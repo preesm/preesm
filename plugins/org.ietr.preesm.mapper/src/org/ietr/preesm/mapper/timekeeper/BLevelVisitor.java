@@ -39,7 +39,6 @@ package org.ietr.preesm.mapper.timekeeper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
@@ -50,82 +49,90 @@ import org.ietr.preesm.mapper.model.property.EdgeTiming;
 import org.ietr.preesm.mapper.model.property.VertexTiming;
 import org.ietr.preesm.mapper.tools.CustomTopologicalIterator;
 
+// TODO: Auto-generated Javadoc
 /**
- * Visitor computing the BLevel of each actor firing. T levels are considered to
- * be valid.
- * 
+ * Visitor computing the BLevel of each actor firing. T levels are considered to be valid.
+ *
  * @author mpelcat
  */
-public class BLevelVisitor implements
-		IGraphVisitor<MapperDAG, MapperDAGVertex, MapperDAGEdge> {
+public class BLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, MapperDAGEdge> {
 
-	/**
-	 * Visiting a graph in topological order to assign b-levels
-	 */
-	@Override
-	public void visit(MapperDAG dag) {
-		// Visiting a DAG consists in computing T Levels for all its vertices,
-		// starting from vertices without predecessors
-		CustomTopologicalIterator iterator = new CustomTopologicalIterator(dag,
-				false);
-		while (iterator.hasNext()) {
-			DAGVertex vertex = iterator.next();
-			try {
-				vertex.accept(this);
-			} catch (SDF4JException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+  /**
+   * Visiting a graph in topological order to assign b-levels.
+   *
+   * @param dag
+   *          the dag
+   */
+  @Override
+  public void visit(final MapperDAG dag) {
+    // Visiting a DAG consists in computing T Levels for all its vertices,
+    // starting from vertices without predecessors
+    final CustomTopologicalIterator iterator = new CustomTopologicalIterator(dag, false);
+    while (iterator.hasNext()) {
+      final DAGVertex vertex = iterator.next();
+      try {
+        vertex.accept(this);
+      } catch (final SDF4JException e) {
+        e.printStackTrace();
+      }
+    }
+  }
 
-	/**
-	 * Visiting a vertex to assign b-levels. Successors are considered already
-	 * visited
-	 */
-	@Override
-	public void visit(MapperDAGVertex dagVertex) {
-		long maxBLevel = -1;
-		VertexTiming timing = dagVertex.getTiming();
+  /**
+   * Visiting a vertex to assign b-levels. Successors are considered already visited
+   *
+   * @param dagVertex
+   *          the dag vertex
+   */
+  @Override
+  public void visit(final MapperDAGVertex dagVertex) {
+    long maxBLevel = -1;
+    final VertexTiming timing = dagVertex.getTiming();
 
-		if (dagVertex.outgoingEdges().isEmpty()) {
-			timing.setBLevel(timing.getCost());
-			return;
-		}
+    if (dagVertex.outgoingEdges().isEmpty()) {
+      timing.setBLevel(timing.getCost());
+      return;
+    }
 
-		// Synchronized vertices are taken into account to compute b-level
-		List<MapperDAGVertex> synchroVertices = timing
-				.getVertices((MapperDAG) dagVertex.getBase());
-		Map<MapperDAGVertex, MapperDAGEdge> successors = new HashMap<MapperDAGVertex, MapperDAGEdge>();
+    // Synchronized vertices are taken into account to compute b-level
+    final List<MapperDAGVertex> synchroVertices = timing
+        .getVertices((MapperDAG) dagVertex.getBase());
+    final Map<MapperDAGVertex, MapperDAGEdge> successors = new HashMap<>();
 
-		for (MapperDAGVertex v : synchroVertices) {
-			Map<MapperDAGVertex, MapperDAGEdge> succs = v.getSuccessors(false);
-			successors.putAll(succs);
-		}
+    for (final MapperDAGVertex v : synchroVertices) {
+      final Map<MapperDAGVertex, MapperDAGEdge> succs = v.getSuccessors(false);
+      successors.putAll(succs);
+    }
 
-		// From successors, computing the b-level
-		for (MapperDAGVertex succ : successors.keySet()) {
-			VertexTiming succTiming = succ.getTiming();
-			EdgeTiming edgeTiming = successors.get(succ).getTiming();
-			if (succTiming.hasBLevel() && timing.hasCost()
-					&& edgeTiming.hasCost()) {
-				long currentBLevel = succTiming.getBLevel() + timing.getCost()
-						+ edgeTiming.getCost();
-				if (currentBLevel > maxBLevel) {
-					maxBLevel = currentBLevel;
-				}
-			} else {
-				timing.resetBLevel();
-			}
-		}
+    // From successors, computing the b-level
+    for (final MapperDAGVertex succ : successors.keySet()) {
+      final VertexTiming succTiming = succ.getTiming();
+      final EdgeTiming edgeTiming = successors.get(succ).getTiming();
+      if (succTiming.hasBLevel() && timing.hasCost() && edgeTiming.hasCost()) {
+        final long currentBLevel = succTiming.getBLevel() + timing.getCost() + edgeTiming.getCost();
+        if (currentBLevel > maxBLevel) {
+          maxBLevel = currentBLevel;
+        }
+      } else {
+        timing.resetBLevel();
+      }
+    }
 
-		if (maxBLevel >= 0) {
-			timing.setBLevel(maxBLevel);
-		}
-	}
+    if (maxBLevel >= 0) {
+      timing.setBLevel(maxBLevel);
+    }
+  }
 
-	@Override
-	public void visit(MapperDAGEdge dagEdge) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.
+   * AbstractEdge)
+   */
+  @Override
+  public void visit(final MapperDAGEdge dagEdge) {
 
-	}
+  }
 
 }

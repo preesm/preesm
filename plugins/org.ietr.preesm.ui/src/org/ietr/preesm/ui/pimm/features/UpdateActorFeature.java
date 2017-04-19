@@ -40,35 +40,54 @@ import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class UpdateActorFeature.
+ */
 public class UpdateActorFeature extends UpdateAbstractVertexFeature {
 
-	/**
-	 * Default constructor of the {@link UpdateActorFeature}
-	 * 
-	 * @param fp
-	 */
-	public UpdateActorFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /**
+   * Default constructor of the {@link UpdateActorFeature}.
+   *
+   * @param fp
+   *          the fp
+   */
+  public UpdateActorFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	@Override
-	public boolean canUpdate(IUpdateContext context) {
-		Object bo = getBusinessObjectForPictogramElement(context
-				.getPictogramElement());
-		return (bo instanceof ExecutableActor);
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.ui.pimm.features.UpdateAbstractVertexFeature#canUpdate(org.eclipse.graphiti.features.context.IUpdateContext)
+   */
+  @Override
+  public boolean canUpdate(final IUpdateContext context) {
+    final Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
+    return (bo instanceof ExecutableActor);
+  }
 
-	@Override
-	public IReason updateNeeded(IUpdateContext context) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.ui.pimm.features.UpdateAbstractVertexFeature#updateNeeded(org.eclipse.graphiti.features.context.IUpdateContext)
+   */
+  @Override
+  public IReason updateNeeded(final IUpdateContext context) {
 
-		// Check if a name update is required
-		IReason ret = super.updateNeeded(context);
+    // Check if a name update is required
+    final IReason ret = super.updateNeeded(context);
 
-		return ret;
-	}
+    return ret;
+  }
 
-	@Override
-	public boolean update(IUpdateContext context) {
-		return super.updateName(context);
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.ui.pimm.features.UpdateAbstractVertexFeature#update(org.eclipse.graphiti.features.context.IUpdateContext)
+   */
+  @Override
+  public boolean update(final IUpdateContext context) {
+    return super.updateName(context);
+  }
 }

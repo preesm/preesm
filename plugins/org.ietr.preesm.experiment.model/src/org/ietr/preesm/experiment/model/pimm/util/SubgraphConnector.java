@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
@@ -73,363 +72,545 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 
+// TODO: Auto-generated Javadoc
 /**
- * Parse and connect hierarchical sub-{@link PiGraph} to a top level {@link PiGraph}
+ * Parse and connect hierarchical sub-{@link PiGraph} to a top level {@link PiGraph}.
+ *
  * @author cguy
  * @author kdesnos
- *
  */
 public class SubgraphConnector extends PiMMVisitor {
 
-	// Actor in the outer graph corresponding to the currently visited graph
-	private AbstractActor currentActor = null;
+  /** The current actor. */
+  // Actor in the outer graph corresponding to the currently visited graph
+  private AbstractActor currentActor = null;
 
-	private Map<PiGraph, List<ActorByGraphReplacement>> graphReplacements = new HashMap<PiGraph, List<ActorByGraphReplacement>>();
+  /** The graph replacements. */
+  private final Map<PiGraph, List<ActorByGraphReplacement>> graphReplacements = new HashMap<>();
 
-	public Map<PiGraph, List<ActorByGraphReplacement>> getGraphReplacements() {
-		return graphReplacements;
-	}
+  /**
+   * Gets the graph replacements.
+   *
+   * @return the graph replacements
+   */
+  public Map<PiGraph, List<ActorByGraphReplacement>> getGraphReplacements() {
+    return this.graphReplacements;
+  }
 
-	private PiGraph currentGraph = null;
+  /** The current graph. */
+  private PiGraph currentGraph = null;
 
-	public void connectSubgraphs(PiGraph pg) {
-		pg.accept(this);
-		// Replace Actors with refinement by PiGraphs in pg and all its
-		// subgraphs
-		for (PiGraph key : graphReplacements.keySet()) {
-			for (SubgraphConnector.ActorByGraphReplacement r : graphReplacements
-					.get(key)) {
-				key.getVertices().remove(r.toBeRemoved);
-				key.getVertices().add(r.toBeAdded);
-			}
-		}
-	}
+  /**
+   * Connect subgraphs.
+   *
+   * @param pg
+   *          the graph process
+   */
+  public void connectSubgraphs(final PiGraph pg) {
+    pg.accept(this);
+    // Replace Actors with refinement by PiGraphs in pg and all its
+    // subgraphs
+    for (final PiGraph key : this.graphReplacements.keySet()) {
+      for (final SubgraphConnector.ActorByGraphReplacement r : this.graphReplacements.get(key)) {
+        key.getVertices().remove(r.toBeRemoved);
+        key.getVertices().add(r.toBeAdded);
+      }
+    }
+  }
 
-	@Override
-	public void visitPiGraph(PiGraph pg) {
-		PiGraph oldGraph = currentGraph;
-		currentGraph = pg;
-		for (AbstractActor v : pg.getVertices()) {
-			v.accept(this);
-		}
-		for (Parameter p : pg.getParameters()) {
-			p.accept(this);
-		}
-		currentGraph = oldGraph;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitPiGraph(org.ietr.preesm.experiment.model.pimm.PiGraph)
+   */
+  @Override
+  public void visitPiGraph(final PiGraph pg) {
+    final PiGraph oldGraph = this.currentGraph;
+    this.currentGraph = pg;
+    for (final AbstractActor v : pg.getVertices()) {
+      v.accept(this);
+    }
+    for (final Parameter p : pg.getParameters()) {
+      p.accept(this);
+    }
+    this.currentGraph = oldGraph;
+  }
 
-	@Override
-	public void visitActor(Actor a) {
-		// If the refinement of the Actor a points to the description of
-		// PiGraph, visit it to connect the subgraph to its supergraph
-		AbstractActor aa = a.getRefinement().getAbstractActor();
-		if (aa != null && aa instanceof PiGraph) {
-			PiGraph innerGraph = (PiGraph) aa;
-			// Connect all Fifos and Dependencies incoming into a and outgoing
-			// from a in order to make them incoming into innerGraph and
-			// outgoing from innerGraph instead
-			reconnectPiGraph(a, innerGraph);
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitActor(org.ietr.preesm.experiment.model.pimm.Actor)
+   */
+  @Override
+  public void visitActor(final Actor a) {
+    // If the refinement of the Actor a points to the description of
+    // PiGraph, visit it to connect the subgraph to its supergraph
+    final AbstractActor aa = a.getRefinement().getAbstractActor();
+    if ((aa != null) && (aa instanceof PiGraph)) {
+      final PiGraph innerGraph = (PiGraph) aa;
+      // Connect all Fifos and Dependencies incoming into a and outgoing
+      // from a in order to make them incoming into innerGraph and
+      // outgoing from innerGraph instead
+      reconnectPiGraph(a, innerGraph);
 
-			currentActor = innerGraph;
-			innerGraph.accept(this);
+      this.currentActor = innerGraph;
+      innerGraph.accept(this);
 
-			ActorByGraphReplacement replacement = new ActorByGraphReplacement(
-					a, innerGraph);
-			if (!graphReplacements.containsKey(currentGraph)) {
-				graphReplacements.put(currentGraph,
-						new ArrayList<ActorByGraphReplacement>());
-			}
-			graphReplacements.get(currentGraph).add(replacement);
-		}
-	}
+      final ActorByGraphReplacement replacement = new ActorByGraphReplacement(a, innerGraph);
+      if (!this.graphReplacements.containsKey(this.currentGraph)) {
+        this.graphReplacements.put(this.currentGraph, new ArrayList<ActorByGraphReplacement>());
+      }
+      this.graphReplacements.get(this.currentGraph).add(replacement);
+    }
+  }
 
-	/*
-	 * Connect all the ports of the PiGraph to the Fifos and Dependencies
-	 * connected to the ports of the Actor
-	 */
-	private void reconnectPiGraph(Actor a, PiGraph pg) {
-		boolean found = false;
-		for (DataInputPort dip1 : a.getDataInputPorts()) {
-			found = false;
-			for (DataInputPort dip2 : pg.getDataInputPorts()) {
-				if (dip1.getName().equals(dip2.getName())) {
-					Fifo fifo = dip1.getIncomingFifo();
-					dip2.setIncomingFifo(fifo);
-					fifo.setTargetPort(dip2);
+  /**
+   * Reconnect pi graph.
+   *
+   * @param a
+   *          the a
+   * @param pg
+   *          the pg
+   */
+  /*
+   * Connect all the ports of the PiGraph to the Fifos and Dependencies connected to the ports of the Actor
+   */
+  private void reconnectPiGraph(final Actor a, final PiGraph pg) {
+    boolean found = false;
+    for (final DataInputPort dip1 : a.getDataInputPorts()) {
+      found = false;
+      for (final DataInputPort dip2 : pg.getDataInputPorts()) {
+        if (dip1.getName().equals(dip2.getName())) {
+          final Fifo fifo = dip1.getIncomingFifo();
+          dip2.setIncomingFifo(fifo);
+          fifo.setTargetPort(dip2);
 
-					dip2.setExpression(dip1.getExpression());
-					dip2.setAnnotation(dip1.getAnnotation());
+          dip2.setExpression(dip1.getExpression());
+          dip2.setAnnotation(dip1.getAnnotation());
 
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				throw new RuntimeException("PiGraph" + pg.getName()
-						+ "does not have a corresponding DataInputPort for "
-						+ dip1.getName() + " of Actor " + a.getName());
-			}
-		}
-		for (DataOutputPort dop1 : a.getDataOutputPorts()) {
-			found = false;
-			for (DataOutputPort dop2 : pg.getDataOutputPorts()) {
-				if (dop1.getName().equals(dop2.getName())) {
-					Fifo fifo = dop1.getOutgoingFifo();
-					dop2.setOutgoingFifo(fifo);
-					fifo.setSourcePort(dop2);
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        throw new RuntimeException("PiGraph" + pg.getName() + "does not have a corresponding DataInputPort for " + dip1.getName() + " of Actor " + a.getName());
+      }
+    }
+    for (final DataOutputPort dop1 : a.getDataOutputPorts()) {
+      found = false;
+      for (final DataOutputPort dop2 : pg.getDataOutputPorts()) {
+        if (dop1.getName().equals(dop2.getName())) {
+          final Fifo fifo = dop1.getOutgoingFifo();
+          dop2.setOutgoingFifo(fifo);
+          fifo.setSourcePort(dop2);
 
-					dop2.setExpression(dop1.getExpression());
-					dop2.setAnnotation(dop1.getAnnotation());
+          dop2.setExpression(dop1.getExpression());
+          dop2.setAnnotation(dop1.getAnnotation());
 
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				throw new RuntimeException("PiGraph" + pg.getName()
-						+ "does not have a corresponding DataOutputPort for "
-						+ dop1.getName() + " of Actor " + a.getName());
-			}
-		}
-		for (ConfigInputPort cip1 : a.getConfigInputPorts()) {
-			found = false;
-			for (ConfigInputPort cip2 : pg.getConfigInputPorts()) {
-				if (cip1.getName().equals(cip2.getName())) {
-					Dependency dep = cip1.getIncomingDependency();
-					cip2.setIncomingDependency(dep);
-					dep.setGetter(cip2);
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				throw new RuntimeException("PiGraph" + pg.getName()
-						+ "does not have a corresponding ConfigInputPort for "
-						+ cip1.getName() + " of Actor " + a.getName());
-			}
-		}
-		for (ConfigOutputPort cop1 : a.getConfigOutputPorts()) {
-			found = false;
-			for (ConfigOutputPort cop2 : pg.getConfigOutputPorts()) {
-				if (cop1.getName().equals(cop2.getName())) {
-					for (Dependency dep : cop1.getOutgoingDependencies()) {
-						cop2.getOutgoingDependencies().add(dep);
-						dep.setSetter(cop2);
-					}
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				throw new RuntimeException("PiGraph" + pg.getName()
-						+ "does not have a corresponding ConfigOutputPort for "
-						+ cop1.getName() + " of Actor " + a.getName());
-			}
-		}
-	}
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        throw new RuntimeException(
+            "PiGraph" + pg.getName() + "does not have a corresponding DataOutputPort for " + dop1.getName() + " of Actor " + a.getName());
+      }
+    }
+    for (final ConfigInputPort cip1 : a.getConfigInputPorts()) {
+      found = false;
+      for (final ConfigInputPort cip2 : pg.getConfigInputPorts()) {
+        if (cip1.getName().equals(cip2.getName())) {
+          final Dependency dep = cip1.getIncomingDependency();
+          cip2.setIncomingDependency(dep);
+          dep.setGetter(cip2);
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        throw new RuntimeException(
+            "PiGraph" + pg.getName() + "does not have a corresponding ConfigInputPort for " + cip1.getName() + " of Actor " + a.getName());
+      }
+    }
+    for (final ConfigOutputPort cop1 : a.getConfigOutputPorts()) {
+      found = false;
+      for (final ConfigOutputPort cop2 : pg.getConfigOutputPorts()) {
+        if (cop1.getName().equals(cop2.getName())) {
+          for (final Dependency dep : cop1.getOutgoingDependencies()) {
+            cop2.getOutgoingDependencies().add(dep);
+            dep.setSetter(cop2);
+          }
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        throw new RuntimeException(
+            "PiGraph" + pg.getName() + "does not have a corresponding ConfigOutputPort for " + cop1.getName() + " of Actor " + a.getName());
+      }
+    }
+  }
 
-	@Override
-	public void visitDataInputInterface(DataInputInterface dii) {
-		// Connect the interface to the incoming fifo from the outer graph, if
-		// any
-		if (currentActor != null) {
-			DataInputPort correspondingPort = null;
-			for (DataInputPort dip : currentActor.getDataInputPorts()) {
-				if (dip.getName() == dii.getName()) {
-					correspondingPort = dip;
-					break;
-				}
-			}
-			if (correspondingPort != null) {
-				dii.setGraphPort(correspondingPort);
-			}
-		}
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataInputInterface(org.ietr.preesm.experiment.model.pimm.DataInputInterface)
+   */
+  @Override
+  public void visitDataInputInterface(final DataInputInterface dii) {
+    // Connect the interface to the incoming fifo from the outer graph, if
+    // any
+    if (this.currentActor != null) {
+      DataInputPort correspondingPort = null;
+      for (final DataInputPort dip : this.currentActor.getDataInputPorts()) {
+        if (dip.getName().equals(dii.getName())) {
+          correspondingPort = dip;
+          break;
+        }
+      }
+      if (correspondingPort != null) {
+        dii.setGraphPort(correspondingPort);
+      }
+    }
+  }
 
-	@Override
-	public void visitDataOutputInterface(DataOutputInterface doi) {
-		// Connect the interface to the outgoing fifo to the outer graph, if any
-		if (currentActor != null) {
-			DataOutputPort correspondingPort = null;
-			for (DataOutputPort dop : currentActor.getDataOutputPorts()) {
-				if (dop.getName() == doi.getName()) {
-					correspondingPort = dop;
-					break;
-				}
-			}
-			if (correspondingPort != null) {
-				doi.setGraphPort(correspondingPort);
-			}
-		}
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataOutputInterface(org.ietr.preesm.experiment.model.pimm.DataOutputInterface)
+   */
+  @Override
+  public void visitDataOutputInterface(final DataOutputInterface doi) {
+    // Connect the interface to the outgoing fifo to the outer graph, if any
+    if (this.currentActor != null) {
+      DataOutputPort correspondingPort = null;
+      for (final DataOutputPort dop : this.currentActor.getDataOutputPorts()) {
+        if (dop.getName().equals(doi.getName())) {
+          correspondingPort = dop;
+          break;
+        }
+      }
+      if (correspondingPort != null) {
+        doi.setGraphPort(correspondingPort);
+      }
+    }
+  }
 
-	@Override
-	public void visitConfigInputInterface(ConfigInputInterface cii) {
-		// Connect the interface to the incoming dependencies from the outer
-		// graph
-		ConfigInputPort correspondingPort = null;
-		for (ConfigInputPort cip : currentActor.getConfigInputPorts()) {
-			if (cip.getName() == cii.getName()) {
-				correspondingPort = cip;
-				break;
-			}
-		}
-		if (correspondingPort != null) {
-			cii.setGraphPort(correspondingPort);
-		}
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigInputInterface(org.ietr.preesm.experiment.model.pimm.ConfigInputInterface)
+   */
+  @Override
+  public void visitConfigInputInterface(final ConfigInputInterface cii) {
+    // Connect the interface to the incoming dependencies from the outer
+    // graph
+    ConfigInputPort correspondingPort = null;
+    for (final ConfigInputPort cip : this.currentActor.getConfigInputPorts()) {
+      if (cip.getName().equals(cii.getName())) {
+        correspondingPort = cip;
+        break;
+      }
+    }
+    if (correspondingPort != null) {
+      cii.setGraphPort(correspondingPort);
+    }
+  }
 
-	@Override
-	public void visitConfigOutputInterface(ConfigOutputInterface coi) {
-		// Connect the interface to the outgoing dependencies to the outer graph
-		ConfigOutputPort correspondingPort = null;
-		for (ConfigOutputPort cop : currentActor.getConfigOutputPorts()) {
-			if (cop.getName() == coi.getName()) {
-				correspondingPort = cop;
-				break;
-			}
-		}
-		if (correspondingPort != null) {
-			coi.setGraphPort(correspondingPort);
-		}
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigOutputInterface(org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface)
+   */
+  @Override
+  public void visitConfigOutputInterface(final ConfigOutputInterface coi) {
+    // Connect the interface to the outgoing dependencies to the outer graph
+    ConfigOutputPort correspondingPort = null;
+    for (final ConfigOutputPort cop : this.currentActor.getConfigOutputPorts()) {
+      if (cop.getName().equals(coi.getName())) {
+        correspondingPort = cop;
+        break;
+      }
+    }
+    if (correspondingPort != null) {
+      coi.setGraphPort(correspondingPort);
+    }
+  }
 
-	@Override
-	public void visitParameter(Parameter p) {
-		// We only do something for ConfigInputInterface (subclass of
-		// Parameter), other parameters are visited but nothing should be done
-		// DO NOTHING
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitParameter(org.ietr.preesm.experiment.model.pimm.Parameter)
+   */
+  @Override
+  public void visitParameter(final Parameter p) {
+    // We only do something for ConfigInputInterface (subclass of
+    // Parameter), other parameters are visited but nothing should be done
+    // DO NOTHING
+  }
 
-	@Override
-	public void visitAbstractActor(AbstractActor aa) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitAbstractActor(org.ietr.preesm.experiment.model.pimm.AbstractActor)
+   */
+  @Override
+  public void visitAbstractActor(final AbstractActor aa) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitAbstractVertex(AbstractVertex av) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitAbstractVertex(org.ietr.preesm.experiment.model.pimm.AbstractVertex)
+   */
+  @Override
+  public void visitAbstractVertex(final AbstractVertex av) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitConfigInputPort(ConfigInputPort cip) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigInputPort(org.ietr.preesm.experiment.model.pimm.ConfigInputPort)
+   */
+  @Override
+  public void visitConfigInputPort(final ConfigInputPort cip) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitConfigOutputPort(ConfigOutputPort cop) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigOutputPort(org.ietr.preesm.experiment.model.pimm.ConfigOutputPort)
+   */
+  @Override
+  public void visitConfigOutputPort(final ConfigOutputPort cop) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitDataPort(DataPort p) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataPort(org.ietr.preesm.experiment.model.pimm.DataPort)
+   */
+  @Override
+  public void visitDataPort(final DataPort p) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitDataInputPort(DataInputPort dip) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataInputPort(org.ietr.preesm.experiment.model.pimm.DataInputPort)
+   */
+  @Override
+  public void visitDataInputPort(final DataInputPort dip) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitDataOutputPort(DataOutputPort dop) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataOutputPort(org.ietr.preesm.experiment.model.pimm.DataOutputPort)
+   */
+  @Override
+  public void visitDataOutputPort(final DataOutputPort dop) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitDelay(Delay d) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDelay(org.ietr.preesm.experiment.model.pimm.Delay)
+   */
+  @Override
+  public void visitDelay(final Delay d) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitDependency(Dependency d) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDependency(org.ietr.preesm.experiment.model.pimm.Dependency)
+   */
+  @Override
+  public void visitDependency(final Dependency d) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitExpression(Expression e) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitExpression(org.ietr.preesm.experiment.model.pimm.Expression)
+   */
+  @Override
+  public void visitExpression(final Expression e) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitFifo(Fifo f) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitFifo(org.ietr.preesm.experiment.model.pimm.Fifo)
+   */
+  @Override
+  public void visitFifo(final Fifo f) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitInterfaceActor(InterfaceActor ia) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitInterfaceActor(org.ietr.preesm.experiment.model.pimm.InterfaceActor)
+   */
+  @Override
+  public void visitInterfaceActor(final InterfaceActor ia) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitISetter(ISetter is) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitISetter(org.ietr.preesm.experiment.model.pimm.ISetter)
+   */
+  @Override
+  public void visitISetter(final ISetter is) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitParameterizable(Parameterizable p) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitParameterizable(org.ietr.preesm.experiment.model.pimm.Parameterizable)
+   */
+  @Override
+  public void visitParameterizable(final Parameterizable p) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitPort(Port p) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitPort(org.ietr.preesm.experiment.model.pimm.Port)
+   */
+  @Override
+  public void visitPort(final Port p) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitRefinement(Refinement r) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitRefinement(org.ietr.preesm.experiment.model.pimm.Refinement)
+   */
+  @Override
+  public void visitRefinement(final Refinement r) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitFunctionParameter(
-			FunctionParameter functionParameter) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitFunctionParameter(org.ietr.preesm.experiment.model.pimm.FunctionParameter)
+   */
+  @Override
+  public void visitFunctionParameter(final FunctionParameter functionParameter) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitFunctionPrototype(
-			FunctionPrototype functionPrototype) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitFunctionPrototype(org.ietr.preesm.experiment.model.pimm.FunctionPrototype)
+   */
+  @Override
+  public void visitFunctionPrototype(final FunctionPrototype functionPrototype) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitBroadcastActor(BroadcastActor ba) {
-		// Do nothing
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitBroadcastActor(org.ietr.preesm.experiment.model.pimm.BroadcastActor)
+   */
+  @Override
+  public void visitBroadcastActor(final BroadcastActor ba) {
+    // Do nothing
+  }
 
-	@Override
-	public void visitJoinActor(JoinActor ja) {
-		// Do nothing
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitJoinActor(org.ietr.preesm.experiment.model.pimm.JoinActor)
+   */
+  @Override
+  public void visitJoinActor(final JoinActor ja) {
+    // Do nothing
+  }
 
-	@Override
-	public void visitForkActor(ForkActor fa) {
-		// Do nothing
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitForkActor(org.ietr.preesm.experiment.model.pimm.ForkActor)
+   */
+  @Override
+  public void visitForkActor(final ForkActor fa) {
+    // Do nothing
+  }
 
-	@Override
-	public void visitRoundBufferActor(RoundBufferActor rba) {
-		// Do nothing
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitRoundBufferActor(org.ietr.preesm.experiment.model.pimm.RoundBufferActor)
+   */
+  @Override
+  public void visitRoundBufferActor(final RoundBufferActor rba) {
+    // Do nothing
+  }
 
-	@Override
-	public void visitExecutableActor(ExecutableActor ea) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitExecutableActor(org.ietr.preesm.experiment.model.pimm.ExecutableActor)
+   */
+  @Override
+  public void visitExecutableActor(final ExecutableActor ea) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitHRefinement(HRefinement hRefinement) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitHRefinement(org.ietr.preesm.experiment.model.pimm.HRefinement)
+   */
+  @Override
+  public void visitHRefinement(final HRefinement hRefinement) {
+    throw new UnsupportedOperationException();
+  }
 
-	public class ActorByGraphReplacement {
-		public Actor toBeRemoved;
-		public PiGraph toBeAdded;
+  /**
+   * The Class ActorByGraphReplacement.
+   */
+  public class ActorByGraphReplacement {
 
-		public ActorByGraphReplacement(Actor toBeRemoved, PiGraph toBeAdded) {
-			this.toBeRemoved = toBeRemoved;
-			this.toBeAdded = toBeAdded;
-		}
-	}
+    /** The to be removed. */
+    public Actor toBeRemoved;
+
+    /** The to be added. */
+    public PiGraph toBeAdded;
+
+    /**
+     * Instantiates a new actor by graph replacement.
+     *
+     * @param toBeRemoved
+     *          the to be removed
+     * @param toBeAdded
+     *          the to be added
+     */
+    public ActorByGraphReplacement(final Actor toBeRemoved, final PiGraph toBeAdded) {
+      this.toBeRemoved = toBeRemoved;
+      this.toBeAdded = toBeAdded;
+    }
+  }
 }

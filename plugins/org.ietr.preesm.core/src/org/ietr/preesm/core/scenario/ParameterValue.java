@@ -37,186 +37,229 @@ package org.ietr.preesm.core.scenario;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.nfunk.jep.JEP;
+import org.nfunk.jep.Node;
+import org.nfunk.jep.ParseException;
 
-import com.singularsys.jep.Jep;
-import com.singularsys.jep.JepException;
-
+// TODO: Auto-generated Javadoc
 /**
  * Value(s) of a parameter in a graph. It can be: Static, Dependent or Dynamic.
- * 
+ *
  * @author jheulot
  */
-public class ParameterValue {	
-	/**
-	 * Different type of Parameter.
-	 */
-	public enum ParameterType {
-		// No configuration input port
-		INDEPENDENT,
-		// Direct dependency from a configuration actor to this parameter
-		ACTOR_DEPENDENT,
-		// Configuration input ports, but none directly dependent from a
-		// configuration actor
-		PARAMETER_DEPENDENT
-	}
+public class ParameterValue {
+  /**
+   * Different type of Parameter.
+   */
+  public enum ParameterType {
 
-	/**
-	 * Parameter for which we keep value(s)
-	 */
-	private  Parameter parameter;
-	
-	/**
-	 * The name of the parameter
-	 */
-	private String name;
+    /** The independent. */
+    // No configuration input port
+    INDEPENDENT,
 
-	/**
-	 * The parameter type
-	 */
-	private ParameterType type;
+    /** The actor dependent. */
+    // Direct dependency from a configuration actor to this parameter
+    ACTOR_DEPENDENT,
+    // Configuration input ports, but none directly dependent from a
+    /** The parameter dependent. */
+    // configuration actor
+    PARAMETER_DEPENDENT
+  }
 
-	/**
-	 * The corresponding parent vertex
-	 */
-	private String parentVertex;
+  /** Parameter for which we keep value(s). */
+  private Parameter parameter;
 
-	/**
-	 * Type specific attributes
-	 */
-	/* INDEPENDENT */
-	private String value;
+  /** The name of the parameter. */
+  private final String name;
 
-	/* ACTOR_DEPENDENT */
-	private Set<Integer> values;
+  /** The parameter type. */
+  private final ParameterType type;
 
-	/* PARAMETER_DEPENDENT */
-	private Set<String> inputParameters;
-	private String expression;
+  /** The corresponding parent vertex. */
+  private final String parentVertex;
 
-	/**
-	 * @return the expression
-	 */
-	public String getExpression() {
-		return expression;
-	}
+  /** Type specific attributes. */
+  /* INDEPENDENT */
+  private String value;
 
-	/**
-	 * @param inputParameters
-	 *            the inputParameters to set
-	 */
-	public void setInputParameters(Set<String> inputParameters) {
-		this.inputParameters = inputParameters;
-	}
+  /** The values. */
+  /* ACTOR_DEPENDENT */
+  private Set<Integer> values;
 
-	/**
-	 * @param expression
-	 *            the expression to set
-	 */
-	public void setExpression(String expression) {
-		this.expression = expression;
-	}
+  /** The input parameters. */
+  /* PARAMETER_DEPENDENT */
+  private Set<String> inputParameters;
 
-	public ParameterValue(Parameter parameter, ParameterType type, String parent) {
-		this.setParameter(parameter);
-		this.name = parameter.getName();
-		this.type = type;
-		this.values = new HashSet<Integer>();
-		this.inputParameters = new HashSet<String>();
-		this.parentVertex = parent;
-	}
+  /** The expression. */
+  private String expression;
 
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
+  /**
+   * Gets the expression.
+   *
+   * @return the expression
+   */
+  public String getExpression() {
+    return this.expression;
+  }
 
-	/**
-	 * @return the type
-	 */
-	public ParameterType getType() {
-		return type;
-	}
+  /**
+   * Sets the input parameters.
+   *
+   * @param inputParameters
+   *          the inputParameters to set
+   */
+  public void setInputParameters(final Set<String> inputParameters) {
+    this.inputParameters = inputParameters;
+  }
 
-	/**
-	 * @return the parent
-	 */
-	public String getParentVertex() {
-		return parentVertex;
-	}
+  /**
+   * Sets the expression.
+   *
+   * @param expression
+   *          the expression to set
+   */
+  public void setExpression(final String expression) {
+    this.expression = expression;
+  }
 
-	/**
-	 * @return the value
-	 */
-	public String getValue() {
-		return value;
-	}
+  /**
+   * Instantiates a new parameter value.
+   *
+   * @param parameter
+   *          the parameter
+   * @param type
+   *          the type
+   * @param parent
+   *          the parent
+   */
+  public ParameterValue(final Parameter parameter, final ParameterType type, final String parent) {
+    setParameter(parameter);
+    this.name = parameter.getName();
+    this.type = type;
+    this.values = new HashSet<>();
+    this.inputParameters = new HashSet<>();
+    this.parentVertex = parent;
+  }
 
-	/**
-	 * @return the values
-	 */
-	public Set<Integer> getValues() {
-		return values;
-	}
+  /**
+   * Gets the name.
+   *
+   * @return the name
+   */
+  public String getName() {
+    return this.name;
+  }
 
-	/**
-	 * @param value
-	 *            the value to set
-	 */
-	public void setValue(String value) {
-		this.value = value;
-	}
+  /**
+   * Gets the type.
+   *
+   * @return the type
+   */
+  public ParameterType getType() {
+    return this.type;
+  }
 
-	/**
-	 * @param values
-	 *            the values to set
-	 */
-	public void setValues(Set<Integer> values) {
-		this.values = values;
-	}
+  /**
+   * Gets the parent vertex.
+   *
+   * @return the parent
+   */
+  public String getParentVertex() {
+    return this.parentVertex;
+  }
 
-	/**
-	 * @return the inputParameters
-	 */
-	public Set<String> getInputParameters() {
-		return inputParameters;
-	}
+  /**
+   * Gets the value.
+   *
+   * @return the value
+   */
+  public String getValue() {
+    return this.value;
+  }
 
-	/**
-	 * Test if the parameter value is defined correctly
-	 * 
-	 * @return if the parameter value is defined correctly
-	 */
-	public boolean isValid() {
-		switch (type) {
-		case INDEPENDENT:
-			return true;
-		case ACTOR_DEPENDENT:
-			return !values.isEmpty();
-		case PARAMETER_DEPENDENT:
-			Jep jep = new Jep();
-			try {
-				for (String parameter : inputParameters)
-					jep.addVariable(parameter, 1);
-				jep.parse(expression);
-				jep.evaluate();
-				return true;
-			} catch (JepException e) {
-				return false;
-			}
-		default:
-			return false;
-		}
-	}
+  /**
+   * Gets the values.
+   *
+   * @return the values
+   */
+  public Set<Integer> getValues() {
+    return this.values;
+  }
 
-	public Parameter getParameter() {
-		return parameter;
-	}
+  /**
+   * Sets the value.
+   *
+   * @param value
+   *          the value to set
+   */
+  public void setValue(final String value) {
+    this.value = value;
+  }
 
-	public void setParameter(Parameter parameter) {
-		this.parameter = parameter;
-	}
+  /**
+   * Sets the values.
+   *
+   * @param values
+   *          the values to set
+   */
+  public void setValues(final Set<Integer> values) {
+    this.values = values;
+  }
+
+  /**
+   * Gets the input parameters.
+   *
+   * @return the inputParameters
+   */
+  public Set<String> getInputParameters() {
+    return this.inputParameters;
+  }
+
+  /**
+   * Test if the parameter value is defined correctly.
+   *
+   * @return if the parameter value is defined correctly
+   */
+  public boolean isValid() {
+    switch (this.type) {
+      case INDEPENDENT:
+        return true;
+      case ACTOR_DEPENDENT:
+        return !this.values.isEmpty();
+      case PARAMETER_DEPENDENT:
+        final JEP jep = new JEP();
+        try {
+          for (final String parameter : this.inputParameters) {
+            jep.addVariable(parameter, 1);
+          }
+          final Node parse = jep.parse(this.expression);
+          jep.evaluate(parse);
+          return true;
+        } catch (final ParseException e) {
+          return false;
+        }
+      default:
+        return false;
+    }
+  }
+
+  /**
+   * Gets the parameter.
+   *
+   * @return the parameter
+   */
+  public Parameter getParameter() {
+    return this.parameter;
+  }
+
+  /**
+   * Sets the parameter.
+   *
+   * @param parameter
+   *          the new parameter
+   */
+  public void setParameter(final Parameter parameter) {
+    this.parameter = parameter;
+  }
 }

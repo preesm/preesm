@@ -39,16 +39,22 @@ package org.ietr.preesm.ui.scenario.editor.relativeconstraints;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 
+// TODO: Auto-generated Javadoc
 /**
- * Listener of core definition change and of table selection
- * 
+ * Listener of core definition change and of table selection.
+ *
  * @author mpelcat
  */
 public class RelativeConstraintsSelectionListener implements ISelectionChangedListener {
 
-	@Override
-	public void selectionChanged(SelectionChangedEvent event) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.ISelectionChangedListener#selectionChanged(org.eclipse.jface.viewers.SelectionChangedEvent)
+   */
+  @Override
+  public void selectionChanged(final SelectionChangedEvent event) {
 
-	}
+  }
 
 }

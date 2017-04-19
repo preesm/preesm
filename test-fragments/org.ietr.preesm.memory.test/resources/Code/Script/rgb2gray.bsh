@@ -1,0 +1,2 @@
+// RGB2Gra script
+o_output.matchWith(0,i_input,2,h*w);

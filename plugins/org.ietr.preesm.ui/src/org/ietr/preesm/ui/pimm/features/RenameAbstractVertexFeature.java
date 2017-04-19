@@ -45,93 +45,117 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 
+// TODO: Auto-generated Javadoc
 /**
  * Custom feature to rename an {@link AbstractVertex}.
- * 
+ *
  * @author kdesnos
- * 
+ *
  */
 public class RenameAbstractVertexFeature extends AbstractCustomFeature {
 
-	protected boolean hasDoneChanges = false;
+  /** The has done changes. */
+  protected boolean hasDoneChanges = false;
 
-	/**
-	 * Default Constructor
-	 * 
-	 * @param fp
-	 *            the feature provider
-	 */
-	public RenameAbstractVertexFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /**
+   * Default Constructor.
+   *
+   * @param fp
+   *          the feature provider
+   */
+  public RenameAbstractVertexFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	@Override
-	public String getName() {
-		return "Rename\tF2";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#getName()
+   */
+  @Override
+  public String getName() {
+    return "Rename\tF2";
+  }
 
-	@Override
-	public String getDescription() {
-		return "Change the name";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#getDescription()
+   */
+  @Override
+  public String getDescription() {
+    return "Change the name";
+  }
 
-	@Override
-	public boolean canExecute(ICustomContext context) {
-		// allow rename if exactly one pictogram element
-		// representing an AbstractVertex is selected
-		boolean ret = false;
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes != null && pes.length == 1) {
-			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof AbstractVertex) {
-				ret = true;
-			}
-		}
-		return ret;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public boolean canExecute(final ICustomContext context) {
+    // allow rename if exactly one pictogram element
+    // representing an AbstractVertex is selected
+    boolean ret = false;
+    final PictogramElement[] pes = context.getPictogramElements();
+    if ((pes != null) && (pes.length == 1)) {
+      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+      if (bo instanceof AbstractVertex) {
+        ret = true;
+      }
+    }
+    return ret;
+  }
 
-	@Override
-	public void execute(ICustomContext context) {
-		// Retrieve the graph
-		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public void execute(final ICustomContext context) {
+    // Retrieve the graph
+    final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
 
-		// Re-check if only one element is selected
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes != null && pes.length == 1) {
-			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof AbstractVertex) {
-				AbstractVertex vertex = (AbstractVertex) bo;
-				String currentName = vertex.getName();
+    // Re-check if only one element is selected
+    final PictogramElement[] pes = context.getPictogramElements();
+    if ((pes != null) && (pes.length == 1)) {
+      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+      if (bo instanceof AbstractVertex) {
+        final AbstractVertex vertex = (AbstractVertex) bo;
+        final String currentName = vertex.getName();
 
-				// Ask user for AbstractVertex name until a valid name is
-				// entered.
-				String className = bo.getClass().getSimpleName();
-				className = className.substring(0,
-						className.lastIndexOf("Impl"));
-				String question = "Enter new " + className + " name";
-				String newVertexName = vertex.getName();
+        // Ask user for AbstractVertex name until a valid name is
+        // entered.
+        String className = bo.getClass().getSimpleName();
+        className = className.substring(0, className.lastIndexOf("Impl"));
+        final String question = "Enter new " + className + " name";
+        String newVertexName = vertex.getName();
 
-				newVertexName = PiMMUtil.askString("Rename " + className,
-						question, newVertexName, new VertexNameValidator(graph,
-								vertex));
+        newVertexName = PiMMUtil.askString("Rename " + className, question, newVertexName, new VertexNameValidator(graph, vertex));
 
-				if (newVertexName != null && !newVertexName.equals(currentName)) {
-					this.hasDoneChanges = true;
-					vertex.setName(newVertexName);
+        if ((newVertexName != null) && !newVertexName.equals(currentName)) {
+          this.hasDoneChanges = true;
+          vertex.setName(newVertexName);
 
-					// Update the Pictogram element
-					updatePictogramElement(pes[0]);
+          // Update the Pictogram element
+          updatePictogramElement(pes[0]);
 
-					// Call the layout feature
-					layoutPictogramElement(pes[0]);
-				}
-			}
-		}
-	}
+          // Call the layout feature
+          layoutPictogramElement(pes[0]);
+        }
+      }
+    }
+  }
 
-	@Override
-	public boolean hasDoneChanges() {
-		return this.hasDoneChanges;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
+   */
+  @Override
+  public boolean hasDoneChanges() {
+    return this.hasDoneChanges;
+  }
 
 }

@@ -36,68 +36,95 @@
 
 package org.ietr.preesm.codegen.model.containers;
 
+// TODO: Auto-generated Javadoc
 /**
- * Defining a type of section in a thread
- * 
+ * Defining a type of section in a thread.
+ *
  * @author mpelcat
  */
 public class CodeSectionType {
 
-	public enum MajorType {
+  /**
+   * The Enum MajorType.
+   */
+  public enum MajorType {
 
-		FIFOINIT, COMINIT, INIT, LOOP
-	}
+    /** The fifoinit. */
+    FIFOINIT,
+    /** The cominit. */
+    COMINIT,
+    /** The init. */
+    INIT,
+    /** The loop. */
+    LOOP
+  }
 
-	/**
-	 * Main code block identification
-	 */
-	private MajorType major;
+  /** Main code block identification. */
+  private final MajorType major;
 
-	/**
-	 * sub code block identification
-	 */
-	private int minor = -1;
+  /** sub code block identification. */
+  private int minor = -1;
 
-	/**
-	 * creating a section type with major and minor
-	 */
-	public CodeSectionType(MajorType major, int minor) {
-		super();
-		this.major = major;
-		this.minor = minor;
-	}
+  /**
+   * creating a section type with major and minor.
+   *
+   * @param major
+   *          the major
+   * @param minor
+   *          the minor
+   */
+  public CodeSectionType(final MajorType major, final int minor) {
+    super();
+    this.major = major;
+    this.minor = minor;
+  }
 
-	/**
-	 * creating a section type with only major
-	 */
-	public CodeSectionType(MajorType major) {
-		super();
-		this.major = major;
-		this.minor = -1;
-	}
+  /**
+   * creating a section type with only major.
+   *
+   * @param major
+   *          the major
+   */
+  public CodeSectionType(final MajorType major) {
+    super();
+    this.major = major;
+    this.minor = -1;
+  }
 
-	public MajorType getMajor() {
-		return major;
-	}
+  /**
+   * Gets the major.
+   *
+   * @return the major
+   */
+  public MajorType getMajor() {
+    return this.major;
+  }
 
-	public int getMinor() {
-		return minor;
-	}
+  /**
+   * Gets the minor.
+   *
+   * @return the minor
+   */
+  public int getMinor() {
+    return this.minor;
+  }
 
-	@Override
-	public String toString() {
-		if(major.equals(MajorType.LOOP)){
-			return "LOOP";
-		}
-		else if(major.equals(MajorType.COMINIT)){
-			return "COMINIT";
-		}
-		else if(major.equals(MajorType.INIT)){
-			return "(INIT," + minor + ")";
-		}
-		else if(major.equals(MajorType.FIFOINIT)){
-			return "FIFOINIT";
-		}
-		return "";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    if (this.major.equals(MajorType.LOOP)) {
+      return "LOOP";
+    } else if (this.major.equals(MajorType.COMINIT)) {
+      return "COMINIT";
+    } else if (this.major.equals(MajorType.INIT)) {
+      return "(INIT," + this.minor + ")";
+    } else if (this.major.equals(MajorType.FIFOINIT)) {
+      return "FIFOINIT";
+    }
+    return "";
+  }
 }

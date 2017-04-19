@@ -44,35 +44,41 @@ import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 
+// TODO: Auto-generated Javadoc
 /**
  * Delete Feature for {@link Dependency}.
- * 
+ *
  * @author kdesnos
- * 
+ *
  */
 public class DeleteDependencyFeature extends DefaultDeleteFeature {
 
-	/**
-	 * Default constructor for {@link DeleteDependencyFeature}.
-	 * 
-	 * @param fp
-	 *            the feature provider
-	 */
-	public DeleteDependencyFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /**
+   * Default constructor for {@link DeleteDependencyFeature}.
+   *
+   * @param fp
+   *          the feature provider
+   */
+  public DeleteDependencyFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	@Override
-	public void preDelete(IDeleteContext context) {
-		super.preDelete(context);
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.ui.features.DefaultDeleteFeature#preDelete(org.eclipse.graphiti.features.context.IDeleteContext)
+   */
+  @Override
+  public void preDelete(final IDeleteContext context) {
+    super.preDelete(context);
 
-		PictogramElement pe = context.getPictogramElement();
-		Object obj = getBusinessObjectForPictogramElement(pe);
-		ConfigInputPort iCfgPort = ((Dependency) obj).getGetter();
-		Parameterizable portOwner = (Parameterizable) iCfgPort.eContainer();
-		// If the getter is not an actor, delete the configInputPort
-		if (!(portOwner instanceof ExecutableActor)) {
-			portOwner.getConfigInputPorts().remove(iCfgPort);
-		}
-	}
+    final PictogramElement pe = context.getPictogramElement();
+    final Object obj = getBusinessObjectForPictogramElement(pe);
+    final ConfigInputPort iCfgPort = ((Dependency) obj).getGetter();
+    final Parameterizable portOwner = (Parameterizable) iCfgPort.eContainer();
+    // If the getter is not an actor, delete the configInputPort
+    if (!(portOwner instanceof ExecutableActor)) {
+      portOwner.getConfigInputPorts().remove(iCfgPort);
+    }
+  }
 }

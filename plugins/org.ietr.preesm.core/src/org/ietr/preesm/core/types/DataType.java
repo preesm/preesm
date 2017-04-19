@@ -39,60 +39,104 @@ package org.ietr.preesm.core.types;
 
 import java.util.HashMap;
 
+// TODO: Auto-generated Javadoc
 /**
  * Representing a data type in code generation (exple: char, int...).
- * 
+ *
  * @author mpelcat
  */
 public class DataType {
 
-	private String typeName;
+  /** The type name. */
+  private final String typeName;
 
-	/**
-	 * Size in base units (usually bytes)
-	 */
-	private Integer size;
+  /** Size in base units (usually bytes). */
+  private Integer size;
 
-	public static final Integer defaultDataTypeSize = 1;
-	public static final HashMap<String, Integer> nameToSize = new HashMap<String, Integer>();
+  /** The Constant defaultDataTypeSize. */
+  public static final Integer defaultDataTypeSize = 1;
 
-	public DataType(String typeName) {
-		super();
-		this.typeName = typeName;
-		if (nameToSize.get(typeName) == null) {
-			this.size = defaultDataTypeSize;
-		} else {
-			this.size = nameToSize.get(typeName);
-		}
-	}
+  /** The Constant nameToSize. */
+  public static final HashMap<String, Integer> nameToSize = new HashMap<>();
 
-	public DataType(DataType type) {
-		super();
-		this.typeName = type.getTypeName();
-		this.size = type.getSize();
-	}
+  /**
+   * Instantiates a new data type.
+   *
+   * @param typeName
+   *          the type name
+   */
+  public DataType(final String typeName) {
+    super();
+    this.typeName = typeName;
+    if (DataType.nameToSize.get(typeName) == null) {
+      this.size = DataType.defaultDataTypeSize;
+    } else {
+      this.size = DataType.nameToSize.get(typeName);
+    }
+  }
 
-	public DataType(String typeName, Integer size) {
-		super();
-		this.typeName = typeName;
-		this.size = size;
-		nameToSize.put(typeName, size);
-	}
+  /**
+   * Instantiates a new data type.
+   *
+   * @param type
+   *          the type
+   */
+  public DataType(final DataType type) {
+    super();
+    this.typeName = type.getTypeName();
+    this.size = type.getSize();
+  }
 
-	public String getTypeName() {
-		return typeName;
-	}
+  /**
+   * Instantiates a new data type.
+   *
+   * @param typeName
+   *          the type name
+   * @param size
+   *          the size
+   */
+  public DataType(final String typeName, final Integer size) {
+    super();
+    this.typeName = typeName;
+    this.size = size;
+    DataType.nameToSize.put(typeName, size);
+  }
 
-	public Integer getSize() {
-		return size;
-	}
+  /**
+   * Gets the type name.
+   *
+   * @return the type name
+   */
+  public String getTypeName() {
+    return this.typeName;
+  }
 
-	public void setSize(Integer size) {
-		this.size = size;
-	}
+  /**
+   * Gets the size.
+   *
+   * @return the size
+   */
+  public Integer getSize() {
+    return this.size;
+  }
 
-	@Override
-	public String toString() {
-		return typeName;
-	}
+  /**
+   * Sets the size.
+   *
+   * @param size
+   *          the new size
+   */
+  public void setSize(final Integer size) {
+    this.size = size;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return this.typeName;
+  }
 }

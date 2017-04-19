@@ -40,53 +40,81 @@ import org.ietr.preesm.mapper.abc.edgescheduling.IntervalFinder;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * The task switcher adds a processing to the mapping algorithm. When a vertex
- * is mapped, it looks for the best place to schedule it.
- * 
+ * The task switcher adds a processing to the mapping algorithm. When a vertex is mapped, it looks
+ * for the best place to schedule it.
+ *
  * @author mpelcat
  */
 public class TaskSwitcher extends AbstractTaskSched {
 
-	private IntervalFinder intervalFinder;
+  /** The interval finder. */
+  private IntervalFinder intervalFinder;
 
-	public TaskSwitcher() {
-		super();
-	}
+  /**
+   * Instantiates a new task switcher.
+   */
+  public TaskSwitcher() {
+    super();
+  }
 
-	@Override
-	public void setOrderManager(OrderManager orderManager) {
-		super.setOrderManager(orderManager);
-		intervalFinder = new IntervalFinder(orderManager);
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#setOrderManager(org.ietr.preesm.
+   * mapper.abc.order.OrderManager)
+   */
+  @Override
+  public void setOrderManager(final OrderManager orderManager) {
+    super.setOrderManager(orderManager);
+    this.intervalFinder = new IntervalFinder(orderManager);
+  }
 
-	public void insertVertexBefore(MapperDAGVertex successor,
-			MapperDAGVertex vertex) {
+  /**
+   * Insert vertex before.
+   *
+   * @param successor
+   *          the successor
+   * @param vertex
+   *          the vertex
+   */
+  public void insertVertexBefore(final MapperDAGVertex successor, final MapperDAGVertex vertex) {
 
-		// Removing the vertex if necessary before inserting it
-		if (orderManager.totalIndexOf(vertex) != -1)
-			orderManager.remove(vertex, true);
+    // Removing the vertex if necessary before inserting it
+    if (this.orderManager.totalIndexOf(vertex) != -1) {
+      this.orderManager.remove(vertex, true);
+    }
 
-		int newIndex = intervalFinder.getBestIndex(vertex, 0);
-		if (newIndex >= 0) {
-			orderManager.insertAtIndex(newIndex, vertex);
-		} else {
-			orderManager.insertBefore(successor, vertex);
-		}
-	}
+    final int newIndex = this.intervalFinder.getBestIndex(vertex, 0);
+    if (newIndex >= 0) {
+      this.orderManager.insertAtIndex(newIndex, vertex);
+    } else {
+      this.orderManager.insertBefore(successor, vertex);
+    }
+  }
 
-	@Override
-	public void insertVertex(MapperDAGVertex vertex) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#insertVertex(org.ietr.preesm.mapper
+   * .model.MapperDAGVertex)
+   */
+  @Override
+  public void insertVertex(final MapperDAGVertex vertex) {
 
-		// Removing the vertex if necessary before inserting it
-		if (orderManager.totalIndexOf(vertex) != -1)
-			orderManager.remove(vertex, true);
+    // Removing the vertex if necessary before inserting it
+    if (this.orderManager.totalIndexOf(vertex) != -1) {
+      this.orderManager.remove(vertex, true);
+    }
 
-		int newIndex = intervalFinder.getBestIndex(vertex, 0);
-		if (newIndex >= 0) {
-			orderManager.insertAtIndex(newIndex, vertex);
-		} else {
-			orderManager.addLast(vertex);
-		}
-	}
+    final int newIndex = this.intervalFinder.getBestIndex(vertex, 0);
+    if (newIndex >= 0) {
+      this.orderManager.insertAtIndex(newIndex, vertex);
+    } else {
+      this.orderManager.addLast(vertex);
+    }
+  }
 }

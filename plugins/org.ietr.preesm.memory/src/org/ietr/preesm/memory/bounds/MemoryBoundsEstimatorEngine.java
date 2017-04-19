@@ -38,83 +38,121 @@ package org.ietr.preesm.memory.bounds;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.jgrapht.graph.DefaultEdge;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MemoryBoundsEstimatorEngine.
+ */
 public class MemoryBoundsEstimatorEngine {
 
-	static final public String PARAM_SOLVER = "Solver";
-	static final public String VALUE_SOLVER_DEFAULT = "? C {Heuristic, Ostergard, Yamaguchi}";
-	static final public String VALUE_SOLVER_OSTERGARD = "Ostergard";
-	static final public String VALUE_SOLVER_YAMAGUCHI = "Yamaguchi";
-	static final public String VALUE_SOLVER_HEURISTIC = "Heuristic";
+  /** The Constant PARAM_SOLVER. */
+  public static final String PARAM_SOLVER = "Solver";
 
-	static final public String VALUE_VERBOSE_TRUE = "True";
+  /** The Constant VALUE_SOLVER_DEFAULT. */
+  public static final String VALUE_SOLVER_DEFAULT = "? C {Heuristic, Ostergard, Yamaguchi}";
 
-	// Rem: Logger is used to display messages in the console
-	private Logger logger = WorkflowLogger.getLogger();
-	private MemoryExclusionGraph memEx;
-	private boolean verbose;
-	private AbstractMaximumWeightCliqueSolver<MemoryExclusionVertex, DefaultEdge> solver;
+  /** The Constant VALUE_SOLVER_OSTERGARD. */
+  public static final String VALUE_SOLVER_OSTERGARD = "Ostergard";
 
-	public MemoryBoundsEstimatorEngine(MemoryExclusionGraph memEx,
-			String valueVerbose) {
-		this.memEx = memEx;
-		this.verbose = valueVerbose.contains(VALUE_VERBOSE_TRUE);
-	}
+  /** The Constant VALUE_SOLVER_YAMAGUCHI. */
+  public static final String VALUE_SOLVER_YAMAGUCHI = "Yamaguchi";
 
-	public void selectSolver(String valueSolver) {
-		if (verbose) {
-			if (valueSolver.equals(VALUE_SOLVER_DEFAULT)) {
-				logger.log(Level.INFO,
-						"No solver specified. Heuristic solver used by default.");
-			} else {
-				if (valueSolver.equals(VALUE_SOLVER_HEURISTIC)
-						|| valueSolver.equals(VALUE_SOLVER_OSTERGARD)
-						|| valueSolver.equals(VALUE_SOLVER_YAMAGUCHI)) {
-					logger.log(Level.INFO, valueSolver + " solver used.");
-				} else {
-					logger.log(Level.INFO, "Incorrect solver :" + valueSolver
-							+ ". Heuristic solver used by default.");
-				}
-			}
-		}
-		switch (valueSolver) {
-		case VALUE_SOLVER_HEURISTIC:
-			solver = new HeuristicSolver<MemoryExclusionVertex, DefaultEdge>(
-					memEx);
-			break;
-		case VALUE_SOLVER_OSTERGARD:
-			solver = new OstergardSolver<MemoryExclusionVertex, DefaultEdge>(
-					memEx);
-			break;
-		case VALUE_SOLVER_YAMAGUCHI:
-			solver = new YamaguchiSolver<MemoryExclusionVertex, DefaultEdge>(
-					memEx);
-			break;
-		default:
-			solver = new HeuristicSolver<MemoryExclusionVertex, DefaultEdge>(
-					memEx);
-		}
-	}
+  /** The Constant VALUE_SOLVER_HEURISTIC. */
+  public static final String VALUE_SOLVER_HEURISTIC = "Heuristic";
 
-	public void solve() {
-		if (verbose) {
-			logger.log(Level.INFO,
-					"Maximum-Weight Clique Problem : start solving");
-		}
+  /** The Constant VALUE_VERBOSE_TRUE. */
+  public static final String VALUE_VERBOSE_TRUE = "True";
 
-		solver.solve();
-	}
+  /** The logger. */
+  // Rem: Logger is used to display messages in the console
+  private final Logger logger = WorkflowLogger.getLogger();
 
-	public int getMinBound() {
-		return solver.sumWeight(solver.getHeaviestClique());
-	}
+  /** The mem ex. */
+  private final MemoryExclusionGraph memEx;
 
-	public int getMaxBound() {
-		return solver.sumWeight(memEx.vertexSet());
-	}
+  /** The verbose. */
+  private final boolean verbose;
+
+  /** The solver. */
+  private AbstractMaximumWeightCliqueSolver<MemoryExclusionVertex, DefaultEdge> solver;
+
+  /**
+   * Instantiates a new memory bounds estimator engine.
+   *
+   * @param memEx
+   *          the mem ex
+   * @param valueVerbose
+   *          the value verbose
+   */
+  public MemoryBoundsEstimatorEngine(final MemoryExclusionGraph memEx, final String valueVerbose) {
+    this.memEx = memEx;
+    this.verbose = valueVerbose.contains(MemoryBoundsEstimatorEngine.VALUE_VERBOSE_TRUE);
+  }
+
+  /**
+   * Select solver.
+   *
+   * @param valueSolver
+   *          the value solver
+   */
+  public void selectSolver(final String valueSolver) {
+    if (this.verbose) {
+      if (valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_DEFAULT)) {
+        this.logger.log(Level.INFO, "No solver specified. Heuristic solver used by default.");
+      } else {
+        if (valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_HEURISTIC) || valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_OSTERGARD)
+            || valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_YAMAGUCHI)) {
+          this.logger.log(Level.INFO, valueSolver + " solver used.");
+        } else {
+          this.logger.log(Level.INFO, "Incorrect solver :" + valueSolver + ". Heuristic solver used by default.");
+        }
+      }
+    }
+    switch (valueSolver) {
+      case VALUE_SOLVER_HEURISTIC:
+        this.solver = new HeuristicSolver<>(this.memEx);
+        break;
+      case VALUE_SOLVER_OSTERGARD:
+        this.solver = new OstergardSolver<>(this.memEx);
+        break;
+      case VALUE_SOLVER_YAMAGUCHI:
+        this.solver = new YamaguchiSolver<>(this.memEx);
+        break;
+      default:
+        this.solver = new HeuristicSolver<>(this.memEx);
+    }
+  }
+
+  /**
+   * Solve.
+   */
+  public void solve() {
+    if (this.verbose) {
+      this.logger.log(Level.INFO, "Maximum-Weight Clique Problem : start solving");
+    }
+
+    this.solver.solve();
+  }
+
+  /**
+   * Gets the min bound.
+   *
+   * @return the min bound
+   */
+  public int getMinBound() {
+    return this.solver.sumWeight(this.solver.getHeaviestClique());
+  }
+
+  /**
+   * Gets the max bound.
+   *
+   * @return the max bound
+   */
+  public int getMaxBound() {
+    return this.solver.sumWeight(this.memEx.vertexSet());
+  }
 }

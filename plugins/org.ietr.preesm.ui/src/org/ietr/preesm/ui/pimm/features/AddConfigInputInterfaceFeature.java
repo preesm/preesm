@@ -56,111 +56,116 @@ import org.eclipse.graphiti.util.IColorConstant;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
+// TODO: Auto-generated Javadoc
 /**
- * Add feature to add a new {@link Parameter} to the {@link PiGraph}
- * 
+ * Add feature to add a new {@link Parameter} to the {@link PiGraph}.
+ *
  * @author kdesnos
- * 
  */
 public class AddConfigInputInterfaceFeature extends AbstractAddFeature {
 
-	public static final IColorConstant CFG_IN_TEXT_FOREGROUND = IColorConstant.BLACK;
+  /** The Constant CFG_IN_TEXT_FOREGROUND. */
+  public static final IColorConstant CFG_IN_TEXT_FOREGROUND = IColorConstant.BLACK;
 
-	public static final IColorConstant CFG_IN_FOREGROUND = AddParameterFeature.PARAMETER_FOREGROUND;
+  /** The Constant CFG_IN_FOREGROUND. */
+  public static final IColorConstant CFG_IN_FOREGROUND = AddParameterFeature.PARAMETER_FOREGROUND;
 
-	public static final IColorConstant CFG_IN_BACKGROUND = AddParameterFeature.PARAMETER_BACKGROUND;
+  /** The Constant CFG_IN_BACKGROUND. */
+  public static final IColorConstant CFG_IN_BACKGROUND = AddParameterFeature.PARAMETER_BACKGROUND;
 
-	/**
-	 * The default constructor of {@link AddConfigInputInterfaceFeature}
-	 * 
-	 * @param fp
-	 *            the feature provider
-	 */
-	public AddConfigInputInterfaceFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /**
+   * The default constructor of {@link AddConfigInputInterfaceFeature}.
+   *
+   * @param fp
+   *          the feature provider
+   */
+  public AddConfigInputInterfaceFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	@Override
-	public PictogramElement add(IAddContext context) {
-		Parameter addedParam = (Parameter) context.getNewObject();
-		Diagram targetDiagram = (Diagram) context.getTargetContainer();
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.func.IAdd#add(org.eclipse.graphiti.features.context.IAddContext)
+   */
+  @Override
+  public PictogramElement add(final IAddContext context) {
+    final Parameter addedParam = (Parameter) context.getNewObject();
+    final Diagram targetDiagram = (Diagram) context.getTargetContainer();
 
-		// CONTAINER SHAPE WITH ROUNDED RECTANGLE
-		IPeCreateService peCreateService = Graphiti.getPeCreateService();
-		ContainerShape containerShape = peCreateService.createContainerShape(
-				targetDiagram, true);
+    // CONTAINER SHAPE WITH ROUNDED RECTANGLE
+    final IPeCreateService peCreateService = Graphiti.getPeCreateService();
+    final ContainerShape containerShape = peCreateService.createContainerShape(targetDiagram, true);
 
-		// define a default size for the shape
-		int width = 16;
-		int height = 16;
-		IGaService gaService = Graphiti.getGaService();
-		Font font = gaService.manageDefaultFont(getDiagram(), false, true);
-		int fontHeight = GraphitiUi.getUiLayoutService()
-				.calculateTextSize("Abcq", font).getHeight();
+    // define a default size for the shape
+    final int width = 16;
+    final int height = 16;
+    final IGaService gaService = Graphiti.getGaService();
+    final Font font = gaService.manageDefaultFont(getDiagram(), false, true);
+    final int fontHeight = GraphitiUi.getUiLayoutService().calculateTextSize("Abcq", font).getHeight();
 
-		Rectangle invisibleRectangle = gaService
-				.createInvisibleRectangle(containerShape);
-		gaService.setLocationAndSize(invisibleRectangle, context.getX(),
-				context.getY(), 200, height + fontHeight + 2);
+    final Rectangle invisibleRectangle = gaService.createInvisibleRectangle(containerShape);
+    gaService.setLocationAndSize(invisibleRectangle, context.getX(), context.getY(), 200, height + fontHeight + 2);
 
-		Polygon triangle; // need to access it later
-		{
-			final BoxRelativeAnchor boxAnchor = peCreateService
-					.createBoxRelativeAnchor(containerShape);
-			boxAnchor.setRelativeWidth(0.5);
-			boxAnchor.setRelativeHeight(1.0);
-			boxAnchor.setReferencedGraphicsAlgorithm(invisibleRectangle);
+    Polygon triangle; // need to access it later
+    {
+      final BoxRelativeAnchor boxAnchor = peCreateService.createBoxRelativeAnchor(containerShape);
+      boxAnchor.setRelativeWidth(0.5);
+      boxAnchor.setRelativeHeight(1.0);
+      boxAnchor.setReferencedGraphicsAlgorithm(invisibleRectangle);
 
-			// create and set graphics algorithm for the anchor
-			int xy[] = { width / 2, 0, width, height, 0, height };
-			triangle = gaService.createPolygon(boxAnchor, xy);
-			triangle.setForeground(manageColor(CFG_IN_FOREGROUND));
-			triangle.setBackground(manageColor(CFG_IN_BACKGROUND));
-			triangle.setLineWidth(2);
-			gaService.setLocationAndSize(triangle, -width / 2, -height, width,
-					height);
+      // create and set graphics algorithm for the anchor
+      final int[] xy = { width / 2, 0, width, height, 0, height };
+      triangle = gaService.createPolygon(boxAnchor, xy);
+      triangle.setForeground(manageColor(AddConfigInputInterfaceFeature.CFG_IN_FOREGROUND));
+      triangle.setBackground(manageColor(AddConfigInputInterfaceFeature.CFG_IN_BACKGROUND));
+      triangle.setLineWidth(2);
+      gaService.setLocationAndSize(triangle, -width / 2, -height, width, height);
 
-			// if added Parameter has no resource we add it to the
-			// resource of the graph
-			if (addedParam.eResource() == null) {
-				PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
-				graph.getParameters().add(addedParam);
-			}
-			link(boxAnchor, addedParam);
-		}
+      // if added Parameter has no resource we add it to the
+      // resource of the graph
+      if (addedParam.eResource() == null) {
+        final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
+        graph.getParameters().add(addedParam);
+      }
+      link(boxAnchor, addedParam);
+    }
 
-		// Name of the ConfigInIf - SHAPE WITH TEXT
-		{
-			// create and set text graphics algorithm
-			// create shape for text
-			Shape shape = peCreateService.createShape(containerShape, false);
-			Text text = gaService.createText(shape, addedParam.getName());
-			text.setForeground(manageColor(CFG_IN_TEXT_FOREGROUND));
-			text.setVerticalAlignment(Orientation.ALIGNMENT_TOP);
-			text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
-			// vertical alignment has as default value "center"
-			text.setFont(font);
-			text.setHeight(20);
-			text.setWidth(200);
-			link(shape, addedParam);
-		}
-		// create link and wire it
-		link(containerShape, addedParam);
+    // Name of the ConfigInIf - SHAPE WITH TEXT
+    {
+      // create and set text graphics algorithm
+      // create shape for text
+      final Shape shape = peCreateService.createShape(containerShape, false);
+      final Text text = gaService.createText(shape, addedParam.getName());
+      text.setForeground(manageColor(AddConfigInputInterfaceFeature.CFG_IN_TEXT_FOREGROUND));
+      text.setVerticalAlignment(Orientation.ALIGNMENT_TOP);
+      text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
+      // vertical alignment has as default value "center"
+      text.setFont(font);
+      text.setHeight(20);
+      text.setWidth(200);
+      link(shape, addedParam);
+    }
+    // create link and wire it
+    link(containerShape, addedParam);
 
-		// Call the layout feature
-		layoutPictogramElement(containerShape);
+    // Call the layout feature
+    layoutPictogramElement(containerShape);
 
-		return containerShape;
-	}
+    return containerShape;
+  }
 
-	@Override
-	public boolean canAdd(IAddContext context) {
-		// Check that the user wants to add an ConfigInputInterface to the
-		// Diagram
-		return context.getNewObject() instanceof Parameter
-				&& ((Parameter) context.getNewObject())
-						.isConfigurationInterface()
-				&& context.getTargetContainer() instanceof Diagram;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.func.IAdd#canAdd(org.eclipse.graphiti.features.context.IAddContext)
+   */
+  @Override
+  public boolean canAdd(final IAddContext context) {
+    // Check that the user wants to add an ConfigInputInterface to the
+    // Diagram
+    return (context.getNewObject() instanceof Parameter) && ((Parameter) context.getNewObject()).isConfigurationInterface()
+        && (context.getTargetContainer() instanceof Diagram);
+  }
 
 }

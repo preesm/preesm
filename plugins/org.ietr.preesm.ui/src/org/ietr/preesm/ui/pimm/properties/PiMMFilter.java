@@ -35,7 +35,6 @@
  *******************************************************************************/
 package org.ietr.preesm.ui.pimm.properties;
 
-
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
@@ -49,60 +48,75 @@ import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 
-public class PiMMFilter extends AbstractPropertySectionFilter{
+// TODO: Auto-generated Javadoc
+/**
+ * The Class PiMMFilter.
+ */
+public class PiMMFilter extends AbstractPropertySectionFilter {
 
-	/**
-	 * Check the given pictogram element for acceptance.
-	 * Returns true, if pictogram element is accepted, otherwise false.
-	 */
-	@Override
-	protected boolean accept(PictogramElement pictogramElement) {
-		EObject eObject = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pictogramElement);
+  /**
+   * Check the given pictogram element for acceptance. Returns true, if pictogram element is accepted, otherwise false.
+   *
+   * @param pictogramElement
+   *          the pictogram element
+   * @return true, if successful
+   */
+  @Override
+  protected boolean accept(final PictogramElement pictogramElement) {
+    final EObject eObject = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pictogramElement);
 
-		/**
-		 * Parameter, SourceInterface, SinkInterface and Delay are EObject has associated properties window.
-		 */
+    /**
+     * Parameter, SourceInterface, SinkInterface and Delay are EObject has associated properties window.
+     */
 
-		//System.out.println(eObject.toString()+" Container: "+eObject.eContainer());
-		
-		// Parameter and ConfigInputInterface.
-		if(eObject instanceof Parameter){
-			if(((Parameter) eObject).isConfigurationInterface())	// is an ConfigInputInterface
-				return false;
-			return true;
-		}
-	
-		// ConfigOutputPort contained in the Actor.
-		if(eObject instanceof ConfigOutputPort)
-			return false;
-		
-		// OutputPort contained in the SourceInterface and Actor
-		if(eObject instanceof DataOutputPort){
-			if(eObject.eContainer() instanceof DataInputInterface)
-				return true;
-			if(eObject.eContainer() instanceof ExecutableActor)
-				return true;
-		}
-		
-		// InputPort contained in the SinkInterface and Actor
-		if(eObject instanceof DataInputPort){
-			if(eObject.eContainer() instanceof DataOutputInterface)
-				return true;
-			if(eObject.eContainer() instanceof ExecutableActor)
-				return true;
-		}
-		
-		if(eObject instanceof DataOutputInterface)
-			return true;
-		
-		if(eObject instanceof DataInputInterface)
-			return true;
-		
-		if(eObject instanceof Delay)
-			return true;
+    // System.out.println(eObject.toString()+" Container: "+eObject.eContainer());
 
-		
-		return false;
-	}
+    // Parameter and ConfigInputInterface.
+    if (eObject instanceof Parameter) {
+      if (((Parameter) eObject).isConfigurationInterface()) {
+        return false;
+      }
+      return true;
+    }
+
+    // ConfigOutputPort contained in the Actor.
+    if (eObject instanceof ConfigOutputPort) {
+      return false;
+    }
+
+    // OutputPort contained in the SourceInterface and Actor
+    if (eObject instanceof DataOutputPort) {
+      if (eObject.eContainer() instanceof DataInputInterface) {
+        return true;
+      }
+      if (eObject.eContainer() instanceof ExecutableActor) {
+        return true;
+      }
+    }
+
+    // InputPort contained in the SinkInterface and Actor
+    if (eObject instanceof DataInputPort) {
+      if (eObject.eContainer() instanceof DataOutputInterface) {
+        return true;
+      }
+      if (eObject.eContainer() instanceof ExecutableActor) {
+        return true;
+      }
+    }
+
+    if (eObject instanceof DataOutputInterface) {
+      return true;
+    }
+
+    if (eObject instanceof DataInputInterface) {
+      return true;
+    }
+
+    if (eObject instanceof Delay) {
+      return true;
+    }
+
+    return false;
+  }
 
 }

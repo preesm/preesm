@@ -43,50 +43,63 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.mapper.gantt.GanttData;
 
+// TODO: Auto-generated Javadoc
 /**
- * Class used by the editor displaying the gantt chart. Useful to run editor in
- * display thread.
- * 
+ * Class used by the editor displaying the gantt chart. Useful to run editor in display thread.
+ *
  * @author mpelcat
  */
 public class GanttEditorRunnable implements Runnable {
 
-	private IEditorInput input;
+  /** The input. */
+  private final IEditorInput input;
 
-	public GanttEditorRunnable(IEditorInput input) {
-		super();
-		this.input = input;
-	}
+  /**
+   * Instantiates a new gantt editor runnable.
+   *
+   * @param input
+   *          the input
+   */
+  public GanttEditorRunnable(final IEditorInput input) {
+    super();
+    this.input = input;
+  }
 
-	/**
-	 * Run a new editor in display thread to display the Gantt chart from given
-	 * ABC
-	 */
-	public static void run(GanttData ganttData, String name) {
+  /**
+   * Run a new editor in display thread to display the Gantt chart from given ABC.
+   *
+   * @param ganttData
+   *          the gantt data
+   * @param name
+   *          the name
+   */
+  public static void run(final GanttData ganttData, final String name) {
 
-		IEditorInput input = new GanttEditorInput(ganttData, name);
+    final IEditorInput input = new GanttEditorInput(ganttData, name);
 
-		PlatformUI.getWorkbench().getDisplay()
-				.asyncExec(new GanttEditorRunnable(input));
-	}
+    PlatformUI.getWorkbench().getDisplay().asyncExec(new GanttEditorRunnable(input));
+  }
 
-	@Override
-	public void run() {
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Runnable#run()
+   */
+  @Override
+  public void run() {
 
-		IWorkbenchWindow dwindow = PlatformUI.getWorkbench()
-				.getWorkbenchWindows()[0];
+    final IWorkbenchWindow dwindow = PlatformUI.getWorkbench().getWorkbenchWindows()[0];
 
-		if (dwindow != null && input instanceof GanttEditorInput) {
-			IWorkbenchPage page = dwindow.getActivePage();
+    if ((dwindow != null) && (this.input instanceof GanttEditorInput)) {
+      final IWorkbenchPage page = dwindow.getActivePage();
 
-			try {
-				page.openEditor(input,
-						"org.ietr.preesm.plugin.mapper.plot.GanttEditor", false);
+      try {
+        page.openEditor(this.input, "org.ietr.preesm.plugin.mapper.plot.GanttEditor", false);
 
-			} catch (PartInitException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+      } catch (final PartInitException e) {
+        e.printStackTrace();
+      }
+    }
+  }
 
 }

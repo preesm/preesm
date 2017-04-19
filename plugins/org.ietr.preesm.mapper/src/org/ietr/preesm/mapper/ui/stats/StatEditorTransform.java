@@ -41,7 +41,6 @@ package org.ietr.preesm.mapper.ui.stats;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
@@ -52,48 +51,62 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.IAbc;
 
+// TODO: Auto-generated Javadoc
 /**
- * Transform class that can be called in workflow. The transform method displays
- * the gantt chart of the given mapped dag
- * 
+ * Transform class that can be called in workflow. The transform method displays the gantt chart of
+ * the given mapped dag
+ *
  * @author mpelcat
  */
 public class StatEditorTransform extends AbstractTaskImplementation {
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
+   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs,
+      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
+      final Workflow workflow) throws WorkflowException {
 
-		IAbc abc = (IAbc) inputs.get("ABC");
-		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+    final IAbc abc = (IAbc) inputs.get("ABC");
+    final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 
-		IEditorInput input = new StatEditorInput(abc, scenario, parameters);
+    final IEditorInput input = new StatEditorInput(abc, scenario, parameters);
 
-		// Check if the workflow is running in command line mode
-		try {
-			// Run statistic editor
-			PlatformUI.getWorkbench().getDisplay()
-					.asyncExec(new EditorRunnable(input));
-		} catch (IllegalStateException e) {
-			WorkflowLogger
-					.getLogger()
-					.log(Level.WARNING,
-							"Gantt display is impossible in this context."
-									+ " Ignore this warning if you are running the command line version of Preesm.");
-		}
+    // Check if the workflow is running in command line mode
+    try {
+      // Run statistic editor
+      PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
+    } catch (final IllegalStateException e) {
+      WorkflowLogger.getLogger().log(Level.WARNING, "Gantt display is impossible in this context."
+          + " Ignore this warning if you are running the command line version of Preesm.");
+    }
 
-		return new HashMap<String, Object>();
-	}
+    return new HashMap<>();
+  }
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    return null;
+  }
 
-	@Override
-	public String monitorMessage() {
-		return "Plots the Gantt chart";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Plots the Gantt chart";
+  }
 
 }

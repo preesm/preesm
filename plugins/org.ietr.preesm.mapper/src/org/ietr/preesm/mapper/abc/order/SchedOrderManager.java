@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
-
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
@@ -53,489 +52,569 @@ import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * The scheduling order manager keeps a total order of the vertices and a
- * partial order in each schedule. It is used by the schedule edge adder to
- * insert schedule edges. The scheduling order manager is observed by the time
- * keeper and reports the vertices which timings need to be updated.
- * 
+ * The scheduling order manager keeps a total order of the vertices and a partial order in each
+ * schedule. It is used by the schedule edge adder to insert schedule edges. The scheduling order
+ * manager is observed by the time keeper and reports the vertices which timings need to be updated.
+ *
  * @author mpelcat
  */
 public class SchedOrderManager extends Observable {
 
-	/**
-	 * Contains the rank list of all the vertices in an implementation
-	 */
-	private Map<ComponentInstance, Schedule> schedules = null;
-
-	/**
-	 * total order of the vertices in the implementation
-	 */
-	Schedule totalOrder = null;
-
-	public SchedOrderManager(Design archi) {
-
-		schedules = new HashMap<ComponentInstance, Schedule>();
-
-		// Adding one schedule per component
-		for (ComponentInstance cmp : DesignTools.getComponentInstances(archi)) {
-			schedules.put(cmp, new Schedule());
-		}
-
-		totalOrder = new Schedule();
-	}
-
-	public int findLastestPredIndexForOp(ComponentInstance cmp, int refIndex) {
-
-		// Retrieves the schedule corresponding to the component
-		Schedule currentSched = getSchedule(cmp);
-
-		// Iterates the schedule to find the latest predecessor
-		int maxPrec = -1;
-		for (MapperDAGVertex current : currentSched.getList()) {
-
-			// Looking for the preceding vertex with maximum total order in
-			// vertex schedule
-			int currentTotalOrder = totalIndexOf(current);
-
-			if (currentTotalOrder < refIndex) {
-				maxPrec = currentTotalOrder;
-			}
-		}
-
-		return maxPrec;
-	}
-
-	/**
-	 * Considering that vertex already has a total order (is already in total
-	 * order list), inserts it at the appropriate position in its schedule
-	 */
-	public void insertGivenTotalOrder(MapperDAGVertex vertex) {
-
-		if (vertex.hasEffectiveComponent()) {
-
-			ComponentInstance cmp = vertex.getEffectiveComponent();
-			int newSchedulingTotalOrder = totalIndexOf(vertex);
-			int maxPrec = findLastestPredIndexForOp(
-					vertex.getEffectiveComponent(),
-					newSchedulingTotalOrder);
-			// Testing a possible synchronized vertex
-			MapperDAGVertex elt = get(newSchedulingTotalOrder);
-			if (elt == null || elt.equals(vertex)) {
-				elt = vertex;
-			}
-
-			// Adds vertex or synchro vertices after its chosen predecessor
-			if (maxPrec >= 0) {
-				MapperDAGVertex previous = totalOrder.get(maxPrec);
-				getSchedule(cmp).insertAfter(previous, elt);
-			} else {
-				getSchedule(cmp).addFirst(elt);
-			}
-
-		}
-
-		// Notifies the time keeper that it should update the successors
-		Set<MapperDAGVertex> vSet = totalOrder.getSuccessors(vertex);
-		if (vSet == null || vSet.isEmpty()) {
-			vSet = new HashSet<MapperDAGVertex>();
-		}
-		vSet.add(vertex);
-		setChanged();
-		notifyObservers(vSet);
-	}
-
-	/**
-	 * If the input is a vertex, appends it at the end of one schedule and at
-	 * the end of total order. If the input is synschronizedVertices, appends it
-	 * at the end of all concerned schedules and at the end of total order.
-	 */
-	public void addLast(MapperDAGVertex elt) {
-
-		if (elt instanceof MapperDAGVertex) {
-			MapperDAGVertex vertex = (MapperDAGVertex) elt;
-			if (vertex
-					.hasEffectiveComponent()) {
-				ComponentInstance effectiveCmp = vertex
-						.getEffectiveComponent();
-
-				// Gets the schedule of vertex
-				Schedule currentSchedule = getSchedule(effectiveCmp);
-
-				currentSchedule.addLast(vertex);
-
-				if (totalOrder.contains(vertex)) {
-					totalOrder.remove(vertex);
-				}
-
-				totalOrder.addLast(vertex);
-			}
-
-			// Notifies the time keeper that it should update the vertex
-			setChanged();
-			notifyObservers(vertex);
-		}
-	}
-
-	/**
-	 * Appends the vertex at the beginning of a schedule and at the end of total
-	 * order
-	 */
-	public void addFirst(MapperDAGVertex vertex) {
-
-		if (vertex.hasEffectiveComponent()) {
-			ComponentInstance effectiveCmp = vertex
-					.getEffectiveComponent();
-
-			// Gets the schedule of vertex
-			Schedule currentSchedule = getSchedule(effectiveCmp);
-
-			currentSchedule.addFirst(vertex);
-
-			if (totalOrder.contains(vertex)) {
-				totalOrder.remove(vertex);
-			}
-
-			totalOrder.addFirst(vertex);
-		}
-
-		// Notifies the time keeper that it should update the successors
-		setChanged();
-		notifyObservers(new HashSet<MapperDAGVertex>(totalOrder.getList()));
-	}
-
-	/**
-	 * Inserts vertex after previous
-	 */
-	public void insertAfter(MapperDAGVertex previous, MapperDAGVertex vertex) {
-
-		if (previous == null) {
-			addLast(vertex);
-		} else {
-
-			if (previous.hasEffectiveComponent()
-					&& vertex.hasEffectiveComponent()) {
-
-				if (!totalOrder.contains(vertex)) {
-					if (totalOrder.indexOf(previous) >= 0) {
-						totalOrder.insertAfter(previous, vertex);
-					}
-				}
-				insertGivenTotalOrder(vertex);
-
-			}
-		}
-	}
-
-	/**
-	 * Inserts vertex before next
-	 */
-	public void insertBefore(MapperDAGVertex next, MapperDAGVertex vertex) {
-
-		if (next == null) {
-			addFirst(vertex);
-		} else {
-
-			if (next.hasEffectiveComponent()
-					&& vertex.hasEffectiveComponent()) {
-
-				if (!totalOrder.contains(vertex)) {
-					if (totalOrder.indexOf(next) >= 0) {
-						totalOrder.insertBefore(next, vertex);
-					}
-				}
-				insertGivenTotalOrder(vertex);
-
-			}
-		}
-
-	}
-
-	/**
-	 * Inserts vertex after previous
-	 */
-	public void insertAtIndex(int index, MapperDAGVertex vertex) {
-
-		if (index < totalOrder.size() && index >= 0) {
-			MapperDAGVertex ref = totalOrder.get(index);
-			insertBefore(ref, vertex);
-		} else {
-			addLast(vertex);
-		}
-	}
-
-	/**
-	 * Gets the local scheduling order, -1 if not present
-	 */
-	public int localIndexOf(MapperDAGVertex vertex) {
-
-		if (vertex.hasEffectiveComponent()) {
-
-			Schedule sch = getSchedule(vertex
-					.getEffectiveComponent());
-			if (sch != null) {
-				return sch.indexOf(vertex);
-			}
-		}
-
-		return -1;
-	}
-
-	/**
-	 * Gets the total scheduling order
-	 */
-	public int totalIndexOf(MapperDAGVertex vertex) {
-
-		return totalOrder.indexOf(vertex);
-	}
-
-	/**
-	 * Gets the vertex with the given total scheduling order
-	 */
-	public MapperDAGVertex get(int totalOrderIndex) {
-		MapperDAGVertex elt = totalOrder.get(totalOrderIndex);
-		return elt;
-	}
-
-	/**
-	 * Gets the scheduling components
-	 */
-	public Set<ComponentInstance> getArchitectureComponents() {
-
-		return schedules.keySet();
-
-	}
-
-	/**
-	 * Removes a given vertex
-	 */
-	public void remove(MapperDAGVertex vertex, boolean removeFromTotalOrder) {
-
-		// Notifies the time keeper that it should update the successors
-		Set<MapperDAGVertex> successors = totalOrder.getSuccessors(vertex);
-		if (successors == null) {
-			successors = new HashSet<MapperDAGVertex>();
-		}
-		successors.add(vertex);
-		setChanged();
-		notifyObservers(successors);
-
-		// If the vertex has an effective component,
-		// removes it from the corresponding scheduling
-		Schedule sch = null;
-		if (vertex.hasEffectiveComponent()) {
-
-			ComponentInstance cmp = vertex
-					.getEffectiveComponent();
-			sch = getSchedule(cmp);
-		} else { // Looks for the right scheduling to remove the vertex
-			for (Schedule locSched : schedules.values()) {
-				if (locSched.contains(vertex)) {
-					sch = locSched;
-					break;
-				}
-			}
-		}
-
-		if (sch != null) {
-			MapperDAGVertex elt = sch.getScheduleElt(vertex);
-			if (elt != null) {
-				if (elt.equals(vertex)) {
-					sch.remove(elt);
-				}
-			}
-		}
-
-		if (removeFromTotalOrder) {
-			MapperDAGVertex elt = totalOrder.getScheduleElt(vertex);
-
-			if (elt != null) {
-				totalOrder.remove(elt);
-			}
-		}
-
-	}
-
-	/**
-	 * Resets Total Order
-	 */
-	public void resetTotalOrder() {
-		totalOrder.clear();
-
-		for (Schedule s : schedules.values()) {
-			s.clear();
-		}
-	}
-
-	/**
-	 * Reconstructs the total order using the total order stored in DAG. Creates
-	 * synchronized vertices when several vertices have the same order
-	 */
-	public void reconstructTotalOrderFromDAG(MapperDAG dag) {
-
-		resetTotalOrder();
-
-		List<DAGVertex> newTotalOrder = new ArrayList<DAGVertex>(
-				dag.vertexSet());
-
-		Collections.sort(newTotalOrder, new SchedulingOrderComparator());
-
-		int currentOrder = ((MapperDAGVertex) newTotalOrder.get(0))
-				.getTotalOrder();
-		List<MapperDAGVertex> verticesToSynchro = new ArrayList<MapperDAGVertex>();
-
-		// If the current vertex has a greater order than its predecessor, we
-		// add its predecessor in the schedules and we store the new vertex. If
-		// the current vertex has the same order as its predecessor, we add it
-		// to the vertices to synchro.
-		for (DAGVertex vertex : newTotalOrder) {
-			MapperDAGVertex mVertex = (MapperDAGVertex) vertex;
-			int mVOrder = mVertex.getTotalOrder();
-			if (mVOrder > currentOrder) {
-				// Adding the preceding element
-				if (verticesToSynchro.size() == 1) {
-					addLast(verticesToSynchro.get(0));
-				}
-				verticesToSynchro.clear();
-				currentOrder = mVOrder;
-			}
-
-			verticesToSynchro.add((MapperDAGVertex) vertex);
-		}
-
-		// Adding the last element
-		if (verticesToSynchro.size() == 1) {
-			addLast(verticesToSynchro.get(0));
-		} else if (verticesToSynchro.size() > 1) {
-			// addLast(new SynchronizedVertices(verticesToSynchro));
-		}
-	}
-
-	/**
-	 * Sets the total order of each implementation property in DAG
-	 */
-	public void tagDAG(MapperDAG dag) {
-
-		for (MapperDAGVertex internalVertex : totalOrder.getList()) {
-			MapperDAGVertex vertex = dag.getMapperDAGVertex(internalVertex
-					.getName());
-
-			if (vertex != null) {
-				tagVertex(vertex);
-			}
-		}
-	}
-
-	/**
-	 * Sets the total order of vertex implementation property in DAG
-	 */
-	private void tagVertex(MapperDAGVertex vertex) {
-
-		vertex.setTotalOrder(
-				totalOrder.indexOf(vertex));
-	}
-
-	/**
-	 * Gets the previous vertex in the same schedule. Searches in the
-	 * synchronized vertices if any
-	 */
-	public MapperDAGVertex getPrevious(MapperDAGVertex vertex) {
-
-		MapperDAGVertex prevElt = null;
-		MapperDAGVertex prevVertex = null;
-		ComponentInstance cmp = vertex
-				.getEffectiveComponent();
-		Schedule schedule = getSchedule(cmp);
-
-		if (schedule != null) {
-			prevElt = schedule.getPrevious(vertex);
-
-			if (prevElt instanceof MapperDAGVertex) {
-				prevVertex = (MapperDAGVertex) prevElt;
-			}
-		}
-
-		return prevVertex;
-	}
-
-	/**
-	 * Gets the next vertex in the same schedule
-	 */
-	public MapperDAGVertex getNext(MapperDAGVertex vertex) {
-		MapperDAGVertex nextElement = null;
-		MapperDAGVertex nextVertex = null;
-
-		ComponentInstance cmp = vertex
-				.getEffectiveComponent();
-		Schedule schedule = getSchedule(cmp);
-
-		if (schedule != null) {
-			nextElement = schedule.getNext(vertex);
-
-			if (nextElement instanceof MapperDAGVertex) {
-				nextVertex = (MapperDAGVertex) nextElement;
-			}
-		}
-
-		return nextVertex;
-	}
-
-	public Schedule getTotalOrder() {
-		return totalOrder;
-	}
-
-	@Override
-	public String toString() {
-		return totalOrder.toString();
-	}
-
-	/**
-	 * Gets the schedule of a given component
-	 */
-	private Schedule getSchedule(ComponentInstance cmp) {
-
-		// Preventing from creating several schedules with same name
-		for (ComponentInstance o : schedules.keySet()) {
-			if (o.getInstanceName().equals(cmp.getInstanceName())) {
-				return schedules.get(o);
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Gets the mapperdag vertex list of a given component. Splits the
-	 * synchronized vertices objects into their components
-	 */
-	public List<MapperDAGVertex> getVertexList(ComponentInstance cmp) {
-
-		Schedule s = null;
-		List<MapperDAGVertex> vList = new ArrayList<MapperDAGVertex>();
-
-		// Preventing from creating several schedules with same name
-		for (ComponentInstance o : schedules.keySet()) {
-			if (o.getInstanceName().equals(cmp.getInstanceName())) {
-				s = schedules.get(o);
-			}
-		}
-
-		if (s != null) {
-			for (MapperDAGVertex elt : s.getList()) {
-				if (elt instanceof MapperDAGVertex) {
-					vList.add((MapperDAGVertex) elt);
-				}
-			}
-		}
-
-		return vList;
-	}
-
-	public long getBusyTime(ComponentInstance c) {
-		Schedule sched = getSchedule(c);
-		if (sched != null) {
-			return sched.getBusyTime();
-		}
-
-		return 0l;
-	}
+  /** Contains the rank list of all the vertices in an implementation. */
+  private Map<ComponentInstance, Schedule> schedules = null;
+
+  /** total order of the vertices in the implementation. */
+  Schedule totalOrder = null;
+
+  /**
+   * Instantiates a new sched order manager.
+   *
+   * @param archi
+   *          the archi
+   */
+  public SchedOrderManager(final Design archi) {
+
+    this.schedules = new HashMap<>();
+
+    // Adding one schedule per component
+    for (final ComponentInstance cmp : DesignTools.getComponentInstances(archi)) {
+      this.schedules.put(cmp, new Schedule());
+    }
+
+    this.totalOrder = new Schedule();
+  }
+
+  /**
+   * Find lastest pred index for op.
+   *
+   * @param cmp
+   *          the cmp
+   * @param refIndex
+   *          the ref index
+   * @return the int
+   */
+  public int findLastestPredIndexForOp(final ComponentInstance cmp, final int refIndex) {
+
+    // Retrieves the schedule corresponding to the component
+    final Schedule currentSched = getSchedule(cmp);
+
+    // Iterates the schedule to find the latest predecessor
+    int maxPrec = -1;
+    for (final MapperDAGVertex current : currentSched.getList()) {
+
+      // Looking for the preceding vertex with maximum total order in
+      // vertex schedule
+      final int currentTotalOrder = totalIndexOf(current);
+
+      if (currentTotalOrder < refIndex) {
+        maxPrec = currentTotalOrder;
+      }
+    }
+
+    return maxPrec;
+  }
+
+  /**
+   * Considering that vertex already has a total order (is already in total order list), inserts it
+   * at the appropriate position in its schedule.
+   *
+   * @param vertex
+   *          the vertex
+   */
+  public void insertGivenTotalOrder(final MapperDAGVertex vertex) {
+
+    if (vertex.hasEffectiveComponent()) {
+
+      final ComponentInstance cmp = vertex.getEffectiveComponent();
+      final int newSchedulingTotalOrder = totalIndexOf(vertex);
+      final int maxPrec = findLastestPredIndexForOp(vertex.getEffectiveComponent(),
+          newSchedulingTotalOrder);
+      // Testing a possible synchronized vertex
+      MapperDAGVertex elt = get(newSchedulingTotalOrder);
+      if ((elt == null) || elt.equals(vertex)) {
+        elt = vertex;
+      }
+
+      // Adds vertex or synchro vertices after its chosen predecessor
+      if (maxPrec >= 0) {
+        final MapperDAGVertex previous = this.totalOrder.get(maxPrec);
+        getSchedule(cmp).insertAfter(previous, elt);
+      } else {
+        getSchedule(cmp).addFirst(elt);
+      }
+
+    }
+
+    // Notifies the time keeper that it should update the successors
+    Set<MapperDAGVertex> vSet = this.totalOrder.getSuccessors(vertex);
+    if ((vSet == null) || vSet.isEmpty()) {
+      vSet = new HashSet<>();
+    }
+    vSet.add(vertex);
+    setChanged();
+    notifyObservers(vSet);
+  }
+
+  /**
+   * If the input is a vertex, appends it at the end of one schedule and at the end of total order.
+   * If the input is synschronizedVertices, appends it at the end of all concerned schedules and at
+   * the end of total order.
+   *
+   * @param elt
+   *          the elt
+   */
+  public void addLast(final MapperDAGVertex elt) {
+
+    if (elt instanceof MapperDAGVertex) {
+      final MapperDAGVertex vertex = elt;
+      if (vertex.hasEffectiveComponent()) {
+        final ComponentInstance effectiveCmp = vertex.getEffectiveComponent();
+
+        // Gets the schedule of vertex
+        final Schedule currentSchedule = getSchedule(effectiveCmp);
+
+        currentSchedule.addLast(vertex);
+
+        if (this.totalOrder.contains(vertex)) {
+          this.totalOrder.remove(vertex);
+        }
+
+        this.totalOrder.addLast(vertex);
+      }
+
+      // Notifies the time keeper that it should update the vertex
+      setChanged();
+      notifyObservers(vertex);
+    }
+  }
+
+  /**
+   * Appends the vertex at the beginning of a schedule and at the end of total order.
+   *
+   * @param vertex
+   *          the vertex
+   */
+  public void addFirst(final MapperDAGVertex vertex) {
+
+    if (vertex.hasEffectiveComponent()) {
+      final ComponentInstance effectiveCmp = vertex.getEffectiveComponent();
+
+      // Gets the schedule of vertex
+      final Schedule currentSchedule = getSchedule(effectiveCmp);
+
+      currentSchedule.addFirst(vertex);
+
+      if (this.totalOrder.contains(vertex)) {
+        this.totalOrder.remove(vertex);
+      }
+
+      this.totalOrder.addFirst(vertex);
+    }
+
+    // Notifies the time keeper that it should update the successors
+    setChanged();
+    notifyObservers(new HashSet<>(this.totalOrder.getList()));
+  }
+
+  /**
+   * Inserts vertex after previous.
+   *
+   * @param previous
+   *          the previous
+   * @param vertex
+   *          the vertex
+   */
+  public void insertAfter(final MapperDAGVertex previous, final MapperDAGVertex vertex) {
+
+    if (previous == null) {
+      addLast(vertex);
+    } else {
+
+      if (previous.hasEffectiveComponent() && vertex.hasEffectiveComponent()) {
+
+        if (!this.totalOrder.contains(vertex)) {
+          if (this.totalOrder.indexOf(previous) >= 0) {
+            this.totalOrder.insertAfter(previous, vertex);
+          }
+        }
+        insertGivenTotalOrder(vertex);
+
+      }
+    }
+  }
+
+  /**
+   * Inserts vertex before next.
+   *
+   * @param next
+   *          the next
+   * @param vertex
+   *          the vertex
+   */
+  public void insertBefore(final MapperDAGVertex next, final MapperDAGVertex vertex) {
+
+    if (next == null) {
+      addFirst(vertex);
+    } else {
+
+      if (next.hasEffectiveComponent() && vertex.hasEffectiveComponent()) {
+
+        if (!this.totalOrder.contains(vertex)) {
+          if (this.totalOrder.indexOf(next) >= 0) {
+            this.totalOrder.insertBefore(next, vertex);
+          }
+        }
+        insertGivenTotalOrder(vertex);
+
+      }
+    }
+
+  }
+
+  /**
+   * Inserts vertex after previous.
+   *
+   * @param index
+   *          the index
+   * @param vertex
+   *          the vertex
+   */
+  public void insertAtIndex(final int index, final MapperDAGVertex vertex) {
+
+    if ((index < this.totalOrder.size()) && (index >= 0)) {
+      final MapperDAGVertex ref = this.totalOrder.get(index);
+      insertBefore(ref, vertex);
+    } else {
+      addLast(vertex);
+    }
+  }
+
+  /**
+   * Gets the local scheduling order, -1 if not present.
+   *
+   * @param vertex
+   *          the vertex
+   * @return the int
+   */
+  public int localIndexOf(final MapperDAGVertex vertex) {
+
+    if (vertex.hasEffectiveComponent()) {
+
+      final Schedule sch = getSchedule(vertex.getEffectiveComponent());
+      if (sch != null) {
+        return sch.indexOf(vertex);
+      }
+    }
+
+    return -1;
+  }
+
+  /**
+   * Gets the total scheduling order.
+   *
+   * @param vertex
+   *          the vertex
+   * @return the int
+   */
+  public int totalIndexOf(final MapperDAGVertex vertex) {
+
+    return this.totalOrder.indexOf(vertex);
+  }
+
+  /**
+   * Gets the vertex with the given total scheduling order.
+   *
+   * @param totalOrderIndex
+   *          the total order index
+   * @return the mapper DAG vertex
+   */
+  public MapperDAGVertex get(final int totalOrderIndex) {
+    final MapperDAGVertex elt = this.totalOrder.get(totalOrderIndex);
+    return elt;
+  }
+
+  /**
+   * Gets the scheduling components.
+   *
+   * @return the architecture components
+   */
+  public Set<ComponentInstance> getArchitectureComponents() {
+
+    return this.schedules.keySet();
+
+  }
+
+  /**
+   * Removes a given vertex.
+   *
+   * @param vertex
+   *          the vertex
+   * @param removeFromTotalOrder
+   *          the remove from total order
+   */
+  public void remove(final MapperDAGVertex vertex, final boolean removeFromTotalOrder) {
+
+    // Notifies the time keeper that it should update the successors
+    Set<MapperDAGVertex> successors = this.totalOrder.getSuccessors(vertex);
+    if (successors == null) {
+      successors = new HashSet<>();
+    }
+    successors.add(vertex);
+    setChanged();
+    notifyObservers(successors);
+
+    // If the vertex has an effective component,
+    // removes it from the corresponding scheduling
+    Schedule sch = null;
+    if (vertex.hasEffectiveComponent()) {
+
+      final ComponentInstance cmp = vertex.getEffectiveComponent();
+      sch = getSchedule(cmp);
+    } else { // Looks for the right scheduling to remove the vertex
+      for (final Schedule locSched : this.schedules.values()) {
+        if (locSched.contains(vertex)) {
+          sch = locSched;
+          break;
+        }
+      }
+    }
+
+    if (sch != null) {
+      final MapperDAGVertex elt = sch.getScheduleElt(vertex);
+      if (elt != null) {
+        if (elt.equals(vertex)) {
+          sch.remove(elt);
+        }
+      }
+    }
+
+    if (removeFromTotalOrder) {
+      final MapperDAGVertex elt = this.totalOrder.getScheduleElt(vertex);
+
+      if (elt != null) {
+        this.totalOrder.remove(elt);
+      }
+    }
+
+  }
+
+  /**
+   * Resets Total Order.
+   */
+  public void resetTotalOrder() {
+    this.totalOrder.clear();
+
+    for (final Schedule s : this.schedules.values()) {
+      s.clear();
+    }
+  }
+
+  /**
+   * Reconstructs the total order using the total order stored in DAG. Creates synchronized vertices
+   * when several vertices have the same order
+   *
+   * @param dag
+   *          the dag
+   */
+  public void reconstructTotalOrderFromDAG(final MapperDAG dag) {
+
+    resetTotalOrder();
+
+    final List<DAGVertex> newTotalOrder = new ArrayList<>(dag.vertexSet());
+
+    Collections.sort(newTotalOrder, new SchedulingOrderComparator());
+
+    int currentOrder = ((MapperDAGVertex) newTotalOrder.get(0)).getTotalOrder();
+    final List<MapperDAGVertex> verticesToSynchro = new ArrayList<>();
+
+    // If the current vertex has a greater order than its predecessor, we
+    // add its predecessor in the schedules and we store the new vertex. If
+    // the current vertex has the same order as its predecessor, we add it
+    // to the vertices to synchro.
+    for (final DAGVertex vertex : newTotalOrder) {
+      final MapperDAGVertex mVertex = (MapperDAGVertex) vertex;
+      final int mVOrder = mVertex.getTotalOrder();
+      if (mVOrder > currentOrder) {
+        // Adding the preceding element
+        if (verticesToSynchro.size() == 1) {
+          addLast(verticesToSynchro.get(0));
+        }
+        verticesToSynchro.clear();
+        currentOrder = mVOrder;
+      }
+
+      verticesToSynchro.add((MapperDAGVertex) vertex);
+    }
+
+    // Adding the last element
+    if (verticesToSynchro.size() == 1) {
+      addLast(verticesToSynchro.get(0));
+    } else if (verticesToSynchro.size() > 1) {
+      // addLast(new SynchronizedVertices(verticesToSynchro));
+    }
+  }
+
+  /**
+   * Sets the total order of each implementation property in DAG.
+   *
+   * @param dag
+   *          the dag
+   */
+  public void tagDAG(final MapperDAG dag) {
+
+    for (final MapperDAGVertex internalVertex : this.totalOrder.getList()) {
+      final MapperDAGVertex vertex = dag.getMapperDAGVertex(internalVertex.getName());
+
+      if (vertex != null) {
+        tagVertex(vertex);
+      }
+    }
+  }
+
+  /**
+   * Sets the total order of vertex implementation property in DAG.
+   *
+   * @param vertex
+   *          the vertex
+   */
+  private void tagVertex(final MapperDAGVertex vertex) {
+
+    vertex.setTotalOrder(this.totalOrder.indexOf(vertex));
+  }
+
+  /**
+   * Gets the previous vertex in the same schedule. Searches in the synchronized vertices if any
+   *
+   * @param vertex
+   *          the vertex
+   * @return the previous
+   */
+  public MapperDAGVertex getPrevious(final MapperDAGVertex vertex) {
+
+    MapperDAGVertex prevElt = null;
+    MapperDAGVertex prevVertex = null;
+    final ComponentInstance cmp = vertex.getEffectiveComponent();
+    final Schedule schedule = getSchedule(cmp);
+
+    if (schedule != null) {
+      prevElt = schedule.getPrevious(vertex);
+
+      if (prevElt instanceof MapperDAGVertex) {
+        prevVertex = prevElt;
+      }
+    }
+
+    return prevVertex;
+  }
+
+  /**
+   * Gets the next vertex in the same schedule.
+   *
+   * @param vertex
+   *          the vertex
+   * @return the next
+   */
+  public MapperDAGVertex getNext(final MapperDAGVertex vertex) {
+    MapperDAGVertex nextElement = null;
+    MapperDAGVertex nextVertex = null;
+
+    final ComponentInstance cmp = vertex.getEffectiveComponent();
+    final Schedule schedule = getSchedule(cmp);
+
+    if (schedule != null) {
+      nextElement = schedule.getNext(vertex);
+
+      if (nextElement instanceof MapperDAGVertex) {
+        nextVertex = nextElement;
+      }
+    }
+
+    return nextVertex;
+  }
+
+  /**
+   * Gets the total order.
+   *
+   * @return the total order
+   */
+  public Schedule getTotalOrder() {
+    return this.totalOrder;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return this.totalOrder.toString();
+  }
+
+  /**
+   * Gets the schedule of a given component.
+   *
+   * @param cmp
+   *          the cmp
+   * @return the schedule
+   */
+  private Schedule getSchedule(final ComponentInstance cmp) {
+
+    // Preventing from creating several schedules with same name
+    for (final ComponentInstance o : this.schedules.keySet()) {
+      if (o.getInstanceName().equals(cmp.getInstanceName())) {
+        return this.schedules.get(o);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Gets the mapperdag vertex list of a given component. Splits the synchronized vertices objects
+   * into their components
+   *
+   * @param cmp
+   *          the cmp
+   * @return the vertex list
+   */
+  public List<MapperDAGVertex> getVertexList(final ComponentInstance cmp) {
+
+    Schedule s = null;
+    final List<MapperDAGVertex> vList = new ArrayList<>();
+
+    // Preventing from creating several schedules with same name
+    for (final ComponentInstance o : this.schedules.keySet()) {
+      if (o.getInstanceName().equals(cmp.getInstanceName())) {
+        s = this.schedules.get(o);
+      }
+    }
+
+    if (s != null) {
+      for (final MapperDAGVertex elt : s.getList()) {
+        if (elt instanceof MapperDAGVertex) {
+          vList.add(elt);
+        }
+      }
+    }
+
+    return vList;
+  }
+
+  /**
+   * Gets the busy time.
+   *
+   * @param c
+   *          the c
+   * @return the busy time
+   */
+  public long getBusyTime(final ComponentInstance c) {
+    final Schedule sched = getSchedule(c);
+    if (sched != null) {
+      return sched.getBusyTime();
+    }
+
+    return 0L;
+  }
 }

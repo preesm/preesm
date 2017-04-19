@@ -39,7 +39,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.URI;
@@ -55,119 +54,143 @@ import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class NewPiMMPage.
+ */
 public class NewPiMMPage extends WizardNewFileCreationPage {
 
-	/**
-	 * The name of the saved file
-	 */
-	private String graphName;
+  /** The name of the saved file. */
+  private String graphName;
 
-	/**
-	 * Constructor for {@link NewPiMMPage}
-	 * 
-	 * @param pageName
-	 *            The name of the Page
-	 * @param selection
-	 *            The current resource selection
-	 */
-	public NewPiMMPage(String pageName, IStructuredSelection selection) {
-		super(pageName, selection);
-		// if the selection is a file, gets its file name and removes its
-		// extension. Otherwise, let fileName be null.
-		Object obj = selection.getFirstElement();
-		if (obj instanceof IFile) {
-			IFile file = (IFile) obj;
-			String ext = file.getFileExtension();
-			graphName = file.getName();
-			int idx = graphName.indexOf(ext);
-			if (idx != -1) {
-				graphName = graphName.substring(0, idx - 1);
-			}
-		}
+  /**
+   * Constructor for {@link NewPiMMPage}.
+   *
+   * @param pageName
+   *          The name of the Page
+   * @param selection
+   *          The current resource selection
+   */
+  public NewPiMMPage(final String pageName, final IStructuredSelection selection) {
+    super(pageName, selection);
+    // if the selection is a file, gets its file name and removes its
+    // extension. Otherwise, let fileName be null.
+    final Object obj = selection.getFirstElement();
+    if (obj instanceof IFile) {
+      final IFile file = (IFile) obj;
+      final String ext = file.getFileExtension();
+      this.graphName = file.getName();
+      if (this.graphName == null) {
+        throw new RuntimeException();
+      }
+      final int idx = this.graphName.indexOf(ext);
+      if (idx != -1) {
+        this.graphName = this.graphName.substring(0, idx - 1);
+      }
+    }
 
-		setTitle("Choose file name and parent folder");
-	}
+    setTitle("Choose file name and parent folder");
+  }
 
-	private PiGraph createGraph(IPath path) {
-		graphName = getFileName();
-		int idx = graphName.indexOf("diagram");
-		if (idx != -1) {
-			graphName = graphName.substring(0, idx - 1);
-		}
+  /**
+   * Creates the graph.
+   *
+   * @param path
+   *          the path
+   * @return the pi graph
+   */
+  private PiGraph createGraph(final IPath path) {
+    this.graphName = getFileName();
+    final int idx = this.graphName.indexOf("diagram");
+    if (idx != -1) {
+      this.graphName = this.graphName.substring(0, idx - 1);
+    }
 
-		PiGraph graph = PiMMFactory.eINSTANCE.createPiGraph();
-		graph.setName(graphName);
+    final PiGraph graph = PiMMFactory.eINSTANCE.createPiGraph();
+    graph.setName(this.graphName);
 
-		return graph;
-	}
+    return graph;
+  }
 
-	private void saveGraph(ResourceSet set, IPath path, PiGraph graph) {
-		URI uri = URI.createPlatformResourceURI(path.toString(), true);
+  /**
+   * Save graph.
+   *
+   * @param set
+   *          the set
+   * @param path
+   *          the path
+   * @param graph
+   *          the graph
+   */
+  private void saveGraph(final ResourceSet set, final IPath path, final PiGraph graph) {
+    final URI uri = URI.createPlatformResourceURI(path.toString(), true);
 
-		// Following lines corresponds to a copy of
-		// EcoreHelper.putEObject(set, uri, graph);
-		// from net.sf.orcc.util.util
-		// @author mwipliez
-		// date of copy 2012.10.12
-		{
-			Resource resource = set.getResource(uri, false);
-			if (resource == null) {
-				resource = set.createResource(uri);
-			} else {
-				resource.getContents().clear();
-			}
+    // Following lines corresponds to a copy of
+    // EcoreHelper.putEObject(set, uri, graph);
+    // from net.sf.orcc.util.util
+    // @author mwipliez
+    // date of copy 2012.10.12
+    {
+      Resource resource = set.getResource(uri, false);
+      if (resource == null) {
+        resource = set.createResource(uri);
+      } else {
+        resource.getContents().clear();
+      }
 
-			resource.getContents().add(graph);
-			try {
-				resource.save(null);
-				// return true;
-			} catch (IOException e) {
-				e.printStackTrace();
-				// return false;
-			}
-		}
-		Resource resource = set.getResource(uri, false);
-		resource.setTrackingModification(true);
-	}
+      resource.getContents().add(graph);
+      try {
+        resource.save(null);
+        // return true;
+      } catch (final IOException e) {
+        e.printStackTrace();
+        // return false;
+      }
+    }
+    final Resource resource = set.getResource(uri, false);
+    resource.setTrackingModification(true);
+  }
 
-	@Override
-	protected InputStream getInitialContents() {
-		IPath path = getContainerFullPath();
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.dialogs.WizardNewFileCreationPage#getInitialContents()
+   */
+  @Override
+  protected InputStream getInitialContents() {
+    final IPath path = getContainerFullPath();
 
-		// create graph
-		IPath piPath = path.append(getFileName()).removeFileExtension()
-				.addFileExtension("pi");
-		PiGraph graph = createGraph(piPath);
+    // create graph
+    final IPath piPath = path.append(getFileName()).removeFileExtension().addFileExtension("pi");
+    final PiGraph graph = createGraph(piPath);
 
-		// save graph
-		ResourceSet set = new ResourceSetImpl();
-		saveGraph(set, piPath, graph);
+    // save graph
+    final ResourceSet set = new ResourceSetImpl();
+    saveGraph(set, piPath, graph);
 
-		// create diagram
-		Diagram diagram = Graphiti.getPeCreateService().createDiagram(
-				"PiMM", graphName, true);
+    // create diagram
+    final Diagram diagram = Graphiti.getPeCreateService().createDiagram("PiMM", this.graphName, true);
 
-		// link diagram to network
-		PictogramLink link = PictogramsFactory.eINSTANCE.createPictogramLink();
-		link.getBusinessObjects().add(graph);
-		diagram.setLink(link);
+    // link diagram to network
+    final PictogramLink link = PictogramsFactory.eINSTANCE.createPictogramLink();
+    link.getBusinessObjects().add(graph);
+    diagram.setLink(link);
 
-		// create the resource (safe because the wizard does not allow existing
-		// resources to be overridden)
-		URI uri = URI.createPlatformResourceURI(path.append(getFileName()).toString(),
-				true);
-		Resource resource = set.createResource(uri);
-		resource.getContents().add(diagram);
+    // create the resource (safe because the wizard does not allow existing
+    // resources to be overridden)
+    final URI uri = URI.createPlatformResourceURI(path.append(getFileName()).toString(), true);
+    final Resource resource = set.createResource(uri);
+    resource.getContents().add(diagram);
 
-		// save to a byte array output stream
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		try {
-			resource.save(outputStream, null);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+    // save to a byte array output stream
+    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    try {
+      resource.save(outputStream, null);
+    } catch (final IOException e) {
+      e.printStackTrace();
+    }
 
-		return new ByteArrayInputStream(outputStream.toByteArray());
-	}
+    return new ByteArrayInputStream(outputStream.toByteArray());
+  }
 
 }

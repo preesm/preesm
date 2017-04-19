@@ -37,36 +37,63 @@
 
 package org.ietr.preesm.mapper.model.property;
 
+// TODO: Auto-generated Javadoc
 /**
- * Properties of an edge set when converting dag to mapper dag
- * 
+ * Properties of an edge set when converting dag to mapper dag.
+ *
  * @author mpelcat
  */
 public class EdgeInit {
 
-	private int dataSize = 0;
+  /** The data size. */
+  private int dataSize = 0;
 
-	public EdgeInit() {
-		super();
-	}
+  /**
+   * Instantiates a new edge init.
+   */
+  public EdgeInit() {
+    super();
+  }
 
-	public EdgeInit(int dataSize) {
-		super();
-		this.dataSize = dataSize;
-	}
+  /**
+   * Instantiates a new edge init.
+   *
+   * @param dataSize
+   *          the data size
+   */
+  public EdgeInit(final int dataSize) {
+    super();
+    this.dataSize = dataSize;
+  }
 
-	@Override
-	public EdgeInit clone() {
-		EdgeInit property = new EdgeInit();
-		property.setDataSize(getDataSize());
-		return property;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#clone()
+   */
+  @Override
+  public EdgeInit clone() {
+    final EdgeInit property = new EdgeInit();
+    property.setDataSize(getDataSize());
+    return property;
+  }
 
-	public int getDataSize() {
-		return dataSize;
-	}
+  /**
+   * Gets the data size.
+   *
+   * @return the data size
+   */
+  public int getDataSize() {
+    return this.dataSize;
+  }
 
-	public void setDataSize(int dataSize) {
-		this.dataSize = dataSize;
-	}
+  /**
+   * Sets the data size.
+   *
+   * @param dataSize
+   *          the new data size
+   */
+  public void setDataSize(final int dataSize) {
+    this.dataSize = dataSize;
+  }
 }

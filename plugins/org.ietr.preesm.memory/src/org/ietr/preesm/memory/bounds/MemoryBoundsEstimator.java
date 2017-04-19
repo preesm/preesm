@@ -41,67 +41,81 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
+import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
+// TODO: Auto-generated Javadoc
 /**
- * Workflow element that takes a MemoryExclusionGraph as input and computes its
- * memory bounds. It outputs the unmodified MemEx as well as the input and
- * output bounds found.
- * 
+ * Workflow element that takes a MemoryExclusionGraph as input and computes its memory bounds. It outputs the unmodified MemEx as well as the input and output
+ * bounds found.
+ *
  * @author kdesnos
- * 
+ *
  */
 public class MemoryBoundsEstimator extends AbstractMemoryBoundsEstimator {
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
-		// Rem: Logger is used to display messages in the console
-		Logger logger = WorkflowLogger.getLogger();
+    // Rem: Logger is used to display messages in the console
+    final Logger logger = WorkflowLogger.getLogger();
 
-		// Check Workflow element parameters
-		String valueVerbose = parameters.get(PARAM_VERBOSE);
-		String valueSolver = parameters.get(PARAM_SOLVER);
-		
-		MemoryExclusionGraph memEx = (MemoryExclusionGraph) inputs.get("MemEx");
-		
-		MemoryBoundsEstimatorEngine engine = new MemoryBoundsEstimatorEngine(memEx, valueVerbose);
-		engine.selectSolver(valueSolver);
-		engine.solve();
-		
-		int minBound = engine.getMinBound();
-		
-		int maxBound = engine.getMaxBound();
+    // Check Workflow element parameters
+    final String valueVerbose = parameters.get(AbstractMemoryBoundsEstimator.PARAM_VERBOSE);
+    final String valueSolver = parameters.get(AbstractMemoryBoundsEstimator.PARAM_SOLVER);
 
-		logger.log(Level.INFO, "Bound_Max = " + maxBound + " Bound_Min = "
-				+ minBound);		
+    final MemoryExclusionGraph memEx = (MemoryExclusionGraph) inputs.get("MemEx");
 
-		// Generate output
-		Map<String, Object> output = new HashMap<String, Object>();
-		output.put(KEY_BOUND_MAX, maxBound);
-		output.put(KEY_BOUND_MIN, minBound);
-		output.put(KEY_MEM_EX, memEx);
-		return output;
-	}
+    final MemoryBoundsEstimatorEngine engine = new MemoryBoundsEstimatorEngine(memEx, valueVerbose);
+    engine.selectSolver(valueSolver);
+    engine.solve();
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put(PARAM_SOLVER, VALUE_SOLVER_DEFAULT);
-		parameters.put(PARAM_VERBOSE, VALUE_VERBOSE_DEFAULT);
-		return parameters;
-	}
+    final int minBound = engine.getMinBound();
 
-	@Override
-	public String monitorMessage() {
-		return "Estimating Memory Bounds";
-	}
+    final int maxBound = engine.getMaxBound();
+
+    logger.log(Level.INFO, "Bound_Max = " + maxBound + " Bound_Min = " + minBound);
+
+    // Generate output
+    final Map<String, Object> output = new HashMap<>();
+    output.put(AbstractWorkflowNodeImplementation.KEY_BOUND_MAX, maxBound);
+    output.put(AbstractWorkflowNodeImplementation.KEY_BOUND_MIN, minBound);
+    output.put(AbstractWorkflowNodeImplementation.KEY_MEM_EX, memEx);
+    return output;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new HashMap<>();
+    parameters.put(AbstractMemoryBoundsEstimator.PARAM_SOLVER, AbstractMemoryBoundsEstimator.VALUE_SOLVER_DEFAULT);
+    parameters.put(AbstractMemoryBoundsEstimator.PARAM_VERBOSE, AbstractMemoryBoundsEstimator.VALUE_VERBOSE_DEFAULT);
+    return parameters;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Estimating Memory Bounds";
+  }
 
 }

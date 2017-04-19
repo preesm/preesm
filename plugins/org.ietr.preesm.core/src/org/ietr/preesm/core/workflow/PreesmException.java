@@ -36,12 +36,23 @@
 
 package org.ietr.preesm.core.workflow;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class PreesmException.
+ */
 public class PreesmException extends Exception {
 
-	private static final long serialVersionUID = 620727777815265095L;
+  /** The Constant serialVersionUID. */
+  private static final long serialVersionUID = 620727777815265095L;
 
-	public PreesmException(String message) {
-		super(message);
-	}
+  /**
+   * Instantiates a new preesm exception.
+   *
+   * @param message
+   *          the message
+   */
+  public PreesmException(final String message) {
+    super(message);
+  }
 
 }

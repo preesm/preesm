@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IWorkspace;
@@ -58,138 +57,185 @@ import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MemoryScriptEngine.
+ */
 public class MemoryScriptEngine {
-	public static final String VALUE_CHECK_NONE = "None";
-	public static final String VALUE_CHECK_FAST = "Fast";
-	public static final String VALUE_CHECK_THOROUGH = "Thorough";
 
-	private ScriptRunner sr;
-	private boolean verbose;
-	private Logger logger;
-	private PreesmScenario scenario;
+  /** The Constant VALUE_CHECK_NONE. */
+  public static final String VALUE_CHECK_NONE = "None";
 
-	public MemoryScriptEngine(String valueAlignment, String log, boolean verbose, PreesmScenario scenario) {
-		this.verbose = verbose;
-		// Get the logger
-		this.logger = WorkflowLogger.getLogger();
-		this.scenario = scenario;
-		int alignment;
-		switch (valueAlignment.substring(0,
-				Math.min(valueAlignment.length(), 7))) {
-		case AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_NONE:
-			alignment = -1;
-			break;
-		case AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_DATA:
-			alignment = 0;
-			break;
-		case AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED:
-			String fixedValue = valueAlignment.substring(7);
-			alignment = Integer.parseInt(fixedValue);
-			break;
-		default:
-			alignment = -1;
-		}
-		if (verbose) {
-			logger.log(Level.INFO, "Scripts with alignment:=" + alignment + ".");
-		}
+  /** The Constant VALUE_CHECK_FAST. */
+  public static final String VALUE_CHECK_FAST = "Fast";
 
-		sr = new ScriptRunner(alignment);
-		sr.generateLog = !(log.equals(""));
-	}
+  /** The Constant VALUE_CHECK_THOROUGH. */
+  public static final String VALUE_CHECK_THOROUGH = "Thorough";
 
-	public void runScripts(DirectedAcyclicGraph dag,
-			Map<String, DataType> dataTypes, String checkString) {
-		// Retrieve all the scripts
-		int nbScripts = sr.findScripts(dag, scenario);
+  /** The sr. */
+  private final ScriptRunner sr;
 
-		sr.setDataTypes(dataTypes);
+  /** The verbose. */
+  private final boolean verbose;
 
-		// Execute all the scripts
-		if (verbose) {
-			logger.log(Level.INFO, "Running " + nbScripts + " memory scripts.");
-		}
-		sr.run();
+  /** The logger. */
+  private final Logger logger;
 
-		check(checkString);
+  /** The scenario. */
+  private final PreesmScenario scenario;
 
-		// Pre-process the script result
-		if (verbose) {
-			logger.log(Level.INFO, "Processing memory script results.");
-		}
-		sr.process();
-	}
+  /**
+   * Instantiates a new memory script engine.
+   *
+   * @param valueAlignment
+   *          the value alignment
+   * @param log
+   *          the log
+   * @param verbose
+   *          the verbose
+   * @param scenario
+   *          the scenario
+   */
+  public MemoryScriptEngine(final String valueAlignment, final String log, final boolean verbose, final PreesmScenario scenario) {
+    this.verbose = verbose;
+    // Get the logger
+    this.logger = WorkflowLogger.getLogger();
+    this.scenario = scenario;
+    int alignment;
+    switch (valueAlignment.substring(0, Math.min(valueAlignment.length(), 7))) {
+      case AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_NONE:
+        alignment = -1;
+        break;
+      case AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_DATA:
+        alignment = 0;
+        break;
+      case AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED:
+        final String fixedValue = valueAlignment.substring(7);
+        alignment = Integer.parseInt(fixedValue);
+        break;
+      default:
+        alignment = -1;
+    }
+    if (verbose) {
+      this.logger.log(Level.INFO, "Scripts with alignment:=" + alignment + ".");
+    }
 
-	private void check(String checkString) {
-		// Check the result
-		switch (checkString) {
-		case VALUE_CHECK_NONE:
-			sr.setCheckPolicy(CheckPolicy.NONE);
-			break;
-		case VALUE_CHECK_FAST:
-			sr.setCheckPolicy(CheckPolicy.FAST);
-			break;
-		case VALUE_CHECK_THOROUGH:
-			sr.setCheckPolicy(CheckPolicy.THOROUGH);
-			break;
-		default:
-			checkString = VALUE_CHECK_FAST;
-			sr.setCheckPolicy(CheckPolicy.FAST);
-			break;
-		}
-		if (verbose) {
-			logger.log(Level.INFO,
-					"Checking results of memory scripts with checking policy: "
-							+ checkString + ".");
-		}
-		sr.check();
-	}
+    this.sr = new ScriptRunner(alignment);
+    this.sr.generateLog = !(log.equals(""));
+  }
 
-	public void updateMemEx(MemoryExclusionGraph meg) {
-		// Update memex
-		if (verbose) {
-			logger.log(Level.INFO, "Updating memory exclusion graph.");
-			// Display a message for each divided buffers
-			for (List<Buffer> group : sr.bufferGroups) {
-				for (Buffer buffer : group) {
-					if (buffer.getMatched() != null
-							&& buffer.getMatched().size() > 1) {
-						logger.log(
-								Level.WARNING,
-								"Buffer "
-										+ buffer
-										+ " was divided and will be replaced by a NULL pointer in the generated code.");
-					}
-				}
-			}
-		}
+  /**
+   * Run scripts.
+   *
+   * @param dag
+   *          the dag
+   * @param dataTypes
+   *          the data types
+   * @param checkString
+   *          the check string
+   */
+  public void runScripts(final DirectedAcyclicGraph dag, final Map<String, DataType> dataTypes, final String checkString) {
+    // Retrieve all the scripts
+    final int nbScripts = this.sr.findScripts(dag, this.scenario);
 
-		sr.updateMEG(meg);
-	}
+    this.sr.setDataTypes(dataTypes);
 
-	public void generateCode(PreesmScenario scenario, String log) {
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		String codegenPath = scenario.getCodegenManager().getCodegenDirectory()
-				+ "/";
+    // Execute all the scripts
+    if (this.verbose) {
+      this.logger.log(Level.INFO, "Running " + nbScripts + " memory scripts.");
+    }
+    this.sr.run();
 
-		// Create a resource
-		scenario.getCodegenManager().getCodegenDirectory();
-		
+    check(checkString);
 
-		IFile iFile = workspace.getRoot().getFile(new Path(codegenPath + log + ".txt"));
-		try {
-			if (!iFile.exists()) {
-				IFolder iFolder = workspace.getRoot().getFolder(new Path(codegenPath));
-				if(!iFolder.exists()){
-					iFolder.create(false, true, new NullProgressMonitor());
-				}
-				
-				iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
-			}
-			iFile.setContents(new ByteArrayInputStream(sr.getLog().toString()
-					.getBytes()), true, false, new NullProgressMonitor());
-		} catch (CoreException e1) {
-			e1.printStackTrace();
-		}
+    // Pre-process the script result
+    if (this.verbose) {
+      this.logger.log(Level.INFO, "Processing memory script results.");
+    }
+    this.sr.process();
+  }
 
-	}
+  /**
+   * Check.
+   *
+   * @param checkString
+   *          the check string
+   */
+  private void check(String checkString) {
+    // Check the result
+    switch (checkString) {
+      case VALUE_CHECK_NONE:
+        this.sr.setCheckPolicy(CheckPolicy.NONE);
+        break;
+      case VALUE_CHECK_FAST:
+        this.sr.setCheckPolicy(CheckPolicy.FAST);
+        break;
+      case VALUE_CHECK_THOROUGH:
+        this.sr.setCheckPolicy(CheckPolicy.THOROUGH);
+        break;
+      default:
+        checkString = MemoryScriptEngine.VALUE_CHECK_FAST;
+        this.sr.setCheckPolicy(CheckPolicy.FAST);
+        break;
+    }
+    if (this.verbose) {
+      this.logger.log(Level.INFO, "Checking results of memory scripts with checking policy: " + checkString + ".");
+    }
+    this.sr.check();
+  }
+
+  /**
+   * Update mem ex.
+   *
+   * @param meg
+   *          the meg
+   */
+  public void updateMemEx(final MemoryExclusionGraph meg) {
+    // Update memex
+    if (this.verbose) {
+      this.logger.log(Level.INFO, "Updating memory exclusion graph.");
+      // Display a message for each divided buffers
+      for (final List<Buffer> group : this.sr.bufferGroups) {
+        for (final Buffer buffer : group) {
+          if ((buffer.getMatched() != null) && (buffer.getMatched().size() > 1)) {
+            this.logger.log(Level.WARNING, "Buffer " + buffer + " was divided and will be replaced by a NULL pointer in the generated code.");
+          }
+        }
+      }
+    }
+
+    this.sr.updateMEG(meg);
+  }
+
+  /**
+   * Generate code.
+   *
+   * @param scenario
+   *          the scenario
+   * @param log
+   *          the log
+   */
+  public void generateCode(final PreesmScenario scenario, final String log) {
+    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    final String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + "/";
+
+    // Create a resource
+    scenario.getCodegenManager().getCodegenDirectory();
+
+    final IFile iFile = workspace.getRoot().getFile(new Path(codegenPath + log + ".txt"));
+    try {
+      if (!iFile.exists()) {
+        final IFolder iFolder = workspace.getRoot().getFolder(new Path(codegenPath));
+        if (!iFolder.exists()) {
+          iFolder.create(false, true, new NullProgressMonitor());
+        }
+
+        iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
+      }
+      iFile.setContents(new ByteArrayInputStream(this.sr.getLog().toString().getBytes()), true, false, new NullProgressMonitor());
+    } catch (final CoreException e) {
+      e.printStackTrace();
+    }
+
+  }
 }

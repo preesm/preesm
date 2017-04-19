@@ -42,7 +42,6 @@ package org.ietr.preesm.codegen.idl;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.logging.Level;
-
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
@@ -73,263 +72,356 @@ import org.jacorb.idl.Value;
 import org.jacorb.idl.VectorType;
 import org.jacorb.idl.parser;
 
+// TODO: Auto-generated Javadoc
 /**
- * Retrieving prototype data from an idl file
- * 
+ * Retrieving prototype data from an idl file.
+ *
  * @author jpiat
  * @author mpelcat
  */
 public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
 
-	public final static IDLPrototypeFactory INSTANCE = new IDLPrototypeFactory();
-	
-	/**
-	 * Keeping memory of all created IDL prototypes
-	 */
-	private HashMap<String, ActorPrototypes> createdIdls;
+  /** The Constant INSTANCE. */
+  public static final IDLPrototypeFactory INSTANCE = new IDLPrototypeFactory();
 
-	/**
-	 * Keeping memory of the highest index of init declared. Used to determine
-	 * how many init phases must be generated
-	 */
-	private int maxInitIndex = -1;
+  /** Keeping memory of all created IDL prototypes. */
+  private HashMap<String, ActorPrototypes> createdIdls;
 
-	/**
-	 * Generated prototypes
-	 */
-	private ActorPrototypes finalPrototypes;
+  /**
+   * Keeping memory of the highest index of init declared. Used to determine how many init phases must be generated
+   */
+  private int maxInitIndex = -1;
 
-	/**
-	 * Temporary prototype used during parsing
-	 */
-	private Prototype currentPrototype;
+  /** Generated prototypes. */
+  private ActorPrototypes finalPrototypes;
 
-	public IDLPrototypeFactory() {
-		resetPrototypes();
-	}
+  /** Temporary prototype used during parsing. */
+  private Prototype currentPrototype;
 
-	public void resetPrototypes() {
-		createdIdls = new HashMap<String, ActorPrototypes>();
-		maxInitIndex = -1;
-	}
+  /**
+   * Instantiates a new IDL prototype factory.
+   */
+  public IDLPrototypeFactory() {
+    resetPrototypes();
+  }
 
-	/**
-	 * Retrieving prototypes from an IDL file
-	 */
-	@Override
-	public ActorPrototypes create(String idlPath) {
-		if (createdIdls.get(idlPath) == null) {
-			parser.setGenerator(this);
+  /**
+   * Reset prototypes.
+   */
+  public void resetPrototypes() {
+    this.createdIdls = new HashMap<>();
+    this.maxInitIndex = -1;
+  }
 
-			try {
-				finalPrototypes = new ActorPrototypes(idlPath);
-				IDLParser.parse(idlPath, this);
-				createdIdls.put(idlPath, finalPrototypes);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return createdIdls.get(idlPath);
-	}
+  /**
+   * Retrieving prototypes from an IDL file.
+   *
+   * @param idlPath
+   *          the idl path
+   * @return the actor prototypes
+   */
+  @Override
+  public ActorPrototypes create(final String idlPath) {
+    if (this.createdIdls.get(idlPath) == null) {
+      parser.setGenerator(this);
 
-	@Override
-	public void visitDefinition(Definition arg0) {
-		arg0.get_declaration().accept(this);
-	}
+      try {
+        this.finalPrototypes = new ActorPrototypes(idlPath);
+        IDLParser.parse(idlPath, this);
+        this.createdIdls.put(idlPath, this.finalPrototypes);
+      } catch (final Exception e) {
+        e.printStackTrace();
+      }
+    }
+    return this.createdIdls.get(idlPath);
+  }
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public void visitDefinitions(Definitions arg0) {
-		Enumeration e = arg0.getElements();
-		while (e.hasMoreElements()) {
-			IdlSymbol s = (IdlSymbol) e.nextElement();
-			s.accept(this);
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jacorb.idl.IDLTreeVisitor#visitDefinition(org.jacorb.idl.Definition)
+   */
+  @Override
+  public void visitDefinition(final Definition arg0) {
+    arg0.get_declaration().accept(this);
+  }
 
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jacorb.idl.IDLTreeVisitor#visitDefinitions(org.jacorb.idl.Definitions)
+   */
+  @SuppressWarnings("rawtypes")
+  @Override
+  public void visitDefinitions(final Definitions arg0) {
+    final Enumeration e = arg0.getElements();
+    while (e.hasMoreElements()) {
+      final IdlSymbol s = (IdlSymbol) e.nextElement();
+      s.accept(this);
+    }
 
-	/**
-	 * Retrieving prototypes for the different code phases
-	 */
-	@Override
-	public void visitInterface(Interface arg0) {
-		// Latest init phase prototype is in the interface "init"
-		if (arg0.name().equals("init")) {
-			currentPrototype = new Prototype();
-			arg0.body.accept(this);
-			finalPrototypes.setInitPrototype(currentPrototype);
+  }
 
-			if (maxInitIndex < 0)
-				maxInitIndex = 0;
-		}
+  /**
+   * Retrieving prototypes for the different code phases.
+   *
+   * @param arg0
+   *          the arg 0
+   */
+  @Override
+  public void visitInterface(final Interface arg0) {
+    // Latest init phase prototype is in the interface "init"
+    if (arg0.name().equals("init")) {
+      this.currentPrototype = new Prototype();
+      arg0.body.accept(this);
+      this.finalPrototypes.setInitPrototype(this.currentPrototype);
 
-		// Previous init phases to fill the delays
-		else if (arg0.name().startsWith("init_")) {
-			String sIndex = arg0.name().replaceFirst("init_", "");
+      if (this.maxInitIndex < 0) {
+        this.maxInitIndex = 0;
+      }
+    } else if (arg0.name().startsWith("init_")) {
+      // Previous init phases to fill the delays
+      final String sIndex = arg0.name().replaceFirst("init_", "");
 
-			// Retrieving the index of the init phase
-			try {
-				int index = Integer.parseInt(sIndex);
+      // Retrieving the index of the init phase
+      try {
+        final int index = Integer.parseInt(sIndex);
 
-				currentPrototype = new Prototype();
-				finalPrototypes.setInitPrototype(currentPrototype, index);
-				arg0.body.accept(this);
+        this.currentPrototype = new Prototype();
+        this.finalPrototypes.setInitPrototype(this.currentPrototype, index);
+        arg0.body.accept(this);
 
-				if (maxInitIndex < index)
-					maxInitIndex = index;
-			} catch (NumberFormatException e) {
-				WorkflowLogger.getLogger().log(
-						Level.SEVERE,
-						"Badly formatted IDL interface, loop, init or init-i accepted : "
-								+ arg0.name());
-			}
-		}
+        if (this.maxInitIndex < index) {
+          this.maxInitIndex = index;
+        }
+      } catch (final NumberFormatException e) {
+        WorkflowLogger.getLogger().log(Level.SEVERE, "Badly formatted IDL interface, loop, init or init-i accepted : " + arg0.name());
+      }
+    } else if (arg0.name().equals("loop")) {
+      // loop phase prototype is in the interphase "loop"
+      this.currentPrototype = new Prototype();
+      this.finalPrototypes.setLoopPrototype(this.currentPrototype);
+      arg0.body.accept(this);
+    } else {
+      WorkflowLogger.getLogger().log(Level.WARNING, "Ignored badly formatted IDL interface, loop, init or init-i accepted : " + arg0.name());
+    }
+  }
 
-		// loop phase prototype is in the interphase "loop"
-		else if (arg0.name().equals("loop")) {
-			currentPrototype = new Prototype();
-			finalPrototypes.setLoopPrototype(currentPrototype);
-			arg0.body.accept(this);
-		} else {
-			WorkflowLogger.getLogger().log(
-					Level.WARNING,
-					"Ignored badly formatted IDL interface, loop, init or init-i accepted : "
-							+ arg0.name());
-		}
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jacorb.idl.IDLTreeVisitor#visitInterfaceBody(org.jacorb.idl.InterfaceBody)
+   */
+  @Override
+  public void visitInterfaceBody(final InterfaceBody arg0) {
+    final Operation[] ops = arg0.getMethods();
+    for (final Operation op : ops) {
+      op.accept(this);
+    }
+  }
 
-	@Override
-	public void visitInterfaceBody(InterfaceBody arg0) {
-		Operation[] ops = arg0.getMethods();
-		for (int i = 0; i < ops.length; i++) {
-			ops[i].accept(this);
-		}
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jacorb.idl.IDLTreeVisitor#visitMethod(org.jacorb.idl.Method)
+   */
+  @Override
+  public void visitMethod(final Method arg0) {
+    this.currentPrototype.setFunctionName(arg0.name());
+    arg0.parameterType.accept(this);
+  }
 
-	@Override
-	public void visitMethod(Method arg0) {
-		currentPrototype.setFunctionName(arg0.name());
-		arg0.parameterType.accept(this);
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jacorb.idl.IDLTreeVisitor#visitModule(org.jacorb.idl.Module)
+   */
+  @Override
+  public void visitModule(final Module arg0) {
+    System.out.println(arg0.toString());
 
-	@Override
-	public void visitModule(Module arg0) {
-		System.out.println(arg0.toString());
+    arg0.getDefinitions().accept(this);
+  }
 
-		arg0.getDefinitions().accept(this);
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jacorb.idl.IDLTreeVisitor#visitNative(org.jacorb.idl.NativeType)
+   */
+  @Override
+  public void visitNative(final NativeType arg0) {
+    System.out.println(arg0.toString());
+  }
 
-	@Override
-	public void visitNative(NativeType arg0) {
-		System.out.println(arg0.toString());
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jacorb.idl.IDLTreeVisitor#visitOpDecl(org.jacorb.idl.OpDecl)
+   */
+  @Override
+  public void visitOpDecl(final OpDecl arg0) {
+    this.currentPrototype.setFunctionName(arg0.name());
+    for (final Object param : arg0.paramDecls) {
+      ((ParamDecl) param).accept(this);
+    }
+  }
 
-	@Override
-	public void visitOpDecl(OpDecl arg0) {
-		currentPrototype.setFunctionName(arg0.name());
-		for (Object param : arg0.paramDecls) {
-			((ParamDecl) param).accept(this);
-		}
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jacorb.idl.IDLTreeVisitor#visitParamDecl(org.jacorb.idl.ParamDecl)
+   */
+  @Override
+  public void visitParamDecl(final ParamDecl arg0) {
+    if (arg0.paramAttribute == ParamDecl.MODE_IN) {
+      if (arg0.paramTypeSpec.name().equals("parameter")) {
+        final CodeGenParameter parameter = new CodeGenParameter(arg0.simple_declarator.name(), 0);
+        this.currentPrototype.addParameter(parameter);
+      } else {
+        final CodeGenArgument argument = new CodeGenArgument(arg0.simple_declarator.name(), CodeGenArgument.INPUT);
+        if ((arg0.paramTypeSpec.name() == null) || (arg0.paramTypeSpec.name().length() == 0)) {
+          argument.setType(arg0.paramTypeSpec.getIDLTypeName());
+        } else {
+          argument.setType(arg0.paramTypeSpec.name());
+        }
+        this.currentPrototype.addArgument(argument);
+      }
+    } else if (arg0.paramAttribute == ParamDecl.MODE_OUT) {
+      if (arg0.paramTypeSpec.name().equals("parameter")) {
+        final CodeGenParameter parameter = new CodeGenParameter(arg0.simple_declarator.name(), 1);
+        this.currentPrototype.addParameter(parameter);
+      } else {
+        final CodeGenArgument argument = new CodeGenArgument(arg0.simple_declarator.name(), CodeGenArgument.OUTPUT);
+        if ((arg0.paramTypeSpec.name() == null) || (arg0.paramTypeSpec.name().length() == 0)) {
+          argument.setType(arg0.paramTypeSpec.getIDLTypeName());
+        } else {
+          argument.setType(arg0.paramTypeSpec.name());
+        }
+        this.currentPrototype.addArgument(argument);
+      }
+    }
+  }
 
-	@Override
-	public void visitParamDecl(ParamDecl arg0) {
-		if (arg0.paramAttribute == ParamDecl.MODE_IN) {
-			if (arg0.paramTypeSpec.name().equals("parameter")) {
-				CodeGenParameter parameter = new CodeGenParameter(
-						arg0.simple_declarator.name(), 0);
-				currentPrototype.addParameter(parameter);
-			} else {
-				CodeGenArgument argument = new CodeGenArgument(
-						arg0.simple_declarator.name(), CodeGenArgument.INPUT);
-				if (arg0.paramTypeSpec.name() == null
-						|| arg0.paramTypeSpec.name().length() == 0) {
-					argument.setType(arg0.paramTypeSpec.getIDLTypeName());
-				} else {
-					argument.setType(arg0.paramTypeSpec.name());
-				}
-				currentPrototype.addArgument(argument);
-			}
-		} else if (arg0.paramAttribute == ParamDecl.MODE_OUT) {
-			if (arg0.paramTypeSpec.name().equals("parameter")) {
-				CodeGenParameter parameter = new CodeGenParameter(
-						arg0.simple_declarator.name(), 1);
-				currentPrototype.addParameter(parameter);
-			} else {
-				CodeGenArgument argument = new CodeGenArgument(
-						arg0.simple_declarator.name(), CodeGenArgument.OUTPUT);
-				if (arg0.paramTypeSpec.name() == null
-						|| arg0.paramTypeSpec.name().length() == 0) {
-					argument.setType(arg0.paramTypeSpec.getIDLTypeName());
-				} else {
-					argument.setType(arg0.paramTypeSpec.name());
-				}
-				currentPrototype.addArgument(argument);
-			}
-		}
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jacorb.idl.IDLTreeVisitor#visitSpec(org.jacorb.idl.Spec)
+   */
+  @SuppressWarnings("rawtypes")
+  @Override
+  public void visitSpec(final Spec arg0) {
+    final Enumeration e = arg0.definitions.elements();
+    while (e.hasMoreElements()) {
+      final IdlSymbol s = (IdlSymbol) e.nextElement();
+      s.accept(this);
+    }
+  }
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public void visitSpec(Spec arg0) {
-		Enumeration e = arg0.definitions.elements();
-		while (e.hasMoreElements()) {
-			IdlSymbol s = (IdlSymbol) e.nextElement();
-			s.accept(this);
-		}
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jacorb.idl.IDLTreeVisitor#visitSimpleTypeSpec(org.jacorb.idl.SimpleTypeSpec)
+   */
+  @Override
+  public void visitSimpleTypeSpec(final SimpleTypeSpec arg0) {
+  }
 
-	@Override
-	public void visitSimpleTypeSpec(SimpleTypeSpec arg0) {
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jacorb.idl.IDLTreeVisitor#visitStruct(org.jacorb.idl.StructType)
+   */
+  @Override
+  public void visitStruct(final StructType arg0) {
+  }
 
-	@Override
-	public void visitStruct(StructType arg0) {
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jacorb.idl.IDLTreeVisitor#visitTypeDeclaration(org.jacorb.idl.TypeDeclaration)
+   */
+  @Override
+  public void visitTypeDeclaration(final TypeDeclaration arg0) {
+  }
 
-	@Override
-	public void visitTypeDeclaration(TypeDeclaration arg0) {
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jacorb.idl.IDLTreeVisitor#visitTypeDef(org.jacorb.idl.TypeDef)
+   */
+  @Override
+  public void visitTypeDef(final TypeDef arg0) {
+  }
 
-	@Override
-	public void visitTypeDef(TypeDef arg0) {
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jacorb.idl.IDLTreeVisitor#visitUnion(org.jacorb.idl.UnionType)
+   */
+  @Override
+  public void visitUnion(final UnionType arg0) {
+  }
 
-	@Override
-	public void visitUnion(UnionType arg0) {
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jacorb.idl.IDLTreeVisitor#visitValue(org.jacorb.idl.Value)
+   */
+  @Override
+  public void visitValue(final Value arg0) {
+  }
 
-	@Override
-	public void visitValue(Value arg0) {
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jacorb.idl.IDLTreeVisitor#visitVectorType(org.jacorb.idl.VectorType)
+   */
+  @Override
+  public void visitVectorType(final VectorType arg0) {
+  }
 
-	@Override
-	public void visitVectorType(VectorType arg0) {
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jacorb.idl.IDLTreeVisitor#visitAlias(org.jacorb.idl.AliasTypeSpec)
+   */
+  @Override
+  public void visitAlias(final AliasTypeSpec arg0) {
+  }
 
-	@Override
-	public void visitAlias(AliasTypeSpec arg0) {
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jacorb.idl.IDLTreeVisitor#visitConstrTypeSpec(org.jacorb.idl.ConstrTypeSpec)
+   */
+  @Override
+  public void visitConstrTypeSpec(final ConstrTypeSpec arg0) {
+  }
 
-	@Override
-	public void visitConstrTypeSpec(ConstrTypeSpec arg0) {
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jacorb.idl.IDLTreeVisitor#visitDeclaration(org.jacorb.idl.Declaration)
+   */
+  @Override
+  public void visitDeclaration(final Declaration arg0) {
+  }
 
-	@Override
-	public void visitDeclaration(Declaration arg0) {
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jacorb.idl.IDLTreeVisitor#visitEnum(org.jacorb.idl.EnumType)
+   */
+  @Override
+  public void visitEnum(final EnumType arg0) {
+  }
 
-	@Override
-	public void visitEnum(EnumType arg0) {
-	}
-
-	/**
-	 * IDL prototypes determine the number of initialization phases that are
-	 * necessary
-	 * 
-	 * @return The number of code init phases that must be generated
-	 */
-	public int getNumberOfInitPhases() {
-		return maxInitIndex + 1;
-	}
+  /**
+   * IDL prototypes determine the number of initialization phases that are necessary.
+   *
+   * @return The number of code init phases that must be generated
+   */
+  public int getNumberOfInitPhases() {
+    return this.maxInitIndex + 1;
+  }
 }

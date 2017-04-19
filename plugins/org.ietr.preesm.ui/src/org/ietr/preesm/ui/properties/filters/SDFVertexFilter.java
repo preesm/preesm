@@ -42,25 +42,30 @@ import org.eclipse.jface.viewers.IFilter;
 import org.ietr.dftools.graphiti.model.Graph;
 import org.ietr.dftools.graphiti.model.Vertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * This class filters SDF vertices to enable the correct property tabs
- * 
+ * This class filters SDF vertices to enable the correct property tabs.
+ *
  * @author mpelcat
- * 
  */
 public class SDFVertexFilter implements IFilter {
 
-	@Override
-	public boolean select(Object toTest) {
-		if (toTest instanceof EditPart) {
-			Object model = ((EditPart) toTest).getModel();
-			if (model instanceof Vertex) {
-				Vertex vertex = (Vertex) model;
-				Graph graph = vertex.getParent();
-				return graph.getType().getName().equals("Dataflow Graph");
-			}
-		}
-		return false;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.IFilter#select(java.lang.Object)
+   */
+  @Override
+  public boolean select(final Object toTest) {
+    if (toTest instanceof EditPart) {
+      final Object model = ((EditPart) toTest).getModel();
+      if (model instanceof Vertex) {
+        final Vertex vertex = (Vertex) model;
+        final Graph graph = vertex.getParent();
+        return graph.getType().getName().equals("Dataflow Graph");
+      }
+    }
+    return false;
+  }
 
 }

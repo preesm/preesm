@@ -38,53 +38,81 @@
 package org.ietr.preesm.ui.wizards;
 
 import java.net.URI;
-
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
+// TODO: Auto-generated Javadoc
 /**
  * This class provides a wizard to create a new Preesm Project.
- * 
+ *
  * @author Matthieu Wipliez
  * @author Clément Guy
  */
 public class NewPreesmProjectWizard extends BasicNewProjectResourceWizard {
-	// Strings displayed in the wizard (titles, names, descriptions...)
-	private static final String WINDOW_TITLE = "New PREESM Project";
-	private static final String PAGE_NAME = "PREESM Project Wizard";
-	private static final String PAGE_TITLE = "PREESM Project";
-	private static final String PAGE_DESCRIPTION = "Create a new PREESM project.";
-	// Pages of the wizard
-	private WizardNewProjectCreationPage firstPage;
 
-	public NewPreesmProjectWizard() {
-		setWindowTitle(WINDOW_TITLE);
-	}
-	
-	@Override
-	public void addPages() {		 
-	    firstPage = new WizardNewProjectCreationPage(PAGE_NAME);
-	    firstPage.setTitle(PAGE_TITLE);
-	    firstPage.setDescription(PAGE_DESCRIPTION);
-	 
-	    addPage(firstPage);
-	}
+  /** The Constant WINDOW_TITLE. */
+  // Strings displayed in the wizard (titles, names, descriptions...)
+  private static final String WINDOW_TITLE = "New PREESM Project";
 
-	@Override
-	protected void initializeDefaultPageImageDescriptor() {
-		super.initializeDefaultPageImageDescriptor();
-	}
+  /** The Constant PAGE_NAME. */
+  private static final String PAGE_NAME = "PREESM Project Wizard";
 
-	@Override
-	public boolean performFinish() {
-		String name = firstPage.getProjectName();
-		URI location = null;
-		if (!firstPage.useDefaults()) {
-			location = firstPage.getLocationURI();
-		} // else location == null
+  /** The Constant PAGE_TITLE. */
+  private static final String PAGE_TITLE = "PREESM Project";
 
-		NewPreesmProjectCreator.createProject(name, location);
+  /** The Constant PAGE_DESCRIPTION. */
+  private static final String PAGE_DESCRIPTION = "Create a new PREESM project.";
 
-		return true;
-	}
+  /** The first page. */
+  // Pages of the wizard
+  private WizardNewProjectCreationPage firstPage;
+
+  /**
+   * Instantiates a new new preesm project wizard.
+   */
+  public NewPreesmProjectWizard() {
+    setWindowTitle(NewPreesmProjectWizard.WINDOW_TITLE);
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard#addPages()
+   */
+  @Override
+  public void addPages() {
+    this.firstPage = new WizardNewProjectCreationPage(NewPreesmProjectWizard.PAGE_NAME);
+    this.firstPage.setTitle(NewPreesmProjectWizard.PAGE_TITLE);
+    this.firstPage.setDescription(NewPreesmProjectWizard.PAGE_DESCRIPTION);
+
+    addPage(this.firstPage);
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard#initializeDefaultPageImageDescriptor()
+   */
+  @Override
+  protected void initializeDefaultPageImageDescriptor() {
+    super.initializeDefaultPageImageDescriptor();
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard#performFinish()
+   */
+  @Override
+  public boolean performFinish() {
+    final String name = this.firstPage.getProjectName();
+    URI location = null;
+    if (!this.firstPage.useDefaults()) {
+      location = this.firstPage.getLocationURI();
+    } // else location == null
+
+    NewPreesmProjectCreator.createProject(name, location);
+
+    return true;
+  }
 }

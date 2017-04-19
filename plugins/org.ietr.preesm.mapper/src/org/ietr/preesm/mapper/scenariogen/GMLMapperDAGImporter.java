@@ -46,104 +46,110 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+// TODO: Auto-generated Javadoc
 /**
- * Importer for DAG graphs produced by the mapper
- * 
+ * Importer for DAG graphs produced by the mapper.
+ *
  * @author mpelcat
- * 
  */
-public class GMLMapperDAGImporter extends
-		GMLImporter<SDFGraph, SDFAbstractVertex, SDFEdge> {
+public class GMLMapperDAGImporter extends GMLImporter<SDFGraph, SDFAbstractVertex, SDFEdge> {
 
-	/**
-	 * COnstructs a new importer for SDF graphs
-	 */
-	public GMLMapperDAGImporter() {
-		super(new SDFEdgeFactory());
-	}
+  /**
+   * COnstructs a new importer for SDF graphs.
+   */
+  public GMLMapperDAGImporter() {
+    super(new SDFEdgeFactory());
+  }
 
-	/**
-	 * Parses an Edge in the DOM document
-	 * 
-	 * @param edgeElt
-	 *            The DOM Element
-	 * @param parentGraph
-	 *            The parent Graph of this Edge
-	 */
-	@Override
-	public void parseEdge(Element edgeElt, SDFGraph parentGraph) {
-	}
+  /**
+   * Parses an Edge in the DOM document.
+   *
+   * @param edgeElt
+   *          The DOM Element
+   * @param parentGraph
+   *          The parent Graph of this Edge
+   */
+  @Override
+  public void parseEdge(final Element edgeElt, final SDFGraph parentGraph) {
+  }
 
-	/**
-	 * Parses a Graph in the DOM document
-	 * 
-	 * @param graphElt
-	 *            The graph Element in the DOM document
-	 * @return The parsed graph
-	 */
-	@Override
-	public SDFGraph parseGraph(Element graphElt) {
-		SDFGraph graph = new SDFGraph((SDFEdgeFactory) edgeFactory);
-		NodeList childList = graphElt.getChildNodes();
-		parseParameters(graph, graphElt);
-		parseVariables(graph, graphElt);
-		for (int i = 0; i < childList.getLength(); i++) {
-			if (childList.item(i).getNodeName().equals("node")) {
-				Element vertexElt = (Element) childList.item(i);
-				parseNode(vertexElt, graph);
-			}
-		}
-		for (int i = 0; i < childList.getLength(); i++) {
-			if (childList.item(i).getNodeName().equals("edge")) {
-				Element edgeElt = (Element) childList.item(i);
-				parseEdge(edgeElt, graph);
-			}
-		}
-		parseKeys(graphElt, graph);
-		return graph;
-	}
+  /**
+   * Parses a Graph in the DOM document.
+   *
+   * @param graphElt
+   *          The graph Element in the DOM document
+   * @return The parsed graph
+   */
+  @Override
+  public SDFGraph parseGraph(final Element graphElt) {
+    final SDFGraph graph = new SDFGraph((SDFEdgeFactory) this.edgeFactory);
+    final NodeList childList = graphElt.getChildNodes();
+    parseParameters(graph, graphElt);
+    parseVariables(graph, graphElt);
+    for (int i = 0; i < childList.getLength(); i++) {
+      if (childList.item(i).getNodeName().equals("node")) {
+        final Element vertexElt = (Element) childList.item(i);
+        parseNode(vertexElt, graph);
+      }
+    }
+    for (int i = 0; i < childList.getLength(); i++) {
+      if (childList.item(i).getNodeName().equals("edge")) {
+        final Element edgeElt = (Element) childList.item(i);
+        parseEdge(edgeElt, graph);
+      }
+    }
+    parseKeys(graphElt, graph);
+    return graph;
+  }
 
-	/**
-	 * Parses a Vertex from the DOM document
-	 * 
-	 * @param vertexElt
-	 *            The node Element in the DOM document
-	 * @return The parsed node
-	 */
-	@Override
-	public SDFAbstractVertex parseNode(Element vertexElt, SDFGraph parentGraph) {
+  /**
+   * Parses a Vertex from the DOM document.
+   *
+   * @param vertexElt
+   *          The node Element in the DOM document
+   * @param parentGraph
+   *          the parent graph
+   * @return The parsed node
+   */
+  @Override
+  public SDFAbstractVertex parseNode(final Element vertexElt, final SDFGraph parentGraph) {
 
-		SDFAbstractVertex vertex;
-		/*
-		 * HashMap<String, String> attributes = new HashMap<String, String>();
-		 * for (int i = 0; i < vertexElt.getAttributes().getLength(); i++) {
-		 * attributes.put(vertexElt.getAttributes().item(i).getNodeName(),
-		 * vertexElt.getAttributes().item(i).getNodeValue()); }
-		 * 
-		 * attributes.put("kind", SDFVertex.VERTEX);
-		 */
-		vertex = SDFVertexFactory.getInstance().createVertex(vertexElt);
+    SDFAbstractVertex vertex;
+    /*
+     * HashMap<String, String> attributes = new HashMap<String, String>(); for (int i = 0; i <
+     * vertexElt.getAttributes().getLength(); i++) {
+     * attributes.put(vertexElt.getAttributes().item(i).getNodeName(),
+     * vertexElt.getAttributes().item(i).getNodeValue()); }
+     *
+     * attributes.put("kind", SDFVertex.VERTEX);
+     */
+    vertex = SDFVertexFactory.getInstance().createVertex(vertexElt);
 
-		vertex.setId(vertexElt.getAttribute("id"));
+    vertex.setId(vertexElt.getAttribute("id"));
 
-		for (int i = 0; i < vertexElt.getChildNodes().getLength(); i++) {
-			Node n = vertexElt.getChildNodes().item(i);
-			if (n.getNodeName().equals("data")) {
-				vertex.getPropertyBean().setValue(
-						n.getAttributes().getNamedItem("key").getTextContent(),
-						n.getTextContent());
-			}
-		}
+    for (int i = 0; i < vertexElt.getChildNodes().getLength(); i++) {
+      final Node n = vertexElt.getChildNodes().item(i);
+      if (n.getNodeName().equals("data")) {
+        vertex.getPropertyBean().setValue(n.getAttributes().getNamedItem("key").getTextContent(),
+            n.getTextContent());
+      }
+    }
 
-		parseKeys(vertexElt, vertex);
-		vertexFromId.put(vertex.getId(), vertex);
-		parseArguments(vertex, vertexElt);
-		return vertex;
-	}
+    parseKeys(vertexElt, vertex);
+    this.vertexFromId.put(vertex.getId(), vertex);
+    parseArguments(vertex, vertexElt);
+    return vertex;
+  }
 
-	@Override
-	public SDFAbstractVertex parsePort(Element portElt, SDFGraph parentGraph) {
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.algorithm.importer.GMLImporter#parsePort(org.w3c.dom.Element,
+   * org.ietr.dftools.algorithm.model.AbstractGraph)
+   */
+  @Override
+  public SDFAbstractVertex parsePort(final Element portElt, final SDFGraph parentGraph) {
+    return null;
+  }
 
 }

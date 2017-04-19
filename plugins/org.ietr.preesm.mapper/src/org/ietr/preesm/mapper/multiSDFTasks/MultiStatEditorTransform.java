@@ -39,54 +39,73 @@ package org.ietr.preesm.mapper.multiSDFTasks;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.ui.stats.EditorRunnable;
 import org.ietr.preesm.mapper.ui.stats.StatEditorInput;
 
+// TODO: Auto-generated Javadoc
 /**
- * Transform class that can be called in workflow. The transform method displays
- * the gantt chart of the given mapped dag
- * 
+ * Transform class that can be called in workflow. The transform method displays the gantt chart of
+ * the given mapped dag
+ *
  * @author mpelcat
  */
 public class MultiStatEditorTransform extends AbstractTaskImplementation {
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
+   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs,
+      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
+      final Workflow workflow) throws WorkflowException {
 
-		@SuppressWarnings("unchecked")
-		Set<IAbc> simulators = (Set<IAbc>) inputs.get(KEY_SDF_ABC_SET);
-		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
+    @SuppressWarnings("unchecked")
+    final Set<IAbc> simulators = (Set<IAbc>) inputs
+        .get(AbstractWorkflowNodeImplementation.KEY_SDF_ABC_SET);
+    final PreesmScenario scenario = (PreesmScenario) inputs
+        .get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
-		for (IAbc abc : simulators) {
-			IEditorInput input = new StatEditorInput(abc, scenario, parameters);
+    for (final IAbc abc : simulators) {
+      final IEditorInput input = new StatEditorInput(abc, scenario, parameters);
 
-			// Run statistic editor
-			PlatformUI.getWorkbench().getDisplay()
-					.asyncExec(new EditorRunnable(input));
-		}
+      // Run statistic editor
+      PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
+    }
 
-		return new HashMap<String, Object>();
-	}
+    return new HashMap<>();
+  }
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    return null;
+  }
 
-	@Override
-	public String monitorMessage() {
-		return "Plots the Gantt charts";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Plots the Gantt charts";
+  }
 
 }

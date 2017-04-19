@@ -38,7 +38,6 @@ package org.ietr.preesm.pimm.algorithm.stats.printer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
@@ -46,39 +45,54 @@ import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
+// TODO: Auto-generated Javadoc
 /**
- * A Test workflow element for PiGraphs
+ * A Test workflow element for PiGraphs.
+ *
  * @author mpelcat
  * @author jheulot
- *
  */
-public class PrintPISDFStats extends AbstractTaskImplementation{
+public class PrintPISDFStats extends AbstractTaskImplementation {
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
-		
-		PiGraph piGraph = (PiGraph) inputs.get("PiMM");
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
-		WorkflowLogger.getLogger().log(Level.INFO, "PiMM Stats:");
-		WorkflowLogger.getLogger().log(Level.INFO, "Name         : "+piGraph.getName());
-		WorkflowLogger.getLogger().log(Level.INFO, "Nb Vertices  : "+piGraph.getVertices().size());
-		WorkflowLogger.getLogger().log(Level.INFO, "Nb Fifos     : "+piGraph.getFifos().size());
-		WorkflowLogger.getLogger().log(Level.INFO, "Nb Parameters: "+piGraph.getParameters().size());	
-		
-		return new HashMap<String, Object>();
-	}
+    final PiGraph piGraph = (PiGraph) inputs.get("PiMM");
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		return null;
-	}
+    WorkflowLogger.getLogger().log(Level.INFO, "PiMM Stats:");
+    WorkflowLogger.getLogger().log(Level.INFO, "Name         : " + piGraph.getName());
+    WorkflowLogger.getLogger().log(Level.INFO, "Nb Vertices  : " + piGraph.getVertices().size());
+    WorkflowLogger.getLogger().log(Level.INFO, "Nb Fifos     : " + piGraph.getFifos().size());
+    WorkflowLogger.getLogger().log(Level.INFO, "Nb Parameters: " + piGraph.getParameters().size());
 
-	@Override
-	public String monitorMessage() {
-		return "Display Stats on PiMM.";
-	}
+    return new HashMap<>();
+  }
 
-	
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Display Stats on PiMM.";
+  }
+
 }

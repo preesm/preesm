@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.eclipse.xtext.util.Pair;
 import org.ietr.dftools.algorithm.model.AbstractEdge;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
@@ -53,366 +52,377 @@ import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.memory.script.Range;
 
+// TODO: Auto-generated Javadoc
 /**
  * MemoryExclusionVertex is used to represent vertices in the Exclusion graph.
- * 
+ *
  * @author kdesnos
- * 
+ *
  */
-public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
-		implements IWeightedVertex<Integer>, Comparable<MemoryExclusionVertex> {
+public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> implements IWeightedVertex<Integer>, Comparable<MemoryExclusionVertex> {
 
-	/**
-	 * String used in the {@link PropertyBean} of a
-	 * {@link MemoryExclusionVertex} to store the offset at which the memory
-	 * object is stored in memory.
-	 */
-	public static final String MEMORY_OFFSET_PROPERTY = "memory_offset";
+  /**
+   * String used in the {@link PropertyBean} of a {@link MemoryExclusionVertex} to store the offset at which the memory object is stored in memory.
+   */
+  public static final String MEMORY_OFFSET_PROPERTY = "memory_offset";
 
-	/**
-	 * Property of the {@link MemoryExclusionVertex}. The object associated to
-	 * this property is:<br>
-	 * <code>
-	 * List&lt;Pair&lt;MemoryExclusionVertex,Pair&lt;Range,Range&gt;&gt;</code>
-	 * <br>
-	 * This {@link List} stores {@link Pair} of {@link MemoryExclusionVertex}
-	 * and {@link Pair}. Each {@link Pair} corresponds to a {@link Range} of
-	 * real tokens of the memory object and their position in the actual
-	 * {@link MemoryExclusionVertex} (i.e. the key of the first {@link Pair}).
-	 * <br>
-	 * For the host memory object, this property gives the position of the range
-	 * of bytes of the host within the memory allocated for it.<br>
-	 * For hosted memory object, this property gives the position of the
-	 * range(s) of bytes of the hosted memory object relatively to the position
-	 * of the 0 index of the host memory object within the memory allocated for
-	 * it.
-	 */
-	public static final String REAL_TOKEN_RANGE_PROPERTY = "real_token_range";
+  /**
+   * Property of the {@link MemoryExclusionVertex}. The object associated to this property is:<br>
+   * <code>
+   * List&lt;Pair&lt;MemoryExclusionVertex,Pair&lt;Range,Range&gt;&gt;</code> <br>
+   * This {@link List} stores {@link Pair} of {@link MemoryExclusionVertex} and {@link Pair}. Each {@link Pair} corresponds to a {@link Range} of real tokens of
+   * the memory object and their position in the actual {@link MemoryExclusionVertex} (i.e. the key of the first {@link Pair}). <br>
+   * For the host memory object, this property gives the position of the range of bytes of the host within the memory allocated for it.<br>
+   * For hosted memory object, this property gives the position of the range(s) of bytes of the hosted memory object relatively to the position of the 0 index
+   * of the host memory object within the memory allocated for it.
+   */
+  public static final String REAL_TOKEN_RANGE_PROPERTY = "real_token_range";
 
-	/**
-	 * Property of the {@link MemoryExclusionVertex}. The object associated to
-	 * this property is:<br>
-	 * <code>
-	 * List&lt;MemoryExclusionVertex&gt;</code><br>
-	 * This list contains the fake {@link MemoryExclusionVertex} that are added
-	 * to the {@link MemoryExclusionGraph} during memory allocation when the
-	 * current {@link MemoryExclusionVertex} is divided because of scripts.
-	 * These fake {@link MemoryExclusionVertex} should be removed from the
-	 * {@link MemoryExclusionGraph} if it is
-	 * {@link MemoryExclusionGraph#deallocate() deallocated}.
-	 */
-	public static final String FAKE_MOBJECT = "fake_mobject";
+  /**
+   * Property of the {@link MemoryExclusionVertex}. The object associated to this property is:<br>
+   * <code>
+   * List&lt;MemoryExclusionVertex&gt;</code><br>
+   * This list contains the fake {@link MemoryExclusionVertex} that are added to the {@link MemoryExclusionGraph} during memory allocation when the current
+   * {@link MemoryExclusionVertex} is divided because of scripts. These fake {@link MemoryExclusionVertex} should be removed from the
+   * {@link MemoryExclusionGraph} if it is {@link MemoryExclusionGraph#deallocate() deallocated}.
+   */
+  public static final String FAKE_MOBJECT = "fake_mobject";
 
-	/**
-	 * Property of the {@link MemoryExclusionVertex}. The object associated to
-	 * this property is:<br>
-	 * <code>
-	 * List&lt;MemoryExclusionVertex&gt;</code><br>
-	 * This {@link List} stores {@link MemoryExclusionVertex} corresponding to
-	 * the
-	 * {@link MemoryExclusionGraph#getAdjacentVertexOf(MemoryExclusionVertex)
-	 * adjacent vertices} of the current {@link MemoryExclusionVertex} before it
-	 * was merged as a result of memory scripts execution.
-	 */
-	public static final String ADJACENT_VERTICES_BACKUP = "adjacent_vertices_backup";
+  /**
+   * Property of the {@link MemoryExclusionVertex}. The object associated to this property is:<br>
+   * <code>
+   * List&lt;MemoryExclusionVertex&gt;</code><br>
+   * This {@link List} stores {@link MemoryExclusionVertex} corresponding to the {@link MemoryExclusionGraph#getAdjacentVertexOf(MemoryExclusionVertex) adjacent
+   * vertices} of the current {@link MemoryExclusionVertex} before it was merged as a result of memory scripts execution.
+   */
+  public static final String ADJACENT_VERTICES_BACKUP = "adjacent_vertices_backup";
 
-	/**
-	 * Property of the {@link MemoryExclusionVertex}. The object associated to
-	 * this property is an {@link Integer} that corresponds to the space in
-	 * bytes between the offset at which the {@link MemoryExclusionVertex} is
-	 * allocated and the actual beginning of the real token ranges. This
-	 * property is set after the memory script execution.
-	 */
-	public static final String EMPTY_SPACE_BEFORE = "empty_space_before";
+  /**
+   * Property of the {@link MemoryExclusionVertex}. The object associated to this property is an {@link Integer} that corresponds to the space in bytes between
+   * the offset at which the {@link MemoryExclusionVertex} is allocated and the actual beginning of the real token ranges. This property is set after the memory
+   * script execution.
+   */
+  public static final String EMPTY_SPACE_BEFORE = "empty_space_before";
 
-	/**
-	 * Property of the {@link MemoryExclusionVertex}. The object associated to
-	 * this property is an {@link Integer} that corresponds to the size in bytes
-	 * of the {@link MemoryExclusionVertex} when it hosts merged
-	 * {@link MemoryExclusionVertex} as a result of scripts execution. This
-	 * value is stored in case the host {@link MemoryExclusionVertex} needs to
-	 * be deallocated, and restored to the size it has when all hosted
-	 * {@link MemoryExclusionVertex} are merged.
-	 */
-	public static final String HOST_SIZE = "host_size";
+  /**
+   * Property of the {@link MemoryExclusionVertex}. The object associated to this property is an {@link Integer} that corresponds to the size in bytes of the
+   * {@link MemoryExclusionVertex} when it hosts merged {@link MemoryExclusionVertex} as a result of scripts execution. This value is stored in case the host
+   * {@link MemoryExclusionVertex} needs to be deallocated, and restored to the size it has when all hosted {@link MemoryExclusionVertex} are merged.
+   */
+  public static final String HOST_SIZE = "host_size";
 
-	/**
-	 * Property associated to {@link MemoryExclusionVertex} that are divided as
-	 * a result of the application of memory scripts. The object associated to
-	 * this property is a {@link List} of {@link MemoryExclusionVertex} that
-	 * corresponds to the {@link MemoryExclusionVertex} in which the parts of
-	 * the divided {@link MemoryExclusionVertex} will be merged.
-	 */
-	public static final String DIVIDED_PARTS_HOSTS = "divided_parts_hosts";
+  /**
+   * Property associated to {@link MemoryExclusionVertex} that are divided as a result of the application of memory scripts. The object associated to this
+   * property is a {@link List} of {@link MemoryExclusionVertex} that corresponds to the {@link MemoryExclusionVertex} in which the parts of the divided
+   * {@link MemoryExclusionVertex} will be merged.
+   */
+  public static final String DIVIDED_PARTS_HOSTS = "divided_parts_hosts";
 
-	/**
-	 * This Map is used as a reference of dataTypes size when creating an vertex
-	 * from a DAGEdge
-	 */
-	static public Map<String, DataType> _dataTypes = new HashMap<String, DataType>();
+  /** This Map is used as a reference of dataTypes size when creating an vertex from a DAGEdge. */
+  public static Map<String, DataType> _dataTypes = new HashMap<>();
 
-	/**
-	 * This method is used to associate a map of data types to the
-	 * MemoryExclusionVertex class. This map will be used when creating a MemEx
-	 * Vertex from a DAGEdge to give their real weight to the MemEx graph
-	 * vertices.
-	 * 
-	 * @param dataTypes
-	 *            the map of DataType
-	 */
-	static public void setDataTypes(Map<String, DataType> dataTypes) {
-		if (dataTypes != null) {
-			_dataTypes = dataTypes;
-		}
-	}
+  /**
+   * This method is used to associate a map of data types to the MemoryExclusionVertex class. This map will be used when creating a MemEx Vertex from a DAGEdge
+   * to give their real weight to the MemEx graph vertices.
+   *
+   * @param dataTypes
+   *          the map of DataType
+   */
+  public static void setDataTypes(final Map<String, DataType> dataTypes) {
+    if (dataTypes != null) {
+      MemoryExclusionVertex._dataTypes = dataTypes;
+    }
+  }
 
-	/**
-	 * unique identifier of vertex for user convenience
-	 */
-	private int identifier;
+  /** unique identifier of vertex for user convenience. */
+  private int identifier;
 
-	/**
-	 * ID of the task consuming the memory.
-	 */
-	private String sink;
+  /**
+   * ID of the task consuming the memory.
+   */
+  private final String sink;
 
-	/**
-	 * Size of the memory used
-	 */
-	private Integer size;
+  /** Size of the memory used. */
+  private Integer size;
 
-	/**
-	 * ID of the task producing the memory.
-	 */
-	private String source;
+  /**
+   * ID of the task producing the memory.
+   */
+  private final String source;
 
-	/**
-	 * ID of the explode/Implode dag vertex the memory belongs to
-	 */
-	private String explodeImplode;
+  /** ID of the explode/Implode dag vertex the memory belongs to. */
+  private String explodeImplode;
 
-	/**
-	 * The edge in the DAG that corresponds to this vertex in the exclusion
-	 * graph. (This attribute is used only if the vertices corresponds to an
-	 * edge in the dag, i.e. a transfer between actors)
-	 */
-	private DAGEdge edge;
+  /**
+   * The edge in the DAG that corresponds to this vertex in the exclusion graph. (This attribute is used only if the vertices corresponds to an edge in the dag,
+   * i.e. a transfer between actors)
+   */
+  private DAGEdge edge;
 
-	/**
-	 * {@link MemoryExclusionVertex} property associated to a {@link List} of
-	 * {@link Integer} that represent the space <b>in bytes</b> between
-	 * successive "subbuffers" of a {@link MemoryExclusionVertex}.
-	 */
-	public static final String INTER_BUFFER_SPACES = "inter_buffer_spaces";
+  /**
+   * {@link MemoryExclusionVertex} property associated to a {@link List} of {@link Integer} that represent the space <b>in bytes</b> between successive
+   * "subbuffers" of a {@link MemoryExclusionVertex}.
+   */
+  public static final String INTER_BUFFER_SPACES = "inter_buffer_spaces";
 
-	/**
-	 * Property used with fifo {@link MemoryExclusionVertex memory objects} to
-	 * relate the size of one token in the fifo.
-	 */
-	public static final String TYPE_SIZE = "type_size";
+  /**
+   * Property used with fifo {@link MemoryExclusionVertex memory objects} to relate the size of one token in the fifo.
+   */
+  public static final String TYPE_SIZE = "type_size";
 
-	/**
-	 * Constructor of the class
-	 * 
-	 * @param inputEdge
-	 *            the DAG edge corresponding to the constructed vertex
-	 */
-	public MemoryExclusionVertex(DAGEdge inputEdge) {
-		source = inputEdge.getSource().getName();
-		sink = inputEdge.getTarget().getName();
+  /**
+   * Constructor of the class.
+   *
+   * @param inputEdge
+   *          the DAG edge corresponding to the constructed vertex
+   */
+  public MemoryExclusionVertex(final DAGEdge inputEdge) {
+    this.source = inputEdge.getSource().getName();
+    this.sink = inputEdge.getTarget().getName();
 
-		if (inputEdge.getPropertyBean().getValue("explodeName") != null) {
-			explodeImplode = inputEdge.getPropertyBean().getValue("explodeName").toString();
-		} else {
-			explodeImplode = "";
-		}
+    if (inputEdge.getPropertyBean().getValue("explodeName") != null) {
+      this.explodeImplode = inputEdge.getPropertyBean().getValue("explodeName").toString();
+    } else {
+      this.explodeImplode = "";
+    }
 
-		// try {
-		// size = inputEdge.getWeight().intValue();
-		// } catch (InvalidExpressionException e) {
-		// e.printStackTrace();
-		// }
-		// if datatype is defined, correct the vertex weight
-		BufferAggregate buffers = (BufferAggregate) inputEdge.getPropertyBean()
-				.getValue(BufferAggregate.propertyBeanName);
-		Iterator<BufferProperties> iter = buffers.iterator();
-		int vertexWeight = 0;
-		while (iter.hasNext()) {
-			BufferProperties properties = iter.next();
+    // try {
+    // size = inputEdge.getWeight().intValue();
+    // } catch (InvalidExpressionException e) {
+    // e.printStackTrace();
+    // }
+    // if datatype is defined, correct the vertex weight
+    final BufferAggregate buffers = (BufferAggregate) inputEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+    final Iterator<BufferProperties> iter = buffers.iterator();
+    int vertexWeight = 0;
+    while (iter.hasNext()) {
+      final BufferProperties properties = iter.next();
 
-			String dataType = properties.getDataType();
-			DataType type = _dataTypes.get(dataType);
+      final String dataType = properties.getDataType();
+      final DataType type = MemoryExclusionVertex._dataTypes.get(dataType);
 
-			if (type != null) {
-				vertexWeight += type.getSize() * properties.getSize();
-			} else {
-				vertexWeight += properties.getSize();
-			}
-		}
+      if (type != null) {
+        vertexWeight += type.getSize() * properties.getSize();
+      } else {
+        vertexWeight += properties.getSize();
+      }
+    }
 
-		size = vertexWeight;
+    this.size = vertexWeight;
 
-		if (vertexWeight == 0) {
-			System.out.println("Probable ERROR: Vertex weight is 0");
-		}
+    if (vertexWeight == 0) {
+      System.out.println("Probable ERROR: Vertex weight is 0");
+    }
 
-		this.edge = inputEdge;
-	}
+    this.edge = inputEdge;
+  }
 
-	/**
-	 * Constructor of the class
-	 * 
-	 * @param sourceTask
-	 *            The ID of the task producing memory
-	 * @param sourceTask
-	 *            The ID of the task consuming memory
-	 * @param sourceTask
-	 *            The size of the memory
-	 */
-	public MemoryExclusionVertex(String sourceTask, String sinkTask, int sizeMem) {
-		source = sourceTask;
-		sink = sinkTask;
-		size = sizeMem;
-		explodeImplode = "";
-	}
+  /**
+   * Constructor of the class.
+   *
+   * @param sourceTask
+   *          The size of the memory
+   * @param sinkTask
+   *          the sink task
+   * @param sizeMem
+   *          the size mem
+   */
+  public MemoryExclusionVertex(final String sourceTask, final String sinkTask, final int sizeMem) {
+    this.source = sourceTask;
+    this.sink = sinkTask;
+    this.size = sizeMem;
+    this.explodeImplode = "";
+  }
 
-	@Override
-	public AbstractVertex<MemoryExclusionGraph> clone() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.algorithm.model.AbstractVertex#clone()
+   */
+  @Override
+  public AbstractVertex<MemoryExclusionGraph> clone() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-	/**
-	 * The comparison of two MemoryExclusionVertex is made according to their
-	 * weight
-	 */
-	@Override
-	public int compareTo(MemoryExclusionVertex o) {
-		return this.size - o.size;
-	}
+  /**
+   * The comparison of two MemoryExclusionVertex is made according to their weight.
+   *
+   * @param o
+   *          the o
+   * @return the int
+   */
+  @Override
+  public int compareTo(final MemoryExclusionVertex o) {
+    return this.size - o.size;
+  }
 
-	@Override
-	public void connectionAdded(AbstractEdge<?, ?> e) {
-		// TODO Auto-generated method stub
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.algorithm.model.AbstractVertex#connectionAdded(org.ietr.dftools.algorithm.model.AbstractEdge)
+   */
+  @Override
+  public void connectionAdded(final AbstractEdge<?, ?> e) {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public void connectionRemoved(AbstractEdge<?, ?> e) {
-		// TODO Auto-generated method stub
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.algorithm.model.AbstractVertex#connectionRemoved(org.ietr.dftools.algorithm.model.AbstractEdge)
+   */
+  @Override
+  public void connectionRemoved(final AbstractEdge<?, ?> e) {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	/**
-	 * Test equality of two {@link MemoryExclusionVertex vertices}.<br>
-	 * Two {@link MemoryExclusionVertex vertices} are considered equals if their
-	 * {@link #getSource() source} and {@link #getSink() sink} are equals.
-	 * Neither the weight nor the explodeImplode attributes of the vertices are
-	 * taken into account to test the equality.
-	 * 
-	 * Do not change the way the comparison is done since several other classes
-	 * relate on it, like ScriptRunner#updateMEG method.
-	 * 
-	 * @param o
-	 *            the object to compare.
-	 * @return true if the object is a similar vertex, false else.
-	 */
-	@Override
-	public boolean equals(Object o) {
-		if (o instanceof MemoryExclusionVertex) {
-			return (this.source.equals(((MemoryExclusionVertex) o).source)
-					&& this.sink.equals(((MemoryExclusionVertex) o).sink));
-		} else {
-			return false;
-		}
-	}
+  /**
+   * Test equality of two {@link MemoryExclusionVertex vertices}.<br>
+   * Two {@link MemoryExclusionVertex vertices} are considered equals if their {@link #getSource() source} and {@link #getSink() sink} are equals. Neither the
+   * weight nor the explodeImplode attributes of the vertices are taken into account to test the equality.
+   *
+   * <p>
+   * Do not change the way the comparison is done since several other classes relate on it, like ScriptRunner#updateMEG method.
+   * </p>
+   *
+   * @param o
+   *          the object to compare.
+   * @return true if the object is a similar vertex, false else.
+   */
+  @Override
+  public boolean equals(final Object o) {
+    if (o instanceof MemoryExclusionVertex) {
+      return (this.source.equals(((MemoryExclusionVertex) o).source) && this.sink.equals(((MemoryExclusionVertex) o).sink));
+    } else {
+      return false;
+    }
+  }
 
-	@Override
-	public MemoryExclusionVertex getClone() {
-		MemoryExclusionVertex copy;
-		copy = new MemoryExclusionVertex(this.source, this.sink, this.size);
-		copy.setIdentifier(getIdentifier());
-		copy.edge = this.edge;
-		copy.explodeImplode = this.explodeImplode;
-		return copy;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.memory.exclusiongraph.IWeightedVertex#getClone()
+   */
+  @Override
+  public MemoryExclusionVertex getClone() {
+    MemoryExclusionVertex copy;
+    copy = new MemoryExclusionVertex(this.source, this.sink, this.size);
+    copy.setIdentifier(getIdentifier());
+    copy.edge = this.edge;
+    copy.explodeImplode = this.explodeImplode;
+    return copy;
+  }
 
-	/**
-	 * @return the edge of the DAG that correspond to this vertex in the
-	 *         exclusion Graph
-	 */
-	public DAGEdge getEdge() {
-		return edge;
-	}
+  /**
+   * Gets the edge.
+   *
+   * @return the edge of the DAG that correspond to this vertex in the exclusion Graph
+   */
+  public DAGEdge getEdge() {
+    return this.edge;
+  }
 
-	/**
-	 * @return the explodeImplode
-	 */
-	public String getExplodeImplode() {
-		return explodeImplode;
-	}
+  /**
+   * Gets the explode implode.
+   *
+   * @return the explodeImplode
+   */
+  public String getExplodeImplode() {
+    return this.explodeImplode;
+  }
 
-	@Override
-	public PropertyFactory getFactoryForProperty(String propertyName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.algorithm.model.PropertySource#getFactoryForProperty(java.lang.String)
+   */
+  @Override
+  public PropertyFactory getFactoryForProperty(final String propertyName) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-	/**
-	 * @return the unique identifier of the vertex
-	 */
-	@Override
-	public int getIdentifier() {
-		return identifier;
-	}
+  /**
+   * Gets the identifier.
+   *
+   * @return the unique identifier of the vertex
+   */
+  @Override
+  public int getIdentifier() {
+    return this.identifier;
+  }
 
-	/**
-	 * @return the sink
-	 */
-	public String getSink() {
-		return sink;
-	}
+  /**
+   * Gets the sink.
+   *
+   * @return the sink
+   */
+  public String getSink() {
+    return this.sink;
+  }
 
-	/**
-	 * @return the source
-	 */
-	public String getSource() {
-		return source;
-	}
+  /**
+   * Gets the source.
+   *
+   * @return the source
+   */
+  public String getSource() {
+    return this.source;
+  }
 
-	/**
-	 * @return the weight
-	 */
-	@Override
-	public Integer getWeight() {
-		return size;
-	}
+  /**
+   * Gets the weight.
+   *
+   * @return the weight
+   */
+  @Override
+  public Integer getWeight() {
+    return this.size;
+  }
 
-	/**
-	 * Method added to enable the use of contains() method in Set
-	 * <MemoryExclusionVertex>
-	 */
-	@Override
-	public int hashCode() {
-		return (new String(sink + "=>" + source)).hashCode();
-	}
+  /**
+   * <p>
+   * Method added to enable the use of contains() method in Set &lt;MemoryExclusionVertex&gt;.
+   * </p>
+   *
+   * @return the int
+   */
+  @Override
+  public int hashCode() {
+    return (new String(this.sink + "=>" + this.source)).hashCode();
+  }
 
-	/**
-	 * @param identifier
-	 *            the identifier to set
-	 */
-	@Override
-	public void setIdentifier(int identifier) {
-		this.identifier = identifier;
-	}
+  /**
+   * Sets the identifier.
+   *
+   * @param identifier
+   *          the identifier to set
+   */
+  @Override
+  public void setIdentifier(final int identifier) {
+    this.identifier = identifier;
+  }
 
-	@Override
-	public void setWeight(Integer w) {
-		size = w.intValue();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.memory.exclusiongraph.IWeightedVertex#setWeight(java.lang.Object)
+   */
+  @Override
+  public void setWeight(final Integer w) {
+    this.size = w.intValue();
+  }
 
-	@Override
-	public String toString() {
-		return source + "=>" + sink + ":" + size;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return this.source + "=>" + this.sink + ":" + this.size;
+  }
 }

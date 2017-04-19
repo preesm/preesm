@@ -40,47 +40,90 @@ import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class SpiderTypeConverter.
+ */
 public final class SpiderTypeConverter {
-	public enum PiSDFType {
-		PISDF_TYPE_BODY, 
-		PISDF_TYPE_CONFIG, 
-		PISDF_TYPE_IF		
-	}
-	
-	public enum PiSDFSubType {
-		PISDF_SUBTYPE_NORMAL,
-		PISDF_SUBTYPE_BROADCAST,
-		PISDF_SUBTYPE_FORK,
-		PISDF_SUBTYPE_JOIN,
-		PISDF_SUBTYPE_END,
-		PISDF_SUBTYPE_INPUT_IF,
-		PISDF_SUBTYPE_OUTPUT_IF
-	}
-	
-	/** Private constructor: prevents instantiation by client code */
-	private SpiderTypeConverter(){		
-	}
-	
-	public static PiSDFType getType(AbstractVertex aa){
-		if(aa instanceof InterfaceActor)
-			return PiSDFType.PISDF_TYPE_IF;
-		else if(aa instanceof Actor && ((Actor)aa).isConfigurationActor())
-			return PiSDFType.PISDF_TYPE_CONFIG;
-		else return PiSDFType.PISDF_TYPE_BODY;
-	}
-	
-	public static PiSDFSubType getSubType(AbstractVertex aa){
-		switch(getType(aa)){
-		case PISDF_TYPE_BODY:
-		case PISDF_TYPE_CONFIG:
-			return PiSDFSubType.PISDF_SUBTYPE_NORMAL;
-		case PISDF_TYPE_IF:
-			if(((AbstractActor)aa).getDataInputPorts().size() > 0)
-				return PiSDFSubType.PISDF_SUBTYPE_OUTPUT_IF;
-			else
-				return PiSDFSubType.PISDF_SUBTYPE_INPUT_IF;
-		}
-		return null;
-	}
+
+  /**
+   * The Enum PiSDFType.
+   */
+  public enum PiSDFType {
+
+    /** The pisdf type body. */
+    PISDF_TYPE_BODY,
+    /** The pisdf type config. */
+    PISDF_TYPE_CONFIG,
+    /** The pisdf type if. */
+    PISDF_TYPE_IF
+  }
+
+  /**
+   * The Enum PiSDFSubType.
+   */
+  public enum PiSDFSubType {
+
+    /** The pisdf subtype normal. */
+    PISDF_SUBTYPE_NORMAL,
+    /** The pisdf subtype broadcast. */
+    PISDF_SUBTYPE_BROADCAST,
+    /** The pisdf subtype fork. */
+    PISDF_SUBTYPE_FORK,
+    /** The pisdf subtype join. */
+    PISDF_SUBTYPE_JOIN,
+    /** The pisdf subtype end. */
+    PISDF_SUBTYPE_END,
+    /** The pisdf subtype input if. */
+    PISDF_SUBTYPE_INPUT_IF,
+    /** The pisdf subtype output if. */
+    PISDF_SUBTYPE_OUTPUT_IF
+  }
+
+  /**
+   * Private constructor: prevents instantiation by client code.
+   */
+  private SpiderTypeConverter() {
+  }
+
+  /**
+   * Gets the type.
+   *
+   * @param aa
+   *          the aa
+   * @return the type
+   */
+  public static PiSDFType getType(final AbstractVertex aa) {
+    if (aa instanceof InterfaceActor) {
+      return PiSDFType.PISDF_TYPE_IF;
+    } else if ((aa instanceof Actor) && ((Actor) aa).isConfigurationActor()) {
+      return PiSDFType.PISDF_TYPE_CONFIG;
+    } else {
+      return PiSDFType.PISDF_TYPE_BODY;
+    }
+  }
+
+  /**
+   * Gets the sub type.
+   *
+   * @param aa
+   *          the aa
+   * @return the sub type
+   */
+  public static PiSDFSubType getSubType(final AbstractVertex aa) {
+    switch (SpiderTypeConverter.getType(aa)) {
+      case PISDF_TYPE_BODY:
+      case PISDF_TYPE_CONFIG:
+        return PiSDFSubType.PISDF_SUBTYPE_NORMAL;
+      case PISDF_TYPE_IF:
+        if (((AbstractActor) aa).getDataInputPorts().size() > 0) {
+          return PiSDFSubType.PISDF_SUBTYPE_OUTPUT_IF;
+        } else {
+          return PiSDFSubType.PISDF_SUBTYPE_INPUT_IF;
+        }
+      default:
+    }
+    return null;
+  }
 
 }

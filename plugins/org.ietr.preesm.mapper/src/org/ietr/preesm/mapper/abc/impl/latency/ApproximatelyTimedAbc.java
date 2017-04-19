@@ -39,7 +39,6 @@ package org.ietr.preesm.mapper.abc.impl.latency;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.core.architecture.util.DesignTools;
@@ -53,67 +52,89 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
 import org.ietr.preesm.mapper.params.AbcParameters;
 
+// TODO: Auto-generated Javadoc
 /**
- * An approximately timed architecture simulator associates a complex cost to
- * each inter-core communication. This cost is composed of an overhead on the
- * sender, a transfer time on the medium and a reception time on the receiver.
- * Scheduling transfer vertices are added and mapped to the media architecture
- * components
- * 
+ * An approximately timed architecture simulator associates a complex cost to each inter-core
+ * communication. This cost is composed of an overhead on the sender, a transfer time on the medium
+ * and a reception time on the receiver. Scheduling transfer vertices are added and mapped to the
+ * media architecture components
+ *
  * @author mpelcat
  */
 public class ApproximatelyTimedAbc extends LatencyAbc {
 
-	List<Integer> types = null;
+  /** The types. */
+  List<Integer> types = null;
 
-	/**
-	 * Constructor of the simulator from a "blank" implementation where every
-	 * vertex has not been mapped yet.
-	 */
-	public ApproximatelyTimedAbc(AbcParameters params, MapperDAG dag,
-			Design archi, AbcType abcType, PreesmScenario scenario) {
-		super(params, dag, archi, abcType, scenario);
+  /**
+   * Constructor of the simulator from a "blank" implementation where every vertex has not been
+   * mapped yet.
+   *
+   * @param params
+   *          the params
+   * @param dag
+   *          the dag
+   * @param archi
+   *          the archi
+   * @param abcType
+   *          the abc type
+   * @param scenario
+   *          the scenario
+   */
+  public ApproximatelyTimedAbc(final AbcParameters params, final MapperDAG dag, final Design archi,
+      final AbcType abcType, final PreesmScenario scenario) {
+    super(params, dag, archi, abcType, scenario);
 
-		types = new ArrayList<Integer>();
-		types.add(CommunicationRouter.transferType);
-		types.add(CommunicationRouter.synchroType);
-	}
+    this.types = new ArrayList<>();
+    this.types.add(CommunicationRouter.transferType);
+    this.types.add(CommunicationRouter.synchroType);
+  }
 
-	/**
-	 * Called when a new vertex operator is set
-	 */
-	@Override
-	protected void fireNewMappedVertex(MapperDAGVertex vertex,
-			boolean updateRank) {
+  /**
+   * Called when a new vertex operator is set.
+   *
+   * @param vertex
+   *          the vertex
+   * @param updateRank
+   *          the update rank
+   */
+  @Override
+  protected void fireNewMappedVertex(final MapperDAGVertex vertex, final boolean updateRank) {
 
-		super.fireNewMappedVertex(vertex, updateRank);
+    super.fireNewMappedVertex(vertex, updateRank);
 
-		ComponentInstance effectiveOp = vertex
-				.getEffectiveOperator();
+    final ComponentInstance effectiveOp = vertex.getEffectiveOperator();
 
-		if (effectiveOp != DesignTools.NO_COMPONENT_INSTANCE) {
+    if (effectiveOp != DesignTools.NO_COMPONENT_INSTANCE) {
 
-			new PrecedenceEdgeAdder(orderManager, implementation)
-					.scheduleVertex(vertex);
-			comRouter.routeNewVertex(vertex, types);
-		}
-	}
+      new PrecedenceEdgeAdder(this.orderManager, this.implementation).scheduleVertex(vertex);
+      this.comRouter.routeNewVertex(vertex, this.types);
+    }
+  }
 
-	/**
-	 * Edge scheduling vertices are added. Thus useless edge costs are removed
-	 */
-	@Override
-	protected final void setEdgeCost(MapperDAGEdge edge) {
+  /**
+   * Edge scheduling vertices are added. Thus useless edge costs are removed
+   *
+   * @param edge
+   *          the new edge cost
+   */
+  @Override
+  protected final void setEdgeCost(final MapperDAGEdge edge) {
 
-		edge.getTiming().setCost(0);
+    edge.getTiming().setCost(0);
 
-		// Setting edge costs for special types
-		// super.setEdgeCost(edge);
+    // Setting edge costs for special types
+    // super.setEdgeCost(edge);
 
-	}
+  }
 
-	@Override
-	public EdgeSchedType getEdgeSchedType() {
-		return edgeScheduler.getEdgeSchedType();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#getEdgeSchedType()
+   */
+  @Override
+  public EdgeSchedType getEdgeSchedType() {
+    return this.edgeScheduler.getEdgeSchedType();
+  }
 }

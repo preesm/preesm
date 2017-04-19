@@ -37,54 +37,89 @@
 
 package org.ietr.preesm.mapper.model.property;
 
+// TODO: Auto-generated Javadoc
 /**
- * Property added to a DAG edge to give its timing properties. Only used within
- * ABCs.
- * 
+ * Property added to a DAG edge to give its timing properties. Only used within ABCs.
+ *
  * @author mpelcat
  */
 public class EdgeTiming {
-	static public final long UNAVAILABLE = -1;
 
-	/**
-	 * time to execute the edge
-	 */
-	private long cost;
+  /** The Constant UNAVAILABLE. */
+  public static final long UNAVAILABLE = -1;
 
-	public EdgeTiming() {
-		super();
-		reset();
-	}
+  /** time to execute the edge. */
+  private long cost;
 
-	@Override
-	public EdgeTiming clone() {
-		EdgeTiming property = new EdgeTiming();
-		property.setCost(this.getCost());
-		return property;
-	}
+  /**
+   * Instantiates a new edge timing.
+   */
+  public EdgeTiming() {
+    super();
+    reset();
+  }
 
-	public void reset() {
-		cost = UNAVAILABLE;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#clone()
+   */
+  @Override
+  public EdgeTiming clone() {
+    final EdgeTiming property = new EdgeTiming();
+    property.setCost(getCost());
+    return property;
+  }
 
-	@Override
-	public String toString() {
-		return "cost: " + cost;
-	}
+  /**
+   * Reset.
+   */
+  public void reset() {
+    this.cost = EdgeTiming.UNAVAILABLE;
+  }
 
-	public long getCost() {
-		return cost;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return "cost: " + this.cost;
+  }
 
-	public void setCost(long cost) {
-		this.cost = cost;
-	}
+  /**
+   * Gets the cost.
+   *
+   * @return the cost
+   */
+  public long getCost() {
+    return this.cost;
+  }
 
-	public boolean hasCost() {
-		return (this.cost != UNAVAILABLE);
-	}
+  /**
+   * Sets the cost.
+   *
+   * @param cost
+   *          the new cost
+   */
+  public void setCost(final long cost) {
+    this.cost = cost;
+  }
 
-	public void resetCost() {
-		setCost(UNAVAILABLE);
-	}
+  /**
+   * Checks for cost.
+   *
+   * @return true, if successful
+   */
+  public boolean hasCost() {
+    return (this.cost != EdgeTiming.UNAVAILABLE);
+  }
+
+  /**
+   * Reset cost.
+   */
+  public void resetCost() {
+    setCost(EdgeTiming.UNAVAILABLE);
+  }
 }

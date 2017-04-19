@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
@@ -51,112 +50,132 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.jgrapht.graph.DefaultEdge;
 
+// TODO: Auto-generated Javadoc
 /**
- * Workflow element that takes several memexes as input and computes their
- * memory bounds.
- * 
+ * Workflow element that takes several memexes as input and computes their memory bounds.
+ *
  * @author kdesnos
- * 
+ *
  */
 public class SerialMemoryBoundsEstimator extends AbstractTaskImplementation {
 
-	static final public String PARAM_SOLVER = "Solver";
-	static final public String VALUE_SOLVER_DEFAULT = "? C {Heuristic, Ostergard, Yamaguchi}";
-	static final public String VALUE_SOLVER_OSTERGARD = "Ostergard";
-	static final public String VALUE_SOLVER_YAMAGUCHI = "Yamaguchi";
-	static final public String VALUE_SOLVER_HEURISTIC = "Heuristic";
+  /** The Constant PARAM_SOLVER. */
+  public static final String PARAM_SOLVER = "Solver";
 
-	static final public String PARAM_VERBOSE = "Verbose";
-	static final public String VALUE_VERBOSE_DEFAULT = "? C {True, False}";
-	static final public String VALUE_VERBOSE_TRUE = "True";
-	static final public String VALUE_VERBOSE_FALSE = "False";
+  /** The Constant VALUE_SOLVER_DEFAULT. */
+  public static final String VALUE_SOLVER_DEFAULT = "? C {Heuristic, Ostergard, Yamaguchi}";
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /** The Constant VALUE_SOLVER_OSTERGARD. */
+  public static final String VALUE_SOLVER_OSTERGARD = "Ostergard";
 
-		// Rem: Logger is used to display messages in the console
-		Logger logger = WorkflowLogger.getLogger();
+  /** The Constant VALUE_SOLVER_YAMAGUCHI. */
+  public static final String VALUE_SOLVER_YAMAGUCHI = "Yamaguchi";
 
-		// Check Workflow element parameters
-		String valueVerbose = parameters.get(PARAM_VERBOSE);
-		boolean verbose;
-		verbose = valueVerbose.equals(VALUE_VERBOSE_TRUE);
+  /** The Constant VALUE_SOLVER_HEURISTIC. */
+  public static final String VALUE_SOLVER_HEURISTIC = "Heuristic";
 
-		String valueSolver = parameters.get(PARAM_SOLVER);
-		if (verbose) {
-			if (valueSolver.equals(VALUE_SOLVER_DEFAULT)) {
-				logger.log(Level.INFO,
-						"No solver specified. Heuristic solver used by default.");
-			} else {
-				if (valueSolver.equals(VALUE_SOLVER_HEURISTIC)
-						|| valueSolver.equals(VALUE_SOLVER_OSTERGARD)
-						|| valueSolver.equals(VALUE_SOLVER_YAMAGUCHI)) {
-					logger.log(Level.INFO, valueSolver + " solver used.");
-				} else {
-					logger.log(Level.INFO, "Incorrect solver :" + valueSolver
-							+ ". Heuristic solver used by default.");
-				}
-			}
-		}
+  /** The Constant PARAM_VERBOSE. */
+  public static final String PARAM_VERBOSE = "Verbose";
 
-		// MemoryExclusionGraph memEx = (MemoryExclusionGraph)
-		// inputs.get("MemEx");
-		@SuppressWarnings("unchecked")
-		Map<String, MemoryExclusionGraph> memExes = (Map<String, MemoryExclusionGraph>) inputs
-				.get("MEGs");
+  /** The Constant VALUE_VERBOSE_DEFAULT. */
+  public static final String VALUE_VERBOSE_DEFAULT = "? C {True, False}";
 
-		for (String memory : memExes.keySet()) {
-			MemoryExclusionGraph memEx = memExes.get(memory);
-			int nbVertices = memEx.vertexSet().size();
-			double density = memEx.edgeSet().size()
-					/ (memEx.vertexSet().size()
-							* (memEx.vertexSet().size() - 1) / 2.0);
-			// Derive bounds
-			AbstractMaximumWeightCliqueSolver<MemoryExclusionVertex, DefaultEdge> solver = null;
-			if (valueSolver.equals(VALUE_SOLVER_HEURISTIC)) {
-				solver = new HeuristicSolver<MemoryExclusionVertex, DefaultEdge>(
-						memEx);
-			}
-			if (valueSolver.equals(VALUE_SOLVER_OSTERGARD)) {
-				solver = new OstergardSolver<MemoryExclusionVertex, DefaultEdge>(
-						memEx);
-			}
-			if (valueSolver.equals(VALUE_SOLVER_YAMAGUCHI)) {
-				solver = new YamaguchiSolver<MemoryExclusionVertex, DefaultEdge>(
-						memEx);
-			}
-			if (solver == null) {
-				solver = new HeuristicSolver<MemoryExclusionVertex, DefaultEdge>(
-						memEx);
-			}
+  /** The Constant VALUE_VERBOSE_TRUE. */
+  public static final String VALUE_VERBOSE_TRUE = "True";
 
-			solver.solve();
-			int minBound = solver.sumWeight(solver.getHeaviestClique());
-			int maxBound = solver.sumWeight(memEx.vertexSet());
+  /** The Constant VALUE_VERBOSE_FALSE. */
+  public static final String VALUE_VERBOSE_FALSE = "False";
 
-			logger.log(Level.INFO, "Memory(" + memory + ") Vertices = "
-					+ nbVertices + " Bound_Max = " + maxBound + " Bound_Min = "
-					+ minBound + " Density = " + density);
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
-		// Generate output
-		Map<String, Object> output = new HashMap<String, Object>();
-		return output;
-	}
+    // Rem: Logger is used to display messages in the console
+    final Logger logger = WorkflowLogger.getLogger();
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put(PARAM_SOLVER, VALUE_SOLVER_DEFAULT);
-		parameters.put(PARAM_VERBOSE, VALUE_VERBOSE_DEFAULT);
-		return parameters;
-	}
+    // Check Workflow element parameters
+    final String valueVerbose = parameters.get(SerialMemoryBoundsEstimator.PARAM_VERBOSE);
+    boolean verbose;
+    verbose = valueVerbose.equals(SerialMemoryBoundsEstimator.VALUE_VERBOSE_TRUE);
 
-	@Override
-	public String monitorMessage() {
-		return "Estimating Memory Bounds for all Memex in input map";
-	}
+    final String valueSolver = parameters.get(SerialMemoryBoundsEstimator.PARAM_SOLVER);
+    if (verbose) {
+      if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_DEFAULT)) {
+        logger.log(Level.INFO, "No solver specified. Heuristic solver used by default.");
+      } else {
+        if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_HEURISTIC) || valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_OSTERGARD)
+            || valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_YAMAGUCHI)) {
+          logger.log(Level.INFO, valueSolver + " solver used.");
+        } else {
+          logger.log(Level.INFO, "Incorrect solver :" + valueSolver + ". Heuristic solver used by default.");
+        }
+      }
+    }
+
+    // MemoryExclusionGraph memEx = (MemoryExclusionGraph)
+    // inputs.get("MemEx");
+    @SuppressWarnings("unchecked")
+    final Map<String, MemoryExclusionGraph> memExes = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");
+
+    for (final String memory : memExes.keySet()) {
+      final MemoryExclusionGraph memEx = memExes.get(memory);
+      final int nbVertices = memEx.vertexSet().size();
+      final double density = memEx.edgeSet().size() / ((memEx.vertexSet().size() * (memEx.vertexSet().size() - 1)) / 2.0);
+      // Derive bounds
+      AbstractMaximumWeightCliqueSolver<MemoryExclusionVertex, DefaultEdge> solver = null;
+      if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_HEURISTIC)) {
+        solver = new HeuristicSolver<>(memEx);
+      }
+      if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_OSTERGARD)) {
+        solver = new OstergardSolver<>(memEx);
+      }
+      if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_YAMAGUCHI)) {
+        solver = new YamaguchiSolver<>(memEx);
+      }
+      if (solver == null) {
+        solver = new HeuristicSolver<>(memEx);
+      }
+
+      solver.solve();
+      final int minBound = solver.sumWeight(solver.getHeaviestClique());
+      final int maxBound = solver.sumWeight(memEx.vertexSet());
+
+      logger.log(Level.INFO,
+          "Memory(" + memory + ") Vertices = " + nbVertices + " Bound_Max = " + maxBound + " Bound_Min = " + minBound + " Density = " + density);
+    }
+
+    // Generate output
+    final Map<String, Object> output = new HashMap<>();
+    return output;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new HashMap<>();
+    parameters.put(SerialMemoryBoundsEstimator.PARAM_SOLVER, SerialMemoryBoundsEstimator.VALUE_SOLVER_DEFAULT);
+    parameters.put(SerialMemoryBoundsEstimator.PARAM_VERBOSE, SerialMemoryBoundsEstimator.VALUE_VERBOSE_DEFAULT);
+    return parameters;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Estimating Memory Bounds for all Memex in input map";
+  }
 
 }

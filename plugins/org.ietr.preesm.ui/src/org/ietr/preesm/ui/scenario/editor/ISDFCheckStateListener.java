@@ -45,18 +45,33 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
+// TODO: Auto-generated Javadoc
 /**
- * Interface allowing code generation page and constraint page to share the same
- * class for sdf tree edition.
- * 
+ * Interface allowing code generation page and constraint page to share the same class for sdf tree edition.
+ *
  * @author mpelcat
  */
-public interface ISDFCheckStateListener extends SelectionListener,
-		ICheckStateListener, PaintListener {
+public interface ISDFCheckStateListener extends SelectionListener, ICheckStateListener, PaintListener {
 
-	public void addComboBoxSelector(Composite parent, FormToolkit toolkit);
+  /**
+   * Adds the combo box selector.
+   *
+   * @param parent
+   *          the parent
+   * @param toolkit
+   *          the toolkit
+   */
+  public void addComboBoxSelector(Composite parent, FormToolkit toolkit);
 
-	public void setTreeViewer(CheckboxTreeViewer treeViewer,
-			PreesmAlgorithmTreeContentProvider contentProvider,
-			IPropertyListener propertyListener);
+  /**
+   * Sets the tree viewer.
+   *
+   * @param treeViewer
+   *          the tree viewer
+   * @param contentProvider
+   *          the content provider
+   * @param propertyListener
+   *          the property listener
+   */
+  public void setTreeViewer(CheckboxTreeViewer treeViewer, PreesmAlgorithmTreeContentProvider contentProvider, IPropertyListener propertyListener);
 }

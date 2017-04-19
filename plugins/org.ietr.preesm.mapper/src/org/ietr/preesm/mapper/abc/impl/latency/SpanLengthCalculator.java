@@ -44,29 +44,53 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.params.AbcParameters;
 
+// TODO: Auto-generated Javadoc
 /**
- * Using infinite homogeneous simulation to calculate the span length of a dag
- * 
+ * Using infinite homogeneous simulation to calculate the span length of a dag.
+ *
  * @author mpelcat
  */
 public class SpanLengthCalculator extends InfiniteHomogeneousAbc {
 
-	public static final String DAG_SPAN = "dag span length";
+  /** The Constant DAG_SPAN. */
+  public static final String DAG_SPAN = "dag span length";
 
-	public SpanLengthCalculator(AbcParameters params, MapperDAG dag,
-			Design archi, TaskSchedType taskSchedType, PreesmScenario scenario)
-			throws WorkflowException {
-		super(params, dag, archi, taskSchedType, scenario);
+  /**
+   * Instantiates a new span length calculator.
+   *
+   * @param params
+   *          the params
+   * @param dag
+   *          the dag
+   * @param archi
+   *          the archi
+   * @param taskSchedType
+   *          the task sched type
+   * @param scenario
+   *          the scenario
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+  public SpanLengthCalculator(final AbcParameters params, final MapperDAG dag, final Design archi,
+      final TaskSchedType taskSchedType, final PreesmScenario scenario) throws WorkflowException {
+    super(params, dag, archi, taskSchedType, scenario);
 
-		this.updateTimings();
+    updateTimings();
 
-		// The span corresponds to the final latency of an infinite homogeneous
-		// simulation
-		dag.getPropertyBean().setValue(DAG_SPAN, getFinalLatency());
-	}
+    // The span corresponds to the final latency of an infinite homogeneous
+    // simulation
+    dag.getPropertyBean().setValue(SpanLengthCalculator.DAG_SPAN, getFinalLatency());
+  }
 
-	@Override
-	protected void setEdgeCost(MapperDAGEdge edge) {
-		edge.getTiming().setCost(1);
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc#setEdgeCost(org.ietr.preesm.
+   * mapper.model.MapperDAGEdge)
+   */
+  @Override
+  protected void setEdgeCost(final MapperDAGEdge edge) {
+    edge.getTiming().setCost(1);
+  }
 }

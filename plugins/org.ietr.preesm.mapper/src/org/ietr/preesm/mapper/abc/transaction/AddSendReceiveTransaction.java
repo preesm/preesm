@@ -40,7 +40,6 @@ package org.ietr.preesm.mapper.abc.transaction;
 
 import java.util.List;
 import java.util.logging.Level;
-
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
@@ -53,183 +52,209 @@ import org.ietr.preesm.mapper.model.special.ReceiveVertex;
 import org.ietr.preesm.mapper.model.special.SendVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 
+// TODO: Auto-generated Javadoc
 /**
  * A transaction that adds a send and a receive vertex in an implementation.
- * 
+ *
  * @author mpelcat
  */
 public class AddSendReceiveTransaction extends Transaction {
-	// Inputs
-	/**
-	 * If not null, the transfer vertices need to be chained with formerly added
-	 * ones
-	 */
-	private Transaction precedingTransaction = null;
-	/**
-	 * Implementation DAG to which the vertex is added
-	 */
-	private MapperDAG implementation = null;
+  // Inputs
+  /** If not null, the transfer vertices need to be chained with formerly added ones. */
+  private Transaction precedingTransaction = null;
 
-	/**
-	 * Route step corresponding to this overhead
-	 */
-	private AbstractRouteStep step = null;
+  /** Implementation DAG to which the vertex is added. */
+  private MapperDAG implementation = null;
 
-	/**
-	 * Original edge corresponding to this overhead
-	 */
-	private MapperDAGEdge edge = null;
+  /** Route step corresponding to this overhead. */
+  private AbstractRouteStep step = null;
 
-	/**
-	 * manager keeping scheduling orders
-	 */
-	private OrderManager orderManager = null;
+  /** Original edge corresponding to this overhead. */
+  private MapperDAGEdge edge = null;
 
-	/**
-	 * Cost of the transfer to give to the transfer vertex
-	 */
-	private long transferCost = 0;
+  /** manager keeping scheduling orders. */
+  private OrderManager orderManager = null;
 
-	/**
-	 * Index of the route step within its route
-	 */
-	private int routeIndex = 0;
+  /** Cost of the transfer to give to the transfer vertex. */
+  private long transferCost = 0;
 
-	// Generated objects
-	/**
-	 * overhead vertex added
-	 */
-	private TransferVertex sendVertex = null;
-	private TransferVertex receiveVertex = null;
+  /** Index of the route step within its route. */
+  private int routeIndex = 0;
 
-	/**
-	 * edges added
-	 */
-	private MapperDAGEdge newEdge1 = null;
-	private MapperDAGEdge newEdge2 = null;
-	private MapperDAGEdge newEdge3 = null;
+  // Generated objects
+  /** overhead vertex added. */
+  private TransferVertex sendVertex = null;
 
-	public AddSendReceiveTransaction(MapperDAGEdge edge,
-			MapperDAG implementation, OrderManager orderManager,
-			int routeIndex, AbstractRouteStep step, long transferCost) {
-		super();
-		this.precedingTransaction = null;
-		this.edge = edge;
-		this.implementation = implementation;
-		this.orderManager = orderManager;
-		this.routeIndex = routeIndex;
-		this.step = step;
-		this.transferCost = transferCost;
-	}
+  /** The receive vertex. */
+  private TransferVertex receiveVertex = null;
 
-	public AddSendReceiveTransaction(Transaction precedingTransaction,
-			MapperDAGEdge edge, MapperDAG implementation,
-			OrderManager orderManager, int routeIndex, AbstractRouteStep step,
-			long transferCost) {
-		super();
-		this.precedingTransaction = precedingTransaction;
-		this.edge = edge;
-		this.implementation = implementation;
-		this.orderManager = orderManager;
-		this.routeIndex = routeIndex;
-		this.step = step;
-		this.transferCost = transferCost;
-	}
+  /** edges added. */
+  private MapperDAGEdge newEdge1 = null;
 
-	@Override
-	public void execute(List<Object> resultList) {
-		super.execute(resultList);
+  /** The new edge 2. */
+  private MapperDAGEdge newEdge2 = null;
 
-		MapperDAGVertex currentSource = null;
-		MapperDAGVertex currentTarget = (MapperDAGVertex) edge.getTarget();
-		if (precedingTransaction != null
-				&& precedingTransaction instanceof AddSendReceiveTransaction) {
-			currentSource = ((AddSendReceiveTransaction) precedingTransaction).receiveVertex;
+  /** The new edge 3. */
+  private MapperDAGEdge newEdge3 = null;
 
-			((MapperDAG) currentSource.getBase()).removeAllEdges(currentSource,
-					currentTarget);
-		} else {
-			currentSource = (MapperDAGVertex) edge.getSource();
-		}
+  /**
+   * Instantiates a new adds the send receive transaction.
+   *
+   * @param edge
+   *          the edge
+   * @param implementation
+   *          the implementation
+   * @param orderManager
+   *          the order manager
+   * @param routeIndex
+   *          the route index
+   * @param step
+   *          the step
+   * @param transferCost
+   *          the transfer cost
+   */
+  public AddSendReceiveTransaction(final MapperDAGEdge edge, final MapperDAG implementation,
+      final OrderManager orderManager, final int routeIndex, final AbstractRouteStep step,
+      final long transferCost) {
+    super();
+    this.precedingTransaction = null;
+    this.edge = edge;
+    this.implementation = implementation;
+    this.orderManager = orderManager;
+    this.routeIndex = routeIndex;
+    this.step = step;
+    this.transferCost = transferCost;
+  }
 
-		// Careful!!! Those names are used in code generation
-		String nameRadix = ((MapperDAGVertex) edge.getSource()).getName()
-				+ currentTarget.getName() + "_" + routeIndex;
+  /**
+   * Instantiates a new adds the send receive transaction.
+   *
+   * @param precedingTransaction
+   *          the preceding transaction
+   * @param edge
+   *          the edge
+   * @param implementation
+   *          the implementation
+   * @param orderManager
+   *          the order manager
+   * @param routeIndex
+   *          the route index
+   * @param step
+   *          the step
+   * @param transferCost
+   *          the transfer cost
+   */
+  public AddSendReceiveTransaction(final Transaction precedingTransaction, final MapperDAGEdge edge,
+      final MapperDAG implementation, final OrderManager orderManager, final int routeIndex,
+      final AbstractRouteStep step, final long transferCost) {
+    super();
+    this.precedingTransaction = precedingTransaction;
+    this.edge = edge;
+    this.implementation = implementation;
+    this.orderManager = orderManager;
+    this.routeIndex = routeIndex;
+    this.step = step;
+    this.transferCost = transferCost;
+  }
 
-		String sendVertexID = "s_" + nameRadix;
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.abc.transaction.Transaction#execute(java.util.List)
+   */
+  @Override
+  public void execute(final List<Object> resultList) {
+    super.execute(resultList);
 
-		String receiveVertexID = "r_" + nameRadix;
+    MapperDAGVertex currentSource = null;
+    final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();
+    if ((this.precedingTransaction != null)
+        && (this.precedingTransaction instanceof AddSendReceiveTransaction)) {
+      currentSource = ((AddSendReceiveTransaction) this.precedingTransaction).receiveVertex;
 
-		if (edge instanceof PrecedenceEdge) {
-			WorkflowLogger.getLogger().log(Level.INFO,
-					"no transfer vertex corresponding to a schedule edge");
-			return;
-		}
+      ((MapperDAG) currentSource.getBase()).removeAllEdges(currentSource, currentTarget);
+    } else {
+      currentSource = (MapperDAGVertex) this.edge.getSource();
+    }
 
-		ComponentInstance senderOperator = step.getSender();
-		ComponentInstance receiverOperator = step.getReceiver();
+    // Careful!!! Those names are used in code generation
+    final String nameRadix = ((MapperDAGVertex) this.edge.getSource()).getName()
+        + currentTarget.getName() + "_" + this.routeIndex;
 
-		sendVertex = new SendVertex(sendVertexID, implementation,
-				(MapperDAGVertex) edge.getSource(),
-				(MapperDAGVertex) edge.getTarget(), 0, 0);
-		implementation.getTimings().dedicate(sendVertex);
-		implementation.getMappings().dedicate(sendVertex);
-		sendVertex.setRouteStep(step);
-		implementation.addVertex(sendVertex);
-		sendVertex.getTiming().setCost(transferCost);
-		sendVertex.setEffectiveOperator(senderOperator);
-		orderManager.insertAfter(currentSource, sendVertex);
+    final String sendVertexID = "s_" + nameRadix;
 
-		receiveVertex = new ReceiveVertex(receiveVertexID, implementation,
-				(MapperDAGVertex) edge.getSource(),
-				(MapperDAGVertex) edge.getTarget(), 0, 0);
-		implementation.getTimings().dedicate(receiveVertex);
-		implementation.getMappings().dedicate(receiveVertex);
-		receiveVertex.setRouteStep(step);
-		implementation.addVertex(receiveVertex);
-		receiveVertex.getTiming().setCost(transferCost);
-		receiveVertex.setEffectiveOperator(receiverOperator);
-		orderManager.insertAfter(sendVertex, receiveVertex);
+    final String receiveVertexID = "r_" + nameRadix;
 
-		newEdge1 = (MapperDAGEdge) implementation.addEdge(currentSource,
-				sendVertex);
-		newEdge2 = (MapperDAGEdge) implementation.addEdge(sendVertex,
-				receiveVertex);
-		newEdge3 = (MapperDAGEdge) implementation.addEdge(receiveVertex,
-				currentTarget);
+    if (this.edge instanceof PrecedenceEdge) {
+      WorkflowLogger.getLogger().log(Level.INFO,
+          "no transfer vertex corresponding to a schedule edge");
+      return;
+    }
 
-		newEdge1.setInit(edge.getInit().clone());
-		newEdge2.setInit(edge.getInit().clone());
-		newEdge3.setInit(edge.getInit().clone());
+    final ComponentInstance senderOperator = this.step.getSender();
+    final ComponentInstance receiverOperator = this.step.getReceiver();
 
-		newEdge1.getTiming().setCost(0);
-		newEdge2.getTiming().setCost(0);
-		newEdge3.getTiming().setCost(0);
+    this.sendVertex = new SendVertex(sendVertexID, this.implementation,
+        (MapperDAGVertex) this.edge.getSource(), (MapperDAGVertex) this.edge.getTarget(), 0, 0);
+    this.implementation.getTimings().dedicate(this.sendVertex);
+    this.implementation.getMappings().dedicate(this.sendVertex);
+    this.sendVertex.setRouteStep(this.step);
+    this.implementation.addVertex(this.sendVertex);
+    this.sendVertex.getTiming().setCost(this.transferCost);
+    this.sendVertex.setEffectiveOperator(senderOperator);
+    this.orderManager.insertAfter(currentSource, this.sendVertex);
 
-		newEdge1.setAggregate(edge.getAggregate());
-		newEdge2.setAggregate(edge.getAggregate());
-		newEdge3.setAggregate(edge.getAggregate());
+    this.receiveVertex = new ReceiveVertex(receiveVertexID, this.implementation,
+        (MapperDAGVertex) this.edge.getSource(), (MapperDAGVertex) this.edge.getTarget(), 0, 0);
+    this.implementation.getTimings().dedicate(this.receiveVertex);
+    this.implementation.getMappings().dedicate(this.receiveVertex);
+    this.receiveVertex.setRouteStep(this.step);
+    this.implementation.addVertex(this.receiveVertex);
+    this.receiveVertex.getTiming().setCost(this.transferCost);
+    this.receiveVertex.setEffectiveOperator(receiverOperator);
+    this.orderManager.insertAfter(this.sendVertex, this.receiveVertex);
 
-		// TODO: Consider the need for transfer vertex rescheduling
-		/*
-		 * if (false) { // Remove original edges
-		 * implementation.removeAllEdges(currentSource, currentTarget); }
-		 * 
-		 * if (false) { // Scheduling transfer vertex PrecedenceEdgeAdder adder
-		 * = new PrecedenceEdgeAdder(orderManager, implementation);
-		 * adder.scheduleVertex(sendVertex);
-		 * adder.scheduleVertex(receiveVertex); }
-		 */
+    this.newEdge1 = (MapperDAGEdge) this.implementation.addEdge(currentSource, this.sendVertex);
+    this.newEdge2 = (MapperDAGEdge) this.implementation.addEdge(this.sendVertex,
+        this.receiveVertex);
+    this.newEdge3 = (MapperDAGEdge) this.implementation.addEdge(this.receiveVertex, currentTarget);
 
-		if (resultList != null) {
-			resultList.add(sendVertex);
-			resultList.add(receiveVertex);
-		}
-	}
+    this.newEdge1.setInit(this.edge.getInit().clone());
+    this.newEdge2.setInit(this.edge.getInit().clone());
+    this.newEdge3.setInit(this.edge.getInit().clone());
 
-	@Override
-	public String toString() {
-		return ("AddSendReceive");
-	}
+    this.newEdge1.getTiming().setCost(0);
+    this.newEdge2.getTiming().setCost(0);
+    this.newEdge3.getTiming().setCost(0);
+
+    this.newEdge1.setAggregate(this.edge.getAggregate());
+    this.newEdge2.setAggregate(this.edge.getAggregate());
+    this.newEdge3.setAggregate(this.edge.getAggregate());
+
+    // TODO: Consider the need for transfer vertex rescheduling
+    /*
+     * if (false) { // Remove original edges implementation.removeAllEdges(currentSource,
+     * currentTarget); }
+     *
+     * if (false) { // Scheduling transfer vertex PrecedenceEdgeAdder adder = new
+     * PrecedenceEdgeAdder(orderManager, implementation); adder.scheduleVertex(sendVertex);
+     * adder.scheduleVertex(receiveVertex); }
+     */
+
+    if (resultList != null) {
+      resultList.add(this.sendVertex);
+      resultList.add(this.receiveVertex);
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.abc.transaction.Transaction#toString()
+   */
+  @Override
+  public String toString() {
+    return ("AddSendReceive");
+  }
 
 }

@@ -44,8 +44,23 @@
 		<relativePath>..</relativePath>
 	</parent>
 
+	<!-- Extra repositories for building the all-in-one dev feature -->
+	<repositories>
+		<repository>
+			<id>Tycho M2E extension</id>
+			<layout>p2</layout>
+			<url>http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST/</url>
+		</repository>
+		<repository>
+			<id>Checkstyle</id>
+			<layout>p2</layout>
+			<url>http://eclipse-cs.sf.net/update</url>
+		</repository>
+	</repositories>
+
 	<modules>
 		<module>org.ietr.preesm.feature</module>
+		<module>org.ietr.preesm.dev.feature</module>
 		<module>org.ietr.preesm.complete.site</module>
 		<!-- Following modules are not used
 

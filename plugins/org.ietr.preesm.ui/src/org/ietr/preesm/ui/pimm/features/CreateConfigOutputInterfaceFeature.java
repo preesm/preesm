@@ -38,6 +38,7 @@ package org.ietr.preesm.ui.pimm.features;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
+import org.eclipse.graphiti.func.ICreate;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -45,73 +46,89 @@ import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 
+// TODO: Auto-generated Javadoc
 /**
- * Create feature for {@link ConfigOutputInterface}
- * 
+ * Create feature for {@link ConfigOutputInterface}.
+ *
  * @author kdesnos
- * 
  */
 public class CreateConfigOutputInterfaceFeature extends AbstractCreateFeature {
 
-	boolean hasDoneChanges = false;
+  /** The has done changes. */
+  boolean hasDoneChanges = false;
 
-	private static final String FEATURE_NAME = "Config Output Interface";
+  /** The Constant FEATURE_NAME. */
+  private static final String FEATURE_NAME = "Config Output Interface";
 
-	private static final String FEATURE_DESCRIPTION = "Create Config Output Interface";
+  /** The Constant FEATURE_DESCRIPTION. */
+  private static final String FEATURE_DESCRIPTION = "Create Config Output Interface";
 
-	/**
-	 * the Default constructor of {@link CreateConfigOutputInterfaceFeature}
-	 * 
-	 * @param fp
-	 *            the feature provider
-	 */
-	public CreateConfigOutputInterfaceFeature(IFeatureProvider fp) {
-		super(fp, FEATURE_NAME, FEATURE_DESCRIPTION);
-	}
+  /**
+   * the Default constructor of {@link CreateConfigOutputInterfaceFeature}.
+   *
+   * @param fp
+   *          the feature provider
+   */
+  public CreateConfigOutputInterfaceFeature(final IFeatureProvider fp) {
+    super(fp, CreateConfigOutputInterfaceFeature.FEATURE_NAME, CreateConfigOutputInterfaceFeature.FEATURE_DESCRIPTION);
+  }
 
-	@Override
-	public boolean canCreate(ICreateContext context) {
-		return context.getTargetContainer() instanceof Diagram;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.func.ICreate#canCreate(org.eclipse.graphiti.features.context.ICreateContext)
+   */
+  @Override
+  public boolean canCreate(final ICreateContext context) {
+    return context.getTargetContainer() instanceof Diagram;
+  }
 
-	@Override
-	public Object[] create(ICreateContext context) {
-		// Retrieve the graph
-		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.func.ICreate#create(org.eclipse.graphiti.features.context.ICreateContext)
+   */
+  @Override
+  public Object[] create(final ICreateContext context) {
+    // Retrieve the graph
+    final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
 
-		// Ask user for ConfigOutputInterface name until a valid name is
-		// entered.
-		String question = "Enter new Config. Output Interface name";
-		String newCfgOutName = "cfgOutIfName";
+    // Ask user for ConfigOutputInterface name until a valid name is
+    // entered.
+    final String question = "Enter new Config. Output Interface name";
+    String newCfgOutName = "cfgOutIfName";
 
-		newCfgOutName = PiMMUtil.askString("Create Config. Output Interface",
-				question, newCfgOutName, new VertexNameValidator(graph, null));
-		if (newCfgOutName == null || newCfgOutName.trim().length() == 0) {
-			this.hasDoneChanges = false; // If this is not done, the graph is
-											// considered modified.
-			return EMPTY;
-		}
+    newCfgOutName = PiMMUtil.askString("Create Config. Output Interface", question, newCfgOutName, new VertexNameValidator(graph, null));
+    if ((newCfgOutName == null) || (newCfgOutName.trim().length() == 0)) {
+      this.hasDoneChanges = false; // If this is not done, the graph is
+      // considered modified.
+      return ICreate.EMPTY;
+    }
 
-		// create ConfigOutInterface
-		ConfigOutputInterface newCfgOutIf = PiMMFactory.eINSTANCE
-				.createConfigOutputInterface();
-		newCfgOutIf.setName(newCfgOutName);
+    // create ConfigOutInterface
+    final ConfigOutputInterface newCfgOutIf = PiMMFactory.eINSTANCE.createConfigOutputInterface();
+    newCfgOutIf.setName(newCfgOutName);
 
-		// Add new ConfigOutInterface to the graph.
-		if (graph.getVertices().add(newCfgOutIf)) {
-			this.hasDoneChanges = true;
-		}
+    // Add new ConfigOutInterface to the graph.
+    if (graph.getVertices().add(newCfgOutIf)) {
+      this.hasDoneChanges = true;
+    }
 
-		// do the add to the Diagram
-		addGraphicalRepresentation(context, newCfgOutIf);
+    // do the add to the Diagram
+    addGraphicalRepresentation(context, newCfgOutIf);
 
-		// return newly created business object(s)
-		return new Object[] { newCfgOutIf };
-	}
+    // return newly created business object(s)
+    return new Object[] { newCfgOutIf };
+  }
 
-	@Override
-	public boolean hasDoneChanges() {
-		return this.hasDoneChanges;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
+   */
+  @Override
+  public boolean hasDoneChanges() {
+    return this.hasDoneChanges;
+  }
 
 }

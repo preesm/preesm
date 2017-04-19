@@ -40,56 +40,86 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+// TODO: Auto-generated Javadoc
 /**
- * This is a transaction container that enables the consecutive execution of
- * several listed transactions.
- * 
+ * This is a transaction container that enables the consecutive execution of several listed
+ * transactions.
+ *
  * @author mpelcat
  */
 public class TransactionManager {
 
-	LinkedList<Transaction> transactionList = null;
-	List<Object> resultList = null;
+  /** The transaction list. */
+  LinkedList<Transaction> transactionList = null;
 
-	public TransactionManager() {
-		this(null);
-	}
+  /** The result list. */
+  List<Object> resultList = null;
 
-	public TransactionManager(List<Object> resultList) {
-		super();
-		this.transactionList = new LinkedList<Transaction>();
-		this.resultList = resultList;
-	}
+  /**
+   * Instantiates a new transaction manager.
+   */
+  public TransactionManager() {
+    this(null);
+  }
 
-	public void execute() {
-		Iterator<Transaction> it = transactionList.iterator();
+  /**
+   * Instantiates a new transaction manager.
+   *
+   * @param resultList
+   *          the result list
+   */
+  public TransactionManager(final List<Object> resultList) {
+    super();
+    this.transactionList = new LinkedList<>();
+    this.resultList = resultList;
+  }
 
-		while (it.hasNext()) {
-			Transaction currentT = it.next();
-			currentT.execute(resultList);
-		}
-	}
+  /**
+   * Execute.
+   */
+  public void execute() {
+    final Iterator<Transaction> it = this.transactionList.iterator();
 
-	public void add(Transaction transaction) {
-		transactionList.add(transaction);
-	}
+    while (it.hasNext()) {
+      final Transaction currentT = it.next();
+      currentT.execute(this.resultList);
+    }
+  }
 
-	public void clear() {
-		transactionList.clear();
-	}
+  /**
+   * Adds the.
+   *
+   * @param transaction
+   *          the transaction
+   */
+  public void add(final Transaction transaction) {
+    this.transactionList.add(transaction);
+  }
 
-	@Override
-	public String toString() {
-		String s = "{";
+  /**
+   * Clear.
+   */
+  public void clear() {
+    this.transactionList.clear();
+  }
 
-		for (Transaction t : transactionList) {
-			s += t.toString() + ",";
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    String s = "{";
 
-		s = s.substring(0, s.length() - 1);
-		s += "}";
+    for (final Transaction t : this.transactionList) {
+      s += t.toString() + ",";
+    }
 
-		return s;
-	}
+    s = s.substring(0, s.length() - 1);
+    s += "}";
+
+    return s;
+  }
 
 }

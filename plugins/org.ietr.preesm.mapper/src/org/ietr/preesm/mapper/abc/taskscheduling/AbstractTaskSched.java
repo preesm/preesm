@@ -39,26 +39,40 @@ package org.ietr.preesm.mapper.abc.taskscheduling;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * Scheduling the tasks when a heuristic maps a vertex
- * 
+ * Scheduling the tasks when a heuristic maps a vertex.
+ *
  * @author mpelcat
  */
 public abstract class AbstractTaskSched {
 
-	/**
-	 * Contains the rank list of all the vertices in an implementation
-	 */
-	protected OrderManager orderManager = null;
+  /** Contains the rank list of all the vertices in an implementation. */
+  protected OrderManager orderManager = null;
 
-	public AbstractTaskSched() {
-		super();
-	}
+  /**
+   * Instantiates a new abstract task sched.
+   */
+  public AbstractTaskSched() {
+    super();
+  }
 
-	public void setOrderManager(OrderManager orderManager) {
-		this.orderManager = orderManager;
-	}
+  /**
+   * Sets the order manager.
+   *
+   * @param orderManager
+   *          the new order manager
+   */
+  public void setOrderManager(final OrderManager orderManager) {
+    this.orderManager = orderManager;
+  }
 
-	public abstract void insertVertex(MapperDAGVertex vertex);
+  /**
+   * Insert vertex.
+   *
+   * @param vertex
+   *          the vertex
+   */
+  public abstract void insertVertex(MapperDAGVertex vertex);
 
 }

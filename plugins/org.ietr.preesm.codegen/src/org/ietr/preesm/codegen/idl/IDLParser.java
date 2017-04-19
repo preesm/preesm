@@ -38,7 +38,6 @@
 package org.ietr.preesm.codegen.idl;
 
 import java.util.logging.Level;
-
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.jacorb.idl.ConstDecl;
 import org.jacorb.idl.GlobalInputStream;
@@ -48,32 +47,40 @@ import org.jacorb.idl.TypeMap;
 import org.jacorb.idl.lexer;
 import org.jacorb.idl.parser;
 
+// TODO: Auto-generated Javadoc
 /**
- * Parsing actor function prototypes from IDL files
- * 
+ * Parsing actor function prototypes from IDL files.
+ *
  * @author jpiat
  */
 
 public class IDLParser extends parser {
 
-	public static void parse(String filePath, IDLTreeVisitor visitor) {
-		try {
-			init();
-			setGenerator(visitor);
-			GlobalInputStream.init();
-			GlobalInputStream.setInput(filePath);
+  /**
+   * Parses the.
+   *
+   * @param filePath
+   *          the file path
+   * @param visitor
+   *          the visitor
+   */
+  public static void parse(final String filePath, final IDLTreeVisitor visitor) {
+    try {
+      parser.init();
+      parser.setGenerator(visitor);
+      GlobalInputStream.init();
+      GlobalInputStream.setInput(filePath);
 
-			/* reset tables everywhere */
-			lexer.reset();
-			NameTable.init();
-			ConstDecl.init();
-			TypeMap.init();
+      /* reset tables everywhere */
+      lexer.reset();
+      NameTable.init();
+      ConstDecl.init();
+      TypeMap.init();
 
-			new parser().parse();
-		} catch (Exception e) {
-			WorkflowLogger.getLogger().log(Level.WARNING,
-					"IDL Parser internal exception: " + e.getMessage());
-		}
-	}
+      new parser().parse();
+    } catch (final Exception e) {
+      WorkflowLogger.getLogger().log(Level.WARNING, "IDL Parser internal exception: " + e.getMessage());
+    }
+  }
 
 }

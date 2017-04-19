@@ -39,59 +39,84 @@ package org.ietr.preesm.ui.scenario.editor;
 
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * Class used as a scenario editor tree content to distinguish two vertices with
- * the same name but different paths (stored in "info" property)
- * 
+ * Class used as a scenario editor tree content to distinguish two vertices with the same name but different paths (stored in "info" property).
+ *
  * @author mpelcat
  */
 public class HierarchicalSDFVertex implements IHierarchicalVertex {
 
-	private SDFAbstractVertex storedVertex;
+  /** The stored vertex. */
+  private final SDFAbstractVertex storedVertex;
 
-	public HierarchicalSDFVertex(SDFAbstractVertex storedVertex) {
-		super();
-		this.storedVertex = storedVertex;
-	}
+  /**
+   * Instantiates a new hierarchical SDF vertex.
+   *
+   * @param storedVertex
+   *          the stored vertex
+   */
+  public HierarchicalSDFVertex(final SDFAbstractVertex storedVertex) {
+    super();
+    this.storedVertex = storedVertex;
+  }
 
-	@Override
-	public SDFAbstractVertex getStoredVertex() {
-		return storedVertex;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.ui.scenario.editor.IHierarchicalVertex#getStoredVertex()
+   */
+  @Override
+  public SDFAbstractVertex getStoredVertex() {
+    return this.storedVertex;
+  }
 
-	@Override
-	public String getName() {
-		return storedVertex.getName();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.ui.scenario.editor.IHierarchicalVertex#getName()
+   */
+  @Override
+  public String getName() {
+    return this.storedVertex.getName();
+  }
 
-	/**
-	 * Checking equality between vertices but also between their paths
-	 */
-	@Override
-	public boolean equals(Object e) {
-		if (e instanceof HierarchicalSDFVertex) {
-			HierarchicalSDFVertex v = ((HierarchicalSDFVertex) e);
-			SDFAbstractVertex vStored = v.getStoredVertex();
-			SDFAbstractVertex thisStored = this.getStoredVertex();
+  /**
+   * Checking equality between vertices but also between their paths.
+   *
+   * @param e
+   *          the e
+   * @return true, if successful
+   */
+  @Override
+  public boolean equals(final Object e) {
+    if (e instanceof HierarchicalSDFVertex) {
+      final HierarchicalSDFVertex v = ((HierarchicalSDFVertex) e);
+      final SDFAbstractVertex vStored = v.getStoredVertex();
+      final SDFAbstractVertex thisStored = getStoredVertex();
 
-			boolean equals = vStored.equals(thisStored);
+      boolean equals = vStored.equals(thisStored);
 
-			if (equals) {
-				if (!(vStored.getInfo() == null || thisStored.getInfo() == null)) {
-					if ((!(vStored.getInfo().isEmpty()) || thisStored.getInfo()
-							.isEmpty())) {
-						equals = vStored.getInfo().equals(thisStored.getInfo());
-					}
-				}
-			}
-			return equals;
-		} else {
-			return false;
-		}
-	}
+      if (equals) {
+        if (!((vStored.getInfo() == null) || (thisStored.getInfo() == null))) {
+          if ((!(vStored.getInfo().isEmpty()) || thisStored.getInfo().isEmpty())) {
+            equals = vStored.getInfo().equals(thisStored.getInfo());
+          }
+        }
+      }
+      return equals;
+    } else {
+      return false;
+    }
+  }
 
-	@Override
-	public String toString() {
-		return storedVertex.getInfo();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return this.storedVertex.getInfo();
+  }
 }

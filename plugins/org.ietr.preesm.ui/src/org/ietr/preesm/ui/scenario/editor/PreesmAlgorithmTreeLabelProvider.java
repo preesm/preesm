@@ -40,25 +40,31 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 
+// TODO: Auto-generated Javadoc
 /**
- * The label provider displays the name of the vertex displayed in a SDF tree
- * 
+ * The label provider displays the name of the vertex displayed in a SDF tree.
+ *
  * @author mpelcat
  */
 public class PreesmAlgorithmTreeLabelProvider extends LabelProvider {
 
-	@Override
-	public String getText(Object element) {
-		String name = "";
-		if (element instanceof HierarchicalSDFVertex) {
-			name = ((HierarchicalSDFVertex) element).getName();
-		} else if (element instanceof SDFGraph) {
-			name = "graph";
-		} else if (element instanceof AbstractActor) {
-			name = ((AbstractActor) element).getName();
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
+   */
+  @Override
+  public String getText(final Object element) {
+    String name = "";
+    if (element instanceof HierarchicalSDFVertex) {
+      name = ((HierarchicalSDFVertex) element).getName();
+    } else if (element instanceof SDFGraph) {
+      name = "graph";
+    } else if (element instanceof AbstractActor) {
+      name = ((AbstractActor) element).getName();
+    }
 
-		return name;
-	}
+    return name;
+  }
 
 }

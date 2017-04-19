@@ -37,7 +37,6 @@
 package org.ietr.preesm.ui.scenario.editor;
 
 import java.io.InputStream;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -51,85 +50,107 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.ietr.preesm.core.Activator;
 
+// TODO: Auto-generated Javadoc
 /**
- * This class provides a save as excel sheet wizard
- * 
+ * This class provides a save as excel sheet wizard.
+ *
  * @author mpelcat
  * @author kdesnos
  */
 public class SaveAsWizard extends Wizard implements INewWizard {
 
-	private IWorkbench workbench;
-	private ExcelWriter writer;
-	
-	/**
-	 *  What is saved (Timings, Variables, ...)
-	 */
-	private String _savedObject;
+  /** The workbench. */
+  private IWorkbench workbench;
 
-	/**
-	 * Constructor for {@link SaveAsWizard}.
-	 */
-	public SaveAsWizard(ExcelWriter writer, String savedObject) {
-		super();
-		this.writer = writer;
-		this._savedObject = savedObject;
-		setNeedsProgressMonitor(true);
-		setWindowTitle("Save "+ _savedObject +" As...");
-	}
+  /** The writer. */
+  private final ExcelWriter writer;
 
-	@Override
-	public void addPages() {
-		WizardSaveExcelPage page = new WizardSaveExcelPage(_savedObject);
-		page.setWriter(writer);
-		page.setDescription("Save "+ _savedObject +" As...");
-		addPage(page);
-	}
+  /**
+   * What is saved (Timings, Variables, ...)
+   */
+  private final String _savedObject;
 
-	/**
-	 * Returns the workbench which was passed to <code>init</code>.
-	 * 
-	 * @return the workbench
-	 */
-	public IWorkbench getWorkbench() {
-		return workbench;
-	}
+  /**
+   * Constructor for {@link SaveAsWizard}.
+   *
+   * @param writer
+   *          the writer
+   * @param savedObject
+   *          the saved object
+   */
+  public SaveAsWizard(final ExcelWriter writer, final String savedObject) {
+    super();
+    this.writer = writer;
+    this._savedObject = savedObject;
+    setNeedsProgressMonitor(true);
+    setWindowTitle("Save " + this._savedObject + " As...");
+  }
 
-	@Override
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		this.workbench = workbench;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.wizard.Wizard#addPages()
+   */
+  @Override
+  public void addPages() {
+    final WizardSaveExcelPage page = new WizardSaveExcelPage(this._savedObject);
+    page.setWriter(this.writer);
+    page.setDescription("Save " + this._savedObject + " As...");
+    addPage(page);
+  }
 
-	@Override
-	public boolean performFinish() {
-		final WizardSaveExcelPage page = (WizardSaveExcelPage) getPage("save"+_savedObject);
+  /**
+   * Returns the workbench which was passed to <code>init</code>.
+   *
+   * @return the workbench
+   */
+  public IWorkbench getWorkbench() {
+    return this.workbench;
+  }
 
-		InputStream in = page.getInitialContents();
-		if (in == null) {
-			return false;
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
+   */
+  @Override
+  public void init(final IWorkbench workbench, final IStructuredSelection selection) {
+    this.workbench = workbench;
+  }
 
-		IFile file = page.createNewFile();
-		if (file == null) {
-			return false;
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.wizard.Wizard#performFinish()
+   */
+  @Override
+  public boolean performFinish() {
+    final WizardSaveExcelPage page = (WizardSaveExcelPage) getPage("save" + this._savedObject);
 
-		// Open editor on new file.
-		IWorkbenchWindow dw = Activator.getDefault().getWorkbench()
-				.getActiveWorkbenchWindow();
-		try {
-			if (dw != null) {
-				BasicNewResourceWizard.selectAndReveal(file, dw);
-				IWorkbenchPage activePage = dw.getActivePage();
-				if (activePage != null) {
-					IDE.openEditor(activePage, file, true);
-				}
-			}
-		} catch (PartInitException e) {
-			MessageDialog.openError(dw.getShell(), "Problem opening editor",
-					e.getMessage());
-		}
+    final InputStream in = page.getInitialContents();
+    if (in == null) {
+      return false;
+    }
 
-		return true;
-	}
+    final IFile file = page.createNewFile();
+    if (file == null) {
+      return false;
+    }
+
+    // Open editor on new file.
+    final IWorkbenchWindow dw = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow();
+    try {
+      if (dw != null) {
+        BasicNewResourceWizard.selectAndReveal(file, dw);
+        final IWorkbenchPage activePage = dw.getActivePage();
+        if (activePage != null) {
+          IDE.openEditor(activePage, file, true);
+        }
+      }
+    } catch (final PartInitException e) {
+      MessageDialog.openError(dw.getShell(), "Problem opening editor", e.getMessage());
+    }
+
+    return true;
+  }
 }

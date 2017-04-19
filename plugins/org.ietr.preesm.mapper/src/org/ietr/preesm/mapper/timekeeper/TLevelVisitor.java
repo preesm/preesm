@@ -43,8 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
@@ -54,130 +52,134 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.property.EdgeTiming;
 import org.ietr.preesm.mapper.model.property.VertexTiming;
 import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
-import org.jgrapht.alg.CycleDetector;
 
+// TODO: Auto-generated Javadoc
 /**
- * Visitor computing the TLevel of each actor firing
- * 
+ * Visitor computing the TLevel of each actor firing.
+ *
  * @author mpelcat
  */
-public class TLevelVisitor implements
-		IGraphVisitor<MapperDAG, MapperDAGVertex, MapperDAGEdge> {
+public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, MapperDAGEdge> {
 
-	/**
-	 * Vertices which TLevel needs to be recomputed
-	 */
-	private Set<MapperDAGVertex> dirtyVertices;
+  /** Vertices which TLevel needs to be recomputed. */
+  private final Set<MapperDAGVertex> dirtyVertices;
 
-	public TLevelVisitor(Set<MapperDAGVertex> dirtyVertices) {
-		super();
-		this.dirtyVertices = dirtyVertices;
-	}
+  /**
+   * Instantiates a new t level visitor.
+   *
+   * @param dirtyVertices
+   *          the dirty vertices
+   */
+  public TLevelVisitor(final Set<MapperDAGVertex> dirtyVertices) {
+    super();
+    this.dirtyVertices = dirtyVertices;
+  }
 
-	/**
-	 * Method to detect bugs. Activate if there is some problem in the DAG (usually caused by cycles)
-	 */
-	@SuppressWarnings("unused")
-	private void detectCycle(MapperDAG dag) {
-		CycleDetector<DAGVertex, DAGEdge> cd = new CycleDetector<DAGVertex, DAGEdge>(dag);
-		if (cd.detectCycles()) {
-			System.out.println("cycle detected");
-			System.out.println("cycle " + cd.findCycles());
-		}
-	}
+  /**
+   * Visiting a graph in topological order to assign t-levels.
+   *
+   * @param dag
+   *          the dag
+   */
+  @Override
+  public void visit(final MapperDAG dag) {
+    // Visiting a DAG consists in computing T Levels for all its vertices,
+    // starting from vertices without predecessors
+    final TopologicalDAGIterator iterator = new TopologicalDAGIterator(dag);
 
-	/**
-	 * Visiting a graph in topological order to assign t-levels
-	 */
-	@Override
-	public void visit(MapperDAG dag) {
-		// Visiting a DAG consists in computing T Levels for all its vertices,
-		// starting from vertices without predecessors
-		TopologicalDAGIterator iterator = new TopologicalDAGIterator(dag);
+    // Activate to detect problems
+    // detectCycle(dag);
 
-		// Activate to detect problems
-		// detectCycle(dag);
+    try {
+      // Recomputing all TLevels
+      if (this.dirtyVertices.isEmpty()) {
+        while (iterator.hasNext()) {
+          final DAGVertex next = iterator.next();
+          try {
+            next.accept(this);
+          } catch (final SDF4JException e) {
+            e.printStackTrace();
+          }
+        }
+      } else {
+        boolean dirty = false;
+        while (iterator.hasNext()) {
+          final DAGVertex next = iterator.next();
+          if (!dirty) {
+            dirty |= this.dirtyVertices.contains(next);
+          }
+          if (dirty) {
+            next.accept(this);
+          }
+        }
+      }
+    } catch (final SDF4JException e) {
+      e.printStackTrace();
+    } catch (final NoSuchElementException e) {
+      e.printStackTrace();
+    }
+  }
 
-		try {
-			// Recomputing all TLevels
-			if (dirtyVertices.isEmpty()) {
-				while (iterator.hasNext()) {
-					DAGVertex next = iterator.next();
-					try {
-						next.accept(this);
-					} catch (SDF4JException e) {
-						e.printStackTrace();
-					}
-				}
-			} else {
-				boolean dirty = false;
-				while (iterator.hasNext()) {
-					DAGVertex next = iterator.next();
-					if (!dirty) {
-						dirty |= dirtyVertices.contains(next);
-					}
-					if (dirty) {
-						next.accept(this);
-					}
-				}
-			}
-		} catch (SDF4JException e) {
-			e.printStackTrace();
-		} catch (NoSuchElementException e) {
-			e.printStackTrace();
-		}
-	}
+  /**
+   * Visiting a vertex to assign t-levels. Prececessors are considered already visited. Successors
+   * are accepted
+   *
+   * @param dagVertex
+   *          the dag vertex
+   * @throws SDF4JException
+   *           the SDF 4 J exception
+   */
+  @Override
+  public void visit(final MapperDAGVertex dagVertex) throws SDF4JException {
+    long maxTLevel = -1;
+    final VertexTiming timing = dagVertex.getTiming();
 
-	/**
-	 * Visiting a vertex to assign t-levels. Prececessors are considered already
-	 * visited. Successors are accepted
-	 */
-	@Override
-	public void visit(MapperDAGVertex dagVertex) throws SDF4JException {
-		long maxTLevel = -1;
-		VertexTiming timing = dagVertex.getTiming();
+    // Synchronized vertices are taken into account to compute t-level
+    final List<MapperDAGVertex> synchroVertices = timing
+        .getVertices((MapperDAG) dagVertex.getBase());
 
-		// Synchronized vertices are taken into account to compute t-level
-		List<MapperDAGVertex> synchroVertices = timing
-				.getVertices((MapperDAG) dagVertex.getBase());
+    if (dagVertex.incomingEdges().isEmpty()) {
+      timing.setTLevel(0L);
+    } else {
+      final Map<MapperDAGVertex, MapperDAGEdge> predecessors = new HashMap<>();
 
-		if (dagVertex.incomingEdges().isEmpty()) {
-			timing.setTLevel(0l);
-		} else {
-			Map<MapperDAGVertex, MapperDAGEdge> predecessors = new HashMap<MapperDAGVertex, MapperDAGEdge>();
+      for (final MapperDAGVertex v : synchroVertices) {
+        final Map<MapperDAGVertex, MapperDAGEdge> preds = v.getPredecessors(false);
+        predecessors.putAll(preds);
+      }
 
-			for (MapperDAGVertex v : synchroVertices) {
-				Map<MapperDAGVertex, MapperDAGEdge> preds = v
-						.getPredecessors(false);
-				predecessors.putAll(preds);
-			}
+      // From predecessors, computing the earliest time that the
+      // vertex can start
+      for (final MapperDAGVertex pred : predecessors.keySet()) {
+        final VertexTiming predTiming = pred.getTiming();
+        final EdgeTiming edgeTiming = predecessors.get(pred).getTiming();
+        if (predTiming.hasTLevel() && predTiming.hasCost() && edgeTiming.hasCost()) {
+          final long currentTLevel = predTiming.getTLevel() + predTiming.getCost()
+              + edgeTiming.getCost();
+          if (currentTLevel > maxTLevel) {
+            maxTLevel = currentTLevel;
+          }
+        } else {
+          timing.resetTLevel();
+        }
+      }
 
-			// From predecessors, computing the earliest time that the
-			// vertex can start
-			for (MapperDAGVertex pred : predecessors.keySet()) {
-				VertexTiming predTiming = pred.getTiming();
-				EdgeTiming edgeTiming = predecessors.get(pred).getTiming();
-				if (predTiming.hasTLevel() && predTiming.hasCost()
-						&& edgeTiming.hasCost()) {
-					long currentTLevel = predTiming.getTLevel()
-							+ predTiming.getCost() + edgeTiming.getCost();
-					if (currentTLevel > maxTLevel) {
-						maxTLevel = currentTLevel;
-					}
-				} else {
-					timing.resetTLevel();
-				}
-			}
+      if (maxTLevel >= 0) {
+        timing.setTLevel(maxTLevel);
+      }
+    }
+  }
 
-			if (maxTLevel >= 0) {
-				timing.setTLevel(maxTLevel);
-			}
-		}
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.
+   * AbstractEdge)
+   */
+  @Override
+  public void visit(final MapperDAGEdge dagEdge) {
 
-	@Override
-	public void visit(MapperDAGEdge dagEdge) {
-
-	}
+  }
 
 }

@@ -40,58 +40,102 @@ import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class SpiderNameGenerator.
+ */
 public final class SpiderNameGenerator {
-	/** Private constructor: prevents instantiation by client code */
-	private SpiderNameGenerator(){
-		
-	}
-	
-	/**
-	 * Returns the name of the subgraph pg
-	 */
-	public static String getSubraphName(PiGraph pg) {
-		return pg.getName() + "_subGraph";
-	}
-	
-	public static String getCoreTypeName(String coreType) {
-		return "CORE_TYPE_" + coreType.toUpperCase();
-	}
 
-	/**
-	 * Returns the name of the variable pointing to the C++ object corresponding
-	 * to AbstractActor aa
-	 */
-	public static String getVertexName(AbstractVertex aa) {
-		switch (SpiderTypeConverter.getType(aa)) {
-		case PISDF_TYPE_BODY:
-			return "bo_" + aa.getName();
-		case PISDF_TYPE_CONFIG:
-			return "cf_" + aa.getName();
-		case PISDF_TYPE_IF:
-			return "if_" + aa.getName();
-		}
-		return null;
-	}
+  /**
+   * Private constructor: prevents instantiation by client code.
+   */
+  private SpiderNameGenerator() {
 
-	/**
-	 * Returns the name of the building method for the PiGraph pg
-	 */
-	public static String getMethodName(PiGraph pg) {
-		return pg.getName();
-	}
-	
-	public static String getFunctionName(AbstractActor aa) {
-		return ((PiGraph)aa.eContainer()).getName() + "_" + aa.getName();
-	}
+  }
 
-	/**
-	 * Returns the name of the parameter
-	 */
-	public static String getParameterName(Parameter p) {
-		return "param_" + p.getName();
-	}
+  /**
+   * Returns the name of the subgraph pg.
+   *
+   * @param pg
+   *          the pg
+   * @return the subraph name
+   */
+  public static String getSubraphName(final PiGraph pg) {
+    return pg.getName() + "_subGraph";
+  }
 
-	public static String getCoreName(String core) {
-		return "CORE_" + core.toUpperCase();
-	}
+  /**
+   * Gets the core type name.
+   *
+   * @param coreType
+   *          the core type
+   * @return the core type name
+   */
+  public static String getCoreTypeName(final String coreType) {
+    return "CORE_TYPE_" + coreType.toUpperCase();
+  }
+
+  /**
+   * Returns the name of the variable pointing to the C++ object corresponding to AbstractActor aa.
+   *
+   * @param aa
+   *          the aa
+   * @return the vertex name
+   */
+  public static String getVertexName(final AbstractVertex aa) {
+    switch (SpiderTypeConverter.getType(aa)) {
+      case PISDF_TYPE_BODY:
+        return "bo_" + aa.getName();
+      case PISDF_TYPE_CONFIG:
+        return "cf_" + aa.getName();
+      case PISDF_TYPE_IF:
+        return "if_" + aa.getName();
+      default:
+    }
+    return null;
+  }
+
+  /**
+   * Returns the name of the building method for the PiGraph pg.
+   *
+   * @param pg
+   *          the pg
+   * @return the method name
+   */
+  public static String getMethodName(final PiGraph pg) {
+    return pg.getName();
+  }
+
+  /**
+   * Gets the function name.
+   *
+   * @param aa
+   *          the aa
+   * @return the function name
+   */
+  public static String getFunctionName(final AbstractActor aa) {
+    return ((PiGraph) aa.eContainer()).getName() + "_" + aa.getName();
+  }
+
+  /**
+   * Returns the name of the parameter.
+   *
+   * @param p
+   *          the p
+   * @return the parameter name
+   */
+  public static String getParameterName(final Parameter p) {
+    return "param_" + p.getName();
+  }
+
+  /**
+   * Gets the core name.
+   *
+   * @param core
+   *          the core
+   * @return the core name
+   */
+  public static String getCoreName(final String core) {
+    return "CORE_" + core.toUpperCase();
+  }
 }

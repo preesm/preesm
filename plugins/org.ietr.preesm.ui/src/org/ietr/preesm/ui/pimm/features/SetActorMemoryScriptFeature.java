@@ -37,7 +37,6 @@ package org.ietr.preesm.ui.pimm.features;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
@@ -46,85 +45,121 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 
+// TODO: Auto-generated Javadoc
 /**
- * Custom Feature to set a new memory script to an {@link Actor}
- * 
+ * Custom Feature to set a new memory script to an {@link Actor}.
+ *
  * @author kdesnos
- * 
  */
 public class SetActorMemoryScriptFeature extends AbstractCustomFeature {
 
-	protected boolean hasDoneChanges = false;
+  /** The has done changes. */
+  protected boolean hasDoneChanges = false;
 
-	/**
-	 * Default Constructor of {@link SetActorMemoryScriptFeature}
-	 * 
-	 * @param fp
-	 *            the feature provider
-	 */
-	public SetActorMemoryScriptFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /**
+   * Default Constructor of {@link SetActorMemoryScriptFeature}.
+   *
+   * @param fp
+   *          the feature provider
+   */
+  public SetActorMemoryScriptFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	@Override
-	public String getName() {
-		return "Set memory script path";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#getName()
+   */
+  @Override
+  public String getName() {
+    return "Set memory script path";
+  }
 
-	@Override
-	public String getDescription() {
-		return "Set the path to the memory script of an Actor";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#getDescription()
+   */
+  @Override
+  public String getDescription() {
+    return "Set the path to the memory script of an Actor";
+  }
 
-	@Override
-	public boolean canExecute(ICustomContext context) {
-		// Allow setting if exactly one pictogram element
-		// representing an Actor is selected
-		boolean ret = false;
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes != null && pes.length == 1) {
-			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof Actor) {
-				ret = true;
-			}
-		}
-		return ret;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public boolean canExecute(final ICustomContext context) {
+    // Allow setting if exactly one pictogram element
+    // representing an Actor is selected
+    boolean ret = false;
+    final PictogramElement[] pes = context.getPictogramElements();
+    if ((pes != null) && (pes.length == 1)) {
+      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+      if (bo instanceof Actor) {
+        ret = true;
+      }
+    }
+    return ret;
+  }
 
-	@Override
-	public void execute(ICustomContext context) {
-		// Re-check if only one element is selected
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes != null && pes.length == 1) {
-			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof Actor) {
-				Actor actor = (Actor) bo;
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public void execute(final ICustomContext context) {
+    // Re-check if only one element is selected
+    final PictogramElement[] pes = context.getPictogramElements();
+    if ((pes != null) && (pes.length == 1)) {
+      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+      if (bo instanceof Actor) {
+        final Actor actor = (Actor) bo;
 
-				String question = "Please select a valid file\n(.bshi)";
-				String dialogTitle = "Select a memory script";
-				askMemoryScript(actor, question, dialogTitle);
+        final String question = "Please select a valid file\n(.bshi)";
+        final String dialogTitle = "Select a memory script";
+        askMemoryScript(actor, question, dialogTitle);
 
-				// Call the layout feature
-				layoutPictogramElement(pes[0]);
-			}
-		}
-	}
+        // Call the layout feature
+        layoutPictogramElement(pes[0]);
+      }
+    }
+  }
 
-	private void askMemoryScript(Actor actor, String question, String dialogTitle) {
-		// Ask user for memory script
-		Set<String> fileExtensions = new HashSet<String>();
-		fileExtensions.add("bsh");
-		IPath newFilePath = PiMMUtil.askFile(dialogTitle, question, null, fileExtensions);
+  /**
+   * Ask memory script.
+   *
+   * @param actor
+   *          the actor
+   * @param question
+   *          the question
+   * @param dialogTitle
+   *          the dialog title
+   */
+  private void askMemoryScript(final Actor actor, final String question, final String dialogTitle) {
+    // Ask user for memory script
+    final Set<String> fileExtensions = new HashSet<>();
+    fileExtensions.add("bsh");
+    final IPath newFilePath = PiMMUtil.askFile(dialogTitle, question, null, fileExtensions);
 
-		if (newFilePath != null && newFilePath != actor.getMemoryScriptPath()) {
-			this.hasDoneChanges = true;			
-			actor.setMemoryScriptPath(newFilePath);
-		}
-	}
+    if ((newFilePath != null) && (newFilePath != actor.getMemoryScriptPath())) {
+      this.hasDoneChanges = true;
+      actor.setMemoryScriptPath(newFilePath);
+    }
+  }
 
-	@Override
-	public boolean hasDoneChanges() {
-		return this.hasDoneChanges;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
+   */
+  @Override
+  public boolean hasDoneChanges() {
+    return this.hasDoneChanges;
+  }
 
 }

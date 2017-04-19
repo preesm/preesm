@@ -39,153 +39,171 @@ package org.ietr.preesm.mapper.params;
 
 import java.util.Map;
 import java.util.logging.Level;
-
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
+// TODO: Auto-generated Javadoc
 /**
- * Parameters for task scheduling genetic algorithm multithread
- * 
+ * Parameters for task scheduling genetic algorithm multithread.
+ *
  * @author pmenuet
  * @author mpelcat
  */
 public class PGeneticAlgoParameters {
 
-	// Number of individuals the algorithm will keep in the best population
-	private int populationSize;
+  /** The population size. */
+  // Number of individuals the algorithm will keep in the best population
+  private int populationSize;
 
-	// Number of generation performed by the PGenetic algorithm
-	private int generationNumber;
+  /** The generation number. */
+  // Number of generation performed by the PGenetic algorithm
+  private int generationNumber;
 
-	// Number of thread/processor available to perform the PGenetic Algorithm
-	private int procNumber;
+  /** The proc number. */
+  // Number of thread/processor available to perform the PGenetic Algorithm
+  private int procNumber;
 
-	// Boolean to determine the type of algorithm to make the population
-	private boolean pfastused2makepopulation;
+  /** The pfastused 2 makepopulation. */
+  // Boolean to determine the type of algorithm to make the population
+  private boolean pfastused2makepopulation;
 
-	/**
-	 * Time in seconds between two FAST probabilistic hops in the critical path
-	 */
-	private int fastTime = 200;
+  /** Time in seconds between two FAST probabilistic hops in the critical path. */
+  private int fastTime = 200;
 
-	/**
-	 * Time in seconds spent in one FAST local neighborhood
-	 */
-	private int fastLocalSearchTime = 10;
+  /** Time in seconds spent in one FAST local neighborhood. */
+  private int fastLocalSearchTime = 10;
 
-	/**
-	 * Number of fast iterations to execute before stopping PFast
-	 */
-	private int fastNumber = 100;
+  /** Number of fast iterations to execute before stopping PFast. */
+  private int fastNumber = 100;
 
-	/**
-	 * Constructors
-	 */
+  /**
+   * Constructors.
+   *
+   * @param textParameters
+   *          the text parameters
+   */
 
-	public PGeneticAlgoParameters(Map<String, String> textParameters) {
+  public PGeneticAlgoParameters(final Map<String, String> textParameters) {
 
-		this.generationNumber = Integer.valueOf(textParameters
-				.get("generationNumber"));
-		this.populationSize = Integer.valueOf(textParameters
-				.get("populationSize"));
-		this.procNumber = Integer.valueOf(textParameters.get("procNumber"));
-		this.pfastused2makepopulation = Boolean.valueOf(textParameters
-				.get("pfastused2makepopulation"));
-		if (Integer.valueOf(textParameters.get("fastTime")) > 0) {
-			this.fastTime = Integer.valueOf(textParameters.get("fastTime"));
-		}
-		if (Integer.valueOf(textParameters.get("fastLocalSearchTime")) > 0) {
-			this.fastLocalSearchTime = Integer.valueOf(textParameters
-					.get("fastLocalSearchTime"));
-		}
-		if (Integer.valueOf(textParameters.get("fastNumber")) != 0) {
-			this.fastNumber = Integer.valueOf(textParameters.get("fastNumber"));
-		}
+    this.generationNumber = Integer.valueOf(textParameters.get("generationNumber"));
+    this.populationSize = Integer.valueOf(textParameters.get("populationSize"));
+    this.procNumber = Integer.valueOf(textParameters.get("procNumber"));
+    this.pfastused2makepopulation = Boolean.valueOf(textParameters.get("pfastused2makepopulation"));
+    if (Integer.valueOf(textParameters.get("fastTime")) > 0) {
+      this.fastTime = Integer.valueOf(textParameters.get("fastTime"));
+    }
+    if (Integer.valueOf(textParameters.get("fastLocalSearchTime")) > 0) {
+      this.fastLocalSearchTime = Integer.valueOf(textParameters.get("fastLocalSearchTime"));
+    }
+    if (Integer.valueOf(textParameters.get("fastNumber")) != 0) {
+      this.fastNumber = Integer.valueOf(textParameters.get("fastNumber"));
+    }
 
-		WorkflowLogger
-				.getLogger()
-				.log(Level.INFO,
-						"The Genetic algo parameters are: generationNumber; populationSize; procNumber; pfastused2makepopulation=true/false; fastTime in seconds; fastLocalSearchTime in seconds; fastNumber");
-	}
+    WorkflowLogger.getLogger().log(Level.INFO,
+        "The Genetic algo parameters are: generationNumber; populationSize;"
+            + "procNumber; pfastused2makepopulation=true/false; fastTime in seconds; fastLocalSearchTime in seconds; fastNumber");
+  }
 
-	/**
-	 * @return the pfastused2makepopulation
-	 */
-	public boolean isPfastused2makepopulation() {
-		return pfastused2makepopulation;
-	}
+  /**
+   * Checks if is pfastused 2 makepopulation.
+   *
+   * @return the pfastused2makepopulation
+   */
+  public boolean isPfastused2makepopulation() {
+    return this.pfastused2makepopulation;
+  }
 
-	/**
-	 * @param pfastused2makepopulation
-	 *            the pfastused2makepopulation to set
-	 */
-	public void setPfastused2makepopulation(boolean pfastused2makepopulation) {
-		this.pfastused2makepopulation = pfastused2makepopulation;
-	}
+  /**
+   * Sets the pfastused 2 makepopulation.
+   *
+   * @param pfastused2makepopulation
+   *          the pfastused2makepopulation to set
+   */
+  public void setPfastused2makepopulation(final boolean pfastused2makepopulation) {
+    this.pfastused2makepopulation = pfastused2makepopulation;
+  }
 
-	/**
-	 * @return the populationSize
-	 */
-	public int getPopulationSize() {
-		return populationSize;
-	}
+  /**
+   * Gets the population size.
+   *
+   * @return the populationSize
+   */
+  public int getPopulationSize() {
+    return this.populationSize;
+  }
 
-	/**
-	 * @param populationSize
-	 *            the populationSize to set
-	 */
-	public void setPopulationSize(int populationSize) {
-		this.populationSize = populationSize;
-	}
+  /**
+   * Sets the population size.
+   *
+   * @param populationSize
+   *          the populationSize to set
+   */
+  public void setPopulationSize(final int populationSize) {
+    this.populationSize = populationSize;
+  }
 
-	/**
-	 * @return the generationNumber
-	 */
-	public int getGenerationNumber() {
-		return generationNumber;
-	}
+  /**
+   * Gets the generation number.
+   *
+   * @return the generationNumber
+   */
+  public int getGenerationNumber() {
+    return this.generationNumber;
+  }
 
-	/**
-	 * @param generationNumber
-	 *            the generationNumber to set
-	 */
-	public void setGenerationNumber(int generationNumber) {
-		this.generationNumber = generationNumber;
-	}
+  /**
+   * Sets the generation number.
+   *
+   * @param generationNumber
+   *          the generationNumber to set
+   */
+  public void setGenerationNumber(final int generationNumber) {
+    this.generationNumber = generationNumber;
+  }
 
-	/**
-	 * @return the processorNumber
-	 */
-	public int getProcessorNumber() {
-		return procNumber;
-	}
+  /**
+   * Gets the processor number.
+   *
+   * @return the processorNumber
+   */
+  public int getProcessorNumber() {
+    return this.procNumber;
+  }
 
-	/**
-	 * @param processorNumber
-	 *            the processorNumber to set
-	 */
-	public void setProcessorNumber(int processorNumber) {
-		this.procNumber = processorNumber;
-	}
+  /**
+   * Sets the processor number.
+   *
+   * @param processorNumber
+   *          the processorNumber to set
+   */
+  public void setProcessorNumber(final int processorNumber) {
+    this.procNumber = processorNumber;
+  }
 
-	/**
-	 * Returns the Number of fast iterations to execute before stopping PFast
-	 */
-	public int getFastNumber() {
-		return fastNumber;
-	}
+  /**
+   * Returns the Number of fast iterations to execute before stopping PFast.
+   *
+   * @return the fast number
+   */
+  public int getFastNumber() {
+    return this.fastNumber;
+  }
 
-	/**
-	 * Returns the time in seconds for one whole FAST process
-	 */
-	public int getFastTime() {
-		return fastTime;
-	}
+  /**
+   * Returns the time in seconds for one whole FAST process.
+   *
+   * @return the fast time
+   */
+  public int getFastTime() {
+    return this.fastTime;
+  }
 
-	/**
-	 * Returns the time in seconds spent in one FAST local neighborhood
-	 */
-	public int getFastLocalSearchTime() {
-		return fastLocalSearchTime;
-	}
+  /**
+   * Returns the time in seconds spent in one FAST local neighborhood.
+   *
+   * @return the fast local search time
+   */
+  public int getFastLocalSearchTime() {
+    return this.fastLocalSearchTime;
+  }
 
 }

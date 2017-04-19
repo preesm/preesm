@@ -36,7 +36,6 @@
 package org.ietr.preesm.ui.scenario.editor.parametervalues;
 
 import java.net.URL;
-
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -51,98 +50,140 @@ import org.ietr.preesm.core.scenario.ParameterValue.ParameterType;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
+// TODO: Auto-generated Javadoc
 /**
  * The label provider displays informations to fill the multi-column tree for parameter edition.
+ *
  * @author jheulot
  */
 public class PiParameterTableLabelProvider extends LabelProvider implements ITableLabelProvider, ITableColorProvider {
-	private final Table table;
-	private Image imageOk, imageError;
-	
-	PiParameterTableLabelProvider(Table _table){
-		super();
-		table = _table;
-		
-		Bundle bundle = FrameworkUtil.getBundle(PiParameterTableLabelProvider.class);
-		
-	    URL url = FileLocator.find(bundle, new Path("icons/error.png"), null);
-	    ImageDescriptor imageDcr = ImageDescriptor.createFromURL(url);
-	    this.imageError = imageDcr.createImage();
 
-	    url = FileLocator.find(bundle, new Path("icons/ok.png"), null);
-	    imageDcr = ImageDescriptor.createFromURL(url);
-	    this.imageOk = imageDcr.createImage();
-	}
-	
-	
-	@Override
-	public String getText(Object element) {
-		return null;
-	}
+  /** The table. */
+  private final Table table;
 
-	@Override
-	public Image getColumnImage(Object element, int columnIndex) {
-		ParameterValue paramValue = ((ParameterValue)element);
-		if(columnIndex == 4){ // Expression Column
-			if(paramValue.isValid())
-				return imageOk;
-			else
-				return imageError;	
-		} 
-		return null;
-	}
+  /** The image ok. */
+  private final Image imageOk;
 
-	@Override
-	public String getColumnText(Object element, int columnIndex) {
-		ParameterValue paramValue = ((ParameterValue)element);
-		switch(columnIndex){
-			case 0: // Actors Column
-				return paramValue.getName();
-			case 1: // Path Column
-				return paramValue.getParentVertex();
-			case 2: // Type Column
-				return paramValue.getType().toString();
-			case 3: // Variables Column
-				if(paramValue.getType() == ParameterType.PARAMETER_DEPENDENT)
-					return paramValue.getInputParameters().toString();
-				else 
-					return null;
-			case 4: // Expression Column
-				if(paramValue.getType() == ParameterType.PARAMETER_DEPENDENT)
-					return paramValue.getExpression();
-				else if(paramValue.getType() == ParameterType.INDEPENDENT)
-					return String.valueOf(paramValue.getValue());
-				else if(paramValue.getType() == ParameterType.ACTOR_DEPENDENT)
-					return paramValue.getValues().toString();
-				return null;
-				
-		}
-		return null;
-	}
+  /** The image error. */
+  private final Image imageError;
 
-	@Override
-	public Color getForeground(Object element, int columnIndex) {
-		return table.getForeground();
-	}
+  /**
+   * Instantiates a new pi parameter table label provider.
+   *
+   * @param _table
+   *          the table
+   */
+  PiParameterTableLabelProvider(final Table _table) {
+    super();
+    this.table = _table;
 
+    final Bundle bundle = FrameworkUtil.getBundle(PiParameterTableLabelProvider.class);
 
-	@Override
-	public Color getBackground(Object element, int columnIndex) {
-		ParameterValue paramValue = ((ParameterValue)element);
-		switch(columnIndex){
-			case 0: // Actors Column
-			case 1: // Path Column
-			case 2: // Type Column
-			case 4: // Expression Column
-				return table.getBackground();
-			case 3: // Variables Column
-				if(paramValue.getType() == ParameterType.ACTOR_DEPENDENT)
-					return table.getBackground();
-				else 
-					return new Color(table.getDisplay(), 200,200,200);
-				
-		}
-		return table.getBackground();
-	}
+    URL url = FileLocator.find(bundle, new Path("icons/error.png"), null);
+    ImageDescriptor imageDcr = ImageDescriptor.createFromURL(url);
+    this.imageError = imageDcr.createImage();
+
+    url = FileLocator.find(bundle, new Path("icons/ok.png"), null);
+    imageDcr = ImageDescriptor.createFromURL(url);
+    this.imageOk = imageDcr.createImage();
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
+   */
+  @Override
+  public String getText(final Object element) {
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
+   */
+  @Override
+  public Image getColumnImage(final Object element, final int columnIndex) {
+    final ParameterValue paramValue = ((ParameterValue) element);
+    if (columnIndex == 4) { // Expression Column
+      if (paramValue.isValid()) {
+        return this.imageOk;
+      } else {
+        return this.imageError;
+      }
+    }
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
+   */
+  @Override
+  public String getColumnText(final Object element, final int columnIndex) {
+    final ParameterValue paramValue = ((ParameterValue) element);
+    switch (columnIndex) {
+      case 0: // Actors Column
+        return paramValue.getName();
+      case 1: // Path Column
+        return paramValue.getParentVertex();
+      case 2: // Type Column
+        return paramValue.getType().toString();
+      case 3: // Variables Column
+        if (paramValue.getType() == ParameterType.PARAMETER_DEPENDENT) {
+          return paramValue.getInputParameters().toString();
+        } else {
+          return null;
+        }
+      case 4: // Expression Column
+        if (paramValue.getType() == ParameterType.PARAMETER_DEPENDENT) {
+          return paramValue.getExpression();
+        } else if (paramValue.getType() == ParameterType.INDEPENDENT) {
+          return String.valueOf(paramValue.getValue());
+        } else if (paramValue.getType() == ParameterType.ACTOR_DEPENDENT) {
+          return paramValue.getValues().toString();
+        }
+        return null;
+      default:
+    }
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.ITableColorProvider#getForeground(java.lang.Object, int)
+   */
+  @Override
+  public Color getForeground(final Object element, final int columnIndex) {
+    return this.table.getForeground();
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.ITableColorProvider#getBackground(java.lang.Object, int)
+   */
+  @Override
+  public Color getBackground(final Object element, final int columnIndex) {
+    final ParameterValue paramValue = ((ParameterValue) element);
+    switch (columnIndex) {
+      case 0: // Actors Column
+      case 1: // Path Column
+      case 2: // Type Column
+      case 4: // Expression Column
+        return this.table.getBackground();
+      case 3: // Variables Column
+        if (paramValue.getType() == ParameterType.ACTOR_DEPENDENT) {
+          return this.table.getBackground();
+        } else {
+          return new Color(this.table.getDisplay(), 200, 200, 200);
+        }
+      default:
+    }
+    return this.table.getBackground();
+  }
 
 }

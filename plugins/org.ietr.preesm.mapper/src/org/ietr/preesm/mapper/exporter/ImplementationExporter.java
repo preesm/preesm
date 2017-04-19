@@ -41,7 +41,6 @@ package org.ietr.preesm.mapper.exporter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Iterator;
-
 import org.ietr.dftools.algorithm.exporter.GMLExporter;
 import org.ietr.dftools.algorithm.exporter.Key;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
@@ -56,123 +55,163 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 import org.w3c.dom.Element;
 
+// TODO: Auto-generated Javadoc
 /**
- * Exporter for the mapper DAG graph that represents the implementation. The
- * attributes contain every information on the deployment. It should not be
- * displayed right away by Graphiti and its purpose is to be transformed into
- * another tool's input
- * 
+ * Exporter for the mapper DAG graph that represents the implementation. The attributes contain
+ * every information on the deployment. It should not be displayed right away by Graphiti and its
+ * purpose is to be transformed into another tool's input
+ *
  * @author mpelcat
- * 
+ *
  */
 public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
 
-	/**
-	 * Builds a new Implementation Exporter
-	 */
-	public ImplementationExporter() {
-		super();
-	}
+  /**
+   * Builds a new Implementation Exporter.
+   */
+  public ImplementationExporter() {
+    super();
+  }
 
-	@Override
-	protected Element exportEdge(DAGEdge edge, Element parentELement) {
-		Element edgeElt = createEdge(parentELement, edge.getSource().getId(),
-				edge.getTarget().getId());
-		//exportKeys(edge, "edge", edgeElt);
-		return edgeElt;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.ietr.dftools.algorithm.exporter.GMLExporter#exportEdge(org.ietr.dftools.algorithm.model.
+   * AbstractEdge, org.w3c.dom.Element)
+   */
+  @Override
+  protected Element exportEdge(final DAGEdge edge, final Element parentELement) {
+    final Element edgeElt = createEdge(parentELement, edge.getSource().getId(),
+        edge.getTarget().getId());
+    // exportKeys(edge, "edge", edgeElt);
+    return edgeElt;
+  }
 
-	@Override
-	public Element exportGraph(AbstractGraph<DAGVertex, DAGEdge> graph) {
-		try {
-			addKeySet(rootElt);
-			MapperDAG myGraph = (MapperDAG) graph;
-			Element graphElt = createGraph(rootElt, true);
-			graphElt.setAttribute("edgedefault", "directed");
-			exportKeys(myGraph, "graph", graphElt);
-			for (DAGVertex child : myGraph.vertexSet()) {
-				exportNode(child, graphElt);
-			}
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.ietr.dftools.algorithm.exporter.GMLExporter#exportGraph(org.ietr.dftools.algorithm.model.
+   * AbstractGraph)
+   */
+  @Override
+  public Element exportGraph(final AbstractGraph<DAGVertex, DAGEdge> graph) {
+    try {
+      addKeySet(this.rootElt);
+      final MapperDAG myGraph = (MapperDAG) graph;
+      final Element graphElt = createGraph(this.rootElt, true);
+      graphElt.setAttribute("edgedefault", "directed");
+      exportKeys(myGraph, "graph", graphElt);
+      for (final DAGVertex child : myGraph.vertexSet()) {
+        exportNode(child, graphElt);
+      }
 
-			for (DAGEdge edge : myGraph.edgeSet()) {
-				exportEdge(edge, graphElt);
-			}
-			return graphElt;
+      for (final DAGEdge edge : myGraph.edgeSet()) {
+        exportEdge(edge, graphElt);
+      }
+      return graphElt;
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+    } catch (final Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
 
-	@Override
-	protected Element exportNode(DAGVertex vertex, Element parentELement) {
-		// Pre modification for xml export
-		if(vertex.getPropertyBean().getValue("originalId") != null)
-		{
-			if(vertex instanceof MapperDAGVertex){
-				((MapperDAGVertex) vertex).getInit().getParentVertex().setId(vertex.getPropertyBean().getValue("originalId").toString());
-			}
-		}
-		
-		vertex.setKind(vertex.getPropertyBean().getValue("vertexType").toString());
-				
-		Element vertexElt = createNode(parentELement, vertex.getId());
-		exportKeys(vertex, "vertex", vertexElt);
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.ietr.dftools.algorithm.exporter.GMLExporter#exportNode(org.ietr.dftools.algorithm.model.
+   * AbstractVertex, org.w3c.dom.Element)
+   */
+  @Override
+  protected Element exportNode(final DAGVertex vertex, final Element parentELement) {
+    // Pre modification for xml export
+    if (vertex.getPropertyBean().getValue("originalId") != null) {
+      if (vertex instanceof MapperDAGVertex) {
+        ((MapperDAGVertex) vertex).getInit().getParentVertex()
+            .setId(vertex.getPropertyBean().getValue("originalId").toString());
+      }
+    }
 
-		if (vertex instanceof TransferVertex) {
-			// Adding route step to the node
-			AbstractRouteStep routeStep = (AbstractRouteStep) vertex
-					.getPropertyBean().getValue(
-							ImplementationPropertyNames.SendReceive_routeStep);
-			// Add the Operator_address key
-			if (routeStep != null) {
-				String memAddress = null;
-				Element operatorAdress = this.domDocument.createElement("data");
-				Iterator<Parameter> iter = ((ComponentInstanceImpl)vertex.getPropertyBean().getValue("Operator")).getParameters().iterator();
-				while(iter.hasNext()){
-					Parameter param = iter.next();
-					if(param.getKey().equals("memoryAddress")){
-						memAddress = param.getValue();
-						break;
-					}					
-				}
-				
-				if(memAddress != null){
-					operatorAdress.setAttribute("key", "Operator_address");
-					operatorAdress.setTextContent(memAddress);
-					vertexElt.appendChild(operatorAdress);
+    vertex.setKind(vertex.getPropertyBean().getValue("vertexType").toString());
 
-					this.addKey("Operator_address",
-							new Key("Operator_address", "vertex", "string", null));
-				}
-				
-				exportRouteStep(routeStep, vertexElt);
-			}
+    final Element vertexElt = createNode(parentELement, vertex.getId());
+    exportKeys(vertex, "vertex", vertexElt);
 
-		}
-		return vertexElt;
-	}
+    if (vertex instanceof TransferVertex) {
+      // Adding route step to the node
+      final AbstractRouteStep routeStep = (AbstractRouteStep) vertex.getPropertyBean()
+          .getValue(ImplementationPropertyNames.SendReceive_routeStep);
+      // Add the Operator_address key
+      if (routeStep != null) {
+        String memAddress = null;
+        final Element operatorAdress = this.domDocument.createElement("data");
+        final Iterator<Parameter> iter = ((ComponentInstanceImpl) vertex.getPropertyBean()
+            .getValue("Operator")).getParameters().iterator();
+        while (iter.hasNext()) {
+          final Parameter param = iter.next();
+          if (param.getKey().equals("memoryAddress")) {
+            memAddress = param.getValue();
+            break;
+          }
+        }
 
-	private void exportRouteStep(AbstractRouteStep step, Element vertexElt) {
-		step.appendRouteStep(this.domDocument, vertexElt);
-	}
+        if (memAddress != null) {
+          operatorAdress.setAttribute("key", "Operator_address");
+          operatorAdress.setTextContent(memAddress);
+          vertexElt.appendChild(operatorAdress);
 
-	@Override
-	protected Element exportPort(DAGVertex interfaceVertex,
-			Element parentELement) {
-		return null;
-	}
+          addKey("Operator_address", new Key("Operator_address", "vertex", "string", null));
+        }
 
-	@Override
-	public void export(AbstractGraph<DAGVertex, DAGEdge> graph, String path) {
-		this.path = path;
-		try {
-			exportGraph(graph);
-			transform(new FileOutputStream(path));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
+        exportRouteStep(routeStep, vertexElt);
+      }
+
+    }
+    return vertexElt;
+  }
+
+  /**
+   * Export route step.
+   *
+   * @param step
+   *          the step
+   * @param vertexElt
+   *          the vertex elt
+   */
+  private void exportRouteStep(final AbstractRouteStep step, final Element vertexElt) {
+    step.appendRouteStep(this.domDocument, vertexElt);
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.ietr.dftools.algorithm.exporter.GMLExporter#exportPort(org.ietr.dftools.algorithm.model.
+   * AbstractVertex, org.w3c.dom.Element)
+   */
+  @Override
+  protected Element exportPort(final DAGVertex interfaceVertex, final Element parentELement) {
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.algorithm.exporter.GMLExporter#export(org.ietr.dftools.algorithm.model.
+   * AbstractGraph, java.lang.String)
+   */
+  @Override
+  public void export(final AbstractGraph<DAGVertex, DAGEdge> graph, final String path) {
+    this.path = path;
+    try {
+      exportGraph(graph);
+      transform(new FileOutputStream(path));
+    } catch (final FileNotFoundException e) {
+      e.printStackTrace();
+    }
+  }
 
 }

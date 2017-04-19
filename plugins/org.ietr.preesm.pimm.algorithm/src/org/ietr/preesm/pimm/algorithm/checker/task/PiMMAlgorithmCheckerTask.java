@@ -40,58 +40,76 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.pimm.algorithm.checker.PiMMAlgorithmChecker;
 
+// TODO: Auto-generated Javadoc
 /**
- * Head class to launch check on a PiGraph
- * 
+ * Head class to launch check on a PiGraph.
+ *
  * @author cguy
- * 
  */
 public class PiMMAlgorithmCheckerTask extends AbstractTaskImplementation {
 
-	// Rem: Logger is used to display messages in the console
-	protected Logger logger = WorkflowLogger.getLogger();
+  /** The logger. */
+  // Rem: Logger is used to display messages in the console
+  protected Logger logger = WorkflowLogger.getLogger();
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
-		// Get the PiGraph to check
-		PiGraph graph = (PiGraph) inputs.get(KEY_PI_GRAPH);
-		// Check the graph and display corresponding messages
-		PiMMAlgorithmChecker checker = new PiMMAlgorithmChecker();
-		if (checker.checkGraph(graph))
-			logger.log(Level.FINE, checker.getOkMsg().toString());
-		else {
-			if (checker.isErrors())
-				logger.log(Level.SEVERE, checker.getErrorMsg().toString());
-			if (checker.isWarnings())
-				logger.log(Level.WARNING, checker.getWarningMsg().toString());
-		}
+    // Get the PiGraph to check
+    final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
+    // Check the graph and display corresponding messages
+    final PiMMAlgorithmChecker checker = new PiMMAlgorithmChecker();
+    if (checker.checkGraph(graph)) {
+      this.logger.log(Level.FINE, checker.getOkMsg().toString());
+    } else {
+      if (checker.isErrors()) {
+        this.logger.log(Level.SEVERE, checker.getErrorMsg().toString());
+      }
+      if (checker.isWarnings()) {
+        this.logger.log(Level.WARNING, checker.getWarningMsg().toString());
+      }
+    }
 
-		// Return the checked graph
-		Map<String, Object> outputs = new HashMap<String, Object>();
-		outputs.put(KEY_PI_GRAPH, graph);
-		return outputs;
-	}
+    // Return the checked graph
+    final Map<String, Object> outputs = new HashMap<>();
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
+    return outputs;
+  }
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		return Collections.emptyMap();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    return Collections.emptyMap();
+  }
 
-	@Override
-	public String monitorMessage() {
-		return "Starting checking of PiGraph";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Starting checking of PiGraph";
+  }
 
 }

@@ -1,0 +1,9 @@
+// Interleave
+List<Match> resList = new ArrayList<Match>(N);
+for(i=0;i<N;i++) {
+	resList.add(o_o.matchWith(i*clusterSize,
+				  i_i,
+				  i*(clusterSize+interClusterSize)+interClusterSize,
+				clusterSize));
+}
+resList;

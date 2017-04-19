@@ -41,7 +41,7 @@ package org.ietr.preesm.mapper.model;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
+import org.ietr.dftools.algorithm.model.AbstractVertex;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
@@ -57,296 +57,375 @@ import org.ietr.preesm.mapper.model.special.ReceiveVertex;
 import org.ietr.preesm.mapper.model.special.SendVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * Represents a vertex in a DAG of type {@link MapperDAG} used in the mapper
- * 
+ * Represents a vertex in a DAG of type {@link MapperDAG} used in the mapper.
+ *
  * @author mpelcat
  */
 public class MapperDAGVertex extends DAGVertex {
 
-	/**
-	 * Operator to which the vertex has been affected by the mapping algorithm
-	 */
-	private ComponentInstance effectiveComponent;
-	
-	/**
-	 * Properties set when converting sdf to dag
-	 */
-	private static final String INITIAL_PROPERTY = "INITIAL_PROPERTY";
-	// protected InitialVertexProperty initialVertexProperty;
+  /** Operator to which the vertex has been affected by the mapping algorithm. */
+  private ComponentInstance effectiveComponent;
 
-	static {
-		{
-			public_properties
-					.add(ImplementationPropertyNames.Vertex_OperatorDef);
-			public_properties
-					.add(ImplementationPropertyNames.Vertex_Available_Operators);
-			public_properties
-					.add(ImplementationPropertyNames.Vertex_originalVertexId);
-			public_properties.add(ImplementationPropertyNames.Task_duration);
-			public_properties
-					.add(ImplementationPropertyNames.Vertex_schedulingOrder);
-			public_properties.add(ImplementationPropertyNames.Vertex_Operator);
+  /** Properties set when converting sdf to dag. */
+  private static final String INITIAL_PROPERTY = "INITIAL_PROPERTY";
+  // protected InitialVertexProperty initialVertexProperty;
 
-		}
-	};
+  static {
+    {
+      AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_OperatorDef);
+      AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_Available_Operators);
+      AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_originalVertexId);
+      AbstractVertex.public_properties.add(ImplementationPropertyNames.Task_duration);
+      AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_schedulingOrder);
+      AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_Operator);
 
-	public MapperDAGVertex() {
+    }
+  }
 
-		this("default", "default", null);
-		effectiveComponent = DesignTools.NO_COMPONENT_INSTANCE;
-	}
+  /**
+   * Instantiates a new mapper DAG vertex.
+   */
+  public MapperDAGVertex() {
 
-	public MapperDAGVertex(String id, MapperDAG base) {
+    this("default", "default", null);
+    this.effectiveComponent = DesignTools.NO_COMPONENT_INSTANCE;
+  }
 
-		this(id, id, base);
-	}
+  /**
+   * Instantiates a new mapper DAG vertex.
+   *
+   * @param id
+   *          the id
+   * @param base
+   *          the base
+   */
+  public MapperDAGVertex(final String id, final MapperDAG base) {
 
-	public MapperDAGVertex(String id, String name, MapperDAG base) {
+    this(id, id, base);
+  }
 
-		super();
+  /**
+   * Instantiates a new mapper DAG vertex.
+   *
+   * @param id
+   *          the id
+   * @param name
+   *          the name
+   * @param base
+   *          the base
+   */
+  public MapperDAGVertex(final String id, final String name, final MapperDAG base) {
 
-		this.setName(name);
-		this.getPropertyBean().setValue(INITIAL_PROPERTY, new VertexInit());
-		this.getInit().setParentVertex(this);
-		effectiveComponent = DesignTools.NO_COMPONENT_INSTANCE;
-	}
+    super();
 
-	@Override
-	public MapperDAGVertex clone() {
+    setName(name);
+    getPropertyBean().setValue(MapperDAGVertex.INITIAL_PROPERTY, new VertexInit());
+    getInit().setParentVertex(this);
+    this.effectiveComponent = DesignTools.NO_COMPONENT_INSTANCE;
+  }
 
-		MapperDAGVertex result = null;
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.algorithm.model.dag.DAGVertex#clone()
+   */
+  @Override
+  public MapperDAGVertex clone() {
 
-		if (this instanceof OverheadVertex) {
-			result = new OverheadVertex(this.getId(),
-					(MapperDAG) this.getBase());
-		} else if (this instanceof SendVertex) {
-			result = new SendVertex(this.getId(), (MapperDAG) this.getBase(),
-					((SendVertex) this).getSource(),
-					((SendVertex) this).getTarget(),
-					((SendVertex) this).getRouteStepIndex(),
-					((SendVertex) this).getNodeIndex());
-		} else if (this instanceof ReceiveVertex) {
-			result = new ReceiveVertex(this.getId(),
-					(MapperDAG) this.getBase(),
-					((ReceiveVertex) this).getSource(),
-					((ReceiveVertex) this).getTarget(),
-					((ReceiveVertex) this).getRouteStepIndex(),
-					((ReceiveVertex) this).getNodeIndex());
-		} else if (this instanceof TransferVertex) {
-			TransferVertex t = (TransferVertex) this;
-			result = new TransferVertex(this.getId(),
-					(MapperDAG) this.getBase(), t.getSource(), t.getTarget(),
-					t.getRouteStepIndex(), t.getNodeIndex());
-		} else {
-			result = new MapperDAGVertex(this.getId(), this.getName(),
-					(MapperDAG) this.getBase());
-		}
+    MapperDAGVertex result = null;
 
-		result.setInit(this.getInit().clone(result));
-		result.setEffectiveComponent(getEffectiveComponent());
+    if (this instanceof OverheadVertex) {
+      result = new OverheadVertex(getId(), (MapperDAG) getBase());
+    } else if (this instanceof SendVertex) {
+      result = new SendVertex(getId(), (MapperDAG) getBase(), ((SendVertex) this).getSource(),
+          ((SendVertex) this).getTarget(), ((SendVertex) this).getRouteStepIndex(),
+          ((SendVertex) this).getNodeIndex());
+    } else if (this instanceof ReceiveVertex) {
+      result = new ReceiveVertex(getId(), (MapperDAG) getBase(), ((ReceiveVertex) this).getSource(),
+          ((ReceiveVertex) this).getTarget(), ((ReceiveVertex) this).getRouteStepIndex(),
+          ((ReceiveVertex) this).getNodeIndex());
+    } else if (this instanceof TransferVertex) {
+      final TransferVertex t = (TransferVertex) this;
+      result = new TransferVertex(getId(), (MapperDAG) getBase(), t.getSource(), t.getTarget(),
+          t.getRouteStepIndex(), t.getNodeIndex());
+    } else {
+      result = new MapperDAGVertex(getId(), getName(), (MapperDAG) getBase());
+    }
 
-		for (String propertyKey : this.getPropertyBean().keys()) {
-			Object property = this.getPropertyBean().getValue(propertyKey);
-			result.getPropertyBean().setValue(propertyKey, property);
-		}
+    result.setInit(getInit().clone(result));
+    result.setEffectiveComponent(getEffectiveComponent());
 
-		return result;
-	}
+    for (final String propertyKey : getPropertyBean().keys()) {
+      final Object property = getPropertyBean().getValue(propertyKey);
+      result.getPropertyBean().setValue(propertyKey, property);
+    }
 
-	public VertexInit getInit() {
-		return (VertexInit) this.getPropertyBean().getValue(INITIAL_PROPERTY);
-	}
+    return result;
+  }
 
-	private void setInit(VertexInit initialVertexProperty) {
-		this.getPropertyBean()
-				.setValue(INITIAL_PROPERTY, initialVertexProperty);
-	}
+  /**
+   * Gets the inits the.
+   *
+   * @return the inits the
+   */
+  public VertexInit getInit() {
+    return (VertexInit) getPropertyBean().getValue(MapperDAGVertex.INITIAL_PROPERTY);
+  }
 
-	@Override
-	public boolean equals(Object obj) {
+  /**
+   * Sets the inits the.
+   *
+   * @param initialVertexProperty
+   *          the new inits the
+   */
+  private void setInit(final VertexInit initialVertexProperty) {
+    getPropertyBean().setValue(MapperDAGVertex.INITIAL_PROPERTY, initialVertexProperty);
+  }
 
-		if (obj instanceof MapperDAGVertex) {
-			MapperDAGVertex v = (MapperDAGVertex) obj;
-			return (this.getName().compareTo(v.getName()) == 0);
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.algorithm.model.AbstractVertex#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(final Object obj) {
 
-		return false;
-	}
+    if (obj instanceof MapperDAGVertex) {
+      final MapperDAGVertex v = (MapperDAGVertex) obj;
+      return (getName().compareTo(v.getName()) == 0);
+    }
 
-	@Override
-	public String toString() {
+    return false;
+  }
 
-		String toString = "";
-		if (this.hasEffectiveComponent()) {
-			// If the vertex is mapped, displays its component and rank
-			toString = getName() + "(";
-			toString += this.getEffectiveComponent()
-						.toString();
-			if (this.getTiming() != null) {
-				//toString += "," + this.getTiming().getTotalOrder(this);
-				toString += "," + this.getTiming().getTLevel();
-				toString += "," + this.getTiming().getBLevel();
-				toString += "," + this.getTiming().getCost();
-			}
-			toString += ")";
-		} else {
-			// If the vertex is not mapped, displays its weight
-			toString = getName() + "(" + this.getNbRepeat() + ")";
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.algorithm.model.dag.DAGVertex#toString()
+   */
+  @Override
+  public String toString() {
 
-		return toString;
-	}
+    String toString = "";
+    if (hasEffectiveComponent()) {
+      // If the vertex is mapped, displays its component and rank
+      toString = getName() + "(";
+      toString += getEffectiveComponent().toString();
+      if (getTiming() != null) {
+        // toString += "," + this.getTiming().getTotalOrder(this);
+        toString += "," + getTiming().getTLevel();
+        toString += "," + getTiming().getBLevel();
+        toString += "," + getTiming().getCost();
+      }
+      toString += ")";
+    } else {
+      // If the vertex is not mapped, displays its weight
+      toString = getName() + "(" + getNbRepeat() + ")";
+    }
 
-	/**
-	 * Getting all predecessors, ignoring or not the precedence edges.
-	 * Predecessors are given as keys for a map containing corresponding edges.
-	 */
-	public Map<MapperDAGVertex, MapperDAGEdge> getPredecessors(
-			boolean ignorePrecedence) {
+    return toString;
+  }
 
-		Map<MapperDAGVertex, MapperDAGEdge> preds = new HashMap<MapperDAGVertex, MapperDAGEdge>();
-		Set<DAGEdge> incomingSet = this.incomingEdges();
+  /**
+   * Getting all predecessors, ignoring or not the precedence edges. Predecessors are given as keys
+   * for a map containing corresponding edges.
+   *
+   * @param ignorePrecedence
+   *          the ignore precedence
+   * @return the predecessors
+   */
+  public Map<MapperDAGVertex, MapperDAGEdge> getPredecessors(final boolean ignorePrecedence) {
 
-		if (ignorePrecedence) {
-			for (DAGEdge edge : incomingSet) {
-				if (!(edge instanceof PrecedenceEdge)
-						&& edge.getSource() != null) {
-					preds.put((MapperDAGVertex) edge.getSource(),
-							(MapperDAGEdge) edge);
-				}
-			}
-		} else {
-			for (DAGEdge edge : incomingSet) {
-				if (edge.getSource() != null) {
-					preds.put((MapperDAGVertex) edge.getSource(),
-							(MapperDAGEdge) edge);
-				}
-			}
-		}
-		return preds;
-	}
+    final Map<MapperDAGVertex, MapperDAGEdge> preds = new HashMap<>();
+    final Set<DAGEdge> incomingSet = incomingEdges();
 
-	/**
-	 * Getting all successors, ignoring or not the precedence edges Successors
-	 * are given as keys for a map containing corresponding edges.
-	 */
-	public Map<MapperDAGVertex, MapperDAGEdge> getSuccessors(
-			boolean ignorePrecedence) {
+    if (ignorePrecedence) {
+      for (final DAGEdge edge : incomingSet) {
+        if (!(edge instanceof PrecedenceEdge) && (edge.getSource() != null)) {
+          preds.put((MapperDAGVertex) edge.getSource(), (MapperDAGEdge) edge);
+        }
+      }
+    } else {
+      for (final DAGEdge edge : incomingSet) {
+        if (edge.getSource() != null) {
+          preds.put((MapperDAGVertex) edge.getSource(), (MapperDAGEdge) edge);
+        }
+      }
+    }
+    return preds;
+  }
 
-		Map<MapperDAGVertex, MapperDAGEdge> succs = new HashMap<MapperDAGVertex, MapperDAGEdge>();
-		Set<DAGEdge> outgoingSet = this.outgoingEdges();
+  /**
+   * Getting all successors, ignoring or not the precedence edges Successors are given as keys for a
+   * map containing corresponding edges.
+   *
+   * @param ignorePrecedence
+   *          the ignore precedence
+   * @return the successors
+   */
+  public Map<MapperDAGVertex, MapperDAGEdge> getSuccessors(final boolean ignorePrecedence) {
 
-		if (ignorePrecedence) {
-			for (DAGEdge edge : outgoingSet) {
-				if (!(edge instanceof PrecedenceEdge)
-						&& edge.getTarget() != null) {
-					succs.put((MapperDAGVertex) edge.getTarget(),
-							(MapperDAGEdge) edge);
-				}
-			}
-		} else {
-			for (DAGEdge edge : outgoingSet) {
-				if (edge.getTarget() != null) {
-					succs.put((MapperDAGVertex) edge.getTarget(),
-							(MapperDAGEdge) edge);
-				}
-			}
-		}
-		return succs;
-	}
+    final Map<MapperDAGVertex, MapperDAGEdge> succs = new HashMap<>();
+    final Set<DAGEdge> outgoingSet = outgoingEdges();
 
-	@Override
-	public Set<DAGEdge> incomingEdges() {
-		// TODO Auto-generated method stub
-		return super.incomingEdges();
-	}
+    if (ignorePrecedence) {
+      for (final DAGEdge edge : outgoingSet) {
+        if (!(edge instanceof PrecedenceEdge) && (edge.getTarget() != null)) {
+          succs.put((MapperDAGVertex) edge.getTarget(), (MapperDAGEdge) edge);
+        }
+      }
+    } else {
+      for (final DAGEdge edge : outgoingSet) {
+        if (edge.getTarget() != null) {
+          succs.put((MapperDAGVertex) edge.getTarget(), (MapperDAGEdge) edge);
+        }
+      }
+    }
+    return succs;
+  }
 
-	@Override
-	public Set<DAGEdge> outgoingEdges() {
-		// TODO Auto-generated method stub
-		return super.outgoingEdges();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.algorithm.model.dag.DAGVertex#incomingEdges()
+   */
+  @Override
+  public Set<DAGEdge> incomingEdges() {
+    // TODO Auto-generated method stub
+    return super.incomingEdges();
+  }
 
-	@Override
-	public String getPropertyStringValue(String propertyName) {
-		if (propertyName.equals(ImplementationPropertyNames.Vertex_OperatorDef)) {
-			return getEffectiveOperator().getComponent().getVlnv()
-					.getName();
-		} else if (propertyName
-				.equals(ImplementationPropertyNames.Vertex_Available_Operators)) {
-			return getInit().getInitialOperatorList().toString();
-		} else if (propertyName
-				.equals(ImplementationPropertyNames.Vertex_originalVertexId)) {
-			return getInit().getParentVertex().getId();
-		} else if (propertyName
-				.equals(ImplementationPropertyNames.Task_duration)) {
-			return String.valueOf(getTiming().getCost());
-		} else if (propertyName
-				.equals(ImplementationPropertyNames.Vertex_schedulingOrder)) {
-			return String.valueOf(this.getTiming().getTotalOrder(this));
-		} else if (propertyName
-				.equals(ImplementationPropertyNames.Vertex_Operator)) {
-			return this.getEffectiveComponent().getInstanceName();
-		}
-		return super.getPropertyStringValue(propertyName);
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.algorithm.model.dag.DAGVertex#outgoingEdges()
+   */
+  @Override
+  public Set<DAGEdge> outgoingEdges() {
+    // TODO Auto-generated method stub
+    return super.outgoingEdges();
+  }
 
-	public int getTotalOrder() {
-		return getTiming().getTotalOrder(this);
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.algorithm.model.AbstractVertex#getPropertyStringValue(java.lang.String)
+   */
+  @Override
+  public String getPropertyStringValue(final String propertyName) {
+    if (propertyName.equals(ImplementationPropertyNames.Vertex_OperatorDef)) {
+      return getEffectiveOperator().getComponent().getVlnv().getName();
+    } else if (propertyName.equals(ImplementationPropertyNames.Vertex_Available_Operators)) {
+      return getInit().getInitialOperatorList().toString();
+    } else if (propertyName.equals(ImplementationPropertyNames.Vertex_originalVertexId)) {
+      return getInit().getParentVertex().getId();
+    } else if (propertyName.equals(ImplementationPropertyNames.Task_duration)) {
+      return String.valueOf(getTiming().getCost());
+    } else if (propertyName.equals(ImplementationPropertyNames.Vertex_schedulingOrder)) {
+      return String.valueOf(getTiming().getTotalOrder(this));
+    } else if (propertyName.equals(ImplementationPropertyNames.Vertex_Operator)) {
+      return getEffectiveComponent().getInstanceName();
+    }
+    return super.getPropertyStringValue(propertyName);
+  }
 
-	public void setTotalOrder(int schedulingTotalOrder) {
-		getTiming().setTotalOrder(this.getName(), schedulingTotalOrder);
-	}
+  /**
+   * Gets the total order.
+   *
+   * @return the total order
+   */
+  public int getTotalOrder() {
+    return getTiming().getTotalOrder(this);
+  }
 
-	/**
-	 * Timing properties are store in the graph and possibly shared with other
-	 * vertices.
-	 */
-	public VertexTiming getTiming() {
-		return ((MapperDAG) getBase()).getTimings().getTiming(getName());
-	}
+  /**
+   * Sets the total order.
+   *
+   * @param schedulingTotalOrder
+   *          the new total order
+   */
+  public void setTotalOrder(final int schedulingTotalOrder) {
+    getTiming().setTotalOrder(getName(), schedulingTotalOrder);
+  }
 
-	/**
-	 * Mapping group is stored in the graph. It is a group of vertices sharing
-	 * mapping properties.
-	 */
-	public VertexMapping getMapping() {
-			return ((MapperDAG) getBase()).getMappings().getMapping(getName());
-	}
+  /**
+   * Timing properties are store in the graph and possibly shared with other vertices.
+   *
+   * @return the timing
+   */
+  public VertexTiming getTiming() {
+    return ((MapperDAG) getBase()).getTimings().getTiming(getName());
+  }
 
-	/**
-	 * A computation vertex has an effective operator: the operator executing it.
-	 */
-	public ComponentInstance getEffectiveOperator() {
-		if (effectiveComponent != null
-				&& effectiveComponent.getComponent() instanceof Operator)
-			return effectiveComponent;
-		else
-			return DesignTools.NO_COMPONENT_INSTANCE;
-	}
+  /**
+   * Mapping group is stored in the graph. It is a group of vertices sharing mapping properties.
+   *
+   * @return the mapping
+   */
+  public VertexMapping getMapping() {
+    return ((MapperDAG) getBase()).getMappings().getMapping(getName());
+  }
 
-	public boolean hasEffectiveOperator() {
-		return getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE;
-	}
+  /**
+   * A computation vertex has an effective operator: the operator executing it.
+   *
+   * @return the effective operator
+   */
+  public ComponentInstance getEffectiveOperator() {
+    if ((this.effectiveComponent != null)
+        && (this.effectiveComponent.getComponent() instanceof Operator)) {
+      return this.effectiveComponent;
+    } else {
+      return DesignTools.NO_COMPONENT_INSTANCE;
+    }
+  }
 
-	public void setEffectiveOperator(ComponentInstance effectiveOperator) {
-		this.effectiveComponent = effectiveOperator;
-	}
+  /**
+   * Checks for effective operator.
+   *
+   * @return true, if successful
+   */
+  public boolean hasEffectiveOperator() {
+    return getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE;
+  }
 
-	/**
-	 * Effective component is common to communication and computation vertices
-	 */
-	public ComponentInstance getEffectiveComponent() {
-		return effectiveComponent;
-	}
+  /**
+   * Sets the effective operator.
+   *
+   * @param effectiveOperator
+   *          the new effective operator
+   */
+  public void setEffectiveOperator(final ComponentInstance effectiveOperator) {
+    this.effectiveComponent = effectiveOperator;
+  }
 
-	public boolean hasEffectiveComponent() {
-		return getEffectiveComponent() != DesignTools.NO_COMPONENT_INSTANCE;
-	}
+  /**
+   * Effective component is common to communication and computation vertices.
+   *
+   * @return the effective component
+   */
+  public ComponentInstance getEffectiveComponent() {
+    return this.effectiveComponent;
+  }
 
-	public void setEffectiveComponent(ComponentInstance component) {
-		this.effectiveComponent = component;
-	}
+  /**
+   * Checks for effective component.
+   *
+   * @return true, if successful
+   */
+  public boolean hasEffectiveComponent() {
+    return getEffectiveComponent() != DesignTools.NO_COMPONENT_INSTANCE;
+  }
+
+  /**
+   * Sets the effective component.
+   *
+   * @param component
+   *          the new effective component
+   */
+  public void setEffectiveComponent(final ComponentInstance component) {
+    this.effectiveComponent = component;
+  }
 }

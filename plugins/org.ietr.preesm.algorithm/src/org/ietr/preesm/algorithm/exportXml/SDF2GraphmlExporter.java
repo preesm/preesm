@@ -44,25 +44,37 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.ietr.dftools.algorithm.exporter.GMLSDFExporter;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class SDF2GraphmlExporter.
+ */
 public class SDF2GraphmlExporter {
-	public void export(SDFGraph algorithm, IPath xmlPath) {
-		GMLSDFExporter exporter = new GMLSDFExporter();
-		//SDFGraph clone = ((SDFGraph) (algorithm)).clone();
-		if (xmlPath.getFileExtension() == null
-				|| !xmlPath.getFileExtension().equals("graphml")) {
-			xmlPath = xmlPath.addFileExtension("graphml");
-		}
 
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+  /**
+   * Export.
+   *
+   * @param algorithm
+   *          the algorithm
+   * @param xmlPath
+   *          the xml path
+   */
+  public void export(final SDFGraph algorithm, IPath xmlPath) {
+    final GMLSDFExporter exporter = new GMLSDFExporter();
+    // SDFGraph clone = ((SDFGraph) (algorithm)).clone();
+    if ((xmlPath.getFileExtension() == null) || !xmlPath.getFileExtension().equals("graphml")) {
+      xmlPath = xmlPath.addFileExtension("graphml");
+    }
 
-		IFile iFile = workspace.getRoot().getFile(xmlPath);
-		try {
-			if (!iFile.exists()) {
-				iFile.create(null, false, new NullProgressMonitor());
-			}
-			exporter.export(algorithm, iFile.getRawLocation().toOSString());
-		} catch (CoreException e1) {
-			e1.printStackTrace();
-		}
-	}
+    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+
+    final IFile iFile = workspace.getRoot().getFile(xmlPath);
+    try {
+      if (!iFile.exists()) {
+        iFile.create(null, false, new NullProgressMonitor());
+      }
+      exporter.export(algorithm, iFile.getRawLocation().toOSString());
+    } catch (final CoreException ex) {
+      ex.printStackTrace();
+    }
+  }
 }

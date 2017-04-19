@@ -37,7 +37,6 @@
 package org.ietr.preesm.algorithm.exportSdf3Xml;
 
 import java.io.File;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -48,28 +47,45 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class SDF3ExporterEngine.
+ */
 public class SDF3ExporterEngine {
-	public void printSDFGraphToSDF3File(SDFGraph sdf, PreesmScenario scenario, Design architecture, IPath path) {
-		// Create the exporter
-		Sdf3Printer exporter = new Sdf3Printer(sdf, scenario, architecture);
 
-		try {
-			if (path.getFileExtension() == null
-					|| !path.getFileExtension().equals("xml")) {
-				path = path.addFileExtension("xml");
-			}
-			IWorkspace workspace = ResourcesPlugin.getWorkspace();
-			IFile iFile = workspace.getRoot().getFile(path);
-			if (!iFile.exists()) {
-				iFile.create(null, false, new NullProgressMonitor());
-			}
-			File file = new File(iFile.getRawLocation().toOSString());
+  /**
+   * Prints the SDF graph to SDF 3 file.
+   *
+   * @param sdf
+   *          the sdf
+   * @param scenario
+   *          the scenario
+   * @param architecture
+   *          the architecture
+   * @param path
+   *          the path
+   */
+  public void printSDFGraphToSDF3File(final SDFGraph sdf, final PreesmScenario scenario,
+      final Design architecture, IPath path) {
+    // Create the exporter
+    final Sdf3Printer exporter = new Sdf3Printer(sdf, scenario, architecture);
 
-			// Write the result into the text file
-			exporter.write(file);
+    try {
+      if ((path.getFileExtension() == null) || !path.getFileExtension().equals("xml")) {
+        path = path.addFileExtension("xml");
+      }
+      final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+      final IFile iFile = workspace.getRoot().getFile(path);
+      if (!iFile.exists()) {
+        iFile.create(null, false, new NullProgressMonitor());
+      }
+      final File file = new File(iFile.getRawLocation().toOSString());
 
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
-	}
+      // Write the result into the text file
+      exporter.write(file);
+
+    } catch (final CoreException e) {
+      e.printStackTrace();
+    }
+  }
 }

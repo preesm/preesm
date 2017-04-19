@@ -198,7 +198,6 @@
       <plugin id="org.ietr.preesm.ui"/>
       <plugin id="org.ietr.preesm.utils"/>
       <plugin id="org.jgrapht"/>
-      <plugin id="org.junit"/>
       <plugin id="org.sat4j.core"/>
       <plugin id="org.sat4j.pb"/>
       <plugin id="org.tukaani.xz"/>

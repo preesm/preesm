@@ -40,75 +40,123 @@ package org.ietr.preesm.codegen.idl;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import org.ietr.dftools.algorithm.model.IRefinement;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
 
+// TODO: Auto-generated Javadoc
 /**
- * Function prototype
- * 
+ * Function prototype.
+ *
  * @author mpelcat
  */
 public class Prototype implements IRefinement {
 
-	private String functionName;
-	private int nbArgs;
+  /** The function name. */
+  private String functionName;
 
-	/**
-	 * This map associates {@link CodeGenArgument} of the prototype with an
-	 * integer that represent the order of the argument in the prototype.
-	 */
-	private Map<CodeGenArgument, Integer> arguments;
+  /** The nb args. */
+  private int nbArgs;
 
-	/**
-	 * This map associates {@link CodeGenParameter} of the prototype with an
-	 * integer that represent the order of the argument in the prototype.
-	 */
-	private Map<CodeGenParameter, Integer> parameters;
+  /**
+   * This map associates {@link CodeGenArgument} of the prototype with an integer that represent the order of the argument in the prototype.
+   */
+  private final Map<CodeGenArgument, Integer> arguments;
 
-	public Prototype() {
-		functionName = "";
-		arguments = new LinkedHashMap<CodeGenArgument, Integer>();
-		parameters = new LinkedHashMap<CodeGenParameter, Integer>();
-		nbArgs = 0;
-	}
+  /**
+   * This map associates {@link CodeGenParameter} of the prototype with an integer that represent the order of the argument in the prototype.
+   */
+  private final Map<CodeGenParameter, Integer> parameters;
 
-	public Prototype(String name) {
-		functionName = name;
-		arguments = new LinkedHashMap<CodeGenArgument, Integer>();
-		parameters = new LinkedHashMap<CodeGenParameter, Integer>();
-		nbArgs = 0;
-	}
+  /**
+   * Instantiates a new prototype.
+   */
+  public Prototype() {
+    this.functionName = "";
+    this.arguments = new LinkedHashMap<>();
+    this.parameters = new LinkedHashMap<>();
+    this.nbArgs = 0;
+  }
 
-	public String getFunctionName() {
-		return functionName;
-	}
+  /**
+   * Instantiates a new prototype.
+   *
+   * @param name
+   *          the name
+   */
+  public Prototype(final String name) {
+    this.functionName = name;
+    this.arguments = new LinkedHashMap<>();
+    this.parameters = new LinkedHashMap<>();
+    this.nbArgs = 0;
+  }
 
-	public void setFunctionName(String name) {
-		functionName = name;
-	}
+  /**
+   * Gets the function name.
+   *
+   * @return the function name
+   */
+  public String getFunctionName() {
+    return this.functionName;
+  }
 
-	public void addArgument(CodeGenArgument arg) {
-		arguments.put(arg, nbArgs);
-		nbArgs++;
-	}
+  /**
+   * Sets the function name.
+   *
+   * @param name
+   *          the new function name
+   */
+  public void setFunctionName(final String name) {
+    this.functionName = name;
+  }
 
-	public void addParameter(CodeGenParameter parameterName) {
-		parameters.put(parameterName, nbArgs);
-		nbArgs++;
-	}
+  /**
+   * Adds the argument.
+   *
+   * @param arg
+   *          the arg
+   */
+  public void addArgument(final CodeGenArgument arg) {
+    this.arguments.put(arg, this.nbArgs);
+    this.nbArgs++;
+  }
 
-	public Map<CodeGenArgument, Integer> getArguments() {
-		return arguments;
-	}
+  /**
+   * Adds the parameter.
+   *
+   * @param parameterName
+   *          the parameter name
+   */
+  public void addParameter(final CodeGenParameter parameterName) {
+    this.parameters.put(parameterName, this.nbArgs);
+    this.nbArgs++;
+  }
 
-	public Map<CodeGenParameter, Integer> getParameters() {
-		return parameters;
-	}
+  /**
+   * Gets the arguments.
+   *
+   * @return the arguments
+   */
+  public Map<CodeGenArgument, Integer> getArguments() {
+    return this.arguments;
+  }
 
-	public int getNbArgs() {
-		return nbArgs;
-	}
+  /**
+   * Gets the parameters.
+   *
+   * @return the parameters
+   */
+  public Map<CodeGenParameter, Integer> getParameters() {
+    return this.parameters;
+  }
+
+  /**
+   * Gets the nb args.
+   *
+   * @return the nb args
+   */
+  public int getNbArgs() {
+    return this.nbArgs;
+  }
 
 }

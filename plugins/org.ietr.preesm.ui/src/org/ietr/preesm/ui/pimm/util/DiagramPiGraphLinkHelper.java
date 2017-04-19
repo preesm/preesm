@@ -36,7 +36,6 @@
 package org.ietr.preesm.ui.pimm.util;
 
 import java.util.List;
-
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -49,134 +48,110 @@ import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
+// TODO: Auto-generated Javadoc
 /**
- * This class contains methods that can be usefull when manipulating
- * {@link Diagram} together with associated {@link PiGraph}.
- * 
+ * This class contains methods that can be usefull when manipulating {@link Diagram} together with associated {@link PiGraph}.
+ *
  * @author kdesnos
  *
  */
 public class DiagramPiGraphLinkHelper {
 
-	/**
-	 * Clear all the bendpoints of the {@link Fifo} and {@link Dependency} in
-	 * the diagram passed as a parameter.
-	 * 
-	 * @param diagram
-	 */
-	public static void clearBendpoints(Diagram diagram) {
-		for (Connection connection : diagram.getConnections()) {
-			((FreeFormConnection) connection).getBendpoints().clear();
-		}
-	}
+  /**
+   * Clear all the bendpoints of the {@link Fifo} and {@link Dependency} in the diagram passed as a parameter.
+   *
+   * @param diagram
+   *          the diagram
+   */
+  public static void clearBendpoints(final Diagram diagram) {
+    for (final Connection connection : diagram.getConnections()) {
+      ((FreeFormConnection) connection).getBendpoints().clear();
+    }
+  }
 
-	/**
-	 * Retrieve the {@link PictogramElement} of the {@link Diagram}
-	 * corresponding to the given {@link AbstractActor}.
-	 * 
-	 * @param diagram
-	 *            the {@link Diagram} containing the {@link PictogramElement}
-	 * @param actor
-	 *            the {@link AbstractActor} whose {@link PictogramElement} is
-	 *            searched.
-	 * @return the {@link PictogramElement} of the {@link AbstractActor}.
-	 * @throws RuntimeException
-	 *             if no {@link PictogramElement} could be found in this
-	 *             {@link Diagram} for this {@link AbstractActor}.
-	 */
-	public static PictogramElement getActorPE(Diagram diagram, AbstractActor actor)
-			throws RuntimeException {
-		// Get the PE
-		List<PictogramElement> pes = Graphiti.getLinkService()
-				.getPictogramElements(diagram, actor);
-		PictogramElement actorPE = null;
-		for (PictogramElement pe : pes) {
-			if (pe instanceof ContainerShape) {
-				actorPE = pe;
-				break;
-			}
-		}
-	
-		if (actorPE == null) {
-			throw new RuntimeException("No PE was found for actor :"
-					+ actor.getName());
-		}
-		return actorPE;
-	}
+  /**
+   * Retrieve the {@link PictogramElement} of the {@link Diagram} corresponding to the given {@link AbstractActor}.
+   *
+   * @param diagram
+   *          the {@link Diagram} containing the {@link PictogramElement}
+   * @param actor
+   *          the {@link AbstractActor} whose {@link PictogramElement} is searched.
+   * @return the {@link PictogramElement} of the {@link AbstractActor}.
+   * @throws RuntimeException
+   *           if no {@link PictogramElement} could be found in this {@link Diagram} for this {@link AbstractActor}.
+   */
+  public static PictogramElement getActorPE(final Diagram diagram, final AbstractActor actor) throws RuntimeException {
+    // Get the PE
+    final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, actor);
+    PictogramElement actorPE = null;
+    for (final PictogramElement pe : pes) {
+      if (pe instanceof ContainerShape) {
+        actorPE = pe;
+        break;
+      }
+    }
 
-	/**
-	 * Retrieve the {@link PictogramElement} of the {@link Diagram}
-	 * corresponding to the given {@link Fifo}.
-	 * 
-	 * @param diagram
-	 *            the {@link Diagram} containing the {@link PictogramElement}
-	 * @param fifo
-	 *            the {@link Fifo} whose {@link PictogramElement} is searched.
-	 * @return the {@link PictogramElement} of the {@link Fifo}.
-	 * @throws RuntimeException
-	 *             if no {@link PictogramElement} could be found in this
-	 *             {@link Diagram} for this {@link Fifo}.
-	 */
-	public static ContainerShape getDelayPE(Diagram diagram, Fifo fifo)
-			throws RuntimeException {
-		// Get all delays with identical attributes (may not be the
-		// right delay is several delays have the same properties.)
-		List<PictogramElement> pes = Graphiti.getLinkService()
-				.getPictogramElements(diagram, fifo.getDelay());
-		PictogramElement pe = null;
-		for (PictogramElement p : pes) {
-			if (p instanceof ContainerShape
-					&& Graphiti.getLinkService()
-							.getBusinessObjectForLinkedPictogramElement(p) == fifo
-							.getDelay()) {
-				pe = p;
-			}
-		}
-		// if PE is still null.. something is deeply wrong with this
-		// graph !
-		if (pe == null) {
-			throw new RuntimeException(
-					"Pictogram element associated to delay of Fifo "
-							+ fifo.getId() + " could not be found.");
-		}
-		return (ContainerShape) pe;
-	}
+    if (actorPE == null) {
+      throw new RuntimeException("No PE was found for actor :" + actor.getName());
+    }
+    return actorPE;
+  }
 
-	/**
-	 * Get the {@link FreeFormConnection} associated to an edge of the
-	 * {@link Diagram}. The Edge can either be a {@link Fifo} or a
-	 * {@link Dependency}.
-	 * 
-	 * @param diagram
-	 *            the {@link Diagram} containing the edge.
-	 * @param edge
-	 *            the {@link Fifo} or the {@link Dependency} whose
-	 *            {@link FreeFormConnection} is searched.
-	 * @return the searched {@link FreeFormConnection}.
-	 * @throws RuntimeException
-	 *             if not {@link FreeFormConnection} could be found, a
-	 *             {@link RuntimeException} is thrown
-	 */
-	public static FreeFormConnection getFreeFormConnectionOfEdge(
-			Diagram diagram, EObject edge) throws RuntimeException {
-		List<PictogramElement> pes = Graphiti.getLinkService()
-				.getPictogramElements(diagram, edge);
-		FreeFormConnection ffc = null;
-		for (PictogramElement pe : pes) {
-			if (Graphiti.getLinkService()
-					.getBusinessObjectForLinkedPictogramElement(pe) == edge
-					&& pe instanceof FreeFormConnection) {
-				ffc = (FreeFormConnection) pe;
-			}
-		}
-	
-		// if PE is still null.. something is deeply wrong with this
-		// graph !
-		if (ffc == null) {
-			throw new RuntimeException("Pictogram element associated Edge "
-					+ edge + " could not be found.");
-		}
-		return ffc;
-	}
+  /**
+   * Retrieve the {@link PictogramElement} of the {@link Diagram} corresponding to the given {@link Fifo}.
+   *
+   * @param diagram
+   *          the {@link Diagram} containing the {@link PictogramElement}
+   * @param fifo
+   *          the {@link Fifo} whose {@link PictogramElement} is searched.
+   * @return the {@link PictogramElement} of the {@link Fifo}.
+   * @throws RuntimeException
+   *           if no {@link PictogramElement} could be found in this {@link Diagram} for this {@link Fifo}.
+   */
+  public static ContainerShape getDelayPE(final Diagram diagram, final Fifo fifo) throws RuntimeException {
+    // Get all delays with identical attributes (may not be the
+    // right delay is several delays have the same properties.)
+    final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, fifo.getDelay());
+    PictogramElement pe = null;
+    for (final PictogramElement p : pes) {
+      if ((p instanceof ContainerShape) && (Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(p) == fifo.getDelay())) {
+        pe = p;
+      }
+    }
+    // if PE is still null.. something is deeply wrong with this
+    // graph !
+    if (pe == null) {
+      throw new RuntimeException("Pictogram element associated to delay of Fifo " + fifo.getId() + " could not be found.");
+    }
+    return (ContainerShape) pe;
+  }
+
+  /**
+   * Get the {@link FreeFormConnection} associated to an edge of the {@link Diagram}. The Edge can either be a {@link Fifo} or a {@link Dependency}.
+   *
+   * @param diagram
+   *          the {@link Diagram} containing the edge.
+   * @param edge
+   *          the {@link Fifo} or the {@link Dependency} whose {@link FreeFormConnection} is searched.
+   * @return the searched {@link FreeFormConnection}.
+   * @throws RuntimeException
+   *           if not {@link FreeFormConnection} could be found, a {@link RuntimeException} is thrown
+   */
+  public static FreeFormConnection getFreeFormConnectionOfEdge(final Diagram diagram, final EObject edge) throws RuntimeException {
+    final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, edge);
+    FreeFormConnection ffc = null;
+    for (final PictogramElement pe : pes) {
+      if ((Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe) == edge) && (pe instanceof FreeFormConnection)) {
+        ffc = (FreeFormConnection) pe;
+      }
+    }
+
+    // if PE is still null.. something is deeply wrong with this
+    // graph !
+    if (ffc == null) {
+      throw new RuntimeException("Pictogram element associated Edge " + edge + " could not be found.");
+    }
+    return ffc;
+  }
 
 }

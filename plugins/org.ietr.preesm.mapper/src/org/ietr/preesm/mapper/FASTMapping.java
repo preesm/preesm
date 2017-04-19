@@ -40,7 +40,6 @@ package org.ietr.preesm.mapper;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -62,109 +61,116 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.params.FastAlgoParameters;
 
+// TODO: Auto-generated Javadoc
 /**
- * FAST is a sequential mapping/scheduling method based on list scheduling
- * followed by a neighborhood search phase. It was invented by Y-K Kwok.
- * 
+ * FAST is a sequential mapping/scheduling method based on list scheduling followed by a
+ * neighborhood search phase. It was invented by Y-K Kwok.
+ *
  * @author pmenuet
  * @author mpelcat
  */
 public class FASTMapping extends AbstractMapping {
 
-	/**
-	 * 
-	 */
-	public FASTMapping() {
-	}
+  /**
+   * Instantiates a new FAST mapping.
+   */
+  public FASTMapping() {
+  }
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = super.getDefaultParameters();
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.AbstractMapping#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = super.getDefaultParameters();
 
-		parameters.put("displaySolutions", "false");
-		parameters.put("fastTime", "100");
-		parameters.put("fastLocalSearchTime", "10");
-		return parameters;
-	}
+    parameters.put("displaySolutions", "false");
+    parameters.put("fastTime", "100");
+    parameters.put("fastLocalSearchTime", "10");
+    return parameters;
+  }
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.AbstractMapping#execute(java.util.Map, java.util.Map,
+   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs,
+      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
+      final Workflow workflow) throws WorkflowException {
 
-		Map<String, Object> outputs = new HashMap<String, Object>();
-		Design architecture = (Design) inputs.get("architecture");
-		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
-		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+    final Map<String, Object> outputs = new HashMap<>();
+    final Design architecture = (Design) inputs.get("architecture");
+    final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
+    final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 
-		super.execute(inputs, parameters, monitor, nodeName, workflow);
+    super.execute(inputs, parameters, monitor, nodeName, workflow);
 
-		FastAlgoParameters fastParams = new FastAlgoParameters(parameters);
-		AbcParameters abcParams = new AbcParameters(parameters);
+    final FastAlgoParameters fastParams = new FastAlgoParameters(parameters);
+    final AbcParameters abcParams = new AbcParameters(parameters);
 
-		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
-				scenario, false);
+    MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario, false);
 
-		if (dag == null) {
-			throw (new WorkflowException(
-					" graph can't be scheduled, check console messages"));
-		}
+    if (dag == null) {
+      throw (new WorkflowException(" graph can't be scheduled, check console messages"));
+    }
 
-		// calculates the DAG span length on the architecture main operator (the
-		// tasks that can
-		// not be executed by the main operator are deported without transfer
-		// time to other operator
-		calculateSpan(dag, architecture, scenario, abcParams);
+    // calculates the DAG span length on the architecture main operator (the
+    // tasks that can
+    // not be executed by the main operator are deported without transfer
+    // time to other operator
+    calculateSpan(dag, architecture, scenario, abcParams);
 
-		IAbc simu = new InfiniteHomogeneousAbc(abcParams, dag, architecture,
-				abcParams.getSimulatorType().getTaskSchedType(), scenario);
+    final IAbc simu = new InfiniteHomogeneousAbc(abcParams, dag, architecture,
+        abcParams.getSimulatorType().getTaskSchedType(), scenario);
 
-		InitialLists initialLists = new InitialLists();
-		if (!initialLists.constructInitialLists(dag, simu)) {
-			return outputs;
-		}
+    final InitialLists initialLists = new InitialLists();
+    if (!initialLists.constructInitialLists(dag, simu)) {
+      return outputs;
+    }
 
-		TopologicalTaskSched taskSched = new TopologicalTaskSched(
-				simu.getTotalOrder());
-		simu.resetDAG();
+    final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
+    simu.resetDAG();
 
-		FastAlgorithm fastAlgorithm = new FastAlgorithm(initialLists, scenario);
+    final FastAlgorithm fastAlgorithm = new FastAlgorithm(initialLists, scenario);
 
-		WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
+    WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
 
-		dag = fastAlgorithm.map("test", abcParams, fastParams, dag,
-				architecture, false, false, fastParams.isDisplaySolutions(),
-				monitor, taskSched);
+    dag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false,
+        fastParams.isDisplaySolutions(), monitor, taskSched);
 
-		WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
+    WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
 
-		IAbc simu2 = AbstractAbc.getInstance(abcParams, dag, architecture,
-				scenario);
-		// Transfer vertices are automatically regenerated
-		simu2.setDAG(dag);
+    final IAbc simu2 = AbstractAbc.getInstance(abcParams, dag, architecture, scenario);
+    // Transfer vertices are automatically regenerated
+    simu2.setDAG(dag);
 
-		// The transfers are reordered using the best found order during
-		// scheduling
-		simu2.reschedule(fastAlgorithm.getBestTotalOrder());
-		TagDAG tagDAG = new TagDAG();
+    // The transfers are reordered using the best found order during
+    // scheduling
+    simu2.reschedule(fastAlgorithm.getBestTotalOrder());
+    final TagDAG tagDAG = new TagDAG();
 
-		// The mapper dag properties are put in the property bean to be
-		// transfered to code generation
-		try {
-			tagDAG.tag(dag, architecture, scenario, simu2,
-					abcParams.getEdgeSchedType());
-		} catch (InvalidExpressionException e) {
-			throw (new WorkflowException(e.getMessage()));
-		}
+    // The mapper dag properties are put in the property bean to be
+    // transfered to code generation
+    try {
+      tagDAG.tag(dag, architecture, scenario, simu2, abcParams.getEdgeSchedType());
+    } catch (final InvalidExpressionException e) {
+      throw (new WorkflowException(e.getMessage()));
+    }
 
-		outputs.put("DAG", dag);
-		// A simple task scheduler avoids new task swaps and ensures reuse of
-		// previous order.
-		simu2.setTaskScheduler(new SimpleTaskSched());
-		outputs.put("ABC", simu2);
+    outputs.put("DAG", dag);
+    // A simple task scheduler avoids new task swaps and ensures reuse of
+    // previous order.
+    simu2.setTaskScheduler(new SimpleTaskSched());
+    outputs.put("ABC", simu2);
 
-		super.clean(architecture, scenario);
-		return outputs;
-	}
+    super.clean(architecture, scenario);
+    return outputs;
+  }
 
 }

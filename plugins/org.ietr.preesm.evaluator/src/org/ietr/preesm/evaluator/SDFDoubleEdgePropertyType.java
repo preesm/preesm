@@ -39,45 +39,69 @@ package org.ietr.preesm.evaluator;
 
 import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
 
-public class SDFDoubleEdgePropertyType extends AbstractEdgePropertyType<Double>  {
+// TODO: Auto-generated Javadoc
+/**
+ * The Class SDFDoubleEdgePropertyType.
+ */
+public class SDFDoubleEdgePropertyType extends AbstractEdgePropertyType<Double> {
 
-	/**
-	 * Creates a new SDFDefaultEdgePropertyType with the given double value
-	 * 
-	 * @param val
-	 *            The Long value of this SDFDefaultEdgePropertyType
-	 */
-	public SDFDoubleEdgePropertyType(double val) {
-		super(val);
-	}
+  /**
+   * Creates a new SDFDefaultEdgePropertyType with the given double value.
+   *
+   * @param val
+   *          The Long value of this SDFDefaultEdgePropertyType
+   */
+  public SDFDoubleEdgePropertyType(final double val) {
+    super(val);
+  }
 
-	/**
-	 * Creates a new SDFDefaultEdgePropertyType with the given String value
-	 * 
-	 * @param val
-	 *            The String value of this SDFDefaultEdgePropertyType
-	 */
-	public SDFDoubleEdgePropertyType(String val) {
-		super(new Double(val));
-	}
+  /**
+   * Creates a new SDFDefaultEdgePropertyType with the given String value.
+   *
+   * @param val
+   *          The String value of this SDFDefaultEdgePropertyType
+   */
+  public SDFDoubleEdgePropertyType(final String val) {
+    super(new Double(val));
+  }
 
-	@Override
-	public AbstractEdgePropertyType<Double> clone() {
-		return new SDFDoubleEdgePropertyType(value);
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#clone()
+   */
+  @Override
+  public AbstractEdgePropertyType<Double> clone() {
+    return new SDFDoubleEdgePropertyType(this.value);
+  }
 
-	@Override
-	public int intValue(){
-		return value.intValue();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#intValue()
+   */
+  @Override
+  public int intValue() {
+    return this.value.intValue();
+  }
 
-	@Override
-	public String toString() {
-		return value.toString();
-	}
-	
-	@Override
-	public Double getValue() {
-		return value;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#toString()
+   */
+  @Override
+  public String toString() {
+    return this.value.toString();
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#getValue()
+   */
+  @Override
+  public Double getValue() {
+    return this.value;
+  }
 }

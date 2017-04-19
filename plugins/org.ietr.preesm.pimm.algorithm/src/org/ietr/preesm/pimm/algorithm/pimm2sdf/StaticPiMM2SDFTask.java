@@ -39,48 +39,67 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.pimm.algorithm.pimm2sdf.StaticPiMM2SDFLauncher.StaticPiMM2SDFException;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class StaticPiMM2SDFTask.
+ */
 public class StaticPiMM2SDFTask extends AbstractTaskImplementation {
-	
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
-		
-		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
-		PiGraph graph = (PiGraph) inputs.get(KEY_PI_GRAPH);
-		
-		StaticPiMM2SDFLauncher launcher = new StaticPiMM2SDFLauncher(scenario, graph);
-		SDFGraph result = null;
-		try {
-			result = launcher.launch();
-		} catch (StaticPiMM2SDFException e) {
-			WorkflowLogger logger = WorkflowLogger.getLogger();
-			logger.log(Level.WARNING, e.getMessage());
-		}
-		
-		Map<String, Object> output = new HashMap<String, Object>();
-		output.put(KEY_SDF_GRAPH, result);
-		return output;
-	}
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		return Collections.emptyMap();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
-	@Override
-	public String monitorMessage() {
-		return "Transforming PiGraph to SDFGraphs";
-	}
+    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
+
+    final StaticPiMM2SDFLauncher launcher = new StaticPiMM2SDFLauncher(scenario, graph);
+    SDFGraph result = null;
+    try {
+      result = launcher.launch();
+    } catch (final StaticPiMM2SDFException e) {
+      final WorkflowLogger logger = WorkflowLogger.getLogger();
+      logger.log(Level.WARNING, e.getMessage());
+    }
+
+    final Map<String, Object> output = new HashMap<>();
+    output.put(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH, result);
+    return output;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    return Collections.emptyMap();
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Transforming PiGraph to SDFGraphs";
+  }
 }

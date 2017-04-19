@@ -40,49 +40,51 @@ import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.dftools.workflow.tools.CLIWorkflowLogger;
 
+// TODO: Auto-generated Javadoc
 /**
- * Define methods to use in specific cases of IApplication executions, in
- * command-line
- * 
+ * Define methods to use in specific cases of IApplication executions, in command-line.
+ *
  * @author Antoine Lorence
- * 
  */
 public class CommandLineUtil {
 
-	/**
-	 * If it is enabled, disable auto-building on the current workspace.
-	 * 
-	 * @return true if auto-building was enabled, false if it is already
-	 *         disabled
-	 * @throws CoreException
-	 */
-	public static boolean disableAutoBuild(final IWorkspace wp)
-			throws CoreException {
-		// IWorkspace.getDescription() returns a copy. We need to extract,
-		// modify and set it to the current workspace.
-		final IWorkspaceDescription desc = wp.getDescription();
-		if (wp.isAutoBuilding()) {
-			CLIWorkflowLogger.debugln("Disbale auto-building");
-			desc.setAutoBuilding(false);
-			wp.setDescription(desc);
-			return true;
-		}
+  /**
+   * If it is enabled, disable auto-building on the current workspace.
+   *
+   * @param wp
+   *          the wp
+   * @return true if auto-building was enabled, false if it is already disabled
+   * @throws CoreException
+   *           the core exception
+   */
+  public static boolean disableAutoBuild(final IWorkspace wp) throws CoreException {
+    // IWorkspace.getDescription() returns a copy. We need to extract,
+    // modify and set it to the current workspace.
+    final IWorkspaceDescription desc = wp.getDescription();
+    if (wp.isAutoBuilding()) {
+      CLIWorkflowLogger.debugln("Disbale auto-building");
+      desc.setAutoBuilding(false);
+      wp.setDescription(desc);
+      return true;
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	/**
-	 * Enable auto-building on the current workspace
-	 * 
-	 * @throws CoreException
-	 */
-	public static void enableAutoBuild(final IWorkspace wp)
-			throws CoreException {
-		CLIWorkflowLogger.debugln("Re-enable auto-building");
-		// IWorkspace.getDescription() returns a copy. We need to extract,
-		// modify and set it to the current workspace.
-		final IWorkspaceDescription desc = wp.getDescription();
-		desc.setAutoBuilding(true);
-		wp.setDescription(desc);
-	}
+  /**
+   * Enable auto-building on the current workspace.
+   *
+   * @param wp
+   *          the wp
+   * @throws CoreException
+   *           the core exception
+   */
+  public static void enableAutoBuild(final IWorkspace wp) throws CoreException {
+    CLIWorkflowLogger.debugln("Re-enable auto-building");
+    // IWorkspace.getDescription() returns a copy. We need to extract,
+    // modify and set it to the current workspace.
+    final IWorkspaceDescription desc = wp.getDescription();
+    desc.setAutoBuilding(true);
+    wp.setDescription(desc);
+  }
 }

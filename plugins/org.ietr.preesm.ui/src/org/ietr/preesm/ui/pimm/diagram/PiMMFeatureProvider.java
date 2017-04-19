@@ -38,7 +38,6 @@
 package org.ietr.preesm.ui.pimm.diagram;
 
 import java.util.ArrayList;
-
 import org.eclipse.core.internal.resources.File;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IAddFeature;
@@ -159,365 +158,416 @@ import org.ietr.preesm.ui.pimm.features.UpdateDiagramFeature;
 import org.ietr.preesm.ui.pimm.features.UpdatePortFeature;
 import org.ietr.preesm.ui.pimm.layout.AutoLayoutFeature;
 
+// TODO: Auto-generated Javadoc
 /**
- * {@link DefaultFeatureProvider} for the {@link Diagram} with type
- * {@link PiMMFeatureProvider}.
- * 
+ * {@link DefaultFeatureProvider} for the {@link Diagram} with type {@link PiMMFeatureProvider}.
+ *
  * @author kdesnos
  * @author jheulot
- * 
+ *
  */
 @SuppressWarnings("restriction")
 public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
-	public PiMMFeatureProvider(IDiagramTypeProvider dtp) {
-		super(dtp);
-	}
+  /**
+   * Instantiates a new pi MM feature provider.
+   *
+   * @param dtp
+   *          the dtp
+   */
+  public PiMMFeatureProvider(final IDiagramTypeProvider dtp) {
+    super(dtp);
+  }
 
-	@Override
-	public IAddFeature getAddFeature(IAddContext context) {
-		// is object for add request an Actor?
-		if (context.getNewObject() instanceof Actor) {
-			return new AddActorFeature(this);
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeatureProvider#getAddFeature(org.eclipse.graphiti.features.context.IAddContext)
+   */
+  @Override
+  public IAddFeature getAddFeature(final IAddContext context) {
+    // is object for add request an Actor?
+    if (context.getNewObject() instanceof Actor) {
+      return new AddActorFeature(this);
+    }
 
-		if (context.getNewObject() instanceof BroadcastActor) {
-			return new AddBroadcastActorFeature(this);
-		}
+    if (context.getNewObject() instanceof BroadcastActor) {
+      return new AddBroadcastActorFeature(this);
+    }
 
-		if (context.getNewObject() instanceof JoinActor) {
-			return new AddJoinActorFeature(this);
-		}
+    if (context.getNewObject() instanceof JoinActor) {
+      return new AddJoinActorFeature(this);
+    }
 
-		if (context.getNewObject() instanceof ForkActor) {
-			return new AddForkActorFeature(this);
-		}
-		
-		if (context.getNewObject() instanceof RoundBufferActor) {
-			return new AddRoundBufferActorFeature(this);
-		}
+    if (context.getNewObject() instanceof ForkActor) {
+      return new AddForkActorFeature(this);
+    }
 
-		if (context.getNewObject() instanceof Parameter) {
-			if (((Parameter) context.getNewObject()).isConfigurationInterface()) {
-				return new AddConfigInputInterfaceFeature(this);
-			} else {
-				return new AddParameterFeature(this);
-			}
-		}
+    if (context.getNewObject() instanceof RoundBufferActor) {
+      return new AddRoundBufferActorFeature(this);
+    }
 
-		if (context.getNewObject() instanceof DataInputInterface) {
-			return new AddDataInputInterfaceFeature(this);
-		}
+    if (context.getNewObject() instanceof Parameter) {
+      if (((Parameter) context.getNewObject()).isConfigurationInterface()) {
+        return new AddConfigInputInterfaceFeature(this);
+      } else {
+        return new AddParameterFeature(this);
+      }
+    }
 
-		if (context.getNewObject() instanceof DataOutputInterface) {
-			return new AddDataOutputInterfaceFeature(this);
-		}
+    if (context.getNewObject() instanceof DataInputInterface) {
+      return new AddDataInputInterfaceFeature(this);
+    }
 
-		if (context.getNewObject() instanceof ConfigOutputInterface) {
-			return new AddConfigOutputInterfaceFeature(this);
-		}
+    if (context.getNewObject() instanceof DataOutputInterface) {
+      return new AddDataOutputInterfaceFeature(this);
+    }
 
-		if (context.getNewObject() instanceof Fifo) {
-			return new AddFifoFeature(this);
-		}
+    if (context.getNewObject() instanceof ConfigOutputInterface) {
+      return new AddConfigOutputInterfaceFeature(this);
+    }
 
-		if (context.getNewObject() instanceof Dependency) {
-			return new AddDependencyFeature(this);
-		}
-		
-		if(context.getNewObject() instanceof File){
-			if(getBusinessObjectForPictogramElement(context.getTargetContainer()) instanceof Actor){
-				return new AddRefinementFeature(this);
-			}
-			if(getBusinessObjectForPictogramElement(context.getTargetContainer()) instanceof PiGraph){
-				return new AddActorFromRefinementFeature(this);
-			}
-		}
-		
-		return super.getAddFeature(context);
-	}
+    if (context.getNewObject() instanceof Fifo) {
+      return new AddFifoFeature(this);
+    }
 
-	@Override
-	public ICreateConnectionFeature[] getCreateConnectionFeatures() {
-		return new ICreateConnectionFeature[] { new CreateFifoFeature(this),
-				new CreateDependencyFeature(this) };
-	}
+    if (context.getNewObject() instanceof Dependency) {
+      return new AddDependencyFeature(this);
+    }
 
-	@Override
-	public ICreateFeature[] getCreateFeatures() {
-		return new ICreateFeature[] { new CreateActorFeature(this),
-				new CreateParameterFeature(this),
-				new CreateConfigInputInterfaceFeature(this),
-				new CreateConfigOutputInterfaceFeature(this),
-				new CreateDataInputInterfaceFeature(this),
-				new CreateDataOutputInterfaceFeature(this),
-				new CreateBroadcastActorFeature(this),
-				new CreateJoinActorFeature(this),
-				new CreateForkActorFeature(this),
-				new CreateRoundBufferActorFeature(this)};
-	}
+    if (context.getNewObject() instanceof File) {
+      if (getBusinessObjectForPictogramElement(context.getTargetContainer()) instanceof Actor) {
+        return new AddRefinementFeature(this);
+      }
+      if (getBusinessObjectForPictogramElement(context.getTargetContainer()) instanceof PiGraph) {
+        return new AddActorFromRefinementFeature(this);
+      }
+    }
 
-	@Override
-	public ICustomFeature[] getCustomFeatures(ICustomContext context) {
-		ArrayList<ICustomFeature> features = new ArrayList<>();
+    return super.getAddFeature(context);
+  }
 
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes.length != 1) {
-			return new ICustomFeature[0];
-		}
-		Object obj = getBusinessObjectForPictogramElement(pes[0]);
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeatureProvider#getCreateConnectionFeatures()
+   */
+  @Override
+  public ICreateConnectionFeature[] getCreateConnectionFeatures() {
+    return new ICreateConnectionFeature[] { new CreateFifoFeature(this), new CreateDependencyFeature(this) };
+  }
 
-		if (obj instanceof PiGraph) {
-			features.add(new SetVisibleAllDependenciesFeature(this, true));
-			features.add(new SetVisibleAllDependenciesFeature(this, false));
-			features.add(new AutoLayoutFeature(this));
-			features.add(new ExportSVGFeature(this));
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeatureProvider#getCreateFeatures()
+   */
+  @Override
+  public ICreateFeature[] getCreateFeatures() {
+    return new ICreateFeature[] { new CreateActorFeature(this), new CreateParameterFeature(this), new CreateConfigInputInterfaceFeature(this),
+        new CreateConfigOutputInterfaceFeature(this), new CreateDataInputInterfaceFeature(this), new CreateDataOutputInterfaceFeature(this),
+        new CreateBroadcastActorFeature(this), new CreateJoinActorFeature(this), new CreateForkActorFeature(this), new CreateRoundBufferActorFeature(this) };
+  }
 
-		if (obj instanceof AbstractVertex) {
-			features.add(new RenameAbstractVertexFeature(this));
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getCustomFeatures(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public ICustomFeature[] getCustomFeatures(final ICustomContext context) {
+    final ArrayList<ICustomFeature> features = new ArrayList<>();
 
-		if (obj instanceof ExecutableActor) {
-			ICustomFeature[] actorFeatures = new ICustomFeature[] {
-					new AddDataOutputPortFeature(this),
-					new AddDataInputPortFeature(this),
-					new AddConfigInputPortFeature(this),
-					new AddConfigOutputPortFeature(this) };
-			for (ICustomFeature feature : actorFeatures) {
-				features.add(feature);
-			}
-		}
-		if (obj instanceof Actor) {
-			ICustomFeature[] actorFeatures = new ICustomFeature[] {
-					new SetActorRefinementFeature(this),
-					new ClearActorRefinementFeature(this),
-					new OpenRefinementFeature(this),
-					new SetActorMemoryScriptFeature(this),
-					new ClearActorMemoryScriptFeature(this),
-					new OpenMemoryScriptFeature(this) };
-			for (ICustomFeature feature : actorFeatures) {
-				features.add(feature);
-			}
-		}
+    final PictogramElement[] pes = context.getPictogramElements();
+    if (pes.length != 1) {
+      return new ICustomFeature[0];
+    }
+    final Object obj = getBusinessObjectForPictogramElement(pes[0]);
 
-		if (obj instanceof Parameter) {
-			features.add(new SetVisibleDependenciesFromParameterFeature(this,
-					true));
-			features.add(new SetVisibleDependenciesFromParameterFeature(this,
-					false));
-		}
+    if (obj instanceof PiGraph) {
+      features.add(new SetVisibleAllDependenciesFeature(this, true));
+      features.add(new SetVisibleAllDependenciesFeature(this, false));
+      features.add(new AutoLayoutFeature(this));
+      features.add(new ExportSVGFeature(this));
+    }
 
-		if (obj instanceof Port) {
-			features.add(new RenameActorPortFeature(this));
-			features.add(new MoveUpActorPortFeature(this));
-			features.add(new MoveDownActorPortFeature(this));
-		}
+    if (obj instanceof AbstractVertex) {
+      features.add(new RenameAbstractVertexFeature(this));
+    }
 
-		if (obj instanceof DataPort) {
-			features.add(new SetPortMemoryAnnotationFeature(this));
-		}
+    if (obj instanceof ExecutableActor) {
+      final ICustomFeature[] actorFeatures = new ICustomFeature[] { new AddDataOutputPortFeature(this), new AddDataInputPortFeature(this),
+          new AddConfigInputPortFeature(this), new AddConfigOutputPortFeature(this) };
+      for (final ICustomFeature feature : actorFeatures) {
+        features.add(feature);
+      }
+    }
+    if (obj instanceof Actor) {
+      final ICustomFeature[] actorFeatures = new ICustomFeature[] { new SetActorRefinementFeature(this), new ClearActorRefinementFeature(this),
+          new OpenRefinementFeature(this), new SetActorMemoryScriptFeature(this), new ClearActorMemoryScriptFeature(this), new OpenMemoryScriptFeature(this) };
+      for (final ICustomFeature feature : actorFeatures) {
+        features.add(feature);
+      }
+    }
 
-		if (obj instanceof Fifo) {
-			features.add(new AddDelayFeature(this));
-			features.add(new SetFifoTypeFeature(this));
-		}
+    if (obj instanceof Parameter) {
+      features.add(new SetVisibleDependenciesFromParameterFeature(this, true));
+      features.add(new SetVisibleDependenciesFromParameterFeature(this, false));
+    }
 
-		return features.toArray(new ICustomFeature[features.size()]);
+    if (obj instanceof Port) {
+      features.add(new RenameActorPortFeature(this));
+      features.add(new MoveUpActorPortFeature(this));
+      features.add(new MoveDownActorPortFeature(this));
+    }
 
-	}
+    if (obj instanceof DataPort) {
+      features.add(new SetPortMemoryAnnotationFeature(this));
+    }
 
-	@Override
-	public IDeleteFeature getDeleteFeature(IDeleteContext context) {
-		PictogramElement pe = context.getPictogramElement();
-		Object bo = getBusinessObjectForPictogramElement(pe);
+    if (obj instanceof Fifo) {
+      features.add(new AddDelayFeature(this));
+      features.add(new SetFifoTypeFeature(this));
+    }
 
-		if (bo instanceof Port) {
-			if (((Port) bo).eContainer() instanceof ExecutableActor) {
-				return new DeleteActorPortFeature(this);
-			}
-			if (((Port) bo).eContainer() instanceof InterfaceActor) {
-				// We do not allow deletion of the port of an InterfaceVertex
-				// through the GUI
-				return null;
-			}
-		}
+    return features.toArray(new ICustomFeature[features.size()]);
 
-		if (bo instanceof AbstractActor) {
-			return new DeleteAbstractActorFeature(this);
-		}
+  }
 
-		if (bo instanceof Parameter) {
-			return new DeleteParameterizableFeature(this);
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getDeleteFeature(org.eclipse.graphiti.features.context.IDeleteContext)
+   */
+  @Override
+  public IDeleteFeature getDeleteFeature(final IDeleteContext context) {
+    final PictogramElement pe = context.getPictogramElement();
+    final Object bo = getBusinessObjectForPictogramElement(pe);
 
-		if (bo instanceof Fifo) {
-			return new DeleteFifoFeature(this);
-		}
+    if (bo instanceof Port) {
+      if (((Port) bo).eContainer() instanceof ExecutableActor) {
+        return new DeleteActorPortFeature(this);
+      }
+      if (((Port) bo).eContainer() instanceof InterfaceActor) {
+        // We do not allow deletion of the port of an InterfaceVertex
+        // through the GUI
+        return null;
+      }
+    }
 
-		if (bo instanceof Dependency) {
-			return new DeleteDependencyFeature(this);
-		}
+    if (bo instanceof AbstractActor) {
+      return new DeleteAbstractActorFeature(this);
+    }
 
-		if (bo instanceof Delay) {
-			return new DeleteDelayFeature(this);
-		}
+    if (bo instanceof Parameter) {
+      return new DeleteParameterizableFeature(this);
+    }
 
-		return new DefaultDeleteFeature(this);
-	}
+    if (bo instanceof Fifo) {
+      return new DeleteFifoFeature(this);
+    }
 
-	@Override
-	public IDirectEditingFeature getDirectEditingFeature(
-			IDirectEditingContext context) {
-		PictogramElement pe = context.getPictogramElement();
-		Object bo = getBusinessObjectForPictogramElement(pe);
-		if (bo instanceof AbstractVertex) {
-			return new DirectEditingAbstractActorNameFeature(this);
-		}
-		return super.getDirectEditingFeature(context);
-	}
+    if (bo instanceof Dependency) {
+      return new DeleteDependencyFeature(this);
+    }
 
-	@Override
-	public ILayoutFeature getLayoutFeature(ILayoutContext context) {
-		PictogramElement pictogramElement = context.getPictogramElement();
-		Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-		if (bo instanceof ExecutableActor) {
-			return new LayoutActorFeature(this);
-		}
-		if (bo instanceof Port) {
-			return new LayoutPortFeature(this);
-		}
-		if (bo instanceof InterfaceActor) {
-			return new LayoutInterfaceFeature(this);
-		}
-		if (bo instanceof Parameter) {
-			if (((Parameter) bo).isConfigurationInterface()) {
-				return new LayoutInterfaceFeature(this);
-			} else {
-				return new LayoutParameterFeature(this);
-			}
-		}
-		return super.getLayoutFeature(context);
-	}
+    if (bo instanceof Delay) {
+      return new DeleteDelayFeature(this);
+    }
 
-	@Override
-	public IMoveAnchorFeature getMoveAnchorFeature(IMoveAnchorContext context) {
-		// We forbid the user from moving anchors
-		return null;
-	}
+    return new DefaultDeleteFeature(this);
+  }
 
-	@Override
-	public IMoveShapeFeature getMoveShapeFeature(IMoveShapeContext context) {
-		PictogramElement pe = context.getPictogramElement();
-		Object bo = getBusinessObjectForPictogramElement(pe);
-		if (bo instanceof AbstractActor) {
-			return new MoveAbstractActorFeature(this);
-		}
-		return super.getMoveShapeFeature(context);
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeatureProvider#getDirectEditingFeature(org.eclipse.graphiti.features.context.IDirectEditingContext)
+   */
+  @Override
+  public IDirectEditingFeature getDirectEditingFeature(final IDirectEditingContext context) {
+    final PictogramElement pe = context.getPictogramElement();
+    final Object bo = getBusinessObjectForPictogramElement(pe);
+    if (bo instanceof AbstractVertex) {
+      return new DirectEditingAbstractActorNameFeature(this);
+    }
+    return super.getDirectEditingFeature(context);
+  }
 
-	@Override
-	public IReconnectionFeature getReconnectionFeature(
-			IReconnectionContext context) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeatureProvider#getLayoutFeature(org.eclipse.graphiti.features.context.ILayoutContext)
+   */
+  @Override
+  public ILayoutFeature getLayoutFeature(final ILayoutContext context) {
+    final PictogramElement pictogramElement = context.getPictogramElement();
+    final Object bo = getBusinessObjectForPictogramElement(pictogramElement);
+    if (bo instanceof ExecutableActor) {
+      return new LayoutActorFeature(this);
+    }
+    if (bo instanceof Port) {
+      return new LayoutPortFeature(this);
+    }
+    if (bo instanceof InterfaceActor) {
+      return new LayoutInterfaceFeature(this);
+    }
+    if (bo instanceof Parameter) {
+      if (((Parameter) bo).isConfigurationInterface()) {
+        return new LayoutInterfaceFeature(this);
+      } else {
+        return new LayoutParameterFeature(this);
+      }
+    }
+    return super.getLayoutFeature(context);
+  }
 
-		Connection connection = context.getConnection();
-		Object obj = getBusinessObjectForPictogramElement(connection);
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getMoveAnchorFeature(org.eclipse.graphiti.features.context.IMoveAnchorContext)
+   */
+  @Override
+  public IMoveAnchorFeature getMoveAnchorFeature(final IMoveAnchorContext context) {
+    // We forbid the user from moving anchors
+    return null;
+  }
 
-		if (obj instanceof Fifo) {
-			return new ReconnectionFifoFeature(this);
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getMoveShapeFeature(org.eclipse.graphiti.features.context.IMoveShapeContext)
+   */
+  @Override
+  public IMoveShapeFeature getMoveShapeFeature(final IMoveShapeContext context) {
+    final PictogramElement pe = context.getPictogramElement();
+    final Object bo = getBusinessObjectForPictogramElement(pe);
+    if (bo instanceof AbstractActor) {
+      return new MoveAbstractActorFeature(this);
+    }
+    return super.getMoveShapeFeature(context);
+  }
 
-		if (obj instanceof Dependency) {
-			return new ReconnectionDependencyFeature(this);
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeatureProvider#getReconnectionFeature(org.eclipse.graphiti.features.context.IReconnectionContext)
+   */
+  @Override
+  public IReconnectionFeature getReconnectionFeature(final IReconnectionContext context) {
 
-		return null;
-	}
+    final Connection connection = context.getConnection();
+    final Object obj = getBusinessObjectForPictogramElement(connection);
 
-	@Override
-	public IRemoveFeature getRemoveFeature(IRemoveContext context) {
-		return new DefaultRemoveFeature(this) {
-			@Override
-			public boolean isAvailable(IContext context) {
-				return false;
-			}
-		};
-	}
+    if (obj instanceof Fifo) {
+      return new ReconnectionFifoFeature(this);
+    }
 
-	/**
-	 * Provide the default remove feature when needed. This will be used in the
-	 * deletion feature.
-	 * 
-	 * @see PiMMFeatureProviderWithRemove
-	 * @see http 
-	 *      ://www.eclipse.org/forums/index.php/mv/msg/234410/720417/#msg_720417
-	 * @param context
-	 *            the context
-	 * @return remove feature according to the given context
-	 */
-	protected IRemoveFeature getRemoveFeatureEnabled(IRemoveContext context) {
-		return super.getRemoveFeature(context); // used where we enable remove
-												// (deleting...)
-	}
+    if (obj instanceof Dependency) {
+      return new ReconnectionDependencyFeature(this);
+    }
 
-	@Override
-	public IResizeShapeFeature getResizeShapeFeature(IResizeShapeContext context) {
-		PictogramElement pictogramElement = context.getPictogramElement();
-		if (pictogramElement instanceof ContainerShape) {
-			Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-			if (bo instanceof ExecutableActor) {
-				// We do not allow manual resize of Actor's pictogram elements.
-				// The size of these elements will be computed automatically
-				// to fit the content of the shape
-				return null;
-			}
+    return null;
+  }
 
-			if (bo instanceof InterfaceActor) {
-				// We do not allow manual resize of Interface Actor's pictogram
-				// elements.
-				// The size of these elements will be computed automatically
-				// to fit the content of the shape
-				return null;
-			}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getRemoveFeature(org.eclipse.graphiti.features.context.IRemoveContext)
+   */
+  @Override
+  public IRemoveFeature getRemoveFeature(final IRemoveContext context) {
+    return new DefaultRemoveFeature(this) {
+      @Override
+      public boolean isAvailable(final IContext context) {
+        return false;
+      }
+    };
+  }
 
-			if (bo instanceof Parameter) {
-				// We do not allow manual resize of Parameter's pictogram
-				// elements.
-				// The size of these elements will be computed automatically
-				// to fit the content of the shape
-				return null;
-			}
+  /**
+   * Provide the default remove feature when needed. This will be used in the deletion feature.
+   *
+   * @param context
+   *          the context
+   * @return remove feature according to the given context
+   * @see PiMMFeatureProviderWithRemove
+   * @see http ://www.eclipse.org/forums/index.php/mv/msg/234410/720417/#msg_720417
+   */
+  protected IRemoveFeature getRemoveFeatureEnabled(final IRemoveContext context) {
+    return super.getRemoveFeature(context); // used where we enable remove
+    // (deleting...)
+  }
 
-			if (bo instanceof Delay) {
-				// We do not allow manual resize of Delay's pictogram elements.
-				// The size of these elements will be computed automatically
-				// to fit the content of the shape
-				return null;
-			}
-		}
-		return super.getResizeShapeFeature(context);
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getResizeShapeFeature(org.eclipse.graphiti.features.context.IResizeShapeContext)
+   */
+  @Override
+  public IResizeShapeFeature getResizeShapeFeature(final IResizeShapeContext context) {
+    final PictogramElement pictogramElement = context.getPictogramElement();
+    if (pictogramElement instanceof ContainerShape) {
+      final Object bo = getBusinessObjectForPictogramElement(pictogramElement);
+      if (bo instanceof ExecutableActor) {
+        // We do not allow manual resize of Actor's pictogram elements.
+        // The size of these elements will be computed automatically
+        // to fit the content of the shape
+        return null;
+      }
 
-	@Override
-	public IUpdateFeature getUpdateFeature(IUpdateContext context) {
-		PictogramElement pictogramElement = context.getPictogramElement();
-		if (pictogramElement instanceof Diagram) return new UpdateDiagramFeature(this);
-		if (pictogramElement instanceof ContainerShape) {
-			Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-			if (bo instanceof ExecutableActor) {
-				return new UpdateActorFeature(this);
-			} else if (bo instanceof AbstractVertex) {
-				return new UpdateAbstractVertexFeature(this);
-			}
+      if (bo instanceof InterfaceActor) {
+        // We do not allow manual resize of Interface Actor's pictogram
+        // elements.
+        // The size of these elements will be computed automatically
+        // to fit the content of the shape
+        return null;
+      }
 
-		}
-		if (pictogramElement instanceof BoxRelativeAnchor) {
-			Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-			if (bo instanceof Port) {
-				return new UpdatePortFeature(this);
-			}
-		}
-		return super.getUpdateFeature(context);
-	}
+      if (bo instanceof Parameter) {
+        // We do not allow manual resize of Parameter's pictogram
+        // elements.
+        // The size of these elements will be computed automatically
+        // to fit the content of the shape
+        return null;
+      }
+
+      if (bo instanceof Delay) {
+        // We do not allow manual resize of Delay's pictogram elements.
+        // The size of these elements will be computed automatically
+        // to fit the content of the shape
+        return null;
+      }
+    }
+    return super.getResizeShapeFeature(context);
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getUpdateFeature(org.eclipse.graphiti.features.context.IUpdateContext)
+   */
+  @Override
+  public IUpdateFeature getUpdateFeature(final IUpdateContext context) {
+    final PictogramElement pictogramElement = context.getPictogramElement();
+    if (pictogramElement instanceof Diagram) {
+      return new UpdateDiagramFeature(this);
+    }
+    if (pictogramElement instanceof ContainerShape) {
+      final Object bo = getBusinessObjectForPictogramElement(pictogramElement);
+      if (bo instanceof ExecutableActor) {
+        return new UpdateActorFeature(this);
+      } else if (bo instanceof AbstractVertex) {
+        return new UpdateAbstractVertexFeature(this);
+      }
+
+    }
+    if (pictogramElement instanceof BoxRelativeAnchor) {
+      final Object bo = getBusinessObjectForPictogramElement(pictogramElement);
+      if (bo instanceof Port) {
+        return new UpdatePortFeature(this);
+      }
+    }
+    return super.getUpdateFeature(context);
+  }
 
 }

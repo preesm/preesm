@@ -36,32 +36,43 @@
  *******************************************************************************/
 package org.ietr.preesm.ui.scenario.editor;
 
+// TODO: Auto-generated Javadoc
 /**
- * Represents a vertex with its path in a hierarchy
- * 
+ * Represents a vertex with its path in a hierarchy.
+ *
  * @author mpelcat
  */
 public interface IHierarchicalVertex {
 
-	/**
-	 * Returns the vertex
-	 */
-	public Object getStoredVertex();
+  /**
+   * Returns the vertex.
+   *
+   * @return the stored vertex
+   */
+  public Object getStoredVertex();
 
-	/**
-	 * Returns the vertex name
-	 */
-	public String getName();
+  /**
+   * Returns the vertex name.
+   *
+   * @return the name
+   */
+  public String getName();
 
-	/**
-	 * Compares two vertices in hierarchy
-	 */
-	@Override
-	public boolean equals(Object e);
+  /**
+   * Compares two vertices in hierarchy.
+   *
+   * @param e
+   *          the e
+   * @return true, if successful
+   */
+  @Override
+  public boolean equals(Object e);
 
-	/**
-	 * Returns the path of the vertex
-	 */
-	@Override
-	public String toString();
+  /**
+   * Returns the path of the vertex.
+   *
+   * @return the string
+   */
+  @Override
+  public String toString();
 }

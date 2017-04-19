@@ -51,111 +51,127 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 
+// TODO: Auto-generated Javadoc
 /**
  * Custom feature in charge of opening an editor for the refinement of an actor.
- * 
- * If the refinement is a Pi file, the associated diagram will be opened.
- * Otherwise, the workbench default editor will be opened.
- * 
+ *
+ * <p>
+ * If the refinement is a Pi file, the associated diagram will be opened. Otherwise, the workbench default editor will be opened.
+ * </p>
+ *
  * @author kdesnos
- * 
+ *
  */
 public class OpenRefinementFeature extends AbstractCustomFeature {
 
-	/**
-	 * Default constructor for the {@link OpenRefinementFeature}
-	 * 
-	 * @param fp
-	 *            the feature provider
-	 */
-	public OpenRefinementFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /**
+   * Default constructor for the {@link OpenRefinementFeature}.
+   *
+   * @param fp
+   *          the feature provider
+   */
+  public OpenRefinementFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	@Override
-	public boolean canExecute(ICustomContext context) {
-		PictogramElement[] pes = context.getPictogramElements();
-		// first check, if one Actor is selected
-		if (pes != null && pes.length == 1) {
-			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof Actor) {
-				// Check if the actor has a valid refinement
-				if (((Actor) bo).getRefinement().getFilePath() != null)
-					return true;
-			}
-		}
-		return false;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public boolean canExecute(final ICustomContext context) {
+    final PictogramElement[] pes = context.getPictogramElements();
+    // first check, if one Actor is selected
+    if ((pes != null) && (pes.length == 1)) {
+      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+      if (bo instanceof Actor) {
+        // Check if the actor has a valid refinement
+        if (((Actor) bo).getRefinement().getFilePath() != null) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 
-	@Override
-	public void execute(ICustomContext context) {
-		PictogramElement[] pes = context.getPictogramElements();
-		// first check, if one Actor is selected
-		if (pes != null && pes.length == 1) {
-			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof Actor) {
-				// Check if the actor has a valid refinement
-				IPath refinementPath = ((Actor) bo).getRefinement()
-						.getFilePath();
-				if (refinementPath != null) {
-					IWorkbenchWindow dw = PlatformUI.getWorkbench()
-							.getActiveWorkbenchWindow();
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public void execute(final ICustomContext context) {
+    final PictogramElement[] pes = context.getPictogramElements();
+    // first check, if one Actor is selected
+    if ((pes != null) && (pes.length == 1)) {
+      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+      if (bo instanceof Actor) {
+        // Check if the actor has a valid refinement
+        final IPath refinementPath = ((Actor) bo).getRefinement().getFilePath();
+        if (refinementPath != null) {
+          final IWorkbenchWindow dw = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 
-					IResource refResource = ResourcesPlugin.getWorkspace()
-							.getRoot().getFile(refinementPath);
+          IResource refResource = ResourcesPlugin.getWorkspace().getRoot().getFile(refinementPath);
 
-					// If the refinement is a Pi file, open a diagram
-					// instead (if it exists)
-					String extension = refResource.getFileExtension();
-					if (extension != null && extension.equals("pi")) {
-						IPath diagramFile = refinementPath
-								.removeFileExtension().addFileExtension(
-										"diagram");
-						IResource diagResource = ResourcesPlugin.getWorkspace()
-								.getRoot().getFile(diagramFile);
+          // If the refinement is a Pi file, open a diagram
+          // instead (if it exists)
+          final String extension = refResource.getFileExtension();
+          if ((extension != null) && extension.equals("pi")) {
+            final IPath diagramFile = refinementPath.removeFileExtension().addFileExtension("diagram");
+            final IResource diagResource = ResourcesPlugin.getWorkspace().getRoot().getFile(diagramFile);
 
-						// Check if the diaram file exists
-						if (diagResource == null) {
-							MessageDialog.openError(
-									dw.getShell(),
-									"Problem opening editor",
-									"No diagram file for "
-											+ refinementPath.lastSegment());
-						} else {
-							refResource = diagResource;
-						}
-					}
+            // Check if the diaram file exists
+            if (diagResource == null) {
+              MessageDialog.openError(dw.getShell(), "Problem opening editor", "No diagram file for " + refinementPath.lastSegment());
+            } else {
+              refResource = diagResource;
+            }
+          }
 
-					// Open the editor for the refinement
-					try {
-						if (dw != null) {
-							IWorkbenchPage activePage = dw.getActivePage();
-							if (activePage != null) {
-								IDE.openEditor(activePage, (IFile) refResource,
-										true);
-							}
-						}
-					} catch (PartInitException e) {
-						MessageDialog.openError(dw.getShell(),
-								"Problem opening editor", e.getMessage());
-					}
-				}
-			}
-		}
-	}
+          // Open the editor for the refinement
+          try {
+            if (dw != null) {
+              final IWorkbenchPage activePage = dw.getActivePage();
+              if (activePage != null) {
+                IDE.openEditor(activePage, (IFile) refResource, true);
+              }
+            }
+          } catch (final PartInitException e) {
+            MessageDialog.openError(dw.getShell(), "Problem opening editor", e.getMessage());
+          }
+        }
+      }
+    }
+  }
 
-	@Override
-	public String getDescription() {
-		return "Open the refinement associated to the Actor";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#getDescription()
+   */
+  @Override
+  public String getDescription() {
+    return "Open the refinement associated to the Actor";
+  }
 
-	@Override
-	public String getName() {
-		return "Open associated refinement";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#getName()
+   */
+  @Override
+  public String getName() {
+    return "Open associated refinement";
+  }
 
-	@Override
-	public boolean hasDoneChanges() {
-		return false;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
+   */
+  @Override
+  public boolean hasDoneChanges() {
+    return false;
+  }
 }

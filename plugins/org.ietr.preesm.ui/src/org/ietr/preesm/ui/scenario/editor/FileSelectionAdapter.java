@@ -38,53 +38,97 @@ package org.ietr.preesm.ui.scenario.editor;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+// TODO: Auto-generated Javadoc
 /**
- * This class calls the file browser when a "browse" button is pushed
- * 
+ * This class calls the file browser when a "browse" button is pushed.
+ *
  * @author mpelcat
  */
 public class FileSelectionAdapter extends SelectionAdapter {
 
-	private Text filePath;
-	private Shell shell;
-	private String title;
-	Set<String> fileExtensions;
+  /** The file path. */
+  private final Text filePath;
 
-	public FileSelectionAdapter(Text filePath, Shell shell, String title,
-			String fileExtension) {
-		super();
-		this.filePath = filePath;
-		this.shell = shell;
-		this.title = title;
-		this.fileExtensions = new HashSet<String>();
-		this.fileExtensions.add(fileExtension);
-	}
+  /** The shell. */
+  private final Shell shell;
 
-	public FileSelectionAdapter(Text filePath, Shell shell, String title,
-			Set<String> fileExtensions) {
-		super();
-		this.filePath = filePath;
-		this.shell = shell;
-		this.title = title;
-		this.fileExtensions = fileExtensions;
-	}
+  /** The title. */
+  private final String title;
 
-	public FileSelectionAdapter(Text filePath, Shell shell, String title) {
-		super();
-		this.filePath = filePath;
-		this.shell = shell;
-		this.title = title;
-		this.fileExtensions = null;
-	}
+  /** The file extensions. */
+  Set<String> fileExtensions;
 
-	@Override
-	public void widgetSelected(SelectionEvent e) {
-		filePath.setText(EditorTools.browseFiles(shell, title, fileExtensions));
-	}
+  /**
+   * Instantiates a new file selection adapter.
+   *
+   * @param filePath
+   *          the file path
+   * @param shell
+   *          the shell
+   * @param title
+   *          the title
+   * @param fileExtension
+   *          the file extension
+   */
+  public FileSelectionAdapter(final Text filePath, final Shell shell, final String title, final String fileExtension) {
+    super();
+    this.filePath = filePath;
+    this.shell = shell;
+    this.title = title;
+    this.fileExtensions = new HashSet<>();
+    this.fileExtensions.add(fileExtension);
+  }
+
+  /**
+   * Instantiates a new file selection adapter.
+   *
+   * @param filePath
+   *          the file path
+   * @param shell
+   *          the shell
+   * @param title
+   *          the title
+   * @param fileExtensions
+   *          the file extensions
+   */
+  public FileSelectionAdapter(final Text filePath, final Shell shell, final String title, final Set<String> fileExtensions) {
+    super();
+    this.filePath = filePath;
+    this.shell = shell;
+    this.title = title;
+    this.fileExtensions = fileExtensions;
+  }
+
+  /**
+   * Instantiates a new file selection adapter.
+   *
+   * @param filePath
+   *          the file path
+   * @param shell
+   *          the shell
+   * @param title
+   *          the title
+   */
+  public FileSelectionAdapter(final Text filePath, final Shell shell, final String title) {
+    super();
+    this.filePath = filePath;
+    this.shell = shell;
+    this.title = title;
+    this.fileExtensions = null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
+   */
+  @Override
+  public void widgetSelected(final SelectionEvent e) {
+    this.filePath.setText(EditorTools.browseFiles(this.shell, this.title, this.fileExtensions));
+  }
 }

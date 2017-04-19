@@ -40,7 +40,6 @@ package org.ietr.preesm.cli;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspace;
@@ -58,163 +57,162 @@ import org.ietr.dftools.workflow.tools.CLIWorkflowLogger;
 import org.ietr.preesm.ui.wizards.PreesmProjectNature;
 import org.ietr.preesm.utils.files.FilesManager;
 
+// TODO: Auto-generated Javadoc
 /**
- * This application take a folder path in argument and create a valid Eclipse
- * workspace from .project files found in it with the Preesm project nature. The
- * .metadata (workspace information) folder is created in the current Eclipse
- * workspace.
- * 
- * In command-line, workspace folder can be set by using
- * "-data &lt;workspace&gt;" argument.
- * 
+ * This application take a folder path in argument and create a valid Eclipse workspace from .project files found in it with the Preesm project nature. The
+ * .metadata (workspace information) folder is created in the current Eclipse workspace.
+ *
+ * <p>
+ * In command-line, workspace folder can be set by using "-data &lt;workspace&gt;" argument.
+ * </p>
+ *
  * @author cguy
- * 
- *         Code adapted from ORCC (net.sf.orcc.backends,
- *         https://github.com/orcc/orcc)
+ *
+ *         Code adapted from ORCC (net.sf.orcc.backends, https://github.com/orcc/orcc)
  * @author alorence
- * 
+ *
  */
 public class WorkspaceCreator implements IApplication {
 
-	private final IProgressMonitor progressMonitor;
-	private final IWorkspace workspace;
-	private boolean wasAutoBuildEnabled;
-	private final String nature;
+  /** The progress monitor. */
+  private final IProgressMonitor progressMonitor;
 
-	public WorkspaceCreator() {
+  /** The workspace. */
+  private final IWorkspace workspace;
 
-		progressMonitor = new NullProgressMonitor();
+  /** The was auto build enabled. */
+  private boolean wasAutoBuildEnabled;
 
-		nature = PreesmProjectNature.ID;
+  /** The nature. */
+  private final String nature;
 
-		workspace = ResourcesPlugin.getWorkspace();
-		wasAutoBuildEnabled = false;
-	}
+  /**
+   * Instantiates a new workspace creator.
+   */
+  public WorkspaceCreator() {
 
-	/**
-	 * Open searchFolder and try to find .project files inside it. Then, try to
-	 * create an eclipse projects and add it to the current workspace.
-	 * 
-	 * @param searchFolder
-	 * @throws CoreException
-	 */
-	private void searchForProjects(File searchFolder) throws CoreException {
+    this.progressMonitor = new NullProgressMonitor();
 
-		if (!searchFolder.isDirectory()) {
-			throw new RuntimeException("Bad path to search project: "
-					+ searchFolder.getPath());
-		} else {
-			File[] children = searchFolder.listFiles();
-			for (File child : children) {
-				if (child.isDirectory()) {
-					searchForProjects(child);
-				} else if (child.getName().equals(
-						IProjectDescription.DESCRIPTION_FILE_NAME)) {
-					IPath projectPath = new Path(child.getAbsolutePath());
+    this.nature = PreesmProjectNature.ID;
 
-					IProjectDescription description = workspace
-							.loadProjectDescription(projectPath);
+    this.workspace = ResourcesPlugin.getWorkspace();
+    this.wasAutoBuildEnabled = false;
+  }
 
-					if (description.hasNature(nature)) {
-						IProject project = workspace.getRoot().getProject(
-								description.getName());
+  /**
+   * Open searchFolder and try to find .project files inside it. Then, try to create an eclipse projects and add it to the current workspace.
+   *
+   * @param searchFolder
+   *          the search folder
+   * @throws CoreException
+   *           the core exception
+   */
+  private void searchForProjects(final File searchFolder) throws CoreException {
+    if (searchFolder == null) {
+      throw new NullPointerException();
+    }
+    if (!searchFolder.isDirectory()) {
+      throw new RuntimeException("Bad path to search project: " + searchFolder.getPath());
+    } else {
+      final File[] children = searchFolder.listFiles();
+      if (children != null) {
+        for (final File child : children) {
+          if (child.isDirectory()) {
+            searchForProjects(child);
+          } else if (child.getName().equals(IProjectDescription.DESCRIPTION_FILE_NAME)) {
+            final IPath projectPath = new Path(child.getAbsolutePath());
 
-						if (project.exists()) {
-							project.close(progressMonitor);;
-							CLIWorkflowLogger
-									.traceln("A project named "
-											+ project.getName()
-											+ " is already registered, "
-											+ "deleting previous project from Workspace: ");
-						}
-						project.create(description, progressMonitor);
-						project.open(progressMonitor);
-						CLIWorkflowLogger.traceln("New project registered: "
-								+ project.getName());
-					}
-				}
-			}
-		}
-	}
+            final IProjectDescription description = this.workspace.loadProjectDescription(projectPath);
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.
-	 * IApplicationContext)
-	 */
-	@Override
-	public Object start(IApplicationContext context) {
-		Map<?, ?> map = context.getArguments();
+            if (description.hasNature(this.nature)) {
+              final IProject project = this.workspace.getRoot().getProject(description.getName());
 
-		String[] args = (String[]) map
-				.get(IApplicationContext.APPLICATION_ARGS);
+              if (project.exists()) {
+                project.close(this.progressMonitor);
+                CLIWorkflowLogger.traceln("A project named " + project.getName() + " is already registered, " + "deleting previous project from Workspace: ");
+              }
+              project.create(description, this.progressMonitor);
+              project.open(this.progressMonitor);
+              CLIWorkflowLogger.traceln("New project registered: " + project.getName());
+            }
+          }
+        }
+      }
+    }
+  }
 
-		if (args.length == 1) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app. IApplicationContext)
+   */
+  @Override
+  public Object start(final IApplicationContext context) {
+    final Map<?, ?> map = context.getArguments();
 
-			try {
+    final String[] args = (String[]) map.get(IApplicationContext.APPLICATION_ARGS);
 
-				wasAutoBuildEnabled = CommandLineUtil
-						.disableAutoBuild(workspace);
+    if (args.length == 1) {
 
-				final String path = FilesManager.sanitize(args[0]);
-				File searchPath = new File(path).getCanonicalFile();
-				CLIWorkflowLogger.traceln("Register projects from \""
-						+ searchPath.getAbsolutePath() + "\" to workspace \""
-						+ workspace.getRoot().getLocation() + "\"");
-				searchForProjects(searchPath);
+      try {
 
-				// Avoid warning messages of type "The workspace exited
-				// with unsaved changes in the previous session" the next
-				// time an IApplication (FrontendCli) will be launched
-				// This method can be called ONLY if auto-building has
-				// been disabled
-				workspace.save(true, progressMonitor);
+        this.wasAutoBuildEnabled = CommandLineUtil.disableAutoBuild(this.workspace);
 
-				final IJobManager manager = Job.getJobManager();
-				int i = 0;
-				while (!manager.isIdle()) {
-					CLIWorkflowLogger.traceln("Waiting for completion of"
-							+ " currently running jobs - " + ++i);
-					Thread.sleep(500);
-				}
+        final String path = FilesManager.sanitize(args[0]);
+        final File searchPath = new File(path).getCanonicalFile();
+        CLIWorkflowLogger
+            .traceln("Register projects from \"" + searchPath.getAbsolutePath() + "\" to workspace \"" + this.workspace.getRoot().getLocation() + "\"");
+        searchForProjects(searchPath);
 
-			} catch (CoreException e) {
-				CLIWorkflowLogger.severeln(e.getMessage());
-				e.printStackTrace();
-			} catch (IOException e) {
-				CLIWorkflowLogger.severeln(e.getMessage());
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				CLIWorkflowLogger.severeln(e.getMessage());
-				e.printStackTrace();
-			} finally {
-				try {
-					if (wasAutoBuildEnabled) {
-						CommandLineUtil.enableAutoBuild(workspace);
-						wasAutoBuildEnabled = false;
-					}
-					return IApplication.EXIT_OK;
-				} catch (CoreException e) {
-					CLIWorkflowLogger.severeln(e.getMessage());
-					e.printStackTrace();
-				}
-			}
-		} else {
-			CLIWorkflowLogger
-					.severeln("Please add the path to a directories containing projects.");
-		}
+        // Avoid warning messages of type "The workspace exited
+        // with unsaved changes in the previous session" the next
+        // time an IApplication (FrontendCli) will be launched
+        // This method can be called ONLY if auto-building has
+        // been disabled
+        this.workspace.save(true, this.progressMonitor);
 
-		return IApplication.EXIT_RESTART;
-	}
+        final IJobManager manager = Job.getJobManager();
+        int i = 0;
+        while (!manager.isIdle()) {
+          CLIWorkflowLogger.traceln("Waiting for completion of" + " currently running jobs - " + ++i);
+          Thread.sleep(500);
+        }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.equinox.app.IApplication#stop()
-	 */
-	@Override
-	public void stop() {
-	}
+      } catch (final CoreException e) {
+        CLIWorkflowLogger.severeln(e.getMessage());
+        e.printStackTrace();
+      } catch (final IOException e) {
+        CLIWorkflowLogger.severeln(e.getMessage());
+        e.printStackTrace();
+      } catch (final InterruptedException e) {
+        CLIWorkflowLogger.severeln(e.getMessage());
+        e.printStackTrace();
+      } finally {
+        try {
+          if (this.wasAutoBuildEnabled) {
+            CommandLineUtil.enableAutoBuild(this.workspace);
+            this.wasAutoBuildEnabled = false;
+          }
+          return IApplication.EXIT_OK;
+        } catch (final CoreException e) {
+          CLIWorkflowLogger.severeln(e.getMessage());
+          e.printStackTrace();
+        }
+      }
+    } else {
+      CLIWorkflowLogger.severeln("Please add the path to a directories containing projects.");
+    }
+
+    return IApplication.EXIT_RESTART;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.equinox.app.IApplication#stop()
+   */
+  @Override
+  public void stop() {
+  }
 
 }

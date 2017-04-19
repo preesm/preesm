@@ -41,31 +41,46 @@ import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * An edge scheduler that simply adds the transfer as soon as possible after the
- * sender
- * 
+ * An edge scheduler that simply adds the transfer as soon as possible after the sender.
+ *
  * @author mpelcat
  */
 public class SimpleEdgeSched extends AbstractEdgeSched {
 
-	public SimpleEdgeSched(OrderManager orderManager) {
-		super(orderManager);
-	}
+  /**
+   * Instantiates a new simple edge sched.
+   *
+   * @param orderManager
+   *          the order manager
+   */
+  public SimpleEdgeSched(final OrderManager orderManager) {
+    super(orderManager);
+  }
 
-	public static void main(String[] args) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched#schedule(org.ietr.preesm.mapper.model.
+   * special.TransferVertex, org.ietr.preesm.mapper.model.MapperDAGVertex,
+   * org.ietr.preesm.mapper.model.MapperDAGVertex)
+   */
+  @Override
+  public void schedule(final TransferVertex vertex, final MapperDAGVertex source,
+      final MapperDAGVertex target) {
+    this.orderManager.insertAfter(source, vertex);
 
-	}
+  }
 
-	@Override
-	public void schedule(TransferVertex vertex, MapperDAGVertex source,
-			MapperDAGVertex target) {
-		orderManager.insertAfter(source, vertex);
-
-	}
-
-	@Override
-	public EdgeSchedType getEdgeSchedType() {
-		return EdgeSchedType.Simple;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched#getEdgeSchedType()
+   */
+  @Override
+  public EdgeSchedType getEdgeSchedType() {
+    return EdgeSchedType.Simple;
+  }
 }

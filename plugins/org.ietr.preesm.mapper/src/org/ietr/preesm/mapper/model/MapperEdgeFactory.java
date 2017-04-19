@@ -41,15 +41,24 @@ import org.ietr.dftools.algorithm.factories.DAGEdgeFactory;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
+ * A factory for creating MapperEdge objects.
+ *
  * @author mpelcat
- * 
  */
 public class MapperEdgeFactory extends DAGEdgeFactory {
 
-	@Override
-	public DAGEdge createEdge(DAGVertex arg0, DAGVertex arg1) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.ietr.dftools.algorithm.factories.DAGEdgeFactory#createEdge(org.ietr.dftools.algorithm.model
+   * .dag.DAGVertex, org.ietr.dftools.algorithm.model.dag.DAGVertex)
+   */
+  @Override
+  public DAGEdge createEdge(final DAGVertex arg0, final DAGVertex arg1) {
 
-		return new MapperDAGEdge((MapperDAGVertex) arg0, (MapperDAGVertex) arg1);
-	}
+    return new MapperDAGEdge((MapperDAGVertex) arg0, (MapperDAGVertex) arg1);
+  }
 }

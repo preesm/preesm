@@ -39,15 +39,24 @@ package org.ietr.preesm.mapper.model.special;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * An overhead vertex represents a dma setup time to schedule on a core
- * 
+ * An overhead vertex represents a dma setup time to schedule on a core.
+ *
  * @author mpelcat
  */
 public class OverheadVertex extends MapperDAGVertex {
 
-	public OverheadVertex(String id, MapperDAG base) {
-		super(id, base);
-	}
+  /**
+   * Instantiates a new overhead vertex.
+   *
+   * @param id
+   *          the id
+   * @param base
+   *          the base
+   */
+  public OverheadVertex(final String id, final MapperDAG base) {
+    super(id, base);
+  }
 
 }

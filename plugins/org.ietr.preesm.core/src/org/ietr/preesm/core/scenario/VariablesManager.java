@@ -41,67 +41,111 @@ import org.ietr.dftools.algorithm.model.parameters.VariableSet;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.serialize.ExcelVariablesParser;
 
+// TODO: Auto-generated Javadoc
 /**
- * Handles graph variables which values are redefined in the scenario
- * 
+ * Handles graph variables which values are redefined in the scenario.
+ *
  * @author mpelcat
  */
 public class VariablesManager {
 
-	private VariableSet variables;
+  /** The variables. */
+  private final VariableSet variables;
 
-	/**
-	 * Path to a file containing variables
-	 */
-	private String excelFileURL = "";
+  /** Path to a file containing variables. */
+  private String excelFileURL = "";
 
-	public VariablesManager() {
-		variables = new VariableSet();
-	}
+  /**
+   * Instantiates a new variables manager.
+   */
+  public VariablesManager() {
+    this.variables = new VariableSet();
+  }
 
-	public void setVariable(String name, String value) {
+  /**
+   * Sets the variable.
+   *
+   * @param name
+   *          the name
+   * @param value
+   *          the value
+   */
+  public void setVariable(final String name, final String value) {
 
-		if (variables.keySet().contains(name)) {
-			variables.get(name).setValue(value);
-		} else {
-			variables.put(name, new Variable(name, value));
-		}
-	}
+    if (this.variables.keySet().contains(name)) {
+      this.variables.get(name).setValue(value);
+    } else {
+      this.variables.put(name, new Variable(name, value));
+    }
+  }
 
-	public VariableSet getVariables() {
-		return variables;
-	}
+  /**
+   * Gets the variables.
+   *
+   * @return the variables
+   */
+  public VariableSet getVariables() {
+    return this.variables;
+  }
 
-	public void removeVariable(String varName) {
-		variables.remove(varName);
-	}
+  /**
+   * Removes the variable.
+   *
+   * @param varName
+   *          the var name
+   */
+  public void removeVariable(final String varName) {
+    this.variables.remove(varName);
+  }
 
-	public String getExcelFileURL() {
-		return excelFileURL;
-	}
+  /**
+   * Gets the excel file URL.
+   *
+   * @return the excel file URL
+   */
+  public String getExcelFileURL() {
+    return this.excelFileURL;
+  }
 
-	public void setExcelFileURL(String excelFileURL) {
-		this.excelFileURL = excelFileURL;
-	}
+  /**
+   * Sets the excel file URL.
+   *
+   * @param excelFileURL
+   *          the new excel file URL
+   */
+  public void setExcelFileURL(final String excelFileURL) {
+    this.excelFileURL = excelFileURL;
+  }
 
-	public void importVariables(PreesmScenario currentScenario) {
-		if (!excelFileURL.isEmpty() && currentScenario != null) {
-			ExcelVariablesParser parser = new ExcelVariablesParser(
-					currentScenario);
-			
-			try {
-				parser.parse(excelFileURL);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
+  /**
+   * Import variables.
+   *
+   * @param currentScenario
+   *          the current scenario
+   */
+  public void importVariables(final PreesmScenario currentScenario) {
+    if (!this.excelFileURL.isEmpty() && (currentScenario != null)) {
+      final ExcelVariablesParser parser = new ExcelVariablesParser(currentScenario);
 
-	public void updateWith(SDFGraph sdfGraph) {
-		getVariables().clear();
-		for (String v : sdfGraph.getVariables().keySet()) {
-			setVariable(v, sdfGraph.getVariable(v).getValue());
-		}
-	}
+      try {
+        parser.parse(this.excelFileURL);
+      } catch (final Exception e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  /**
+   * Update with.
+   *
+   * @param sdfGraph
+   *          the sdf graph
+   */
+  public void updateWith(final SDFGraph sdfGraph) {
+    getVariables().clear();
+    for (final String v : sdfGraph.getVariables().keySet()) {
+      setVariable(v, sdfGraph.getVariable(v).getValue());
+    }
+  }
 
 }

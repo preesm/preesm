@@ -36,20 +36,33 @@
 
 package org.ietr.preesm.codegen.model;
 
+// TODO: Auto-generated Javadoc
 /**
  * Element of a function call that can be a parameter, an argument...
- * 
+ *
  * @author mpelcat
  */
 public class CodeGenCallElement {
 
-	private String name;
+  /** The name. */
+  private final String name;
 
-	public CodeGenCallElement(String name) {
-		this.name = name;
-	}
+  /**
+   * Instantiates a new code gen call element.
+   *
+   * @param name
+   *          the name
+   */
+  public CodeGenCallElement(final String name) {
+    this.name = name;
+  }
 
-	public String getName() {
-		return name;
-	}
+  /**
+   * Gets the name.
+   *
+   * @return the name
+   */
+  public String getName() {
+    return this.name;
+  }
 }

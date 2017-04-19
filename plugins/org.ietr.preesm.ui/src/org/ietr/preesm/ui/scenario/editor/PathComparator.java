@@ -39,29 +39,34 @@
 package org.ietr.preesm.ui.scenario.editor;
 
 import java.util.Comparator;
-
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
+// TODO: Auto-generated Javadoc
 /**
+ * The Class PathComparator.
+ *
  * @author mpelcat
- * 
- *         Vertex comparator that helps to order vertices in path alphabetical
- *         order
+ *
+ *         Vertex comparator that helps to order vertices in path alphabetical order
  */
 public class PathComparator implements Comparator<IHierarchicalVertex> {
 
-	@Override
-	public int compare(IHierarchicalVertex o1, IHierarchicalVertex o2) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+   */
+  @Override
+  public int compare(final IHierarchicalVertex o1, final IHierarchicalVertex o2) {
 
-		int diff = 0;
+    int diff = 0;
 
-		if (o1.getStoredVertex() instanceof SDFAbstractVertex) {
-			diff = ((SDFAbstractVertex) o1.getStoredVertex()).getInfo().compareTo(
-					((SDFAbstractVertex) o2.getStoredVertex()).getInfo());
+    if (o1.getStoredVertex() instanceof SDFAbstractVertex) {
+      diff = ((SDFAbstractVertex) o1.getStoredVertex()).getInfo().compareTo(((SDFAbstractVertex) o2.getStoredVertex()).getInfo());
 
-		}
+    }
 
-		return diff;
-	}
+    return diff;
+  }
 
 }

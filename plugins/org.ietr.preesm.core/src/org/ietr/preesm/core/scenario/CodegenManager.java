@@ -36,30 +36,43 @@
 
 package org.ietr.preesm.core.scenario;
 
+// TODO: Auto-generated Javadoc
 /**
- * Handles code generation parameters
- * 
+ * Handles code generation parameters.
+ *
  * @author mpelcat
  */
 public class CodegenManager {
 
-	/**
-	 * Directory in which generated code is stored
-	 */
-	private String codegenDirectory;
+  /** Directory in which generated code is stored. */
+  private String codegenDirectory;
 
-	public CodegenManager() {
-		super();
+  /**
+   * Instantiates a new codegen manager.
+   */
+  public CodegenManager() {
+    super();
 
-		codegenDirectory = new String();
-	}
+    this.codegenDirectory = new String();
+  }
 
-	public String getCodegenDirectory() {
-		return codegenDirectory;
-	}
+  /**
+   * Gets the codegen directory.
+   *
+   * @return the codegen directory
+   */
+  public String getCodegenDirectory() {
+    return this.codegenDirectory;
+  }
 
-	public void setCodegenDirectory(String codegenDirectory) {
-		this.codegenDirectory = codegenDirectory;
-	}
+  /**
+   * Sets the codegen directory.
+   *
+   * @param codegenDirectory
+   *          the new codegen directory
+   */
+  public void setCodegenDirectory(final String codegenDirectory) {
+    this.codegenDirectory = codegenDirectory;
+  }
 
 }

@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
-
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.IAbc;
@@ -54,119 +53,136 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.params.FastAlgoParameters;
 
+// TODO: Auto-generated Javadoc
 /**
- * One thread of Task scheduling FAST algorithm multithread
- * 
+ * One thread of Task scheduling FAST algorithm multithread.
+ *
  * @author pmenuet
  */
 class PFastCallable implements Callable<MapperDAG> {
 
-	// Simulator chosen
-	private AbcParameters abcParams;
+  /** The abc params. */
+  // Simulator chosen
+  private final AbcParameters abcParams;
 
-	// thread named by threadName
-	private String threadName;
+  /** The thread name. */
+  // thread named by threadName
+  private final String threadName;
 
-	// DAG given by the main thread
-	private MapperDAG inputDAG;
+  /** The input DAG. */
+  // DAG given by the main thread
+  private final MapperDAG inputDAG;
 
-	// Architecture used to implement the DAG
-	private Design inputArchi;
+  /** The input archi. */
+  // Architecture used to implement the DAG
+  private final Design inputArchi;
 
-	// Set of the nodes upon which we used fast algorithm in the thread
-	private Set<String> blockingNodeNames;
+  /** The blocking node names. */
+  // Set of the nodes upon which we used fast algorithm in the thread
+  private final Set<String> blockingNodeNames;
 
-	// parameters for the fast algorithm
-	private FastAlgoParameters fastParams;
+  /** The fast params. */
+  // parameters for the fast algorithm
+  private final FastAlgoParameters fastParams;
 
-	// True if we want to display the best found solutions
-	private boolean isDisplaySolutions;
+  /** The is display solutions. */
+  // True if we want to display the best found solutions
+  private final boolean isDisplaySolutions;
 
-	// Variables to know if we have to do the initial scheduling or not
-	private boolean alreadyMapped;
+  /** The already mapped. */
+  // Variables to know if we have to do the initial scheduling or not
+  private final boolean alreadyMapped;
 
-	private PreesmScenario scenario;
+  /** The scenario. */
+  private final PreesmScenario scenario;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param name
-	 * @param inputDAG
-	 * @param inputArchi
-	 * @param blockingNodeIds
-	 * @param maxCount
-	 * @param maxStep
-	 * @param margIn
-	 * @param alreadyMapped
-	 * @param simulatorType
-	 */
-	public PFastCallable(String name, MapperDAG inputDAG, Design inputArchi,
-			Set<String> blockingNodeNames, boolean isDisplaySolutions,
-			boolean alreadyMapped, AbcParameters abcParams,
-			FastAlgoParameters fastParams, PreesmScenario scenario) {
-		threadName = name;
-		this.inputDAG = inputDAG;
-		this.inputArchi = inputArchi;
-		this.blockingNodeNames = blockingNodeNames;
-		this.fastParams = fastParams;
-		this.alreadyMapped = alreadyMapped;
-		this.abcParams = abcParams;
-		this.isDisplaySolutions = isDisplaySolutions;
-		this.scenario = scenario;
-	}
+  /**
+   * Constructor.
+   *
+   * @param name
+   *          the name
+   * @param inputDAG
+   *          the input DAG
+   * @param inputArchi
+   *          the input archi
+   * @param blockingNodeNames
+   *          the blocking node names
+   * @param isDisplaySolutions
+   *          the is display solutions
+   * @param alreadyMapped
+   *          the already mapped
+   * @param abcParams
+   *          the abc params
+   * @param fastParams
+   *          the fast params
+   * @param scenario
+   *          the scenario
+   */
+  public PFastCallable(final String name, final MapperDAG inputDAG, final Design inputArchi,
+      final Set<String> blockingNodeNames, final boolean isDisplaySolutions,
+      final boolean alreadyMapped, final AbcParameters abcParams,
+      final FastAlgoParameters fastParams, final PreesmScenario scenario) {
+    this.threadName = name;
+    this.inputDAG = inputDAG;
+    this.inputArchi = inputArchi;
+    this.blockingNodeNames = blockingNodeNames;
+    this.fastParams = fastParams;
+    this.alreadyMapped = alreadyMapped;
+    this.abcParams = abcParams;
+    this.isDisplaySolutions = isDisplaySolutions;
+    this.scenario = scenario;
+  }
 
-	/**
-	 * @Override call():
-	 * 
-	 * @param : void
-	 * @return : MapperDAG
-	 */
-	@Override
-	public MapperDAG call() throws Exception {
+  /**
+   * Call.
+   *
+   * @return : MapperDAG
+   * @throws Exception
+   *           the exception
+   * @Override call():
+   */
+  @Override
+  public MapperDAG call() throws Exception {
 
-		// intern variables
-		MapperDAG callableDAG;
-		MapperDAG outputDAG;
-		Design callableArchi;
-		List<MapperDAGVertex> callableBlockingNodes = new ArrayList<MapperDAGVertex>();
+    // intern variables
+    MapperDAG callableDAG;
+    Design callableArchi;
+    final List<MapperDAGVertex> callableBlockingNodes = new ArrayList<>();
 
-		// Critical sections where the data from the main thread are copied for
-		// this thread
-		synchronized (inputDAG) {
-			callableDAG = inputDAG.clone();
-		}
+    // Critical sections where the data from the main thread are copied for
+    // this thread
+    synchronized (this.inputDAG) {
+      callableDAG = this.inputDAG.clone();
+    }
 
-		synchronized (inputArchi) {
-			callableArchi = inputArchi;
-		}
+    synchronized (this.inputArchi) {
+      callableArchi = this.inputArchi;
+    }
 
-		synchronized (blockingNodeNames) {
-			callableBlockingNodes.addAll(callableDAG
-					.getVertexSet(blockingNodeNames));
-		}
+    synchronized (this.blockingNodeNames) {
+      callableBlockingNodes.addAll(callableDAG.getVertexSet(this.blockingNodeNames));
+    }
 
-		// Create the CPN Dominant Sequence
-		IAbc IHsimu = new InfiniteHomogeneousAbc(abcParams,
-				callableDAG.clone(), callableArchi, scenario);
-		InitialLists initialLists = new InitialLists();
-		initialLists.constructInitialLists(callableDAG, IHsimu);
+    // Create the CPN Dominant Sequence
+    final IAbc IHsimu = new InfiniteHomogeneousAbc(this.abcParams, callableDAG.clone(),
+        callableArchi, this.scenario);
+    final InitialLists initialLists = new InitialLists();
+    initialLists.constructInitialLists(callableDAG, IHsimu);
 
-		TopologicalTaskSched taskSched = new TopologicalTaskSched(
-				IHsimu.getTotalOrder());
-		IHsimu.resetDAG();
+    final TopologicalTaskSched taskSched = new TopologicalTaskSched(IHsimu.getTotalOrder());
+    IHsimu.resetDAG();
 
-		// performing the fast algorithm
-		FastAlgorithm algo = new FastAlgorithm(initialLists, scenario);
-		outputDAG = algo.map(threadName, abcParams, fastParams, callableDAG,
-				callableArchi, alreadyMapped, true, isDisplaySolutions, null,
-				initialLists.getCpnDominant(), callableBlockingNodes,
-				initialLists.getCriticalpath(), taskSched);
+    // performing the fast algorithm
+    final FastAlgorithm algo = new FastAlgorithm(initialLists, this.scenario);
+    final MapperDAG outputDAG = algo.map(this.threadName, this.abcParams, this.fastParams,
+        callableDAG, callableArchi, this.alreadyMapped, true, this.isDisplaySolutions, null,
+        initialLists.getCpnDominant(), callableBlockingNodes, initialLists.getCriticalpath(),
+        taskSched);
 
-		// Saving best total order for future display
-		outputDAG.getPropertyBean().setValue("bestTotalOrder",
-				algo.getBestTotalOrder());
+    // Saving best total order for future display
+    outputDAG.getPropertyBean().setValue("bestTotalOrder", algo.getBestTotalOrder());
 
-		return outputDAG;
+    return outputDAG;
 
-	}
+  }
 }

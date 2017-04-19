@@ -41,17 +41,15 @@ package org.ietr.preesm.ui.scenario.editor;
 import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -65,172 +63,177 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
+// TODO: Auto-generated Javadoc
 /**
- * This page contains general informations of the scenario including current
- * algorithm and current architecture
- * 
+ * This page contains general informations of the scenario including current algorithm and current architecture.
+ *
  * @author mpelcat
  */
 public class OverviewPage extends FormPage {
 
-	/**
-	 * The current scenario being edited
-	 */
-	private PreesmScenario scenario;
+  /** The current scenario being edited. */
+  private final PreesmScenario scenario;
 
-	public OverviewPage(PreesmScenario scenario, FormEditor editor, String id,
-			String title) {
-		super(editor, id, title);
+  /**
+   * Instantiates a new overview page.
+   *
+   * @param scenario
+   *          the scenario
+   * @param editor
+   *          the editor
+   * @param id
+   *          the id
+   * @param title
+   *          the title
+   */
+  public OverviewPage(final PreesmScenario scenario, final FormEditor editor, final String id, final String title) {
+    super(editor, id, title);
 
-		this.scenario = scenario;
-	}
+    this.scenario = scenario;
+  }
 
-	/**
-	 * Creation of the sections and their initialization
-	 */
-	@Override
-	protected void createFormContent(IManagedForm managedForm) {
+  /**
+   * Creation of the sections and their initialization.
+   *
+   * @param managedForm
+   *          the managed form
+   */
+  @Override
+  protected void createFormContent(final IManagedForm managedForm) {
 
-		ScrolledForm form = managedForm.getForm();
-		// FormToolkit toolkit = managedForm.getToolkit();
-		form.setText(Messages.getString("Overview.title"));
-		ColumnLayout layout = new ColumnLayout();
-		layout.topMargin = 0;
-		layout.bottomMargin = 5;
-		layout.leftMargin = 10;
-		layout.rightMargin = 10;
-		layout.horizontalSpacing = 10;
-		layout.verticalSpacing = 10;
-		layout.maxNumColumns = 4;
-		layout.minNumColumns = 1;
-		form.getBody().setLayout(layout);
+    final ScrolledForm form = managedForm.getForm();
+    // FormToolkit toolkit = managedForm.getToolkit();
+    form.setText(Messages.getString("Overview.title"));
+    final ColumnLayout layout = new ColumnLayout();
+    layout.topMargin = 0;
+    layout.bottomMargin = 5;
+    layout.leftMargin = 10;
+    layout.rightMargin = 10;
+    layout.horizontalSpacing = 10;
+    layout.verticalSpacing = 10;
+    layout.maxNumColumns = 4;
+    layout.minNumColumns = 1;
+    form.getBody().setLayout(layout);
 
-		Set<String> algoExtensions = new HashSet<String>();
-		algoExtensions.add("pi");
-		algoExtensions.add("graphml");
+    final Set<String> algoExtensions = new HashSet<>();
+    algoExtensions.add("pi");
+    algoExtensions.add("graphml");
 
-		// Algorithm file chooser section
-		createFileSection(managedForm,
-				Messages.getString("Overview.algorithmFile"),
-				Messages.getString("Overview.algorithmDescription"),
-				Messages.getString("Overview.algorithmFileEdit"),
-				scenario.getAlgorithmURL(),
-				Messages.getString("Overview.algorithmBrowseTitle"),
-				algoExtensions);
+    // Algorithm file chooser section
+    createFileSection(managedForm, Messages.getString("Overview.algorithmFile"), Messages.getString("Overview.algorithmDescription"),
+        Messages.getString("Overview.algorithmFileEdit"), this.scenario.getAlgorithmURL(), Messages.getString("Overview.algorithmBrowseTitle"), algoExtensions);
 
-		Set<String> archiExtensions = new HashSet<String>();
-		archiExtensions.add("slam");
-		archiExtensions.add("design");
+    final Set<String> archiExtensions = new HashSet<>();
+    archiExtensions.add("slam");
+    archiExtensions.add("design");
 
-		// Architecture file chooser section
-		createFileSection(managedForm,
-				Messages.getString("Overview.architectureFile"),
-				Messages.getString("Overview.architectureDescription"),
-				Messages.getString("Overview.architectureFileEdit"),
-				scenario.getArchitectureURL(),
-				Messages.getString("Overview.architectureBrowseTitle"),
-				archiExtensions);
+    // Architecture file chooser section
+    createFileSection(managedForm, Messages.getString("Overview.architectureFile"), Messages.getString("Overview.architectureDescription"),
+        Messages.getString("Overview.architectureFileEdit"), this.scenario.getArchitectureURL(), Messages.getString("Overview.architectureBrowseTitle"),
+        archiExtensions);
 
-	}
+  }
 
-	/**
-	 * Creates a blank section with expansion capabilities
-	 */
-	private Composite createSection(IManagedForm mform, String title,
-			String desc, int numColumns) {
+  /**
+   * Creates a blank section with expansion capabilities.
+   *
+   * @param mform
+   *          the mform
+   * @param title
+   *          the title
+   * @param desc
+   *          the desc
+   * @param numColumns
+   *          the num columns
+   * @return the composite
+   */
+  private Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns) {
 
-		final ScrolledForm form = mform.getForm();
-		FormToolkit toolkit = mform.getToolkit();
-		Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
-				| ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
-		section.setText(title);
-		section.setDescription(desc);
+    final ScrolledForm form = mform.getForm();
+    final FormToolkit toolkit = mform.getToolkit();
+    final Section section = toolkit.createSection(form.getBody(),
+        ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    section.setText(title);
+    section.setDescription(desc);
 
-		toolkit.createCompositeSeparator(section);
-		Composite client = toolkit.createComposite(section);
-		GridLayout layout = new GridLayout();
-		layout.marginWidth = layout.marginHeight = 0;
-		layout.numColumns = numColumns;
-		client.setLayout(layout);
-		section.setClient(client);
-		section.addExpansionListener(new ExpansionAdapter() {
-			@Override
-			public void expansionStateChanged(ExpansionEvent e) {
-				form.reflow(false);
-			}
-		});
-		return client;
-	}
+    toolkit.createCompositeSeparator(section);
+    final Composite client = toolkit.createComposite(section);
+    final GridLayout layout = new GridLayout();
+    layout.marginWidth = layout.marginHeight = 0;
+    layout.numColumns = numColumns;
+    client.setLayout(layout);
+    section.setClient(client);
+    section.addExpansionListener(new ExpansionAdapter() {
+      @Override
+      public void expansionStateChanged(final ExpansionEvent e) {
+        form.reflow(false);
+      }
+    });
+    return client;
+  }
 
-	/**
-	 * Creates a section to edit a file
-	 * 
-	 * @param mform
-	 *            form containing the section
-	 * @param title
-	 *            section title
-	 * @param desc
-	 *            description of the section
-	 * @param fileEdit
-	 *            text to display in text label
-	 * @param initValue
-	 *            initial value of Text
-	 * @param browseTitle
-	 *            title of file browser
-	 */
-	private void createFileSection(IManagedForm mform, String title,
-			String desc, String fileEdit, String initValue, String browseTitle,
-			Set<String> fileExtensions) {
+  /**
+   * Creates a section to edit a file.
+   *
+   * @param mform
+   *          form containing the section
+   * @param title
+   *          section title
+   * @param desc
+   *          description of the section
+   * @param fileEdit
+   *          text to display in text label
+   * @param initValue
+   *          initial value of Text
+   * @param browseTitle
+   *          title of file browser
+   * @param fileExtensions
+   *          the file extensions
+   */
+  private void createFileSection(final IManagedForm mform, final String title, final String desc, final String fileEdit, final String initValue,
+      final String browseTitle, final Set<String> fileExtensions) {
 
-		Composite client = createSection(mform, title, desc, 2);
+    final Composite client = createSection(mform, title, desc, 2);
 
-		FormToolkit toolkit = mform.getToolkit();
+    final FormToolkit toolkit = mform.getToolkit();
 
-		GridData gd = new GridData();
-		toolkit.createLabel(client, fileEdit);
+    final GridData gd = new GridData();
+    toolkit.createLabel(client, fileEdit);
 
-		Text text = toolkit.createText(client, initValue, SWT.SINGLE);
-		text.setData(title);
-		text.addModifyListener(new ModifyListener() {
+    final Text text = toolkit.createText(client, initValue, SWT.SINGLE);
+    text.setData(title);
+    text.addModifyListener(e -> {
+      final Text text1 = (Text) e.getSource();
+      final String type = ((String) text1.getData());
 
-			@Override
-			public void modifyText(ModifyEvent e) {
-				Text text = (Text) e.getSource();
-				String type = ((String) text.getData());
+      if (type.equals(Messages.getString("Overview.algorithmFile"))) {
+        OverviewPage.this.scenario.setAlgorithmURL(text1.getText());
+        try {
+          OverviewPage.this.scenario.update(true, false);
+        } catch (InvalidModelException | CoreException | FileNotFoundException ex) {
+          ex.printStackTrace();
+        }
+      } else if (type.equals(Messages.getString("Overview.architectureFile"))) {
+        OverviewPage.this.scenario.setArchitectureURL(text1.getText());
+        try {
+          OverviewPage.this.scenario.update(false, true);
+        } catch (InvalidModelException | CoreException | FileNotFoundException ex) {
+          ex.printStackTrace();
+        }
+      }
 
-				if (type.equals(Messages.getString("Overview.algorithmFile"))) {
-					scenario.setAlgorithmURL(text.getText());
-					try {
-						scenario.update(true, false);
-					} catch (InvalidModelException | CoreException | FileNotFoundException e1) {
-						e1.printStackTrace();
-					}
-				}
-				else if (type.equals(Messages
-						.getString("Overview.architectureFile"))) {
-					scenario.setArchitectureURL(text.getText());
-					try {
-						scenario.update(false, true);
-					} catch (InvalidModelException | CoreException | FileNotFoundException e1) {
-						e1.printStackTrace();
-					}
-				}
+      firePropertyChange(IEditorPart.PROP_DIRTY);
 
-				firePropertyChange(PROP_DIRTY);
+    });
 
-			}
-		});
+    gd.widthHint = 400;
+    text.setLayoutData(gd);
 
-		gd.widthHint = 400;
-		text.setLayoutData(gd);
+    final Button button = toolkit.createButton(client, Messages.getString("Overview.browse"), SWT.PUSH);
+    final SelectionAdapter adapter = new FileSelectionAdapter(text, client.getShell(), browseTitle, fileExtensions);
+    button.addSelectionListener(adapter);
 
-		final Button button = toolkit.createButton(client,
-				Messages.getString("Overview.browse"), SWT.PUSH);
-		SelectionAdapter adapter = new FileSelectionAdapter(text,
-				client.getShell(), browseTitle, fileExtensions);
-		button.addSelectionListener(adapter);
-
-		toolkit.paintBordersFor(client);
-	}
+    toolkit.paintBordersFor(client);
+  }
 
 }

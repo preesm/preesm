@@ -38,64 +38,71 @@ package org.ietr.preesm.ui.scenario.editor.timings;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.ietr.preesm.core.scenario.MemCopySpeed;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
+// TODO: Auto-generated Javadoc
 /**
- * Provides the elements contained in the memcopy speeds editor
- * 
+ * Provides the elements contained in the memcopy speeds editor.
+ *
  * @author mpelcat
  */
 public class MemCopySpeedContentProvider implements IStructuredContentProvider {
 
-	List<MemCopySpeed> elementList = null;
+  /** The element list. */
+  List<MemCopySpeed> elementList = null;
 
-	@Override
-	public Object[] getElements(Object inputElement) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
+   */
+  @Override
+  public Object[] getElements(final Object inputElement) {
 
-		
-		if (inputElement instanceof PreesmScenario) {
-			PreesmScenario inputScenario = (PreesmScenario) inputElement;
+    if (inputElement instanceof PreesmScenario) {
+      final PreesmScenario inputScenario = (PreesmScenario) inputElement;
 
-			/**
-			 * Memcopy speeds are added for all operator types if non present
-			 */
-			for(String opDefId : inputScenario.getOperatorDefinitionIds()){
-				if(!inputScenario.getTimingManager().hasMemCpySpeed(opDefId)){
-					inputScenario.getTimingManager().setDefaultMemCpySpeed(opDefId);
-				}
-			}
-			
-			// Retrieving the memory copy speeds in operator definition order
-			elementList = new ArrayList<MemCopySpeed>(inputScenario.getTimingManager().getMemcpySpeeds()
-					.values());
-			
-			Collections.sort(elementList, new Comparator<MemCopySpeed>() {
+      /**
+       * Memcopy speeds are added for all operator types if non present
+       */
+      for (final String opDefId : inputScenario.getOperatorDefinitionIds()) {
+        if (!inputScenario.getTimingManager().hasMemCpySpeed(opDefId)) {
+          inputScenario.getTimingManager().setDefaultMemCpySpeed(opDefId);
+        }
+      }
 
-				@Override
-				public int compare(MemCopySpeed o1, MemCopySpeed o2) {
-					return o1.getOperatorDef().compareTo(o2.getOperatorDef());
-				}
-			});
-		}
-		return elementList.toArray();
-	}
+      // Retrieving the memory copy speeds in operator definition order
+      this.elementList = new ArrayList<>(inputScenario.getTimingManager().getMemcpySpeeds().values());
 
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
+      Collections.sort(this.elementList, (o1, o2) -> o1.getOperatorDef().compareTo(o2.getOperatorDef()));
+    }
+    return this.elementList.toArray();
+  }
 
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.IContentProvider#dispose()
+   */
+  @Override
+  public void dispose() {
+    // TODO Auto-generated method stub
 
-	@Override
-	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		// TODO Auto-generated method stub
+  }
 
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
+   */
+  @Override
+  public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
+    // TODO Auto-generated method stub
+
+  }
 
 }

@@ -38,103 +38,125 @@ package org.ietr.preesm.memory.exclusiongraph;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.algorithm.transforms.ForkJoinRemover;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MemExUpdaterEngine.
+ */
 public class MemExUpdaterEngine {
 
-	private boolean verbose;
-	private DirectedAcyclicGraph dag;
-	private MemoryExclusionGraph memEx;
-	private DirectedAcyclicGraph localDAG;
-	private int before;
-	private double density;
-	// Rem: Logger is used to display messages in the console
-	private Logger logger = WorkflowLogger.getLogger();
+  /** The verbose. */
+  private final boolean verbose;
 
-	public MemExUpdaterEngine(DirectedAcyclicGraph dag,
-			MemoryExclusionGraph memEx, boolean verbose) {
-		this.verbose = verbose;
-		this.dag = dag;
-		this.memEx = memEx;
-		this.before = memEx.edgeSet().size();
-	}
+  /** The dag. */
+  private final DirectedAcyclicGraph dag;
 
-	public void createLocalDag(boolean forkJoin) {
-		// Make a copy of the Input DAG for treatment
-		// Clone is deep copy i.e. vertices are thus copied too.
-		localDAG = (DirectedAcyclicGraph) dag.clone();
-		if (localDAG == null) {
-			localDAG = dag;
-		}
+  /** The mem ex. */
+  private final MemoryExclusionGraph memEx;
 
-		if (forkJoin) {
-			ForkJoinRemover.supprImplodeExplode(localDAG);
-		}
-	}
+  /** The local DAG. */
+  private DirectedAcyclicGraph localDAG;
 
-	public void update(boolean lifetime) {
-		updateWithSchedule();
-		
-		if (lifetime) {
-			updateWithLifetimes();
-		}
-	}
+  /** The before. */
+  private int before;
 
-	private void updateWithSchedule() {
-		if (verbose) {
-			logger.log(Level.INFO,
-					"Memory exclusion graph : start updating with schedule");
-		}
-		
-		memEx.updateWithSchedule(localDAG);
+  /** The density. */
+  private double density;
 
-		this.density = memEx.edgeSet().size()
-				/ (memEx.vertexSet().size() * (memEx.vertexSet().size() - 1) / 2.0);
-		
-		if (verbose) {
-			logger.log(Level.INFO, "Memory exclusion graph updated with "
-					+ memEx.vertexSet().size() + " vertices and density = "
-					+ density);
-			logger.log(
-					Level.INFO,
-					"Exclusions removed: "
-							+ (before - memEx.edgeSet().size())
-							+ " ("
-							+ Math.round(100.00
-									* (before - memEx.edgeSet().size())
-									/ before) + "%)");
-		}
-	}
-	
-	private void updateWithLifetimes() {
-		before = memEx.edgeSet().size();
-		if (verbose) {
-			logger.log(Level.INFO,
-					"Memory exclusion graph : start updating with memObject lifetimes");
-		}
+  /** The logger. */
+  // Rem: Logger is used to display messages in the console
+  private final Logger logger = WorkflowLogger.getLogger();
 
-		memEx.updateWithMemObjectLifetimes(localDAG);
+  /**
+   * Instantiates a new mem ex updater engine.
+   *
+   * @param dag
+   *          the dag
+   * @param memEx
+   *          the mem ex
+   * @param verbose
+   *          the verbose
+   */
+  public MemExUpdaterEngine(final DirectedAcyclicGraph dag, final MemoryExclusionGraph memEx, final boolean verbose) {
+    this.verbose = verbose;
+    this.dag = dag;
+    this.memEx = memEx;
+    this.before = memEx.edgeSet().size();
+  }
 
-		density = memEx.edgeSet().size()
-				/ (memEx.vertexSet().size()
-						* (memEx.vertexSet().size() - 1) / 2.0);
+  /**
+   * Creates the local dag.
+   *
+   * @param forkJoin
+   *          the fork join
+   */
+  public void createLocalDag(final boolean forkJoin) {
+    // Make a copy of the Input DAG for treatment
+    // Clone is deep copy i.e. vertices are thus copied too.
+    this.localDAG = (DirectedAcyclicGraph) this.dag.clone();
+    if (this.localDAG == null) {
+      this.localDAG = this.dag;
+    }
 
-		if (verbose) {
-			logger.log(Level.INFO, "Memory exclusion graph updated with "
-					+ memEx.vertexSet().size() + " vertices and density = "
-					+ density);
-			logger.log(
-					Level.INFO,
-					"Exclusions removed: "
-							+ (before - memEx.edgeSet().size())
-							+ " ("
-							+ Math.round(100.00
-									* (before - memEx.edgeSet().size())
-									/ before) + "%)");
-		}
-	
-	}
+    if (forkJoin) {
+      ForkJoinRemover.supprImplodeExplode(this.localDAG);
+    }
+  }
+
+  /**
+   * Update.
+   *
+   * @param lifetime
+   *          the lifetime
+   */
+  public void update(final boolean lifetime) {
+    updateWithSchedule();
+
+    if (lifetime) {
+      updateWithLifetimes();
+    }
+  }
+
+  /**
+   * Update with schedule.
+   */
+  private void updateWithSchedule() {
+    if (this.verbose) {
+      this.logger.log(Level.INFO, "Memory exclusion graph : start updating with schedule");
+    }
+
+    this.memEx.updateWithSchedule(this.localDAG);
+
+    this.density = this.memEx.edgeSet().size() / ((this.memEx.vertexSet().size() * (this.memEx.vertexSet().size() - 1)) / 2.0);
+
+    if (this.verbose) {
+      this.logger.log(Level.INFO, "Memory exclusion graph updated with " + this.memEx.vertexSet().size() + " vertices and density = " + this.density);
+      this.logger.log(Level.INFO, "Exclusions removed: " + (this.before - this.memEx.edgeSet().size()) + " ("
+          + Math.round((100.00 * (this.before - this.memEx.edgeSet().size())) / this.before) + "%)");
+    }
+  }
+
+  /**
+   * Update with lifetimes.
+   */
+  private void updateWithLifetimes() {
+    this.before = this.memEx.edgeSet().size();
+    if (this.verbose) {
+      this.logger.log(Level.INFO, "Memory exclusion graph : start updating with memObject lifetimes");
+    }
+
+    this.memEx.updateWithMemObjectLifetimes(this.localDAG);
+
+    this.density = this.memEx.edgeSet().size() / ((this.memEx.vertexSet().size() * (this.memEx.vertexSet().size() - 1)) / 2.0);
+
+    if (this.verbose) {
+      this.logger.log(Level.INFO, "Memory exclusion graph updated with " + this.memEx.vertexSet().size() + " vertices and density = " + this.density);
+      this.logger.log(Level.INFO, "Exclusions removed: " + (this.before - this.memEx.edgeSet().size()) + " ("
+          + Math.round((100.00 * (this.before - this.memEx.edgeSet().size())) / this.before) + "%)");
+    }
+
+  }
 }

@@ -45,49 +45,66 @@ import org.eclipse.graphiti.features.impl.AbstractAddFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class AddRefinementFeature.
+ */
 @SuppressWarnings("restriction")
 /**
- * When a file is drag and dropped on an actor, the feature attempts to set 
- * this file as the refinement of the actor.
- * 
+ * When a file is drag and dropped on an actor, the feature attempts to set this file as the refinement of the actor.
+ *
  * Works only for IDL, H and PI files.
+ *
  * @author kdesnos
  *
  */
 public class AddRefinementFeature extends AbstractAddFeature {
 
-	public AddRefinementFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /**
+   * Instantiates a new adds the refinement feature.
+   *
+   * @param fp
+   *          the fp
+   */
+  public AddRefinementFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	@Override
-	public boolean canAdd(IAddContext context) {
-		if (!(context.getNewObject() instanceof File)) {
-			return false;
-		} else {
-			String fileExtension = ((File) context.getNewObject()).getFileExtension();
-			
-			if (fileExtension.equals("pi") || fileExtension.equals("h")
-					|| fileExtension.equals("idl")) {
-				return true;
-			}
-			return false;
-		}
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.func.IAdd#canAdd(org.eclipse.graphiti.features.context.IAddContext)
+   */
+  @Override
+  public boolean canAdd(final IAddContext context) {
+    if (!(context.getNewObject() instanceof File)) {
+      return false;
+    } else {
+      final String fileExtension = ((File) context.getNewObject()).getFileExtension();
 
-	@Override
-	public PictogramElement add(IAddContext context) {
-		SetActorRefinementFeature setRefinementFeature = new SetActorRefinementFeature(
-				getFeatureProvider());
+      if (fileExtension.equals("pi") || fileExtension.equals("h") || fileExtension.equals("idl")) {
+        return true;
+      }
+      return false;
+    }
+  }
 
-		IPath newFilePath = ((File) context.getNewObject()).getFullPath();
-			
-		Actor actor = (Actor) getBusinessObjectForPictogramElement(context
-				.getTargetContainer());
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.func.IAdd#add(org.eclipse.graphiti.features.context.IAddContext)
+   */
+  @Override
+  public PictogramElement add(final IAddContext context) {
+    final SetActorRefinementFeature setRefinementFeature = new SetActorRefinementFeature(getFeatureProvider());
 
-		setRefinementFeature.setActorRefinement(actor, newFilePath);
+    final IPath newFilePath = ((File) context.getNewObject()).getFullPath();
 
-		return null;
-	}
+    final Actor actor = (Actor) getBusinessObjectForPictogramElement(context.getTargetContainer());
+
+    setRefinementFeature.setActorRefinement(actor, newFilePath);
+
+    return null;
+  }
 
 }

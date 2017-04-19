@@ -38,108 +38,108 @@
 
 package org.ietr.preesm.core.types;
 
+import org.ietr.dftools.algorithm.model.dag.DAGEdge;
+
+// TODO: Auto-generated Javadoc
 /**
- * This class contains property bean names used to exchange vertex properties
- * between the mapper and the code generation plugins.
- * 
+ * This class contains property bean names used to exchange vertex properties between the mapper and the code generation plugins.
+ *
  * @author mpelcat
  */
 public final class ImplementationPropertyNames {
 
-	// Graph properties
-	/**
-	 * See AbcType for available ABC types.
-	 */
-	public static final String Graph_AbcReferenceType = "AbcReferenceType";
+  // Graph properties
+  /**
+   * See AbcType for available ABC types.
+   */
+  public static final String Graph_AbcReferenceType = "AbcReferenceType";
 
-	/**
-	 * See EdgeSchedType for available edge scheduling types.
-	 */
-	public static final String Graph_EdgeSchedReferenceType = "EdgeSchedReferenceType";
+  /**
+   * See EdgeSchedType for available edge scheduling types.
+   */
+  public static final String Graph_EdgeSchedReferenceType = "EdgeSchedReferenceType";
 
-	/**
-	 * SDFGraph object containing the reference graph for this dag graph.
-	 */
-	public static final String Graph_SdfReferenceGraph = "SdfReferenceGraph";
+  /**
+   * SDFGraph object containing the reference graph for this dag graph.
+   */
+  public static final String Graph_SdfReferenceGraph = "SdfReferenceGraph";
 
-	// Vertex properties
-	/**
-	 * See {@link VertexType} for available vertex types.
-	 */
-	public static final String Vertex_vertexType = "vertexType";
+  // Vertex properties
+  /**
+   * See {@link VertexType} for available vertex types.
+   */
+  public static final String Vertex_vertexType = "vertexType";
 
-	/**
-	 * Operator on which the vertex is mapped.
-	 */
-	public static final String Vertex_Operator = "Operator";
+  /**
+   * Operator on which the vertex is mapped.
+   */
+  public static final String Vertex_Operator = "Operator";
 
-	/**
-	 * Operator on which the vertex can be mapped.
-	 */
-	public static final String Vertex_Available_Operators = "availableOperators";
+  /**
+   * Operator on which the vertex can be mapped.
+   */
+  public static final String Vertex_Available_Operators = "availableOperators";
 
-	/**
-	 * OperatorDefinition of the vertex operator.
-	 */
-	public static final String Vertex_OperatorDef = "OperatorDef";
+  /**
+   * OperatorDefinition of the vertex operator.
+   */
+  public static final String Vertex_OperatorDef = "OperatorDef";
 
-	/**
-	 * integer equal to the total order of the vertex.
-	 */
-	public static final String Vertex_schedulingOrder = "schedulingOrder";
+  /**
+   * integer equal to the total order of the vertex.
+   */
+  public static final String Vertex_schedulingOrder = "schedulingOrder";
 
-	// Vertex of type task properties
-	/**
-	 * integer equal to duration of the task.
-	 */
-	public static final String Task_duration = "duration";
+  // Vertex of type task properties
+  /**
+   * integer equal to duration of the task.
+   */
+  public static final String Task_duration = "duration";
 
-	/**
-	 * Id of the original vertex with no hierarchy info.
-	 */
-	public static final String Vertex_originalVertexId = "originalId";
+  /**
+   * Id of the original vertex with no hierarchy info.
+   */
+  public static final String Vertex_originalVertexId = "originalId";
 
-	/**
-	 * Starting Time of the Task in the simulation.
-	 */
-	public static final String Start_time = "TaskStartTime";
+  /**
+   * Starting Time of the Task in the simulation.
+   */
+  public static final String Start_time = "TaskStartTime";
 
-	// Vertex of type send or receive properties
-	/**
-	 * {@link DAGEdge} that corresponds to a Transfer Vertex
-	 */
-	public static final String SendReceive_correspondingDagEdge = "correspondingDagEdge";
+  // Vertex of type send or receive properties
+  /** {@link DAGEdge} that corresponds to a Transfer Vertex. */
+  public static final String SendReceive_correspondingDagEdge = "correspondingDagEdge";
 
-	/**
-	 * Route step transfering the data.
-	 */
-	public static final String SendReceive_routeStep = "routeStep";
+  /**
+   * Route step transfering the data.
+   */
+  public static final String SendReceive_routeStep = "routeStep";
 
-	/**
-	 * integer with the data size.
-	 */
-	public static final String SendReceive_dataSize = "dataSize";
+  /**
+   * integer with the data size.
+   */
+  public static final String SendReceive_dataSize = "dataSize";
 
-	/**
-	 * String with the operator address.
-	 */
-	public static final String SendReceive_Operator_address = "Operator_address";
+  /**
+   * String with the operator address.
+   */
+  public static final String SendReceive_Operator_address = "Operator_address";
 
-	/**
-	 * {@link OperatorDefinition} of the operator executing the send or receive.
-	 */
-	public static final String SendReceive_OperatorDef = "OperatorDef";
+  /**
+   * {@link OperatorDefinition} of the operator executing the send or receive.
+   */
+  public static final String SendReceive_OperatorDef = "OperatorDef";
 
-	// Vertex of type send properties
-	/**
-	 * Name of the sender vertex.
-	 */
-	public static final String Send_senderGraphName = "senderGraphName";
+  // Vertex of type send properties
+  /**
+   * Name of the sender vertex.
+   */
+  public static final String Send_senderGraphName = "senderGraphName";
 
-	// Vertex of type receive properties
-	/**
-	 * Name of the receiver vertex.
-	 */
-	public static final String Receive_receiverGraphName = "receiverGraphName";
+  // Vertex of type receive properties
+  /**
+   * Name of the receiver vertex.
+   */
+  public static final String Receive_receiverGraphName = "receiverGraphName";
 
 }

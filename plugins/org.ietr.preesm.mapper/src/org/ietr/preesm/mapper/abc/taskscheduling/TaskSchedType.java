@@ -36,43 +36,59 @@
 
 package org.ietr.preesm.mapper.abc.taskscheduling;
 
+// TODO: Auto-generated Javadoc
 /**
- * Types of task scheduler to be used in parameters
- * 
+ * Types of task scheduler to be used in parameters.
+ *
  * @author mpelcat
  */
 public enum TaskSchedType {
 
-	Simple,
+  /** The Simple. */
+  Simple,
 
-	Switcher,
+  /** The Switcher. */
+  Switcher,
 
-	Topological;
+  /** The Topological. */
+  Topological;
 
-	@Override
-	public String toString() {
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Enum#toString()
+   */
+  @Override
+  public String toString() {
 
-		if (this == Simple) {
-			return "Simple";
-		} else if (this == Switcher) {
-			return "Switcher";
-		} else if (this == Topological) {
-			return "Topological";
-		}
+    if (this == Simple) {
+      return "Simple";
+    } else if (this == Switcher) {
+      return "Switcher";
+    } else if (this == Topological) {
+      return "Topological";
+    } else {
+      throw new UnsupportedOperationException();
+    }
+  }
 
-		return null;
-	}
+  /**
+   * From string.
+   *
+   * @param type
+   *          the type
+   * @return the task sched type
+   */
+  public static TaskSchedType fromString(final String type) {
 
-	public static TaskSchedType fromString(String type) {
+    if (type.equalsIgnoreCase("Simple")) {
+      return Simple;
+    } else if (type.equalsIgnoreCase("Switcher")) {
+      return Switcher;
+    } else if (type.equalsIgnoreCase("Topological")) {
+      return Topological;
+    }
 
-		if (type.equalsIgnoreCase("Simple")) {
-			return Simple;
-		} else if (type.equalsIgnoreCase("Switcher")) {
-			return Switcher;
-		} else if (type.equalsIgnoreCase("Topological")) {
-			return Topological;
-		}
-
-		return null;
-	}
+    return null;
+  }
 }

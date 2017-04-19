@@ -41,7 +41,6 @@ package org.ietr.preesm.ui.scenario.editor.variables;
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.util.Locale;
-
 import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.write.Label;
@@ -51,7 +50,6 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
-
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.ui.IWorkbench;
@@ -68,106 +66,123 @@ import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.ui.scenario.editor.ExcelWriter;
 import org.ietr.preesm.ui.scenario.editor.SaveAsWizard;
 
+// TODO: Auto-generated Javadoc
 /**
- * Exporting timings in an excel sheet
- * 
+ * Exporting timings in an excel sheet.
+ *
  * @author mpelcat
  * @author kdesnos
  */
 public class ExcelVariablesWriter extends ExcelWriter {
 
-	private PreesmScenario scenario;
+  /** The scenario. */
+  private final PreesmScenario scenario;
 
-	public ExcelVariablesWriter(PreesmScenario scenario) {
-		super();
-		this.scenario = scenario;
-	}
+  /**
+   * Instantiates a new excel variables writer.
+   *
+   * @param scenario
+   *          the scenario
+   */
+  public ExcelVariablesWriter(final PreesmScenario scenario) {
+    super();
+    this.scenario = scenario;
+  }
 
-	@Override
-	public void widgetDefaultSelected(SelectionEvent e) {
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
+   */
+  @Override
+  public void widgetDefaultSelected(final SelectionEvent e) {
+  }
 
-	@Override
-	public void widgetSelected(SelectionEvent e) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
+   */
+  @Override
+  public void widgetSelected(final SelectionEvent e) {
 
-		IWorkbench workbench = PlatformUI.getWorkbench();
-		IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-		SaveAsWizard wizard = new SaveAsWizard(this, "Variables");
-		WizardDialog dialog = new WizardDialog(window.getShell(), wizard);
-		dialog.open();
-	}
+    final IWorkbench workbench = PlatformUI.getWorkbench();
+    final IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+    final SaveAsWizard wizard = new SaveAsWizard(this, "Variables");
+    final WizardDialog dialog = new WizardDialog(window.getShell(), wizard);
+    dialog.open();
+  }
 
-	/**
-	 * Add timing cells to the newly created file
-	 * 
-	 * @throws IOException
-	 */
-	@Override
-	public void write(OutputStream os) {
+  /**
+   * Add timing cells to the newly created file.
+   *
+   * @param os
+   *          the os
+   */
+  @Override
+  public void write(final OutputStream os) {
 
-		try {
-			WorkbookSettings ws = new WorkbookSettings();
-			ws.setLocale(new Locale("en", "EN"));
-			WritableWorkbook workbook = Workbook.createWorkbook(os, ws);
-			WritableSheet sheet = workbook.createSheet("Variables", 0);
+    try {
+      final WorkbookSettings ws = new WorkbookSettings();
+      ws.setLocale(new Locale("en", "EN"));
+      final WritableWorkbook workbook = Workbook.createWorkbook(os, ws);
+      final WritableSheet sheet = workbook.createSheet("Variables", 0);
 
-			addCells(sheet);
-			workbook.write();
-			workbook.close();
+      addCells(sheet);
+      workbook.write();
+      workbook.close();
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    } catch (final Exception e) {
+      e.printStackTrace();
+    }
+  }
 
-	@Override
-	protected void addCells(WritableSheet sheet) throws InvalidModelException,
-			FileNotFoundException, RowsExceededException {
-		if (sheet != null) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.ui.scenario.editor.ExcelWriter#addCells(jxl.write.WritableSheet)
+   */
+  @Override
+  protected void addCells(final WritableSheet sheet) throws InvalidModelException, FileNotFoundException, RowsExceededException {
+    if (sheet != null) {
 
-			int maxVOrdinate = 0;
+      int maxVOrdinate = 0;
 
-			// Get variables of the graph
-			SDFGraph currentGraph = ScenarioParser.getSDFGraph(scenario
-					.getAlgorithmURL());
-			VariableSet variablesGraph = currentGraph.getVariables();
+      // Get variables of the graph
+      final SDFGraph currentGraph = ScenarioParser.getSDFGraph(this.scenario.getAlgorithmURL());
+      final VariableSet variablesGraph = currentGraph.getVariables();
 
-			// Get variables of the scenario
-			VariableSet variablesScenario = scenario.getVariablesManager()
-					.getVariables();
-			;
+      // Get variables of the scenario
+      final VariableSet variablesScenario = this.scenario.getVariablesManager().getVariables();
+      ;
 
-			for (String variableName : variablesGraph.keySet()) {
-				// Retrieve the cell (if it exists)
-				WritableCell varCell = (WritableCell) sheet
-						.findCell(variableName);
-				try {
-					// If the cell does not exists, create it
-					if (varCell == null) {
-						varCell = new Label(0, maxVOrdinate, variableName);
-						sheet.addCell(varCell);
-						maxVOrdinate++;
-					}
+      for (final String variableName : variablesGraph.keySet()) {
+        // Retrieve the cell (if it exists)
+        WritableCell varCell = (WritableCell) sheet.findCell(variableName);
+        try {
+          // If the cell does not exists, create it
+          if (varCell == null) {
+            varCell = new Label(0, maxVOrdinate, variableName);
+            sheet.addCell(varCell);
+            maxVOrdinate++;
+          }
 
-					// Get the variable value from scenario
-					// if variable not defined in scenario, get value from graph
-					Variable variable = variablesScenario
-							.getVariable(variableName);
-					if (variable == null) {
-						variable = variablesGraph.getVariable(variableName);
-					}
-					int value = variable.intValue();
+          // Get the variable value from scenario
+          // if variable not defined in scenario, get value from graph
+          Variable variable = variablesScenario.getVariable(variableName);
+          if (variable == null) {
+            variable = variablesGraph.getVariable(variableName);
+          }
+          final int value = variable.intValue();
 
-					// Write the value in the cell
-					WritableCell valueCell = new Number(1, varCell.getRow(),
-							value);
-					sheet.addCell(valueCell);
+          // Write the value in the cell
+          final WritableCell valueCell = new Number(1, varCell.getRow(), value);
+          sheet.addCell(valueCell);
 
-				} catch (WriteException | InvalidExpressionException
-						| NoIntegerValueException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
+        } catch (WriteException | InvalidExpressionException | NoIntegerValueException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
 }

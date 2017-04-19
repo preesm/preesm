@@ -52,161 +52,184 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.mapper.ui.Messages;
 
+// TODO: Auto-generated Javadoc
 /**
- * This page displays the quality of the current implementation compared to the
- * theoretic achievable time
- * 
+ * This page displays the quality of the current implementation compared to the theoretic achievable
+ * time.
+ *
  * @author mpelcat
  */
 public class PerformancePage extends FormPage {
 
-	/**
-	 * The class generating the performance data
-	 */
-	private StatGenerator statGen = null;
+  /** The class generating the performance data. */
+  private StatGenerator statGen = null;
 
-	/**
-	 * The class plotting the performance data
-	 */
-	PerformancePlotter plotter = null;
+  /** The class plotting the performance data. */
+  PerformancePlotter plotter = null;
 
-	public PerformancePage(StatGenerator statGen, FormEditor editor, String id,
-			String title) {
-		super(editor, id, title);
+  /**
+   * Instantiates a new performance page.
+   *
+   * @param statGen
+   *          the stat gen
+   * @param editor
+   *          the editor
+   * @param id
+   *          the id
+   * @param title
+   *          the title
+   */
+  public PerformancePage(final StatGenerator statGen, final FormEditor editor, final String id,
+      final String title) {
+    super(editor, id, title);
 
-		this.statGen = statGen;
-	}
+    this.statGen = statGen;
+  }
 
-	/**
-	 * Creation of the sections and their initialization
-	 */
-	@Override
-	protected void createFormContent(IManagedForm managedForm) {
+  /**
+   * Creation of the sections and their initialization.
+   *
+   * @param managedForm
+   *          the managed form
+   */
+  @Override
+  protected void createFormContent(final IManagedForm managedForm) {
 
-		ScrolledForm form = managedForm.getForm();
-		form.setText(Messages.getString("Performance.title"));
-		GridLayout layout = new GridLayout();
-		form.getBody().setLayout(layout);
+    final ScrolledForm form = managedForm.getForm();
+    form.setText(Messages.getString("Performance.title"));
+    final GridLayout layout = new GridLayout();
+    form.getBody().setLayout(layout);
 
-		plotter = new PerformancePlotter(
-				"Comparing the obtained speedup to ideal speedups");
+    this.plotter = new PerformancePlotter("Comparing the obtained speedup to ideal speedups");
 
-		// Explanation on how to read the chart
-		/*
-		 * createExplanationSection(managedForm,
-		 * Messages.getString("Performance.Explanation.title"),
-		 * Messages.getString("Performance.Explanation.description"));
-		 */
-		try {
-			createChartSection(managedForm,
-					Messages.getString("Performance.Chart.title"),
-					Messages.getString("Performance.Chart.description"));
-		} catch (WorkflowException e) {
-			e.printStackTrace();
-		}
+    // Explanation on how to read the chart
+    /*
+     * createExplanationSection(managedForm, Messages.getString("Performance.Explanation.title"),
+     * Messages.getString("Performance.Explanation.description"));
+     */
+    try {
+      createChartSection(managedForm, Messages.getString("Performance.Chart.title"),
+          Messages.getString("Performance.Chart.description"));
+    } catch (final WorkflowException e) {
+      e.printStackTrace();
+    }
 
-		managedForm.refresh();
-	}
+    managedForm.refresh();
+  }
 
-	/**
-	 * Creates a generic section
-	 */
-	public Composite createSection(IManagedForm mform, String title,
-			String desc, int numColumns, GridData gridData) {
+  /**
+   * Creates a generic section.
+   *
+   * @param mform
+   *          the mform
+   * @param title
+   *          the title
+   * @param desc
+   *          the desc
+   * @param numColumns
+   *          the num columns
+   * @param gridData
+   *          the grid data
+   * @return the composite
+   */
+  public Composite createSection(final IManagedForm mform, final String title, final String desc,
+      final int numColumns, final GridData gridData) {
 
-		final ScrolledForm form = mform.getForm();
-		FormToolkit toolkit = mform.getToolkit();
-		Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
-				| ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
-		section.setText(title);
-		section.setDescription(desc);
-		toolkit.createCompositeSeparator(section);
-		Composite client = toolkit.createComposite(section);
-		GridLayout layout = new GridLayout();
-		layout.marginWidth = layout.marginHeight = 0;
-		layout.numColumns = numColumns;
-		client.setLayout(layout);
-		section.setClient(client);
-		section.addExpansionListener(new ExpansionAdapter() {
-			@Override
-			public void expansionStateChanged(ExpansionEvent e) {
-				form.reflow(false);
-			}
-		});
-		section.setLayoutData(gridData);
-		return client;
-	}
+    final ScrolledForm form = mform.getForm();
+    final FormToolkit toolkit = mform.getToolkit();
+    final Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
+        | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    section.setText(title);
+    section.setDescription(desc);
+    toolkit.createCompositeSeparator(section);
+    final Composite client = toolkit.createComposite(section);
+    final GridLayout layout = new GridLayout();
+    layout.marginWidth = layout.marginHeight = 0;
+    layout.numColumns = numColumns;
+    client.setLayout(layout);
+    section.setClient(client);
+    section.addExpansionListener(new ExpansionAdapter() {
+      @Override
+      public void expansionStateChanged(final ExpansionEvent e) {
+        form.reflow(false);
+      }
+    });
+    section.setLayoutData(gridData);
+    return client;
+  }
 
-	/**
-	 * Creates a section to explain the performances
-	 * 
-	 * @param mform
-	 *            form containing the section
-	 * @param title
-	 *            section title
-	 * @param desc
-	 *            description of the section
-	 */
-	/*
-	 * private void createExplanationSection(IManagedForm mform, String title,
-	 * String desc) {
-	 * 
-	 * GridData gridData = new GridData(GridData.FILL_HORIZONTAL |
-	 * GridData.VERTICAL_ALIGN_BEGINNING); gridData.heightHint = 500;
-	 * 
-	 * Composite client = createSection(mform, title, desc, 1, gridData);
-	 * 
-	 * FormToolkit toolkit = mform.getToolkit();
-	 * toolkit.paintBordersFor(client); }
-	 */
+  /**
+   * Creates a section to explain the performances.
+   *
+   * @param mform
+   *          form containing the section
+   * @param title
+   *          section title
+   * @param desc
+   *          description of the section
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+  /*
+   * private void createExplanationSection(IManagedForm mform, String title, String desc) {
+   *
+   * GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
+   * gridData.heightHint = 500;
+   *
+   * Composite client = createSection(mform, title, desc, 1, gridData);
+   *
+   * FormToolkit toolkit = mform.getToolkit(); toolkit.paintBordersFor(client); }
+   */
 
-	/**
-	 * Creates a section for the chart
-	 * 
-	 * @param mform
-	 *            form containing the section
-	 * @param title
-	 *            section title
-	 * @param desc
-	 *            description of the section
-	 */
-	private void createChartSection(IManagedForm mform, String title,
-			String desc) throws WorkflowException {
+  /**
+   * Creates a section for the chart
+   *
+   * @param mform
+   *          form containing the section
+   * @param title
+   *          section title
+   * @param desc
+   *          description of the section
+   */
+  private void createChartSection(final IManagedForm mform, final String title, final String desc)
+      throws WorkflowException {
 
-		long workLength = statGen.getDAGWorkLength();
-		long spanLength = statGen.getDAGSpanLength();
-		long resultTime = statGen.getResultTime();
-		int resultNbCores = statGen.getNbUsedOperators();
-		int resultNbMainCores = statGen.getNbMainTypeOperators();
+    final long workLength = this.statGen.getDAGWorkLength();
+    final long spanLength = this.statGen.getDAGSpanLength();
+    final long resultTime = this.statGen.getResultTime();
+    final int resultNbCores = this.statGen.getNbUsedOperators();
+    final int resultNbMainCores = this.statGen.getNbMainTypeOperators();
 
-		String currentValuesDisplay = String
-				.format("work length: %d, span length: %d, implementation length: %d, implementation number of main type operators: %d.",
-						workLength, spanLength, resultTime, resultNbMainCores);
+    final String currentValuesDisplay = String.format(
+        "work length: %d, span length: %d, implementation length: %d, implementation number of main type operators: %d.",
+        workLength, spanLength, resultTime, resultNbMainCores);
 
-		//GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
-		GridData gridData = new GridData();
-		gridData.widthHint = 800;
-		gridData.heightHint = 500;
-		
-		//mform.getForm().setLayout(new FillLayout());
+    // GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
+    final GridData gridData = new GridData();
+    gridData.widthHint = 800;
+    gridData.heightHint = 500;
 
-		Composite client = createSection(mform, title, desc
-				+ currentValuesDisplay, 1, gridData);
+    // mform.getForm().setLayout(new FillLayout());
 
-		FormToolkit toolkit = mform.getToolkit();
+    final Composite client = createSection(mform, title, desc + currentValuesDisplay, 1, gridData);
 
-		if (workLength > 0 && spanLength > 0 && resultTime > 0
-				&& resultNbCores > 0) {
-			plotter.setData(workLength, spanLength, resultTime, resultNbCores,
-					resultNbMainCores);
-			plotter.display(client);
-		}
+    final FormToolkit toolkit = mform.getToolkit();
 
-		toolkit.paintBordersFor(client);
-	}
+    if ((workLength > 0) && (spanLength > 0) && (resultTime > 0) && (resultNbCores > 0)) {
+      this.plotter.setData(workLength, spanLength, resultTime, resultNbCores, resultNbMainCores);
+      this.plotter.display(client);
+    }
 
-	public StatGenerator getStatGen() {
-		return statGen;
-	}
+    toolkit.paintBordersFor(client);
+  }
+
+  /**
+   * Gets the stat gen.
+   *
+   * @return the stat gen
+   */
+  public StatGenerator getStatGen() {
+    return this.statGen;
+  }
 
 }

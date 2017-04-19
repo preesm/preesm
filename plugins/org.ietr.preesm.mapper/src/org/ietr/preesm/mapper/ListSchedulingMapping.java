@@ -40,13 +40,13 @@ package org.ietr.preesm.mapper;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
+import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbstractAbc;
@@ -61,85 +61,96 @@ import org.ietr.preesm.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.params.AbcParameters;
 
+// TODO: Auto-generated Javadoc
 /**
- * List scheduling is a cheep, greedy, sequential mapping/scheduling method
- * 
+ * List scheduling is a cheep, greedy, sequential mapping/scheduling method.
+ *
  * @author pmenuet
  * @author mpelcat
  */
 public class ListSchedulingMapping extends AbstractMapping {
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = super.getDefaultParameters();
-		return parameters;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.AbstractMapping#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = super.getDefaultParameters();
+    return parameters;
+  }
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.AbstractMapping#execute(java.util.Map, java.util.Map,
+   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs,
+      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
+      final Workflow workflow) throws WorkflowException {
 
-		Design architecture = (Design) inputs.get(KEY_ARCHITECTURE);
-		SDFGraph algorithm = (SDFGraph) inputs.get(KEY_SDF_GRAPH);
-		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
+    final Design architecture = (Design) inputs
+        .get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
+    final SDFGraph algorithm = (SDFGraph) inputs
+        .get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH);
+    final PreesmScenario scenario = (PreesmScenario) inputs
+        .get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
-		super.execute(inputs, parameters, monitor, nodeName, workflow);
+    super.execute(inputs, parameters, monitor, nodeName, workflow);
 
-		AbcParameters abcParameters = new AbcParameters(parameters);
+    final AbcParameters abcParameters = new AbcParameters(parameters);
 
-		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
-				scenario, false);
+    final MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario, false);
 
-		// calculates the DAG span length on the architecture main operator (the
-		// tasks that can not be executed by the main operator are deported
-		// without transfer time to other operator)
-		calculateSpan(dag, architecture, scenario, abcParameters);
+    // calculates the DAG span length on the architecture main operator (the
+    // tasks that can not be executed by the main operator are deported
+    // without transfer time to other operator)
+    calculateSpan(dag, architecture, scenario, abcParameters);
 
-		IAbc simu = new InfiniteHomogeneousAbc(abcParameters, dag,
-				architecture, abcParameters.getSimulatorType()
-						.getTaskSchedType(), scenario);
+    final IAbc simu = new InfiniteHomogeneousAbc(abcParameters, dag, architecture,
+        abcParameters.getSimulatorType().getTaskSchedType(), scenario);
 
-		InitialLists initial = new InitialLists();
+    final InitialLists initial = new InitialLists();
 
-		if (!initial.constructInitialLists(dag, simu)) {
-			WorkflowLogger.getLogger().log(Level.SEVERE, "Error in scheduling");
-			return null;
-		}
+    if (!initial.constructInitialLists(dag, simu)) {
+      WorkflowLogger.getLogger().log(Level.SEVERE, "Error in scheduling");
+      return null;
+    }
 
-		WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
+    WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
 
-		// Using topological task scheduling in list scheduling: the t-level
-		// order of the infinite homogeneous simulation
-		AbstractTaskSched taskSched = new TopologicalTaskSched(
-				simu.getTotalOrder());
+    // Using topological task scheduling in list scheduling: the t-level
+    // order of the infinite homogeneous simulation
+    final AbstractTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
 
-		simu.resetDAG();
-		IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture,
-				scenario);
-		simu2.setTaskScheduler(taskSched);
+    simu.resetDAG();
+    final IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture, scenario);
+    simu2.setTaskScheduler(taskSched);
 
-		KwokListScheduler scheduler = new KwokListScheduler();
-		scheduler.schedule(dag, initial.getCpnDominant(), simu2, null, null);
+    final KwokListScheduler scheduler = new KwokListScheduler();
+    scheduler.schedule(dag, initial.getCpnDominant(), simu2, null, null);
 
-		WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
+    WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
 
-		TagDAG tagSDF = new TagDAG();
+    final TagDAG tagSDF = new TagDAG();
 
-		try {
-			tagSDF.tag(dag, architecture, scenario, simu2,
-					abcParameters.getEdgeSchedType());
-		} catch (InvalidExpressionException e) {
-			e.printStackTrace();
-			throw (new WorkflowException(e.getMessage()));
-		}
+    try {
+      tagSDF.tag(dag, architecture, scenario, simu2, abcParameters.getEdgeSchedType());
+    } catch (final InvalidExpressionException e) {
+      e.printStackTrace();
+      throw (new WorkflowException(e.getMessage()));
+    }
 
-		Map<String, Object> outputs = new HashMap<String, Object>();
-		outputs.put(KEY_SDF_DAG, dag);
-		outputs.put(KEY_SDF_ABC, simu2);
+    final Map<String, Object> outputs = new HashMap<>();
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, simu2);
 
-		super.clean(architecture, scenario);
-		return outputs;
-	}
+    super.clean(architecture, scenario);
+    return outputs;
+  }
 
 }

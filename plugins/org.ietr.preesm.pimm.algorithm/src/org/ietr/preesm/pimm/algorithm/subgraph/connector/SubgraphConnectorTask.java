@@ -38,42 +38,61 @@ package org.ietr.preesm.pimm.algorithm.subgraph.connector;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.util.SubgraphConnector;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class SubgraphConnectorTask.
+ */
 public class SubgraphConnectorTask extends AbstractTaskImplementation {
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
-		// Get the input
-		PiGraph pg = (PiGraph) inputs.get(KEY_PI_GRAPH);
+    // Get the input
+    final PiGraph pg = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
-		// Visit it with the subgraph connector
-		SubgraphConnector connector = new SubgraphConnector();
-		connector.connectSubgraphs(pg);
+    // Visit it with the subgraph connector
+    final SubgraphConnector connector = new SubgraphConnector();
+    connector.connectSubgraphs(pg);
 
-		// Return pg
-		Map<String, Object> outputs = new HashMap<String, Object>();
-		outputs.put(KEY_PI_GRAPH, pg);
-		return outputs;
-	}
+    // Return pg
+    final Map<String, Object> outputs = new HashMap<>();
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, pg);
+    return outputs;
+  }
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		return Collections.emptyMap();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    return Collections.emptyMap();
+  }
 
-	@Override
-	public String monitorMessage() {
-		return "Connecting subgraphs";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Connecting subgraphs";
+  }
 
 }

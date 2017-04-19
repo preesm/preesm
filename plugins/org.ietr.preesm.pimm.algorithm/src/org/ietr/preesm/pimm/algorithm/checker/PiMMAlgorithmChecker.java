@@ -38,7 +38,6 @@ package org.ietr.preesm.pimm.algorithm.checker;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.emf.ecore.EObject;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
@@ -47,136 +46,177 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.pimm.algorithm.checker.structure.FifoChecker;
 import org.ietr.preesm.pimm.algorithm.checker.structure.RefinementChecker;
 
+// TODO: Auto-generated Javadoc
 /**
- * Main class of the checker. Call all the independent checkers and create error
- * messages from their result.
- * 
+ * Main class of the checker. Call all the independent checkers and create error messages from their result.
+ *
  * @author cguy
  * @author kdesnos
- * 
+ *
  */
 public class PiMMAlgorithmChecker {
 
-	private PiGraph graph;
-	private Map<String, EObject> errorMsgs;
-	private Map<String, EObject> warningMsgs;
+  /** The graph. */
+  private PiGraph graph;
 
-	private boolean errors;
-	private boolean warnings;
+  /** The error msgs. */
+  private Map<String, EObject> errorMsgs;
 
-	/**
-	 * Check a PiGraph for different properties
-	 * 
-	 * @param graph
-	 *            the PiGraph to check
-	 * @return true if no problem have been detected in graph, false otherwise
-	 */
-	public boolean checkGraph(PiGraph graph) {
-		this.graph = graph;
-		errorMsgs = new HashMap<String, EObject>();
-		warningMsgs = new HashMap<String, EObject>();
+  /** The warning msgs. */
+  private Map<String, EObject> warningMsgs;
 
-		errors = false;
-		warnings = false;
+  /** The errors. */
+  private boolean errors;
 
-		checkGraphRefinements(graph);
-		checkGraphFifos(graph);
+  /** The warnings. */
+  private boolean warnings;
 
-		return !errors && !warnings;
-	}
+  /**
+   * Check a PiGraph for different properties.
+   *
+   * @param graph
+   *          the PiGraph to check
+   * @return true if no problem have been detected in graph, false otherwise
+   */
+  public boolean checkGraph(final PiGraph graph) {
+    this.graph = graph;
+    this.errorMsgs = new HashMap<>();
+    this.warningMsgs = new HashMap<>();
 
-	private void checkGraphFifos(PiGraph graph) {
-		FifoChecker fifoChecker = new FifoChecker();
-		if (!fifoChecker.checkFifos(graph)) {
-			errors = !fifoChecker.getFifoWithOneZeroRate().isEmpty();
-			warnings = !fifoChecker.getFifoWithVoidType().isEmpty() || !fifoChecker.getFifoWithZeroRates().isEmpty();
-			for (Fifo f : fifoChecker.getFifoWithOneZeroRate()) {
-				String srcActorPath = ((AbstractActor) f.getSourcePort().eContainer()).getName() + "."
-						+ f.getSourcePort().getName();
-				String tgtActorPath = ((AbstractActor) f.getTargetPort().eContainer()).getName() + "."
-						+ f.getTargetPort().getName();
-				errorMsgs.put("Fifo between actors " + srcActorPath + " and " + tgtActorPath
-						+ " has invalid rates (one equals 0 but not the other).\n", f);
-			}
-			for (Fifo f : fifoChecker.getFifoWithVoidType()) {
-				String srcActorPath = ((AbstractActor) f.getSourcePort().eContainer()).getName() + "."
-						+ f.getSourcePort().getName();
-				String tgtActorPath = ((AbstractActor) f.getTargetPort().eContainer()).getName() + "."
-						+ f.getTargetPort().getName();
-				warningMsgs.put("Fifo between actors " + srcActorPath + " and " + tgtActorPath
-						+ " has type \"void\" (this is not supported by code generation).\n", f);
-			}
-			for (Fifo f : fifoChecker.getFifoWithZeroRates()) {
-				String srcActorPath = ((AbstractActor) f.getSourcePort().eContainer()).getName() + "."
-						+ f.getSourcePort().getName();
-				String tgtActorPath = ((AbstractActor) f.getTargetPort().eContainer()).getName() + "."
-						+ f.getTargetPort().getName();
-				warningMsgs.put("Fifo between actors " + srcActorPath + " and " + tgtActorPath
-						+ " has rates equal to 0 (you may have forgotten to set them).\n", f);
-			}
-		}
-	}
+    this.errors = false;
+    this.warnings = false;
 
-	private void checkGraphRefinements(PiGraph graph) {
-		RefinementChecker refinementChecker = new RefinementChecker();
-		if (!refinementChecker.checkRefinements(graph)) {
-			errors = true;
-			for (Actor a : refinementChecker.getActorsWithoutRefinement()) {
-				errorMsgs.put("Actor " + a.getPath() + " does not have a refinement.\n", a);
-			}
-			for (Actor a : refinementChecker.getActorsWithInvalidExtensionRefinement()) {
-				errorMsgs.put("Refinement " + a.getRefinement().getFilePath() + " of Actor " + a.getPath()
-						+ " does not have a valid extension (.h, .idl, or .pi).\n", a);
-			}
-			for (Actor a : refinementChecker.getActorsWithNonExistingRefinement()) {
-				errorMsgs.put("Refinement  " + a.getRefinement().getFilePath() + " of Actor " + a.getPath()
-						+ " does not reference an existing file.\n", a);
-			}
-		}
-	}
+    checkGraphRefinements(graph);
+    checkGraphFifos(graph);
 
-	public String getErrorMsg() {
-		String result = "Validation of graph " + graph.getName() + " raised the following errors:\n";
-		for (String msg : errorMsgs.keySet()) {
-			result += "- " + msg;
-		}
-		return result;
-	}
+    return !this.errors && !this.warnings;
+  }
 
-	/**
-	 * @return the errorMsgs and the associated {@link EObject}
-	 */
-	public Map<String, EObject> getErrorMsgs() {
-		return errorMsgs;
-	}
+  /**
+   * Check graph fifos.
+   *
+   * @param graph
+   *          the graph
+   */
+  private void checkGraphFifos(final PiGraph graph) {
+    final FifoChecker fifoChecker = new FifoChecker();
+    if (!fifoChecker.checkFifos(graph)) {
+      this.errors = !fifoChecker.getFifoWithOneZeroRate().isEmpty();
+      this.warnings = !fifoChecker.getFifoWithVoidType().isEmpty() || !fifoChecker.getFifoWithZeroRates().isEmpty();
+      for (final Fifo f : fifoChecker.getFifoWithOneZeroRate()) {
+        final String srcActorPath = ((AbstractActor) f.getSourcePort().eContainer()).getName() + "." + f.getSourcePort().getName();
+        final String tgtActorPath = ((AbstractActor) f.getTargetPort().eContainer()).getName() + "." + f.getTargetPort().getName();
+        this.errorMsgs.put("Fifo between actors " + srcActorPath + " and " + tgtActorPath + " has invalid rates (one equals 0 but not the other).\n", f);
+      }
+      for (final Fifo f : fifoChecker.getFifoWithVoidType()) {
+        final String srcActorPath = ((AbstractActor) f.getSourcePort().eContainer()).getName() + "." + f.getSourcePort().getName();
+        final String tgtActorPath = ((AbstractActor) f.getTargetPort().eContainer()).getName() + "." + f.getTargetPort().getName();
+        this.warningMsgs
+            .put("Fifo between actors " + srcActorPath + " and " + tgtActorPath + " has type \"void\" (this is not supported by code generation).\n", f);
+      }
+      for (final Fifo f : fifoChecker.getFifoWithZeroRates()) {
+        final String srcActorPath = ((AbstractActor) f.getSourcePort().eContainer()).getName() + "." + f.getSourcePort().getName();
+        final String tgtActorPath = ((AbstractActor) f.getTargetPort().eContainer()).getName() + "." + f.getTargetPort().getName();
+        this.warningMsgs.put("Fifo between actors " + srcActorPath + " and " + tgtActorPath + " has rates equal to 0 (you may have forgotten to set them).\n",
+            f);
+      }
+    }
+  }
 
-	public String getOkMsg() {
-		String result = "Validation of graph " + graph.getName() + " raised no error or warning:\n";
+  /**
+   * Check graph refinements.
+   *
+   * @param graph
+   *          the graph
+   */
+  private void checkGraphRefinements(final PiGraph graph) {
+    final RefinementChecker refinementChecker = new RefinementChecker();
+    if (!refinementChecker.checkRefinements(graph)) {
+      this.errors = true;
+      for (final Actor a : refinementChecker.getActorsWithoutRefinement()) {
+        this.errorMsgs.put("Actor " + a.getPath() + " does not have a refinement.\n", a);
+      }
+      for (final Actor a : refinementChecker.getActorsWithInvalidExtensionRefinement()) {
+        this.errorMsgs
+            .put("Refinement " + a.getRefinement().getFilePath() + " of Actor " + a.getPath() + " does not have a valid extension (.h, .idl, or .pi).\n", a);
+      }
+      for (final Actor a : refinementChecker.getActorsWithNonExistingRefinement()) {
+        this.errorMsgs.put("Refinement  " + a.getRefinement().getFilePath() + " of Actor " + a.getPath() + " does not reference an existing file.\n", a);
+      }
+    }
+  }
 
-		return result;
-	}
+  /**
+   * Gets the error msg.
+   *
+   * @return the error msg
+   */
+  public String getErrorMsg() {
+    String result = "Validation of graph " + this.graph.getName() + " raised the following errors:\n";
+    for (final String msg : this.errorMsgs.keySet()) {
+      result += "- " + msg;
+    }
+    return result;
+  }
 
-	public String getWarningMsg() {
-		String result = "Validation of graph " + graph.getName() + " raised the following warnings:\n";
-		for (String msg : warningMsgs.keySet()) {
-			result += "- " + msg;
-		}
-		return result;
-	}
+  /**
+   * Gets the error msgs.
+   *
+   * @return the errorMsgs and the associated {@link EObject}
+   */
+  public Map<String, EObject> getErrorMsgs() {
+    return this.errorMsgs;
+  }
 
-	/**
-	 * @return the warningMsgs and the associated {@link EObject}
-	 */
-	public Map<String, EObject> getWarningMsgs() {
-		return warningMsgs;
-	}
+  /**
+   * Gets the ok msg.
+   *
+   * @return the ok msg
+   */
+  public String getOkMsg() {
+    final String result = "Validation of graph " + this.graph.getName() + " raised no error or warning:\n";
 
-	public boolean isErrors() {
-		return errors;
-	}
+    return result;
+  }
 
-	public boolean isWarnings() {
-		return warnings;
-	}
+  /**
+   * Gets the warning msg.
+   *
+   * @return the warning msg
+   */
+  public String getWarningMsg() {
+    String result = "Validation of graph " + this.graph.getName() + " raised the following warnings:\n";
+    for (final String msg : this.warningMsgs.keySet()) {
+      result += "- " + msg;
+    }
+    return result;
+  }
+
+  /**
+   * Gets the warning msgs.
+   *
+   * @return the warningMsgs and the associated {@link EObject}
+   */
+  public Map<String, EObject> getWarningMsgs() {
+    return this.warningMsgs;
+  }
+
+  /**
+   * Checks if is errors.
+   *
+   * @return true, if is errors
+   */
+  public boolean isErrors() {
+    return this.errors;
+  }
+
+  /**
+   * Checks if is warnings.
+   *
+   * @return true, if is warnings
+   */
+  public boolean isWarnings() {
+    return this.warnings;
+  }
 
 }

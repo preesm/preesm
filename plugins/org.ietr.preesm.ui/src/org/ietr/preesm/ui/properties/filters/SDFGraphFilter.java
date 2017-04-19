@@ -41,24 +41,29 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.jface.viewers.IFilter;
 import org.ietr.dftools.graphiti.model.Graph;
 
+// TODO: Auto-generated Javadoc
 /**
- * This class filters SDF graphs to enable the correct property tabs
- * 
+ * This class filters SDF graphs to enable the correct property tabs.
+ *
  * @author mpelcat
- * 
  */
 public class SDFGraphFilter implements IFilter {
 
-	@Override
-	public boolean select(Object toTest) {
-		if (toTest instanceof EditPart) {
-			Object model = ((EditPart) toTest).getModel();
-			if (model instanceof Graph) {
-				Graph graph = (Graph) model;
-				return graph.getType().getName().equals("Dataflow Graph");
-			}
-		}
-		return false;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.IFilter#select(java.lang.Object)
+   */
+  @Override
+  public boolean select(final Object toTest) {
+    if (toTest instanceof EditPart) {
+      final Object model = ((EditPart) toTest).getModel();
+      if (model instanceof Graph) {
+        final Graph graph = (Graph) model;
+        return graph.getType().getName().equals("Dataflow Graph");
+      }
+    }
+    return false;
+  }
 
 }

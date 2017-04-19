@@ -42,60 +42,102 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class SetPortMemoryAnnotationFeature.
+ */
 public class SetPortMemoryAnnotationFeature extends AbstractCustomFeature {
 
-	private PortMemoryAnnotation currentPMA;
-	
-	public SetPortMemoryAnnotationFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /** The current PMA. */
+  private PortMemoryAnnotation currentPMA;
 
-	@Override
-	public String getName() {
-		return "Set memory annotation";
-	}
+  /**
+   * Instantiates a new sets the port memory annotation feature.
+   *
+   * @param fp
+   *          the fp
+   */
+  public SetPortMemoryAnnotationFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	@Override
-	public String getDescription() {
-		return "Set the memoy annotation a Port";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#getName()
+   */
+  @Override
+  public String getName() {
+    return "Set memory annotation";
+  }
 
-	@Override
-	public boolean canExecute(ICustomContext context) {
-		// Allow setting if exactly one pictogram element
-		// representing an Actor is selected
-		boolean ret = false;
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes != null && pes.length == 1) {
-			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof DataPort) {
-				ret = true;
-			}
-		}
-		return ret;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#getDescription()
+   */
+  @Override
+  public String getDescription() {
+    return "Set the memoy annotation a Port";
+  }
 
-	@Override
-	public void execute(ICustomContext context) {
-		// Re-check if only one element is selected
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes != null && pes.length == 1) {
-			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof DataPort) {
-				((DataPort) bo).setAnnotation(currentPMA);
-				currentPMA = null;
-				// Call the layout feature
-				layoutPictogramElement(pes[0]);
-			}
-		}
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public boolean canExecute(final ICustomContext context) {
+    // Allow setting if exactly one pictogram element
+    // representing an Actor is selected
+    boolean ret = false;
+    final PictogramElement[] pes = context.getPictogramElements();
+    if ((pes != null) && (pes.length == 1)) {
+      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+      if (bo instanceof DataPort) {
+        ret = true;
+      }
+    }
+    return ret;
+  }
 
-	public PortMemoryAnnotation getCurrentPMA() {
-		return currentPMA;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public void execute(final ICustomContext context) {
+    // Re-check if only one element is selected
+    final PictogramElement[] pes = context.getPictogramElements();
+    if ((pes != null) && (pes.length == 1)) {
+      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+      if (bo instanceof DataPort) {
+        ((DataPort) bo).setAnnotation(this.currentPMA);
+        this.currentPMA = null;
+        // Call the layout feature
+        layoutPictogramElement(pes[0]);
+      }
+    }
+  }
 
-	public void setCurrentPMA(PortMemoryAnnotation currentPMA) {
-		this.currentPMA = currentPMA;
-	}
+  /**
+   * Gets the current PMA.
+   *
+   * @return the current PMA
+   */
+  public PortMemoryAnnotation getCurrentPMA() {
+    return this.currentPMA;
+  }
+
+  /**
+   * Sets the current PMA.
+   *
+   * @param currentPMA
+   *          the new current PMA
+   */
+  public void setCurrentPMA(final PortMemoryAnnotation currentPMA) {
+    this.currentPMA = currentPMA;
+  }
 
 }

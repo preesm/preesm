@@ -40,68 +40,121 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
 
+// TODO: Auto-generated Javadoc
 /**
- * Listening for mouse events to refresh correctly the awt display when Gantt
- * chart is changed.
- * 
+ * Listening for mouse events to refresh correctly the awt display when Gantt chart is changed.
+ *
  * @author mpelcat
  */
-public class MouseClickedListener implements MouseMotionListener,
-		ChartMouseListener, MouseListener {
+public class MouseClickedListener
+    implements MouseMotionListener, ChartMouseListener, MouseListener {
 
-	private Frame frame;
-	boolean dragged = false;
+  /** The frame. */
+  private final Frame frame;
 
-	public MouseClickedListener(Frame frame) {
-		this.frame = frame;
-	}
+  /** The dragged. */
+  boolean dragged = false;
 
-	@Override
-	public void mouseDragged(java.awt.event.MouseEvent e) {
-		dragged = true;
-	}
+  /**
+   * Instantiates a new mouse clicked listener.
+   *
+   * @param frame
+   *          the frame
+   */
+  public MouseClickedListener(final Frame frame) {
+    this.frame = frame;
+  }
 
-	@Override
-	public void mouseMoved(java.awt.event.MouseEvent e) {
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.awt.event.MouseMotionListener#mouseDragged(java.awt.event.MouseEvent)
+   */
+  @Override
+  public void mouseDragged(final java.awt.event.MouseEvent e) {
+    this.dragged = true;
+  }
 
-	@Override
-	public void chartMouseClicked(ChartMouseEvent arg0) {
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.awt.event.MouseMotionListener#mouseMoved(java.awt.event.MouseEvent)
+   */
+  @Override
+  public void mouseMoved(final java.awt.event.MouseEvent e) {
+  }
 
-	@Override
-	public void chartMouseMoved(ChartMouseEvent arg0) {
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jfree.chart.ChartMouseListener#chartMouseClicked(org.jfree.chart.ChartMouseEvent)
+   */
+  @Override
+  public void chartMouseClicked(final ChartMouseEvent arg0) {
+  }
 
-	@Override
-	public void mouseClicked(java.awt.event.MouseEvent e) {
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jfree.chart.ChartMouseListener#chartMouseMoved(org.jfree.chart.ChartMouseEvent)
+   */
+  @Override
+  public void chartMouseMoved(final ChartMouseEvent arg0) {
+  }
 
-	@Override
-	public void mouseEntered(java.awt.event.MouseEvent e) {
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
+   */
+  @Override
+  public void mouseClicked(final java.awt.event.MouseEvent e) {
+  }
 
-	@Override
-	public void mouseExited(java.awt.event.MouseEvent e) {
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
+   */
+  @Override
+  public void mouseEntered(final java.awt.event.MouseEvent e) {
+  }
 
-	@Override
-	public void mousePressed(java.awt.event.MouseEvent e) {
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.awt.event.MouseListener#mouseExited(java.awt.event.MouseEvent)
+   */
+  @Override
+  public void mouseExited(final java.awt.event.MouseEvent e) {
+  }
 
-	@Override
-	public void mouseReleased(java.awt.event.MouseEvent e) {
-		if (dragged) {
-			Dimension d = frame.getSize();
-			frame.setSize(new Dimension(1, 1));
-			frame.setSize(d);
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
+   */
+  @Override
+  public void mousePressed(final java.awt.event.MouseEvent e) {
+  }
 
-			dragged = false;
-		}
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
+   */
+  @Override
+  public void mouseReleased(final java.awt.event.MouseEvent e) {
+    if (this.dragged) {
+      final Dimension d = this.frame.getSize();
+      this.frame.setSize(new Dimension(1, 1));
+      this.frame.setSize(d);
+
+      this.dragged = false;
+    }
+  }
 
 }

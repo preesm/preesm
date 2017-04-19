@@ -1,23 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.ietr.preesm.feature_2.2.6.qualifier.jar" id="org.ietr.preesm.feature" version="2.2.6.qualifier">
+   <feature id="org.ietr.preesm.feature">
       <category name="PREESM"/>
    </feature>
-   
-   <feature id="org.ietr.preesm.feature.source">
-      <category name="source_components"/>
+   <feature id="org.ietr.preesm.dev.feature">
+      <category name="dev_components"/>
    </feature>
-   <category-def name="source_components" label="Developer Resources">
+   <feature id="org.ietr.preesm.feature.source">
+      <category name="dev_components"/>
+      <category name="PREESM"/>
+   </feature>
+
+   <category-def name="dev_components" label="Developer Resources">
       <description>
-         Developper resources (includes source code).
+         Developper resources (source code bundles).
       </description>
    </category-def>
-   
+
    <category-def name="PREESM" label="PREESM">
       <description>
          PREESM (the Parallel and Real-time Embedded Executives Scheduling Method) is an open source rapid prototyping and code generation tool. It is primarily employed to simulate signal processing applications and generate code for multi-core Digital Signal Processors. PREESM is developed at the Institute of Electronics and Telecommunications-Rennes (IETR) in collaboration with Texas Instruments France in Nice.
       </description>
    </category-def>
    <repository-reference location="http://download.eclipse.org/releases/neon/" enabled="true" />
-   <repository-reference location="http://preesm.sourceforge.net/eclipse/update-site/" enabled="true" />
 </site>

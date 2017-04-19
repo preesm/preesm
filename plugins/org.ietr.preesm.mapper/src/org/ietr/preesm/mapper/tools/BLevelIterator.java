@@ -38,50 +38,69 @@
 package org.ietr.preesm.mapper.tools;
 
 import java.util.logging.Level;
-
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * Iterates the graph in ascending or descending BLevel order. Uses abc
- * implementation to retrieve b levels.
- * 
+ * Iterates the graph in ascending or descending BLevel order. Uses abc implementation to retrieve b
+ * levels.
+ *
  * @author mpelcat
  */
 public class BLevelIterator extends ImplementationIterator {
 
-	public BLevelIterator(IAbc abc, MapperDAG dag, boolean directOrder) {
-		super(abc, dag, directOrder);
-	}
+  /**
+   * Instantiates a new b level iterator.
+   *
+   * @param abc
+   *          the abc
+   * @param dag
+   *          the dag
+   * @param directOrder
+   *          the direct order
+   */
+  public BLevelIterator(final IAbc abc, final MapperDAG dag, final boolean directOrder) {
+    super(abc, dag, directOrder);
+  }
 
-	@Override
-	public int compare(MapperDAGVertex arg0, MapperDAGVertex arg1) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.tools.ImplementationIterator#compare(org.ietr.preesm.mapper.model.
+   * MapperDAGVertex, org.ietr.preesm.mapper.model.MapperDAGVertex)
+   */
+  @Override
+  public int compare(MapperDAGVertex arg0, MapperDAGVertex arg1) {
 
-		if(abc != null){
-			arg0 = abc.translateInImplementationVertex(arg0);
-			arg1 = abc.translateInImplementationVertex(arg1);
-		}
-		
-		if(!arg0.getTiming().hasBLevel() || !arg1.getTiming().hasBLevel()){
-			WorkflowLogger.getLogger().log(Level.SEVERE, "B Level Iterator problem");
-		}
-			
-		long bLevelDifference = (arg0.getTiming().getBLevel() - arg1
-				.getTiming().getBLevel());
+    if (this.abc != null) {
+      arg0 = this.abc.translateInImplementationVertex(arg0);
+      arg1 = this.abc.translateInImplementationVertex(arg1);
+    }
 
-		if (!directOrder)
-			bLevelDifference = -bLevelDifference;
+    if (!arg0.getTiming().hasBLevel() || !arg1.getTiming().hasBLevel()) {
+      WorkflowLogger.getLogger().log(Level.SEVERE, "B Level Iterator problem");
+    }
 
-		if (bLevelDifference == 0) {
-			bLevelDifference = arg0.getName().compareTo(arg1.getName());
-		}
+    long bLevelDifference = (arg0.getTiming().getBLevel() - arg1.getTiming().getBLevel());
 
-		// Preventing overflows in conversion from long to int
-		if(bLevelDifference >= 0) bLevelDifference = 1;
-		else bLevelDifference = -1;
-		
-		return (int) bLevelDifference;
-	}
+    if (!this.directOrder) {
+      bLevelDifference = -bLevelDifference;
+    }
+
+    if (bLevelDifference == 0) {
+      bLevelDifference = arg0.getName().compareTo(arg1.getName());
+    }
+
+    // Preventing overflows in conversion from long to int
+    if (bLevelDifference >= 0) {
+      bLevelDifference = 1;
+    } else {
+      bLevelDifference = -1;
+    }
+
+    return (int) bLevelDifference;
+  }
 }

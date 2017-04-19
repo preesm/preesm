@@ -37,43 +37,57 @@
 package org.ietr.preesm.mapper.abc.transaction;
 
 import java.util.List;
-
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 
+// TODO: Auto-generated Javadoc
 /**
- * A transaction that removes one edge in an implementation
- * 
+ * A transaction that removes one edge in an implementation.
+ *
  * @author mpelcat
  */
 public class RemoveEdgeTransaction extends Transaction {
-	// Inputs
-	/**
-	 * Implementation DAG from which the edge is removed
-	 */
-	private MapperDAG implementation = null;
+  // Inputs
+  /** Implementation DAG from which the edge is removed. */
+  private MapperDAG implementation = null;
 
-	/**
-	 * edge removed
-	 */
-	private MapperDAGEdge edge = null;
+  /** edge removed. */
+  private MapperDAGEdge edge = null;
 
-	public RemoveEdgeTransaction(MapperDAGEdge edge, MapperDAG implementation) {
-		super();
-		this.edge = edge;
-		this.implementation = implementation;
-	}
+  /**
+   * Instantiates a new removes the edge transaction.
+   *
+   * @param edge
+   *          the edge
+   * @param implementation
+   *          the implementation
+   */
+  public RemoveEdgeTransaction(final MapperDAGEdge edge, final MapperDAG implementation) {
+    super();
+    this.edge = edge;
+    this.implementation = implementation;
+  }
 
-	@Override
-	public void execute(List<Object> resultList) {
-		super.execute(resultList);
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.abc.transaction.Transaction#execute(java.util.List)
+   */
+  @Override
+  public void execute(final List<Object> resultList) {
+    super.execute(resultList);
 
-		implementation.removeEdge(edge);
-	}
+    this.implementation.removeEdge(this.edge);
+  }
 
-	@Override
-	public String toString() {
-		return ("RemoveEdge(" + edge.toString() + ")");
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.abc.transaction.Transaction#toString()
+   */
+  @Override
+  public String toString() {
+    return ("RemoveEdge(" + this.edge.toString() + ")");
+  }
 
 }

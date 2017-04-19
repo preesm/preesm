@@ -39,40 +39,59 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class DynamicPiMM2SDFTask.
+ */
 public class DynamicPiMM2SDFTask extends AbstractTaskImplementation {
-	
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
-		
-		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
-		PiGraph graph = (PiGraph) inputs.get(KEY_PI_GRAPH);
-		
-		DynamicPiMM2SDFLauncher launcher = new DynamicPiMM2SDFLauncher(scenario, graph);
-		Set<SDFGraph> result = launcher.launch();
-		
-		Map<String, Object> output = new HashMap<String, Object>();
-		output.put(KEY_SDF_GRAPHS_SET, result);
-		return output;
-	}
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		return Collections.emptyMap();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
-	@Override
-	public String monitorMessage() {
-		return "Transforming PiGraph to SDFGraphs";
-	}
+    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
+
+    final DynamicPiMM2SDFLauncher launcher = new DynamicPiMM2SDFLauncher(scenario, graph);
+    final Set<SDFGraph> result = launcher.launch();
+
+    final Map<String, Object> output = new HashMap<>();
+    output.put(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPHS_SET, result);
+    return output;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    return Collections.emptyMap();
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Transforming PiGraph to SDFGraphs";
+  }
 }

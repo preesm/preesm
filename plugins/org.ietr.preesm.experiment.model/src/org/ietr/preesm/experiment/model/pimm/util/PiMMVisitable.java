@@ -35,6 +35,17 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm.util;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Interface PiMMVisitable.
+ */
 public interface PiMMVisitable {
-	public void accept(PiMMVisitor v);
+
+  /**
+   * Accept.
+   *
+   * @param v
+   *          the v
+   */
+  public void accept(PiMMVisitor v);
 }

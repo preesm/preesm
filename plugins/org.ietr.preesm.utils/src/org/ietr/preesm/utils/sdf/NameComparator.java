@@ -37,20 +37,27 @@
 package org.ietr.preesm.utils.sdf;
 
 import java.util.Comparator;
-
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
+// TODO: Auto-generated Javadoc
 /**
+ * The Class NameComparator.
+ *
  * @author mpelcat
- * 
- *         Vertex comparator that helps to order vertices in name alphabetical
- *         order
+ *
+ *         Vertex comparator that helps to order vertices in name alphabetical order
  */
 public class NameComparator implements Comparator<SDFAbstractVertex> {
-	@Override
-	public int compare(SDFAbstractVertex o1, SDFAbstractVertex o2) {
-		int diff = o1.getName().compareTo(o2.getName());
-		return diff;
-	}
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+   */
+  @Override
+  public int compare(final SDFAbstractVertex o1, final SDFAbstractVertex o2) {
+    final int diff = o1.getName().compareTo(o2.getName());
+    return diff;
+  }
 
 }

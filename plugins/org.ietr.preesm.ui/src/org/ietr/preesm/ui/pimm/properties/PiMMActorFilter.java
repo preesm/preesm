@@ -41,22 +41,29 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.platform.AbstractPropertySectionFilter;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 
-public class PiMMActorFilter extends AbstractPropertySectionFilter{
+// TODO: Auto-generated Javadoc
+/**
+ * The Class PiMMActorFilter.
+ */
+public class PiMMActorFilter extends AbstractPropertySectionFilter {
 
-	/**
-	 * Check the given {@link PictogramElement} for acceptance.
-	 * Returns true, if {@link PictogramElement} is accepted, otherwise false.
-	 */
-	@Override
-	protected boolean accept(PictogramElement pictogramElement) {
-		EObject eObject = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pictogramElement);
+  /**
+   * Check the given {@link PictogramElement} for acceptance. Returns true, if {@link PictogramElement} is accepted, otherwise false.
+   *
+   * @param pictogramElement
+   *          the pictogram element
+   * @return true, if successful
+   */
+  @Override
+  protected boolean accept(final PictogramElement pictogramElement) {
+    final EObject eObject = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pictogramElement);
 
-		// ExecutableActor.
-		if(eObject instanceof ExecutableActor){
-			return true;
-		}
-	
-		return false;
-	}
+    // ExecutableActor.
+    if (eObject instanceof ExecutableActor) {
+      return true;
+    }
+
+    return false;
+  }
 
 }

@@ -41,33 +41,51 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
 
+// TODO: Auto-generated Javadoc
 /**
+ * The Class NewScenarioFileWizard.
+ *
  * @author mpelcat
  */
 public class NewScenarioFileWizard extends BasicNewFileResourceWizard {
 
-	@Override
-	public void addPages() {
-		super.addPages();
-		super.setWindowTitle("New Scenario File");
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard#addPages()
+   */
+  @Override
+  public void addPages() {
+    super.addPages();
+    super.setWindowTitle("New Scenario File");
+  }
 
-	@Override
-	protected void initializeDefaultPageImageDescriptor() {
-		super.initializeDefaultPageImageDescriptor();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard#initializeDefaultPageImageDescriptor()
+   */
+  @Override
+  protected void initializeDefaultPageImageDescriptor() {
+    super.initializeDefaultPageImageDescriptor();
+  }
 
-    @Override
-    public boolean performFinish() {
-    	WizardNewFileCreationPage page = (WizardNewFileCreationPage)(getPage("newFilePage1"));
-    	String filename = page.getFileName();
-            
-        if(!filename.endsWith(".scenario")){
-        	filename += ".scenario";
-        	page.setFileName(filename);
-        }
-        
-        final IFile createdFile = page.createNewFile();
-        return createdFile != null;
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard#performFinish()
+   */
+  @Override
+  public boolean performFinish() {
+    final WizardNewFileCreationPage page = (WizardNewFileCreationPage) (getPage("newFilePage1"));
+    String filename = page.getFileName();
+
+    if (!filename.endsWith(".scenario")) {
+      filename += ".scenario";
+      page.setFileName(filename);
     }
+
+    final IFile createdFile = page.createNewFile();
+    return createdFile != null;
+  }
 }

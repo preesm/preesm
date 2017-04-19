@@ -37,41 +37,67 @@ package org.ietr.preesm.memory.script;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class AbstractMemoryScriptTask.
+ */
 public abstract class AbstractMemoryScriptTask extends AbstractTaskImplementation {
 
-	public static final String PARAM_VERBOSE = "Verbose";
-	public static final String VALUE_TRUE = "True";
-	public static final String VALUE_FALSE = "False";
+  /** The Constant PARAM_VERBOSE. */
+  public static final String PARAM_VERBOSE = "Verbose";
 
-	public static final String PARAM_LOG = "Log Path";
-	public static final String VALUE_LOG = "log_memoryScripts";
+  /** The Constant VALUE_TRUE. */
+  public static final String VALUE_TRUE = "True";
 
-	public static final String PARAM_CHECK = "Check";
-	public static final String VALUE_CHECK_NONE = "None";
-	public static final String VALUE_CHECK_FAST = "Fast";
-	public static final String VALUE_CHECK_THOROUGH = "Thorough";
+  /** The Constant VALUE_FALSE. */
+  public static final String VALUE_FALSE = "False";
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> param = new HashMap<String, String>();
-		param.put(PARAM_VERBOSE, "? C {" + VALUE_TRUE + ", " + VALUE_FALSE
-				+ "}");
-		param.put(PARAM_CHECK, "? C {" + VALUE_CHECK_NONE + ", "
-				+ VALUE_CHECK_FAST + ", " + VALUE_CHECK_THOROUGH + "}");
-		param.put(AbstractMemoryAllocatorTask.PARAM_ALIGNMENT,
-				AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
-		param.put(PARAM_LOG, VALUE_LOG);
+  /** The Constant PARAM_LOG. */
+  public static final String PARAM_LOG = "Log Path";
 
-		return param;
-	}
+  /** The Constant VALUE_LOG. */
+  public static final String VALUE_LOG = "log_memoryScripts";
 
-	@Override
-	public String monitorMessage() {
-		return "Running Memory Optimization Scripts.";
-	}
+  /** The Constant PARAM_CHECK. */
+  public static final String PARAM_CHECK = "Check";
+
+  /** The Constant VALUE_CHECK_NONE. */
+  public static final String VALUE_CHECK_NONE = "None";
+
+  /** The Constant VALUE_CHECK_FAST. */
+  public static final String VALUE_CHECK_FAST = "Fast";
+
+  /** The Constant VALUE_CHECK_THOROUGH. */
+  public static final String VALUE_CHECK_THOROUGH = "Thorough";
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> param = new HashMap<>();
+    param.put(AbstractMemoryScriptTask.PARAM_VERBOSE, "? C {" + AbstractMemoryScriptTask.VALUE_TRUE + ", " + AbstractMemoryScriptTask.VALUE_FALSE + "}");
+    param.put(AbstractMemoryScriptTask.PARAM_CHECK, "? C {" + AbstractMemoryScriptTask.VALUE_CHECK_NONE + ", " + AbstractMemoryScriptTask.VALUE_CHECK_FAST
+        + ", " + AbstractMemoryScriptTask.VALUE_CHECK_THOROUGH + "}");
+    param.put(AbstractMemoryAllocatorTask.PARAM_ALIGNMENT, AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
+    param.put(AbstractMemoryScriptTask.PARAM_LOG, AbstractMemoryScriptTask.VALUE_LOG);
+
+    return param;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Running Memory Optimization Scripts.";
+  }
 
 }

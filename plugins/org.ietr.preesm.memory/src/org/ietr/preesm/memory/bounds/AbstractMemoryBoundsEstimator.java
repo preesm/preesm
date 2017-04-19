@@ -37,14 +37,28 @@ package org.ietr.preesm.memory.bounds;
 
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class AbstractMemoryBoundsEstimator.
+ */
 public abstract class AbstractMemoryBoundsEstimator extends AbstractTaskImplementation {
 
-	static final public String PARAM_SOLVER = "Solver";
-	static final public String VALUE_SOLVER_DEFAULT = "? C {Heuristic, Ostergard, Yamaguchi}";
+  /** The Constant PARAM_SOLVER. */
+  public static final String PARAM_SOLVER = "Solver";
 
-	static final public String PARAM_VERBOSE = "Verbose";
-	static final public String VALUE_VERBOSE_DEFAULT = "? C {True, False}";
-	static final public String VALUE_VERBOSE_TRUE = "True";
-	static final public String VALUE_VERBOSE_FALSE = "False";
+  /** The Constant VALUE_SOLVER_DEFAULT. */
+  public static final String VALUE_SOLVER_DEFAULT = "? C {Heuristic, Ostergard, Yamaguchi}";
+
+  /** The Constant PARAM_VERBOSE. */
+  public static final String PARAM_VERBOSE = "Verbose";
+
+  /** The Constant VALUE_VERBOSE_DEFAULT. */
+  public static final String VALUE_VERBOSE_DEFAULT = "? C {True, False}";
+
+  /** The Constant VALUE_VERBOSE_TRUE. */
+  public static final String VALUE_VERBOSE_TRUE = "True";
+
+  /** The Constant VALUE_VERBOSE_FALSE. */
+  public static final String VALUE_VERBOSE_FALSE = "False";
 
 }

@@ -40,7 +40,6 @@ import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -66,210 +65,216 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.messages.WorkflowMessages;
 import org.ietr.dftools.workflow.tools.CLIWorkflowLogger;
 
+// TODO: Auto-generated Javadoc
 /**
- * IApplication to execute PREESM workflows through command line interface
- * 
- * 
+ * IApplication to execute PREESM workflows through command line interface.
+ *
  * @author cguy
- * 
- *         Code adapted from ORCC (net.sf.orcc.backends,
- *         https://github.com/orcc/orcc)
+ *
+ *         Code adapted from ORCC (net.sf.orcc.backends, https://github.com/orcc/orcc)
  * @author Antoine Lorence
- * 
  */
-public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
-		IApplication {
+public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IApplication {
 
-	/**
-	 * Project containing the
-	 */
-	protected IProject project;
+  /** Project containing the. */
+  protected IProject project;
 
-	private static final String workflowDir = "/Workflows";
-	private static final String workflowExt = "workflow";
-	private static final String scenarioDir = "/Scenarios";
-	private static final String scenarioExt = "scenario";
+  /** The Constant workflowDir. */
+  private static final String workflowDir = "/Workflows";
 
-	@Override
-	public Object start(IApplicationContext context) throws Exception {
-		Options options = getCommandLineOptions();
+  /** The Constant workflowExt. */
+  private static final String workflowExt = "workflow";
 
-		try {
-			CommandLineParser parser = new PosixParser();
+  /** The Constant scenarioDir. */
+  private static final String scenarioDir = "/Scenarios";
 
-			String cliOpts = StringUtils.join((Object[]) context.getArguments()
-					.get(IApplicationContext.APPLICATION_ARGS), " ");
-			CLIWorkflowLogger.traceln("Starting workflows execution");
-			CLIWorkflowLogger.traceln("Command line arguments: " + cliOpts);
+  /** The Constant scenarioExt. */
+  private static final String scenarioExt = "scenario";
 
-			// parse the command line arguments
-			CommandLine line = parser.parse(options, (String[]) context
-					.getArguments().get(IApplicationContext.APPLICATION_ARGS));
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.IApplicationContext)
+   */
+  @Override
+  public Object start(final IApplicationContext context) throws Exception {
+    final Options options = getCommandLineOptions();
 
-			if (line.getArgs().length != 1) {
-				throw new ParseException(
-						"Expected project name as first argument", 0);
-			}
-			// Get the project containing the scenarios and workflows to execute
-			String projectName = line.getArgs()[0];
-			IWorkspace workspace = ResourcesPlugin.getWorkspace();
-			IWorkspaceRoot root = workspace.getRoot();
-			project = root.getProject(new Path(projectName).lastSegment());
-			
-			// Refresh the project
-			project.refreshLocal(IResource.DEPTH_INFINITE, null);
+    try {
+      final CommandLineParser parser = new PosixParser();
 
-			// Handle options
-			String workflowPath = line.getOptionValue('w');
-			String scenarioPath = line.getOptionValue('s');
+      final String cliOpts = StringUtils.join((Object[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS), " ");
+      CLIWorkflowLogger.traceln("Starting workflows execution");
+      CLIWorkflowLogger.traceln("Command line arguments: " + cliOpts);
 
-			// Set of workflows to execute
-			Set<String> workflowPaths = new HashSet<String>();
-			// Set of scenarios to execute
-			Set<String> scenarioPaths = new HashSet<String>();
+      // parse the command line arguments
+      final CommandLine line = parser.parse(options, (String[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS));
 
-			// If paths to workflow and scenario are not specified using
-			// options, find them in the project given as arguments
-			if (workflowPath == null) {
-				// If there is no workflow path specified, execute all the
-				// workflows (files with workflowExt) found in workflowDir of
-				// the project
-				workflowPaths = getAllFilePathsIn(workflowExt, project,
-						workflowDir);
-			} else {
-				// Otherwise, format the workflowPath and execute it
-				if (!workflowPath.contains(projectName))
-					workflowPath = projectName + workflowDir + "/"
-							+ workflowPath;
-				if (!workflowPath.endsWith(workflowExt))
-					workflowPath = workflowPath + "." + workflowExt;
-				workflowPaths.add(workflowPath);
-			}
+      if (line.getArgs().length != 1) {
+        throw new ParseException("Expected project name as first argument", 0);
+      }
+      // Get the project containing the scenarios and workflows to execute
+      final String projectName = line.getArgs()[0];
+      final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+      final IWorkspaceRoot root = workspace.getRoot();
+      this.project = root.getProject(new Path(projectName).lastSegment());
 
-			if (scenarioPath == null) {
-				// If there is no scenario path specified, execute all the
-				// scenarios (files with scenarioExt) found in scenarioDir of
-				// the project
-				scenarioPaths = getAllFilePathsIn(scenarioExt, project,
-						scenarioDir);
-			} else {
-				// Otherwise, format the scenarioPath and execute it
-				if (!scenarioPath.contains(projectName))
-					scenarioPath = projectName + scenarioDir + "/"
-							+ scenarioPath;
-				if (!scenarioPath.endsWith(scenarioExt))
-					scenarioPath = scenarioPath + "." + scenarioExt;
-				scenarioPaths.add(scenarioPath);
-			}
+      // Refresh the project
+      this.project.refreshLocal(IResource.DEPTH_INFINITE, null);
 
-			CLIWorkflowLogger.traceln("Launching workflows execution");
-			// Launch the execution of the workflos with the scenarios
-			DFToolsWorkflowLogger.runFromCLI();
-			for (String wPath : workflowPaths) {
-				for (String sPath : scenarioPaths) {
-					CLIWorkflowLogger
-							.traceln("Launching execution of workflow: "
-									+ wPath + " with scenario: " + sPath);
-					if (!execute(wPath, sPath, null)) {
-						throw new WorkflowException(
-								"Workflow "
-										+ wPath
-										+ " did not complete its execution normally with scenario "
-										+ sPath + ".");
-					}
-				}
-			}
+      // Handle options
+      String workflowPath = line.getOptionValue('w');
+      String scenarioPath = line.getOptionValue('s');
 
-		} catch (UnrecognizedOptionException uoe) {
-			printUsage(options, uoe.getLocalizedMessage());
-		} catch (ParseException exp) {
-			printUsage(options, exp.getLocalizedMessage());
-		}
-		return IApplication.EXIT_OK;
-	}
+      // Set of workflows to execute
+      Set<String> workflowPaths = new HashSet<>();
+      // Set of scenarios to execute
+      Set<String> scenarioPaths = new HashSet<>();
 
-	/**
-	 * Returns the path of all IFiles with extension found in the IFolder named
-	 * folderName in the given IProject
-	 * 
-	 * @param extension
-	 *            the extension we are looking for
-	 * @param project
-	 *            the IProject in which we are looking for
-	 * @param folderName
-	 *            the name of the folder in which we are looking for
-	 * @return the set of paths relative to the workspace for all the files
-	 *         found
-	 * @throws CoreException
-	 */
-	private Set<String> getAllFilePathsIn(String extension, IProject project,
-			String folderName) throws CoreException {
-		Set<String> filePaths = new HashSet<String>();
-		// Get the IFolder
-		IFolder folder = project.getFolder(folderName);
-		// For each of its members
-		for (IResource resource : folder.members()) {
-			// If this member is a IFile with the given extension
-			if (resource instanceof IFile) {
-				IFile file = (IFile) resource;
-				if (file.getProjectRelativePath().getFileExtension()
-						.equals(extension)) {
-					// add its path to the return set
-					filePaths.add((new Path(project.getName()).append(file
-							.getProjectRelativePath())).toPortableString());
-				}
-			}
-		}
-		return filePaths;
-	}
+      // If paths to workflow and scenario are not specified using
+      // options, find them in the project given as arguments
+      if (workflowPath == null) {
+        // If there is no workflow path specified, execute all the
+        // workflows (files with workflowExt) found in workflowDir of
+        // the project
+        workflowPaths = getAllFilePathsIn(CLIWorkflowExecutor.workflowExt, this.project, CLIWorkflowExecutor.workflowDir);
+      } else {
+        // Otherwise, format the workflowPath and execute it
+        if (!workflowPath.contains(projectName)) {
+          workflowPath = projectName + CLIWorkflowExecutor.workflowDir + "/" + workflowPath;
+        }
+        if (!workflowPath.endsWith(CLIWorkflowExecutor.workflowExt)) {
+          workflowPath = workflowPath + "." + CLIWorkflowExecutor.workflowExt;
+        }
+        workflowPaths.add(workflowPath);
+      }
 
-	@Override
-	public void stop() {
-	}
+      if (scenarioPath == null) {
+        // If there is no scenario path specified, execute all the
+        // scenarios (files with scenarioExt) found in scenarioDir of
+        // the project
+        scenarioPaths = getAllFilePathsIn(CLIWorkflowExecutor.scenarioExt, this.project, CLIWorkflowExecutor.scenarioDir);
+      } else {
+        // Otherwise, format the scenarioPath and execute it
+        if (!scenarioPath.contains(projectName)) {
+          scenarioPath = projectName + CLIWorkflowExecutor.scenarioDir + "/" + scenarioPath;
+        }
+        if (!scenarioPath.endsWith(CLIWorkflowExecutor.scenarioExt)) {
+          scenarioPath = scenarioPath + "." + CLIWorkflowExecutor.scenarioExt;
+        }
+        scenarioPaths.add(scenarioPath);
+      }
 
-	/**
-	 * Set and return the command line options to follow the application
-	 */
-	private Options getCommandLineOptions() {
-		Options options = new Options();
-		Option opt;
+      CLIWorkflowLogger.traceln("Launching workflows execution");
+      // Launch the execution of the workflos with the scenarios
+      DFToolsWorkflowLogger.runFromCLI();
+      for (final String wPath : workflowPaths) {
+        for (final String sPath : scenarioPaths) {
+          CLIWorkflowLogger.traceln("Launching execution of workflow: " + wPath + " with scenario: " + sPath);
+          if (!execute(wPath, sPath, null)) {
+            throw new WorkflowException("Workflow " + wPath + " did not complete its execution normally with scenario " + sPath + ".");
+          }
+        }
+      }
 
-		opt = new Option("w", "workflow", true, "Workflow path");
-		options.addOption(opt);
+    } catch (final UnrecognizedOptionException uoe) {
+      printUsage(options, uoe.getLocalizedMessage());
+    } catch (final ParseException exp) {
+      printUsage(options, exp.getLocalizedMessage());
+    }
+    return IApplication.EXIT_OK;
+  }
 
-		opt = new Option("s", "scenario", true, "Scenario path");
-		options.addOption(opt);
+  /**
+   * Returns the path of all IFiles with extension found in the IFolder named folderName in the given IProject.
+   *
+   * @param extension
+   *          the extension we are looking for
+   * @param project
+   *          the IProject in which we are looking for
+   * @param folderName
+   *          the name of the folder in which we are looking for
+   * @return the set of paths relative to the workspace for all the files found
+   * @throws CoreException
+   *           the core exception
+   */
+  private Set<String> getAllFilePathsIn(final String extension, final IProject project, final String folderName) throws CoreException {
+    final Set<String> filePaths = new HashSet<>();
+    // Get the IFolder
+    final IFolder folder = project.getFolder(folderName);
+    // For each of its members
+    for (final IResource resource : folder.members()) {
+      // If this member is a IFile with the given extension
+      if (resource instanceof IFile) {
+        final IFile file = (IFile) resource;
+        if (file.getProjectRelativePath().getFileExtension().equals(extension)) {
+          // add its path to the return set
+          filePaths.add((new Path(project.getName()).append(file.getProjectRelativePath())).toPortableString());
+        }
+      }
+    }
+    return filePaths;
+  }
 
-		return options;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.equinox.app.IApplication#stop()
+   */
+  @Override
+  public void stop() {
+  }
 
-	/**
-	 * Print command line documentation on options
-	 * 
-	 * @param options
-	 *            options to print
-	 * @param parserMsg
-	 *            message to print
-	 */
-	private void printUsage(Options options, String parserMsg) {
+  /**
+   * Set and return the command line options to follow the application.
+   *
+   * @return the command line options
+   */
+  private Options getCommandLineOptions() {
+    final Options options = new Options();
+    Option opt;
 
-		String footer = "";
-		if (parserMsg != null && !parserMsg.isEmpty()) {
-			footer = "\nMessage of the command line parser :\n" + parserMsg;
-		}
+    opt = new Option("w", "workflow", true, "Workflow path");
+    options.addOption(opt);
 
-		HelpFormatter helpFormatter = new HelpFormatter();
-		helpFormatter.setWidth(80);
-		helpFormatter.printHelp(getClass().getSimpleName() + " [options] ",
-				"Valid options are :", options, footer);
-	}
+    opt = new Option("s", "scenario", true, "Scenario path");
+    options.addOption(opt);
 
-	/**
-	 * Log method for workflow execution without eclipse UI
-	 */
-	@Override
-	protected void log(Level level, String msgKey, String... variables) {
-		CLIWorkflowLogger.logln(level,
-				WorkflowMessages.getString(msgKey, variables));
-	}
+    return options;
+  }
+
+  /**
+   * Print command line documentation on options.
+   *
+   * @param options
+   *          options to print
+   * @param parserMsg
+   *          message to print
+   */
+  private void printUsage(final Options options, final String parserMsg) {
+
+    String footer = "";
+    if ((parserMsg != null) && !parserMsg.isEmpty()) {
+      footer = "\nMessage of the command line parser :\n" + parserMsg;
+    }
+
+    final HelpFormatter helpFormatter = new HelpFormatter();
+    helpFormatter.setWidth(80);
+    helpFormatter.printHelp(getClass().getSimpleName() + " [options] ", "Valid options are :", options, footer);
+  }
+
+  /**
+   * Log method for workflow execution without eclipse UI.
+   *
+   * @param level
+   *          the level
+   * @param msgKey
+   *          the msg key
+   * @param variables
+   *          the variables
+   */
+  @Override
+  protected void log(final Level level, final String msgKey, final String... variables) {
+    CLIWorkflowLogger.logln(level, WorkflowMessages.getString(msgKey, variables));
+  }
 }

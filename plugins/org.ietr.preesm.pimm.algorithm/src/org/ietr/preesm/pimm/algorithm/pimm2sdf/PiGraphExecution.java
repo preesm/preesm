@@ -41,100 +41,176 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
+// TODO: Auto-generated Javadoc
 /**
- * This class corresponds to one execution of a PiGraph with given values for
- * each parameters
- * 
+ * This class corresponds to one execution of a PiGraph with given values for each parameters.
+ *
  * @author cguy
- * 
  */
 public class PiGraphExecution {
 
-	private PiGraph executedPiGraph;
+  /** The executed pi graph. */
+  private final PiGraph executedPiGraph;
 
-	private String executionLabel;
-	
-	private int executionNumber;
-	
-	private Map<String, List<Integer>> parameterValues;
+  /** The execution label. */
+  private final String executionLabel;
 
-	public PiGraphExecution(PiGraph graph, Map<String, List<Integer>> values) {
-		this.executedPiGraph = graph;
-		this.parameterValues = values;
-		this.executionLabel = "";
-		this.executionNumber = 0;
-	}
-	
-	public PiGraphExecution(PiGraph graph, Map<String, List<Integer>> values, String label, int number) {
-		this.executedPiGraph = graph;
-		this.parameterValues = values;
-		this.executionLabel = label;
-		this.executionNumber = number;
-	}
+  /** The execution number. */
+  private final int executionNumber;
 
-	public List<Integer> getValues(Parameter p) {
-		return this.parameterValues.get(p.getName());
-	}
+  /** The parameter values. */
+  private final Map<String, List<Integer>> parameterValues;
 
-	public Integer getUniqueValue(Parameter p) {
-		List<Integer> pValues = this.getValues(p);
-		if (pValues != null && pValues.size() == 1) {
-			return pValues.get(0);
-		} else {
-			return null;
-		}
-	}
+  /**
+   * Instantiates a new pi graph execution.
+   *
+   * @param graph
+   *          the graph
+   * @param values
+   *          the values
+   */
+  public PiGraphExecution(final PiGraph graph, final Map<String, List<Integer>> values) {
+    this.executedPiGraph = graph;
+    this.parameterValues = values;
+    this.executionLabel = "";
+    this.executionNumber = 0;
+  }
 
-	public boolean hasValue(Parameter p) {
-		return (this.getValues(p) != null && !this.getValues(p).isEmpty());
-	}
+  /**
+   * Instantiates a new pi graph execution.
+   *
+   * @param graph
+   *          the graph
+   * @param values
+   *          the values
+   * @param label
+   *          the label
+   * @param number
+   *          the number
+   */
+  public PiGraphExecution(final PiGraph graph, final Map<String, List<Integer>> values, final String label, final int number) {
+    this.executedPiGraph = graph;
+    this.parameterValues = values;
+    this.executionLabel = label;
+    this.executionNumber = number;
+  }
 
-	public int getNumberOfInnerExecutions(PiGraph subgraph) {
-		int maxNumberOfValues = 0;
-		for (String s : parameterValues.keySet()) {
-			if (getSubgraphParametersNames(subgraph).contains(s)) {
-				int size = parameterValues.get(s).size();
-				if (size > maxNumberOfValues)
-					maxNumberOfValues = size;
-			}
-		}
-		return maxNumberOfValues;
-	}
+  /**
+   * Gets the values.
+   *
+   * @param p
+   *          the p
+   * @return the values
+   */
+  public List<Integer> getValues(final Parameter p) {
+    return this.parameterValues.get(p.getName());
+  }
 
-	public PiGraphExecution extractInnerExecution(PiGraph subgraph,
-			int selector) {
-		Map<String, List<Integer>> innerParameterValues = new HashMap<String, List<Integer>>();
-		for (String s : parameterValues.keySet()) {			
-			if (getSubgraphParametersNames(subgraph).contains(s)) {
-				int size = parameterValues.get(s).size();
-				List<Integer> value = new ArrayList<Integer>();
-				value.add(parameterValues.get(s).get(
-						selector % size));
-				innerParameterValues.put(s, value);
-				
-			} else {
-				innerParameterValues.put(s, parameterValues.get(s));
-			}			
-		}
-		return new PiGraphExecution(executedPiGraph, innerParameterValues, executionLabel + "_" + selector, selector);
-	}
+  /**
+   * Gets the unique value.
+   *
+   * @param p
+   *          the p
+   * @return the unique value
+   */
+  public Integer getUniqueValue(final Parameter p) {
+    final List<Integer> pValues = getValues(p);
+    if ((pValues != null) && (pValues.size() == 1)) {
+      return pValues.get(0);
+    } else {
+      return null;
+    }
+  }
 
-	private Set<String> getSubgraphParametersNames(PiGraph subgraph) {
-		Set<String> parametersNames = new HashSet<String>();
-		for (Parameter p : subgraph.getParameters())
-			parametersNames.add(p.getName());
-		return parametersNames;
-	}
+  /**
+   * Checks for value.
+   *
+   * @param p
+   *          the p
+   * @return true, if successful
+   */
+  public boolean hasValue(final Parameter p) {
+    return ((getValues(p) != null) && !getValues(p).isEmpty());
+  }
 
-	public String getExecutionLabel() {
-		return executionLabel;
-	}
+  /**
+   * Gets the number of inner executions.
+   *
+   * @param subgraph
+   *          the subgraph
+   * @return the number of inner executions
+   */
+  public int getNumberOfInnerExecutions(final PiGraph subgraph) {
+    int maxNumberOfValues = 0;
+    for (final String s : this.parameterValues.keySet()) {
+      if (getSubgraphParametersNames(subgraph).contains(s)) {
+        final int size = this.parameterValues.get(s).size();
+        if (size > maxNumberOfValues) {
+          maxNumberOfValues = size;
+        }
+      }
+    }
+    return maxNumberOfValues;
+  }
 
-	public int getExecutionNumber() {
-		return executionNumber;
-	}
+  /**
+   * Extract inner execution.
+   *
+   * @param subgraph
+   *          the subgraph
+   * @param selector
+   *          the selector
+   * @return the pi graph execution
+   */
+  public PiGraphExecution extractInnerExecution(final PiGraph subgraph, final int selector) {
+    final Map<String, List<Integer>> innerParameterValues = new HashMap<>();
+    for (final String s : this.parameterValues.keySet()) {
+      if (getSubgraphParametersNames(subgraph).contains(s)) {
+        final int size = this.parameterValues.get(s).size();
+        final List<Integer> value = new ArrayList<>();
+        value.add(this.parameterValues.get(s).get(selector % size));
+        innerParameterValues.put(s, value);
+
+      } else {
+        innerParameterValues.put(s, this.parameterValues.get(s));
+      }
+    }
+    return new PiGraphExecution(this.executedPiGraph, innerParameterValues, this.executionLabel + "_" + selector, selector);
+  }
+
+  /**
+   * Gets the subgraph parameters names.
+   *
+   * @param subgraph
+   *          the subgraph
+   * @return the subgraph parameters names
+   */
+  private Set<String> getSubgraphParametersNames(final PiGraph subgraph) {
+    final Set<String> parametersNames = new HashSet<>();
+    for (final Parameter p : subgraph.getParameters()) {
+      parametersNames.add(p.getName());
+    }
+    return parametersNames;
+  }
+
+  /**
+   * Gets the execution label.
+   *
+   * @return the execution label
+   */
+  public String getExecutionLabel() {
+    return this.executionLabel;
+  }
+
+  /**
+   * Gets the execution number.
+   *
+   * @return the execution number
+   */
+  public int getExecutionNumber() {
+    return this.executionNumber;
+  }
 }

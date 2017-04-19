@@ -42,71 +42,106 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class SetFifoTypeFeature.
+ */
 public class SetFifoTypeFeature extends AbstractCustomFeature {
 
-	public SetFifoTypeFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /**
+   * Instantiates a new sets the fifo type feature.
+   *
+   * @param fp
+   *          the fp
+   */
+  public SetFifoTypeFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	protected boolean hasDoneChanges = false;
+  /** The has done changes. */
+  protected boolean hasDoneChanges = false;
 
-	@Override
-	public String getName() {
-		return "Set the Data Type";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#getName()
+   */
+  @Override
+  public String getName() {
+    return "Set the Data Type";
+  }
 
-	@Override
-	public String getDescription() {
-		return "Set/Change the Data Type of a FIFO";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#getDescription()
+   */
+  @Override
+  public String getDescription() {
+    return "Set/Change the Data Type of a FIFO";
+  }
 
-	@Override
-	public boolean canExecute(ICustomContext context) {
-		// Allow setting if exactly one pictogram element
-		// representing an Actor is selected
-		boolean ret = false;
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes != null && pes.length == 1) {
-			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof Fifo) {
-				ret = true;
-			}
-		}
-		return ret;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public boolean canExecute(final ICustomContext context) {
+    // Allow setting if exactly one pictogram element
+    // representing an Actor is selected
+    boolean ret = false;
+    final PictogramElement[] pes = context.getPictogramElements();
+    if ((pes != null) && (pes.length == 1)) {
+      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+      if (bo instanceof Fifo) {
+        ret = true;
+      }
+    }
+    return ret;
+  }
 
-	@Override
-	public void execute(ICustomContext context) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public void execute(final ICustomContext context) {
 
-		// Re-check if only one element is selected
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes != null && pes.length == 1) {
-			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof Fifo) {
-				Fifo fifo = (Fifo) bo;
+    // Re-check if only one element is selected
+    final PictogramElement[] pes = context.getPictogramElements();
+    if ((pes != null) && (pes.length == 1)) {
+      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+      if (bo instanceof Fifo) {
+        final Fifo fifo = (Fifo) bo;
 
-				// Ask user for data type.
-				String question = "Enter data type for the FIFO";
-				String oldType = fifo.getType();
-				String type = oldType;
+        // Ask user for data type.
+        final String question = "Enter data type for the FIFO";
+        final String oldType = fifo.getType();
+        String type = oldType;
 
-				type = PiMMUtil.askString(getName(), question, type, null);
-				if ((type == null && oldType == null)
-						|| (type != null && type.equals(oldType))) {
-					this.hasDoneChanges = false;
-				} else {
-					this.hasDoneChanges = true;
-				}
-				fifo.setType(type);
+        type = PiMMUtil.askString(getName(), question, type, null);
+        if (((type == null) && (oldType == null)) || ((type != null) && type.equals(oldType))) {
+          this.hasDoneChanges = false;
+        } else {
+          this.hasDoneChanges = true;
+        }
+        fifo.setType(type);
 
-				// Call the layout feature
-				layoutPictogramElement(pes[0]);
-			}
-		}
-	}
+        // Call the layout feature
+        layoutPictogramElement(pes[0]);
+      }
+    }
+  }
 
-	@Override
-	public boolean hasDoneChanges() {
-		return this.hasDoneChanges;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
+   */
+  @Override
+  public boolean hasDoneChanges() {
+    return this.hasDoneChanges;
+  }
 }

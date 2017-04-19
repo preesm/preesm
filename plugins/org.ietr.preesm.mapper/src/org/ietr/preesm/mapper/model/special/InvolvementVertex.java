@@ -39,15 +39,24 @@ package org.ietr.preesm.mapper.model.special;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * An involvement vertex represents a communication directly driven by a core
- * 
+ * An involvement vertex represents a communication directly driven by a core.
+ *
  * @author mpelcat
  */
 public class InvolvementVertex extends MapperDAGVertex {
 
-	public InvolvementVertex(String id, MapperDAG base) {
-		super(id, base);
-	}
+  /**
+   * Instantiates a new involvement vertex.
+   *
+   * @param id
+   *          the id
+   * @param base
+   *          the base
+   */
+  public InvolvementVertex(final String id, final MapperDAG base) {
+    super(id, base);
+  }
 
 }

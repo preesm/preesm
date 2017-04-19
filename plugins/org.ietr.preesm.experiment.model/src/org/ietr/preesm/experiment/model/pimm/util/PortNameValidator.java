@@ -38,86 +38,91 @@ package org.ietr.preesm.experiment.model.pimm.util;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
+// TODO: Auto-generated Javadoc
 /**
- * This validator is used to check whether a port in a vertex already has a
- * given name.
- * 
+ * This validator is used to check whether a port in a vertex already has a given name.
+ *
  * @author kdesnos
- * 
+ *
  */
 public class PortNameValidator implements IInputValidator {
 
-	protected AbstractActor vertex;
-	protected Port renamedPort;
-	protected Set<String> portsNames;
+  /** The vertex. */
+  protected AbstractActor vertex;
 
-	/**
-	 * Default constructor of the {@link PortNameValidator}
-	 * 
-	 * @param vertex
-	 *            the port to which we add/rename a port
-	 * @param renamedPort
-	 *            the renamed port, or <code>null</code> if not a rename
-	 *            operation
-	 * @param kind
-	 *            the kind of the port
-	 */
-	public PortNameValidator(AbstractActor vertex, Port renamedPort) {
-		this.vertex = vertex;
-		this.renamedPort = renamedPort;
+  /** The renamed port. */
+  protected Port renamedPort;
 
-		// Create the list of already existing names
-		this.portsNames = new HashSet<>();
+  /** The ports names. */
+  protected Set<String> portsNames;
 
-		for (Port port : vertex.getConfigInputPorts()) {
-			this.portsNames.add(port.getName());
-		}
+  /**
+   * Default constructor of the {@link PortNameValidator}.
+   *
+   * @param vertex
+   *          the port to which we add/rename a port
+   * @param renamedPort
+   *          the renamed port, or <code>null</code> if not a rename operation
+   */
+  public PortNameValidator(final AbstractActor vertex, final Port renamedPort) {
+    this.vertex = vertex;
+    this.renamedPort = renamedPort;
 
-		for (Port port : vertex.getConfigOutputPorts()) {
-			this.portsNames.add(port.getName());
-		}
+    // Create the list of already existing names
+    this.portsNames = new HashSet<>();
 
-		for (Port port : vertex.getDataInputPorts()) {
-			this.portsNames.add(port.getName());
-		}
+    for (final Port port : vertex.getConfigInputPorts()) {
+      this.portsNames.add(port.getName());
+    }
 
-		for (Port port : vertex.getDataOutputPorts()) {
-			this.portsNames.add(port.getName());
-		}
+    for (final Port port : vertex.getConfigOutputPorts()) {
+      this.portsNames.add(port.getName());
+    }
 
-		if (this.renamedPort != null) {
-			this.portsNames.remove(renamedPort.getName());
-		}
-	}
+    for (final Port port : vertex.getDataInputPorts()) {
+      this.portsNames.add(port.getName());
+    }
 
-	@Override
-	public String isValid(String newPortName) {
-		String message = null;
-		// Check if the name is not empty
-		if (newPortName.length() < 1) {
-			message = "/!\\ Port name cannot be empty /!\\";
-			return message;
-		}
+    for (final Port port : vertex.getDataOutputPorts()) {
+      this.portsNames.add(port.getName());
+    }
 
-		// Check if the name contains a space
-		if (newPortName.contains(" ")) {
-			message = "/!\\ Port name must not contain spaces /!\\";
-			return message;
-		}
+    if (this.renamedPort != null) {
+      this.portsNames.remove(renamedPort.getName());
+    }
+  }
 
-		// Check if no other port has the same name
-		if (portsNames.contains(newPortName)) {
-			message = "/!\\ A port with name " + newPortName
-					+ " already exists /!\\";
-			return message;
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.dialogs.IInputValidator#isValid(java.lang.String)
+   */
+  @Override
+  public String isValid(final String newPortName) {
+    String message = null;
+    // Check if the name is not empty
+    if (newPortName.length() < 1) {
+      message = "/!\\ Port name cannot be empty /!\\";
+      return message;
+    }
 
-		return message;
-	}
+    // Check if the name contains a space
+    if (newPortName.contains(" ")) {
+      message = "/!\\ Port name must not contain spaces /!\\";
+      return message;
+    }
+
+    // Check if no other port has the same name
+    if (this.portsNames.contains(newPortName)) {
+      message = "/!\\ A port with name " + newPortName + " already exists /!\\";
+      return message;
+    }
+
+    return message;
+  }
 
 }

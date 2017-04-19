@@ -41,38 +41,47 @@ import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 
+// TODO: Auto-generated Javadoc
 /**
- * The {@link IDiagramTypeProvider} for the PiMM diagram type
- * 
+ * The {@link IDiagramTypeProvider} for the PiMM diagram type.
+ *
  * @author kdesnos
- * 
  */
 public class PiMMDiagramTypeProvider extends AbstractDiagramTypeProvider {
-	/**
-	 * The {@link IToolBehaviorProvider} of this type of {@link Diagram}
-	 */
-	private IToolBehaviorProvider[] toolBehaviorProviders;
 
-	/**
-	 * The default constructor of {@link PiMMDiagramTypeProvider}
-	 */
-	public PiMMDiagramTypeProvider() {
-		super();
-		setFeatureProvider(new PiMMFeatureProvider(this));
-	}
+  /** The {@link IToolBehaviorProvider} of this type of {@link Diagram}. */
+  private IToolBehaviorProvider[] toolBehaviorProviders;
 
-	@Override
-	public IToolBehaviorProvider[] getAvailableToolBehaviorProviders() {
+  /**
+   * The default constructor of {@link PiMMDiagramTypeProvider}.
+   */
+  public PiMMDiagramTypeProvider() {
+    super();
+    setFeatureProvider(new PiMMFeatureProvider(this));
+  }
 
-		if (toolBehaviorProviders == null) {
-			toolBehaviorProviders = new IToolBehaviorProvider[] { //
-					new PiMMToolBehaviorProvider(this) };
-		}
-		return toolBehaviorProviders;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.dt.AbstractDiagramTypeProvider#getAvailableToolBehaviorProviders()
+   */
+  @Override
+  public IToolBehaviorProvider[] getAvailableToolBehaviorProviders() {
 
-	@Override
-	public boolean isAutoUpdateAtStartup() {
-		return true;
-	}
+    if (this.toolBehaviorProviders == null) {
+      this.toolBehaviorProviders = new IToolBehaviorProvider[] { //
+          new PiMMToolBehaviorProvider(this) };
+    }
+    return this.toolBehaviorProviders;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.dt.AbstractDiagramTypeProvider#isAutoUpdateAtStartup()
+   */
+  @Override
+  public boolean isAutoUpdateAtStartup() {
+    return true;
+  }
 }

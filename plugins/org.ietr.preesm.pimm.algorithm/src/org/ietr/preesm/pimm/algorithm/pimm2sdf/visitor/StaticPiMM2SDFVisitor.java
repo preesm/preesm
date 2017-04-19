@@ -46,72 +46,84 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.pimm.algorithm.pimm2sdf.PiGraphExecution;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class StaticPiMM2SDFVisitor.
+ */
 public class StaticPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
 
-	public StaticPiMM2SDFVisitor(PiGraphExecution execution) {
-		super(execution);
-	}
+  /**
+   * Instantiates a new static pi MM 2 SDF visitor.
+   *
+   * @param execution
+   *          the execution
+   */
+  public StaticPiMM2SDFVisitor(final PiGraphExecution execution) {
+    super(execution);
+  }
 
-	@Override
-	public void visitPiGraph(PiGraph pg) {
-		// If result == null, then pg is the first PiGraph we encounter
-		if (result == null) {
-			result = new SDFGraph();
-			result.setName(pg.getName());
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.pimm.algorithm.pimm2sdf.visitor.AbstractPiMM2SDFVisitor#visitPiGraph(org.ietr.preesm.experiment.model.pimm.PiGraph)
+   */
+  @Override
+  public void visitPiGraph(final PiGraph pg) {
+    // If result == null, then pg is the first PiGraph we encounter
+    if (this.result == null) {
+      this.result = new SDFGraph();
+      this.result.setName(pg.getName());
 
-			// Save the original Path to the pigraph in the property bean (used
-			// by memory scripts)
-			result.setPropertyValue(AbstractGraph.PATH, pg.eResource().getURI()
-					.toPlatformString(false));
+      // Save the original Path to the pigraph in the property bean (used
+      // by memory scripts)
+      this.result.setPropertyValue(AbstractGraph.PATH, pg.eResource().getURI().toPlatformString(false));
 
-			// Set the values into the parameters of pg when possible
-			for (Parameter p : pg.getParameters()) {
-				p.accept(this);
-			}
-			computeDerivedParameterValues(pg, execution);
-			// Once the values are set, use them to put parameters as graph
-			// variables in the resulting SDF graph
-			parameters2GraphVariables(pg, result);
+      // Set the values into the parameters of pg when possible
+      for (final Parameter p : pg.getParameters()) {
+        p.accept(this);
+      }
+      computeDerivedParameterValues(pg, this.execution);
+      // Once the values are set, use them to put parameters as graph
+      // variables in the resulting SDF graph
+      parameters2GraphVariables(pg, this.result);
 
-			// Visit each of the vertices of pg with the values set
-			for (AbstractActor aa : pg.getVertices()) {
-				aa.accept(this);
-			}
-			// And each of the data edges of pg with the values set
-			for (Fifo f : pg.getFifos()) {
-				f.accept(this);
-			}
-			
-			// Make sure all ports of special actors are indexed and ordered
-			// both in top and sub graphes
-			SpecialActorPortsIndexer.addIndexes(result);
-			SpecialActorPortsIndexer.sortIndexedPorts(result);
-		}
-		// If result != null, pg is not the first PiGraph we encounter, it is a
-		// subgraph
-		else {
-			SDFVertex v = new SDFVertex();
-			piVx2SDFVx.put(pg, v);
-			// Handle vertex's name
-			v.setName(pg.getName());
-			// Handle vertex's path inside the graph hierarchy
-			v.setInfo(pg.getPath());
-			// Handle ID
-			v.setId(pg.getName());
+      // Visit each of the vertices of pg with the values set
+      for (final AbstractActor aa : pg.getVertices()) {
+        aa.accept(this);
+      }
+      // And each of the data edges of pg with the values set
+      for (final Fifo f : pg.getFifos()) {
+        f.accept(this);
+      }
 
-			visitAbstractActor(pg);
+      // Make sure all ports of special actors are indexed and ordered
+      // both in top and sub graphes
+      SpecialActorPortsIndexer.addIndexes(this.result);
+      SpecialActorPortsIndexer.sortIndexedPorts(this.result);
+    } else {
+      // If result != null, pg is not the first PiGraph we encounter, it is a
+      // subgraph
+      final SDFVertex v = new SDFVertex();
+      this.piVx2SDFVx.put(pg, v);
+      // Handle vertex's name
+      v.setName(pg.getName());
+      // Handle vertex's path inside the graph hierarchy
+      v.setInfo(pg.getPath());
+      // Handle ID
+      v.setId(pg.getName());
 
-			// Visit the subgraph
-			StaticPiMM2SDFVisitor innerVisitor = new StaticPiMM2SDFVisitor(
-					execution);
-			innerVisitor.visit(pg);
-			// Set the obtained SDFGraph as refinement for v
-			SDFGraph sdf = innerVisitor.getResult();
-			sdf.setName(sdf.getName() + execution.getExecutionLabel());
-			v.setGraphDescription(sdf);
+      visitAbstractActor(pg);
 
-			result.addVertex(v);
-		}
-	}
+      // Visit the subgraph
+      final StaticPiMM2SDFVisitor innerVisitor = new StaticPiMM2SDFVisitor(this.execution);
+      innerVisitor.visit(pg);
+      // Set the obtained SDFGraph as refinement for v
+      final SDFGraph sdf = innerVisitor.getResult();
+      sdf.setName(sdf.getName() + this.execution.getExecutionLabel());
+      v.setGraphDescription(sdf);
+
+      this.result.addVertex(v);
+    }
+  }
 
 }

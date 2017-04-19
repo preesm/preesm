@@ -40,24 +40,35 @@ import org.eclipse.graphiti.ui.editor.DefaultMarkerBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramBehavior;
 import org.eclipse.graphiti.ui.editor.IDiagramContainerUI;
 
+// TODO: Auto-generated Javadoc
 /**
- * Class inheriting from the {@link DiagramBehavior}. This class was created to
- * define a custom {@link DefaultMarkerBehavior} that does not reset problems
+ * Class inheriting from the {@link DiagramBehavior}. This class was created to define a custom {@link DefaultMarkerBehavior} that does not reset problems
  * related to graphs on startup of the editor.
- * 
+ *
  * @author kdesnos
  *
  */
 public class PiMMDiagramBehavior extends DiagramBehavior {
 
-	public PiMMDiagramBehavior(IDiagramContainerUI diagramContainer) {
-		super(diagramContainer);
-	}
+  /**
+   * Instantiates a new pi MM diagram behavior.
+   *
+   * @param diagramContainer
+   *          the diagram container
+   */
+  public PiMMDiagramBehavior(final IDiagramContainerUI diagramContainer) {
+    super(diagramContainer);
+  }
 
-	@Override
-	protected DefaultMarkerBehavior createMarkerBehavior() {
-		// TODO Auto-generated method stub
-		return new PiMMMarkerBehavior(this);
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.ui.editor.DiagramBehavior#createMarkerBehavior()
+   */
+  @Override
+  protected DefaultMarkerBehavior createMarkerBehavior() {
+    // TODO Auto-generated method stub
+    return new PiMMMarkerBehavior(this);
+  }
 
 }

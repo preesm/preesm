@@ -41,7 +41,6 @@ package org.ietr.preesm.mapper.exporter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -56,66 +55,90 @@ import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.utils.paths.PathTools;
 
+// TODO: Auto-generated Javadoc
 /**
- * Block in workflow exporting a DAG that contains all information of an
- * implementation
- * 
+ * Block in workflow exporting a DAG that contains all information of an implementation.
+ *
  * @author mpelcat
- * 
  */
 public class ImplExportTransform extends AbstractTaskImplementation {
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
+   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs,
+      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
+      final Workflow workflow) throws WorkflowException {
 
-		DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
+    final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 
-		String sGraphmlPath = PathTools.getAbsolutePath(parameters.get("path"),
-				workflow.getProjectName());
-		Path graphmlPath = new Path(sGraphmlPath);
+    final String sGraphmlPath = PathTools.getAbsolutePath(parameters.get("path"),
+        workflow.getProjectName());
+    final Path graphmlPath = new Path(sGraphmlPath);
 
-		// Exporting the DAG in a GraphML
-		if (!graphmlPath.isEmpty()) {
-			exportGraphML(dag, graphmlPath);
-		}
+    // Exporting the DAG in a GraphML
+    if (!graphmlPath.isEmpty()) {
+      exportGraphML(dag, graphmlPath);
+    }
 
-		Activator.updateWorkspace();
+    Activator.updateWorkspace();
 
-		HashMap<String, Object> outputs = new HashMap<String, Object>();
-		outputs.put("xml", sGraphmlPath);
-		return outputs ;
-	}
+    final HashMap<String, Object> outputs = new HashMap<>();
+    outputs.put("xml", sGraphmlPath);
+    return outputs;
+  }
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = new HashMap<String, String>();
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new HashMap<>();
 
-		parameters.put("path", "");
-		return parameters;
-	}
+    parameters.put("path", "");
+    return parameters;
+  }
 
-	@Override
-	public String monitorMessage() {
-		return "Exporting implementation.";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Exporting implementation.";
+  }
 
-	private void exportGraphML(DirectedAcyclicGraph dag, Path path) {
+  /**
+   * Export graph ML.
+   *
+   * @param dag
+   *          the dag
+   * @param path
+   *          the path
+   */
+  private void exportGraphML(final DirectedAcyclicGraph dag, final Path path) {
 
-		MapperDAG mapperDag = (MapperDAG) dag;
+    final MapperDAG mapperDag = (MapperDAG) dag;
 
-		ImplementationExporter exporter = new ImplementationExporter();
-		MapperDAG clone = mapperDag.clone();
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IFile iGraphMLFile = workspace.getRoot().getFile(path);
+    final ImplementationExporter exporter = new ImplementationExporter();
+    final MapperDAG clone = mapperDag.clone();
+    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    final IFile iGraphMLFile = workspace.getRoot().getFile(path);
 
-		if (iGraphMLFile.getLocation() != null) {
-			exporter.export(clone, iGraphMLFile.getLocation().toOSString());
-		} else {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
-					"The output file " + path + " can not be written.");
-		}
-	}
+    if (iGraphMLFile.getLocation() != null) {
+      exporter.export(clone, iGraphMLFile.getLocation().toOSString());
+    } else {
+      WorkflowLogger.getLogger().log(Level.SEVERE,
+          "The output file " + path + " can not be written.");
+    }
+  }
 
 }

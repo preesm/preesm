@@ -38,34 +38,56 @@
 
 package org.ietr.preesm.mapper.model.special;
 
+import org.ietr.dftools.algorithm.model.AbstractVertex;
 import org.ietr.dftools.algorithm.model.dag.types.DAGDefaultVertexPropertyType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * Vertex corresponding to sending a data. This vertex is mapped on the sender
- * of the corresponding route step.
- * 
+ * Vertex corresponding to sending a data. This vertex is mapped on the sender of the corresponding
+ * route step.
+ *
  * @author mpelcat
  */
 public class SendVertex extends TransferVertex {
 
-	static {
-		{
-			public_properties
-					.add(ImplementationPropertyNames.SendReceive_OperatorDef);
-		}
-	};
-	
-	public SendVertex(String id, MapperDAG base, MapperDAGVertex source,
-			MapperDAGVertex target, int routeStepIndex, int nodeIndex) {
-		super(id,base,source,target,routeStepIndex, nodeIndex);
-	}
+  static {
+    {
+      AbstractVertex.public_properties.add(ImplementationPropertyNames.SendReceive_OperatorDef);
+    }
+  }
 
-	@Override
-	public DAGDefaultVertexPropertyType getNbRepeat() {
-		return new DAGDefaultVertexPropertyType(1);
-	}
+  /**
+   * Instantiates a new send vertex.
+   *
+   * @param id
+   *          the id
+   * @param base
+   *          the base
+   * @param source
+   *          the source
+   * @param target
+   *          the target
+   * @param routeStepIndex
+   *          the route step index
+   * @param nodeIndex
+   *          the node index
+   */
+  public SendVertex(final String id, final MapperDAG base, final MapperDAGVertex source,
+      final MapperDAGVertex target, final int routeStepIndex, final int nodeIndex) {
+    super(id, base, source, target, routeStepIndex, nodeIndex);
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.algorithm.model.dag.DAGVertex#getNbRepeat()
+   */
+  @Override
+  public DAGDefaultVertexPropertyType getNbRepeat() {
+    return new DAGDefaultVertexPropertyType(1);
+  }
 
 }

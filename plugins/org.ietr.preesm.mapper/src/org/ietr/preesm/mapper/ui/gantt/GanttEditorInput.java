@@ -45,61 +45,113 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.activator.Activator;
 import org.ietr.preesm.mapper.gantt.GanttData;
 
+// TODO: Auto-generated Javadoc
 /**
- * Input of the simple editor of implementation gantt chart
- * 
+ * Input of the simple editor of implementation gantt chart.
+ *
  * @author mpelcat
  */
 public class GanttEditorInput implements IEditorInput {
 
-	private GanttData ganttData = null;
-	private String name = null;
+  /** The gantt data. */
+  private GanttData ganttData = null;
 
-	public GanttEditorInput(GanttData ganttData, String name) {
-		super();
-		this.ganttData = ganttData;
-		this.name = name;
-	}
+  /** The name. */
+  private String name = null;
 
-	public GanttData getGanttData() {
-		return ganttData;
-	}
+  /**
+   * Instantiates a new gantt editor input.
+   *
+   * @param ganttData
+   *          the gantt data
+   * @param name
+   *          the name
+   */
+  public GanttEditorInput(final GanttData ganttData, final String name) {
+    super();
+    this.ganttData = ganttData;
+    this.name = name;
+  }
 
-	public void setGanttData(GanttData ganttData) {
-		this.ganttData = ganttData;
-	}
+  /**
+   * Gets the gantt data.
+   *
+   * @return the gantt data
+   */
+  public GanttData getGanttData() {
+    return this.ganttData;
+  }
 
-	@Override
-	public boolean exists() {
-		return false;
-	}
+  /**
+   * Sets the gantt data.
+   *
+   * @param ganttData
+   *          the new gantt data
+   */
+  public void setGanttData(final GanttData ganttData) {
+    this.ganttData = ganttData;
+  }
 
-	@Override
-	public ImageDescriptor getImageDescriptor() {
-		ImageDescriptor img = Activator
-				.getImageDescriptor("icons/preesm3mini.PNG");
-		return img;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.IEditorInput#exists()
+   */
+  @Override
+  public boolean exists() {
+    return false;
+  }
 
-	@Override
-	public String getName() {
-		return name + " " + WorkflowLogger.getFormattedTime();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.IEditorInput#getImageDescriptor()
+   */
+  @Override
+  public ImageDescriptor getImageDescriptor() {
+    final ImageDescriptor img = Activator.getImageDescriptor("icons/preesm3mini.PNG");
+    return img;
+  }
 
-	@Override
-	public IPersistableElement getPersistable() {
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.IEditorInput#getName()
+   */
+  @Override
+  public String getName() {
+    return this.name + " " + WorkflowLogger.getFormattedTime();
+  }
 
-	@Override
-	public String getToolTipText() {
-		return name;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.IEditorInput#getPersistable()
+   */
+  @Override
+  public IPersistableElement getPersistable() {
+    return null;
+  }
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
-	public Object getAdapter(Class adapter) {
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.IEditorInput#getToolTipText()
+   */
+  @Override
+  public String getToolTipText() {
+    return this.name;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+   */
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @Override
+  public Object getAdapter(final Class adapter) {
+    return null;
+  }
 
 }

@@ -46,32 +46,36 @@ import org.ietr.preesm.core.scenarios.generator.ScenariosGenerator;
 import org.ietr.preesm.ui.Activator;
 import org.ietr.preesm.ui.wizards.PreesmProjectNature;
 
+// TODO: Auto-generated Javadoc
 /**
- * Class for pop-up menu on IProjects, allowing to generate PreesmScenarios from
- * the content of the Algo and Archi folders
- * 
- * @author cguy
+ * Class for pop-up menu on IProjects, allowing to generate PreesmScenarios from the content of the Algo and Archi folders.
  *
+ * @author cguy
  */
 public class ScenariosGeneratorPopup extends AbstractHandler {
 
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		ScenariosGenerator generator = new ScenariosGenerator();
-		try {
-			// Get the selected IProject
-			IWorkbenchPage page = Activator.getDefault().getWorkbench()
-					.getActiveWorkbenchWindow().getActivePage();
-			TreeSelection selection = (TreeSelection) page.getSelection();
-			IProject project = (IProject) selection.getFirstElement();
-			// If it is a Preesm project, generate the PreesmScenarios from the
-			// content of the Algo and Archi folders
-			if (project.hasNature(PreesmProjectNature.ID))
-				generator.generateAndSaveScenarios(project);
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.core.commands.IHandler#execute(org.eclipse.core.commands.ExecutionEvent)
+   */
+  @Override
+  public Object execute(final ExecutionEvent event) throws ExecutionException {
+    final ScenariosGenerator generator = new ScenariosGenerator();
+    try {
+      // Get the selected IProject
+      final IWorkbenchPage page = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+      final TreeSelection selection = (TreeSelection) page.getSelection();
+      final IProject project = (IProject) selection.getFirstElement();
+      // If it is a Preesm project, generate the PreesmScenarios from the
+      // content of the Algo and Archi folders
+      if (project.hasNature(PreesmProjectNature.ID)) {
+        generator.generateAndSaveScenarios(project);
+      }
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+    } catch (final Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
 }

@@ -38,67 +38,78 @@
 package org.ietr.preesm.mapper.abc.edgescheduling;
 
 import java.util.Random;
-
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * An advanced edge scheduler. It looks for the largest free interval in
- * scheduling and schedules the new communication in this slot.
- * 
+ * An advanced edge scheduler. It looks for the largest free interval in scheduling and schedules
+ * the new communication in this slot.
+ *
  * @author mpelcat
  */
 public class SwitcherEdgeSched extends AbstractEdgeSched {
 
-	private IntervalFinder intervalFinder = null;
+  /** The interval finder. */
+  private IntervalFinder intervalFinder = null;
 
-	public SwitcherEdgeSched(OrderManager orderManager) {
-		super(orderManager);
+  /**
+   * Instantiates a new switcher edge sched.
+   *
+   * @param orderManager
+   *          the order manager
+   */
+  public SwitcherEdgeSched(final OrderManager orderManager) {
+    super(orderManager);
 
-		intervalFinder = new IntervalFinder(orderManager);
-	}
+    this.intervalFinder = new IntervalFinder(orderManager);
+  }
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched#schedule(org.ietr.preesm.mapper.model.
+   * special.TransferVertex, org.ietr.preesm.mapper.model.MapperDAGVertex,
+   * org.ietr.preesm.mapper.model.MapperDAGVertex)
+   */
+  @Override
+  public void schedule(final TransferVertex vertex, final MapperDAGVertex source,
+      final MapperDAGVertex target) {
 
-	}
+    final ComponentInstance component = vertex.getEffectiveComponent();
+    // intervalFinder.displayCurrentSchedule(vertex, source);
+    final Interval largestInterval = this.intervalFinder.findLargestFreeInterval(component, source,
+        target);
 
-	@Override
-	public void schedule(TransferVertex vertex, MapperDAGVertex source,
-			MapperDAGVertex target) {
+    if (largestInterval.getDuration() > 0) {
+      this.orderManager.insertAtIndex(largestInterval.getTotalOrderIndex(), vertex);
+    } else {
+      final int sourceIndex = this.intervalFinder.getOrderManager().totalIndexOf(source) + 1;
+      final int targetIndex = this.intervalFinder.getOrderManager().totalIndexOf(target);
 
-		ComponentInstance component = vertex
-				.getEffectiveComponent();
-		// intervalFinder.displayCurrentSchedule(vertex, source);
-		Interval largestInterval = intervalFinder.findLargestFreeInterval(
-				component, source, target);
+      if ((targetIndex - sourceIndex) > 0) {
+        final Random r = new Random();
+        int nextInt = r.nextInt(Integer.MAX_VALUE);
+        int randomVal = Math.abs(nextInt);
+        randomVal = randomVal % (targetIndex - sourceIndex);
+        final int index = sourceIndex + randomVal;
+        this.orderManager.insertAtIndex(index, vertex);
+      } else {
+        this.orderManager.insertAfter(source, vertex);
+      }
+    }
+  }
 
-		if (largestInterval.getDuration() > 0) {
-			orderManager.insertAtIndex(largestInterval.getTotalOrderIndex(),
-					vertex);
-		} else {
-			int sourceIndex = intervalFinder.getOrderManager().totalIndexOf(
-					source) + 1;
-			int targetIndex = intervalFinder.getOrderManager().totalIndexOf(
-					target);
-
-			if (targetIndex - sourceIndex > 0) {
-				Random r = new Random();
-				int randomVal = Math.abs(r.nextInt());
-				randomVal = randomVal % (targetIndex - sourceIndex);
-				orderManager.insertAtIndex(sourceIndex + randomVal, vertex);
-			} else {
-				orderManager.insertAfter(source, vertex);
-			}
-		}
-	}
-
-	@Override
-	public EdgeSchedType getEdgeSchedType() {
-		return EdgeSchedType.Switcher;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched#getEdgeSchedType()
+   */
+  @Override
+  public EdgeSchedType getEdgeSchedType() {
+    return EdgeSchedType.Switcher;
+  }
 }

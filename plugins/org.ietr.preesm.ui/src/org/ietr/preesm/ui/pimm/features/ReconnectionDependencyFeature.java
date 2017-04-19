@@ -55,200 +55,202 @@ import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
+// TODO: Auto-generated Javadoc
 /**
  * Feature to reconnect a dependency in the PiMM GUI.
+ *
  * @author kdesnos
  *
  */
 public class ReconnectionDependencyFeature extends DefaultReconnectionFeature {
 
-	protected boolean hasDoneChanges = false;
+  /** The has done changes. */
+  protected boolean hasDoneChanges = false;
 
-	/**
-	 * Default constructor for the {@link ReconnectionDependencyFeature}
-	 * 
-	 * @param fp
-	 *            the feature provider
-	 */
-	public ReconnectionDependencyFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /**
+   * Default constructor for the {@link ReconnectionDependencyFeature}.
+   *
+   * @param fp
+   *          the feature provider
+   */
+  public ReconnectionDependencyFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	@Override
-	public boolean canReconnect(IReconnectionContext context) {
-		// If the new anchor is the same as the old one, reconnection
-		// is possible
-		if (context.getOldAnchor().equals(context.getNewAnchor())) {
-			return true;
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#canReconnect(org.eclipse.graphiti.features.context.IReconnectionContext)
+   */
+  @Override
+  public boolean canReconnect(final IReconnectionContext context) {
+    // If the new anchor is the same as the old one, reconnection
+    // is possible
+    if (context.getOldAnchor().equals(context.getNewAnchor())) {
+      return true;
+    }
 
-		// The create dependency feature is used to check the
-		// reconnection feasibility with the same criteria as the creation
-		// of a new dependency.
-		CreateDependencyFeature createFeature = new CreateDependencyFeature(
-				getFeatureProvider());
-		CreateConnectionContext createContext = new CreateConnectionContext();
-		createContext.setTargetAnchor(context.getConnection().getEnd());
-		createContext.setTargetPictogramElement(context.getConnection()
-				.getEnd());
-		createContext.setSourceAnchor(context.getConnection().getStart());
-		createContext.setSourcePictogramElement(context.getConnection()
-				.getStart());
+    // The create dependency feature is used to check the
+    // reconnection feasibility with the same criteria as the creation
+    // of a new dependency.
+    final CreateDependencyFeature createFeature = new CreateDependencyFeature(getFeatureProvider());
+    final CreateConnectionContext createContext = new CreateConnectionContext();
+    createContext.setTargetAnchor(context.getConnection().getEnd());
+    createContext.setTargetPictogramElement(context.getConnection().getEnd());
+    createContext.setSourceAnchor(context.getConnection().getStart());
+    createContext.setSourcePictogramElement(context.getConnection().getStart());
 
-		// Check whether the setter or the getter is reconnected.
-		if (context.getConnection().getStart() == context.getOldAnchor()) {
-			// The setter is reconnected
-			createContext.setSourceAnchor(context.getNewAnchor());
-			createContext.setSourceLocation(context.getTargetLocation());
-			createContext.setSourcePictogramElement(context
-					.getTargetPictogramElement());
+    // Check whether the setter or the getter is reconnected.
+    if (context.getConnection().getStart() == context.getOldAnchor()) {
+      // The setter is reconnected
+      createContext.setSourceAnchor(context.getNewAnchor());
+      createContext.setSourceLocation(context.getTargetLocation());
+      createContext.setSourcePictogramElement(context.getTargetPictogramElement());
 
-			if (createFeature.canStartConnection(createContext)) {
-				// Check that the new source is not the getter
-				if (context.getConnection().getEnd() == context.getNewAnchor()) {
-					return false;
-				}
+      if (createFeature.canStartConnection(createContext)) {
+        // Check that the new source is not the getter
+        if (context.getConnection().getEnd() == context.getNewAnchor()) {
+          return false;
+        }
 
-				// If the getter is an actor port, check that the setter
-				// is not a configuration actor
-				if (getBusinessObjectForPictogramElement(context
-						.getConnection().getEnd()) instanceof ConfigInputPort
-						&& getBusinessObjectForPictogramElement(context
-								.getNewAnchor()) instanceof ConfigOutputPort) {
-					return false;
-				}
+        // If the getter is an actor port, check that the setter
+        // is not a configuration actor
+        if ((getBusinessObjectForPictogramElement(context.getConnection().getEnd()) instanceof ConfigInputPort)
+            && (getBusinessObjectForPictogramElement(context.getNewAnchor()) instanceof ConfigOutputPort)) {
+          return false;
+        }
 
-				// No special case prevents the the reconnection.
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			// The getter is reconnected
-			createContext.setTargetAnchor(context.getNewAnchor());
-			createContext.setTargetLocation(context.getTargetLocation());
-			createContext.setTargetPictogramElement(context
-					.getTargetPictogramElement());
+        // No special case prevents the the reconnection.
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      // The getter is reconnected
+      createContext.setTargetAnchor(context.getNewAnchor());
+      createContext.setTargetLocation(context.getTargetLocation());
+      createContext.setTargetPictogramElement(context.getTargetPictogramElement());
 
-			return createFeature.canCreate(createContext);
-		}
+      return createFeature.canCreate(createContext);
+    }
 
-		// return false;
-	}
+    // return false;
+  }
 
-	@Override
-	public boolean hasDoneChanges() {
-		return this.hasDoneChanges;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
+   */
+  @Override
+  public boolean hasDoneChanges() {
+    return this.hasDoneChanges;
+  }
 
-	/**
-	 * Method to retrieve the {@link Port} corresponding to an {@link Anchor}
-	 * 
-	 * @param anchor
-	 *            the anchor to treat
-	 * @return the found {@link Port}, or <code>null</code> if no port
-	 *         corresponds to this {@link Anchor}
-	 */
-	protected Port getPort(Anchor anchor) {
-		if (anchor != null) {
-			Object obj = getBusinessObjectForPictogramElement(anchor);
-			if (obj instanceof Port) {
-				return (Port) obj;
-			}
-		}
-		return null;
-	}
+  /**
+   * Method to retrieve the {@link Port} corresponding to an {@link Anchor}.
+   *
+   * @param anchor
+   *          the anchor to treat
+   * @return the found {@link Port}, or <code>null</code> if no port corresponds to this {@link Anchor}
+   */
+  protected Port getPort(final Anchor anchor) {
+    if (anchor != null) {
+      final Object obj = getBusinessObjectForPictogramElement(anchor);
+      if (obj instanceof Port) {
+        return (Port) obj;
+      }
+    }
+    return null;
+  }
 
-	@Override
-	public void preReconnect(IReconnectionContext context) {
-		// If we reconnect to the same anchor: nothing to do
-		if (context.getOldAnchor().equals(context.getNewAnchor())) {
-			return;
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#preReconnect(org.eclipse.graphiti.features.context.IReconnectionContext)
+   */
+  @Override
+  public void preReconnect(final IReconnectionContext context) {
+    // If we reconnect to the same anchor: nothing to do
+    if (context.getOldAnchor().equals(context.getNewAnchor())) {
+      return;
+    }
 
-		// If the reconnection involve the creation of a new config input port
-		// Create it
+    // If the reconnection involve the creation of a new config input port
+    // Create it
 
-		if (context.getOldAnchor() == context.getConnection().getEnd()) {
-			PictogramElement tgtPE = context.getTargetPictogramElement();
-			Object getterObject = getBusinessObjectForPictogramElement(tgtPE);
-			Anchor getterAnchor = context.getNewAnchor();
-			Port getter = getPort(getterAnchor);
+    if (context.getOldAnchor() == context.getConnection().getEnd()) {
+      final PictogramElement tgtPE = context.getTargetPictogramElement();
+      final Object getterObject = getBusinessObjectForPictogramElement(tgtPE);
+      final Anchor getterAnchor = context.getNewAnchor();
+      Port getter = getPort(getterAnchor);
 
-			if (getter == null && (getterObject instanceof Parameterizable)) {
+      if ((getter == null) && (getterObject instanceof Parameterizable)) {
 
-				// The target can be: A Parameter, A Fifo, An Actor, An
-				// interface.
+        // The target can be: A Parameter, A Fifo, An Actor, An
+        // interface.
 
-				// If the getter is an actor
-				if (getterObject instanceof ExecutableActor) {
-					// Create a ConfigInputPort
-					PictogramElement targetPe = context
-							.getTargetPictogramElement();
-					AbstractAddActorPortFeature addPortFeature = CreateDependencyFeature
-							.canCreateConfigPort(targetPe,
-									getFeatureProvider(), "config_input");
-					if (addPortFeature != null) {
-						CustomContext targetContext = new CustomContext(
-								new PictogramElement[] { targetPe });
-						addPortFeature.execute(targetContext);
-						((ReconnectionContext) context)
-								.setNewAnchor(addPortFeature.getCreatedAnchor());
-						getter = addPortFeature.getCreatedPort();
-					}
-					
-					// if getter is null (in case a port creation
-					// failed or was aborted)
-					if (getter == null) {
-						((ReconnectionContext) context).setNewAnchor(context
-								.getOldAnchor());
-					}
-				}
+        // If the getter is an actor
+        if (getterObject instanceof ExecutableActor) {
+          // Create a ConfigInputPort
+          final PictogramElement targetPe = context.getTargetPictogramElement();
+          final AbstractAddActorPortFeature addPortFeature = CreateDependencyFeature.canCreateConfigPort(targetPe, getFeatureProvider(), "config_input");
+          if (addPortFeature != null) {
+            final CustomContext targetContext = new CustomContext(new PictogramElement[] { targetPe });
+            addPortFeature.execute(targetContext);
+            ((ReconnectionContext) context).setNewAnchor(addPortFeature.getCreatedAnchor());
+            getter = addPortFeature.getCreatedPort();
+          }
 
+          // if getter is null (in case a port creation
+          // failed or was aborted)
+          if (getter == null) {
+            ((ReconnectionContext) context).setNewAnchor(context.getOldAnchor());
+          }
+        }
 
-				// TODO implement the creation of configInputPort
-			}
-		}
-	}
+        // TODO implement the creation of configInputPort
+      }
+    }
+  }
 
-	@Override
-	public void postReconnect(IReconnectionContext context) {
-		// Apply changes to the BusinessModel
-		// If we reconnect to the same anchor: nothing to do
-		if (context.getOldAnchor().equals(context.getNewAnchor())) {
-			return;
-		}
-		
-		Dependency dependency = (Dependency) getBusinessObjectForPictogramElement(context.getConnection());
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#postReconnect(org.eclipse.graphiti.features.context.IReconnectionContext)
+   */
+  @Override
+  public void postReconnect(final IReconnectionContext context) {
+    // Apply changes to the BusinessModel
+    // If we reconnect to the same anchor: nothing to do
+    if (context.getOldAnchor().equals(context.getNewAnchor())) {
+      return;
+    }
 
-		// Get the Old and new objects
-		if (context.getNewAnchor() == context.getConnection().getEnd()) {
-			// The reconnected side is the getter
-			ConfigInputPort newGetter = null;
-			
-			Object getterObject = getBusinessObjectForPictogramElement(context.getTargetPictogramElement());
-			// If the getter is a Parameter, a FIFO, or an InterfaceActor
-			if (getterObject instanceof Parameter
-					|| getterObject instanceof InterfaceActor
-					|| getterObject instanceof Delay) {
-				// Create a ConfigInputPort
-				newGetter = PiMMFactory.eINSTANCE.createConfigInputPort();
-				((Parameterizable) getterObject).getConfigInputPorts().add(
-						newGetter);
-			} else {
-				newGetter = (ConfigInputPort) getBusinessObjectForPictogramElement(context
-						.getConnection().getEnd());
-			}
-			
+    final Dependency dependency = (Dependency) getBusinessObjectForPictogramElement(context.getConnection());
 
-			dependency.setGetter(newGetter);
-		} else {
-			// The reconnected side is the setter
-			ISetter newSetter = (ISetter) getBusinessObjectForPictogramElement(context
-					.getConnection().getStart());
-			dependency.setSetter(newSetter);
-		}
+    // Get the Old and new objects
+    if (context.getNewAnchor() == context.getConnection().getEnd()) {
+      // The reconnected side is the getter
+      ConfigInputPort newGetter = null;
 
-		hasDoneChanges = true;
-	}
+      final Object getterObject = getBusinessObjectForPictogramElement(context.getTargetPictogramElement());
+      // If the getter is a Parameter, a FIFO, or an InterfaceActor
+      if ((getterObject instanceof Parameter) || (getterObject instanceof InterfaceActor) || (getterObject instanceof Delay)) {
+        // Create a ConfigInputPort
+        newGetter = PiMMFactory.eINSTANCE.createConfigInputPort();
+        ((Parameterizable) getterObject).getConfigInputPorts().add(newGetter);
+      } else {
+        newGetter = (ConfigInputPort) getBusinessObjectForPictogramElement(context.getConnection().getEnd());
+      }
+
+      dependency.setGetter(newGetter);
+    } else {
+      // The reconnected side is the setter
+      final ISetter newSetter = (ISetter) getBusinessObjectForPictogramElement(context.getConnection().getStart());
+      dependency.setSetter(newSetter);
+    }
+
+    this.hasDoneChanges = true;
+  }
 }

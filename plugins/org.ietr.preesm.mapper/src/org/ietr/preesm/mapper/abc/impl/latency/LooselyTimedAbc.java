@@ -49,72 +49,96 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
 import org.ietr.preesm.mapper.params.AbcParameters;
 
+// TODO: Auto-generated Javadoc
 /**
- * A loosely timed architecture simulator associates a simple cost to each
- * communication. This cost is the transfer size multiplied by the medium speed.
- * The communications are parallel with computation and all parallel with each
- * other.
- * 
+ * A loosely timed architecture simulator associates a simple cost to each communication. This cost
+ * is the transfer size multiplied by the medium speed. The communications are parallel with
+ * computation and all parallel with each other.
+ *
  * @author mpelcat
  */
 public class LooselyTimedAbc extends LatencyAbc {
 
-	/**
-	 * Constructor of the simulator from a "blank" implementation where every
-	 * vertex has not been mapped yet.
-	 */
-	public LooselyTimedAbc(AbcParameters params, MapperDAG dag, Design archi,
-			AbcType abcType, PreesmScenario scenario) {
-		super(params, dag, archi, abcType, scenario);
-	}
+  /**
+   * Constructor of the simulator from a "blank" implementation where every vertex has not been
+   * mapped yet.
+   *
+   * @param params
+   *          the params
+   * @param dag
+   *          the dag
+   * @param archi
+   *          the archi
+   * @param abcType
+   *          the abc type
+   * @param scenario
+   *          the scenario
+   */
+  public LooselyTimedAbc(final AbcParameters params, final MapperDAG dag, final Design archi,
+      final AbcType abcType, final PreesmScenario scenario) {
+    super(params, dag, archi, abcType, scenario);
+  }
 
-	@Override
-	protected void fireNewMappedVertex(MapperDAGVertex vertex,
-			boolean updateRank) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#fireNewMappedVertex(org.ietr.preesm.mapper.
+   * model.MapperDAGVertex, boolean)
+   */
+  @Override
+  protected void fireNewMappedVertex(final MapperDAGVertex vertex, final boolean updateRank) {
 
-		super.fireNewMappedVertex(vertex, updateRank);
+    super.fireNewMappedVertex(vertex, updateRank);
 
-		ComponentInstance effectiveOp = vertex.getEffectiveOperator();
+    final ComponentInstance effectiveOp = vertex.getEffectiveOperator();
 
-		if (effectiveOp != DesignTools.NO_COMPONENT_INSTANCE) {
-			// Adding precedence edges for an automatic graph timings
-			// calculation
-			new PrecedenceEdgeAdder(orderManager, implementation)
-					.scheduleVertex(vertex);
-		}
+    if (effectiveOp != DesignTools.NO_COMPONENT_INSTANCE) {
+      // Adding precedence edges for an automatic graph timings
+      // calculation
+      new PrecedenceEdgeAdder(this.orderManager, this.implementation).scheduleVertex(vertex);
+    }
 
-	}
+  }
 
-	/**
-	 * In the loosely timed ABC, the edges receive the communication times.
-	 */
-	@Override
-	protected final void setEdgeCost(MapperDAGEdge edge) {
+  /**
+   * In the loosely timed ABC, the edges receive the communication times.
+   *
+   * @param edge
+   *          the new edge cost
+   */
+  @Override
+  protected final void setEdgeCost(final MapperDAGEdge edge) {
 
-		MapperDAGVertex source = ((MapperDAGVertex) edge.getSource());
-		MapperDAGVertex dest = ((MapperDAGVertex) edge.getTarget());
+    final MapperDAGVertex source = ((MapperDAGVertex) edge.getSource());
+    final MapperDAGVertex dest = ((MapperDAGVertex) edge.getTarget());
 
-		ComponentInstance sourceOp = source.getEffectiveOperator();
-		ComponentInstance destOp = dest.getEffectiveOperator();
+    final ComponentInstance sourceOp = source.getEffectiveOperator();
+    final ComponentInstance destOp = dest.getEffectiveOperator();
 
-		if (sourceOp != DesignTools.NO_COMPONENT_INSTANCE
-				&& destOp != DesignTools.NO_COMPONENT_INSTANCE) {
-			if (sourceOp.getInstanceName().equals(destOp.getInstanceName())) {
-				edge.getTiming().setCost(0);
-			} else {
+    if ((sourceOp != DesignTools.NO_COMPONENT_INSTANCE)
+        && (destOp != DesignTools.NO_COMPONENT_INSTANCE)) {
+      if (sourceOp.getInstanceName().equals(destOp.getInstanceName())) {
+        edge.getTiming().setCost(0);
+      } else {
 
-				// The transfer evaluation takes into account the route
-				edge.getTiming().setCost(comRouter.evaluateTransferCost(edge));
-			}
-		}
+        // The transfer evaluation takes into account the route
+        edge.getTiming().setCost(this.comRouter.evaluateTransferCost(edge));
+      }
+    }
 
-		// Setting edge costs for special types
-		// super.setEdgeCost(edge);
-	}
+    // Setting edge costs for special types
+    // super.setEdgeCost(edge);
+  }
 
-	@Override
-	public EdgeSchedType getEdgeSchedType() {
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#getEdgeSchedType()
+   */
+  @Override
+  public EdgeSchedType getEdgeSchedType() {
+    return null;
+  }
 
 }

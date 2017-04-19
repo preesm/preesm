@@ -46,50 +46,56 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class DataPortPropertiesUpdater.
+ */
 public class DataPortPropertiesUpdater extends GFPropertySection {
-	protected void updateDataPortProperties(DataPort port, Text textToUpdate) {
-		if (!port.getExpression().getString().equals(textToUpdate.getText())) {
-			setNewExpression(port.getExpression(), textToUpdate.getText());
-			// If port is contained by an DataInterface, we should
-			// also update the graph port of the DataInterface
-			if (port.eContainer() instanceof DataOutputInterface) {
-				DataOutputInterface doi = (DataOutputInterface) port
-						.eContainer();
-				DataOutputPort oPort = (DataOutputPort) doi.getGraphPort();
-				if (!oPort.getExpression().getString()
-						.equals(textToUpdate.getText())) {
-					setNewExpression(oPort.getExpression(),
-							textToUpdate.getText());
-				}
-			} else if (port.eContainer() instanceof DataInputInterface) {
-				DataInputInterface dii = (DataInputInterface) port.eContainer();
-				DataInputPort iPort = (DataInputPort) dii.getGraphPort();
-				if (!iPort.getExpression().getString()
-						.equals(textToUpdate.getText())) {
-					setNewExpression(iPort.getExpression(),
-							textToUpdate.getText());
-				}
-			}
-		}
-	}
 
-	/**
-	 * Safely set an {@link Expression} with the given value.
-	 * 
-	 * @param e
-	 *            {@link Expression} to set
-	 * @param value
-	 *            String value
-	 */
-	protected void setNewExpression(final Expression e, final String value) {
-		TransactionalEditingDomain editingDomain = getDiagramTypeProvider()
-				.getDiagramBehavior().getEditingDomain();
-		editingDomain.getCommandStack().execute(
-				new RecordingCommand(editingDomain) {
-					@Override
-					protected void doExecute() {
-						e.setString(value);
-					}
-				});
-	}
+  /**
+   * Update data port properties.
+   *
+   * @param port
+   *          the port
+   * @param textToUpdate
+   *          the text to update
+   */
+  protected void updateDataPortProperties(final DataPort port, final Text textToUpdate) {
+    if (!port.getExpression().getString().equals(textToUpdate.getText())) {
+      setNewExpression(port.getExpression(), textToUpdate.getText());
+      // If port is contained by an DataInterface, we should
+      // also update the graph port of the DataInterface
+      if (port.eContainer() instanceof DataOutputInterface) {
+        final DataOutputInterface doi = (DataOutputInterface) port.eContainer();
+        final DataOutputPort oPort = (DataOutputPort) doi.getGraphPort();
+        if (!oPort.getExpression().getString().equals(textToUpdate.getText())) {
+          setNewExpression(oPort.getExpression(), textToUpdate.getText());
+        }
+      } else if (port.eContainer() instanceof DataInputInterface) {
+        final DataInputInterface dii = (DataInputInterface) port.eContainer();
+        final DataInputPort iPort = (DataInputPort) dii.getGraphPort();
+        if (!iPort.getExpression().getString().equals(textToUpdate.getText())) {
+          setNewExpression(iPort.getExpression(), textToUpdate.getText());
+        }
+      }
+    }
+  }
+
+  /**
+   * Safely set an {@link Expression} with the given value.
+   *
+   * @param e
+   *          {@link Expression} to set
+   * @param value
+   *          String value
+   */
+  protected void setNewExpression(final Expression e, final String value) {
+    final TransactionalEditingDomain editingDomain = getDiagramTypeProvider().getDiagramBehavior().getEditingDomain();
+    editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
+      @Override
+      protected void doExecute() {
+        e.setString(value);
+      }
+    });
+  }
 }

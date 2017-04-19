@@ -45,79 +45,115 @@ import org.eclipse.ui.part.EditorPart;
 import org.ietr.preesm.mapper.gantt.GanttData;
 import org.ietr.preesm.mapper.ui.GanttPlotter;
 
+// TODO: Auto-generated Javadoc
 /**
- * Editor displaying the gantt chart
- * 
+ * Editor displaying the gantt chart.
+ *
  * @author mpelcat
  */
 public class GanttEditor extends EditorPart {
 
+  /** Data to be displayed. */
+  private GanttData ganttData = null;
 
-	/**
-	 * Data to be displayed
-	 */
-	private GanttData ganttData = null;
+  /**
+   * Instantiates a new gantt editor.
+   */
+  public GanttEditor() {
+    super();
+  }
 
-	public GanttEditor() {
-		super();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
+   */
+  @Override
+  public void doSave(final IProgressMonitor monitor) {
 
-	@Override
-	public void doSave(IProgressMonitor monitor) {
+  }
 
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.part.EditorPart#doSaveAs()
+   */
+  @Override
+  public void doSaveAs() {
 
-	@Override
-	public void doSaveAs() {
+  }
 
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.part.EditorPart#init(org.eclipse.ui.IEditorSite,
+   * org.eclipse.ui.IEditorInput)
+   */
+  @Override
+  public void init(final IEditorSite site, final IEditorInput input) throws PartInitException {
 
-	@Override
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+    try {
+      setSite(site);
+      setInput(input);
+      setPartName(input.getName());
 
-		try {
-			setSite(site);
-			setInput(input);
-			setPartName(input.getName());
+      if (input instanceof GanttEditorInput) {
+        final GanttEditorInput implinput = (GanttEditorInput) input;
+        this.ganttData = implinput.getGanttData();
+      }
 
-			if (input instanceof GanttEditorInput) {
-				GanttEditorInput implinput = (GanttEditorInput) input;
-				this.ganttData = implinput.getGanttData();
-			}
+    } catch (final Exception e) {
+      // Editor might not exist anymore if switching databases. So
+      // just close it.
+      getEditorSite().getPage().closeEditor(this, false);
+    }
 
-		} catch (Exception e) {
-			// Editor might not exist anymore if switching databases. So
-			// just close it.
-			this.getEditorSite().getPage().closeEditor(this, false);
-		}
+  }
 
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.part.EditorPart#isDirty()
+   */
+  @Override
+  public boolean isDirty() {
+    // TODO Auto-generated method stub
+    return false;
+  }
 
-	@Override
-	public boolean isDirty() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.part.EditorPart#isSaveAsAllowed()
+   */
+  @Override
+  public boolean isSaveAsAllowed() {
+    // TODO Auto-generated method stub
+    return false;
+  }
 
-	@Override
-	public boolean isSaveAsAllowed() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
+   */
+  @Override
+  public void createPartControl(final Composite parent) {
 
-	@Override
-	public void createPartControl(Composite parent) {
+    if (this.ganttData != null) {
+      GanttPlotter.plotDeployment(this.ganttData, parent);
+    }
 
-		if (ganttData != null) {
-			GanttPlotter.plotDeployment(ganttData,parent);
-		}
+  }
 
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
+   */
+  @Override
+  public void setFocus() {
+    // TODO Auto-generated method stub
 
-	@Override
-	public void setFocus() {
-		// TODO Auto-generated method stub
-
-	}
+  }
 }

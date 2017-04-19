@@ -40,7 +40,7 @@ package org.ietr.preesm.mapper.model;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
+import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
@@ -49,226 +49,293 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.mapper.model.property.DAGMappings;
 import org.ietr.preesm.mapper.model.property.DAGTimings;
 
+// TODO: Auto-generated Javadoc
 /**
+ * The Class MapperDAG.
+ *
  * @author mpelcat
- * 
- *         This class represents a Directed Acyclic Graph in the mapper. It
- *         holds mapping and scheduling information
+ *
+ *         This class represents a Directed Acyclic Graph in the mapper. It holds mapping and
+ *         scheduling information
  */
 public class MapperDAG extends DirectedAcyclicGraph {
 
-	/**
-	 * Properties of mapped vertices
-	 */
-	private static final String MAPPING_PROPERTY = "MAPPING_PROPERTY";
+  /** Properties of mapped vertices. */
+  private static final String MAPPING_PROPERTY = "MAPPING_PROPERTY";
 
-	/**
-	 * Properties of scheduled vertices
-	 */
-	private static final String TIMING_PROPERTY = "TIMING_PROPERTY";
+  /** Properties of scheduled vertices. */
+  private static final String TIMING_PROPERTY = "TIMING_PROPERTY";
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6757893466692519433L;
+  /** The Constant serialVersionUID. */
+  private static final long serialVersionUID = -6757893466692519433L;
 
-	/**
-	 * Corresponding SDF graph
-	 */
-	private SDFGraph sdfGraph;
+  /** Corresponding SDF graph. */
+  private SDFGraph sdfGraph;
 
-	/**
-	 * The cost of the implementation
-	 */
-	private final static String SCHEDULE_COST = "SCHEDULE_COST";
+  /** The cost of the implementation. */
+  private static final String SCHEDULE_COST = "SCHEDULE_COST";
 
-	static {
-		{
-			public_properties.add(SCHEDULE_COST);
-		}
-	};
+  static {
+    {
+      AbstractGraph.public_properties.add(MapperDAG.SCHEDULE_COST);
+    }
+  }
 
-	/**
-	 * Creactor of a DAG from a edge factory and a converted graph
-	 */
-	public MapperDAG(MapperEdgeFactory factory, SDFGraph graph) {
-		super(factory);
-		this.sdfGraph = graph;
-		this.setScheduleCost(0L);
+  /**
+   * Creactor of a DAG from a edge factory and a converted graph.
+   *
+   * @param factory
+   *          the factory
+   * @param graph
+   *          the graph
+   */
+  public MapperDAG(final MapperEdgeFactory factory, final SDFGraph graph) {
+    super(factory);
+    this.sdfGraph = graph;
+    setScheduleCost(0L);
 
-		this.getPropertyBean().setValue(MAPPING_PROPERTY, new DAGMappings());
-		this.getPropertyBean().setValue(TIMING_PROPERTY, new DAGTimings());
+    getPropertyBean().setValue(MapperDAG.MAPPING_PROPERTY, new DAGMappings());
+    getPropertyBean().setValue(MapperDAG.TIMING_PROPERTY, new DAGTimings());
 
-	}
+  }
 
-	/**
-	 * give the number of vertices in the DAG
-	 */
-	public int getNumberOfVertices() {
-		return vertexSet().size();
-	}
+  /**
+   * give the number of vertices in the DAG.
+   *
+   * @return the number of vertices
+   */
+  public int getNumberOfVertices() {
+    return vertexSet().size();
+  }
 
-	/**
-	 * Adds all vertices of a given set
-	 */
-	public void addAllVertices(Set<MapperDAGVertex> set) {
-		Iterator<MapperDAGVertex> iterator = set.iterator();
+  /**
+   * Adds all vertices of a given set.
+   *
+   * @param set
+   *          the set
+   */
+  public void addAllVertices(final Set<MapperDAGVertex> set) {
+    final Iterator<MapperDAGVertex> iterator = set.iterator();
 
-		while (iterator.hasNext()) {
-			addVertex(iterator.next());
-		}
-	}
+    while (iterator.hasNext()) {
+      addVertex(iterator.next());
+    }
+  }
 
-	public long getScheduleCost() {
-		long cost = (Long) this.getPropertyBean().getValue(SCHEDULE_COST);
-		return cost;
-	}
+  /**
+   * Gets the schedule cost.
+   *
+   * @return the schedule cost
+   */
+  public long getScheduleCost() {
+    final long cost = (Long) getPropertyBean().getValue(MapperDAG.SCHEDULE_COST);
+    return cost;
+  }
 
-	public void setScheduleCost(long scheduleLatency) {
-		this.getPropertyBean().setValue(SCHEDULE_COST, scheduleLatency);
-	}
+  /**
+   * Sets the schedule cost.
+   *
+   * @param scheduleLatency
+   *          the new schedule cost
+   */
+  public void setScheduleCost(final long scheduleLatency) {
+    getPropertyBean().setValue(MapperDAG.SCHEDULE_COST, scheduleLatency);
+  }
 
-	public SDFGraph getReferenceSdfGraph() {
-		return sdfGraph;
-	}
+  /**
+   * Gets the reference sdf graph.
+   *
+   * @return the reference sdf graph
+   */
+  public SDFGraph getReferenceSdfGraph() {
+    return this.sdfGraph;
+  }
 
-	public void setReferenceSdfGraph(SDFGraph sdfGraph) {
-		this.sdfGraph = sdfGraph;
-	}
+  /**
+   * Sets the reference sdf graph.
+   *
+   * @param sdfGraph
+   *          the new reference sdf graph
+   */
+  public void setReferenceSdfGraph(final SDFGraph sdfGraph) {
+    this.sdfGraph = sdfGraph;
+  }
 
-	/**
-	 * Clone a MapperDAG
-	 */
-	@Override
-	public MapperDAG clone() {
+  /**
+   * Clone a MapperDAG.
+   *
+   * @return the mapper DAG
+   */
+  @Override
+  public MapperDAG clone() {
 
-		// create clone
-		MapperDAG newDAG = new MapperDAG(new MapperEdgeFactory(),
-				this.getReferenceSdfGraph());
-		newDAG.setScheduleCost(this.getScheduleCost());
+    // create clone
+    final MapperDAG newDAG = new MapperDAG(new MapperEdgeFactory(), getReferenceSdfGraph());
+    newDAG.setScheduleCost(getScheduleCost());
 
-		// add vertex
-		Iterator<DAGVertex> iterV = this.vertexSet().iterator();
-		while (iterV.hasNext()) {
-			MapperDAGVertex currentVertex = (MapperDAGVertex) iterV.next();
-			currentVertex = currentVertex.clone();
-			newDAG.addVertex(currentVertex);
-		}
+    // add vertex
+    final Iterator<DAGVertex> iterV = vertexSet().iterator();
+    while (iterV.hasNext()) {
+      MapperDAGVertex currentVertex = (MapperDAGVertex) iterV.next();
+      currentVertex = currentVertex.clone();
+      newDAG.addVertex(currentVertex);
+    }
 
-		// add edge
-		Iterator<DAGEdge> iterE = this.edgeSet().iterator();
-		while (iterE.hasNext()) {
-			MapperDAGEdge origEdge = (MapperDAGEdge) iterE.next();
+    // add edge
+    final Iterator<DAGEdge> iterE = edgeSet().iterator();
+    while (iterE.hasNext()) {
+      final MapperDAGEdge origEdge = (MapperDAGEdge) iterE.next();
 
-			DAGVertex source = origEdge.getSource();
-			DAGVertex target = origEdge.getTarget();
+      final DAGVertex source = origEdge.getSource();
+      final DAGVertex target = origEdge.getTarget();
 
-			String sourceName = source.getName();
-			String targetName = target.getName();
-			MapperDAGEdge newEdge = (MapperDAGEdge) newDAG.addEdge(
-					newDAG.getVertex(sourceName), newDAG.getVertex(targetName));
-			newEdge.setInit(origEdge.getInit().clone());
-			newEdge.setTiming(origEdge.getTiming().clone());
-			newEdge.copyProperties(origEdge);
-		}
-		newDAG.copyProperties(this);
+      final String sourceName = source.getName();
+      final String targetName = target.getName();
+      final MapperDAGEdge newEdge = (MapperDAGEdge) newDAG.addEdge(newDAG.getVertex(sourceName),
+          newDAG.getVertex(targetName));
+      newEdge.setInit(origEdge.getInit().clone());
+      newEdge.setTiming(origEdge.getTiming().clone());
+      newEdge.copyProperties(origEdge);
+    }
+    newDAG.copyProperties(this);
 
-		newDAG.setMappings((DAGMappings) this.getMappings().clone());
-		newDAG.setTimings((DAGTimings) this.getTimings().clone());
+    newDAG.setMappings((DAGMappings) getMappings().clone());
+    newDAG.setTimings((DAGTimings) getTimings().clone());
 
-		return newDAG;
-	}
+    return newDAG;
+  }
 
-	public DAGMappings getMappings() {
-		return (DAGMappings) this.getPropertyBean().getValue(MAPPING_PROPERTY);
-	}
+  /**
+   * Gets the mappings.
+   *
+   * @return the mappings
+   */
+  public DAGMappings getMappings() {
+    return (DAGMappings) getPropertyBean().getValue(MapperDAG.MAPPING_PROPERTY);
+  }
 
-	private void setMappings(DAGMappings implementationVertexProperty) {
-		this.getPropertyBean().setValue(MAPPING_PROPERTY,
-				implementationVertexProperty);
-	}
+  /**
+   * Sets the mappings.
+   *
+   * @param implementationVertexProperty
+   *          the new mappings
+   */
+  private void setMappings(final DAGMappings implementationVertexProperty) {
+    getPropertyBean().setValue(MapperDAG.MAPPING_PROPERTY, implementationVertexProperty);
+  }
 
-	public DAGTimings getTimings() {
-		return (DAGTimings) this.getPropertyBean().getValue(TIMING_PROPERTY);
-	}
+  /**
+   * Gets the timings.
+   *
+   * @return the timings
+   */
+  public DAGTimings getTimings() {
+    return (DAGTimings) getPropertyBean().getValue(MapperDAG.TIMING_PROPERTY);
+  }
 
-	private void setTimings(DAGTimings timingVertexProperty) {
-		this.getPropertyBean().setValue(TIMING_PROPERTY, timingVertexProperty);
-	}
+  /**
+   * Sets the timings.
+   *
+   * @param timingVertexProperty
+   *          the new timings
+   */
+  private void setTimings(final DAGTimings timingVertexProperty) {
+    getPropertyBean().setValue(MapperDAG.TIMING_PROPERTY, timingVertexProperty);
+  }
 
-	/**
-	 * Gets the vertex with the given reference graph
-	 */
-	public MapperDAGVertex getVertex(SDFAbstractVertex sdfvertex) {
+  /**
+   * Gets the vertex with the given reference graph.
+   *
+   * @param sdfvertex
+   *          the sdfvertex
+   * @return the vertex
+   */
+  public MapperDAGVertex getVertex(final SDFAbstractVertex sdfvertex) {
 
-		Iterator<DAGVertex> iter = vertexSet().iterator();
-		MapperDAGVertex currentvertex = null;
-		while (iter.hasNext()) {
-			currentvertex = (MapperDAGVertex) iter.next();
-			if (currentvertex.getName().equals(sdfvertex.getName())) {
-				return currentvertex;
-			}
-		}
-		return null;
-	}
+    final Iterator<DAGVertex> iter = vertexSet().iterator();
+    MapperDAGVertex currentvertex = null;
+    while (iter.hasNext()) {
+      currentvertex = (MapperDAGVertex) iter.next();
+      if (currentvertex.getName().equals(sdfvertex.getName())) {
+        return currentvertex;
+      }
+    }
+    return null;
+  }
 
-	/**
-	 * Gets all the DAG vertices corresponding to a given SDF graph
-	 */
-	public Set<MapperDAGVertex> getVertices(SDFAbstractVertex sdfvertex) {
+  /**
+   * Gets all the DAG vertices corresponding to a given SDF graph.
+   *
+   * @param sdfvertex
+   *          the sdfvertex
+   * @return the vertices
+   */
+  public Set<MapperDAGVertex> getVertices(final SDFAbstractVertex sdfvertex) {
 
-		Set<MapperDAGVertex> currentset = new HashSet<MapperDAGVertex>();
-		MapperDAGVertex currentvertex = null;
-		for (DAGVertex currentv : vertexSet()) {
-			currentvertex = (MapperDAGVertex) currentv;
+    final Set<MapperDAGVertex> currentset = new HashSet<>();
+    MapperDAGVertex currentvertex = null;
+    for (final DAGVertex currentv : vertexSet()) {
+      currentvertex = (MapperDAGVertex) currentv;
 
-			// Special vertices have null info
-			if (currentvertex.getCorrespondingSDFVertex().getInfo() != null
-					&& currentvertex.getCorrespondingSDFVertex().getInfo()
-							.equals(sdfvertex.getInfo())) {
-				currentset.add(currentvertex);
-			}
-		}
-		return currentset;
-	}
+      // Special vertices have null info
+      if ((currentvertex.getCorrespondingSDFVertex().getInfo() != null)
+          && currentvertex.getCorrespondingSDFVertex().getInfo().equals(sdfvertex.getInfo())) {
+        currentset.add(currentvertex);
+      }
+    }
+    return currentset;
+  }
 
-	/**
-	 * Returns all vertices corresponding to a set of names
-	 */
-	public Set<MapperDAGVertex> getVertexSet(Set<String> nameSet) {
-		Set<MapperDAGVertex> vSet = new HashSet<MapperDAGVertex>();
+  /**
+   * Returns all vertices corresponding to a set of names.
+   *
+   * @param nameSet
+   *          the name set
+   * @return the vertex set
+   */
+  public Set<MapperDAGVertex> getVertexSet(final Set<String> nameSet) {
+    final Set<MapperDAGVertex> vSet = new HashSet<>();
 
-		Iterator<String> iterator = nameSet.iterator();
+    final Iterator<String> iterator = nameSet.iterator();
 
-		while (iterator.hasNext()) {
-			String name = iterator.next();
-			MapperDAGVertex v = (MapperDAGVertex) this.getVertex(name);
-			vSet.add(v);
+    while (iterator.hasNext()) {
+      final String name = iterator.next();
+      final MapperDAGVertex v = (MapperDAGVertex) this.getVertex(name);
+      vSet.add(v);
 
-		}
+    }
 
-		return vSet;
-	}
+    return vSet;
+  }
 
-	/**
-	 * Returns all vertices with no incoming edges
-	 */
-	public Set<MapperDAGVertex> getSources() {
-		Set<MapperDAGVertex> vSet = new HashSet<MapperDAGVertex>();
+  /**
+   * Returns all vertices with no incoming edges.
+   *
+   * @return the sources
+   */
+  public Set<MapperDAGVertex> getSources() {
+    final Set<MapperDAGVertex> vSet = new HashSet<>();
 
-		for (DAGVertex v : vertexSet()) {
-			if (incomingEdgesOf(v).isEmpty()) {
-				vSet.add((MapperDAGVertex) v);
-			}
+    for (final DAGVertex v : vertexSet()) {
+      if (incomingEdgesOf(v).isEmpty()) {
+        vSet.add((MapperDAGVertex) v);
+      }
 
-		}
+    }
 
-		return vSet;
-	}
+    return vSet;
+  }
 
-	public MapperDAGVertex getMapperDAGVertex(String name) {
+  /**
+   * Gets the mapper DAG vertex.
+   *
+   * @param name
+   *          the name
+   * @return the mapper DAG vertex
+   */
+  public MapperDAGVertex getMapperDAGVertex(final String name) {
 
-		return (MapperDAGVertex) super.getVertex(name);
-	}
+    return (MapperDAGVertex) super.getVertex(name);
+  }
 
 }

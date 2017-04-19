@@ -56,235 +56,258 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.PortNameValidator;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 
+// TODO: Auto-generated Javadoc
 /**
- * Feature called to create and add a port to an actor
- * 
+ * Feature called to create and add a port to an actor.
+ *
  * @author kdesnos
- * 
  */
 public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature {
 
-	/**
-	 * The {@link ICustomContext} given to the {@link #execute(ICustomContext)}
-	 * method can be associated to properties. The {@link #NAME_PROPERTY} key is
-	 * associated to a {@link String} that should be used as a name for the
-	 * created port, thus bypassing the need to ask for a port name to the user.
-	 */
-	public static final String NAME_PROPERTY = "name";
+  /**
+   * The {@link ICustomContext} given to the {@link #execute(ICustomContext)} method can be associated to properties. The {@link #NAME_PROPERTY} key is
+   * associated to a {@link String} that should be used as a name for the created port, thus bypassing the need to ask for a port name to the user.
+   */
+  public static final String NAME_PROPERTY = "name";
 
-	/**
-	 * Position of the port
-	 * 
-	 * @author kdesnos
-	 * 
-	 */
-	public enum PortPosition {
-		LEFT, RIGHT
-	}
+  /**
+   * Position of the port.
+   *
+   * @author kdesnos
+   */
+  public enum PortPosition {
 
-	/**
-	 * Size of the GA of the anchor
-	 */
-	public static final int PORT_ANCHOR_GA_SIZE = 8;
+    /** The left. */
+    LEFT,
+    /** The right. */
+    RIGHT
+  }
 
-	public static final IColorConstant PORT_BACKGROUND = IColorConstant.BLACK;
+  /** Size of the GA of the anchor. */
+  public static final int PORT_ANCHOR_GA_SIZE = 8;
 
-	public static int PORT_FONT_HEIGHT;
+  /** The Constant PORT_BACKGROUND. */
+  public static final IColorConstant PORT_BACKGROUND = IColorConstant.BLACK;
 
-	/**
-	 * Size of the space between the label of a port and the GA
-	 */
-	public static final int PORT_LABEL_GA_SPACE = 2;
+  /** The port font height. */
+  public static int PORT_FONT_HEIGHT;
 
-	public static final IColorConstant PORT_TEXT_FOREGROUND = IColorConstant.BLACK;
+  /** Size of the space between the label of a port and the GA. */
+  public static final int PORT_LABEL_GA_SPACE = 2;
 
-	/**
-	 * Store the created port
-	 */
-	protected Port createdPort = null;
+  /** The Constant PORT_TEXT_FOREGROUND. */
+  public static final IColorConstant PORT_TEXT_FOREGROUND = IColorConstant.BLACK;
 
-	protected Anchor createdAnchor = null;
+  /** Store the created port. */
+  protected Port createdPort = null;
 
-	protected boolean hasDoneChanges = false;
+  /** The created anchor. */
+  protected Anchor createdAnchor = null;
 
-	public AbstractAddActorPortFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /** The has done changes. */
+  protected boolean hasDoneChanges = false;
 
-	/**
-	 * Add a GraphicAlgorithm of the port.
-	 * 
-	 * @param containerShape
-	 *            the shape containing the port {@link GraphicsAlgorithm}.
-	 * 
-	 * @return the graphic algorithm
-	 */
-	public abstract GraphicsAlgorithm addPortGA(GraphicsAlgorithm containerShape);
+  /**
+   * Instantiates a new abstract add actor port feature.
+   *
+   * @param fp
+   *          the fp
+   */
+  public AbstractAddActorPortFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	/**
-	 * Add a label to the port
-	 * 
-	 * @param containerShape
-	 *            the shape containing the port
-	 * @param label
-	 *            the name of the port
-	 * @return
-	 */
-	public abstract GraphicsAlgorithm addPortLabel(
-			GraphicsAlgorithm containerShape, String portName);
+  /**
+   * Add a GraphicAlgorithm of the port.
+   *
+   * @param containerShape
+   *          the shape containing the port {@link GraphicsAlgorithm}.
+   *
+   * @return the graphic algorithm
+   */
+  public abstract GraphicsAlgorithm addPortGA(GraphicsAlgorithm containerShape);
 
-	@Override
-	public boolean canExecute(ICustomContext context) {
-		// allow if exactly one pictogram element
-		// representing an Actor is selected
-		boolean ret = false;
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes != null && pes.length == 1) {
-			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof ExecutableActor) {
-				ret = true;
-			}
-		}
-		return ret;
-	}
+  /**
+   * Add a label to the port.
+   *
+   * @param containerShape
+   *          the shape containing the port
+   * @param portName
+   *          the port name
+   * @return the graphics algorithm
+   */
+  public abstract GraphicsAlgorithm addPortLabel(GraphicsAlgorithm containerShape, String portName);
 
-	@Override
-	public void execute(ICustomContext context) {
-		execute(context, "newPort");
-	}
-	
-	public void execute(ICustomContext context, String portName) {
-		// Re-check if only one element is selected
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes != null && pes.length == 1) {
-			// Retrieve the container shape (corresponding to the actor)
-			ContainerShape containerShape = (ContainerShape) pes[0];
-			// Retrieve the rectangle graphic algorithm
-			GraphicsAlgorithm gaRectangle = pes[0].getGraphicsAlgorithm();
-			// Get the PeCreateService
-			IPeCreateService peCreateService = Graphiti.getPeCreateService();
-			// Get the GaService
-			IGaService gaService = Graphiti.getGaService();
-			// Get the actor
-			ExecutableActor actor = (ExecutableActor) getBusinessObjectForPictogramElement(containerShape);
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public boolean canExecute(final ICustomContext context) {
+    // allow if exactly one pictogram element
+    // representing an Actor is selected
+    boolean ret = false;
+    final PictogramElement[] pes = context.getPictogramElements();
+    if ((pes != null) && (pes.length == 1)) {
+      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+      if (bo instanceof ExecutableActor) {
+        ret = true;
+      }
+    }
+    return ret;
+  }
 
-			// If a name was given in the property, bypass the dialog box
-			Object nameProperty = context.getProperty(NAME_PROPERTY);
-			if (nameProperty != null && nameProperty instanceof String) {
-				portName = (String) nameProperty;
-			} else {
-				portName = PiMMUtil.askString(this.getName(), this
-						.getDescription(), portName, new PortNameValidator(
-						actor, null));
-				if (portName == null) {
-					this.hasDoneChanges = false;
-					return;
-				}
-			}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public void execute(final ICustomContext context) {
+    execute(context, "newPort");
+  }
 
-			// create an box relative anchor
-			final BoxRelativeAnchor boxAnchor = peCreateService
-					.createBoxRelativeAnchor(containerShape);
-			createdAnchor = boxAnchor;
-			if (this.getPosition() == PortPosition.LEFT) {
-				boxAnchor.setRelativeWidth(0.0);
-			} else {
-				boxAnchor.setRelativeWidth(1.0);
-			}
-			boxAnchor.setRelativeHeight(0.5); // The height will be fixed by the
-												// layout feature
-			boxAnchor.setReferencedGraphicsAlgorithm(gaRectangle);
+  /**
+   * Execute.
+   *
+   * @param context
+   *          the context
+   * @param portName
+   *          the port name
+   */
+  public void execute(final ICustomContext context, String portName) {
+    // Re-check if only one element is selected
+    final PictogramElement[] pes = context.getPictogramElements();
+    if ((pes != null) && (pes.length == 1)) {
+      // Retrieve the container shape (corresponding to the actor)
+      final ContainerShape containerShape = (ContainerShape) pes[0];
+      // Retrieve the rectangle graphic algorithm
+      final GraphicsAlgorithm gaRectangle = pes[0].getGraphicsAlgorithm();
+      // Get the PeCreateService
+      final IPeCreateService peCreateService = Graphiti.getPeCreateService();
+      // Get the GaService
+      final IGaService gaService = Graphiti.getGaService();
+      // Get the actor
+      final ExecutableActor actor = (ExecutableActor) getBusinessObjectForPictogramElement(containerShape);
 
-			// Get the new Port and add it to the Graph
-			Port newPort = this.getNewPort(portName, actor);
-			createdPort = newPort;
+      // If a name was given in the property, bypass the dialog box
+      final Object nameProperty = context.getProperty(AbstractAddActorPortFeature.NAME_PROPERTY);
+      if ((nameProperty != null) && (nameProperty instanceof String)) {
+        portName = (String) nameProperty;
+      } else {
+        portName = PiMMUtil.askString(getName(), getDescription(), portName, new PortNameValidator(actor, null));
+        if (portName == null) {
+          this.hasDoneChanges = false;
+          return;
+        }
+      }
 
-			// create invisible rectangle
-			Rectangle invisibleRectangle = gaService
-					.createInvisibleRectangle(boxAnchor);
+      // create an box relative anchor
+      final BoxRelativeAnchor boxAnchor = peCreateService.createBoxRelativeAnchor(containerShape);
+      this.createdAnchor = boxAnchor;
+      if (getPosition() == PortPosition.LEFT) {
+        boxAnchor.setRelativeWidth(0.0);
+      } else {
+        boxAnchor.setRelativeWidth(1.0);
+      }
+      boxAnchor.setRelativeHeight(0.5); // The height will be fixed by the
+      // layout feature
+      boxAnchor.setReferencedGraphicsAlgorithm(gaRectangle);
 
-			// Add a text label for the box relative anchor
-			this.addPortLabel(invisibleRectangle, portName);
+      // Get the new Port and add it to the Graph
+      final Port newPort = getNewPort(portName, actor);
+      this.createdPort = newPort;
 
-			// add a graphics algorithm for the box relative anchor
-			this.addPortGA(invisibleRectangle);
+      // create invisible rectangle
+      final Rectangle invisibleRectangle = gaService.createInvisibleRectangle(boxAnchor);
 
-			// link the Pictogram element to the port in the business model
-			link(boxAnchor, newPort);
+      // Add a text label for the box relative anchor
+      addPortLabel(invisibleRectangle, portName);
 
-			// Layout the port
-			layoutPictogramElement(boxAnchor);
+      // add a graphics algorithm for the box relative anchor
+      addPortGA(invisibleRectangle);
 
-			// Layout the actor
-			layoutPictogramElement(containerShape);
-			updatePictogramElement(containerShape);
+      // link the Pictogram element to the port in the business model
+      link(boxAnchor, newPort);
 
-			this.hasDoneChanges = true;
-		}
-	}
+      // Layout the port
+      layoutPictogramElement(boxAnchor);
 
-	/**
-	 * Get the {@link Anchor} created by the feature
-	 * 
-	 * @return the {@link Anchor}, or <code>null</code> if not port was created.
-	 */
-	public Anchor getCreatedAnchor() {
-		return createdAnchor;
-	}
+      // Layout the actor
+      layoutPictogramElement(containerShape);
+      updatePictogramElement(containerShape);
 
-	/**
-	 * Get the {@link Port} created by the feature
-	 * 
-	 * @return the {@link Port}, or <code>null</code> if not port was created.
-	 */
-	public Port getCreatedPort() {
-		return createdPort;
-	}
+      this.hasDoneChanges = true;
+    }
+  }
 
-	/**
-	 * Create a new port for the given actor
-	 * 
-	 * @param portName
-	 *            the name of the new port to create
-	 * @param actor
-	 *            the actor to which we add a port
-	 * @return the new port, or <code>null</code> if something went wrong
-	 */
-	public abstract Port getNewPort(String portName, ExecutableActor actor);
+  /**
+   * Get the {@link Anchor} created by the feature.
+   *
+   * @return the {@link Anchor}, or <code>null</code> if not port was created.
+   */
+  public Anchor getCreatedAnchor() {
+    return this.createdAnchor;
+  }
 
-	/**
-	 * Get the font of the port
-	 * 
-	 * @return the font
-	 */
-	public Font getPortFont() {
-		// Get the GaService
-		IGaService gaService = Graphiti.getGaService();
-		Font font = gaService.manageDefaultFont(getDiagram(), false, false);
+  /**
+   * Get the {@link Port} created by the feature.
+   *
+   * @return the {@link Port}, or <code>null</code> if not port was created.
+   */
+  public Port getCreatedPort() {
+    return this.createdPort;
+  }
 
-		PORT_FONT_HEIGHT = GraphitiUi.getUiLayoutService()
-				.calculateTextSize("Abcq", font).getHeight();
+  /**
+   * Create a new port for the given actor.
+   *
+   * @param portName
+   *          the name of the new port to create
+   * @param actor
+   *          the actor to which we add a port
+   * @return the new port, or <code>null</code> if something went wrong
+   */
+  public abstract Port getNewPort(String portName, ExecutableActor actor);
 
-		return font;
-	}
+  /**
+   * Get the font of the port.
+   *
+   * @return the font
+   */
+  public Font getPortFont() {
+    // Get the GaService
+    final IGaService gaService = Graphiti.getGaService();
+    final Font font = gaService.manageDefaultFont(getDiagram(), false, false);
 
-	/**
-	 * Get the port of the created port
-	 * 
-	 * @return the kind of the port
-	 */
-	public abstract String getPortKind();
+    AbstractAddActorPortFeature.PORT_FONT_HEIGHT = GraphitiUi.getUiLayoutService().calculateTextSize("Abcq", font).getHeight();
 
-	/**
-	 * Retrieve the {@link PortPosition} of the port
-	 * 
-	 * @return the PortPosition
-	 */
-	public abstract PortPosition getPosition();
+    return font;
+  }
 
-	@Override
-	public boolean hasDoneChanges() {
-		return this.hasDoneChanges;
-	}
+  /**
+   * Get the port of the created port.
+   *
+   * @return the kind of the port
+   */
+  public abstract String getPortKind();
+
+  /**
+   * Retrieve the {@link PortPosition} of the port.
+   *
+   * @return the PortPosition
+   */
+  public abstract PortPosition getPosition();
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
+   */
+  @Override
+  public boolean hasDoneChanges() {
+    return this.hasDoneChanges;
+  }
 
 }

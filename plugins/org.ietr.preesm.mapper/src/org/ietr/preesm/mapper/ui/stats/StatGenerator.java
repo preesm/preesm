@@ -41,7 +41,6 @@ package org.ietr.preesm.mapper.ui.stats;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
@@ -61,211 +60,261 @@ import org.ietr.preesm.mapper.model.special.ReceiveVertex;
 import org.ietr.preesm.mapper.model.special.SendVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * Generating the statistics to be displayed in stat editor
- * 
+ * Generating the statistics to be displayed in stat editor.
+ *
  * @author mpelcat
  */
 public class StatGenerator {
 
-	private IAbc abc = null;
+  /** The abc. */
+  private IAbc abc = null;
 
-	private PreesmScenario scenario = null;
-	private Map<String, String> params = null;
-	private long finalTime = 0;
+  /** The scenario. */
+  private PreesmScenario scenario = null;
 
-	public StatGenerator(IAbc abc, PreesmScenario scenario,
-			Map<String, String> params) {
-		super();
-		this.params = params;
-		this.scenario = scenario;
-		if (abc instanceof LatencyAbc) {
-			this.abc = abc;
+  /** The params. */
+  private Map<String, String> params = null;
 
-			this.abc.updateFinalCosts();
-			this.finalTime = ((LatencyAbc) this.abc).getFinalLatency();
-		} else {
-			this.abc = abc;
-			this.abc.updateFinalCosts();
-			this.finalTime = 0;
-		}
-	}
+  /** The final time. */
+  private long finalTime = 0;
 
-	/**
-	 * The span is the shortest possible execution time. It is theoretic because
-	 * no communication time is taken into account. We consider that we have an
-	 * infinity of cores of main type totally connected with perfect media. The
-	 * span complex because the DAG is not serial-parallel but can be any DAG.
-	 * It is retrieved from the DAG if it was set from the infinite homogeneous
-	 * simulation. If there was no such simulation, the span length can not be
-	 * recalculated because the original DAG without transfers is no more
-	 * available.
-	 */
-	public long getDAGSpanLength() {
-		Object span = abc.getDAG().getPropertyBean()
-				.getValue(SpanLengthCalculator.DAG_SPAN);
-		if (span != null && span instanceof Long) {
-			return (Long) span;
-		}
-		return 0;
-	}
+  /**
+   * Instantiates a new stat generator.
+   *
+   * @param abc
+   *          the abc
+   * @param scenario
+   *          the scenario
+   * @param params
+   *          the params
+   */
+  public StatGenerator(final IAbc abc, final PreesmScenario scenario,
+      final Map<String, String> params) {
+    super();
+    this.params = params;
+    this.scenario = scenario;
+    if (abc instanceof LatencyAbc) {
+      this.abc = abc;
 
-	/**
-	 * The work is the sum of all task lengths excluding vertices added by the
-	 * mapping.
-	 */
-	public long getDAGWorkLength() throws WorkflowException {
+      this.abc.updateFinalCosts();
+      this.finalTime = ((LatencyAbc) this.abc).getFinalLatency();
+    } else {
+      this.abc = abc;
+      this.abc.updateFinalCosts();
+      this.finalTime = 0;
+    }
+  }
 
-		long work = 0;
-		MapperDAG dag = abc.getDAG();
+  /**
+   * The span is the shortest possible execution time. It is theoretic because no communication time
+   * is taken into account. We consider that we have an infinity of cores of main type totally
+   * connected with perfect media. The span complex because the DAG is not serial-parallel but can
+   * be any DAG. It is retrieved from the DAG if it was set from the infinite homogeneous
+   * simulation. If there was no such simulation, the span length can not be recalculated because
+   * the original DAG without transfers is no more available.
+   *
+   * @return the DAG span length
+   */
+  public long getDAGSpanLength() {
+    final Object span = this.abc.getDAG().getPropertyBean().getValue(SpanLengthCalculator.DAG_SPAN);
+    if ((span != null) && (span instanceof Long)) {
+      return (Long) span;
+    }
+    return 0;
+  }
 
-		ComponentInstance mainOp = DesignTools.getComponentInstance(abc
-				.getArchitecture(), scenario.getSimulationManager()
-				.getMainOperatorName());
+  /**
+   * The work is the sum of all task lengths excluding vertices added by the mapping.
+   *
+   * @return the DAG work length
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+  public long getDAGWorkLength() throws WorkflowException {
 
-		for (DAGVertex vertex : dag.vertexSet()) {
-			if (!(vertex instanceof TransferVertex)
-					&& !(vertex instanceof OverheadVertex)
-					&& !(vertex instanceof InvolvementVertex)) {
+    long work = 0;
+    final MapperDAG dag = this.abc.getDAG();
 
-				// Looks for an operator able to execute currentvertex
-				// (preferably
-				// the given operator)
-				ComponentInstance adequateOp = abc.findOperator(
-						(MapperDAGVertex) vertex, mainOp, false);
+    final ComponentInstance mainOp = DesignTools.getComponentInstance(this.abc.getArchitecture(),
+        this.scenario.getSimulationManager().getMainOperatorName());
 
-				work += ((MapperDAGVertex) vertex).getInit()
-						.getTime(adequateOp);
+    for (final DAGVertex vertex : dag.vertexSet()) {
+      if (!(vertex instanceof TransferVertex) && !(vertex instanceof OverheadVertex)
+          && !(vertex instanceof InvolvementVertex)) {
 
-				/*
-				 * PreesmLogger.getLogger().log( Level.INFO, "task " +
-				 * vertex.getName() + " duration " + ((MapperDAGVertex) vertex)
-				 * .getInitialVertexProperty().getTime( adequateOp));
-				 */
-			}
-		}
+        // Looks for an operator able to execute currentvertex
+        // (preferably
+        // the given operator)
+        final ComponentInstance adequateOp = this.abc.findOperator((MapperDAGVertex) vertex, mainOp,
+            false);
 
-		return work;
-	}
+        work += ((MapperDAGVertex) vertex).getInit().getTime(adequateOp);
 
-	/**
-	 * Returns the final time of the current ABC
-	 */
-	public long getResultTime() {
-		if (abc instanceof LatencyAbc) {
-			return ((LatencyAbc) abc).getFinalLatency();
-		} else {
-			return 0l;
-		}
-	}
+        /*
+         * PreesmLogger.getLogger().log( Level.INFO, "task " + vertex.getName() + " duration " +
+         * ((MapperDAGVertex) vertex) .getInitialVertexProperty().getTime( adequateOp));
+         */
+      }
+    }
 
-	/**
-	 * Returns the number of operators in the current architecture that execute
-	 * vertices
-	 */
-	public int getNbUsedOperators() {
-		int nbUsedOperators = 0;
-		for (ComponentInstance o : DesignTools.getOperatorInstances(abc
-				.getArchitecture())) {
-			if (abc.getFinalCost(o) > 0) {
-				nbUsedOperators++;
-			}
-		}
-		return nbUsedOperators;
-	}
+    return work;
+  }
 
-	/**
-	 * Returns the number of operators with main type
-	 */
-	public int getNbMainTypeOperators() {
-		int nbMainTypeOperators = 0;
-		ComponentInstance mainOp = DesignTools.getComponentInstance(abc
-				.getArchitecture(), scenario.getSimulationManager()
-				.getMainOperatorName());
-		nbMainTypeOperators = DesignTools.getInstancesOfComponent(
-				abc.getArchitecture(), mainOp.getComponent()).size();
-		return nbMainTypeOperators;
-	}
+  /**
+   * Returns the final time of the current ABC.
+   *
+   * @return the result time
+   */
+  public long getResultTime() {
+    if (this.abc instanceof LatencyAbc) {
+      return ((LatencyAbc) this.abc).getFinalLatency();
+    } else {
+      return 0L;
+    }
+  }
 
-	/**
-	 * The load is the percentage of a processing resource used for the given
-	 * algorithm
-	 */
-	public long getLoad(ComponentInstance operator) {
+  /**
+   * Returns the number of operators in the current architecture that execute vertices.
+   *
+   * @return the nb used operators
+   */
+  public int getNbUsedOperators() {
+    int nbUsedOperators = 0;
+    for (final ComponentInstance o : DesignTools.getOperatorInstances(this.abc.getArchitecture())) {
+      if (this.abc.getFinalCost(o) > 0) {
+        nbUsedOperators++;
+      }
+    }
+    return nbUsedOperators;
+  }
 
-		if (abc instanceof LatencyAbc) {
-			return ((LatencyAbc) abc).getLoad(operator);
-		} else {
-			return 0l;
-		}
-	}
+  /**
+   * Returns the number of operators with main type.
+   *
+   * @return the nb main type operators
+   */
+  public int getNbMainTypeOperators() {
+    int nbMainTypeOperators = 0;
+    final ComponentInstance mainOp = DesignTools.getComponentInstance(this.abc.getArchitecture(),
+        this.scenario.getSimulationManager().getMainOperatorName());
+    nbMainTypeOperators = DesignTools
+        .getInstancesOfComponent(this.abc.getArchitecture(), mainOp.getComponent()).size();
+    return nbMainTypeOperators;
+  }
 
-	/**
-	 * The memory is the sum of all buffers allocated by the mapping
-	 */
-	public Integer getMem(ComponentInstance operator) {
+  /**
+   * The load is the percentage of a processing resource used for the given algorithm.
+   *
+   * @param operator
+   *          the operator
+   * @return the load
+   */
+  public long getLoad(final ComponentInstance operator) {
 
-		int mem = 0;
+    if (this.abc instanceof LatencyAbc) {
+      return ((LatencyAbc) this.abc).getLoad(operator);
+    } else {
+      return 0L;
+    }
+  }
 
-		if (abc != null) {
+  /**
+   * The memory is the sum of all buffers allocated by the mapping.
+   *
+   * @param operator
+   *          the operator
+   * @return the mem
+   */
+  public Integer getMem(final ComponentInstance operator) {
 
-			for (DAGEdge e : abc.getDAG().edgeSet()) {
-				MapperDAGEdge me = (MapperDAGEdge) e;
-				MapperDAGVertex scr = (MapperDAGVertex) me.getSource();
-				MapperDAGVertex tgt = (MapperDAGVertex) me.getTarget();
-				
-				if(!e.getSource().getPropertyBean().getValue("vertexType").toString().equals("task")
-						|| !e.getTarget().getPropertyBean().getValue("vertexType").toString().equals("task")){
-					// Skip the edge if source or target is not a task
-					continue;
-				}
-					
+    int mem = 0;
 
-				if (!(me instanceof PrecedenceEdge)) {
-					ComponentInstance srcOp = scr
-							
-							.getEffectiveComponent();
-					ComponentInstance tgtOp = tgt
-							
-							.getEffectiveComponent();
+    if (this.abc != null) {
 
-					if (srcOp.getInstanceName().equals(
-							operator.getInstanceName())
-							|| tgtOp.getInstanceName().equals(
-									operator.getInstanceName())) {
-						mem += me.getInit().getDataSize();
-					}
-				}
-			}
-		}
+      for (final DAGEdge e : this.abc.getDAG().edgeSet()) {
+        final MapperDAGEdge me = (MapperDAGEdge) e;
+        final MapperDAGVertex scr = (MapperDAGVertex) me.getSource();
+        final MapperDAGVertex tgt = (MapperDAGVertex) me.getTarget();
 
-		return mem;
+        if (!e.getSource().getPropertyBean().getValue("vertexType").toString().equals("task")
+            || !e.getTarget().getPropertyBean().getValue("vertexType").toString().equals("task")) {
+          // Skip the edge if source or target is not a task
+          continue;
+        }
 
-	}
+        if (!(me instanceof PrecedenceEdge)) {
+          final ComponentInstance srcOp = scr
 
-	public PreesmScenario getScenario() {
-		return scenario;
-	}
+              .getEffectiveComponent();
+          final ComponentInstance tgtOp = tgt
 
-	public Map<String, String> getParams() {
-		return params;
-	}
+              .getEffectiveComponent();
 
-	public long getFinalTime() {
-		return finalTime;
-	}
+          if (srcOp.getInstanceName().equals(operator.getInstanceName())
+              || tgtOp.getInstanceName().equals(operator.getInstanceName())) {
+            mem += me.getInit().getDataSize();
+          }
+        }
+      }
+    }
 
-	public IAbc getAbc() {
-		return abc;
-	}
+    return mem;
 
-	public static void removeSendReceive(MapperDAG localDag) {
+  }
 
-		// Every send and receive vertices are removed
-		Set<DAGVertex> vset = new HashSet<DAGVertex>(localDag.vertexSet());
-		for (DAGVertex v : vset)
-			if (v instanceof SendVertex || v instanceof ReceiveVertex)
-				localDag.removeVertex(v);
+  /**
+   * Gets the scenario.
+   *
+   * @return the scenario
+   */
+  public PreesmScenario getScenario() {
+    return this.scenario;
+  }
 
-	}
+  /**
+   * Gets the params.
+   *
+   * @return the params
+   */
+  public Map<String, String> getParams() {
+    return this.params;
+  }
+
+  /**
+   * Gets the final time.
+   *
+   * @return the final time
+   */
+  public long getFinalTime() {
+    return this.finalTime;
+  }
+
+  /**
+   * Gets the abc.
+   *
+   * @return the abc
+   */
+  public IAbc getAbc() {
+    return this.abc;
+  }
+
+  /**
+   * Removes the send receive.
+   *
+   * @param localDag
+   *          the local dag
+   */
+  public static void removeSendReceive(final MapperDAG localDag) {
+
+    // Every send and receive vertices are removed
+    final Set<DAGVertex> vset = new HashSet<>(localDag.vertexSet());
+    for (final DAGVertex v : vset) {
+      if ((v instanceof SendVertex) || (v instanceof ReceiveVertex)) {
+        localDag.removeVertex(v);
+      }
+    }
+
+  }
 }

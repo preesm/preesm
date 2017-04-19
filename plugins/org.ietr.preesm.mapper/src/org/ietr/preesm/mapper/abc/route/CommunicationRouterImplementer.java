@@ -37,7 +37,6 @@
 package org.ietr.preesm.mapper.abc.route;
 
 import java.util.List;
-
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
@@ -46,37 +45,85 @@ import org.ietr.preesm.mapper.abc.transaction.TransactionManager;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 
+// TODO: Auto-generated Javadoc
 /**
- * Routes a communication and creates the necessary communication vertices
- * 
+ * Routes a communication and creates the necessary communication vertices.
+ *
  * @author mpelcat
  */
 public abstract class CommunicationRouterImplementer {
 
-	private AbstractCommunicationRouter user = null;
+  /** The user. */
+  private AbstractCommunicationRouter user = null;
 
-	public CommunicationRouterImplementer(AbstractCommunicationRouter user) {
-		super();
-		this.user = user;
-	}
+  /**
+   * Instantiates a new communication router implementer.
+   *
+   * @param user
+   *          the user
+   */
+  public CommunicationRouterImplementer(final AbstractCommunicationRouter user) {
+    super();
+    this.user = user;
+  }
 
-	public MapperDAG getImplementation() {
-		return user.getImplementation();
-	}
+  /**
+   * Gets the implementation.
+   *
+   * @return the implementation
+   */
+  public MapperDAG getImplementation() {
+    return this.user.getImplementation();
+  }
 
-	public IEdgeSched getEdgeScheduler() {
-		return user.getEdgeScheduler();
-	}
+  /**
+   * Gets the edge scheduler.
+   *
+   * @return the edge scheduler
+   */
+  public IEdgeSched getEdgeScheduler() {
+    return this.user.getEdgeScheduler();
+  }
 
-	public OrderManager getOrderManager() {
-		return user.getOrderManager();
-	}
+  /**
+   * Gets the order manager.
+   *
+   * @return the order manager
+   */
+  public OrderManager getOrderManager() {
+    return this.user.getOrderManager();
+  }
 
-	public abstract Transaction addVertices(AbstractRouteStep routeStep,
-			MapperDAGEdge edge, TransactionManager transactions, int type,
-			int routeStepIndex, Transaction lastTransaction,
-			List<Object> alreadyCreatedVertices);
+  /**
+   * Adds the vertices.
+   *
+   * @param routeStep
+   *          the route step
+   * @param edge
+   *          the edge
+   * @param transactions
+   *          the transactions
+   * @param type
+   *          the type
+   * @param routeStepIndex
+   *          the route step index
+   * @param lastTransaction
+   *          the last transaction
+   * @param alreadyCreatedVertices
+   *          the already created vertices
+   * @return the transaction
+   */
+  public abstract Transaction addVertices(AbstractRouteStep routeStep, MapperDAGEdge edge,
+      TransactionManager transactions, int type, int routeStepIndex, Transaction lastTransaction,
+      List<Object> alreadyCreatedVertices);
 
-	public abstract void removeVertices(MapperDAGEdge edge,
-			TransactionManager transactions);
+  /**
+   * Removes the vertices.
+   *
+   * @param edge
+   *          the edge
+   * @param transactions
+   *          the transactions
+   */
+  public abstract void removeVertices(MapperDAGEdge edge, TransactionManager transactions);
 }

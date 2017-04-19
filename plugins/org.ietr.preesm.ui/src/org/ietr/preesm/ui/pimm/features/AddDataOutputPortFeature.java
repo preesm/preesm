@@ -49,89 +49,129 @@ import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
+// TODO: Auto-generated Javadoc
 /**
- * Add Feature for {@link DataOutputPort}s
- * 
+ * Add Feature for {@link DataOutputPort}s.
+ *
  * @author kdesnos
  * @author jheulot
- * 
  */
 public class AddDataOutputPortFeature extends AbstractAddActorPortFeature {
 
-	public static final IColorConstant DATA_OUTPUT_PORT_FOREGROUND = AddActorFeature.ACTOR_FOREGROUND;
-	public static final IColorConstant DATA_OUTPUT_PORT_BACKGROUND = new ColorConstant(
-			234, 153, 153);
-	public static final PortPosition DATA_OUTPUT_PORT_POSITION = PortPosition.RIGHT;
-	public static final String DATA_OUTPUT_PORT_KIND = "output";
+  /** The Constant DATA_OUTPUT_PORT_FOREGROUND. */
+  public static final IColorConstant DATA_OUTPUT_PORT_FOREGROUND = AddActorFeature.ACTOR_FOREGROUND;
 
-	/**
-	 * Default constructor
-	 * 
-	 * @param fp
-	 *            the feature provider
-	 */
-	public AddDataOutputPortFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /** The Constant DATA_OUTPUT_PORT_BACKGROUND. */
+  public static final IColorConstant DATA_OUTPUT_PORT_BACKGROUND = new ColorConstant(234, 153, 153);
 
-	@Override
-	public String getName() {
-		return "Add Output Port";
-	}
+  /** The Constant DATA_OUTPUT_PORT_POSITION. */
+  public static final PortPosition DATA_OUTPUT_PORT_POSITION = PortPosition.RIGHT;
 
-	@Override
-	public String getDescription() {
-		return "Add an output port to the Actor";
-	}
+  /** The Constant DATA_OUTPUT_PORT_KIND. */
+  public static final String DATA_OUTPUT_PORT_KIND = "output";
 
-	@Override
-	public PortPosition getPosition() {
-		return DATA_OUTPUT_PORT_POSITION;
-	}
+  /**
+   * Default constructor.
+   *
+   * @param fp
+   *          the feature provider
+   */
+  public AddDataOutputPortFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	@Override
-	public GraphicsAlgorithm addPortGA(GraphicsAlgorithm containerShape) {
-		// Get the GaService
-		IGaService gaService = Graphiti.getGaService();
-		// Create the port GraphicAlcorithm
-		Rectangle rectangle = gaService.createPlainRectangle(containerShape);
-		rectangle.setForeground(manageColor(DATA_OUTPUT_PORT_FOREGROUND));
-		rectangle.setBackground(manageColor(DATA_OUTPUT_PORT_BACKGROUND));
-		rectangle.setLineWidth(1);
-		gaService.setSize(rectangle, PORT_ANCHOR_GA_SIZE, PORT_ANCHOR_GA_SIZE);
-		return rectangle;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#getName()
+   */
+  @Override
+  public String getName() {
+    return "Add Output Port";
+  }
 
-	@Override
-	public GraphicsAlgorithm addPortLabel(GraphicsAlgorithm containerShape,
-			String portName) {
-		// Get the GaService
-		IGaService gaService = Graphiti.getGaService();
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#getDescription()
+   */
+  @Override
+  public String getDescription() {
+    return "Add an output port to the Actor";
+  }
 
-		// Create the text
-		final Text text = gaService.createText(containerShape);
-		text.setValue(portName);
-		text.setFont(getPortFont());
-		text.setForeground(manageColor(PORT_TEXT_FOREGROUND));
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getPosition()
+   */
+  @Override
+  public PortPosition getPosition() {
+    return AddDataOutputPortFeature.DATA_OUTPUT_PORT_POSITION;
+  }
 
-		// Layout the text
-		int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
-		text.setHorizontalAlignment(Orientation.ALIGNMENT_LEFT);
-		gaService.setHeight(text, portFontHeight);
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#addPortGA(org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm)
+   */
+  @Override
+  public GraphicsAlgorithm addPortGA(final GraphicsAlgorithm containerShape) {
+    // Get the GaService
+    final IGaService gaService = Graphiti.getGaService();
+    // Create the port GraphicAlcorithm
+    final Rectangle rectangle = gaService.createPlainRectangle(containerShape);
+    rectangle.setForeground(manageColor(AddDataOutputPortFeature.DATA_OUTPUT_PORT_FOREGROUND));
+    rectangle.setBackground(manageColor(AddDataOutputPortFeature.DATA_OUTPUT_PORT_BACKGROUND));
+    rectangle.setLineWidth(1);
+    gaService.setSize(rectangle, AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE, AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE);
+    return rectangle;
+  }
 
-		return text;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#addPortLabel(org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm, java.lang.String)
+   */
+  @Override
+  public GraphicsAlgorithm addPortLabel(final GraphicsAlgorithm containerShape, final String portName) {
+    // Get the GaService
+    final IGaService gaService = Graphiti.getGaService();
 
-	@Override
-	public Port getNewPort(String portName, ExecutableActor actor) {
-		DataOutputPort newPort = PiMMFactory.eINSTANCE.createDataOutputPort();
-		newPort.setName(portName);
-		actor.getDataOutputPorts().add(newPort);
-		return newPort;
-	}
+    // Create the text
+    final Text text = gaService.createText(containerShape);
+    text.setValue(portName);
+    text.setFont(getPortFont());
+    text.setForeground(manageColor(AbstractAddActorPortFeature.PORT_TEXT_FOREGROUND));
 
-	@Override
-	public String getPortKind() {
-		return DATA_OUTPUT_PORT_KIND;
-	}
+    // Layout the text
+    final int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
+    text.setHorizontalAlignment(Orientation.ALIGNMENT_LEFT);
+    gaService.setHeight(text, portFontHeight);
+
+    return text;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getNewPort(java.lang.String, org.ietr.preesm.experiment.model.pimm.ExecutableActor)
+   */
+  @Override
+  public Port getNewPort(final String portName, final ExecutableActor actor) {
+    final DataOutputPort newPort = PiMMFactory.eINSTANCE.createDataOutputPort();
+    newPort.setName(portName);
+    actor.getDataOutputPorts().add(newPort);
+    return newPort;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getPortKind()
+   */
+  @Override
+  public String getPortKind() {
+    return AddDataOutputPortFeature.DATA_OUTPUT_PORT_KIND;
+  }
 }

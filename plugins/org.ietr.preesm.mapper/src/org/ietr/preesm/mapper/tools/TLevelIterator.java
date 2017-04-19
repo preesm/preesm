@@ -39,35 +39,53 @@ package org.ietr.preesm.mapper.tools;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * Iterates the graph in ascending or descending TLevel order
- * 
+ * Iterates the graph in ascending or descending TLevel order.
+ *
  * @author mpelcat
  */
 public class TLevelIterator extends ImplementationIterator {
 
-	public TLevelIterator(MapperDAG dag, boolean directOrder) {
-		super(null, dag, directOrder);
-	}
+  /**
+   * Instantiates a new t level iterator.
+   *
+   * @param dag
+   *          the dag
+   * @param directOrder
+   *          the direct order
+   */
+  public TLevelIterator(final MapperDAG dag, final boolean directOrder) {
+    super(null, dag, directOrder);
+  }
 
-	@Override
-	public int compare(MapperDAGVertex arg0, MapperDAGVertex arg1) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.tools.ImplementationIterator#compare(org.ietr.preesm.mapper.model.
+   * MapperDAGVertex, org.ietr.preesm.mapper.model.MapperDAGVertex)
+   */
+  @Override
+  public int compare(final MapperDAGVertex arg0, final MapperDAGVertex arg1) {
 
-		long tLevelDifference = (arg0.getTiming().getTLevel() - arg1
-				.getTiming().getTLevel());
+    long tLevelDifference = (arg0.getTiming().getTLevel() - arg1.getTiming().getTLevel());
 
-		if (!directOrder)
-			tLevelDifference = -tLevelDifference;
+    if (!this.directOrder) {
+      tLevelDifference = -tLevelDifference;
+    }
 
-		if (tLevelDifference == 0) {
-			tLevelDifference = arg0.getName().compareTo(arg1.getName());
-		}
+    if (tLevelDifference == 0) {
+      tLevelDifference = arg0.getName().compareTo(arg1.getName());
+    }
 
-		// Preventing overflows in conversion from long to int
-		if(tLevelDifference >= 0) tLevelDifference = 1;
-		else tLevelDifference = -1;
-		
-		return (int) tLevelDifference;
-	}
+    // Preventing overflows in conversion from long to int
+    if (tLevelDifference >= 0) {
+      tLevelDifference = 1;
+    } else {
+      tLevelDifference = -1;
+    }
+
+    return (int) tLevelDifference;
+  }
 
 }

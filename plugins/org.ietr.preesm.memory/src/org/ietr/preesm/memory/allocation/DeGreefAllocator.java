@@ -41,234 +41,287 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * In this class, an adapted version of the placement algorithm presented in <a
- * href=
- * "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.47.3832&rep=rep1&type=pdf"
- * >this paper</a> is implemented.
- * 
+ * In this class, an adapted version of the placement algorithm presented in
+ * <a href= "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.47.3832&rep=rep1&type=pdf" >this paper</a> is implemented.
+ *
  * @author kdesnos
- * 
+ *
  */
 public class DeGreefAllocator extends MemoryAllocator {
 
-	/**
-	 * Constructor of the allocator
-	 * 
-	 * @param memEx
-	 *            The exclusion graph whose vertices are to allocate
-	 */
-	public DeGreefAllocator(MemoryExclusionGraph memEx) {
-		super(memEx);
-	}
+  /**
+   * Constructor of the allocator.
+   *
+   * @param memEx
+   *          The exclusion graph whose vertices are to allocate
+   */
+  public DeGreefAllocator(final MemoryExclusionGraph memEx) {
+    super(memEx);
+  }
 
-	@Override
-	public void allocate() {
-		// clear all previous allocation
-		clear();
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.memory.allocation.MemoryAllocator#allocate()
+   */
+  @Override
+  public void allocate() {
+    // clear all previous allocation
+    clear();
 
-		ArrayList<IntegerAndVertex> nonAllocatedVertices;
-		nonAllocatedVertices = new ArrayList<IntegerAndVertex>();
-		for (MemoryExclusionVertex vertex : inputExclusionGraph.vertexSet()) {
-			nonAllocatedVertices.add(new IntegerAndVertex(0, vertex));
-		}
+    ArrayList<IntegerAndVertex> nonAllocatedVertices;
+    nonAllocatedVertices = new ArrayList<>();
+    for (final MemoryExclusionVertex vertex : this.inputExclusionGraph.vertexSet()) {
+      nonAllocatedVertices.add(new IntegerAndVertex(0, vertex));
+    }
 
-		Collections.sort(nonAllocatedVertices);
+    Collections.sort(nonAllocatedVertices);
 
-		while (!nonAllocatedVertices.isEmpty()) {
-			IntegerAndVertex currentPair = nonAllocatedVertices.remove(0);
-			int offset = currentPair.getFirst();
-			MemoryExclusionVertex vertex = currentPair.getSecond();
-			// The rest of the code could be simpler, as was done before
-			// revision 123, but it would be slower too.
+    while (!nonAllocatedVertices.isEmpty()) {
+      final IntegerAndVertex currentPair = nonAllocatedVertices.remove(0);
+      final int offset = currentPair.getFirst();
+      final MemoryExclusionVertex vertex = currentPair.getSecond();
+      // The rest of the code could be simpler, as was done before
+      // revision 123, but it would be slower too.
 
-			// Get vertex neighbors
-			HashSet<MemoryExclusionVertex> neighbors = inputExclusionGraph
-					.getAdjacentVertexOf(vertex);
+      // Get vertex neighbors
+      final HashSet<MemoryExclusionVertex> neighbors = this.inputExclusionGraph.getAdjacentVertexOf(vertex);
 
-			// Construct two lists that contains the exclusion ranges in memory
-			ArrayList<Integer> excludeFrom = new ArrayList<Integer>();
-			ArrayList<Integer> excludeTo = new ArrayList<Integer>();
-			for (MemoryExclusionVertex neighbor : neighbors) {
-				if (memExNodeAllocation.containsKey(neighbor)) {
-					int neighborOffset = memExNodeAllocation.get(neighbor);
-					excludeFrom.add(neighborOffset);
-					excludeTo.add(neighborOffset + neighbor.getWeight());
-				}
-			}
+      // Construct two lists that contains the exclusion ranges in memory
+      final ArrayList<Integer> excludeFrom = new ArrayList<>();
+      final ArrayList<Integer> excludeTo = new ArrayList<>();
+      for (final MemoryExclusionVertex neighbor : neighbors) {
+        if (this.memExNodeAllocation.containsKey(neighbor)) {
+          final int neighborOffset = this.memExNodeAllocation.get(neighbor);
+          excludeFrom.add(neighborOffset);
+          excludeTo.add(neighborOffset + neighbor.getWeight());
+        }
+      }
 
-			Collections.sort(excludeFrom);
-			Collections.sort(excludeTo);
+      Collections.sort(excludeFrom);
+      Collections.sort(excludeTo);
 
-			int newOffset = -1;
-			int freeFrom = 0; // Where the last exclusion ended
+      int newOffset = -1;
+      int freeFrom = 0; // Where the last exclusion ended
 
-			// Alignment constraint
-			int align = -1;
-			Integer typeSize = (Integer) vertex.getPropertyBean().getValue(
-					MemoryExclusionVertex.TYPE_SIZE, Integer.class);
-			if (alignment == 0) {
-				align = typeSize;
-			} else if (alignment > 0) {
-				align = lcm(typeSize, alignment);
-			}
+      // Alignment constraint
+      int align = -1;
+      final Integer typeSize = (Integer) vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE, Integer.class);
+      if (this.alignment == 0) {
+        align = typeSize;
+      } else if (this.alignment > 0) {
+        align = MemoryAllocator.lcm(typeSize, this.alignment);
+      }
 
-			// Look for first fit only if there are exclusions. Else, simply
-			// keep the 0 offset.
-			if (!excludeFrom.isEmpty()) {
-				// Look for the first free spaces between the exclusion ranges.
-				Iterator<Integer> iterFrom = excludeFrom.iterator();
-				Iterator<Integer> iterTo = excludeTo.iterator();
-				int from = iterFrom.next();
-				int to = iterTo.next();
-				// Number of from encountered minus number of to encountered. If
-				// this value is 0, the space between the last "to" and the next
-				// "from" is free !
-				int nbExcludeFrom = 0;
+      // Look for first fit only if there are exclusions. Else, simply
+      // keep the 0 offset.
+      if (!excludeFrom.isEmpty()) {
+        // Look for the first free spaces between the exclusion ranges.
+        final Iterator<Integer> iterFrom = excludeFrom.iterator();
+        final Iterator<Integer> iterTo = excludeTo.iterator();
+        int from = iterFrom.next();
+        int to = iterTo.next();
+        // Number of from encountered minus number of to encountered. If
+        // this value is 0, the space between the last "to" and the next
+        // "from" is free !
+        int nbExcludeFrom = 0;
 
-				boolean lastFromTreated = false;
-				boolean lastToTreated = false;
+        boolean lastFromTreated = false;
+        boolean lastToTreated = false;
 
-				// Iterate over the excludeFrom and excludeTo lists
-				while (!lastToTreated && newOffset == -1) {
-					if (from <= to) {
-						// If this is the end of a free space with an offset
-						// greater or equal to offset
-						if (nbExcludeFrom == 0 && freeFrom >= offset) {
-							// This is the end of a free space. check if the
-							// current element fits here ?
-							int freeSpaceSize = from - freeFrom;
+        // Iterate over the excludeFrom and excludeTo lists
+        while (!lastToTreated && (newOffset == -1)) {
+          if (from <= to) {
+            // If this is the end of a free space with an offset
+            // greater or equal to offset
+            if ((nbExcludeFrom == 0) && (freeFrom >= offset)) {
+              // This is the end of a free space. check if the
+              // current element fits here ?
+              final int freeSpaceSize = from - freeFrom;
 
-							// If the element fits in the space
-							if (vertex.getWeight() <= freeSpaceSize) {
-								newOffset = freeFrom;
-							}
-						}
-						if (iterFrom.hasNext()) {
-							from = iterFrom.next();
-							nbExcludeFrom++;
-						} else {
-							if (!lastFromTreated) {
-								lastFromTreated = true;
-								// Add a from to avoid considering the end of
-								// lastTo as a free space
-								nbExcludeFrom++;
-							}
-						}
-					}
+              // If the element fits in the space
+              if (vertex.getWeight() <= freeSpaceSize) {
+                newOffset = freeFrom;
+              }
+            }
+            if (iterFrom.hasNext()) {
+              from = iterFrom.next();
+              nbExcludeFrom++;
+            } else {
+              if (!lastFromTreated) {
+                lastFromTreated = true;
+                // Add a from to avoid considering the end of
+                // lastTo as a free space
+                nbExcludeFrom++;
+              }
+            }
+          }
 
-					if ((to < from) || !iterFrom.hasNext()) {
-						nbExcludeFrom--;
-						if (nbExcludeFrom == 0) {
-							// This is the beginning of a free space !
-							freeFrom = to;
-							// Correct the from if an alignment is needed
-							if (align > -1) {
-								freeFrom += ((freeFrom % align) == 0) ? 0
-										: align - (freeFrom % align);
-							}
-						}
+          if ((to < from) || !iterFrom.hasNext()) {
+            nbExcludeFrom--;
+            if (nbExcludeFrom == 0) {
+              // This is the beginning of a free space !
+              freeFrom = to;
+              // Correct the from if an alignment is needed
+              if (align > -1) {
+                freeFrom += ((freeFrom % align) == 0) ? 0 : align - (freeFrom % align);
+              }
+            }
 
-						if (iterTo.hasNext()) {
-							to = iterTo.next();
-						} else {
-							lastToTreated = true;
-						}
-					}
-				}
-			}
+            if (iterTo.hasNext()) {
+              to = iterTo.next();
+            } else {
+              lastToTreated = true;
+            }
+          }
+        }
+      }
 
-			// If no free space was found between excluding elements
-			if (newOffset <= -1) {
-				// Put it right after the last element of the list
-				newOffset = freeFrom;
-			}
+      // If no free space was found between excluding elements
+      if (newOffset <= -1) {
+        // Put it right after the last element of the list
+        newOffset = freeFrom;
+      }
 
-			// If the offset was not valid
-			if (newOffset != offset) {
-				nonAllocatedVertices
-						.add(new IntegerAndVertex(newOffset, vertex));
-				Collections.sort(nonAllocatedVertices);
-			} else {
-				allocateMemoryObject(vertex, offset);
-			}
-		}
-	}
+      // If the offset was not valid
+      if (newOffset != offset) {
+        nonAllocatedVertices.add(new IntegerAndVertex(newOffset, vertex));
+        Collections.sort(nonAllocatedVertices);
+      } else {
+        allocateMemoryObject(vertex, offset);
+      }
+    }
+  }
 
-	protected class IntegerAndVertex implements Comparable<IntegerAndVertex> {
-		private Integer first;
-		private MemoryExclusionVertex second;
+  /**
+   * The Class IntegerAndVertex.
+   */
+  protected class IntegerAndVertex implements Comparable<IntegerAndVertex> {
 
-		public IntegerAndVertex(Integer first, MemoryExclusionVertex second) {
-			super();
-			this.first = first;
-			this.second = second;
-		}
+    /** The first. */
+    private Integer first;
 
-		@Override
-		public int hashCode() {
-			int hashFirst = first != null ? first.hashCode() : 0;
-			int hashSecond = second != null ? second.hashCode() : 0;
+    /** The second. */
+    private MemoryExclusionVertex second;
 
-			return (hashFirst + hashSecond) * hashSecond + hashFirst;
-		}
+    /**
+     * Instantiates a new integer and vertex.
+     *
+     * @param first
+     *          the first
+     * @param second
+     *          the second
+     */
+    public IntegerAndVertex(final Integer first, final MemoryExclusionVertex second) {
+      super();
+      this.first = first;
+      this.second = second;
+    }
 
-		@Override
-		public boolean equals(Object other) {
-			if (other instanceof IntegerAndVertex) {
-				IntegerAndVertex otherPair = (IntegerAndVertex) other;
-				return ((this.first == otherPair.first || (this.first != null
-						&& otherPair.first != null && this.first
-							.equals(otherPair.first))) && (this.second == otherPair.second || (this.second != null
-						&& otherPair.second != null && this.second
-							.equals(otherPair.second))));
-			}
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+      final int hashFirst = this.first != null ? this.first.hashCode() : 0;
+      final int hashSecond = this.second != null ? this.second.hashCode() : 0;
 
-			return false;
-		}
+      return ((hashFirst + hashSecond) * hashSecond) + hashFirst;
+    }
 
-		@Override
-		public String toString() {
-			return "(" + first + ", " + second + ")";
-		}
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(final Object other) {
+      if (other instanceof IntegerAndVertex) {
+        final IntegerAndVertex otherPair = (IntegerAndVertex) other;
+        return (((this.first == otherPair.first) || ((this.first != null) && (otherPair.first != null) && this.first.equals(otherPair.first)))
+            && ((this.second == otherPair.second) || ((this.second != null) && (otherPair.second != null) && this.second.equals(otherPair.second))));
+      }
 
-		public Integer getFirst() {
-			return first;
-		}
+      return false;
+    }
 
-		public void setFirst(Integer first) {
-			this.first = first;
-		}
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+      return "(" + this.first + ", " + this.second + ")";
+    }
 
-		public MemoryExclusionVertex getSecond() {
-			return second;
-		}
+    /**
+     * Gets the first.
+     *
+     * @return the first
+     */
+    public Integer getFirst() {
+      return this.first;
+    }
 
-		public void setSecond(MemoryExclusionVertex second) {
-			this.second = second;
-		}
+    /**
+     * Sets the first.
+     *
+     * @param first
+     *          the new first
+     */
+    public void setFirst(final Integer first) {
+      this.first = first;
+    }
 
-		@Override
-		public int compareTo(IntegerAndVertex o) {
-			// If the offsets are different, use them as a comparison
-			if (first.compareTo(o.first) != 0) {
-				return first.compareTo(o.first);
-			}
+    /**
+     * Gets the second.
+     *
+     * @return the second
+     */
+    public MemoryExclusionVertex getSecond() {
+      return this.second;
+    }
 
-			// Else, compare the vertices
-			if (second.compareTo(o.second) != 0) {
-				return second.compareTo(o.second);
-			}
+    /**
+     * Sets the second.
+     *
+     * @param second
+     *          the new second
+     */
+    public void setSecond(final MemoryExclusionVertex second) {
+      this.second = second;
+    }
 
-			// If the vertices weight and the offsets are equal, compare the
-			// number of exclusion
-			int nbExclusion = inputExclusionGraph.edgesOf(second).size();
-			int nbExclusionO = inputExclusionGraph.edgesOf(o.second).size();
-			return nbExclusion - nbExclusionO;
-		}
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(final IntegerAndVertex o) {
+      // If the offsets are different, use them as a comparison
+      if (this.first.compareTo(o.first) != 0) {
+        return this.first.compareTo(o.first);
+      }
+
+      // Else, compare the vertices
+      if (this.second.compareTo(o.second) != 0) {
+        return this.second.compareTo(o.second);
+      }
+
+      // If the vertices weight and the offsets are equal, compare the
+      // number of exclusion
+      final int nbExclusion = DeGreefAllocator.this.inputExclusionGraph.edgesOf(this.second).size();
+      final int nbExclusionO = DeGreefAllocator.this.inputExclusionGraph.edgesOf(o.second).size();
+      return nbExclusion - nbExclusionO;
+    }
+  }
 }

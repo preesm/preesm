@@ -40,41 +40,49 @@ package org.ietr.preesm.ui.scenario.editor;
 
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
-
 import jxl.write.WritableSheet;
 import jxl.write.biff.RowsExceededException;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.events.SelectionListener;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 
+// TODO: Auto-generated Javadoc
 /**
- * Abstract class, must be implementing when exporting
- * Timings, or variables into an excel sheet
- * @author kdesnos
+ * Abstract class, must be implementing when exporting Timings, or variables into an excel sheet.
  *
+ * @author kdesnos
  */
-public abstract class ExcelWriter implements SelectionListener  {
+public abstract class ExcelWriter implements SelectionListener {
 
-	public ExcelWriter() {
-		super();
-	}
+  /**
+   * Instantiates a new excel writer.
+   */
+  public ExcelWriter() {
+    super();
+  }
 
-	/**
-	 * Add timing cells to the newly created file
-	 * 
-	 * @throws IOException
-	 */
-	public abstract void write(OutputStream os);
-	
-	/**
-	 * Add cells to the created excel sheet
-	 * @param sheet
-	 * @throws FileNotFoundException 
-	 * @throws InvalidModelException 
-	 * @throws RowsExceededException 
-	 * @throws CoreException 
-	 */
-	protected abstract void addCells(WritableSheet sheet) throws InvalidModelException, FileNotFoundException, RowsExceededException, CoreException;
+  /**
+   * Add timing cells to the newly created file.
+   *
+   * @param os
+   *          the os
+   */
+  public abstract void write(OutputStream os);
+
+  /**
+   * Add cells to the created excel sheet.
+   *
+   * @param sheet
+   *          the sheet
+   * @throws InvalidModelException
+   *           the invalid model exception
+   * @throws FileNotFoundException
+   *           the file not found exception
+   * @throws RowsExceededException
+   *           the rows exceeded exception
+   * @throws CoreException
+   *           the core exception
+   */
+  protected abstract void addCells(WritableSheet sheet) throws InvalidModelException, FileNotFoundException, RowsExceededException, CoreException;
 
 }

@@ -41,86 +41,107 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * Property that corresponds to a group of vertices
- * 
+ * Property that corresponds to a group of vertices.
+ *
  * @author mpelcat
  */
-abstract public class GroupProperty implements Cloneable {
+public abstract class GroupProperty implements Cloneable {
 
-	/**
-	 * IDs of the vertices that share the property
-	 */
-	private Set<String> vertexIDs;
+  /** IDs of the vertices that share the property. */
+  private final Set<String> vertexIDs;
 
-	public GroupProperty() {
-		vertexIDs = new HashSet<String>();
-	}
+  /**
+   * Instantiates a new group property.
+   */
+  public GroupProperty() {
+    this.vertexIDs = new HashSet<>();
+  }
 
-	/**
-	 * Duplicating the group property
-	 */
-	@Override
-	protected Object clone() {
-		GroupProperty newProp = null;
-		try {
-			newProp = (GroupProperty) super.clone();
-			newProp.vertexIDs.addAll(vertexIDs);
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
-		return newProp;
-	}
+  /**
+   * Duplicating the group property.
+   *
+   * @return the object
+   */
+  @Override
+  protected Object clone() {
+    GroupProperty newProp = null;
+    try {
+      newProp = (GroupProperty) super.clone();
+      newProp.vertexIDs.addAll(this.vertexIDs);
+    } catch (final CloneNotSupportedException e) {
+      e.printStackTrace();
+    }
+    return newProp;
+  }
 
-	/**
-	 * Adding a new member to the group
-	 */
-	public void addVertexID(String id) {
-		for (String i : vertexIDs) {
-			if (i.equals(id)) {
-				return;
-			}
-		}
-		vertexIDs.add(id);
-	}
+  /**
+   * Adding a new member to the group.
+   *
+   * @param id
+   *          the id
+   */
+  public void addVertexID(final String id) {
+    for (final String i : this.vertexIDs) {
+      if (i.equals(id)) {
+        return;
+      }
+    }
+    this.vertexIDs.add(id);
+  }
 
-	/**
-	 * Removing a member from the group
-	 */
-	public void removeVertexID(String id) {
-		Iterator<String> it = vertexIDs.iterator();
-		while (it.hasNext()) {
-			String i = it.next();
-			if (i.equals(id)) {
-				it.remove();
-			}
-		}
-	}
-	/**
-	 * Returns the number of actors sharing the same property
-	 */
-	public int getNumberOfVertices() {
-		return vertexIDs.size();
-	}
-	
-	/**
-	 * Gets the vertices corresponding to the group
-	 */
-	public List<MapperDAGVertex> getVertices(MapperDAG dag) {
-		List<MapperDAGVertex> vertices = new ArrayList<MapperDAGVertex>();
-		for (String id : vertexIDs) {
-			vertices.add((MapperDAGVertex) dag.getVertex(id));
-		}
-		
-		return vertices;
-	}
+  /**
+   * Removing a member from the group.
+   *
+   * @param id
+   *          the id
+   */
+  public void removeVertexID(final String id) {
+    final Iterator<String> it = this.vertexIDs.iterator();
+    while (it.hasNext()) {
+      final String i = it.next();
+      if (i.equals(id)) {
+        it.remove();
+      }
+    }
+  }
 
-	@Override
-	public String toString() {
-		return vertexIDs.toString();
-	}
+  /**
+   * Returns the number of actors sharing the same property.
+   *
+   * @return the number of vertices
+   */
+  public int getNumberOfVertices() {
+    return this.vertexIDs.size();
+  }
+
+  /**
+   * Gets the vertices corresponding to the group.
+   *
+   * @param dag
+   *          the dag
+   * @return the vertices
+   */
+  public List<MapperDAGVertex> getVertices(final MapperDAG dag) {
+    final List<MapperDAGVertex> vertices = new ArrayList<>();
+    for (final String id : this.vertexIDs) {
+      vertices.add((MapperDAGVertex) dag.getVertex(id));
+    }
+
+    return vertices;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return this.vertexIDs.toString();
+  }
 }

@@ -38,7 +38,6 @@
 package org.ietr.preesm.core.architecture.route;
 
 import java.util.List;
-
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.architecture.slam.component.Dma;
@@ -48,143 +47,169 @@ import org.ietr.dftools.architecture.slam.component.impl.MemImpl;
 import org.ietr.dftools.architecture.slam.link.ControlLink;
 import org.ietr.dftools.architecture.slam.link.Link;
 
+// TODO: Auto-generated Javadoc
 /**
- * Depending on the architecture nodes separating two operators, generates a
- * suited route step. The route steps represents one type of connection between
- * two connected operators
- * 
+ * Depending on the architecture nodes separating two operators, generates a suited route step. The route steps represents one type of connection between two
+ * connected operators
+ *
  * @author mpelcat
  */
 public class RouteStepFactory {
 
-	private Design archi = null;
+  /** The archi. */
+  private Design archi = null;
 
-	public RouteStepFactory(Design archi) {
-		super();
-		this.archi = archi;
-	}
+  /**
+   * Instantiates a new route step factory.
+   *
+   * @param archi
+   *          the archi
+   */
+  public RouteStepFactory(final Design archi) {
+    super();
+    this.archi = archi;
+  }
 
-	/**
-	 * Generates the suited route steps from intermediate nodes
-	 */
-	public AbstractRouteStep getRouteStep(ComponentInstance source,
-			List<ComponentInstance> nodes, ComponentInstance target) {
-		AbstractRouteStep step = null;
+  /**
+   * Generates the suited route steps from intermediate nodes.
+   *
+   * @param source
+   *          the source
+   * @param nodes
+   *          the nodes
+   * @param target
+   *          the target
+   * @return the route step
+   */
+  public AbstractRouteStep getRouteStep(final ComponentInstance source, final List<ComponentInstance> nodes, final ComponentInstance target) {
+    AbstractRouteStep step = null;
 
-		Dma dma = getDma(nodes, source);
-		Mem mem = getRam(nodes, source);
-		if (dma != null) {
-			step = new DmaRouteStep(source, nodes, target, dma);
-		} else if (mem != null) {
-			step = new MemRouteStep(source, nodes, target, mem,
-					getRamNodeIndex(nodes));
-		} else {
-			step = new MessageRouteStep(source, nodes, target);
-		}
+    final Dma dma = getDma(nodes, source);
+    final Mem mem = getRam(nodes, source);
+    if (dma != null) {
+      step = new DmaRouteStep(source, nodes, target, dma);
+    } else if (mem != null) {
+      step = new MemRouteStep(source, nodes, target, mem, getRamNodeIndex(nodes));
+    } else {
+      step = new MessageRouteStep(source, nodes, target);
+    }
 
-		return step;
-	}
+    return step;
+  }
 
-	/**
-	 * Gets the dma corresponding to the step if any exists. The Dma must have a
-	 * setup link with the source.
-	 */
-	private Dma getDma(List<ComponentInstance> nodes, ComponentInstance dmaSetup) {
-		ComponentInstance dmaInst = null;
-		for (ComponentInstance node : nodes) {
-			for (Link i : archi.getLinks()) {
-				if (i.getSourceComponentInstance().getInstanceName()
-						.equals(node.getInstanceName())
-						|| i.getDestinationComponentInstance()
-								.getInstanceName()
-								.equals(node.getInstanceName())) {
-					if (i.getSourceComponentInstance().getComponent() instanceof DmaImpl)
-						dmaInst = i.getSourceComponentInstance();
-					if (i.getDestinationComponentInstance().getComponent() instanceof DmaImpl)
-						dmaInst = i.getDestinationComponentInstance();
+  /**
+   * Gets the dma corresponding to the step if any exists. The Dma must have a setup link with the source.
+   *
+   * @param nodes
+   *          the nodes
+   * @param dmaSetup
+   *          the dma setup
+   * @return the dma
+   */
+  private Dma getDma(final List<ComponentInstance> nodes, final ComponentInstance dmaSetup) {
+    ComponentInstance dmaInst = null;
+    for (final ComponentInstance node : nodes) {
+      for (final Link i : this.archi.getLinks()) {
+        if (i.getSourceComponentInstance().getInstanceName().equals(node.getInstanceName())
+            || i.getDestinationComponentInstance().getInstanceName().equals(node.getInstanceName())) {
+          if (i.getSourceComponentInstance().getComponent() instanceof DmaImpl) {
+            dmaInst = i.getSourceComponentInstance();
+          }
+          if (i.getDestinationComponentInstance().getComponent() instanceof DmaImpl) {
+            dmaInst = i.getDestinationComponentInstance();
+          }
 
-					if (dmaInst != null) {
-						if (existSetup(dmaInst, dmaSetup)) {
-							return (Dma) dmaInst.getComponent();
-						}
-					}
-				}
-			}
-		}
-		return null;
-	}
+          if (dmaInst != null) {
+            if (existSetup(dmaInst, dmaSetup)) {
+              return (Dma) dmaInst.getComponent();
+            }
+          }
+        }
+      }
+    }
+    return null;
+  }
 
-	/**
-	 * Gets the ram corresponding to the step if any exists. The ram must have a
-	 * setup link with the source.
-	 */
-	private Mem getRam(List<ComponentInstance> nodes, ComponentInstance ramSetup) {
-		ComponentInstance ramInst = null;
-		for (ComponentInstance node : nodes) {
-			for (Link i : archi.getLinks()) {
-				if (i.getSourceComponentInstance().getInstanceName()
-						.equals(node.getInstanceName())
-						|| i.getDestinationComponentInstance()
-								.getInstanceName()
-								.equals(node.getInstanceName())) {
-					if (i.getSourceComponentInstance().getComponent() instanceof MemImpl)
-						ramInst = i.getSourceComponentInstance();
-					if (i.getDestinationComponentInstance().getComponent() instanceof MemImpl)
-						ramInst = i.getDestinationComponentInstance();
+  /**
+   * Gets the ram corresponding to the step if any exists. The ram must have a setup link with the source.
+   *
+   * @param nodes
+   *          the nodes
+   * @param ramSetup
+   *          the ram setup
+   * @return the ram
+   */
+  private Mem getRam(final List<ComponentInstance> nodes, final ComponentInstance ramSetup) {
+    ComponentInstance ramInst = null;
+    for (final ComponentInstance node : nodes) {
+      for (final Link i : this.archi.getLinks()) {
+        if (i.getSourceComponentInstance().getInstanceName().equals(node.getInstanceName())
+            || i.getDestinationComponentInstance().getInstanceName().equals(node.getInstanceName())) {
+          if (i.getSourceComponentInstance().getComponent() instanceof MemImpl) {
+            ramInst = i.getSourceComponentInstance();
+          }
+          if (i.getDestinationComponentInstance().getComponent() instanceof MemImpl) {
+            ramInst = i.getDestinationComponentInstance();
+          }
 
-					if (ramInst != null) {
-						if (existSetup(ramInst, ramSetup)) {
-							return (Mem) ramInst.getComponent();
-						}
-					}
-				}
-			}
-		}
-		return null;
-	}
+          if (ramInst != null) {
+            if (existSetup(ramInst, ramSetup)) {
+              return (Mem) ramInst.getComponent();
+            }
+          }
+        }
+      }
+    }
+    return null;
+  }
 
-	/**
-	 * Gets the ram corresponding to the step if any exists. The ram must have a
-	 * setup link with the source.
-	 */
-	private int getRamNodeIndex(List<ComponentInstance> nodes) {
-		ComponentInstance ramInst = null;
-		for (ComponentInstance node : nodes) {
-			for (Link i : archi.getLinks()) {
-				if (i.getSourceComponentInstance().getInstanceName()
-						.equals(node.getInstanceName())
-						|| i.getDestinationComponentInstance()
-								.getInstanceName()
-								.equals(node.getInstanceName())) {
-					if (i.getSourceComponentInstance().getComponent() instanceof MemImpl)
-						ramInst = i.getSourceComponentInstance();
-					if (i.getDestinationComponentInstance().getComponent() instanceof MemImpl)
-						ramInst = i.getDestinationComponentInstance();
+  /**
+   * Gets the ram corresponding to the step if any exists. The ram must have a setup link with the source.
+   *
+   * @param nodes
+   *          the nodes
+   * @return the ram node index
+   */
+  private int getRamNodeIndex(final List<ComponentInstance> nodes) {
+    ComponentInstance ramInst = null;
+    for (final ComponentInstance node : nodes) {
+      for (final Link i : this.archi.getLinks()) {
+        if (i.getSourceComponentInstance().getInstanceName().equals(node.getInstanceName())
+            || i.getDestinationComponentInstance().getInstanceName().equals(node.getInstanceName())) {
+          if (i.getSourceComponentInstance().getComponent() instanceof MemImpl) {
+            ramInst = i.getSourceComponentInstance();
+          }
+          if (i.getDestinationComponentInstance().getComponent() instanceof MemImpl) {
+            ramInst = i.getDestinationComponentInstance();
+          }
 
-					if (ramInst != null) {
-						return nodes.indexOf(node);
-					}
-				}
-			}
-		}
-		return -1;
-	}
+          if (ramInst != null) {
+            return nodes.indexOf(node);
+          }
+        }
+      }
+    }
+    return -1;
+  }
 
-	/**
-	 * Checks if a setup link exists between cmp and operator
-	 */
-	private boolean existSetup(ComponentInstance cmp, ComponentInstance op) {
+  /**
+   * Checks if a setup link exists between cmp and operator.
+   *
+   * @param cmp
+   *          the cmp
+   * @param op
+   *          the op
+   * @return true, if successful
+   */
+  private boolean existSetup(final ComponentInstance cmp, final ComponentInstance op) {
 
-		for (Link i : archi.getLinks()) {
-			if (i.getSourceComponentInstance().getInstanceName()
-					.equals(op.getInstanceName())
-					&& i.getDestinationComponentInstance().getInstanceName()
-							.equals(cmp.getInstanceName())
-					&& (i instanceof ControlLink)) {
-				return true;
-			}
-		}
+    for (final Link i : this.archi.getLinks()) {
+      if (i.getSourceComponentInstance().getInstanceName().equals(op.getInstanceName())
+          && i.getDestinationComponentInstance().getInstanceName().equals(cmp.getInstanceName()) && (i instanceof ControlLink)) {
+        return true;
+      }
+    }
 
-		return false;
-	}
+    return false;
+  }
 }

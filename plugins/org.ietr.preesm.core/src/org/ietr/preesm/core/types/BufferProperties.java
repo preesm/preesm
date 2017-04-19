@@ -36,54 +36,88 @@
 
 package org.ietr.preesm.core.types;
 
-
+// TODO: Auto-generated Javadoc
 /**
- * Objects used to tag the DAG edges. The buffer couple definition is
- * transmitted to the code generation. One buffer is created for the source and
- * one for the destination.
- * 
+ * Objects used to tag the DAG edges. The buffer couple definition is transmitted to the code generation. One buffer is created for the source and one for the
+ * destination.
+ *
  * @author mpelcat
- * 
+ *
  */
 public class BufferProperties {
 
-	private DataType dataType;
+  /** The data type. */
+  private final DataType dataType;
 
-	private String destInputPortID;
+  /** The dest input port ID. */
+  private final String destInputPortID;
 
-	private int size;
+  /** The size. */
+  private final int size;
 
-	private String sourceOutputPortID;
+  /** The source output port ID. */
+  private final String sourceOutputPortID;
 
-	public BufferProperties(DataType dataType, String sourceOutputPortID,
-			String destInputPortID, int size) {
-		super();
-		this.dataType = dataType;
-		this.destInputPortID = destInputPortID;
-		this.size = size;
-		this.sourceOutputPortID = sourceOutputPortID;
-	}
+  /**
+   * Instantiates a new buffer properties.
+   *
+   * @param dataType
+   *          the data type
+   * @param sourceOutputPortID
+   *          the source output port ID
+   * @param destInputPortID
+   *          the dest input port ID
+   * @param size
+   *          the size
+   */
+  public BufferProperties(final DataType dataType, final String sourceOutputPortID, final String destInputPortID, final int size) {
+    super();
+    this.dataType = dataType;
+    this.destInputPortID = destInputPortID;
+    this.size = size;
+    this.sourceOutputPortID = sourceOutputPortID;
+  }
 
-	public String getDataType() {
-		String typeName = "";
-		if (dataType == null) {
-			typeName = "typeNotFound";
-		} else {
-			typeName = dataType.getTypeName();
-		}
-		return typeName;
-	}
+  /**
+   * Gets the data type.
+   *
+   * @return the data type
+   */
+  public String getDataType() {
+    String typeName = "";
+    if (this.dataType == null) {
+      typeName = "typeNotFound";
+    } else {
+      typeName = this.dataType.getTypeName();
+    }
+    return typeName;
+  }
 
-	public String getDestInputPortID() {
-		return destInputPortID;
-	}
+  /**
+   * Gets the dest input port ID.
+   *
+   * @return the dest input port ID
+   */
+  public String getDestInputPortID() {
+    return this.destInputPortID;
+  }
 
-	public int getSize() {
-		return size;
-	}
+  /**
+   * Gets the size.
+   *
+   * @return the size
+   */
+  public int getSize() {
+    return this.size;
+  }
 
-	public String getSourceOutputPortID() {
-		return sourceOutputPortID;
-	}
+  /**
+   * Gets the source output port ID.
+   *
+   * @return the source output port ID
+   */
+  public String getSourceOutputPortID() {
+    return this.sourceOutputPortID;
+  }
 
 }

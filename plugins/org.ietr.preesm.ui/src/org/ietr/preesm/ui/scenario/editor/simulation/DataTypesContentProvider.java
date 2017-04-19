@@ -40,38 +40,54 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
+// TODO: Auto-generated Javadoc
 /**
- * Provides the elements contained in the data types editor
- * 
+ * Provides the elements contained in the data types editor.
+ *
  * @author mpelcat
  */
 public class DataTypesContentProvider implements IStructuredContentProvider {
 
-	Object[] elementTable = null;
+  /** The element table. */
+  Object[] elementTable = null;
 
-	@Override
-	public Object[] getElements(Object inputElement) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
+   */
+  @Override
+  public Object[] getElements(final Object inputElement) {
 
-		if (inputElement instanceof PreesmScenario) {
-			PreesmScenario inputScenario = (PreesmScenario) inputElement;
+    if (inputElement instanceof PreesmScenario) {
+      final PreesmScenario inputScenario = (PreesmScenario) inputElement;
 
-			// Retrieving the data types from the scenario
-			elementTable = inputScenario.getSimulationManager().getDataTypes()
-					.values().toArray();
-		}
-		return elementTable;
-	}
+      // Retrieving the data types from the scenario
+      this.elementTable = inputScenario.getSimulationManager().getDataTypes().values().toArray();
+    }
+    return this.elementTable;
+  }
 
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.IContentProvider#dispose()
+   */
+  @Override
+  public void dispose() {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		// TODO Auto-generated method stub
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
+   */
+  @Override
+  public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
 }

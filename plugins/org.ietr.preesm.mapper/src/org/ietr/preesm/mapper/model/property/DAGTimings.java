@@ -38,50 +38,82 @@ package org.ietr.preesm.mapper.model.property;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * MapperDAG stores mapping properties shared by several of its vertices that
- * are synchronized
- * 
+ * MapperDAG stores mapping properties shared by several of its vertices that are synchronized.
+ *
  * @author mpelcat
  */
 public class DAGTimings {
 
-	Map<String, VertexTiming> timings = null;
+  /** The timings. */
+  Map<String, VertexTiming> timings = null;
 
-	public DAGTimings() {
-		timings = new HashMap<String, VertexTiming>();
-	}
+  /**
+   * Instantiates a new DAG timings.
+   */
+  public DAGTimings() {
+    this.timings = new HashMap<>();
+  }
 
-	public VertexTiming getTiming(String vertexId) {
-		return timings.get(vertexId);
-	}
+  /**
+   * Gets the timing.
+   *
+   * @param vertexId
+   *          the vertex id
+   * @return the timing
+   */
+  public VertexTiming getTiming(final String vertexId) {
+    return this.timings.get(vertexId);
+  }
 
-	/**
-	 * Dedicates a created VertexMapping object to a single vertex
-	 */
-	public void dedicate(MapperDAGVertex vertex) {
-		VertexTiming newTiming = new VertexTiming();
-		put(vertex.getName(), newTiming);
-	}
+  /**
+   * Dedicates a created VertexMapping object to a single vertex.
+   *
+   * @param vertex
+   *          the vertex
+   */
+  public void dedicate(final MapperDAGVertex vertex) {
+    final VertexTiming newTiming = new VertexTiming();
+    put(vertex.getName(), newTiming);
+  }
 
-	private void put(String vertexId, VertexTiming m) {
-		timings.put(vertexId, m);
-		m.addVertexID(vertexId);
-	}
+  /**
+   * Put.
+   *
+   * @param vertexId
+   *          the vertex id
+   * @param m
+   *          the m
+   */
+  private void put(final String vertexId, final VertexTiming m) {
+    this.timings.put(vertexId, m);
+    m.addVertexID(vertexId);
+  }
 
-	public void remove(MapperDAGVertex vertex) {
-		timings.remove(vertex.getName());
-	}
+  /**
+   * Removes the.
+   *
+   * @param vertex
+   *          the vertex
+   */
+  public void remove(final MapperDAGVertex vertex) {
+    this.timings.remove(vertex.getName());
+  }
 
-	@Override
-	public Object clone() {
-		DAGTimings newTimings = new DAGTimings();
-		for (String s : timings.keySet()) {
-			newTimings.put(s, timings.get(s).clone());
-		}
-		return newTimings;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#clone()
+   */
+  @Override
+  public Object clone() {
+    final DAGTimings newTimings = new DAGTimings();
+    for (final String s : this.timings.keySet()) {
+      newTimings.put(s, this.timings.get(s).clone());
+    }
+    return newTimings;
+  }
 }

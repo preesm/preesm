@@ -40,14 +40,23 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.platform.AbstractPropertySectionFilter;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class PiMMFifoFilter.
+ */
 public class PiMMFifoFilter extends AbstractPropertySectionFilter {
 
-	@Override
-	protected boolean accept(PictogramElement pictogramElement) {
-		if (Graphiti.getLinkService()
-				.getBusinessObjectForLinkedPictogramElement(pictogramElement) instanceof Fifo)
-			return true;
-		return false;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.ui.platform.AbstractPropertySectionFilter#accept(org.eclipse.graphiti.mm.pictograms.PictogramElement)
+   */
+  @Override
+  protected boolean accept(final PictogramElement pictogramElement) {
+    if (Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pictogramElement) instanceof Fifo) {
+      return true;
+    }
+    return false;
+  }
 
 }

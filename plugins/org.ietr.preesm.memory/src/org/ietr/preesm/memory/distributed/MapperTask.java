@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
@@ -49,79 +48,99 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
+// TODO: Auto-generated Javadoc
 /**
- * Workflow element taking the architecture a Scheduled DAG and a its
- * corresponding *updated* MemEx as inputs and generates specific MemExes for
- * each memory of the architecture.
- * 
+ * Workflow element taking the architecture a Scheduled DAG and a its corresponding *updated* MemEx as inputs and generates specific MemExes for each memory of
+ * the architecture.
+ *
  * @author kdesnos
- * 
+ *
  */
 public class MapperTask extends AbstractTaskImplementation {
 
-	static final public String PARAM_VERBOSE = "Verbose";
-	static final public String VALUE_VERBOSE_DEFAULT = "? C {True, False}";
-	static final public String VALUE_VERBOSE_TRUE = "True";
-	static final public String VALUE_VERBOSE_FALSE = "False";
+  /** The Constant PARAM_VERBOSE. */
+  public static final String PARAM_VERBOSE = "Verbose";
 
-	static final public String OUTPUT_KEY_MEM_EX = "MemExes";
+  /** The Constant VALUE_VERBOSE_DEFAULT. */
+  public static final String VALUE_VERBOSE_DEFAULT = "? C {True, False}";
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
-			IProgressMonitor monitor, String nodeName, Workflow workflow) throws WorkflowException {
+  /** The Constant VALUE_VERBOSE_TRUE. */
+  public static final String VALUE_VERBOSE_TRUE = "True";
 
-		// Rem: Logger is used to display messages in the console
-		Logger logger = WorkflowLogger.getLogger();
+  /** The Constant VALUE_VERBOSE_FALSE. */
+  public static final String VALUE_VERBOSE_FALSE = "False";
 
-		// Check Workflow element parameters
-		String valueVerbose = parameters.get(PARAM_VERBOSE);
-		boolean verbose;
-		verbose = valueVerbose.equals(VALUE_VERBOSE_TRUE);
+  /** The Constant OUTPUT_KEY_MEM_EX. */
+  public static final String OUTPUT_KEY_MEM_EX = "MemExes";
 
-		String valuePolicy = parameters.get(AbstractMemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY);
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
-		// Retrieve inputs
-		MemoryExclusionGraph memEx = (MemoryExclusionGraph) inputs.get("MemEx");
+    // Rem: Logger is used to display messages in the console
+    final Logger logger = WorkflowLogger.getLogger();
 
-		// Log the distribution policy used
-		if (verbose) {
-			logger.log(Level.INFO, "Filling MemExes Vertices set with " + valuePolicy + " policy");
-		}
+    // Check Workflow element parameters
+    final String valueVerbose = parameters.get(MapperTask.PARAM_VERBOSE);
+    boolean verbose;
+    verbose = valueVerbose.equals(MapperTask.VALUE_VERBOSE_TRUE);
 
-		// Create output
-		Map<String, MemoryExclusionGraph> memExes;
-		memExes = Distributor.distributeMeg(valuePolicy, memEx, -1);
+    final String valuePolicy = parameters.get(AbstractMemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY);
 
-		// Log results
-		if (verbose) {
-			logger.log(Level.INFO, "Created " + memExes.keySet().size() + " MemExes");
-			for (Entry<String, MemoryExclusionGraph> entry : memExes.entrySet()) {
-				double density = entry.getValue().edgeSet().size()
-						/ (entry.getValue().vertexSet().size() * (entry.getValue().vertexSet().size() - 1) / 2.0);
-				logger.log(Level.INFO, "Memex(" + entry.getKey() + "): " + entry.getValue().vertexSet().size()
-						+ " vertices, density=" + density);
-			}
-		}
+    // Retrieve inputs
+    final MemoryExclusionGraph memEx = (MemoryExclusionGraph) inputs.get("MemEx");
 
-		// Output output
-		Map<String, Object> output = new HashMap<String, Object>();
-		output.put(OUTPUT_KEY_MEM_EX, memExes);
-		return output;
-	}
+    // Log the distribution policy used
+    if (verbose) {
+      logger.log(Level.INFO, "Filling MemExes Vertices set with " + valuePolicy + " policy");
+    }
 
+    // Create output
+    Map<String, MemoryExclusionGraph> memExes;
+    memExes = Distributor.distributeMeg(valuePolicy, memEx, -1);
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put(PARAM_VERBOSE, VALUE_VERBOSE_DEFAULT);
-		parameters.put(AbstractMemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY,
-				AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
-		return parameters;
-	}
+    // Log results
+    if (verbose) {
+      logger.log(Level.INFO, "Created " + memExes.keySet().size() + " MemExes");
+      for (final Entry<String, MemoryExclusionGraph> entry : memExes.entrySet()) {
+        final double density = entry.getValue().edgeSet().size() / ((entry.getValue().vertexSet().size() * (entry.getValue().vertexSet().size() - 1)) / 2.0);
+        logger.log(Level.INFO, "Memex(" + entry.getKey() + "): " + entry.getValue().vertexSet().size() + " vertices, density=" + density);
+      }
+    }
 
-	@Override
-	public String monitorMessage() {
-		return "Generating memory specific MemEx";
-	}
+    // Output output
+    final Map<String, Object> output = new HashMap<>();
+    output.put(MapperTask.OUTPUT_KEY_MEM_EX, memExes);
+    return output;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new HashMap<>();
+    parameters.put(MapperTask.PARAM_VERBOSE, MapperTask.VALUE_VERBOSE_DEFAULT);
+    parameters.put(AbstractMemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY, AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
+    return parameters;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Generating memory specific MemEx";
+  }
 
 }

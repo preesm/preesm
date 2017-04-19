@@ -38,6 +38,7 @@ package org.ietr.preesm.ui.pimm.features;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
+import org.eclipse.graphiti.func.ICreate;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -45,67 +46,87 @@ import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class CreateForkActorFeature.
+ */
 public class CreateForkActorFeature extends AbstractCreateFeature {
 
-	private static final String FEATURE_NAME = "Fork Actor";
+  /** The Constant FEATURE_NAME. */
+  private static final String FEATURE_NAME = "Fork Actor";
 
-	private static final String FEATURE_DESCRIPTION = "Create Fork Actor";
+  /** The Constant FEATURE_DESCRIPTION. */
+  private static final String FEATURE_DESCRIPTION = "Create Fork Actor";
 
-	protected Boolean hasDoneChanges;
+  /** The has done changes. */
+  protected Boolean hasDoneChanges;
 
-	/**
-	 * Default constructor
-	 * 
-	 * @param fp
-	 *            the feature provider
-	 */
-	public CreateForkActorFeature(IFeatureProvider fp) {
-		// Set name and description of the creation feature
-		super(fp, FEATURE_NAME, FEATURE_DESCRIPTION);
-		hasDoneChanges = false;
-	}
+  /**
+   * Default constructor.
+   *
+   * @param fp
+   *          the feature provider
+   */
+  public CreateForkActorFeature(final IFeatureProvider fp) {
+    // Set name and description of the creation feature
+    super(fp, CreateForkActorFeature.FEATURE_NAME, CreateForkActorFeature.FEATURE_DESCRIPTION);
+    this.hasDoneChanges = false;
+  }
 
-	@Override
-	public boolean canCreate(ICreateContext context) {
-		return context.getTargetContainer() instanceof Diagram;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.func.ICreate#canCreate(org.eclipse.graphiti.features.context.ICreateContext)
+   */
+  @Override
+  public boolean canCreate(final ICreateContext context) {
+    return context.getTargetContainer() instanceof Diagram;
+  }
 
-	@Override
-	public Object[] create(ICreateContext context) {
-		// Retrieve the graph
-		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.func.ICreate#create(org.eclipse.graphiti.features.context.ICreateContext)
+   */
+  @Override
+  public Object[] create(final ICreateContext context) {
+    // Retrieve the graph
+    final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
 
-		// Ask user for Actor name until a valid name is entered.
-		String question = "Enter new fork actor name";
-		String newActorName = "ForkActorName";
+    // Ask user for Actor name until a valid name is entered.
+    final String question = "Enter new fork actor name";
+    String newActorName = "ForkActorName";
 
-		newActorName = PiMMUtil.askString("Create Fork Actor", question,
-				newActorName, new VertexNameValidator(graph, null));
-		if (newActorName == null || newActorName.trim().length() == 0) {
-			this.hasDoneChanges = false; // If this is not done, the graph is considered modified.
-			return EMPTY;
-		}
+    newActorName = PiMMUtil.askString("Create Fork Actor", question, newActorName, new VertexNameValidator(graph, null));
+    if ((newActorName == null) || (newActorName.trim().length() == 0)) {
+      this.hasDoneChanges = false; // If this is not done, the graph is considered modified.
+      return ICreate.EMPTY;
+    }
 
-		// create Actor
-		ForkActor newActor = PiMMFactory.eINSTANCE.createForkActor();
-		newActor.setName(newActorName);
+    // create Actor
+    final ForkActor newActor = PiMMFactory.eINSTANCE.createForkActor();
+    newActor.setName(newActorName);
 
-		// Add new actor to the graph.
-		if(graph.getVertices().add(newActor))
-		{
-			this.hasDoneChanges = true;
-		}
+    // Add new actor to the graph.
+    if (graph.getVertices().add(newActor)) {
+      this.hasDoneChanges = true;
+    }
 
-		// do the add to the Diagram
-		addGraphicalRepresentation(context, newActor);
+    // do the add to the Diagram
+    addGraphicalRepresentation(context, newActor);
 
-		// return newly created business object(s)
-		return new Object[] { newActor };
-	}
-	
-	@Override
-	public boolean hasDoneChanges() {
-		return this.hasDoneChanges;
-	}
+    // return newly created business object(s)
+    return new Object[] { newActor };
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
+   */
+  @Override
+  public boolean hasDoneChanges() {
+    return this.hasDoneChanges;
+  }
 
 }
