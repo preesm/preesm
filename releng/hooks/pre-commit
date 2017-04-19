@@ -22,8 +22,8 @@ $CONFIG_CHECK_FILE = "checkstyle.checkfile";
 $CONFIG_JAR = "checkstyle.jar";
 $CONFIG_JAVA = "java.command";
 
-$check_file = `git config --get $CONFIG_CHECK_FILE`;
-$checkstyle_jar = `git config --get $CONFIG_JAR`;
+$check_file = "`git rev-parse --show-toplevel`" . "/releng/VAADER_checkstyle.xml";
+$checkstyle_jar = "`git rev-parse --show-toplevel`" . "/releng/hooks/checkstyle-7.6.1-all.jar";
 $java_command = `git config --get $CONFIG_JAVA`;
 
 if (!$check_file || !$checkstyle_jar)
