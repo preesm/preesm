@@ -140,12 +140,6 @@
     <property name="eachLine" value="true"/>
   </module>
   <module name="BeforeExecutionExclusionFileFilter">
-    <property name="fileNamePattern" value="/xtend-gen/"/>
-  </module>
-  <module name="BeforeExecutionExclusionFileFilter">
-    <property name="fileNamePattern" value="/ecore-gen/"/>
-  </module>
-  <module name="BeforeExecutionExclusionFileFilter">
-    <property name="fileNamePattern" value="/src-gen/"/>
+    <property name="fileNamePattern" value="[/\\]((ecore-gen)|(xtend-gen)|(src-gen))[/\\]"/>
   </module>
 </module>
