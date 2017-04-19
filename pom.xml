@@ -43,9 +43,20 @@
 	<properties>
 		<tycho-version>1.0.0</tycho-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- can be changed to a local repo using an URI like file:///path/to/repo
-			Note: plain paths like '/path/to/repo' without file:// will not work -->
 		<complete.p2.repo>http://preesm.sourceforge.net/gensite/update-site/complete/</complete.p2.repo>
+		<!-- ############### -->
+		<!-- ECLIPSE MIRRORS -->
+		<!-- ############### -->
+		<!-- ## Main (mostly down ...) :  -->
+		<!-- http://download.eclipse.org -->
+		<!-- ## Mirrors :  -->
+		<!-- http://ftp.fau.de/eclipse/ -->
+		<!-- http://mirror.ibcp.fr/pub/eclipse/ -->
+		<!-- http://ftp.halifax.rwth-aachen.de/eclipse/ -->
+		<!-- http://eclipse.mirror.wearetriple.com/ -->
+		<!-- http://artfiles.org/eclipse.org/ -->
+		<!-- http://mirror.switch.ch/eclipse/ -->
+		<eclipse.mirror>http://mirror.ibcp.fr/pub/eclipse/</eclipse.mirror>
 	</properties>
 
 	<repositories>
@@ -53,11 +64,11 @@
 		<repository>
 			<id>Neon</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/neon/</url>
+			<url>${eclipse.mirror}/releases/neon/</url>
 		</repository>
-		<!-- add Preesm repository to resolve Graphiti & DFTools -->
+		<!-- add Preesm repository to resolve dependencies -->
 		<repository>
-			<id>Preesm</id>
+			<id>Complete Repo</id>
 			<layout>p2</layout>
 			<url>${complete.p2.repo}</url>
 		</repository>
