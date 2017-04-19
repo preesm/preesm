@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm S-LAM Tools Test
 Bundle-SymbolicName: org.ietr.preesm.architecture.test
-Bundle-Version: 2.2.6.qualifier
+Bundle-Version: 2.2.6
 Bundle-Vendor: IETR/INSA Rennes
 Fragment-Host: org.ietr.preesm.architecture
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
