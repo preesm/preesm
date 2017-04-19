@@ -283,7 +283,7 @@ public class SpiderCodegen {
     this.cppString.setLength(0);
 
     final StringBuilder tmp = new StringBuilder();
-		SpiderCodegenVisitor codeGenerator = new SpiderCodegenVisitor(this, 
+    final SpiderCodegenVisitor codeGenerator = new SpiderCodegenVisitor(this, tmp, this.preprocessor, this.timings, this.constraints,
         this.scenario.getSimulationManager().getDataTypes());
     // Generate C++ code for the whole PiGraph, at the end, tmp will contain
     // the vertex declaration for pg
@@ -534,12 +534,12 @@ public class SpiderCodegen {
    */
   public Map<String, Integer> getCoreTypesCodes() {
     return this.coreTypesIds;
-	}
+  }
 
-	/**
-	 * @return the coreIds
-	 */
-	protected Map<String, Integer> getCoreIds() {
-		return coreIds;
+  /**
+   * @return the coreIds
+   */
+  protected Map<String, Integer> getCoreIds() {
+    return this.coreIds;
   }
 }
