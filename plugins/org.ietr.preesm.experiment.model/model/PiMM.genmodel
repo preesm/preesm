@@ -3,7 +3,7 @@
     xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.ietr.preesm.experiment.model/ecore-gen" editDirectory="/org.ietr.preesm.experiment.model.edit/ecore-gen"
     editorDirectory="/org.ietr.preesm.experiment.model.editor/ecore-gen" modelPluginID="org.ietr.preesm.experiment.model"
     redirection="" modelName="PiMM" testsDirectory="/org.ietr.preesm.experiment.model.tests/ecore-gen"
-    importerID="org.eclipse.emf.importer.ecore" complianceLevel="7.0" copyrightFields="false"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0" copyrightFields="false"
     classNamePattern="">
   <foreignModel>PiMM.ecore</foreignModel>
   <genPackages prefix="PiMM" basePackage="org.ietr.preesm.experiment.model" disposableProviderFactory="true"

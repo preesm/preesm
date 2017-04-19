@@ -4,7 +4,7 @@
     modelDirectory="/org.ietr.preesm.codegen.xtend/ecore-gen" editDirectory="/org.ietr.preesm.codegen.xtend.edit/ecore-gen"
     editorDirectory="/org.ietr.preesm.codegen.xtend.editor/ecore-gen" modelPluginID="org.ietr.preesm.codegen.xtend"
     modelName="Codegen" testsDirectory="/org.ietr.preesm.codegen.xtend.tests/ecore-gen"
-    importerID="org.eclipse.emf.importer.ecore" complianceLevel="7.0" copyrightFields="false">
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0" copyrightFields="false">
   <foreignModel>codegen.ecore</foreignModel>
   <genPackages prefix="Codegen" basePackage="org.ietr.preesm.codegen.xtend.model"
       disposableProviderFactory="true" ecorePackage="codegen.ecore#/">
