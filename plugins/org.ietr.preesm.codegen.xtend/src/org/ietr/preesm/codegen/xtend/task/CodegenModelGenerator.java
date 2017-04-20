@@ -38,7 +38,6 @@ package org.ietr.preesm.codegen.xtend.task;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,7 +59,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.xtext.xbase.lib.Pair;
-import org.ietr.dftools.algorithm.factories.SDFEdgeFactory;
 import org.ietr.dftools.algorithm.iterators.DAGIterator;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
@@ -86,12 +84,10 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.algorithm.transforms.HSDFBuildLoops;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.IDLPrototypeFactory;
 import org.ietr.preesm.codegen.idl.Prototype;
@@ -254,9 +250,23 @@ public class CodegenModelGenerator {
 	 */
 	private Map<String, List<Communication>> communications;
 
+	/** 
+	 * This is used to compute working the buffer offset inside the working memory.
+	 * It is reinitialize to zero at the end of each hierarchical actor print.
+	 */
 	private int currentWorkingMemOffset = 0;
-	private int bufCount = 0;
-	private Map<SDFEdge, SubBuffer> linkHSDFEdgeBuffer;
+	
+	/**
+	 * This {@link Map} associates a dag hierarchical vertex to the internal allocated working memory.
+	 */
+	private Map<DAGVertex, Buffer> linkHSDFVertexBuffer;
+	
+	/**
+	 * During the code generation of hierarchical actors, this {@link Map} associates internal edges to a buffer
+	 * to link input/output buffer (edge) when printing internal vertex and subbuffers of the internal working memory
+	 * of hierarchical actor. This {@link Map} is cleared at the end of the hierarchical actor print. 
+	 */
+	private Map<SDFEdge, Buffer> linkHSDFEdgeBuffer;
 
 	/**
 	 * Constructor of the {@link CodegenModelGenerator}. The constructor
@@ -300,8 +310,8 @@ public class CodegenModelGenerator {
 		this.dagVertexCalls = HashBiMap.create(dag.vertexSet().size());
 		this.communications = new HashMap<String, List<Communication>>();
 		this.popFifoCalls = new HashMap<SDFInitVertex, FifoCall>();
-		this.linkHSDFEdgeBuffer = new HashMap<SDFEdge, SubBuffer>();
-
+		this.linkHSDFVertexBuffer = new HashMap<DAGVertex, Buffer>();
+		this.linkHSDFEdgeBuffer= new HashMap<SDFEdge, Buffer>();
 	}
 
 	/**
@@ -681,55 +691,7 @@ public class CodegenModelGenerator {
 		return vertexRep;
 	}
 
-	// SDFAbstractVertex currentHierarchical = null;
-	// private int isNextRepeatedActor(SDFAbstractVertex s)
-	// {
-	// switch (arg.getDirection()) {
-	// case CodeGenArgument.OUTPUT: {
-	// Set<DAGEdge> edges = dag.outgoingEdgesOf(dagVertex);
-	// for (DAGEdge edge : edges) {
-	// BufferAggregate bufferAggregate = (BufferAggregate)
-	// edge.getPropertyBean()
-	// .getValue(BufferAggregate.propertyBeanName);
-	// for (BufferProperties buffProperty : bufferAggregate) {
-	// if (buffProperty.getSourceOutputPortID().equals(arg.getName())
-	// /*
-	// * && buffProperty.getDataType().equals( arg.getType())
-	// */) {
-	// // check that this edge is not connected to a
-	// // receive vertex
-	// if (edge.getTarget().getKind() != null) {
-	// dagEdge = edge;
-	// subBufferProperties = buffProperty;
-	// }
-	// }
-	// }
-	// }
-	// }
-	// break;
-	// case CodeGenArgument.INPUT: {
-	// Set<DAGEdge> edges = dag.incomingEdgesOf(dagVertex);
-	// for (DAGEdge edge : edges) {
-	// BufferAggregate bufferAggregate = (BufferAggregate)
-	// edge.getPropertyBean()
-	// .getValue(BufferAggregate.propertyBeanName);
-	// for (BufferProperties buffProperty : bufferAggregate) {
-	// if (buffProperty.getDestInputPortID().equals(arg.getName())
-	// /*
-	// * && buffProperty.getDataType().equals( arg.getType())
-	// */) {
-	// // check that this edge is not connected to a send
-	// // vertex
-	// if (edge.getSource().getKind() != null) {
-	// dagEdge = edge;
-	// subBufferProperties = buffProperty;
-	// }
-	// }
-	// }
-	// }
-	// }
-	// }
-
+	@SuppressWarnings("unused")
 	private SDFInterfaceVertex hasCommonSources(SDFAbstractVertex a, SDFAbstractVertex b) {
 		for (int i = 0; i < a.getSources().size(); i++) {
 			for (int j = 0; j < b.getSources().size(); j++) {
@@ -748,6 +710,7 @@ public class CodegenModelGenerator {
 		return null;
 	}
 
+	@SuppressWarnings("unused")
 	private SDFInterfaceVertex hasCommonSinks(SDFAbstractVertex a, SDFAbstractVertex b) {
 		for (int i = 0; i < a.getSinks().size(); i++) {
 			for (int j = 0; j < b.getSinks().size(); j++) {
@@ -813,6 +776,7 @@ public class CodegenModelGenerator {
 		return null;
 	}
 
+	@SuppressWarnings("unused")
 	private void pv(SDFAbstractVertex v) {
 		p("\tActor Name Dump Params: " + v.getName());
 		p("\t\tInterfaces: " + v.getInterfaces());
@@ -835,7 +799,7 @@ public class CodegenModelGenerator {
 		SDFVertex sdfVertex = (SDFVertex) dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFVertex.class);
 		Object refinement = sdfVertex.getPropertyBean().getValue(AbstractVertex.REFINEMENT);
 
-		p("Start generation for hierarchical actor: " + sdfVertex.getName());
+		p("Generating code for hierarchical actor " + sdfVertex.getName());
 		if (refinement instanceof AbstractGraph) {
 			// p(sdfVertex.getName());
 			// pv(sdfVertex);
@@ -848,14 +812,13 @@ public class CodegenModelGenerator {
 			// hierarchy is supported yet
 			for (SDFAbstractVertex v : graph.vertexSet()) {
 				if (v instanceof SDFVertex) {
-					SDFAbstractVertex repVertex = v;
+					//SDFAbstractVertex repVertex = v;
 					repVertexs.add(v);
 					nbActor++;
 					// p("Actor name tryGenerateRepeatActorFiring " +
 					// v.getName() + " repeated " +
 					// getSDFVertexNbRepeated(repVertex) );
 					// pv(v);
-
 					/*
 					 * SDFInterfaceVertex iV = null; if((iV =
 					 * hasCommonSources(v, sdfVertex)) != null) {
@@ -865,21 +828,17 @@ public class CodegenModelGenerator {
 					 * p("hasCommonSinks: " + iV + " Actors " + v.getName() +
 					 * " and " + sdfVertex.getName()); }
 					 */
-					/*
-					 * SDFVertex prev = sdfVertex; hasCommonEdges(prev, v,
-					 * sdfVertex);
-					 */
 				}
 				if (v instanceof SDFInterfaceVertex) {
 					interfaces.add((SDFInterfaceVertex) v);
 				}
-				if (v instanceof SDFInterfaceVertex) {
-					p("\tSDF Interface Vertex " + v.getName());
-				} else if (v instanceof SDFVertex) {
-					p("\tSDF Vertex " + v.getName());
-				} else {
-					p("\tSDF Abs Vertex " + v.getName());
-				}
+				//if (v instanceof SDFInterfaceVertex) {
+				//	p("\tSDF Interface Vertex " + v.getName());
+				//} else if (v instanceof SDFVertex) {
+				//	p("\tSDF Vertex " + v.getName());
+				//} else {
+				//	p("\tSDF Abs Vertex " + v.getName());
+				//}
 			}
 
 			// put vertex in the hierarchical actor in right order
@@ -1009,9 +968,8 @@ public class CodegenModelGenerator {
 									+ " Associate a refinement to this actor before generating code.");
 				}
 			}
-			// this.linkHSDFEdgeBuffer.clear();
-			// this.currentWorkingMemOffset = 0;
-			// this.bufCount = 0;
+			this.linkHSDFEdgeBuffer.clear();
+			this.currentWorkingMemOffset = 0;
 		}
 		return 0;
 	}
@@ -1046,7 +1004,7 @@ public class CodegenModelGenerator {
 			// try to generate for loop on a hierarchical actor
 			if (tryGenerateRepeatActorFiring(operatorBlock, dagVertex) == 0) {
 
-				p("Hierarchical actor " + dagVertex.getName() + " generation Successed");
+				//p("Hierarchical actor " + dagVertex.getName() + " generation Successed");
 
 			} else {
 				p("Hierarchical actor " + dagVertex.getName() + " printing Failed");
@@ -1371,6 +1329,8 @@ public class CodegenModelGenerator {
 				workingMemBuffer.setName("wMem_" + mObj.getVertex().getName());
 				workingMemBuffer.setType("char");
 				workingMemBuffer.setTypeSize(1); // char is 1 byte
+				this.linkHSDFVertexBuffer.put(dag.getVertex(mObj.getVertex().getName()), workingMemBuffer);
+				//p("wMem add working buffer " + workingMemBuffer.getName() + " key " + dag.getVertex(mObj.getVertex().getName()).getName());
 			}
 		}
 	}
@@ -1871,35 +1831,21 @@ public class CodegenModelGenerator {
 					e1.printStackTrace();
 				}
 
-				SubBuffer buf = (SubBuffer) this.linkHSDFEdgeBuffer.get(currentEdge);
+				SubBuffer workingMemBuf = (SubBuffer) this.linkHSDFVertexBuffer.get(dagVertex);
+				SubBuffer buf = (SubBuffer)this.linkHSDFEdgeBuffer.get(currentEdge);
+				//p("Tried get linkHSDFVertexBuffer key " + dagVertex.getName() + " working buf " + workingMemBuf.getName());
 				if (buf == null) {
 					buf = CodegenFactory.eINSTANCE.createSubBuffer();
-					Buffer bufContainer = null;
-					for (Entry<String, Buffer> e : this.mainBuffers.entrySet()) { // get
-																					// Proper
-																					// working
-																					// memory
-																					// !!!
-						// p("buffer Name hash " + e.getValue().getName() + " "
-						// +e.getKey());
-						bufContainer = e.getValue();
-					}
-					buf.setName(bufContainer.getName() + "_" + Integer.toString(currentWorkingMemOffset) + "_"
-							+ Integer.toString(bufCount));
-					buf.setContainer(bufContainer);
+					//p("linkHSDFEdgeBuffer buffer Name " + e.getValue().getName() + " "  + e.getKey() + " coretype " + operatorBlock.getCoreType() + " corename " + operatorBlock.getName());
+					buf.setName(workingMemBuf.getName() + "_" + Integer.toString(currentWorkingMemOffset));
+					buf.setContainer(workingMemBuf);
 					buf.setOffset(currentWorkingMemOffset);
 					buf.setSize(bufSize);
 					buf.setType("char");
 					buf.setTypeSize(1);
-					if (this.linkHSDFEdgeBuffer.containsKey(buf) == false) { // fill
-																				// hashMap
-																				// if
-																				// first
-																				// time
-						this.linkHSDFEdgeBuffer.put(currentEdge, buf);
-					}
 					currentWorkingMemOffset += bufSize;
-					bufCount++;
+					//p("Internal working buffer " + buf.getName());
+					this.linkHSDFEdgeBuffer.put(currentEdge, buf);
 				}
 				var = buf;
 			}
@@ -1933,7 +1879,7 @@ public class CodegenModelGenerator {
 			}
 			var.getUsers().add(operatorBlock);
 			// var.setCreator(operatorBlock);
-			// registerCallVariableToCoreBlock(operatorBlock, var);
+			//registerCallVariableToCoreBlock(operatorBlock, var);
 			/*
 			 * if(var.getCreator() == null) { throw new
 			 * CodegenException("GenerateRepeatedCallVariable " + var.getName()
