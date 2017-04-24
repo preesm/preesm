@@ -10,6 +10,13 @@
 		<relativePath>..</relativePath>
 	</parent>
 	
+	<pluginRepositories>
+		<pluginRepository>
+			<id>preesm</id>
+			<url>http://preesm.sourceforge.net/maven/</url>
+		</pluginRepository>
+	</pluginRepositories>
+	
 	<build>
 		<plugins>
 			<!--
@@ -28,41 +35,6 @@
 				</configuration>
 			</plugin>
 			
-			<!--
-				This plugin will fetch all features and plugins
-				from the online Preesm update site (URL defined in the 
-				parent POM). This will be executed after packaging the
-				update site for the current release. It will merge the
-				features and plugins from the online update site and 
-				the ones generated for the current release, in 
-				${project.build.directory}/gensite/update-site/complete.
-				It also copies the update-site for the current release
-				in ${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}
-				-->
-			<plugin>
-				<groupId>org.eclipse.tycho.extras</groupId>
-				<artifactId>tycho-p2-extras-plugin</artifactId>
-				<version>${tycho-version}</version>
-				<executions>
-					<execution>
-						<id>copy-current</id>
-						<phase>deploy</phase>
-						<goals>
-							<goal>mirror</goal>
-						</goals>
-						<configuration>
-							<source>
-								<repository><url>${project.baseUri}/target/gensite/update-site/${project.groupId}-${project.version}</url></repository>
-								<repository><url>${complete.p2.repo}</url></repository>
-							</source>
-							<append>false</append>
-							<compress>false</compress>
-							<includeOptional>true</includeOptional>
-							<destination>${project.build.directory}/gensite/update-site/complete</destination>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -131,83 +103,63 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!--
+				This plugin will fetch all features and plugins
+				from the online Preesm update site (URL defined in the 
+				parent POM). This will be executed after packaging the
+				update site for the current release. It will merge the
+				features and plugins from the online update site and 
+				the ones generated for the current release, in 
+				${project.build.directory}/gensite/update-site/complete.
+				It also copies the update-site for the current release
+				in ${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}
+				-->
+			<plugin>
+				<groupId>org.eclipse.tycho.extras</groupId>
+				<artifactId>tycho-p2-extras-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<executions>
+					<execution>
+						<id>copy-current</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>mirror</goal>
+						</goals>
+						<configuration>
+							<source>
+								<repository><url>${project.baseUri}/target/gensite/update-site/${project.groupId}-${project.version}</url></repository>
+								<repository><url>${complete.p2.repo}</url></repository>
+							</source>
+							<append>false</append>
+							<compress>false</compress>
+							<includeOptional>true</includeOptional>
+							<destination>${project.build.directory}/gensite/update-site/complete</destination>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.ietr.maven</groupId>
+				<artifactId>sftp-maven-plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+					<execution>
+						<id>upload-repo</id>
+						<phase>deploy</phase>
+						<configuration>
+							<serverId>sf-preesm-update-site</serverId>
+							<serverHost>web.sourceforge.net</serverHost>
+							<strictHostKeyChecking>false</strictHostKeyChecking>
+							<mode>send</mode>
+							<remotePath>/home/project-web/preesm/htdocs/gensite/</remotePath>
+							<localPath>${project.build.directory}/gensite/</localPath>
+						</configuration>
+						<goals>
+							<goal>sftp-transfert</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
-		
-	<profiles>
-		<profile>
-			<!-- Make sure the upload only activates on Unix like platform. Windows
-				is not supported since rsync does not handle windows like paths (C:\....),
-				even when using Cygwin. Tested with MacOSX and Linux. Rsync must be installed
-				on system. -->
-			<activation>
-				<os>
-					<family>!windows</family>
-				</os>
-			</activation>
-			<build>
-				<plugins>
-					<!-- The following plugins print a message informing the user that it
-						will have to enter SourceForge credentials for uploading the new update site
-						using rsync. -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-antrun-plugin</artifactId>
-						<version>1.8</version>
-						<executions>
-							<execution>
-								<id>read-SF-user-login</id>
-								<phase>deploy</phase>
-								<goals>
-									<goal>run</goal>
-								</goals>
-								<configuration>
-									<target name="Print hint message">
-										<echo>############################################</echo>
-										<echo>### In the following prompts please</echo>
-										<echo>### enter your sourceforge</echo>
-										<echo>### credentials for the PREESM project.</echo>
-										<echo>### The generated content will be uploaded using rsync at</echo>
-										<echo>### login,preesm@web.sourceforge.net:/home/project-web/preesm/htdocs/gensite/</echo>
-										<echo>###  </echo>
-										<echo>### When prompted for login, please do not specify ",preesm".</echo>
-										<echo>###  </echo>
-										<echo>############################################</echo>
-										<input
-											message="Please enter your Sourceforge Login (without project name) : "
-											addproperty="user-login" />
-									</target>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<!-- This plugin calls the system RSync to upload the complete update
-							site on SF website. It will fail if the binary is not present in $PATH. Disabled
-							on windows hosts (see comment at the profile declaration above). -->
-						<artifactId>exec-maven-plugin</artifactId>
-						<groupId>org.codehaus.mojo</groupId>
-						<version>1.6.0</version>
-						<executions>
-							<execution>
-								<id>sf-preesm-deploy</id>
-								<phase>deploy</phase>
-								<goals>
-									<goal>exec</goal>
-								</goals>
-								<configuration>
-									<executable>rsync</executable>
-									<arguments>
-										<argument>-auv</argument>
-										<argument>${project.build.directory}/gensite</argument>
-										<argument>${user-login},preesm@web.sourceforge.net:/home/project-web/preesm/htdocs/</argument>
-									</arguments>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 </project>
