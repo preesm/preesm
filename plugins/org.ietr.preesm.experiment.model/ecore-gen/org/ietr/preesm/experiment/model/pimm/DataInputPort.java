@@ -36,24 +36,22 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
-
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Input Port</b></em>'. <!-- end-user-doc -->
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.DataInputPort#getIncomingFifo <em>Incoming Fifo</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDataInputPort()
  * @model
  * @generated
  */
-public interface DataInputPort extends DataPort, PiMMVisitable {
+public interface DataInputPort extends DataPort {
 
   /**
    * Returns the value of the '<em><b>Incoming Fifo</b></em>' reference. It is bidirectional and its opposite is
@@ -62,7 +60,7 @@ public interface DataInputPort extends DataPort, PiMMVisitable {
    * If the meaning of the '<em>Incoming Fifo</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Incoming Fifo</em>' reference.
    * @see #setIncomingFifo(Fifo)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDataInputPort_IncomingFifo()
@@ -75,7 +73,7 @@ public interface DataInputPort extends DataPort, PiMMVisitable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.DataInputPort#getIncomingFifo <em>Incoming Fifo</em>}' reference. <!-- begin-user-doc
    * --> <!-- end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Incoming Fifo</em>' reference.
    * @see #getIncomingFifo()

@@ -70,13 +70,13 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMDefaultVisitor;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class SpiderPreProcessVisitor.
  */
-public class SpiderPreProcessVisitor extends PiMMVisitor {
+public class SpiderPreProcessVisitor extends PiMMDefaultVisitor {
 
   /** The current abstract actor. */
   private AbstractActor currentAbstractActor = null;

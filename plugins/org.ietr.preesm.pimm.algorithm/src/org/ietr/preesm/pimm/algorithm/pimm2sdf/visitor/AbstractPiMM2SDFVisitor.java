@@ -94,14 +94,14 @@ import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMDefaultVisitor;
 import org.ietr.preesm.pimm.algorithm.pimm2sdf.PiGraphExecution;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class AbstractPiMM2SDFVisitor.
  */
-public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
+public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
 
   /** The result. */
   // SDFGraph created from the outer graph

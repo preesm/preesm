@@ -36,8 +36,6 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
-
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Source Interface</b></em>'. <!-- end-user-doc -->
@@ -47,7 +45,7 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  * @model
  * @generated
  */
-public interface DataInputInterface extends InterfaceActor, PiMMVisitable {
+public interface DataInputInterface extends InterfaceActor {
 
   /** The Constant KIND. */
   public static final String KIND = "src";

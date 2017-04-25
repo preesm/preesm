@@ -50,28 +50,28 @@ import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Fifo</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getSourcePort <em>Source Port</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getTargetPort <em>Target Port</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getDelay <em> Delay</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getId <em>Id </em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getType <em> Type</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getDelay <em>Delay</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getId <em>Id</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getType <em>Type</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
 public class FifoImpl extends EObjectImpl implements Fifo {
   /**
    * The cached value of the '{@link #getSourcePort() <em>Source Port</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getSourcePort()
    * @generated
    * @ordered
@@ -80,7 +80,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 
   /**
    * The cached value of the '{@link #getTargetPort() <em>Target Port</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getTargetPort()
    * @generated
    * @ordered
@@ -89,7 +89,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 
   /**
    * The cached value of the '{@link #getDelay() <em>Delay</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getDelay()
    * @generated
    * @ordered
@@ -98,7 +98,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 
   /**
    * The default value of the '{@link #getId() <em>Id</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getId()
    * @generated
    * @ordered
@@ -107,7 +107,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 
   /**
    * The default value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getType()
    * @generated
    * @ordered
@@ -116,7 +116,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 
   /**
    * The cached value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getType()
    * @generated
    * @ordered
@@ -406,8 +406,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
    */
   @Override
   public boolean isSetId() {
-    // TODO: implement this method to return whether the 'Id' attribute is
-    // set
+    // TODO: implement this method to return whether the 'Id' attribute is set
     // Ensure that you remove @generated or mark it @generated NOT
     throw new UnsupportedOperationException();
   }

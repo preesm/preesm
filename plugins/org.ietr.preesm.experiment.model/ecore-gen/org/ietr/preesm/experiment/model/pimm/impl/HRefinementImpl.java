@@ -52,25 +52,25 @@ import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>HRefinement</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl#getLoopPrototype <em>Loop Prototype</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl#getInitPrototype <em>Init Prototype</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
 public class HRefinementImpl extends RefinementImpl implements HRefinement {
   /**
    * The cached value of the '{@link #getLoopPrototype() <em>Loop Prototype</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getLoopPrototype()
    * @generated
    * @ordered
@@ -78,7 +78,7 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
   protected FunctionPrototype loopPrototype;
   /**
    * The cached value of the '{@link #getInitPrototype() <em>Init Prototype</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getInitPrototype()
    * @generated
    * @ordered

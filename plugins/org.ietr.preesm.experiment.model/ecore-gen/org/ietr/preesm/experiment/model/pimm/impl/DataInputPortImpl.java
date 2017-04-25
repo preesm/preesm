@@ -47,24 +47,24 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Input Port</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DataInputPortImpl#getIncomingFifo <em>Incoming Fifo</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
 public class DataInputPortImpl extends DataPortImpl implements DataInputPort {
   /**
    * The cached value of the '{@link #getIncomingFifo() <em>Incoming Fifo</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getIncomingFifo()
    * @generated
    * @ordered

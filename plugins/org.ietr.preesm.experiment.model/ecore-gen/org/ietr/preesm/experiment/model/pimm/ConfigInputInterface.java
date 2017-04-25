@@ -37,8 +37,6 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
-
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Config Input Interface</b></em>'. <!-- end-user-doc -->
  *
@@ -47,5 +45,5 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  * @model
  * @generated
  */
-public interface ConfigInputInterface extends Parameter, PiMMVisitable {
+public interface ConfigInputInterface extends Parameter {
 } // ConfigInputInterface

@@ -35,8 +35,7 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
-import org.eclipse.emf.ecore.EObject;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -44,26 +43,26 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.FunctionParameter#getName <em>Name</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.FunctionParameter#getDirection <em>Direction</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.FunctionParameter#getType <em>Type</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.FunctionParameter#isIsConfigurationParameter <em>Is Configuration Parameter</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getFunctionParameter()
  * @model
  * @generated
  */
-public interface FunctionParameter extends EObject, PiMMVisitable {
+public interface FunctionParameter extends PiMMVisitable {
   /**
    * Returns the value of the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Name</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Name</em>' attribute.
    * @see #setName(String)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getFunctionParameter_Name()
@@ -75,7 +74,7 @@ public interface FunctionParameter extends EObject, PiMMVisitable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.FunctionParameter#getName <em>Name</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Name</em>' attribute.
    * @see #getName()
@@ -90,7 +89,7 @@ public interface FunctionParameter extends EObject, PiMMVisitable {
    * If the meaning of the '<em>Direction</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Direction</em>' attribute.
    * @see org.ietr.preesm.experiment.model.pimm.Direction
    * @see #setDirection(Direction)
@@ -103,7 +102,7 @@ public interface FunctionParameter extends EObject, PiMMVisitable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.FunctionParameter#getDirection <em>Direction</em>}' attribute. <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Direction</em>' attribute.
    * @see org.ietr.preesm.experiment.model.pimm.Direction
@@ -118,7 +117,7 @@ public interface FunctionParameter extends EObject, PiMMVisitable {
    * If the meaning of the '<em>Type</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Type</em>' attribute.
    * @see #setType(String)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getFunctionParameter_Type()
@@ -130,7 +129,7 @@ public interface FunctionParameter extends EObject, PiMMVisitable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.FunctionParameter#getType <em>Type</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Type</em>' attribute.
    * @see #getType()
@@ -144,7 +143,7 @@ public interface FunctionParameter extends EObject, PiMMVisitable {
    * If the meaning of the '<em>Is Configuration Parameter</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Is Configuration Parameter</em>' attribute.
    * @see #setIsConfigurationParameter(boolean)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getFunctionParameter_IsConfigurationParameter()
@@ -156,7 +155,7 @@ public interface FunctionParameter extends EObject, PiMMVisitable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.FunctionParameter#isIsConfigurationParameter <em>Is Configuration Parameter</em>}'
    * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Is Configuration Parameter</em>' attribute.
    * @see #isIsConfigurationParameter()

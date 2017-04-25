@@ -40,7 +40,6 @@ package org.ietr.preesm.experiment.model.pimm;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -48,16 +47,16 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.ISetter#getOutgoingDependencies <em>Outgoing Dependencies</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getISetter()
  * @model interface="true" abstract="true"
  * @generated
  */
-public interface ISetter extends EObject, PiMMVisitable {
+public interface ISetter extends EObject {
 
   /**
    * Returns the value of the '<em><b>Outgoing Dependencies</b></em>' reference list. The list contents are of type
@@ -67,7 +66,7 @@ public interface ISetter extends EObject, PiMMVisitable {
    * If the meaning of the '<em>Outgoing Dependencies</em>' reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Outgoing Dependencies</em>' reference list.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getISetter_OutgoingDependencies()
    * @see org.ietr.preesm.experiment.model.pimm.Dependency#getSetter

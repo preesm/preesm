@@ -42,27 +42,27 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.ietr.preesm.experiment.model.pimm.Direction;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Function Parameter</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl#getName <em>Name</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl#getDirection <em>Direction</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl#getType <em>Type</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl#isIsConfigurationParameter <em>Is Configuration Parameter</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
 public class FunctionParameterImpl extends EObjectImpl implements FunctionParameter {
   /**
    * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getName()
    * @generated
    * @ordered
@@ -71,7 +71,7 @@ public class FunctionParameterImpl extends EObjectImpl implements FunctionParame
 
   /**
    * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getName()
    * @generated
    * @ordered
@@ -80,7 +80,7 @@ public class FunctionParameterImpl extends EObjectImpl implements FunctionParame
 
   /**
    * The default value of the '{@link #getDirection() <em>Direction</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getDirection()
    * @generated
    * @ordered
@@ -89,7 +89,7 @@ public class FunctionParameterImpl extends EObjectImpl implements FunctionParame
 
   /**
    * The cached value of the '{@link #getDirection() <em>Direction</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getDirection()
    * @generated
    * @ordered
@@ -98,7 +98,7 @@ public class FunctionParameterImpl extends EObjectImpl implements FunctionParame
 
   /**
    * The default value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getType()
    * @generated
    * @ordered
@@ -107,7 +107,7 @@ public class FunctionParameterImpl extends EObjectImpl implements FunctionParame
 
   /**
    * The cached value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getType()
    * @generated
    * @ordered

@@ -45,18 +45,18 @@ import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Interface Vertex</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#getGraphPort <em>Graph Port</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#getKind <em>Kind</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -64,7 +64,7 @@ public class InterfaceActorImpl extends AbstractActorImpl implements InterfaceAc
   /**
    * The cached value of the '{@link #getGraphPort() <em>Graph Port</em>}' reference. <!-- begin-user-doc --> This {@link Port} is the corresponding
    * {@link Port} of the {@link PiGraph} containing this {@link Interface} instance. <!-- end-user-doc -->
-   *
+   * 
    * @see #getGraphPort()
    * @generated
    * @ordered
@@ -73,7 +73,7 @@ public class InterfaceActorImpl extends AbstractActorImpl implements InterfaceAc
 
   /**
    * The default value of the '{@link #getKind() <em>Kind</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getKind()
    * @generated
    * @ordered
@@ -82,7 +82,7 @@ public class InterfaceActorImpl extends AbstractActorImpl implements InterfaceAc
 
   /**
    * The cached value of the '{@link #getKind() <em>Kind</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getKind()
    * @generated
    * @ordered

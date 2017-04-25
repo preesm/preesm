@@ -82,11 +82,13 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
+import org.ietr.preesm.experiment.model.pimm.visitor.VisitorPackage;
+import org.ietr.preesm.experiment.model.pimm.visitor.impl.VisitorPackageImpl;
 
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Package</b>. <!-- end-user-doc -->
- *
+ * 
  * @generated
  */
 public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
@@ -335,7 +337,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
    * <p>
    * Note: the correct way to create the package is via the static factory method {@link #init init()}, which also performs initialization of the package, or
    * returns the registered package, if one already exists. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see org.eclipse.emf.ecore.EPackage.Registry
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#eNS_URI
    * @see #init()
@@ -358,8 +360,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
    * <p>
    * This method is used to initialize {@link PiMMPackage#eINSTANCE} when that field is accessed. Clients should not invoke it directly. Instead, they should
    * simply access that field to obtain the package. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @return the pi MM package
+   * 
    * @see #eNS_URI
    * @see #createPackageContents()
    * @see #initializePackageContents()
@@ -376,11 +377,18 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     PiMMPackageImpl.isInited = true;
 
+    // Obtain or create and register interdependencies
+    final VisitorPackageImpl theVisitorPackage = (VisitorPackageImpl) (EPackage.Registry.INSTANCE
+        .getEPackage(VisitorPackage.eNS_URI) instanceof VisitorPackageImpl ? EPackage.Registry.INSTANCE.getEPackage(VisitorPackage.eNS_URI)
+            : VisitorPackage.eINSTANCE);
+
     // Create package meta-data objects
     thePiMMPackage.createPackageContents();
+    theVisitorPackage.createPackageContents();
 
     // Initialize created meta-data
     thePiMMPackage.initializePackageContents();
+    theVisitorPackage.initializePackageContents();
 
     // Mark meta-data to indicate it can't be changed
     thePiMMPackage.freeze();
@@ -1269,7 +1277,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   /**
    * Creates the meta-model objects for the package. This method is guarded to have no affect on any invocation but its first. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   *
+   * 
    * @generated
    */
   public void createPackageContents() {
@@ -1417,29 +1425,43 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     setNsPrefix(PiMMPackage.eNS_PREFIX);
     setNsURI(PiMMPackage.eNS_URI);
 
+    // Obtain other dependent packages
+    final VisitorPackage theVisitorPackage = (VisitorPackage) EPackage.Registry.INSTANCE.getEPackage(VisitorPackage.eNS_URI);
+
+    // Add subpackages
+    getESubpackages().add(theVisitorPackage);
+
     // Create type parameters
 
     // Set bounds for type parameters
 
     // Add supertypes to classes
+    this.parameterizableEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.abstractVertexEClass.getESuperTypes().add(getParameterizable());
     this.abstractActorEClass.getESuperTypes().add(getAbstractVertex());
     this.piGraphEClass.getESuperTypes().add(getAbstractActor());
     this.actorEClass.getESuperTypes().add(getExecutableActor());
+    this.portEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.dataInputPortEClass.getESuperTypes().add(getDataPort());
     this.dataOutputPortEClass.getESuperTypes().add(getDataPort());
     this.configInputPortEClass.getESuperTypes().add(getPort());
     this.configOutputPortEClass.getESuperTypes().add(getDataOutputPort());
     this.configOutputPortEClass.getESuperTypes().add(getISetter());
+    this.fifoEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.interfaceActorEClass.getESuperTypes().add(getAbstractActor());
     this.dataInputInterfaceEClass.getESuperTypes().add(getInterfaceActor());
     this.dataOutputInterfaceEClass.getESuperTypes().add(getInterfaceActor());
     this.configInputInterfaceEClass.getESuperTypes().add(getParameter());
     this.configOutputInterfaceEClass.getESuperTypes().add(getInterfaceActor());
+    this.refinementEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.parameterEClass.getESuperTypes().add(getAbstractVertex());
     this.parameterEClass.getESuperTypes().add(getISetter());
+    this.dependencyEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.delayEClass.getESuperTypes().add(getParameterizable());
+    this.expressionEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.hRefinementEClass.getESuperTypes().add(getRefinement());
+    this.functionPrototypeEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
+    this.functionParameterEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.dataPortEClass.getESuperTypes().add(getPort());
     this.broadcastActorEClass.getESuperTypes().add(getExecutableActor());
     this.joinActorEClass.getESuperTypes().add(getExecutableActor());
