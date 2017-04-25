@@ -2,9 +2,9 @@
 <genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
     xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.ietr.preesm.experiment.model/ecore-gen" editDirectory="/org.ietr.preesm.experiment.model.edit/ecore-gen"
     editorDirectory="/org.ietr.preesm.experiment.model.editor/ecore-gen" modelPluginID="org.ietr.preesm.experiment.model"
-    redirection="" modelName="PiMM" testsDirectory="/org.ietr.preesm.experiment.model.tests/ecore-gen"
+    redirection="" modelName="PiMM" codeFormatting="true" testsDirectory="/org.ietr.preesm.experiment.model.tests/ecore-gen"
     importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0" copyrightFields="false"
-    classNamePattern="">
+    classNamePattern="" importOrganizing="true" cleanup="true">
   <foreignModel>PiMM.ecore</foreignModel>
   <genPackages prefix="PiMM" basePackage="org.ietr.preesm.experiment.model" disposableProviderFactory="true"
       dataTypeConverters="true" ecorePackage="PiMM.ecore#/">
