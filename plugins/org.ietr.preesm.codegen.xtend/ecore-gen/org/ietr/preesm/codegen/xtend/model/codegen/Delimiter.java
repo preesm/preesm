@@ -47,7 +47,7 @@ import org.eclipse.emf.common.util.Enumerator;
  * communication zone. <br>
  * Data can be sent/received as soon a communication zone {@link #START starts} and until this zone {@link #END ends}. If the {@link #END} of a zone is reached
  * before the completion of the corresponding, the process must wait until the communication completes before pursuing its computation. <!-- end-user-doc -->
- *
+ * 
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getDelimiter()
  * @model
  * @generated
@@ -55,7 +55,7 @@ import org.eclipse.emf.common.util.Enumerator;
 public enum Delimiter implements Enumerator {
   /**
    * The '<em><b>START</b></em>' literal object. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #START_VALUE
    * @generated
    * @ordered
@@ -64,7 +64,7 @@ public enum Delimiter implements Enumerator {
 
   /**
    * The '<em><b>END</b></em>' literal object. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #END_VALUE
    * @generated
    * @ordered
@@ -77,7 +77,7 @@ public enum Delimiter implements Enumerator {
    * If the meaning of '<em><b>START</b></em>' literal object isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @see #START
    * @model
    * @generated
@@ -91,7 +91,7 @@ public enum Delimiter implements Enumerator {
    * If the meaning of '<em><b>END</b></em>' literal object isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @see #END
    * @model
    * @generated
@@ -101,24 +101,24 @@ public enum Delimiter implements Enumerator {
 
   /**
    * An array of all the '<em><b>Delimiter</b></em>' enumerators. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   private static final Delimiter[] VALUES_ARRAY = new Delimiter[] { START, END, };
 
   /**
    * A public read-only list of all the '<em><b>Delimiter</b></em>' enumerators. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   public static final List<Delimiter> VALUES = Collections.unmodifiableList(Arrays.asList(Delimiter.VALUES_ARRAY));
 
   /**
    * Returns the '<em><b>Delimiter</b></em>' literal with the specified literal value. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @param literal
-   *          the literal
-   * @return the delimiter
+   *          the literal.
+   * @return the matching enumerator or <code>null</code>.
    * @generated
    */
   public static Delimiter get(final String literal) {
@@ -132,10 +132,10 @@ public enum Delimiter implements Enumerator {
 
   /**
    * Returns the '<em><b>Delimiter</b></em>' literal with the specified name. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @param name
-   *          the name
-   * @return the by name
+   *          the name.
+   * @return the matching enumerator or <code>null</code>.
    * @generated
    */
   public static Delimiter getByName(final String name) {
@@ -149,10 +149,10 @@ public enum Delimiter implements Enumerator {
 
   /**
    * Returns the '<em><b>Delimiter</b></em>' literal with the specified integer value. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @param value
-   *          the value
-   * @return the delimiter
+   *          the integer value.
+   * @return the matching enumerator or <code>null</code>.
    * @generated
    */
   public static Delimiter get(final int value) {
@@ -188,13 +188,7 @@ public enum Delimiter implements Enumerator {
 
   /**
    * Only this class can construct instances. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @param value
-   *          the value
-   * @param name
-   *          the name
-   * @param literal
-   *          the literal
+   * 
    * @generated
    */
   private Delimiter(final int value, final String name, final String literal) {
@@ -238,8 +232,7 @@ public enum Delimiter implements Enumerator {
 
   /**
    * Returns the literal value of the enumerator, which is its string representation. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @return the string
+   * 
    * @generated
    */
   @Override

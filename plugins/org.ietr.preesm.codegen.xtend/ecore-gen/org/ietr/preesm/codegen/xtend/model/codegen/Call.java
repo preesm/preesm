@@ -44,13 +44,13 @@ import org.eclipse.emf.common.util.EList;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getParameters <em>Parameters</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getName <em>Name </em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getName <em>Name</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getEReference0 <em>EReference0</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getParameterDirections <em>Parameter Directions</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCall()
  * @model abstract="true"
@@ -59,18 +59,17 @@ import org.eclipse.emf.common.util.EList;
 public interface Call extends CodeElt {
 
   /**
-   * Returns the value of of the '<em><b>Parameters</b></em>' reference list. The list contents are of type
+   * Returns the value of the '<em><b>Parameters</b></em>' reference list. The list contents are of type
    * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable}. <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Parameters</em>' reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Parameters</em>' reference list.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCall_Parameters()
-   * @model
+   * @model changeable="false"
    * @generated
-   *
    */
   EList<Variable> getParameters();
 
@@ -80,7 +79,7 @@ public interface Call extends CodeElt {
    * If the meaning of the '<em>Name</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Name</em>' attribute.
    * @see #setName(String)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCall_Name()
@@ -90,8 +89,8 @@ public interface Call extends CodeElt {
   String getName();
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getName <em>Name</em>}' attribute. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getName <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
    *
    * @param value
    *          the new value of the '<em>Name</em>' attribute.
@@ -106,7 +105,7 @@ public interface Call extends CodeElt {
    * If the meaning of the '<em>EReference0</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>EReference0</em>' reference.
    * @see #setEReference0(Call)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCall_EReference0()
@@ -116,9 +115,9 @@ public interface Call extends CodeElt {
   Call getEReference0();
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getEReference0 <em>EReference0</em>}' reference. <!-- begin-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getEReference0 <em>EReference0</em>}' reference. <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>EReference0</em>' reference.
    * @see #getEReference0()
@@ -134,11 +133,11 @@ public interface Call extends CodeElt {
    * If the meaning of the '<em>Parameter Directions</em>' attribute list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Parameter Directions</em>' attribute list.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCall_ParameterDirections()
-   * @model
+   * @model unique="false"
    * @generated
    */
   EList<PortDirection> getParameterDirections();

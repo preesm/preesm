@@ -46,25 +46,25 @@ import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Function Prototype</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl#getName <em>Name</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl#getParameters <em>Parameters</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
 public class FunctionPrototypeImpl extends EObjectImpl implements FunctionPrototype {
   /**
    * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getName()
    * @generated
    * @ordered
@@ -73,7 +73,7 @@ public class FunctionPrototypeImpl extends EObjectImpl implements FunctionProtot
 
   /**
    * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getName()
    * @generated
    * @ordered
@@ -82,7 +82,7 @@ public class FunctionPrototypeImpl extends EObjectImpl implements FunctionProtot
 
   /**
    * The cached value of the '{@link #getParameters() <em>Parameters</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getParameters()
    * @generated
    * @ordered

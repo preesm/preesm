@@ -79,7 +79,7 @@ import org.ietr.preesm.memory.script.Range;
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Package</b>. <!-- end-user-doc -->
- *
+ * 
  * @generated
  */
 public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
@@ -286,7 +286,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
    * <p>
    * Note: the correct way to create the package is via the static factory method {@link #init init()}, which also performs initialization of the package, or
    * returns the registered package, if one already exists. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see org.eclipse.emf.ecore.EPackage.Registry
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#eNS_URI
    * @see #init()
@@ -309,8 +309,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
    * <p>
    * This method is used to initialize {@link CodegenPackage#eINSTANCE} when that field is accessed. Clients should not invoke it directly. Instead, they should
    * simply access that field to obtain the package. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @return the codegen package
+   * 
    * @see #eNS_URI
    * @see #createPackageContents()
    * @see #initializePackageContents()
@@ -1220,7 +1219,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
   /**
    * Creates the meta-model objects for the package. This method is guarded to have no affect on any invocation but its first. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   *
+   * 
    * @generated
    */
   public void createPackageContents() {

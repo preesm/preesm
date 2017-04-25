@@ -54,24 +54,25 @@ import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Refinement</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.RefinementImpl#getFileName <em>File Name</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.RefinementImpl#getFilePath <em>File Path</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
 public class RefinementImpl extends EObjectImpl implements Refinement {
   /**
    * The default value of the '{@link #getFileName() <em>File Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getFileName()
    * @generated
    * @ordered
@@ -80,12 +81,21 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 
   /**
    * The cached value of the '{@link #getFileName() <em>File Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getFileName()
    * @generated
    * @ordered
    */
   protected String fileName = RefinementImpl.FILE_NAME_EDEFAULT;
+
+  /**
+   * The default value of the '{@link #getFilePath() <em>File Path</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @see #getFilePath()
+   * @generated
+   * @ordered
+   */
+  protected static final IPath FILE_PATH_EDEFAULT = null;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
@@ -113,6 +123,8 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
     switch (featureID) {
       case PiMMPackage.REFINEMENT__FILE_NAME:
         return getFileName();
+      case PiMMPackage.REFINEMENT__FILE_PATH:
+        return getFilePath();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -130,6 +142,8 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
     switch (featureID) {
       case PiMMPackage.REFINEMENT__FILE_NAME:
         return RefinementImpl.FILE_NAME_EDEFAULT == null ? this.fileName != null : !RefinementImpl.FILE_NAME_EDEFAULT.equals(this.fileName);
+      case PiMMPackage.REFINEMENT__FILE_PATH:
+        return RefinementImpl.FILE_PATH_EDEFAULT == null ? this.filePath != null : !RefinementImpl.FILE_PATH_EDEFAULT.equals(this.filePath);
     }
     return super.eIsSet(featureID);
   }
@@ -148,6 +162,9 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
     switch (featureID) {
       case PiMMPackage.REFINEMENT__FILE_NAME:
         setFileName((String) newValue);
+        return;
+      case PiMMPackage.REFINEMENT__FILE_PATH:
+        setFilePath((IPath) newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -176,6 +193,9 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
     switch (featureID) {
       case PiMMPackage.REFINEMENT__FILE_NAME:
         setFileName(RefinementImpl.FILE_NAME_EDEFAULT);
+        return;
+      case PiMMPackage.REFINEMENT__FILE_PATH:
+        setFilePath(RefinementImpl.FILE_PATH_EDEFAULT);
         return;
     }
     super.eUnset(featureID);
@@ -286,6 +306,8 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
     final StringBuffer result = new StringBuffer(super.toString());
     result.append(" (fileName: ");
     result.append(this.fileName);
+    result.append(", filePath: ");
+    result.append(this.filePath);
     result.append(')');
     return result.toString();
   }

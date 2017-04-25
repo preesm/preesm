@@ -45,7 +45,7 @@ import org.eclipse.emf.common.util.Enumerator;
 /**
  * <!-- begin-user-doc --> A representation of the literals of the enumeration ' <em><b>Special Type</b></em>', and utility methods for working with them. <!--
  * end-user-doc -->
- *
+ * 
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSpecialType()
  * @model
  * @generated
@@ -53,7 +53,7 @@ import org.eclipse.emf.common.util.Enumerator;
 public enum SpecialType implements Enumerator {
   /**
    * The '<em><b>FORK</b></em>' literal object. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #FORK_VALUE
    * @generated
    * @ordered
@@ -62,7 +62,7 @@ public enum SpecialType implements Enumerator {
 
   /**
    * The '<em><b>JOIN</b></em>' literal object. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #JOIN_VALUE
    * @generated
    * @ordered
@@ -71,7 +71,7 @@ public enum SpecialType implements Enumerator {
 
   /**
    * The '<em><b>BROADCAST</b></em>' literal object. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #BROADCAST_VALUE
    * @generated
    * @ordered
@@ -80,7 +80,7 @@ public enum SpecialType implements Enumerator {
 
   /**
    * The '<em><b>ROUND BUFFER</b></em>' literal object. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #ROUND_BUFFER_VALUE
    * @generated
    * @ordered
@@ -93,7 +93,7 @@ public enum SpecialType implements Enumerator {
    * If the meaning of '<em><b>FORK</b></em>' literal object isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @see #FORK
    * @model
    * @generated
@@ -107,7 +107,7 @@ public enum SpecialType implements Enumerator {
    * If the meaning of '<em><b>JOIN</b></em>' literal object isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @see #JOIN
    * @model
    * @generated
@@ -121,7 +121,7 @@ public enum SpecialType implements Enumerator {
    * If the meaning of '<em><b>BROADCAST</b></em>' literal object isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @see #BROADCAST
    * @model
    * @generated
@@ -135,7 +135,7 @@ public enum SpecialType implements Enumerator {
    * If the meaning of '<em><b>ROUND BUFFER</b></em>' literal object isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @see #ROUND_BUFFER
    * @model
    * @generated
@@ -145,24 +145,24 @@ public enum SpecialType implements Enumerator {
 
   /**
    * An array of all the '<em><b>Special Type</b></em>' enumerators. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   private static final SpecialType[] VALUES_ARRAY = new SpecialType[] { FORK, JOIN, BROADCAST, ROUND_BUFFER, };
 
   /**
    * A public read-only list of all the '<em><b>Special Type</b></em>' enumerators. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   public static final List<SpecialType> VALUES = Collections.unmodifiableList(Arrays.asList(SpecialType.VALUES_ARRAY));
 
   /**
    * Returns the '<em><b>Special Type</b></em>' literal with the specified literal value. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @param literal
-   *          the literal
-   * @return the special type
+   *          the literal.
+   * @return the matching enumerator or <code>null</code>.
    * @generated
    */
   public static SpecialType get(final String literal) {
@@ -176,10 +176,10 @@ public enum SpecialType implements Enumerator {
 
   /**
    * Returns the '<em><b>Special Type</b></em>' literal with the specified name. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @param name
-   *          the name
-   * @return the by name
+   *          the name.
+   * @return the matching enumerator or <code>null</code>.
    * @generated
    */
   public static SpecialType getByName(final String name) {
@@ -193,10 +193,10 @@ public enum SpecialType implements Enumerator {
 
   /**
    * Returns the '<em><b>Special Type</b></em>' literal with the specified integer value. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @param value
-   *          the value
-   * @return the special type
+   *          the integer value.
+   * @return the matching enumerator or <code>null</code>.
    * @generated
    */
   public static SpecialType get(final int value) {
@@ -236,13 +236,7 @@ public enum SpecialType implements Enumerator {
 
   /**
    * Only this class can construct instances. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @param value
-   *          the value
-   * @param name
-   *          the name
-   * @param literal
-   *          the literal
+   * 
    * @generated
    */
   private SpecialType(final int value, final String name, final String literal) {
@@ -286,8 +280,7 @@ public enum SpecialType implements Enumerator {
 
   /**
    * Returns the literal value of the enumerator, which is its string representation. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @return the string
+   * 
    * @generated
    */
   @Override

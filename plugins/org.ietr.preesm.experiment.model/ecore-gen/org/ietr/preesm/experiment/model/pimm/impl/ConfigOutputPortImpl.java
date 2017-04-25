@@ -50,24 +50,24 @@ import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Config Output Port</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigOutputPortImpl#getOutgoingDependencies <em>Outgoing Dependencies</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
 public class ConfigOutputPortImpl extends DataOutputPortImpl implements ConfigOutputPort {
   /**
    * The cached value of the '{@link #getOutgoingDependencies() <em>Outgoing Dependencies</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getOutgoingDependencies()
    * @generated
    * @ordered
@@ -267,8 +267,8 @@ public class ConfigOutputPortImpl extends DataOutputPortImpl implements ConfigOu
   @Override
   public EList<Dependency> getOutgoingDependencies() {
     if (this.outgoingDependencies == null) {
-      this.outgoingDependencies = new EObjectWithInverseResolvingEList<>(Dependency.class, this, PiMMPackage.CONFIG_OUTPUT_PORT__OUTGOING_DEPENDENCIES,
-          PiMMPackage.DEPENDENCY__SETTER);
+      this.outgoingDependencies = new EObjectWithInverseResolvingEList<>(Dependency.class, this,
+          PiMMPackage.CONFIG_OUTPUT_PORT__OUTGOING_DEPENDENCIES, PiMMPackage.DEPENDENCY__SETTER);
     }
     return this.outgoingDependencies;
   }

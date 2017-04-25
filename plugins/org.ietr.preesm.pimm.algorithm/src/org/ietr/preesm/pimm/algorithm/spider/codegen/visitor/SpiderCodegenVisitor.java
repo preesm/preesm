@@ -80,7 +80,7 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMDefaultVisitor;
 import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderNameGenerator;
 import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderTypeConverter;
 import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderTypeConverter.PiSDFSubType;
@@ -96,7 +96,7 @@ import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderTypeConverter.P
  * PiMM models visitor generating C++ code for COMPA Runtime currentGraph: The most outer graph of the PiMM model currentMethod: The StringBuilder used to write
  * the C++ code
  */
-public class SpiderCodegenVisitor extends PiMMVisitor {
+public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
   private final SpiderPreProcessVisitor preprocessor;
 
   private final SpiderCodegen callerSpiderCodegen;

@@ -42,13 +42,11 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Source Interface</b></em>'. <!-- end-user-doc -->
- * <p>
- * </p>
  *
  * @generated
  */

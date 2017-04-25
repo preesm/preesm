@@ -38,8 +38,7 @@
 package org.ietr.preesm.experiment.model.pimm;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.emf.ecore.EObject;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -47,27 +46,28 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.Refinement#getFileName <em>File Name</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.Refinement#getFilePath <em>File Path</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getRefinement()
  * @model
  * @generated
  */
-public interface Refinement extends EObject, PiMMVisitable {
+public interface Refinement extends PiMMVisitable {
   /**
-   * Returns the value of the '<em><b>File Name</b></em>' attribute. <!-- begin-user-doc -->
+   * Returns the value of the '<em><b>File Name</b></em>' attribute. The default value is <code>"\"\""</code>. <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>File Name</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>File Name</em>' attribute.
    * @see #setFileName(String)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getRefinement_FileName()
-   * @model
+   * @model default="\"\""
    * @generated
    */
   String getFileName();
@@ -88,9 +88,9 @@ public interface Refinement extends EObject, PiMMVisitable {
   void setFilePath(IPath path);
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.experiment.model.pimm.Refinement#getFileName <em>File Name</em>}' attribute. <!-- begin-user-doc --> <!--
+   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Refinement#getFileName <em>File Name</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>File Name</em>' attribute.
    * @see #getFileName()

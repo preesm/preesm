@@ -67,9 +67,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
  * <!-- begin-user-doc --> The <b>Switch</b> for the model's inheritance hierarchy. It supports the call {@link #doSwitch(EObject) doSwitch(object)} to invoke
  * the <code>caseXXX</code> method for each class of the model, starting with the actual class of the object and proceeding up the inheritance hierarchy until a
  * non-null result is returned, which is the result of the switch. <!-- end-user-doc -->
- *
- * @param <T>
- *          the generic type
+ * 
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage
  * @generated
  */
@@ -84,7 +82,7 @@ public class CodegenSwitch<T> extends Switch<T> {
 
   /**
    * Creates an instance of the switch. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   public CodegenSwitch() {
@@ -95,11 +93,10 @@ public class CodegenSwitch<T> extends Switch<T> {
 
   /**
    * Checks whether this is a switch for the given package. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @param ePackage
-   *          the e package
+   *          the package in question.
    * @return whether this is a switch for the given package.
-   * @parameter ePackage the package in question.
    * @generated
    */
   @Override
@@ -110,11 +107,7 @@ public class CodegenSwitch<T> extends Switch<T> {
   /**
    * Calls <code>caseXXX</code> for each class of the model until one returns a non null result; it yields that result. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   *
-   * @param classifierID
-   *          the classifier ID
-   * @param theEObject
-   *          the the E object
+   * 
    * @return the first non-null result returned by a <code>caseXXX</code> call.
    * @generated
    */
@@ -420,12 +413,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Block</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
+   * Returns the result of interpreting the object as an instance of '<em>Block</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
    * non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Block</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Block</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -434,12 +427,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Code Elt</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
+   * Returns the result of interpreting the object as an instance of '<em>Code Elt</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
    * non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Code Elt</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Code Elt</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -448,12 +441,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Call</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
+   * Returns the result of interpreting the object as an instance of '<em>Call</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
    * non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Call</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Call</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -462,12 +455,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Variable</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
+   * Returns the result of interpreting the object as an instance of '<em>Variable</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
    * non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Variable</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Variable</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -476,12 +469,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Buffer</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
+   * Returns the result of interpreting the object as an instance of '<em>Buffer</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
    * non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Buffer</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Buffer</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -490,12 +483,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Sub Buffer</em>'. <!-- begin-user-doc --> This implementation returns null; returning
+   * Returns the result of interpreting the object as an instance of '<em>Sub Buffer</em>'. <!-- begin-user-doc --> This implementation returns null; returning
    * a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Sub Buffer</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Sub Buffer</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -504,12 +497,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Constant</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
+   * Returns the result of interpreting the object as an instance of '<em>Constant</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
    * non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Constant</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Constant</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -518,12 +511,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Function Call</em>'. <!-- begin-user-doc --> This implementation returns null;
+   * Returns the result of interpreting the object as an instance of '<em>Function Call</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Function Call</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Function Call</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -532,12 +525,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Communication</em>'. <!-- begin-user-doc --> This implementation returns null;
+   * Returns the result of interpreting the object as an instance of '<em>Communication</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Communication</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Communication</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -546,12 +539,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Core Block</em>'. <!-- begin-user-doc --> This implementation returns null; returning
+   * Returns the result of interpreting the object as an instance of '<em>Core Block</em>'. <!-- begin-user-doc --> This implementation returns null; returning
    * a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Core Block</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Core Block</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -560,12 +553,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Actor Block</em>'. <!-- begin-user-doc --> This implementation returns null;
-   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * Returns the result of interpreting the object as an instance of '<em>Actor Block</em>'. <!-- begin-user-doc --> This implementation returns null; returning
+   * a non-null result will terminate the switch. <!-- end-user-doc -->
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Actor Block</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Actor Block</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -574,12 +567,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Loop Block</em>'. <!-- begin-user-doc --> This implementation returns null; returning
+   * Returns the result of interpreting the object as an instance of '<em>Loop Block</em>'. <!-- begin-user-doc --> This implementation returns null; returning
    * a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Loop Block</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Loop Block</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -588,12 +581,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Actor Call</em>'. <!-- begin-user-doc --> This implementation returns null; returning
+   * Returns the result of interpreting the object as an instance of '<em>Actor Call</em>'. <!-- begin-user-doc --> This implementation returns null; returning
    * a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Actor Call</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Actor Call</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -602,12 +595,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Call Block</em>'. <!-- begin-user-doc --> This implementation returns null; returning
+   * Returns the result of interpreting the object as an instance of '<em>Call Block</em>'. <!-- begin-user-doc --> This implementation returns null; returning
    * a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Call Block</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Call Block</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -616,12 +609,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Special Call</em>'. <!-- begin-user-doc --> This implementation returns null;
+   * Returns the result of interpreting the object as an instance of '<em>Special Call</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Special Call</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Special Call</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -630,12 +623,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Fifo Call</em>'. <!-- begin-user-doc --> This implementation returns null; returning
-   * a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * Returns the result of interpreting the object as an instance of '<em>Fifo Call</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
+   * non-null result will terminate the switch. <!-- end-user-doc -->
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Fifo Call</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Fifo Call</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -644,12 +637,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Commentable</em>'. <!-- begin-user-doc --> This implementation returns null;
-   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * Returns the result of interpreting the object as an instance of '<em>Commentable</em>'. <!-- begin-user-doc --> This implementation returns null; returning
+   * a non-null result will terminate the switch. <!-- end-user-doc -->
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Commentable</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Commentable</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -658,12 +651,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Communication Node</em>'. <!-- begin-user-doc --> This implementation returns null;
+   * Returns the result of interpreting the object as an instance of '<em>Communication Node</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Communication Node</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Communication Node</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -672,12 +665,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Semaphore</em>'. <!-- begin-user-doc --> This implementation returns null; returning
-   * a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * Returns the result of interpreting the object as an instance of '<em>Semaphore</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
+   * non-null result will terminate the switch. <!-- end-user-doc -->
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Semaphore</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Semaphore</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -686,12 +679,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Shared Memory Communication</em>'. <!-- begin-user-doc --> This implementation
-   * returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * Returns the result of interpreting the object as an instance of '<em>Shared Memory Communication</em>'. <!-- begin-user-doc --> This implementation returns
+   * null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Shared Memory Communication</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Shared Memory Communication</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -700,12 +693,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Constant String</em>'. <!-- begin-user-doc --> This implementation returns null;
+   * Returns the result of interpreting the object as an instance of '<em>Constant String</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Constant String</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Constant String</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -714,12 +707,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>Null Buffer</em>'. <!-- begin-user-doc --> This implementation returns null;
-   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * Returns the result of interpreting the object as an instance of '<em>Null Buffer</em>'. <!-- begin-user-doc --> This implementation returns null; returning
+   * a non-null result will terminate the switch. <!-- end-user-doc -->
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>Null Buffer</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Null Buffer</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
@@ -728,12 +721,12 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of ' <em>EObject</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
+   * Returns the result of interpreting the object as an instance of '<em>EObject</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
    * non-null result will terminate the switch, but this is the last case anyway. <!-- end-user-doc -->
-   *
+   * 
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of ' <em>EObject</em>'.
+   * @return the result of interpreting the object as an instance of '<em>EObject</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject)
    * @generated
    */

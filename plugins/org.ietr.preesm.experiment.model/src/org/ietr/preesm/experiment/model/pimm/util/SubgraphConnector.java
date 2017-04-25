@@ -79,7 +79,7 @@ import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
  * @author cguy
  * @author kdesnos
  */
-public class SubgraphConnector extends PiMMVisitor {
+public class SubgraphConnector extends PiMMDefaultVisitor {
 
   /** The current actor. */
   // Actor in the outer graph corresponding to the currently visited graph

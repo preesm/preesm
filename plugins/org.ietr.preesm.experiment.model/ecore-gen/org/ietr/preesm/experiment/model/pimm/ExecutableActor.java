@@ -35,8 +35,6 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
-
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Executable Actor</b></em>'. <!-- end-user-doc -->
  *
@@ -45,5 +43,5 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  * @model abstract="true"
  * @generated
  */
-public interface ExecutableActor extends AbstractActor, PiMMVisitable {
+public interface ExecutableActor extends AbstractActor {
 } // ExecutableActor

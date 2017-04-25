@@ -39,8 +39,7 @@ package org.ietr.preesm.experiment.model.pimm;
 
 import java.util.Set;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.EObject;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -48,16 +47,16 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.Parameterizable#getConfigInputPorts <em>Config Input Ports</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameterizable()
  * @model abstract="true"
  * @generated
  */
-public interface Parameterizable extends EObject, PiMMVisitable {
+public interface Parameterizable extends PiMMVisitable {
   /**
    * Returns the value of the '<em><b>Config Input Ports</b></em>' containment reference list. The list contents are of type
    * {@link org.ietr.preesm.experiment.model.pimm.ConfigInputPort}. <!-- begin-user-doc -->
@@ -65,7 +64,7 @@ public interface Parameterizable extends EObject, PiMMVisitable {
    * If the meaning of the '<em>Config Input Ports</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Config Input Ports</em>' containment reference list.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameterizable_ConfigInputPorts()
    * @model containment="true"

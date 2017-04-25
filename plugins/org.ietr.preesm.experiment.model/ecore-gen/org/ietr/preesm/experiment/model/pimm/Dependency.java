@@ -37,8 +37,7 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
-import org.eclipse.emf.ecore.EObject;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -46,17 +45,17 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.Dependency#getSetter <em>Setter</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.Dependency#getGetter <em>Getter</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDependency()
  * @model
  * @generated
  */
-public interface Dependency extends EObject, PiMMVisitable {
+public interface Dependency extends PiMMVisitable {
   /**
    * Returns the value of the '<em><b>Setter</b></em>' reference. It is bidirectional and its opposite is
    * '{@link org.ietr.preesm.experiment.model.pimm.ISetter#getOutgoingDependencies <em>Outgoing Dependencies</em>}'. <!-- begin-user-doc -->
@@ -64,7 +63,7 @@ public interface Dependency extends EObject, PiMMVisitable {
    * If the meaning of the '<em>Setter</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Setter</em>' reference.
    * @see #setSetter(ISetter)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDependency_Setter()
@@ -77,7 +76,7 @@ public interface Dependency extends EObject, PiMMVisitable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Dependency#getSetter <em>Setter</em>}' reference. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Setter</em>' reference.
    * @see #getSetter()
@@ -92,7 +91,7 @@ public interface Dependency extends EObject, PiMMVisitable {
    * If the meaning of the '<em>Getter</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Getter</em>' reference.
    * @see #setGetter(ConfigInputPort)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDependency_Getter()
@@ -105,7 +104,7 @@ public interface Dependency extends EObject, PiMMVisitable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Dependency#getGetter <em>Getter</em>}' reference. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Getter</em>' reference.
    * @see #getGetter()

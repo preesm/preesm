@@ -53,19 +53,19 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType;
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Special Call</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SpecialCallImpl#getType <em>Type</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SpecialCallImpl#getInputBuffers <em>Input Buffers</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SpecialCallImpl#getOutputBuffers <em>Output Buffers</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
 public class SpecialCallImpl extends CallImpl implements SpecialCall {
   /**
    * The default value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getType()
    * @generated
    * @ordered
@@ -74,7 +74,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 
   /**
    * The cached value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getType()
    * @generated
    * @ordered
@@ -83,7 +83,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 
   /**
    * The cached value of the '{@link #getInputBuffers() <em>Input Buffers</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getInputBuffers()
    * @generated
    * @ordered
@@ -92,7 +92,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 
   /**
    * The cached value of the '{@link #getOutputBuffers() <em>Output Buffers</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getOutputBuffers()
    * @generated
    * @ordered

@@ -37,28 +37,26 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
-
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Interface Vertex</b></em>'. <!-- end-user-doc -->
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.InterfaceActor#getGraphPort <em>Graph Port</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.InterfaceActor#getKind <em>Kind</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getInterfaceActor()
  * @model
  * @generated
  */
-public interface InterfaceActor extends AbstractActor, PiMMVisitable {
+public interface InterfaceActor extends AbstractActor {
   /**
    * Returns the value of the '<em><b>Graph Port</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Graph Port</em>' reference.
    * @see #setGraphPort(Port)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getInterfaceActor_GraphPort()
@@ -70,7 +68,7 @@ public interface InterfaceActor extends AbstractActor, PiMMVisitable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.InterfaceActor#getGraphPort <em>Graph Port</em>}' reference. <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Graph Port</em>' reference.
    * @see #getGraphPort()
@@ -84,7 +82,7 @@ public interface InterfaceActor extends AbstractActor, PiMMVisitable {
    * If the meaning of the '<em>Kind</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Kind</em>' attribute.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getInterfaceActor_Kind()
    * @model required="true" changeable="false"

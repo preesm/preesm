@@ -41,10 +41,10 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.ConstantString#getValue <em>Value</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getConstantString()
  * @model
@@ -57,7 +57,7 @@ public interface ConstantString extends Variable {
    * If the meaning of the '<em>Value</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Value</em>' attribute.
    * @see #setValue(String)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getConstantString_Value()
@@ -67,9 +67,9 @@ public interface ConstantString extends Variable {
   String getValue();
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.ConstantString#getValue <em>Value</em>}' attribute. <!-- begin-user-doc --> <!--
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.ConstantString#getValue <em>Value</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Value</em>' attribute.
    * @see #getValue()

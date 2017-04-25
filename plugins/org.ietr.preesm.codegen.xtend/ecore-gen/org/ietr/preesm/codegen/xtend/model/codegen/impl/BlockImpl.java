@@ -58,20 +58,20 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Block</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BlockImpl#getCodeElts <em>Code Elts</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BlockImpl#getDeclarations <em>Declarations</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BlockImpl#getName <em>Name</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BlockImpl#getDefinitions <em>Definitions</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
 public class BlockImpl extends EObjectImpl implements Block {
   /**
    * The cached value of the '{@link #getCodeElts() <em>Code Elts</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getCodeElts()
    * @generated
    * @ordered
@@ -79,8 +79,8 @@ public class BlockImpl extends EObjectImpl implements Block {
   protected EList<CodeElt> codeElts;
 
   /**
-   * The cached value of the '{@link #getDeclarations() <em>Declarations</em>} ' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * The cached value of the '{@link #getDeclarations() <em>Declarations</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
    * @see #getDeclarations()
    * @generated
    * @ordered
@@ -89,7 +89,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 
   /**
    * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getName()
    * @generated
    * @ordered
@@ -98,7 +98,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 
   /**
    * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getName()
    * @generated
    * @ordered
@@ -107,7 +107,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 
   /**
    * The cached value of the '{@link #getDefinitions() <em>Definitions</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getDefinitions()
    * @generated
    * @ordered
@@ -199,7 +199,8 @@ public class BlockImpl extends EObjectImpl implements Block {
   @Override
   public EList<Variable> getDefinitions() {
     if (this.definitions == null) {
-      this.definitions = new EObjectContainmentWithInverseEList<>(Variable.class, this, CodegenPackage.BLOCK__DEFINITIONS, CodegenPackage.VARIABLE__CREATOR);
+      this.definitions = new EObjectContainmentWithInverseEList<>(Variable.class, this, CodegenPackage.BLOCK__DEFINITIONS,
+          CodegenPackage.VARIABLE__CREATOR);
     }
     return this.definitions;
   }

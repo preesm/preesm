@@ -38,7 +38,6 @@
 package org.ietr.preesm.experiment.model.pimm;
 
 import org.eclipse.emf.common.util.EList;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -46,18 +45,18 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getDataInputPorts <em>Data Input Ports</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getDataOutputPorts <em>Data Output Ports</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getConfigOutputPorts <em>Config Output Ports</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getAbstractActor()
  * @model abstract="true"
  * @generated
  */
-public interface AbstractActor extends AbstractVertex, PiMMVisitable {
+public interface AbstractActor extends AbstractVertex {
   /**
    * Returns the value of the '<em><b>Data Input Ports</b></em>' containment reference list. The list contents are of type
    * {@link org.ietr.preesm.experiment.model.pimm.DataInputPort}. <!-- begin-user-doc -->
@@ -65,7 +64,7 @@ public interface AbstractActor extends AbstractVertex, PiMMVisitable {
    * If the meaning of the '<em>Data Input Ports</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Data Input Ports</em>' containment reference list.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getAbstractActor_DataInputPorts()
    * @model containment="true"
@@ -80,7 +79,7 @@ public interface AbstractActor extends AbstractVertex, PiMMVisitable {
    * If the meaning of the '<em>Data Output Ports</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Data Output Ports</em>' containment reference list.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getAbstractActor_DataOutputPorts()
    * @model containment="true"
@@ -95,7 +94,7 @@ public interface AbstractActor extends AbstractVertex, PiMMVisitable {
    * If the meaning of the '<em>Config Output Ports</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Config Output Ports</em>' containment reference list.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getAbstractActor_ConfigOutputPorts()
    * @model containment="true"

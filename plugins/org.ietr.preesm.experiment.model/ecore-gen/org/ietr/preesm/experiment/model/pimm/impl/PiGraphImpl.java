@@ -56,27 +56,27 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.adapter.GraphInterfaceObserver;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Graph</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl#getVertices <em>Vertices</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl#getFifos <em>Fifos</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl#getParameters <em>Parameters</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl#getDependencies <em>Dependencies</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
 public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
   /**
    * The cached value of the '{@link #getVertices() <em>Vertices</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getVertices()
    * @generated
    * @ordered
@@ -85,7 +85,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 
   /**
    * The cached value of the '{@link #getFifos() <em>Fifos</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getFifos()
    * @generated
    * @ordered
@@ -94,7 +94,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 
   /**
    * The cached value of the '{@link #getParameters() <em>Parameters</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getParameters()
    * @generated
    * @ordered
@@ -102,8 +102,8 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
   protected EList<Parameter> parameters;
 
   /**
-   * The cached value of the '{@link #getDependencies() <em>Dependencies</em>} ' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * The cached value of the '{@link #getDependencies() <em>Dependencies</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
    * @see #getDependencies()
    * @generated
    * @ordered

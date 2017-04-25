@@ -43,11 +43,11 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getContainer <em>Container</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getOffset <em>Offset</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSubBuffer()
  * @model
@@ -55,26 +55,28 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  */
 public interface SubBuffer extends Buffer {
   /**
-   * Returns the value of the '<em><b>Container</b></em>' reference. <!-- begin-user-doc -->
+   * Returns the value of the '<em><b>Container</b></em>' reference. It is bidirectional and its opposite is
+   * '{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getChildrens <em>Childrens</em>}'. <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Container</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Container</em>' reference.
    * @see #setContainer(Buffer)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSubBuffer_Container()
-   * @model required="true"
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getChildrens
+   * @model opposite="childrens" required="true"
    * @generated
    */
   Buffer getContainer();
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getContainer <em>Container</em>}' reference. <!-- begin-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getContainer <em>Container</em>}' reference. <!-- begin-user-doc -->
    * The container of the {@link SubBuffer} is a {@link Buffer} containing the current {@link SubBuffer}. If the {@link SubBuffer} already has a
    * {@link #getCreator() creator}, it will be added to the {@link #getUsers()} list of the new container. (If an old container is replaced, the creator of the
    * current SubBuffer will not be removed from its users list)<!-- end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Container</em>' reference.
    * @see #getContainer()
@@ -85,7 +87,7 @@ public interface SubBuffer extends Buffer {
   /**
    * Returns the value of the '<em><b>Offset</b></em>' attribute. <!-- begin-user-doc --> For coherence reason, offset is expressed in bytes, no matter the
    * {@link #getType()} of the {@link SubBuffer} or the type of its {@link #getContainer()}. <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Offset</em>' attribute.
    * @see #setOffset(int)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSubBuffer_Offset()
@@ -95,9 +97,9 @@ public interface SubBuffer extends Buffer {
   int getOffset();
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getOffset <em>Offset</em>}' attribute. <!-- begin-user-doc --> <!--
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getOffset <em>Offset</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Offset</em>' attribute.
    * @see #getOffset()

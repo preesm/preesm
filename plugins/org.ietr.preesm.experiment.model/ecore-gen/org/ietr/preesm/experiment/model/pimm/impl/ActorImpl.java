@@ -55,26 +55,26 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Actor</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#getRefinement <em>Refinement</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#isConfigurationActor <em>Configuration Actor</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#getMemoryScriptPath <em>Memory Script Path</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
 public class ActorImpl extends ExecutableActorImpl implements Actor {
   /**
    * The cached value of the '{@link #getRefinement() <em>Refinement</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getRefinement()
    * @generated
    * @ordered
@@ -83,7 +83,7 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
 
   /**
    * The default value of the '{@link #isConfigurationActor() <em>Configuration Actor</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #isConfigurationActor()
    * @generated
    * @ordered
@@ -92,7 +92,7 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
 
   /**
    * The default value of the '{@link #getMemoryScriptPath() <em>Memory Script Path</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getMemoryScriptPath()
    * @generated
    * @ordered
@@ -101,7 +101,7 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
 
   /**
    * The cached value of the '{@link #getMemoryScriptPath() <em>Memory Script Path</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getMemoryScriptPath()
    * @generated
    * @ordered

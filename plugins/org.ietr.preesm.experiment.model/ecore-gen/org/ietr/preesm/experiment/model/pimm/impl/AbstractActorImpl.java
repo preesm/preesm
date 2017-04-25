@@ -52,26 +52,26 @@ import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Abstract Vertex</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#getDataInputPorts <em>Data Input Ports</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#getDataOutputPorts <em>Data Output Ports</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#getConfigOutputPorts <em>Config Output Ports</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
 public abstract class AbstractActorImpl extends AbstractVertexImpl implements AbstractActor {
   /**
    * The cached value of the '{@link #getDataInputPorts() <em>Data Input Ports</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getDataInputPorts()
    * @generated
    * @ordered
@@ -91,7 +91,7 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements Ab
   /**
    * The cached value of the '{@link #getConfigOutputPorts() <em>Config Output Ports</em>}' containment reference list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   *
+   * 
    * @see #getConfigOutputPorts()
    * @generated
    * @ordered

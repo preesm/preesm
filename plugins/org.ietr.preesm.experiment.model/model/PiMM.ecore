@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="pimm" nsURI="http://org.ietr.preesm/experiment/model/pimm" nsPrefix="org.ietr.preesm.experiment.pimm">
-  <eClassifiers xsi:type="ecore:EClass" name="Parameterizable" abstract="true">
+  <eClassifiers xsi:type="ecore:EClass" name="Parameterizable" abstract="true" eSuperTypes="#//visitor/PiMMVisitable">
     <eStructuralFeatures xsi:type="ecore:EReference" name="configInputPorts" upperBound="-1"
         eType="#//ConfigInputPort" containment="true"/>
   </eClassifiers>
@@ -34,7 +34,7 @@
         volatile="true" unsettable="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="memoryScriptPath" eType="#//IPath"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Port" abstract="true">
+  <eClassifiers xsi:type="ecore:EClass" name="Port" abstract="true" eSuperTypes="#//visitor/PiMMVisitable">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         changeable="false"/>
@@ -52,7 +52,7 @@
         eOpposite="#//Dependency/getter"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ConfigOutputPort" eSuperTypes="#//DataOutputPort #//ISetter"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Fifo">
+  <eClassifiers xsi:type="ecore:EClass" name="Fifo" eSuperTypes="#//visitor/PiMMVisitable">
     <eStructuralFeatures xsi:type="ecore:EReference" name="sourcePort" lowerBound="1"
         eType="#//DataOutputPort" eOpposite="#//DataOutputPort/outgoingFifo"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetPort" lowerBound="1"
@@ -74,7 +74,7 @@
   <eClassifiers xsi:type="ecore:EClass" name="DataOutputInterface" eSuperTypes="#//InterfaceActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="ConfigInputInterface" eSuperTypes="#//Parameter"/>
   <eClassifiers xsi:type="ecore:EClass" name="ConfigOutputInterface" eSuperTypes="#//InterfaceActor"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Refinement">
+  <eClassifiers xsi:type="ecore:EClass" name="Refinement" eSuperTypes="#//visitor/PiMMVisitable">
     <eOperations name="getAbstractActor" eType="#//AbstractActor"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="fileName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         defaultValueLiteral="&quot;&quot;"/>
@@ -90,7 +90,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
         eType="#//Expression" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Dependency">
+  <eClassifiers xsi:type="ecore:EClass" name="Dependency" eSuperTypes="#//visitor/PiMMVisitable">
     <eStructuralFeatures xsi:type="ecore:EReference" name="setter" lowerBound="1"
         eType="#//ISetter" eOpposite="#//ISetter/outgoingDependencies"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="getter" lowerBound="1"
@@ -105,7 +105,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
         eType="#//Expression" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Expression">
+  <eClassifiers xsi:type="ecore:EClass" name="Expression" eSuperTypes="#//visitor/PiMMVisitable">
     <eOperations name="evaluate" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="string" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral="0"/>
@@ -115,12 +115,12 @@
         eType="#//FunctionPrototype"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="initPrototype" eType="#//FunctionPrototype"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="FunctionPrototype">
+  <eClassifiers xsi:type="ecore:EClass" name="FunctionPrototype" eSuperTypes="#//visitor/PiMMVisitable">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
         eType="#//FunctionParameter"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="FunctionParameter">
+  <eClassifiers xsi:type="ecore:EClass" name="FunctionParameter" eSuperTypes="#//visitor/PiMMVisitable">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="direction" eType="#//Direction"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
@@ -148,4 +148,110 @@
   <eClassifiers xsi:type="ecore:EClass" name="ForkActor" eSuperTypes="#//ExecutableActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="RoundBufferActor" eSuperTypes="#//ExecutableActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="ExecutableActor" abstract="true" eSuperTypes="#//AbstractActor"/>
+  <eSubpackages name="visitor" nsURI="http://org.ietr.preesm/experiment/model/pimm/visitor"
+      nsPrefix="org.ietr.preesm.experiment.pimm.visitor">
+    <eClassifiers xsi:type="ecore:EClass" name="PiMMVisitable" abstract="true" interface="true">
+      <eOperations name="accept" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//visitor/PiMMVisitor"/>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="PiMMVisitor" abstract="true">
+      <eOperations name="visit" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//visitor/PiMMVisitable"/>
+      </eOperations>
+      <eOperations name="visitAbstractActor" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//AbstractActor"/>
+      </eOperations>
+      <eOperations name="visitAbstractVertex" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//AbstractVertex"/>
+      </eOperations>
+      <eOperations name="visitActor" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//Actor"/>
+      </eOperations>
+      <eOperations name="visitConfigInputInterface" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//ConfigInputInterface"/>
+      </eOperations>
+      <eOperations name="visitConfigInputPort" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//ConfigInputPort"/>
+      </eOperations>
+      <eOperations name="visitConfigOutputInterface" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//ConfigOutputInterface"/>
+      </eOperations>
+      <eOperations name="visitConfigOutputPort" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//ConfigOutputPort"/>
+      </eOperations>
+      <eOperations name="visitDataInputInterface" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//DataInputInterface"/>
+      </eOperations>
+      <eOperations name="visitDataInputPort" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//DataInputPort"/>
+      </eOperations>
+      <eOperations name="visitDataOutputInterface" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//DataOutputInterface"/>
+      </eOperations>
+      <eOperations name="visitDataOutputPort" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//DataOutputPort"/>
+      </eOperations>
+      <eOperations name="visitDelay" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//Delay"/>
+      </eOperations>
+      <eOperations name="visitDependency" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//Dependency"/>
+      </eOperations>
+      <eOperations name="visitExpression" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//Expression"/>
+      </eOperations>
+      <eOperations name="visitFifo" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//Fifo"/>
+      </eOperations>
+      <eOperations name="visitInterfaceActor" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//InterfaceActor"/>
+      </eOperations>
+      <eOperations name="visitISetter" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//ISetter"/>
+      </eOperations>
+      <eOperations name="visitParameter" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//Parameter"/>
+      </eOperations>
+      <eOperations name="visitParameterizable" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//Parameterizable"/>
+      </eOperations>
+      <eOperations name="visitPiGraph" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//PiGraph"/>
+      </eOperations>
+      <eOperations name="visitPort" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//Port"/>
+      </eOperations>
+      <eOperations name="visitRefinement" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//Refinement"/>
+      </eOperations>
+      <eOperations name="visitFunctionParameter" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//FunctionParameter"/>
+      </eOperations>
+      <eOperations name="visitFunctionPrototype" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//FunctionPrototype"/>
+      </eOperations>
+      <eOperations name="visitHRefinement" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//HRefinement"/>
+      </eOperations>
+      <eOperations name="visitDataPort" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//DataPort"/>
+      </eOperations>
+      <eOperations name="visitBroadcastActor" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//BroadcastActor"/>
+      </eOperations>
+      <eOperations name="visitJoinActor" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//JoinActor"/>
+      </eOperations>
+      <eOperations name="visitForkActor" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//ForkActor"/>
+      </eOperations>
+      <eOperations name="visitRoundBufferActor" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//RoundBufferActor"/>
+      </eOperations>
+      <eOperations name="visitExecutableActor" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//ExecutableActor"/>
+      </eOperations>
+    </eClassifiers>
+  </eSubpackages>
 </ecore:EPackage>

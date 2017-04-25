@@ -52,18 +52,18 @@ import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Actor Block</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.ActorBlockImpl#getLoopBlock <em>Loop Block</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.ActorBlockImpl#getInitBlock <em>Init Block</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
 public class ActorBlockImpl extends BlockImpl implements ActorBlock {
   /**
    * The cached value of the '{@link #getLoopBlock() <em>Loop Block</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getLoopBlock()
    * @generated
    * @ordered
@@ -71,7 +71,7 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
   protected LoopBlock loopBlock;
   /**
    * The cached value of the '{@link #getInitBlock() <em>Init Block</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getInitBlock()
    * @generated
    * @ordered

@@ -49,7 +49,7 @@ import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
@@ -59,10 +59,10 @@ import org.nfunk.jep.ParseException;
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Expression</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl#getString <em>String</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -70,7 +70,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 
   /**
    * The default value of the '{@link #getString() <em>String</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getString()
    * @generated
    * @ordered
@@ -78,7 +78,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
   protected static final String STRING_EDEFAULT = "0";
   /**
    * The cached value of the '{@link #getString() <em>String</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getString()
    * @generated
    * @ordered

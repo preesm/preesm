@@ -42,8 +42,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Semaphore</b></em>'. <!-- end-user-doc -->
- * <p>
- * </p>
  *
  * @generated
  */

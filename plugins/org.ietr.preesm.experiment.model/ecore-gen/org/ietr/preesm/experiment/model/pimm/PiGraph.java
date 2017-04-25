@@ -38,7 +38,6 @@ package org.ietr.preesm.experiment.model.pimm;
 
 import java.util.Set;
 import org.eclipse.emf.common.util.EList;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -46,19 +45,19 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  *
  * <p>
  * The following features are supported:
- * <ul>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getVertices <em> Vertices</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getFifos <em>Fifos </em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getParameters <em> Parameters</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getDependencies <em> Dependencies</em>}</li>
- * </ul>
  * </p>
+ * <ul>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getVertices <em>Vertices</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getFifos <em>Fifos</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getParameters <em>Parameters</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getDependencies <em>Dependencies</em>}</li>
+ * </ul>
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiGraph()
  * @model
  * @generated
  */
-public interface PiGraph extends AbstractActor, PiMMVisitable {
+public interface PiGraph extends AbstractActor {
   /**
    * Returns the value of the '<em><b>Vertices</b></em>' containment reference list. The list contents are of type
    * {@link org.ietr.preesm.experiment.model.pimm.AbstractActor}. <!-- begin-user-doc -->
@@ -70,9 +69,9 @@ public interface PiGraph extends AbstractActor, PiMMVisitable {
    * If the meaning of the '<em>Vertices</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Vertices</em>' containment reference list.
-   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getGraph_Vertices()
+   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiGraph_Vertices()
    * @model containment="true"
    * @generated
    */
@@ -85,7 +84,7 @@ public interface PiGraph extends AbstractActor, PiMMVisitable {
    * If the meaning of the '<em>Fifos</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Fifos</em>' containment reference list.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiGraph_Fifos()
    * @model containment="true"
@@ -100,9 +99,9 @@ public interface PiGraph extends AbstractActor, PiMMVisitable {
    * If the meaning of the '<em>Parameters</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Parameters</em>' containment reference list.
-   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getGraph_Parameters()
+   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiGraph_Parameters()
    * @model containment="true"
    * @generated
    */
@@ -115,9 +114,9 @@ public interface PiGraph extends AbstractActor, PiMMVisitable {
    * If the meaning of the '<em>Dependencies</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Dependencies</em>' containment reference list.
-   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getGraph_Dependencies()
+   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiGraph_Dependencies()
    * @model containment="true"
    * @generated
    */

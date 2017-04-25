@@ -44,7 +44,7 @@ import org.eclipse.emf.common.util.Enumerator;
 /**
  * <!-- begin-user-doc --> A representation of the literals of the enumeration '<em><b>Port Memory Annotation</b></em>', and utility methods for working with
  * them. <!-- end-user-doc -->
- *
+ * 
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPortMemoryAnnotation()
  * @model
  * @generated
@@ -52,7 +52,7 @@ import org.eclipse.emf.common.util.Enumerator;
 public enum PortMemoryAnnotation implements Enumerator {
   /**
    * The '<em><b>NONE</b></em>' literal object. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #NONE_VALUE
    * @generated
    * @ordered
@@ -60,7 +60,7 @@ public enum PortMemoryAnnotation implements Enumerator {
   NONE(0, "NONE", "NONE"),
   /**
    * The '<em><b>READ ONLY</b></em>' literal object. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #READ_ONLY_VALUE
    * @generated
    * @ordered
@@ -69,7 +69,7 @@ public enum PortMemoryAnnotation implements Enumerator {
 
   /**
    * The '<em><b>WRITE ONLY</b></em>' literal object. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #WRITE_ONLY_VALUE
    * @generated
    * @ordered
@@ -78,7 +78,7 @@ public enum PortMemoryAnnotation implements Enumerator {
 
   /**
    * The '<em><b>UNUSED</b></em>' literal object. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #UNUSED_VALUE
    * @generated
    * @ordered
@@ -91,7 +91,7 @@ public enum PortMemoryAnnotation implements Enumerator {
    * If the meaning of '<em><b>NONE</b></em>' literal object isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @see #NONE
    * @model
    * @generated
@@ -105,7 +105,7 @@ public enum PortMemoryAnnotation implements Enumerator {
    * If the meaning of '<em><b>READ ONLY</b></em>' literal object isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @see #READ_ONLY
    * @model
    * @generated
@@ -119,7 +119,7 @@ public enum PortMemoryAnnotation implements Enumerator {
    * If the meaning of '<em><b>WRITE ONLY</b></em>' literal object isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @see #WRITE_ONLY
    * @model
    * @generated
@@ -133,7 +133,7 @@ public enum PortMemoryAnnotation implements Enumerator {
    * If the meaning of '<em><b>UNUSED</b></em>' literal object isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @see #UNUSED
    * @model
    * @generated
@@ -143,24 +143,24 @@ public enum PortMemoryAnnotation implements Enumerator {
 
   /**
    * An array of all the '<em><b>Port Memory Annotation</b></em>' enumerators. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   private static final PortMemoryAnnotation[] VALUES_ARRAY = new PortMemoryAnnotation[] { NONE, READ_ONLY, WRITE_ONLY, UNUSED, };
 
   /**
    * A public read-only list of all the '<em><b>Port Memory Annotation</b></em>' enumerators. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   public static final List<PortMemoryAnnotation> VALUES = Collections.unmodifiableList(Arrays.asList(PortMemoryAnnotation.VALUES_ARRAY));
 
   /**
    * Returns the '<em><b>Port Memory Annotation</b></em>' literal with the specified literal value. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @param literal
-   *          the literal
-   * @return the port memory annotation
+   *          the literal.
+   * @return the matching enumerator or <code>null</code>.
    * @generated
    */
   public static PortMemoryAnnotation get(final String literal) {
@@ -174,10 +174,10 @@ public enum PortMemoryAnnotation implements Enumerator {
 
   /**
    * Returns the '<em><b>Port Memory Annotation</b></em>' literal with the specified name. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @param name
-   *          the name
-   * @return the by name
+   *          the name.
+   * @return the matching enumerator or <code>null</code>.
    * @generated
    */
   public static PortMemoryAnnotation getByName(final String name) {
@@ -191,10 +191,10 @@ public enum PortMemoryAnnotation implements Enumerator {
 
   /**
    * Returns the '<em><b>Port Memory Annotation</b></em>' literal with the specified integer value. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @param value
-   *          the value
-   * @return the port memory annotation
+   *          the integer value.
+   * @return the matching enumerator or <code>null</code>.
    * @generated
    */
   public static PortMemoryAnnotation get(final int value) {
@@ -234,13 +234,7 @@ public enum PortMemoryAnnotation implements Enumerator {
 
   /**
    * Only this class can construct instances. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @param value
-   *          the value
-   * @param name
-   *          the name
-   * @param literal
-   *          the literal
+   * 
    * @generated
    */
   private PortMemoryAnnotation(final int value, final String name, final String literal) {
@@ -284,8 +278,7 @@ public enum PortMemoryAnnotation implements Enumerator {
 
   /**
    * Returns the literal value of the enumerator, which is its string representation. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @return the string
+   * 
    * @generated
    */
   @Override
