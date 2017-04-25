@@ -43,10 +43,10 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Commentable#getComment <em>Comment</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCommentable()
  * @model abstract="true"
@@ -59,7 +59,7 @@ public interface Commentable extends EObject {
    * If the meaning of the '<em>Comment</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Comment</em>' attribute.
    * @see #setComment(String)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCommentable_Comment()
@@ -69,9 +69,9 @@ public interface Commentable extends EObject {
   String getComment();
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Commentable#getComment <em>Comment</em>}' attribute. <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   *
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Commentable#getComment <em>Comment</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   * 
    * @param value
    *          the new value of the '<em>Comment</em>' attribute.
    * @see #getComment()

@@ -55,20 +55,20 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Call</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getParameters <em>Parameters</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getName <em>Name</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getEReference0 <em>EReference0</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getParameterDirections <em>Parameter Directions</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
 public abstract class CallImpl extends EObjectImpl implements Call {
   /**
    * The cached value of the '{@link #getParameters() <em>Parameters</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getParameters()
    * @generated
    * @ordered
@@ -77,7 +77,7 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 
   /**
    * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getName()
    * @generated
    * @ordered
@@ -86,7 +86,7 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 
   /**
    * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getName()
    * @generated
    * @ordered
@@ -95,7 +95,7 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 
   /**
    * The cached value of the '{@link #getEReference0() <em>EReference0</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getEReference0()
    * @generated
    * @ordered
@@ -104,7 +104,7 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 
   /**
    * The cached value of the '{@link #getParameterDirections() <em>Parameter Directions</em>}' attribute list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getParameterDirections()
    * @generated
    * @ordered

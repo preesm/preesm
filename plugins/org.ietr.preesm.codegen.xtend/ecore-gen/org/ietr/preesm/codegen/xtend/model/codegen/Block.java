@@ -47,13 +47,13 @@ import org.eclipse.emf.common.util.EList;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getCodeElts <em> Code Elts</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getCodeElts <em>Code Elts</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDeclarations <em>Declarations</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getName <em>Name </em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getName <em>Name</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDefinitions <em>Definitions</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBlock()
  * @model
@@ -67,25 +67,27 @@ public interface Block extends CodeElt {
    * If the meaning of the '<em>Code Elts</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Code Elts</em>' containment reference list.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBlock_CodeElts()
-   * @model containment="true"
+   * @model containment="true" changeable="false"
    * @generated
    */
   EList<CodeElt> getCodeElts();
 
   /**
-   * Returns the value of the '<em><b>Declarations</b></em>' containment reference list. The list contents are of type
-   * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable}. <!-- begin-user-doc -->
+   * Returns the value of the '<em><b>Declarations</b></em>' reference list. The list contents are of type
+   * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable}. It is bidirectional and its opposite is
+   * '{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getUsers <em>Users</em>}'. <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Declarations</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
-   * @return the value of the '<em>Declarations</em>' containment reference list.
+   * 
+   * @return the value of the '<em>Declarations</em>' reference list.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBlock_Declarations()
-   * @model containment="true"
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.Variable#getUsers
+   * @model opposite="users" changeable="false"
    * @generated
    */
   EList<Variable> getDeclarations();
@@ -96,7 +98,7 @@ public interface Block extends CodeElt {
    * If the meaning of the '<em>Name</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Name</em>' attribute.
    * @see #setName(String)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBlock_Name()
@@ -106,9 +108,9 @@ public interface Block extends CodeElt {
   String getName();
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getName <em>Name</em>}' attribute. <!-- begin-user-doc --> <!--
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getName <em>Name</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Name</em>' attribute.
    * @see #getName()
@@ -118,13 +120,13 @@ public interface Block extends CodeElt {
 
   /**
    * Returns the value of the '<em><b>Definitions</b></em>' containment reference list. The list contents are of type
-   * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable}. It is bidirectional and its opposite is '
-   * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator <em>Creator</em>}'. <!-- begin-user-doc -->
+   * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable}. It is bidirectional and its opposite is
+   * '{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator <em>Creator</em>}'. <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Definitions</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Definitions</em>' containment reference list.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBlock_Definitions()
    * @see org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator

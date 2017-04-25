@@ -48,18 +48,18 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode;
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Communication Node</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationNodeImpl#getName <em>Name</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationNodeImpl#getType <em>Type</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
 public class CommunicationNodeImpl extends EObjectImpl implements CommunicationNode {
   /**
    * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getName()
    * @generated
    * @ordered
@@ -68,7 +68,7 @@ public class CommunicationNodeImpl extends EObjectImpl implements CommunicationN
 
   /**
    * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getName()
    * @generated
    * @ordered
@@ -77,7 +77,7 @@ public class CommunicationNodeImpl extends EObjectImpl implements CommunicationN
 
   /**
    * The default value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getType()
    * @generated
    * @ordered
@@ -86,7 +86,7 @@ public class CommunicationNodeImpl extends EObjectImpl implements CommunicationN
 
   /**
    * The cached value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getType()
    * @generated
    * @ordered

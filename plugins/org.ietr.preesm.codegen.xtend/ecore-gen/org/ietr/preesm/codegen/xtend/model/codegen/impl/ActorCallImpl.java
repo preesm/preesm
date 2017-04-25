@@ -42,8 +42,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Actor Call</b></em>'. <!-- end-user-doc -->
- * <p>
- * </p>
  *
  * @generated
  */

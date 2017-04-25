@@ -46,13 +46,13 @@ import org.eclipse.emf.common.util.EList;
  *
  * <p>
  * The following features are supported:
- * <ul>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getName <em> Name</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getType <em> Type</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator <em>Creator</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getUsers <em> Users</em>}</li>
- * </ul>
  * </p>
+ * <ul>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getName <em>Name</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getType <em>Type</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator <em>Creator</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getUsers <em>Users</em>}</li>
+ * </ul>
  *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getVariable()
  * @model abstract="true"
@@ -65,7 +65,7 @@ public interface Variable extends Commentable {
    * If the meaning of the '<em>Name</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Name</em>' attribute.
    * @see #setName(String)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getVariable_Name()
@@ -75,9 +75,9 @@ public interface Variable extends Commentable {
   String getName();
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getName <em>Name</em>}' attribute. <!-- begin-user-doc --> <!--
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getName <em>Name</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Name</em>' attribute.
    * @see #getName()
@@ -91,7 +91,7 @@ public interface Variable extends Commentable {
    * If the meaning of the '<em>Type</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Type</em>' attribute.
    * @see #setType(String)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getVariable_Type()
@@ -101,9 +101,9 @@ public interface Variable extends Commentable {
   String getType();
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getType <em>Type</em>}' attribute. <!-- begin-user-doc --> <!--
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getType <em>Type</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Type</em>' attribute.
    * @see #getType()
@@ -112,26 +112,28 @@ public interface Variable extends Commentable {
   void setType(String value);
 
   /**
-   * Returns the value of the '<em><b>Creator</b></em>' reference. <!-- begin-user-doc -->
+   * Returns the value of the '<em><b>Creator</b></em>' container reference. It is bidirectional and its opposite is
+   * '{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDefinitions <em>Definitions</em>}'. <!-- begin-user-doc -->
    * <p>
    * The {@link #getCreator() creator} of a {@link Variable} is the {@link Block} that declare and define the {@link Variable}.
    * </p>
    * <!-- end-user-doc -->
-   *
-   * @return the value of the '<em>Creator</em>' reference.
+   * 
+   * @return the value of the '<em>Creator</em>' container reference.
    * @see #setCreator(Block)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getVariable_Creator()
-   * @model required="true"
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.Block#getDefinitions
+   * @model opposite="definitions" transient="false"
    * @generated
    */
   Block getCreator();
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator <em>Creator</em>}' reference. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
-   *
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator <em>Creator</em>}' container reference. <!-- begin-user-doc
+   * --> <!-- end-user-doc -->
+   * 
    * @param value
-   *          the new value of the '<em>Creator</em>' reference.
+   *          the new value of the '<em>Creator</em>' container reference.
    * @see #getCreator()
    * @generated
    */

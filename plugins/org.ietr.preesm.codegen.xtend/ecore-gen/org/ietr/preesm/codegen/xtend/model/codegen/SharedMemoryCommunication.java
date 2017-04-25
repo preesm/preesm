@@ -41,10 +41,10 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication#getSemaphore <em>Semaphore</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSharedMemoryCommunication()
  * @model
@@ -57,7 +57,7 @@ public interface SharedMemoryCommunication extends Communication {
    * If the meaning of the '<em>Semaphore</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Semaphore</em>' reference.
    * @see #setSemaphore(Semaphore)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSharedMemoryCommunication_Semaphore()

@@ -47,17 +47,17 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Constant;
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Constant</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.ConstantImpl#getValue <em>Value</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
 public class ConstantImpl extends VariableImpl implements Constant {
   /**
    * The default value of the '{@link #getValue() <em>Value</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getValue()
    * @generated
    * @ordered
@@ -65,7 +65,7 @@ public class ConstantImpl extends VariableImpl implements Constant {
   protected static final long VALUE_EDEFAULT = 0L;
   /**
    * The cached value of the '{@link #getValue() <em>Value</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getValue()
    * @generated
    * @ordered

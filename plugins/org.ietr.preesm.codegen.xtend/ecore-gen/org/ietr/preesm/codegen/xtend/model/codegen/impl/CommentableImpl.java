@@ -48,17 +48,17 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Commentable;
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Commentable</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommentableImpl#getComment <em>Comment</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
 public abstract class CommentableImpl extends EObjectImpl implements Commentable {
   /**
    * The default value of the '{@link #getComment() <em>Comment</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getComment()
    * @generated
    * @ordered
@@ -67,7 +67,7 @@ public abstract class CommentableImpl extends EObjectImpl implements Commentable
 
   /**
    * The cached value of the '{@link #getComment() <em>Comment</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getComment()
    * @generated
    * @ordered

@@ -67,19 +67,19 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
+import org.ietr.preesm.memory.script.Range;
 
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!-- end-user-doc -->
- *
+ * 
  * @generated
  */
 public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
   /**
    * Creates the default factory implementation. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @return the codegen factory
+   * 
    * @generated
    */
   public static CodegenFactory init() {
@@ -96,7 +96,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
   /**
    * Creates an instance of the factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   public CodegenFactoryImpl() {
@@ -601,8 +601,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
    * @return the org.ietr.preesm.memory.script. range
    * @generated
    */
-  public org.ietr.preesm.memory.script.Range createrangeFromString(final EDataType eDataType, final String initialValue) {
-    return (org.ietr.preesm.memory.script.Range) super.createFromString(eDataType, initialValue);
+  public Range createrangeFromString(final EDataType eDataType, final String initialValue) {
+    return (Range) super.createFromString(eDataType, initialValue);
   }
 
   /**

@@ -49,17 +49,17 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Shared Memory Communication</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SharedMemoryCommunicationImpl#getSemaphore <em>Semaphore</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
 public class SharedMemoryCommunicationImpl extends CommunicationImpl implements SharedMemoryCommunication {
   /**
    * The cached value of the '{@link #getSemaphore() <em>Semaphore</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getSemaphore()
    * @generated
    * @ordered

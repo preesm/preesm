@@ -50,6 +50,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation;
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Fifo Call</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FifoCallImpl#getOperation <em>Operation</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FifoCallImpl#getFifoHead <em>Fifo Head</em>}</li>
@@ -57,14 +58,13 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation;
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FifoCallImpl#getHeadBuffer <em>Head Buffer</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FifoCallImpl#getBodyBuffer <em>Body Buffer</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
 public class FifoCallImpl extends CallImpl implements FifoCall {
   /**
    * The default value of the '{@link #getOperation() <em>Operation</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getOperation()
    * @generated
    * @ordered
@@ -73,7 +73,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 
   /**
    * The cached value of the '{@link #getOperation() <em>Operation</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getOperation()
    * @generated
    * @ordered
@@ -82,7 +82,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 
   /**
    * The cached value of the '{@link #getFifoHead() <em>Fifo Head</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getFifoHead()
    * @generated
    * @ordered
@@ -91,7 +91,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 
   /**
    * The cached value of the '{@link #getFifoTail() <em>Fifo Tail</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getFifoTail()
    * @generated
    * @ordered
@@ -100,7 +100,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 
   /**
    * The cached value of the '{@link #getHeadBuffer() <em>Head Buffer</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getHeadBuffer()
    * @generated
    * @ordered
@@ -109,7 +109,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 
   /**
    * The cached value of the '{@link #getBodyBuffer() <em>Body Buffer</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getBodyBuffer()
    * @generated
    * @ordered

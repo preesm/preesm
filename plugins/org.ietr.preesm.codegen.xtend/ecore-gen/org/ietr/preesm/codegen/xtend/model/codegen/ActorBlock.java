@@ -42,11 +42,11 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock#getLoopBlock <em>Loop Block</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock#getInitBlock <em>Init Block</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getActorBlock()
  * @model
@@ -60,7 +60,7 @@ public interface ActorBlock extends Block {
    * If the meaning of the '<em>Loop Block</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Loop Block</em>' reference.
    * @see #setLoopBlock(LoopBlock)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getActorBlock_LoopBlock()
@@ -70,9 +70,9 @@ public interface ActorBlock extends Block {
   LoopBlock getLoopBlock();
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock#getLoopBlock <em>Loop Block</em>}' reference. <!-- begin-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock#getLoopBlock <em>Loop Block</em>}' reference. <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Loop Block</em>' reference.
    * @see #getLoopBlock()
@@ -86,7 +86,7 @@ public interface ActorBlock extends Block {
    * If the meaning of the '<em>Init Block</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Init Block</em>' reference.
    * @see #setInitBlock(CallBlock)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getActorBlock_InitBlock()
@@ -96,9 +96,9 @@ public interface ActorBlock extends Block {
   CallBlock getInitBlock();
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock#getInitBlock <em>Init Block</em>}' reference. <!-- begin-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock#getInitBlock <em>Init Block</em>}' reference. <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Init Block</em>' reference.
    * @see #getInitBlock()
