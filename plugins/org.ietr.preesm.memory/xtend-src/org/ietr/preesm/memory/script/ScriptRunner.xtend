@@ -74,6 +74,8 @@ import org.ietr.preesm.utils.files.FilesManager
 
 import static extension org.ietr.preesm.memory.script.Buffer.*
 import static extension org.ietr.preesm.memory.script.Range.*
+import org.eclipse.core.runtime.CoreException
+import java.net.URISyntaxException
 
 enum CheckPolicy {
 	NONE,
@@ -333,7 +335,7 @@ class ScriptRunner {
 	 *            the {@link DirectedAcyclicGraph} whose vertices memory scripts
 	 *            are retrieved.
 	 */
-	def protected int findScripts(DirectedAcyclicGraph dag, PreesmScenario scenario) {
+	def protected int findScripts(DirectedAcyclicGraph dag, PreesmScenario scenario) throws CoreException , IOException, URISyntaxException {
 
 		// TODO : extract script lookup and initialization
 
@@ -1574,14 +1576,14 @@ class ScriptRunner {
 	 * are not valid, they will not be stored in the {@link #scriptResults}
 	 * {@link Map}, and a warning will be printed in the {@link Logger log}.
 	 */
-	def void run() {
+	def void run() throws EvalError {
 		// For each vertex with a script
 		for (e : scriptedVertices.entrySet) {
 			runScript(e.key, e.value)
 		}
 	}
 
-	def void runScript(DAGVertex dagVertex, File script) {
+	def void runScript(DAGVertex dagVertex, File script) throws EvalError {
 		val interpreter = new Interpreter();
 
 		// TODO : isolate Interpreter initializatino
@@ -1630,9 +1632,15 @@ class ScriptRunner {
 		interpreter.eval("import " + List.name + ";")
 
 		// Feed the parameters/inputs/outputs to the interpreter
-		parameters.forEach[name, value|interpreter.set(name, value)]
-		inputs.forEach[interpreter.set("i_" + it.name, it)]
-		outputs.forEach[interpreter.set("o_" + it.name, it)]
+		for (e : parameters.entrySet) {
+			interpreter.set(e.key, e.value)
+		}
+		for (i : inputs) {
+			interpreter.set("i_" + i.name, i)
+		}
+		for (o : outputs) {
+			interpreter.set("o_" + o.name, o)
+		}
 		if (interpreter.get("parameters") === null)
 			interpreter.set("parameters", parameters)
 		if (interpreter.get("inputs") === null)
@@ -1661,7 +1669,8 @@ class ScriptRunner {
 				"Evaluation error in " + sdfVertex.name + " memory script:\n[Line " + error.errorLineNumber + "] " +
 					message)
 		} catch (IOException exception) {
-			exception.printStackTrace
+			val logger = WorkflowLogger.getLogger
+			logger.log(Level.WARNING,exception.message, exception)
 		}
 	}
 

@@ -38,7 +38,10 @@
 
 package org.ietr.preesm.memory.script;
 
+import bsh.EvalError;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -134,7 +137,8 @@ public class MemoryScriptEngine {
    * @param checkString
    *          the check string
    */
-  public void runScripts(final DirectedAcyclicGraph dag, final Map<String, DataType> dataTypes, final String checkString) {
+  public void runScripts(final DirectedAcyclicGraph dag, final Map<String, DataType> dataTypes, final String checkString)
+      throws CoreException, IOException, URISyntaxException, EvalError {
     // Retrieve all the scripts
     final int nbScripts = this.sr.findScripts(dag, this.scenario);
 
