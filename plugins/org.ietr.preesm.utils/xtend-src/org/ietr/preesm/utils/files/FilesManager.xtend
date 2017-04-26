@@ -1,24 +1,24 @@
 /*******************************************************************************
  * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
  * Karol Desnos, Julien Heulot, Clément Guy, Yaset Oliva Venegas
- * 
+ *
  * [mpelcat,jnezan,kdesnos,jheulot,cguy,yoliva]@insa-rennes.fr
- * 
+ *
  * This software is a computer program whose purpose is to prototype
  * parallel applications.
- * 
+ *
  * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use, 
+ * abiding by the rules of distribution of free software.  You can  use,
  * modify and/ or redistribute the software under the terms of the CeCILL-C
  * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info". 
- * 
+ * "http://www.cecill.info".
+ *
  * As a counterpart to the access to the source code and  rights to copy,
  * modify and redistribute granted by the license, users are provided only
  * with a limited warranty  and the software's author,  the holder of the
  * economic rights,  and the successive licensors  have only  limited
- * liability. 
- * 
+ * liability.
+ *
  * In this respect, the user's attention is drawn to the risks associated
  * with loading,  using,  modifying and/or developing or reproducing the
  * software by the user in light of its specific status of free software,
@@ -26,10 +26,10 @@
  * therefore means  that it is reserved for developers  and  experienced
  * professionals having in-depth computer knowledge. Users are therefore
  * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or 
- * data to be ensured and,  more generally, to use and operate it in the 
- * same conditions as regards security. 
- * 
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
@@ -56,15 +56,17 @@ import org.osgi.framework.FrameworkUtil
 import static org.ietr.preesm.utils.files.Result.*
 import java.io.IOException
 import java.net.URL
+import java.net.URISyntaxException
+import java.net.MalformedURLException
 
 /**
  * Utility class to manipulate files. It brings everything needed to extract files
  * from a jar plugin to the filesystem, check if 2 files are identical, read/write
  * files, etc.
- * 
+ *
  * Code adapted from ORCC (net.sf.orcc.util, https://github.com/orcc/orcc)
  * @author Antoine Lorence
- * 
+ *
  */
 @SuppressWarnings("unchecked")
 class FilesManager {
@@ -73,7 +75,7 @@ class FilesManager {
 
 	/**
 	 * Returns the File found at the given path
-	 * 
+	 *
 	 * @param path
 	 * 			path to the file
 	 * @param bundleFilter
@@ -88,7 +90,7 @@ class FilesManager {
 	/**
 	 * <p>Copy the file or the folder at given <em>path</em> to the given
 	 * <em>target folder</em>.</p>
-	 * 
+	 *
 	 * <p>It is important to understand that the resource (file or folder) at the given path
 	 * will be copied <b>into</b> the target folder. For example,
 	 * <code>extract("/path/to/file.txt", "/home/johndoe")</code> will copy <em>file.txt</em>
@@ -96,7 +98,7 @@ class FilesManager {
 	 * will create <em>MyFolder</em> directory in <em>/home/johndoe</em> and copy all files
 	 * from the source folder into it.
 	 * </p>
-	 * 
+	 *
 	 * @param path The path of the source (folder or file) to copy
 	 * @param targetFolder The directory where to copy the source element
 	 * @param bundleFilter
@@ -105,7 +107,7 @@ class FilesManager {
 	 * 		written, and how many haven't because they were already up-to-date
 	 * @throws FileNotFoundException If not resource have been found at the given path
 	 */
-	def static Result extract(String path, String targetFolder, String bundleFilter) {
+	def static Result extract(String path, String targetFolder, String bundleFilter) throws IOException , URISyntaxException {
 		val targetF = new File(targetFolder.sanitize)
 		val url = getUrl(path, bundleFilter)
 
@@ -125,13 +127,13 @@ class FilesManager {
 	/**
 	 * Copy the given <i>source</i> file to the given <em>targetFile</em>
 	 * path.
-	 * 
+	 *
 	 * @param source
 	 * 			An existing File instance
 	 * @param targetFolder
 	 * 			The target folder to copy the file
 	 */
-	private def static Result fsExtract(File source, File targetFolder) {
+	private def static Result fsExtract(File source, File targetFolder) throws IOException {
 		if (!source.exists) {
 			throw new FileNotFoundException(source.path)
 		}
@@ -149,13 +151,13 @@ class FilesManager {
 	/**
 	 * Copy the given <i>source</i> directory and its content into
 	 * the given <em>targetFolder</em> directory.
-	 * 
+	 *
 	 * @param source
 	 * 			The source path of an existing file
 	 * @param targetFolder
 	 * 			Path to the folder where source will be copied
 	 */
-	private def static fsDirectoryExtract(File source, File targetFolder) {
+	private def static fsDirectoryExtract(File source, File targetFolder) throws IOException {
 		Assert.isTrue(source.directory)
 		if (!targetFolder.exists)
 			Assert.isTrue(targetFolder.mkdirs)
@@ -172,9 +174,9 @@ class FilesManager {
 	}
 
 	/**
-	 * Starting point for extraction of a file/folder resource from a jar. 
+	 * Starting point for extraction of a file/folder resource from a jar.
 	 */
-	private def static jarExtract(JarFile jar, String path, File targetFolder) {
+	private def static jarExtract(JarFile jar, String path, File targetFolder) throws IOException {
 		val updatedPath = if (path.startsWith("/")) {
 				path.substring(1)
 			} else {
@@ -209,7 +211,7 @@ class FilesManager {
 	 * Extract all files in the given <em>entry</em> from the given <em>jar</em> into
 	 * the <em>target folder</em>.
 	 */
-	private def static jarDirectoryExtract(JarFile jar, JarEntry entry, File targetFolder) {
+	private def static jarDirectoryExtract(JarFile jar, JarEntry entry, File targetFolder) throws IOException {
 		val prefix = entry.name
 		val entries = Collections::list(jar.entries).filter[name.startsWith(prefix)]
 		val result = newInstance
@@ -242,10 +244,10 @@ class FilesManager {
 	 * Copy the content represented by the given <em>inputStream</em> into the
 	 * <em>target file</em>. No checking is performed for equality between input
 	 * stream and target file. Data are always written.
-	 * 
+	 *
 	 * @return A Result object with information about extraction status
 	 */
-	private def static streamExtract(InputStream inputStream, File targetFile) {
+	private def static streamExtract(InputStream inputStream, File targetFile) throws IOException {
 		if (!targetFile.parentFile.exists) {
 			targetFile.parentFile.mkdirs
 		}
@@ -269,7 +271,7 @@ class FilesManager {
 	 * Search on the file system for a file or folder corresponding to the
 	 * given path. If not found, search on the current classpath. If this method
 	 * returns an URL, it always represents an existing file.
-	 * 
+	 *
 	 * @param path
 	 * 			A path
 	 * @param bundleFilter
@@ -277,7 +279,7 @@ class FilesManager {
 	 * @return
 	 * 			An URL for an existing file, or null
 	 */
-	def static URL getUrl(String path, String bundleFilter) {
+	def static URL getUrl(String path, String bundleFilter) throws MalformedURLException , IOException {
 		val sanitizedPath = path.sanitize
 
 		val file = new File(sanitizedPath)
@@ -314,7 +316,7 @@ class FilesManager {
 	 * Check if given a CharSequence have exactly the same content
 	 * than file b.
 	 */
-	static def boolean isContentEqual(CharSequence a, File b) {
+	static def boolean isContentEqual(CharSequence a, File b) throws IOException {
 		return new ByteArrayInputStream(a.toString.bytes).isContentEqual(b)
 	}
 
@@ -322,22 +324,22 @@ class FilesManager {
 	 * Check if given File a have exactly the same content
 	 * than File b.
 	 */
-	static def boolean isContentEqual(File a, File b) {
+	static def boolean isContentEqual(File a, File b) throws IOException {
 		return new FileInputStream(a).isContentEqual(b)
 	}
 
 	/**
 	 * <p>Compare the content of input stream <em>a</em> and file <em>b</em>.
 	 * Returns true if the </p>
-	 * 
+	 *
 	 * <p><strong>Important</strong>: This method will close the input stream
 	 * <em>a</em> before returning the result.</p>
-	 * 
+	 *
 	 * @param a An input stream
 	 * @param b A file
 	 * @return true if content in a is equals to content in b
 	 */
-	static def boolean isContentEqual(InputStream a, File b) {
+	static def boolean isContentEqual(InputStream a, File b) throws IOException {
 		if(!b.exists) return false
 		val inputStreamA = new BufferedInputStream(a)
 		val inputStreamB = new BufferedInputStream(new FileInputStream(b))
@@ -358,12 +360,12 @@ class FilesManager {
 	 * Write <em>content</em> to the given <em>targetFolder</em> in a new file called
 	 * <em>fileName</em>. This method will write the content to the target file only if
 	 * it is empty or if its content is different than that given.
-	 * 
+	 *
 	 * @param content The text content to write
 	 * @param targetFolder The folder where the file should be created
-	 * @param fileName The name of the new file 
+	 * @param fileName The name of the new file
 	 */
-	static def Result writeFile(CharSequence content, String targetFolder, String fileName) {
+	static def Result writeFile(CharSequence content, String targetFolder, String fileName) throws IOException {
 		return content.writeFile(new File(targetFolder.sanitize, fileName))
 	}
 
@@ -371,18 +373,18 @@ class FilesManager {
 	 * Write <em>content</em> to the given file <em>path</em>. This method will write the
 	 * content to the target file only if it is empty or if its content is different than
 	 * that given.
-	 * 
+	 *
 	 * @param content The text content to write
 	 * @param path The path of the file to write
 	 */
-	static def Result writeFile(CharSequence content, String path) {
+	static def Result writeFile(CharSequence content, String path) throws IOException {
 		return content.writeFile(new File(path.sanitize))
 	}
 
 	/**
 	 * Write the <em>content</em> into the <em>targetFile</em> only if necessary.
 	 */
-	static def Result writeFile(CharSequence content, File targetFile) {
+	static def Result writeFile(CharSequence content, File targetFile) throws IOException {
 		if (content.isContentEqual(targetFile)) {
 			return newCachedInstance
 		}
@@ -400,7 +402,7 @@ class FilesManager {
 	/**
 	 * Read the file at the given <em>path</em> and returns its content
 	 * as a String.
-	 * 
+	 *
 	 * @param path
 	 * 			The path of the file to read
 	 * @returns
@@ -408,7 +410,7 @@ class FilesManager {
 	 * @throws FileNotFoundException
 	 * 			If the file doesn't exists
 	 */
-	static def String readFile(String path, String bundleFilter) {
+	static def String readFile(String path, String bundleFilter) throws IOException , URISyntaxException {
 
 		val url = getUrl(path, bundleFilter)
 		if (url === null) {
@@ -447,7 +449,7 @@ class FilesManager {
 
 	/**
 	 * Transform the given path to a valid filesystem one.
-	 * 
+	 *
 	 * <ul>
 	 * <li>It replaces first '~' by the home directory of the current user.</li>
 	 * </ul>
