@@ -940,11 +940,7 @@ public class CodegenModelGenerator {
 					// Put Variables in the function call
 					for (int idx = 0; idx < callVars.getKey().size(); idx++) {
 						repFunc.addParameter(callVars.getKey().get(idx), callVars.getValue().get(idx));
-						/*
-						 * p("Called var " + idx + " " +
-						 * callVars.getKey().get(idx).getName() + " " +
-						 * callVars.getValue().get(idx).getName());
-						 */
+						//p("Called var " + idx + " " + callVars.getKey().get(idx).getName() + " " + callVars.getValue().get(idx).getName());
 					}
 					// identifyMergedInputRange(callVars); //NOT SUPPORTED YET
 
@@ -957,6 +953,7 @@ public class CodegenModelGenerator {
 					 */
 					// Add the function call to the for loop block
 					forLoop.getCodeElts().add(repFunc);
+
 					registerCallVariableToCoreBlock(operatorBlock, repFunc);
 					// operatorBlock.getLoopBlock().getCodeElts().add(repFunc);
 					// Save the functionCall in the dagvertexFunctionCall Map
@@ -1676,54 +1673,6 @@ public class CodegenModelGenerator {
 						+ ") ports and IDL loop prototype argument " + arg.getName());
 			}
 
-			// check if the port is link to edges of the hierarchical actor
-			// SDFAbstractVertex hsdfVertex = (SDFAbstractVertex)
-			// dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX,
-			// SDFAbstractVertex.class);
-			// int isHSDFCommonEdge = 0;
-			//// SDFEdge hsdfedge = hsdfVertex.getAssociatedEdge(port);
-			//// p("hsdfedge source " + hsdfedge.getSource() + " target " +
-			// hsdfedge.getTarget()
-			//// + " port left " + hsdfedge.getSourceLabel() + " port right " +
-			// hsdfedge.getTargetLabel());
-			//
-			//
-			//
-			// for(IInterface i : hsdfVertex.getInterfaces()){
-			// p("hsdf interface " + i.getName() + " direction " +
-			// i.getDirection().name());
-			// }
-			//
-			// if(dir == PortDirection.INPUT){
-			// for(SDFInterfaceVertex i : sdfVertex.getSources()){
-			// if(hsdfedge.getSourceLabel() ==
-			// sdfVertex.getAssociatedEdge(i).getSourceLabel()){
-			// isHSDFCommonEdge = 1;
-			// }
-			// if(isHSDFCommonEdge == 1) break;
-			// }
-			// }else{
-			//
-			// }
-			//
-			// for(SDFInterfaceVertex i : sdfVertex.getSources()){
-			// if(hsdfedge == sdfVertex.getAssociatedEdge(i)){
-			// isHSDFCommonEdge = 1;
-			// }
-			// if(isHSDFCommonEdge == 1) break;
-			// }
-			// for(SDFInterfaceVertex i : sdfVertex.getSinks()){
-			// if(hsdfedge == sdfVertex.getAssociatedEdge(i).){
-			// isHSDFCommonEdge = 1;
-			// }
-			// if(isHSDFCommonEdge == 1) break;
-			// }
-			// if(isHSDFCommonEdge == 1)
-			// {
-			// p("Common edge for actor " + sdfVertex.getName() + " port is " +
-			// port.getName());
-			// }
-
 			// Retrieve the Edge corresponding to the current Argument
 			// This is only done because of the scheduler that is merging
 			// consecutive buffers of an actor
@@ -1731,51 +1680,51 @@ public class CodegenModelGenerator {
 			BufferProperties subBufferProperties = null;
 			if (isInputActorTmp == true || isOutputActorTmp == true) {
 				switch (arg.getDirection()) {
-				case CodeGenArgument.OUTPUT: {
-					Set<DAGEdge> edges = dag.outgoingEdgesOf(dagVertex);
-					for (DAGEdge edge : edges) {
-						BufferAggregate bufferAggregate = (BufferAggregate) edge.getPropertyBean()
-								.getValue(BufferAggregate.propertyBeanName);
-						for (BufferProperties buffProperty : bufferAggregate) {
-							if (buffProperty.getSourceOutputPortID().equals(arg.getName())
-							/*
-							 * && buffProperty.getDataType().equals(
-							 * arg.getType())
-							 */) {
-								// check that this edge is not connected to a
-								// receive vertex
-								if (edge.getTarget().getKind() != null) {
-									dagEdge = edge;
-									subBufferProperties = buffProperty;
+					case CodeGenArgument.OUTPUT: {
+						Set<DAGEdge> edges = dag.outgoingEdgesOf(dagVertex);
+						for (DAGEdge edge : edges) {
+							BufferAggregate bufferAggregate = (BufferAggregate) edge.getPropertyBean()
+									.getValue(BufferAggregate.propertyBeanName);
+							for (BufferProperties buffProperty : bufferAggregate) {
+								if (buffProperty.getSourceOutputPortID().equals(arg.getName())
+								/*
+								 * && buffProperty.getDataType().equals(
+								 * arg.getType())
+								 */) {
+									// check that this edge is not connected to a
+									// receive vertex
+									if (edge.getTarget().getKind() != null) {
+										dagEdge = edge;
+										subBufferProperties = buffProperty;
+									}
 								}
 							}
 						}
+						break;
 					}
-					break;
-				}
-				case CodeGenArgument.INPUT: {
-					Set<DAGEdge> edges = dag.incomingEdgesOf(dagVertex);
-					for (DAGEdge edge : edges) {
-						BufferAggregate bufferAggregate = (BufferAggregate) edge.getPropertyBean()
-								.getValue(BufferAggregate.propertyBeanName);
-						for (BufferProperties buffProperty : bufferAggregate) {
-							if (buffProperty.getDestInputPortID().equals(arg.getName())
-							/*
-							 * && buffProperty.getDataType().equals(
-							 * arg.getType())
-							 */) {
-								// check that this edge is not connected to a
-								// send
-								// vertex
-								if (edge.getSource().getKind() != null) {
-									dagEdge = edge;
-									subBufferProperties = buffProperty;
+					case CodeGenArgument.INPUT: {
+						Set<DAGEdge> edges = dag.incomingEdgesOf(dagVertex);
+						for (DAGEdge edge : edges) {
+							BufferAggregate bufferAggregate = (BufferAggregate) edge.getPropertyBean()
+									.getValue(BufferAggregate.propertyBeanName);
+							for (BufferProperties buffProperty : bufferAggregate) {
+								if (buffProperty.getDestInputPortID().equals(arg.getName())
+								/*
+								 * && buffProperty.getDataType().equals(
+								 * arg.getType())
+								 */) {
+									// check that this edge is not connected to a
+									// send
+									// vertex
+									if (edge.getSource().getKind() != null) {
+										dagEdge = edge;
+										subBufferProperties = buffProperty;
+									}
 								}
 							}
 						}
+						break;
 					}
-					break;
-				}
 				}
 				/*
 				 * logger.log(Level.INFO, "Edge " +
