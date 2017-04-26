@@ -37,13 +37,16 @@
 
 package org.ietr.preesm.codegen.xtend.task;
 
+import org.ietr.dftools.workflow.AbstractWorkflowExecutor;
 import org.ietr.dftools.workflow.WorkflowException;
 
-// TODO: Auto-generated Javadoc
 /**
- * Exception thrown when an error has occured during the codegen.
+ * Exception thrown when an error has occurred during the codegen.
+ *
+ * This extends {@link WorkflowException} so that it is caught by the {@link AbstractWorkflowExecutor}.
  *
  * @author kdesnos
+ * @author Antoine Morvan
  */
 public class CodegenException extends WorkflowException {
 
@@ -57,7 +60,11 @@ public class CodegenException extends WorkflowException {
    *          the msg
    */
   public CodegenException(final String msg) {
-    super(msg);
+    this(msg, null);
+  }
+
+  public CodegenException(final String msg, final Throwable t) {
+    super(msg, t);
   }
 
 }

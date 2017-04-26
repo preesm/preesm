@@ -37,12 +37,18 @@
 
 package org.ietr.preesm.memory.script;
 
+import bsh.EvalError;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
@@ -87,7 +93,13 @@ public class MemoryScriptTask extends AbstractMemoryScriptTask {
 
     // execute
     final MemoryScriptEngine engine = new MemoryScriptEngine(valueAlignment, log, verbose, scenario);
-    engine.runScripts(dag, dataTypes, checkString);
+    try {
+      engine.runScripts(dag, dataTypes, checkString);
+    } catch (CoreException | IOException | URISyntaxException | EvalError e) {
+      String message = "An error occurred during memory scripts execution";
+      WorkflowLogger.getLogger().log(Level.SEVERE, message, e);
+      throw new WorkflowException(message, e);
+    }
     engine.updateMemEx(meg);
 
     if (!log.equals("")) {
