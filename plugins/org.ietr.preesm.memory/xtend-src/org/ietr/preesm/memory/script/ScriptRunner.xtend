@@ -1611,7 +1611,7 @@ class ScriptRunner {
 			} catch (NullPointerException exc) {
 				throw new WorkflowException(
 					'''SDFEdge «it.source.name»_«it.sourceLabel»->«it.target.name»_«it.targetLabel» has unknows type «it.
-						dataType.toString». Add the corresponding data type to the scenario.''')
+						dataType.toString». Add the corresponding data type to the scenario.''', exc)
 			}].toList
 
 		val outputs = sdfVertex.outgoingEdges.map[
@@ -1624,7 +1624,7 @@ class ScriptRunner {
 			} catch (NullPointerException exc) {
 				throw new WorkflowException(
 					'''SDFEdge «it.source.name»_«it.sourceLabel»->«it.target.name»_«it.targetLabel» has unknows type «it.
-						dataType.toString». Add the corresponding data type to the scenario.''')
+						dataType.toString». Add the corresponding data type to the scenario.''', exc)
 			}].toList
 
 		// Import the necessary libraries
