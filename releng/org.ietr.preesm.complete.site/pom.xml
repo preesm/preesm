@@ -172,7 +172,7 @@
       <plugin>
         <groupId>org.ietr.maven</groupId>
         <artifactId>sftp-maven-plugin</artifactId>
-        <version>2.0.2</version>
+        <version>2.1.0</version>
         <executions>
           <execution>
             <id>upload-repo</id>
@@ -181,6 +181,7 @@
               <serverId>sf-preesm-update-site</serverId>
               <serverHost>web.sourceforge.net</serverHost>
               <strictHostKeyChecking>false</strictHostKeyChecking>
+              <transferThreadCount>12</transferThreadCount>
               <mode>send</mode>
               <remotePath>/home/project-web/preesm/htdocs/gensite/</remotePath>
               <localPath>${project.build.directory}/gensite/</localPath>
