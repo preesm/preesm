@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
@@ -232,6 +234,202 @@ public class HSDFBuildLoops {
 		}
 		//p("setHierarchicalWorkingMemory topVertex " + topVertex.getName() + " nbBuf " + nbWorkingBufferAllocated + " bufSize " + bufSize);
 		return nbWorkingBufferAllocated;
+	}
+
+	private int getPGCD(int a, int b){
+		int r;
+		while (b != 0) {
+			r = a%b;
+			a = b;
+			b = r;
+		}
+		return a;
+	}
+
+	private int pg(String s){
+		p("generateClustering " + s);
+		return 0;
+	}
+
+	private List<SDFAbstractVertex> getPredessecors(SDFAbstractVertex v){
+		List <SDFAbstractVertex> l = new ArrayList<SDFAbstractVertex>();
+		List<SDFAbstractVertex> tmp = getInVertexs(v);
+		boolean exit = false;
+		do{
+			l.removeAll(tmp);
+			l.addAll(tmp);
+			List<SDFAbstractVertex> tmp1 = new ArrayList<SDFAbstractVertex>();
+			tmp1.addAll(tmp);
+			//tmp1.removeAll(l); // avoid cycles deadlock
+			if(tmp.isEmpty() == true)
+				exit = true;
+			tmp.clear();
+			for(SDFAbstractVertex e : tmp1){
+				tmp.addAll(getInVertexs(e));
+			}
+		}while(exit == false);
+		p("Predessecors of " + v.getName() + " are: ");
+		for(SDFAbstractVertex e : l){
+			p(" - " + e.getName());
+		}
+		return l;
+	}
+
+	private List<SDFAbstractVertex> getSuccessors(SDFAbstractVertex v){
+		List <SDFAbstractVertex> l = new ArrayList<SDFAbstractVertex>();
+		List<SDFAbstractVertex> tmp = getOutVertexs(v);
+		boolean exit = false;
+		do{
+			l.removeAll(tmp);
+			l.addAll(tmp);
+			List<SDFAbstractVertex> tmp1 = new ArrayList<SDFAbstractVertex>();
+			tmp1.addAll(tmp);
+			//tmp1.removeAll(l); // avoid cycles deadlock
+			if(tmp.isEmpty() == true)
+				exit = true;
+			tmp.clear();
+			for(SDFAbstractVertex e : tmp1){
+				tmp.addAll(getOutVertexs(e));
+			}
+		}while(exit == false);
+		p("Sucessors of " + v.getName() + " are: ");
+		for(SDFAbstractVertex e : l){
+			p(" - " + e.getName());
+		}
+		return l;
+	}
+
+	private List<SDFAbstractVertex> getInVertexs(SDFAbstractVertex v){
+		List<SDFAbstractVertex> inV = new ArrayList<SDFAbstractVertex>();
+		for(SDFInterfaceVertex i : v.getSources()){
+			SDFAbstractVertex vv = v.getAssociatedEdge(i).getSource();
+			if(vv instanceof SDFVertex){
+				if(vv != v){
+					inV.add(vv);
+					p("getInVertexs " + vv.getName() + " -> " + v.getName());
+				}else{
+					try {
+						throw new WorkflowException("HSDFBuildLoops Delays not supported when generating clustering");
+					} catch (WorkflowException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		return inV;
+	}
+	
+	private List<SDFAbstractVertex> getOutVertexs(SDFAbstractVertex v){
+		List<SDFAbstractVertex> outV = new ArrayList<SDFAbstractVertex>();
+		for(SDFInterfaceVertex i : v.getSinks()){
+			SDFAbstractVertex vv = v.getAssociatedEdge(i).getTarget();
+			if(vv instanceof SDFVertex){
+				if(vv != v){
+					outV.add(vv);
+					p("getOutVertexs " + v.getName() + " -> " + vv.getName());
+				}else{
+					try {
+						throw new WorkflowException("HSDFBuildLoops Delays not supported when generating clustering");
+					} catch (WorkflowException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		return outV;
+	}
+
+	private List<SDFAbstractVertex> clusteredVertexs = new ArrayList<SDFAbstractVertex>();
+	private SDFAbstractVertex leftVertex = null;
+	private SDFAbstractVertex rightVertex = null;
+
+	private int simpleClusteringHeuristic(List<SDFAbstractVertex> inV, List<SDFAbstractVertex> outV, SDFAbstractVertex current){
+		
+		/* leftVertex ---> rightVertex */
+		/* AN HEURISTIC CAN BE PLACED HERE */
+		for(SDFAbstractVertex v : inV){
+			if(clusteredVertexs.contains(v) == false){
+				this.rightVertex = current;
+				this.leftVertex = v;
+				clusteredVertexs.add(v);
+				return 0; // success
+			}
+		}
+		for(SDFAbstractVertex v : outV){
+			if(clusteredVertexs.contains(v) == false){
+				this.leftVertex = current;
+				this.rightVertex = v;
+				clusteredVertexs.add(v);
+				return 0; // success
+			}
+		}
+		return -1;
+	}
+
+	private Map<SDFAbstractVertex, List<SDFAbstractVertex>> linkPred;
+	private Map<SDFAbstractVertex, List<SDFAbstractVertex>> linkSucc;
+	
+	public REPVertex generateClustering(List<SDFAbstractVertex> vertexs){
+		
+		
+		for(SDFAbstractVertex e : vertexs){
+			getPredessecors(e);
+			getSuccessors(e);
+		}
+		
+		REPVertex repVertexs = new REPVertex();
+		int first = 0;//new Random().nextInt();
+		List<SDFAbstractVertex> vertexsCpy = new ArrayList<SDFAbstractVertex>();
+		for(SDFAbstractVertex v : vertexs) vertexsCpy.add(v);
+		/* start clustering from this vertex */
+		int nbActor = vertexsCpy.size();
+		int nbActorLeft = nbActor;
+		SDFAbstractVertex current = vertexsCpy.get((first)%vertexs.size()); // get first actor to be clustered
+		clusteredVertexs.add(current);
+		nbActorLeft--;
+		List<SDFAbstractVertex> inV = getInVertexs(current);
+		List<SDFAbstractVertex> outV = getOutVertexs(current);
+
+		while(nbActorLeft != 0){
+
+			if(simpleClusteringHeuristic(inV, outV, current) == 0){
+				repVertexs.setLeftVertex(leftVertex);
+				repVertexs.setRightVertex(rightVertex);
+				if(clusteredVertexs.contains(leftVertex) == false) clusteredVertexs.add(leftVertex); // mark as clustered
+				if(clusteredVertexs.contains(rightVertex) == false) clusteredVertexs.add(rightVertex); // mark as clustered
+				inV.remove(leftVertex); inV.remove(rightVertex); // nothing changed when not present
+				outV.remove(leftVertex); outV.remove(rightVertex); // nothing changed when not present
+				int pgdc = -1;
+				int repLeft = -1;
+				int repRight = -1;
+				try {
+					pgdc = getPGCD(leftVertex.getNbRepeatAsInteger(), rightVertex.getNbRepeatAsInteger());
+					repLeft = leftVertex.getNbRepeatAsInteger()/pgdc;
+					repRight = rightVertex.getNbRepeatAsInteger()/pgdc;
+				} catch (InvalidExpressionException e) {
+					// TODO Auto-generated catch block
+					try {
+						throw new WorkflowException("HSDFBuildLoops fail to get repetion vertors: pgdc" + pgdc + " repLeft" + repLeft + " repRight" + repRight);
+					} catch (WorkflowException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				repVertexs.setRepeat(pgdc);
+				repVertexs.setRepeatLeft(repLeft);
+				repVertexs.setRepeatRight(repRight);
+				p("Found " + pgdc + " ( " + repLeft + " " + this.leftVertex.getName() + " -> " + repRight + " " + this.rightVertex.getName() + " ) ");
+				nbActorLeft--;
+			}else{
+				nbActorLeft--;
+			}
+		}
+		/* pg(current.getAssociatedEdge(current.getSources().get(0)).getSource().getName() + " -> " + current.getName()); */
+		/* for(SDFAbstractVertex v : vertexsCpy){ } */
+		this.clusteredVertexs.clear();
+		return repVertexs;
 	}
 
 	public SDFGraph execute(SDFGraph inputGraph) throws WorkflowException {

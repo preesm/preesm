@@ -88,6 +88,8 @@ import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.ietr.preesm.algorithm.transforms.HSDFBuildLoops;
+import org.ietr.preesm.algorithm.transforms.REPVertex;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.IDLPrototypeFactory;
 import org.ietr.preesm.codegen.idl.Prototype;
@@ -840,6 +842,18 @@ public class CodegenModelGenerator {
 				//	p("\tSDF Abs Vertex " + v.getName());
 				//}
 			}
+			
+			HSDFBuildLoops loopBuilder = new HSDFBuildLoops();
+			REPVertex repV = loopBuilder.generateClustering(repVertexs);
+			//REPVertex r = repV;
+			//while(r != null){
+			//	//p(r.r + " (" + r.ra + " * " + r.a.getName() + " " + r.rb + " * " + r.b.getName() + ")");
+			//	if(r.get != null){
+			//		r = r.repVertex;
+			//	}else{
+			//		break; 
+			//	}
+			//}
 
 			// put vertex in the hierarchical actor in right order
 			List<SDFAbstractVertex> sortedRepVertexs = new ArrayList<SDFAbstractVertex>();
