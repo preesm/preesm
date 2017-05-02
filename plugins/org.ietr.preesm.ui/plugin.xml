@@ -1348,4 +1348,14 @@
       </handler>
    </extension>
 
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.ietr.preesm.ui.perspective.PreesmPerspective"
+            fixed="false"
+            icon="icons/preesmLogo_48x48.bmp"
+            id="org.ietr.preesm.ui.perspective"
+            name="Preesm">
+      </perspective>
+   </extension>
 </plugin>

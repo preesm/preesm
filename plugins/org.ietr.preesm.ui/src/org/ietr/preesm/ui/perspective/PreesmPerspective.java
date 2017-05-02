@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  *******************************************************************************/
-package org.ietr.preesm.rcp.utils;
+package org.ietr.preesm.ui.perspective;
 
 import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.ui.IFolderLayout;
