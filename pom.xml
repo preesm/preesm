@@ -76,6 +76,25 @@
 
   <build>
     <plugins>
+		<!-- Directory plugin to find parent root directory absolute path -->
+		<plugin>
+		  <groupId>org.commonjava.maven.plugins</groupId>
+		  <artifactId>directory-maven-plugin</artifactId>
+		  <version>0.1</version>
+		  <executions>
+			<execution>
+			  <id>directories</id>
+			  <goals>
+				<goal>highest-basedir</goal>
+			  </goals>
+			  <phase>initialize</phase>
+			  <configuration>
+				<property>main.basedir</property>
+			  </configuration>
+			</execution>
+		  </executions>
+		</plugin>
+      <plugin>
       <plugin>
         <!-- enable tycho build extension -->
         <groupId>org.eclipse.tycho</groupId>
@@ -181,7 +200,7 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>2.17</version>
         <configuration>
-          <configLocation>${session.executionRootDirectory}/releng/VAADER_checkstyle.xml</configLocation>
+          <configLocation>${main.basedir}/releng/VAADER_checkstyle.xml</configLocation>
         </configuration>
         <dependencies>
           <dependency>
