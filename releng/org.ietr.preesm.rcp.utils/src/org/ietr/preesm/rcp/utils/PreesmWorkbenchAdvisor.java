@@ -39,17 +39,21 @@ import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 
+/**
+ *
+ */
 public class PreesmWorkbenchAdvisor extends WorkbenchAdvisor {
 
-	private static final String PERSPECTIVE_ID = "org.ietr.preesm.rcp.utils.PreesmPerspective";
+  private static final String PERSPECTIVE_ID = "org.ietr.preesm.rcp.utils.PreesmPerspective";
 
-	public WorkbenchWindowAdvisor createWorkbenchWindowAdvisor(
-			IWorkbenchWindowConfigurer configurer) {
-		return new PreesmWorkbenchWindowAdvisor(configurer);
-	}
+  @Override
+  public WorkbenchWindowAdvisor createWorkbenchWindowAdvisor(final IWorkbenchWindowConfigurer configurer) {
+    return new PreesmWorkbenchWindowAdvisor(configurer);
+  }
 
-	public String getInitialWindowPerspectiveId() {
-		return PERSPECTIVE_ID;
-	}
+  @Override
+  public String getInitialWindowPerspectiveId() {
+    return PreesmWorkbenchAdvisor.PERSPECTIVE_ID;
+  }
 
 }
