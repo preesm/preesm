@@ -2,6 +2,7 @@ package org.ietr.preesm.algorithm.transforms;
 
 //import java.awt.List;
 import java.util.List;
+import java.awt.Choice;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -256,11 +257,10 @@ public class HSDFBuildLoops {
 		List<SDFAbstractVertex> tmp = getInVertexs(v);
 		boolean exit = false;
 		do{
-			l.removeAll(tmp);
+			tmp.removeAll(l); // avoid cycles deadlock
 			l.addAll(tmp);
 			List<SDFAbstractVertex> tmp1 = new ArrayList<SDFAbstractVertex>();
 			tmp1.addAll(tmp);
-			//tmp1.removeAll(l); // avoid cycles deadlock
 			if(tmp.isEmpty() == true)
 				exit = true;
 			tmp.clear();
@@ -280,11 +280,10 @@ public class HSDFBuildLoops {
 		List<SDFAbstractVertex> tmp = getOutVertexs(v);
 		boolean exit = false;
 		do{
-			l.removeAll(tmp);
+			tmp.removeAll(l); // avoid cycles deadlock
 			l.addAll(tmp);
 			List<SDFAbstractVertex> tmp1 = new ArrayList<SDFAbstractVertex>();
 			tmp1.addAll(tmp);
-			//tmp1.removeAll(l); // avoid cycles deadlock
 			if(tmp.isEmpty() == true)
 				exit = true;
 			tmp.clear();
@@ -299,6 +298,16 @@ public class HSDFBuildLoops {
 		return l;
 	}
 
+	private boolean isMergeable(SDFAbstractVertex a, SDFAbstractVertex b){
+		List<SDFAbstractVertex> prodA = getPredessecors(a);
+		List<SDFAbstractVertex> prodB = getPredessecors(b);
+		List<SDFAbstractVertex> succA = getSuccessors(a);
+		List<SDFAbstractVertex> succB = getSuccessors(b);
+		prodA.retainAll(succB);
+		prodB.retainAll(succA);
+		return prodA.isEmpty() && prodB.isEmpty();
+	}
+
 	private List<SDFAbstractVertex> getInVertexs(SDFAbstractVertex v){
 		List<SDFAbstractVertex> inV = new ArrayList<SDFAbstractVertex>();
 		for(SDFInterfaceVertex i : v.getSources()){
@@ -306,7 +315,7 @@ public class HSDFBuildLoops {
 			if(vv instanceof SDFVertex){
 				if(vv != v){
 					inV.add(vv);
-					p("getInVertexs " + vv.getName() + " -> " + v.getName());
+					//p("getInVertexs " + vv.getName() + " -> " + v.getName());
 				}else{
 					try {
 						throw new WorkflowException("HSDFBuildLoops Delays not supported when generating clustering");
@@ -327,7 +336,7 @@ public class HSDFBuildLoops {
 			if(vv instanceof SDFVertex){
 				if(vv != v){
 					outV.add(vv);
-					p("getOutVertexs " + v.getName() + " -> " + vv.getName());
+					//p("getOutVertexs " + v.getName() + " -> " + vv.getName());
 				}else{
 					try {
 						throw new WorkflowException("HSDFBuildLoops Delays not supported when generating clustering");
@@ -342,27 +351,38 @@ public class HSDFBuildLoops {
 	}
 
 	private List<SDFAbstractVertex> clusteredVertexs = new ArrayList<SDFAbstractVertex>();
+	private List<SDFAbstractVertex> visitedClusteredVertexs = new ArrayList<SDFAbstractVertex>();
+	private List <SDFAbstractVertex> chooseNewV = new ArrayList<SDFAbstractVertex>();
 	private SDFAbstractVertex leftVertex = null;
 	private SDFAbstractVertex rightVertex = null;
 
 	private int simpleClusteringHeuristic(List<SDFAbstractVertex> inV, List<SDFAbstractVertex> outV, SDFAbstractVertex current){
-		
 		/* leftVertex ---> rightVertex */
 		/* AN HEURISTIC CAN BE PLACED HERE */
 		for(SDFAbstractVertex v : inV){
-			if(clusteredVertexs.contains(v) == false){
+			if((clusteredVertexs.contains(v)) == false && (isMergeable(v, current) == true)){
 				this.rightVertex = current;
+				if(clusteredVertexs.contains(this.rightVertex) == false){
+					clusteredVertexs.add(this.rightVertex); // mark as clustered
+				}
 				this.leftVertex = v;
 				clusteredVertexs.add(v);
-				return 0; // success
+				inV.remove(this.leftVertex);
+				inV.remove(this.rightVertex); // nothing changed when not present
+				return 0;
 			}
 		}
 		for(SDFAbstractVertex v : outV){
-			if(clusteredVertexs.contains(v) == false){
+			if((clusteredVertexs.contains(v) == false) && (isMergeable(v, current) == true)){
 				this.leftVertex = current;
+				if(clusteredVertexs.contains(this.leftVertex) == false){
+					clusteredVertexs.add(this.leftVertex); // mark as clustered
+				}
 				this.rightVertex = v;
 				clusteredVertexs.add(v);
-				return 0; // success
+				outV.remove(this.leftVertex);
+				outV.remove(this.rightVertex); // nothing changed when not present
+				return 0;
 			}
 		}
 		return -1;
@@ -370,15 +390,14 @@ public class HSDFBuildLoops {
 
 	private Map<SDFAbstractVertex, List<SDFAbstractVertex>> linkPred;
 	private Map<SDFAbstractVertex, List<SDFAbstractVertex>> linkSucc;
-	
+
 	public REPVertex generateClustering(List<SDFAbstractVertex> vertexs){
-		
-		
-		for(SDFAbstractVertex e : vertexs){
-			getPredessecors(e);
-			getSuccessors(e);
-		}
-		
+
+		//for(SDFAbstractVertex e : vertexs){
+			//getPredessecors(e);
+			//getSuccessors(e);
+		//}
+
 		REPVertex repVertexs = new REPVertex();
 		int first = 0;//new Random().nextInt();
 		List<SDFAbstractVertex> vertexsCpy = new ArrayList<SDFAbstractVertex>();
@@ -397,10 +416,6 @@ public class HSDFBuildLoops {
 			if(simpleClusteringHeuristic(inV, outV, current) == 0){
 				repVertexs.setLeftVertex(leftVertex);
 				repVertexs.setRightVertex(rightVertex);
-				if(clusteredVertexs.contains(leftVertex) == false) clusteredVertexs.add(leftVertex); // mark as clustered
-				if(clusteredVertexs.contains(rightVertex) == false) clusteredVertexs.add(rightVertex); // mark as clustered
-				inV.remove(leftVertex); inV.remove(rightVertex); // nothing changed when not present
-				outV.remove(leftVertex); outV.remove(rightVertex); // nothing changed when not present
 				int pgdc = -1;
 				int repLeft = -1;
 				int repRight = -1;
@@ -423,12 +438,25 @@ public class HSDFBuildLoops {
 				p("Found " + pgdc + " ( " + repLeft + " " + this.leftVertex.getName() + " -> " + repRight + " " + this.rightVertex.getName() + " ) ");
 				nbActorLeft--;
 			}else{
-				nbActorLeft--;
+				visitedClusteredVertexs.add(current);
+				/* no vertex left to be clustered on vertex current */
+				chooseNewV.addAll(getInVertexs(current));
+				chooseNewV.addAll(getOutVertexs(current));
+				chooseNewV.removeAll(visitedClusteredVertexs);
+				/* at this point we got clustered vertex that have non-clustered neighboors */ 
+				for(SDFAbstractVertex v : chooseNewV){
+					current = v;
+					break;
+				}
+				inV = getInVertexs(current);
+				outV = getOutVertexs(current);
 			}
 		}
 		/* pg(current.getAssociatedEdge(current.getSources().get(0)).getSource().getName() + " -> " + current.getName()); */
 		/* for(SDFAbstractVertex v : vertexsCpy){ } */
 		this.clusteredVertexs.clear();
+		this.visitedClusteredVertexs.clear();
+		this.chooseNewV.clear();
 		return repVertexs;
 	}
 
