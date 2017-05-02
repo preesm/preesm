@@ -36,6 +36,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
 Export-Package: org.ietr.preesm.ui.console,
+ org.ietr.preesm.ui.perspective,
  org.ietr.preesm.ui.pimm.features,
  org.ietr.preesm.ui.scenario.editor,
  org.ietr.preesm.ui.scenario.editor.codegen,
