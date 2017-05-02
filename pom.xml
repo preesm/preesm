@@ -66,12 +66,6 @@
       <layout>p2</layout>
       <url>${eclipse.mirror}/releases/neon/</url>
     </repository>
-    <!-- add Neon Update Repository -->
-    <repository>
-      <id>Neon Updates</id>
-      <layout>p2</layout>
-      <url>http://download.eclipse.org/eclipse/updates/4.6</url>
-    </repository>
     <!-- add Preesm repository to resolve dependencies -->
     <repository>
       <id>Complete Repo</id>
