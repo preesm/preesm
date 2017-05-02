@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Preesm" uid="org.ietr.preesm.product" id="org.eclipse.platform.ide" application="org.eclipse.ui.ide.workbench" version="2.2.6" useFeatures="true" includeLaunchers="true">
+<product name="Preesm" uid="org.ietr.preesm.product" id="org.ietr.preesm.rcp.utils.product" application="org.ietr.preesm.rcp.utils.application" version="2.2.6" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
@@ -30,94 +30,23 @@
    </launcher>
 
    <features>
-      <feature id="org.ietr.preesm.dev.feature"/>
-      <feature id="org.eclipse.emf.mapping.ecore"/>
-      <feature id="org.eclipse.emf.databinding.edit.source"/>
-      <feature id="org.eclipse.graphiti.feature.examples"/>
-      <feature id="org.eclipse.emf.codegen.ui.source"/>
-      <feature id="org.ietr.dftools.feature"/>
-      <feature id="org.eclipse.emf.databinding.source"/>
-      <feature id="org.eclipse.graphiti.source.feature"/>
-      <feature id="org.eclipse.xtext.xbase.lib"/>
-      <feature id="org.eclipse.emf.codegen"/>
-      <feature id="org.eclipse.emf"/>
-      <feature id="org.eclipse.egit"/>
-      <feature id="org.eclipse.emf.mapping.ecore.editor.source"/>
-      <feature id="org.eclipse.gef"/>
-      <feature id="org.eclipse.graphiti.export.feature"/>
-      <feature id="org.sonatype.tycho.m2e.feature"/>
-      <feature id="org.eclipse.draw2d"/>
-      <feature id="org.eclipse.xtext.runtime"/>
-      <feature id="org.eclipse.emf.edit"/>
-      <feature id="org.ietr.externaldeps.aio.deps"/>
-      <feature id="org.eclipse.graphiti.sdk.plus.feature"/>
-      <feature id="org.eclipse.emf.codegen.ui"/>
-      <feature id="org.eclipse.emf.ecore.editor.source"/>
-      <feature id="org.eclipse.emf.databinding.edit"/>
-      <feature id="org.eclipse.emf.edit.source"/>
-      <feature id="org.eclipse.emf.codegen.ecore"/>
-      <feature id="org.eclipse.emf.converter"/>
-      <feature id="org.eclipse.emf.mapping.ecore.source"/>
-      <feature id="org.eclipse.emf.edit.ui"/>
-      <feature id="org.eclipse.m2e.feature"/>
-      <feature id="org.eclipse.xtext.xbase.lib.source"/>
-      <feature id="org.eclipse.rcp"/>
-      <feature id="org.eclipse.xtext.ui"/>
-      <feature id="org.eclipse.emf.codegen.source"/>
-      <feature id="org.eclipse.gef.source"/>
-      <feature id="org.eclipse.emf.sdk"/>
-      <feature id="org.eclipse.emf.mapping.source"/>
-      <feature id="org.eclipse.emf.codegen.ecore.ui.source"/>
-      <feature id="org.eclipse.draw2d.source"/>
-      <feature id="org.eclipse.emf.doc"/>
-      <feature id="org.eclipse.pde"/>
-      <feature id="org.ietr.dftools.feature.source"/>
-      <feature id="org.eclipse.emf.edit.ui.source"/>
-      <feature id="org.eclipse.emf.common.ui"/>
-      <feature id="org.eclipse.draw2d.sdk"/>
-      <feature id="org.eclipse.emf.converter.source"/>
-      <feature id="org.eclipse.jdt"/>
-      <feature id="org.eclipse.emf.common"/>
-      <feature id="org.eclipse.graphiti.feature.examples.source"/>
-      <feature id="org.eclipse.graphiti.feature"/>
-      <feature id="org.eclipse.graphiti.feature.tools.source"/>
-      <feature id="org.eclipse.emf.mapping.ui"/>
-      <feature id="org.eclipse.emf.codegen.ecore.source"/>
-      <feature id="org.eclipse.xtend.sdk"/>
-      <feature id="org.eclipse.emf.mapping"/>
-      <feature id="org.eclipse.emf.mapping.ui.source"/>
-      <feature id="org.eclipse.emf.ecore"/>
-      <feature id="org.eclipse.emf.ecore.edit.source"/>
-      <feature id="org.eclipse.graphiti.feature.tools"/>
-      <feature id="net.sf.eclipsecs"/>
-      <feature id="org.ietr.graphiti.feature.source"/>
-      <feature id="org.eclipse.gef.sdk"/>
-      <feature id="org.eclipse.emf.codegen.ecore.ui"/>
-      <feature id="org.eclipse.emf.doc.source"/>
-      <feature id="org.eclipse.emf.ecore.editor"/>
-      <feature id="org.eclipse.emf.source"/>
-      <feature id="org.eclipse.jgit"/>
-      <feature id="org.eclipse.emf.mapping.ecore.editor"/>
-      <feature id="org.ietr.graphiti.feature"/>
-      <feature id="org.eclipse.emf.databinding"/>
-      <feature id="org.eclipse.emf.ecore.edit"/>
-      <feature id="org.eclipse.graphiti.sdk.feature"/>
-      <feature id="org.eclipse.e4.rcp"/>
-      <feature id="org.eclipse.emf.common.ui.source"/>
       <feature id="org.ietr.preesm.feature"/>
-      <feature id="org.eclipse.equinox.p2.core.feature"/>
-      <feature id="org.eclipse.equinox.p2.discovery.feature"/>
-      <feature id="org.eclipse.equinox.p2.extras.feature"/>
-      <feature id="org.eclipse.equinox.p2.rcp.feature"/>
-      <feature id="org.eclipse.equinox.p2.user.ui"/>
       <feature id="org.eclipse.platform"/>
+      <feature id="org.eclipse.emf.ecore"/>
+      <feature id="org.eclipse.equinox.p2.user.ui"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
       <feature id="org.eclipse.help"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"/>
+      <feature id="org.eclipse.equinox.p2.extras.feature"/>
+      <feature id="org.eclipse.rcp"/>
+      <feature id="org.eclipse.emf.common"/>
+      <feature id="org.eclipse.equinox.p2.core.feature"/>
+      <feature id="org.eclipse.ecf.core.feature"/>
+      <feature id="org.eclipse.equinox.p2.rcp.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.feature"/>
       <feature id="org.eclipse.ecf.core.ssl.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
-      <feature id="org.eclipse.ecf.filetransfer.feature"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"/>
-      <feature id="org.eclipse.ecf.core.feature"/>
+      <feature id="org.eclipse.e4.rcp"/>
    </features>
 
    <configurations>
@@ -128,10 +57,6 @@
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
    </configurations>
-
-   <repositories>
-      <repository location="http://preesm.sourceforge.net/eclipse/update-site/" enabled="true" />
-   </repositories>
 
    <preferencesInfo>
       <targetfile overwrite="false"/>
