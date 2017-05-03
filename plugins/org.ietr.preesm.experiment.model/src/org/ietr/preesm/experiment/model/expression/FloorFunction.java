@@ -41,19 +41,19 @@ import org.nfunk.jep.ParseException;
 import org.nfunk.jep.function.PostfixMathCommand;
 
 /**
- * The Class CeilFunction.
+ * The Class FloorFunction.
  */
-public class CeilFunction extends PostfixMathCommand {
+public class FloorFunction extends PostfixMathCommand {
 
   /**
-   * Instantiates a new ceil function.
+   * Instantiates a new floor function.
    */
-  public CeilFunction() {
+  public FloorFunction() {
     this.numberOfParameters = -1;
   }
 
   /**
-   * Calculates the result of applying the ceil function to the top of the stack and pushes it back on the stack.
+   * Calculates the result of applying the floor function to the top of the stack and pushes it back on the stack.
    *
    * @param stack
    *          the stack
@@ -63,7 +63,7 @@ public class CeilFunction extends PostfixMathCommand {
   @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
   public void run(final Stack stack) throws ParseException {
-    stack.push(Math.ceil((Double) (stack.pop())));
+    stack.push(Math.floor((Double) (stack.pop())));
   }
 
 }
