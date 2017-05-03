@@ -1,6 +1,6 @@
 package org.ietr.preesm.core.test;
 
-import org.ietr.preesm.core.expression.CeilFunction;
+import org.ietr.preesm.experiment.model.expression.CeilFunction;
 import org.junit.Assert;
 import org.junit.Test;
 

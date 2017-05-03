@@ -34,7 +34,7 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  *******************************************************************************/
 
-package org.ietr.preesm.core.expression;
+package org.ietr.preesm.experiment.model.expression;
 
 import org.nfunk.jep.ASTConstant;
 import org.nfunk.jep.ASTFunNode;

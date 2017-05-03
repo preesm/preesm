@@ -2,7 +2,6 @@
  * Copyright or © or Copr. 2012 - 2017 IETR/INSA:
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Maxime Pelcat <Maxime.Pelcat@insa-rennes.fr> (2012)
  *
  * This software is a computer program whose purpose is to prototype
@@ -35,93 +34,74 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  *******************************************************************************/
 
-package org.ietr.preesm.core.expression;
+package org.ietr.preesm.experiment.model.expression;
 
-import org.nfunk.jep.Variable;
+import java.util.UUID;
+import org.nfunk.jep.ASTVarNode;
+import org.nfunk.jep.JEP;
+import org.nfunk.jep.Node;
+import org.nfunk.jep.ParseException;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class Parameter.
+ * The Class ExprParser.
  */
-public class Parameter extends Variable implements Cloneable {
+public class ExprParser {
 
-  /** The sdx index. */
-  public int sdxIndex;
-
-  /**
-   * Instantiates a new parameter.
-   *
-   * @param name
-   *          the name
-   */
-  public Parameter(final String name) {
-    super(name);
-    // TODO Auto-generated constructor stub
-  }
+  /** The to parse. */
+  protected String toParse;
 
   /**
-   * Instantiates a new parameter.
+   * Instantiates a new expr parser.
    *
-   * @param name
-   *          the name
-   * @param value
-   *          the value
+   * @param val
+   *          the val
    */
-  public Parameter(final String name, final Object value) {
-    super(name, value);
-    // TODO Auto-generated constructor stub
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#clone()
-   */
-  @Override
-  public Parameter clone() {
-    final Parameter newParam = new Parameter(this.name);
-    newParam.setValue(getValue());
-    newParam.setSdxIndex(getSdxIndex());
-    return newParam;
+  public ExprParser(final String val) {
+    this.toParse = val;
   }
 
   /**
-   * Gets the sdx index.
+   * Start parser.
    *
-   * @return the sdx index
+   * @return the node
    */
-  public int getSdxIndex() {
-    return this.sdxIndex;
-  }
+  public Node startParser() {
+    try {
+      final JEP jep = new JEP();
+      jep.setAllowUndeclared(true);
+      try {
+        jep.addStandardFunctions();
+        jep.addStandardConstants();
+        if (this.toParse.contains("\"")) {
+          this.toParse = this.toParse.replace("\"", "");
+          final ASTVarNode var = new ASTVarNode(UUID.randomUUID().hashCode());
+          var.setVar(new Parameter(this.toParse));
+          return var;
+        }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.nfunk.jep.Variable#getValue()
-   */
-  @Override
-  public Object getValue() {
-    return super.getValue();
-  }
+        System.out.println("Chain to parse : " + this.toParse);
+        this.toParse = this.toParse.replace(" ", "");
+        if (this.toParse.charAt(0) == '%') {
+          this.toParse = "ceil(" + this.toParse.substring(1) + ")";
+        }
+        for (int i = 1; i < this.toParse.length(); i++) {
+          if ((this.toParse.charAt(i) == '%') && ((this.toParse.charAt(i - 1) == '*') || (this.toParse.charAt(i - 1) == '/')
+              || (this.toParse.charAt(i - 1) == '+') || (this.toParse.charAt(i - 1) == '-') || (this.toParse.charAt(i - 1) == '('))) {
+            this.toParse = this.toParse.substring(0, i) + "ceil" + this.toParse.substring(i + 1);
+          }
+        }
+        System.out.println("Chain to parse : " + this.toParse);
+        jep.addFunction("ceil", new CeilFunction());
+        final Node mainNode = jep.parse(this.toParse);
+        return mainNode;
 
-  /**
-   * Sets the sdx index.
-   *
-   * @param index
-   *          the new sdx index
-   */
-  public void setSdxIndex(final int index) {
-    this.sdxIndex = index;
+      } catch (final ParseException e) {
+        e.printStackTrace();
+      }
+    } catch (final Exception e) {
+      e.printStackTrace();
+    }
+    return null;
   }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.nfunk.jep.Variable#setValue(java.lang.Object)
-   */
-  @Override
-  public boolean setValue(final Object value) {
-    return super.setValue(value);
-  }
-
 }

@@ -1,6 +1,6 @@
 package org.ietr.preesm.core.test;
 
-import org.ietr.preesm.core.expression.ExprParser;
+import org.ietr.preesm.experiment.model.expression.ExprParser;
 import org.junit.Test;
 import org.nfunk.jep.JEP;
 

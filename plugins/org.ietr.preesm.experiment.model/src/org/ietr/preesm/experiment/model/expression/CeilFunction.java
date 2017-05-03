@@ -34,74 +34,80 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  *******************************************************************************/
 
-package org.ietr.preesm.core.expression;
+package org.ietr.preesm.experiment.model.expression;
 
-import java.util.UUID;
-import org.nfunk.jep.ASTVarNode;
-import org.nfunk.jep.JEP;
-import org.nfunk.jep.Node;
+import java.util.Stack;
 import org.nfunk.jep.ParseException;
+import org.nfunk.jep.function.PostfixMathCommand;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class ExprParser.
+ * The Class CeilFunction.
  */
-public class ExprParser {
-
-  /** The to parse. */
-  protected String toParse;
+public class CeilFunction extends PostfixMathCommand {
 
   /**
-   * Instantiates a new expr parser.
-   *
-   * @param val
-   *          the val
+   * Instantiates a new ceil function.
    */
-  public ExprParser(final String val) {
-    this.toParse = val;
+  public CeilFunction() {
+    this.numberOfParameters = -1;
   }
 
   /**
-   * Start parser.
+   * Ceil.
    *
-   * @return the node
+   * @param d1
+   *          the d 1
+   * @return the double
    */
-  public Node startParser() {
-    try {
-      final JEP jep = new JEP();
-      jep.setAllowUndeclared(true);
-      try {
-        jep.addStandardFunctions();
-        jep.addStandardConstants();
-        if (this.toParse.contains("\"")) {
-          this.toParse = this.toParse.replace("\"", "");
-          final ASTVarNode var = new ASTVarNode(UUID.randomUUID().hashCode());
-          var.setVar(new Parameter(this.toParse));
-          return var;
-        }
+  public Double ceil(final Number d1) {
+    return Math.ceil(d1.doubleValue());
+  }
 
-        System.out.println("Chain to parse : " + this.toParse);
-        this.toParse = this.toParse.replace(" ", "");
-        if (this.toParse.charAt(0) == '%') {
-          this.toParse = "ceil(" + this.toParse.substring(1) + ")";
-        }
-        for (int i = 1; i < this.toParse.length(); i++) {
-          if ((this.toParse.charAt(i) == '%') && ((this.toParse.charAt(i - 1) == '*') || (this.toParse.charAt(i - 1) == '/')
-              || (this.toParse.charAt(i - 1) == '+') || (this.toParse.charAt(i - 1) == '-') || (this.toParse.charAt(i - 1) == '('))) {
-            this.toParse = this.toParse.substring(0, i) + "ceil" + this.toParse.substring(i + 1);
-          }
-        }
-        System.out.println("Chain to parse : " + this.toParse);
-        jep.addFunction("ceil", new CeilFunction());
-        final Node mainNode = jep.parse(this.toParse);
-        return mainNode;
-
-      } catch (final ParseException e) {
-        e.printStackTrace();
-      }
-    } catch (final Exception e) {
-      e.printStackTrace();
+  /**
+   * Adds two numbers together. The parameters can be of type Number, Complex, or String. If a certain combination of types is not supported, a ParseException
+   * is thrown.
+   *
+   * @param param1
+   *          The first parameter to be added.
+   * @return The sum of param1 and param2, or concatenation of the two if they are Strings.
+   * @throws ParseException
+   *           the parse exception
+   */
+  public Object ceil(final Object param1) throws ParseException {
+    if (param1 instanceof Number) {
+      return ceil((Number) param1);
+    } else if ((param1 instanceof String)) {
+      return "%" + (String) param1;
     }
-    return null;
+
+    throw new ParseException("Invalid parameter type");
   }
+
+  /**
+   * Calculates the result of applying the "+" operator to the arguments from the stack and pushes it back on the stack.
+   *
+   * @param stack
+   *          the stack
+   * @throws ParseException
+   *           the parse exception
+   */
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  @Override
+  public void run(final Stack stack) throws ParseException {
+    checkStack(stack);// check the stack
+
+    Object ceil;
+    Object param1;
+    // get the parameter from the stack
+    param1 = stack.pop();
+
+    // add it to the sum (order is important for String arguments)
+    ceil = ceil(param1);
+
+    stack.push(ceil);
+
+    return;
+  }
+
 }
