@@ -1,5 +1,7 @@
 package org.ietr.preesm.experiment.model.expression;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
@@ -18,24 +20,43 @@ import org.nfunk.jep.ParseException;
 public class ExpressionEvaluator {
 
   /**
+   * Take an {@link Expression}, use its eContainers to lookup parameters and finally evaluates the expression to a long value representing the result
    *
    */
-  public static final String evaluate(final Expression expression) {
-    final String allExpression = expression.getString();
+  public static final long evaluate(final Expression expression) {
+    final Parameterizable parameterizableObj = ExpressionEvaluator.lookUpParameters(expression);
+    final Map<String, Number> addInputParameterValues = ExpressionEvaluator.addInputParameterValues(parameterizableObj);
+    return ExpressionEvaluator.evaluate(expression.getString(), addInputParameterValues);
+  }
 
-    Parameterizable parameterizableObj = lookUpParameters(expression);
+  public static final long evaluate(final String expression) {
+    return ExpressionEvaluator.evaluate(expression, null);
+  }
 
+  /**
+   */
+  public static final long evaluate(final String expression, final Map<String, Number> addInputParameterValues) {
+    final JEP jep = ExpressionEvaluator.initJep(addInputParameterValues);
+    long result;
     try {
-      final JEP jep = new JEP();
-      addInputParameterValues(parameterizableObj, jep);
-      final long round = parse(allExpression, jep);
-
-      return Long.toString(round);
+      result = ExpressionEvaluator.parse(expression, jep);
+      return result;
     } catch (final ParseException e) {
-      throw new RuntimeException("Parsing Error, check expression syntax" + " : " + allExpression, e);
-    } catch (final NumberFormatException e) {
-      throw new RuntimeException("Evaluation Error, check parameter dependencies" + " : " + allExpression, e);
+      throw new RuntimeException("Parsing Error, check expression syntax" + " : " + expression, e);
     }
+  }
+
+  private static JEP initJep(final Map<String, Number> addInputParameterValues) {
+    final JEP jep = new JEP();
+
+    if (addInputParameterValues != null) {
+      addInputParameterValues.forEach((name, value) -> {
+        jep.addVariable(name, value);
+      });
+    }
+    // jep.addStandardConstants();
+    // jep.addStandardFunctions();
+    return jep;
   }
 
   private static long parse(final String allExpression, final JEP jep) throws ParseException {
@@ -44,7 +65,7 @@ public class ExpressionEvaluator {
     if (!(result instanceof Double)) {
       throw new UnsupportedOperationException("Unsupported result type " + result.getClass().getSimpleName());
     }
-    Double dResult = (Double) result;
+    final Double dResult = (Double) result;
     final long round = Math.round(dResult);
     return round;
   }
@@ -61,7 +82,8 @@ public class ExpressionEvaluator {
     return parameterizableObj;
   }
 
-  private static void addInputParameterValues(Parameterizable parameterizableObj, final JEP jep) {
+  private static Map<String, Number> addInputParameterValues(final Parameterizable parameterizableObj) {
+    final Map<String, Number> result = new LinkedHashMap<>();
     for (final ConfigInputPort port : parameterizableObj.getConfigInputPorts()) {
       if ((port.getIncomingDependency() != null) && (port.getIncomingDependency().getSetter() instanceof Parameter)) {
         final Parameter p = (Parameter) port.getIncomingDependency().getSetter();
@@ -74,9 +96,10 @@ public class ExpressionEvaluator {
         }
 
         final String evaluatedParam = p.getExpression().evaluate();
-
-        jep.addVariable(parameterName, Double.parseDouble(evaluatedParam));
+        final double parseDouble = Double.parseDouble(evaluatedParam);
+        result.put(parameterName, parseDouble);
       }
     }
+    return result;
   }
 }

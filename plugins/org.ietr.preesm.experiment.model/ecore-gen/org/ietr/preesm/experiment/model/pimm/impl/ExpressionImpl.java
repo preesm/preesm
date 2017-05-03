@@ -132,7 +132,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
    */
   @Override
   public String evaluate() {
-    return ExpressionEvaluator.evaluate(this);
+    return Long.toString(ExpressionEvaluator.evaluate(this));
   }
 
   /**
