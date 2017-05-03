@@ -30,11 +30,13 @@ Require-Bundle: org.eclipse.ui.views.properties.tabbed,
  org.clojars.gilesc.jgrapht;bundle-version="0.8.2",
  org.ietr.graphiti.model;bundle-version="1.3.16",
  org.ietr.graphiti.ui;bundle-version="1.3.16",
- net.sourceforge.jexcelapi.jxl;bundle-version="2.6.10"
+ net.sourceforge.jexcelapi.jxl;bundle-version="2.6.10",
+ org.eclipse.debug.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
 Export-Package: org.ietr.preesm.ui.console,
+ org.ietr.preesm.ui.perspective,
  org.ietr.preesm.ui.pimm.features,
  org.ietr.preesm.ui.scenario.editor,
  org.ietr.preesm.ui.scenario.editor.codegen,
