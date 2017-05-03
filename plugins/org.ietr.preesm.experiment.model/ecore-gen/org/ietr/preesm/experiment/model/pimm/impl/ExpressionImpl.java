@@ -42,17 +42,10 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.Expression;
-import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
-import org.nfunk.jep.JEP;
-import org.nfunk.jep.Node;
-import org.nfunk.jep.ParseException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -70,7 +63,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 
   /**
    * The default value of the '{@link #getString() <em>String</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getString()
    * @generated
    * @ordered
@@ -78,7 +71,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
   protected static final String STRING_EDEFAULT = "0";
   /**
    * The cached value of the '{@link #getString() <em>String</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getString()
    * @generated
    * @ordered
@@ -139,57 +132,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
    */
   @Override
   public String evaluate() {
-    final String allExpression = getString();
-    final JEP jep = new JEP();
-
-    Parameterizable parameterizableObj;
-    if (eContainer() instanceof Parameterizable) {
-      parameterizableObj = (Parameterizable) eContainer();
-    } else if (eContainer().eContainer() instanceof Parameterizable) {
-      parameterizableObj = (Parameterizable) eContainer().eContainer();
-    } else {
-      return "Neither a child of Parameterizable nor a child of a child of Parameterizable";
-    }
-
-    try {
-      for (final ConfigInputPort port : parameterizableObj.getConfigInputPorts()) {
-        if ((port.getIncomingDependency() != null) && (port.getIncomingDependency().getSetter() instanceof Parameter)) {
-          final Parameter p = (Parameter) port.getIncomingDependency().getSetter();
-
-          String parameterName;
-          if ((parameterizableObj instanceof Parameter) || (parameterizableObj instanceof Delay) || (parameterizableObj instanceof InterfaceActor)) {
-            parameterName = p.getName();
-          } else {
-            parameterName = port.getName();
-          }
-
-          final String evaluatedParam = p.getExpression().evaluate();
-
-          jep.addVariable(parameterName, Double.parseDouble(evaluatedParam));
-        }
-      }
-
-      final Node parse = jep.parse(allExpression);
-
-      final Object result = jep.evaluate(parse);
-      String evaluation;
-
-      /*
-       * Display an Integer as it: 1 instead of 1.0 (Useful to parse them then)
-       */
-      if ((result instanceof Double) && (((Double) result % 1) == 0)) {
-        evaluation = Integer.toString((int) (double) result);
-      } else {
-        evaluation = result.toString();
-      }
-      return evaluation;
-
-    } catch (final ParseException e) {
-      return "Parsing Error, check expression syntax" + " : " + allExpression;
-    } catch (final NumberFormatException e) {
-      return "Evaluation Error, check parameter dependencies" + " : " + allExpression;
-    }
-
+    return ExpressionEvaluator.evaluate(this);
   }
 
   /**
