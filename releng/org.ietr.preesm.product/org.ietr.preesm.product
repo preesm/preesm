@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Preesm" uid="org.ietr.preesm.product" id="org.ietr.preesm.rcp.utils.product" application="org.ietr.preesm.rcp.utils.application" version="2.2.6" useFeatures="true" includeLaunchers="true">
+<product name="Preesm" uid="org.ietr.preesm.product" id="org.ietr.preesm.rcp.utils.product" application="org.eclipse.ui.ide.workbench" version="2.2.6" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
-      <programArgs>-clearPersistedState
-      </programArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
    </launcherArgs>
@@ -53,6 +51,13 @@
       <feature id="org.eclipse.ecf.core.ssl.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
       <feature id="org.eclipse.e4.rcp"/>
+      <feature id="org.eclipse.cdt" version="9.2.1.201703062208"/>
+      <feature id="org.eclipse.cdt.gnu.dsf"/>
+      <feature id="org.eclipse.cdt.gnu.build"/>
+      <feature id="org.eclipse.cdt.platform"/>
+      <feature id="org.eclipse.cdt.native"/>
+      <feature id="org.eclipse.cdt.gnu.debug"/>
+      <feature id="org.eclipse.cdt.gdb"/>
    </features>
 
    <configurations>
