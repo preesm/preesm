@@ -2,6 +2,7 @@
  * Copyright or © or Copr. 2012 - 2017 IETR/INSA:
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Maxime Pelcat <Maxime.Pelcat@insa-rennes.fr> (2012)
  *
  * This software is a computer program whose purpose is to prototype
@@ -34,80 +35,93 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  *******************************************************************************/
 
-package org.ietr.preesm.core.expression;
+package org.ietr.preesm.experiment.model.expression;
 
-import java.util.Stack;
-import org.nfunk.jep.ParseException;
-import org.nfunk.jep.function.PostfixMathCommand;
+import org.nfunk.jep.Variable;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class CeilFunction.
+ * The Class Parameter.
  */
-public class CeilFunction extends PostfixMathCommand {
+public class Parameter extends Variable implements Cloneable {
+
+  /** The sdx index. */
+  public int sdxIndex;
 
   /**
-   * Instantiates a new ceil function.
+   * Instantiates a new parameter.
+   *
+   * @param name
+   *          the name
    */
-  public CeilFunction() {
-    this.numberOfParameters = -1;
+  public Parameter(final String name) {
+    super(name);
+    // TODO Auto-generated constructor stub
   }
 
   /**
-   * Ceil.
+   * Instantiates a new parameter.
    *
-   * @param d1
-   *          the d 1
-   * @return the double
+   * @param name
+   *          the name
+   * @param value
+   *          the value
    */
-  public Double ceil(final Number d1) {
-    return Math.ceil(d1.doubleValue());
+  public Parameter(final String name, final Object value) {
+    super(name, value);
+    // TODO Auto-generated constructor stub
   }
 
-  /**
-   * Adds two numbers together. The parameters can be of type Number, Complex, or String. If a certain combination of types is not supported, a ParseException
-   * is thrown.
+  /*
+   * (non-Javadoc)
    *
-   * @param param1
-   *          The first parameter to be added.
-   * @return The sum of param1 and param2, or concatenation of the two if they are Strings.
-   * @throws ParseException
-   *           the parse exception
+   * @see java.lang.Object#clone()
    */
-  public Object ceil(final Object param1) throws ParseException {
-    if (param1 instanceof Number) {
-      return ceil((Number) param1);
-    } else if ((param1 instanceof String)) {
-      return "%" + (String) param1;
-    }
-
-    throw new ParseException("Invalid parameter type");
-  }
-
-  /**
-   * Calculates the result of applying the "+" operator to the arguments from the stack and pushes it back on the stack.
-   *
-   * @param stack
-   *          the stack
-   * @throws ParseException
-   *           the parse exception
-   */
-  @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
-  public void run(final Stack stack) throws ParseException {
-    checkStack(stack);// check the stack
+  public Parameter clone() {
+    final Parameter newParam = new Parameter(this.name);
+    newParam.setValue(getValue());
+    newParam.setSdxIndex(getSdxIndex());
+    return newParam;
+  }
 
-    Object ceil;
-    Object param1;
-    // get the parameter from the stack
-    param1 = stack.pop();
+  /**
+   * Gets the sdx index.
+   *
+   * @return the sdx index
+   */
+  public int getSdxIndex() {
+    return this.sdxIndex;
+  }
 
-    // add it to the sum (order is important for String arguments)
-    ceil = ceil(param1);
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.nfunk.jep.Variable#getValue()
+   */
+  @Override
+  public Object getValue() {
+    return super.getValue();
+  }
 
-    stack.push(ceil);
+  /**
+   * Sets the sdx index.
+   *
+   * @param index
+   *          the new sdx index
+   */
+  public void setSdxIndex(final int index) {
+    this.sdxIndex = index;
+  }
 
-    return;
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.nfunk.jep.Variable#setValue(java.lang.Object)
+   */
+  @Override
+  public boolean setValue(final Object value) {
+    return super.setValue(value);
   }
 
 }

@@ -2,7 +2,6 @@
  * Copyright or © or Copr. 2012 - 2017 IETR/INSA:
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Maxime Pelcat <Maxime.Pelcat@insa-rennes.fr> (2012)
  *
  * This software is a computer program whose purpose is to prototype
@@ -35,93 +34,36 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  *******************************************************************************/
 
-package org.ietr.preesm.core.expression;
+package org.ietr.preesm.experiment.model.expression;
 
-import org.nfunk.jep.Variable;
+import java.util.Stack;
+import org.nfunk.jep.ParseException;
+import org.nfunk.jep.function.PostfixMathCommand;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class Parameter.
+ * The Class CeilFunction.
  */
-public class Parameter extends Variable implements Cloneable {
-
-  /** The sdx index. */
-  public int sdxIndex;
+public class CeilFunction extends PostfixMathCommand {
 
   /**
-   * Instantiates a new parameter.
-   *
-   * @param name
-   *          the name
+   * Instantiates a new ceil function.
    */
-  public Parameter(final String name) {
-    super(name);
-    // TODO Auto-generated constructor stub
+  public CeilFunction() {
+    this.numberOfParameters = -1;
   }
 
   /**
-   * Instantiates a new parameter.
+   * Calculates the result of applying the ceil function to the top of the stack and pushes it back on the stack.
    *
-   * @param name
-   *          the name
-   * @param value
-   *          the value
+   * @param stack
+   *          the stack
+   * @throws ParseException
+   *           the parse exception
    */
-  public Parameter(final String name, final Object value) {
-    super(name, value);
-    // TODO Auto-generated constructor stub
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#clone()
-   */
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
-  public Parameter clone() {
-    final Parameter newParam = new Parameter(this.name);
-    newParam.setValue(getValue());
-    newParam.setSdxIndex(getSdxIndex());
-    return newParam;
-  }
-
-  /**
-   * Gets the sdx index.
-   *
-   * @return the sdx index
-   */
-  public int getSdxIndex() {
-    return this.sdxIndex;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.nfunk.jep.Variable#getValue()
-   */
-  @Override
-  public Object getValue() {
-    return super.getValue();
-  }
-
-  /**
-   * Sets the sdx index.
-   *
-   * @param index
-   *          the new sdx index
-   */
-  public void setSdxIndex(final int index) {
-    this.sdxIndex = index;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.nfunk.jep.Variable#setValue(java.lang.Object)
-   */
-  @Override
-  public boolean setValue(final Object value) {
-    return super.setValue(value);
+  public void run(final Stack stack) throws ParseException {
+    stack.push(Math.ceil((Double) (stack.pop())));
   }
 
 }
