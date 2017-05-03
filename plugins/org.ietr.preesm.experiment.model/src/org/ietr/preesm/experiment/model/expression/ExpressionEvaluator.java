@@ -13,6 +13,7 @@ import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
 
 /**
+ * TODO: clean package, check use references, ...
  *
  * @author anmorvan
  *
