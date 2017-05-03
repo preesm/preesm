@@ -54,8 +54,12 @@ public class ExpressionEvaluator {
         jep.addVariable(name, value);
       });
     }
-    // jep.addStandardConstants();
-    // jep.addStandardFunctions();
+    jep.addStandardConstants();
+    jep.addStandardFunctions();
+
+    jep.addFunction("floor", new FloorFunction());
+    jep.addFunction("ceil", new CeilFunction());
+
     return jep;
   }
 
