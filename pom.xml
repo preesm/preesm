@@ -259,6 +259,22 @@
                     <ignore />
                   </action>
                 </pluginExecution>
+
+                <!-- Disable directory maven plugin (unsupported and unused -->
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.commonjava.maven.plugins</groupId>
+                    <artifactId>directory-maven-plugin</artifactId>
+                    <versionRange>[0.0.0,)</versionRange>
+                    <goals>
+                      <goal>highest-basedir</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore />
+                  </action>
+                </pluginExecution>
+
               </pluginExecutions>
             </lifecycleMappingMetadata>
           </configuration>
