@@ -62,6 +62,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator
 import org.ietr.preesm.codegen.xtend.model.codegen.IntVar
+import org.ietr.preesm.codegen.xtend.model.codegen.Direction
+import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -337,9 +339,17 @@ class CPrinter extends DefaultPrinter {
 
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
 	«/*Since everything is already in shared memory, communications are simple synchronizations here*/
-	»«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«
-		IF communication.semaphore !== null»&«
-		communication.semaphore.name»/*ID*/«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.data.doSwitch»
+	»«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
+		direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
+		(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«{
+		var coreName = if (communication.direction == Direction::SEND) {
+				communication.receiveStart.coreContainer.name
+			} else {
+				communication.sendStart.coreContainer.name
+			}
+		coreName.charAt(coreName.length - 1)
+	}»«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.
+		data.doSwitch» 
 	'''
 
 	override printFunctionCall(FunctionCall functionCall) '''
