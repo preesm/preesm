@@ -481,26 +481,34 @@ public class HSDFBuildLoops {
 		}
 
 		// get in and out vertexes
-		int first = 0;
-		SDFAbstractVertex a = vertexes.get(first);
-		List<SDFAbstractVertex> inA = getInVertexs(a);
-		List<SDFAbstractVertex> outA = getOutVertexs(a);
-		List<SDFAbstractVertex> linkA = new ArrayList<SDFAbstractVertex>();
-		linkA.addAll(inA);
-		linkA.addAll(outA);
-
-		// get first mergeable vertexes
-		for(SDFAbstractVertex v : linkA){
-			if(isMergeable(a, v)){
-				if(getInVertexs(a).contains(v) == true){
-					r.add(v);
-					r.add(a);
-				}else{
-					r.add(a);
-					r.add(v);
+		int first = vertexes.size()-1;
+		int nbVertex = vertexes.size();
+		for(int i = first; i < nbVertex; i++){
+			SDFAbstractVertex a = vertexes.get(i);
+			List<SDFAbstractVertex> inA = getInVertexs(a);
+			List<SDFAbstractVertex> outA = getOutVertexs(a);
+			List<SDFAbstractVertex> linkA = new ArrayList<SDFAbstractVertex>();
+			linkA.addAll(inA);
+			linkA.addAll(outA);
+	
+			// get first mergeable vertexes
+			for(SDFAbstractVertex v : linkA){
+				if(isMergeable(a, v)){
+					if(getInVertexs(a).contains(v) == true){
+						r.add(v);
+						r.add(a);
+					}else{
+						r.add(a);
+						r.add(v);
+					}
+					//p("isMergeable " + r.get(0).getName() + " " + r.get(1).getName());
+					return r;
 				}
-				//p("isMergeable " + r.get(0).getName() + " " + r.get(1).getName());
-				return r;
+			}
+			
+			if(i == (nbVertex -1)){
+				i = -1;
+				nbVertex = first;
 			}
 		}
 		if(r.isEmpty() == true){
@@ -588,8 +596,6 @@ public class HSDFBuildLoops {
 			sinksVertex.add(e.getSourceInterface());
 		}
 
-		// new prod RVA / pgcm(AB) * prod A vers le mec
-
 		// now we can build up vertex
 		SDFVertex vertex = new SDFVertex();
 		vertex.setName(left.getName() + "_" + right.getName());
@@ -601,12 +607,18 @@ public class HSDFBuildLoops {
 		for(SDFEdge e : inEdgeVertex){
 			SDFEdge newEdge = this.graph.addEdge(e.getSource(), vertex);
 			copyEdge(newEdge, e);
-			this.graph.removeEdge(e);
 		}
 
 		for(SDFEdge e : outEdgeVertex){
 			SDFEdge newEdge = this.graph.addEdge(vertex, e.getTarget());
 			copyEdge(newEdge, e);
+		}
+
+		// remove edges and vertexes
+		for(SDFEdge e : inEdgeVertex){
+			this.graph.removeEdge(e);
+		}
+		for(SDFEdge e : outEdgeVertex){
 			this.graph.removeEdge(e);
 		}
 		this.graph.removeVertex(left);

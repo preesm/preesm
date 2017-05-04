@@ -860,7 +860,7 @@ public class CodegenModelGenerator {
 			//SDFRandomGraph sdfRandom = new SDFRandomGraph();
 			/*DirectedAcyclicGraphGenerator sdfRandom = new DirectedAcyclicGraphGenerator();
 			SDFGraph g = null;
-			g = sdfRandom.createAcyclicRandomGraph(20, 1, 7, 1, 7);
+			g = sdfRandom.createAcyclicRandomGraph(40, 1, 20, 1, 20);
 			try {
 				loopBuilder.generateClustering(g);
 			} catch (WorkflowException e) {
