@@ -59,6 +59,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.xtext.xbase.lib.Pair;
+import org.ietr.dftools.algorithm.generator.DirectedAcyclicGraphGenerator;
+import org.ietr.dftools.algorithm.generator.SDFRandomGraph;
 import org.ietr.dftools.algorithm.iterators.DAGIterator;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
@@ -84,8 +86,10 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
+import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
+import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.algorithm.transforms.HSDFBuildLoops;
@@ -136,6 +140,8 @@ import org.ietr.preesm.memory.allocation.MemoryAllocator;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.ietr.preesm.memory.script.Range;
+import org.jgrapht.ext.GraphMLExporter;
+import org.jgrapht.generate.RandomGraphGenerator;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -842,9 +848,25 @@ public class CodegenModelGenerator {
 				//	p("\tSDF Abs Vertex " + v.getName());
 				//}
 			}
-			
+
 			HSDFBuildLoops loopBuilder = new HSDFBuildLoops();
-			REPVertex repV = loopBuilder.generateClustering(repVertexs);
+			try {
+				loopBuilder.generateClustering(graph);
+			} catch (WorkflowException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			//SDFRandomGraph sdfRandom = new SDFRandomGraph();
+			/*DirectedAcyclicGraphGenerator sdfRandom = new DirectedAcyclicGraphGenerator();
+			SDFGraph g = null;
+			g = sdfRandom.createAcyclicRandomGraph(20, 1, 7, 1, 7);
+			try {
+				loopBuilder.generateClustering(g);
+			} catch (WorkflowException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}*/
 			//REPVertex r = repV;
 			//while(r != null){
 			//	//p(r.r + " (" + r.ra + " * " + r.a.getName() + " " + r.rb + " * " + r.b.getName() + ")");

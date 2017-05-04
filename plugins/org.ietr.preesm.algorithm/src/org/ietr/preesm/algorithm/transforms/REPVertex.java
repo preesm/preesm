@@ -6,28 +6,28 @@ import java.util.List;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 public class REPVertex {
-	
+
 	/* left Vertex --> right Vertex */
-	
+
 	/* repeat * ( repeatLeft * leftVertex --> repeatRight * rightVertex ) */
-	
+
 	private SDFAbstractVertex leftVertex = null;
 	private List<SDFAbstractVertex> inLeftVertexVertexs = new ArrayList<SDFAbstractVertex>();
 	private List<SDFAbstractVertex> outLeftVertexVertexs = new ArrayList<SDFAbstractVertex>();
-	
+
 	private SDFAbstractVertex rightVertex = null;
 	private List<SDFAbstractVertex> inRightVertexVertexs = new ArrayList<SDFAbstractVertex>();
 	private List<SDFAbstractVertex> outRightVertexVertexs = new ArrayList<SDFAbstractVertex>();
-	
+
 	private int repeat = -1;
 	private int repeatLeft = -1;
 	private int repeatRight = -1;
 
 	/* repLeftCluster --> this --> repRightCluster */
-	
+
 	private REPVertex repLeftCluster = null;
 	private REPVertex repRightCluster = null;
-	
+
 	public SDFAbstractVertex getLeftVertex() {
 		return leftVertex;
 	}
