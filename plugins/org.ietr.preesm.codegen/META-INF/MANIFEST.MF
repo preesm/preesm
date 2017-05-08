@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm code generation plug-in
 Bundle-SymbolicName: org.ietr.preesm.codegen;singleton:=true
-Bundle-Version: 2.2.6
+Bundle-Version: 2.2.7
 Bundle-Activator: org.ietr.preesm.codegen.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,

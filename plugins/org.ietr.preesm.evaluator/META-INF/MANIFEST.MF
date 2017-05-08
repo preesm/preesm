@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Evaluator plug-in
 Bundle-SymbolicName: org.ietr.preesm.evaluator;singleton:=true
-Bundle-Version: 2.2.6
+Bundle-Version: 2.2.7
 Bundle-Activator: org.ietr.preesm.evaluator.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.ietr.dftools.workflow,

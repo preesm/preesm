@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PREESM utilities
 Bundle-SymbolicName: org.ietr.preesm.utils
-Bundle-Version: 2.2.6
+Bundle-Version: 2.2.7
 Bundle-Activator: org.ietr.preesm.utils.Activator
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.core.runtime,

@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.ietr.preesm</groupId>
     <artifactId>org.ietr.preesm.releng</artifactId>
-    <version>2.2.6</version>
+    <version>2.2.7</version>
     <relativePath>..</relativePath>
   </parent>
 
@@ -27,7 +27,7 @@
     <dependency>
       <groupId>org.ietr.preesm</groupId>
       <artifactId>org.ietr.preesm.product</artifactId>
-      <version>2.2.6</version>
+      <version>2.2.7</version>
       <type>eclipse-repository</type>
     </dependency>
   </dependencies>
