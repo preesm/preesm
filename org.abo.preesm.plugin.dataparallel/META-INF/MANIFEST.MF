@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Dataparallel
+Bundle-SymbolicName: org.abo.preesm.plugin.dataparallel;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.core.runtime,
+ org.ietr.dftools.workflow,
+ org.clojars.gilesc.jgrapht,
+ org.ietr.dftools.algorithm,
+ org.junit,
+ jep,
+ com.github.yannrichet.JMathArray,
+ gov.nist.math.jama,
+ org.eclipse.xtend.lib
+Export-Package: org.abo.preesm.plugin.dataparallel
