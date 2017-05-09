@@ -1,6 +1,31 @@
 PREESM Changelog
 ================
 
+
+## Release version 2.2.8
+*2017.05.XX*
+
+### New Feature
+
+### Changes
+* Add TMF updates repo for latest XTend lib
+* Update Graphiti to 1.3.18
+* Update DFTools to 1.1.11
+
+### Bug fix
+
+## Release version 2.2.7
+*2017.05.09*
+
+### New Feature
+
+### Changes
+* Update Graphiti to 1.3.17
+* Update DFTools to 1.1.10
+
+### Bug fix
+* Fix a bug in the Workflow due to Graphiti issue
+
 ## Release version 2.2.6
 *2017.04.19*
 
