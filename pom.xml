@@ -60,20 +60,32 @@
     <eclipse.mirror>http://mirror.ibcp.fr/pub/eclipse/</eclipse.mirror>
   </properties>
 
-  <repositories>
-    <!-- add Neon repository to resolve dependencies -->
-    <repository>
-      <id>Neon</id>
-      <layout>p2</layout>
-      <url>${eclipse.mirror}/releases/neon/</url>
-    </repository>
-    <!-- add Preesm repository to resolve dependencies -->
-    <repository>
-      <id>Complete Repo</id>
-      <layout>p2</layout>
-      <url>${complete.p2.repo}</url>
-    </repository>
-  </repositories>
+	<repositories>
+		<!-- add Neon repository to resolve dependencies -->
+		<repository>
+			<id>Neon</id>
+			<layout>p2</layout>
+			<url>${eclipse.mirror}/releases/neon/</url>
+		</repository>
+		<!-- add Neon updates for latest releases -->
+		<repository>
+		  <id>Neon Updates</id>
+		  <layout>p2</layout>
+		  <url>${eclipse.mirror}/eclipse/updates/4.6</url>
+		</repository>
+		<!-- add TMF repository for latest Xtend -->
+		<repository>
+			<id>TMF Repo</id>
+			<layout>p2</layout>
+			<url>${eclipse.mirror}/modeling/tmf/xtext/updates/composite/releases/</url>
+		</repository>
+		<!-- add Preesm repository to resolve dependencies -->
+		<repository>
+			<id>Complete Repo</id>
+			<layout>p2</layout>
+			<url>${complete.p2.repo}</url>
+		</repository>
+	</repositories>
 
   <build>
     <plugins>
