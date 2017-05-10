@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.ietr.preesm</groupId>
     <artifactId>org.ietr.preesm.releng</artifactId>
-    <version>2.2.7</version>
+    <version>2.2.8</version>
     <relativePath>..</relativePath>
   </parent>
 
@@ -27,7 +27,7 @@
     <dependency>
       <groupId>org.ietr.preesm</groupId>
       <artifactId>org.ietr.preesm.product</artifactId>
-      <version>2.2.7</version>
+      <version>2.2.8</version>
       <type>eclipse-repository</type>
     </dependency>
   </dependencies>
@@ -146,6 +146,7 @@
               <goal>wget</goal>
             </goals>
             <configuration>
+              <skipCache>true</skipCache>
               <url>${complete.p2.repo}/artifacts.xml</url>
               <outputFileName>artifacts.xml</outputFileName>
               <outputDirectory>${project.build.directory}/gensite/update-site/complete/</outputDirectory>
@@ -158,6 +159,7 @@
               <goal>wget</goal>
             </goals>
             <configuration>
+              <skipCache>true</skipCache>
               <url>${complete.p2.repo}/content.xml</url>
               <outputFileName>content.xml</outputFileName>
               <outputDirectory>${project.build.directory}/gensite/update-site/complete/</outputDirectory>
