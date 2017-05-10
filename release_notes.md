@@ -2,8 +2,18 @@ PREESM Changelog
 ================
 
 
+## Release version 2.2.9
+*2017.05.10*
+
+### New Feature
+
+### Changes
+
+### Bug fix
+* Include .exsd schemas in the binaries (https://github.com/preesm/preesm/issues/32)
+
 ## Release version 2.2.8
-*2017.05.XX*
+*2017.05.09*
 
 ### New Feature
 
@@ -24,7 +34,7 @@ PREESM Changelog
 * Update DFTools to 1.1.10
 
 ### Bug fix
-* Fix a bug in the Workflow due to Graphiti issue
+* Fix a bug in the Workflow due to Graphiti issue (https://github.com/preesm/preesm/issues/31)
 
 ## Release version 2.2.6
 *2017.04.19*
