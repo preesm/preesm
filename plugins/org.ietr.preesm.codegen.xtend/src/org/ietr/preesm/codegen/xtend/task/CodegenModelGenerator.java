@@ -851,7 +851,7 @@ public class CodegenModelGenerator {
 
 			HSDFBuildLoops loopBuilder = new HSDFBuildLoops();
 			try {
-					loopBuilder.generateClustering(graph); 
+					loopBuilder.generateClustering(graph);
 			} catch (WorkflowException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -861,7 +861,7 @@ public class CodegenModelGenerator {
 			}
 
 			//SDFRandomGraph sdfRandom = new SDFRandomGraph();
-			DirectedAcyclicGraphGenerator sdfRandom = new DirectedAcyclicGraphGenerator();
+			/*DirectedAcyclicGraphGenerator sdfRandom = new DirectedAcyclicGraphGenerator();
 			SDFGraph g = null;
 			g = sdfRandom.createAcyclicRandomGraph(40, 1, 20, 1, 20);
 			try {
@@ -872,7 +872,7 @@ public class CodegenModelGenerator {
 			} catch (SDF4JException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
 			//REPVertex r = repV;
 			//while(r != null){
 			//	//p(r.r + " (" + r.ra + " * " + r.a.getName() + " " + r.rb + " * " + r.b.getName() + ")");

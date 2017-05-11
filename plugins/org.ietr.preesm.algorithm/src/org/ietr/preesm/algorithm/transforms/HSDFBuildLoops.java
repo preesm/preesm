@@ -3,6 +3,7 @@ package org.ietr.preesm.algorithm.transforms;
 //import java.awt.List;
 import java.util.List;
 import java.awt.Choice;
+import java.awt.color.CMMException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -625,11 +626,33 @@ public class HSDFBuildLoops {
 		this.graph.removeVertex(right);
 	
 		if(this.graph.isSchedulable() == true){
-			p("graph ok isSchedulable");
+			//p("graph ok isSchedulable");
 		}else{
-			throw new SDF4JException("Bug found graph not schedulable while clustering"); 
+			throw new SDF4JException("Graph not schedulable while clustering procedure (possible bug)"); 
 		}
 		return vertex;
+	}
+
+	String clustSchedString = new String();
+	
+	private void recursivePrintClustSched(AbstractClust seq) throws SDF4JException{
+		if(seq instanceof ClustVextex){
+				clustSchedString += "(" + Integer.toString(seq.getRepeat()) + "-" + ((ClustVextex)seq).getVertex().getName() + ")";
+		}else if(seq instanceof ClustSequence){
+			clustSchedString += seq.getRepeat() + "(";
+			for(AbstractClust s : ((ClustSequence) seq).getSeq()){
+				recursivePrintClustSched(s);
+			}
+			clustSchedString += ")";
+		}else{
+			throw new SDF4JException("Error while printed clustering schedule");
+		}
+	}
+
+	public void printClusteringSchedule(AbstractClust seq) throws SDF4JException{
+		recursivePrintClustSched(seq);
+		p(clustSchedString);
+		clustSchedString = "";
 	}
 
 	public ClustSequence generateClustering(SDFGraph inGraph) throws WorkflowException, SDF4JException {
@@ -643,23 +666,102 @@ public class HSDFBuildLoops {
 			}
 		}
 
-		// seq
-		ClustSequence seq = new ClustSequence();
-
+		HashMap<SDFAbstractVertex, AbstractClust> clustMap = new HashMap<SDFAbstractVertex, AbstractClust>();
 		int pgcm = 0;
+		int repLeft = 0;
+		int repRight = 0;
 		int nbActor = vertexesCpy.size();
+		SDFAbstractVertex lastClusteredVertex = vertexesCpy.get(0); 
 		for(int i=0;i<nbActor-1;i++){
 			// get actor
 			List <SDFAbstractVertex> current = getClusteringVertexes(vertexesCpy);
 			try {
 				pgcm = getPGCD(current.get(0).getNbRepeatAsInteger(), current.get(1).getNbRepeatAsInteger());
+				repLeft = current.get(0).getNbRepeatAsInteger()/pgcm;
+				repRight = current.get(1).getNbRepeatAsInteger()/pgcm;
 			} catch (InvalidExpressionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+
+			// clusterized at graph level the choosen actors (graph transfo)
 			SDFAbstractVertex clusteredVertex = generatePairedClusteredVertex(pgcm, current.get(0)/*left*/, current.get(1)/*right*/);
 			vertexesCpy.removeAll(current);
 			vertexesCpy.add(clusteredVertex);
+
+			AbstractClust seqLeft = clustMap.get(current.get(0)/*left*/);
+			AbstractClust seqRight = clustMap.get(current.get(1)/*right*/);
+
+			// combinatory
+			if(seqLeft != null && seqRight != null){
+				// existing sequences fusion here
+				// create cluster vertex sequence
+				ClustSequence seq = new ClustSequence();
+				seq.setSeq(new ArrayList<AbstractClust>());
+				// set new repeat for seqRight
+				seqRight.setRepeat(repRight);
+				// set new repeat for seqLeft
+				seqLeft.setRepeat(repLeft);
+				// set sequence
+				seq.setRepeat(pgcm);
+				seq.getSeq().add(seqLeft);
+				seq.getSeq().add(seqRight);
+				clustMap.put(clusteredVertex, seq); // add hash map
+				clustMap.remove(current.get(0));
+				clustMap.remove(current.get(1));
+
+			}else if(seqLeft != null && seqRight == null){
+				// add clust vertex sequence with existing sequence on the right
+				ClustVextex vRight = new ClustVextex();
+				vRight.setRepeat(repRight);
+				vRight.setVertex(current.get(1));
+				// set new repeat for seqLeft
+				seqLeft.setRepeat(repLeft);
+				// create cluster vertex sequence
+				ClustSequence seq = new ClustSequence();
+				seq.setSeq(new ArrayList<AbstractClust>());
+				// set sequence
+				seq.setRepeat(pgcm);
+				seq.getSeq().add(seqLeft);
+				seq.getSeq().add(vRight);
+				clustMap.put(clusteredVertex, seq); // add hash map
+				clustMap.remove(current.get(0));
+
+			}else if(seqLeft == null && seqRight != null){
+				// add clust vertex sequence with existing sequence on the left
+				ClustVextex vLeft = new ClustVextex();
+				vLeft.setRepeat(repLeft);
+				vLeft.setVertex(current.get(0));
+				// set new repeat for seqRight
+				seqRight.setRepeat(repRight);
+				// create cluster vertex sequence
+				ClustSequence seq = new ClustSequence();
+				seq.setSeq(new ArrayList<AbstractClust>());
+				// set sequence
+				seq.setRepeat(pgcm);
+				seq.getSeq().add(vLeft);
+				seq.getSeq().add(seqRight);
+				clustMap.put(clusteredVertex, seq); // add hash map
+				clustMap.remove(current.get(1));
+				
+			}else{ // (seqLeft == null && seqRight == null)
+				// new sequence (never visited)
+				ClustVextex vLeft = new ClustVextex();
+				vLeft.setRepeat(repLeft);
+				vLeft.setVertex(current.get(0));
+				ClustVextex vRight = new ClustVextex();
+				vRight.setRepeat(repRight);
+				vRight.setVertex(current.get(1));
+				// create cluster vertex sequence
+				ClustSequence seq = new ClustSequence();
+				seq.setSeq(new ArrayList<AbstractClust>());
+				// set sequence
+				seq.setRepeat(pgcm);
+				seq.getSeq().add(vLeft);
+				seq.getSeq().add(vRight);
+				clustMap.put(clusteredVertex, seq); // add hash map
+			}
+			
 			//graph.addEdge(source, sourcePort, target, targetPort)
 			/*for(SDFEdge e : getInEdges(clusteredVertex)){
 				graph.addEdge(e.getSource(), e.getTarget());
@@ -668,9 +770,11 @@ public class HSDFBuildLoops {
 				graph.addEdge(e.getSource(), e.getTarget());
 			}*/
 			p("clusteredVertex " + clusteredVertex.getName());
+			lastClusteredVertex = clusteredVertex;
 		}
 		p("generateClustering ok");
-		return seq;
+		printClusteringSchedule(clustMap.get(lastClusteredVertex));
+		return null;
 
 		//for(SDFAbstractVertex e : vertexs){
 			//getPredessecors(e);
