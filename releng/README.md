@@ -5,31 +5,28 @@ This document explains the build process of Preesm and its components (Graphiti,
 
 Old documentation is available in the [HowToRelease.md](HowToRelease.md) file.
 
-<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+TODO: setup sonar, configure jenkins
 
-	- [Introduction](#introduction)
+- [Introduction](#introduction)
+	- [Documentation](#documentation)
+	- [Git](#git)
+	- [Maven](#maven)
+	- [Eclipse IDE](#eclipse-ide)
+	- [Coding Style](#coding-style)
+	- [Dependency Management](#dependency-management)
+- [Project structure](#project-structure)
+	- [Preesm website](#preesm-website)
 		- [Documentation](#documentation)
-		- [Git](#git)
-		- [Maven](#maven)
-			- [Release Engineering](#release-engineering)
-		- [Eclipse IDE](#eclipse-ide)
-		- [Coding Style](#coding-style)
-		- [Dependency Management](#dependency-management)
-	- [Project structure](#project-structure)
-		- [Preesm website](#preesm-website)
-			- [Documentation](#documentation)
-			- [Generated content](#generated-content)
-		- [Github](#github)
-	- [Build Process in Maven](#build-process-in-maven)
-	- [Eclipse setup](#eclipse-setup)
-	- [Releasing (deploy)](#releasing-deploy)
-		- [Update online update site](#update-online-update-site)
-	- [Continuous integration](#continuous-integration)
-		- [Jenkins](#jenkins)
-		- [Sonar](#sonar)
-	- [Howto ?](#howto-)
-
-<!-- /TOC -->
+		- [Generated content](#generated-content)
+	- [Github](#github)
+- [Build Process in Maven](#build-process-in-maven)
+- [Eclipse setup](#eclipse-setup)
+- [Releasing (deploy)](#releasing-deploy)
+	- [Update online update site](#update-online-update-site)
+- [Continuous integration](#continuous-integration)
+	- [Jenkins](#jenkins)
+	- [Sonar](#sonar)
+- [Howto ?](#howto-)
 
 ## Introduction
 
