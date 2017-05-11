@@ -828,6 +828,15 @@ public class CodegenModelGenerator {
           if (!this.dagEdgeBuffers.containsKey(originalDagEdge)) {
             this.dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
           } else {
+            /**
+             * Notes for future development of this feature If you are reading this because you want to adapt the code generation for distributed only memory
+             * allocation, here is a TODO for you: The updateWithSchedule method (in the MemoryExclusionGraph) does not take into account communications which,
+             * as commented there, have no effects when allocating memory in shared memory. However, communications may have a very strong impact when
+             * targetting shared memory. In particular, as soon as a SendEnd has passed, it can be assumed that the memory associated to an outgoing buffer can
+             * be freed (contrary to shared mem where you have to wait for the firing of its consumer actor). So in order to optimize memory allocation for
+             * distributed memory allocation, a new update of the MemEx has to be done, taking communication into account this time.
+             * 
+             */
             throw new CodegenException("\n" + AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY
                 + " distribution policy during memory allocation not yet supported in code generation.\n" + "DAGEdge " + originalDagEdge
                 + " is already associated to a Buffer and cannot be associated to a second one.");

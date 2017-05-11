@@ -1611,6 +1611,11 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    * This function update a {@link MemoryExclusionGraph MemEx} by taking scheduling information contained in a {@link DirectedAcyclicGraph DAG} into account.
    * <br>
    * <br>
+   * It is important to note that only scheduling order of actors on each core is taken into account in order to remove exclusions. The scheduling order of
+   * communication primitives is currently ignored when removing exclusions because they have no impact when allocating memory in shared memory. <br>
+   * In the case of distributed memory, memory of a buffer could be freed as soon as the sendEnd communication delimiter is passed. But this has not been
+   * implemented so far. <br>
+   * <br>
    * kdesnos: This method could probably be accelerated a lot ! Instead of scanning the dag in scheduling order, the dag could be updated with new precedence
    * edges. Then, scanning the exclusions and checking if they still hold (as is done with memory object lifetime) could be done to remove unnecessary
    * exclusions.
