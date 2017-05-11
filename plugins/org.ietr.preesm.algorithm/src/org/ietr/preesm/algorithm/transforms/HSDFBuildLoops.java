@@ -505,7 +505,7 @@ public class HSDFBuildLoops {
 					return r;
 				}
 			}
-			
+
 			if(i == (nbVertex -1)){
 				i = -1;
 				nbVertex = first;
@@ -538,7 +538,7 @@ public class HSDFBuildLoops {
 		return 0;
 	}
 
-	private SDFAbstractVertex generatePairedClusteredVertex(int pgcm, SDFAbstractVertex left, SDFAbstractVertex right) throws WorkflowException{
+	private SDFAbstractVertex generatePairedClusteredVertex(int pgcm, SDFAbstractVertex left, SDFAbstractVertex right) throws WorkflowException, SDF4JException{
 
 		// execution order left ---> right
 
@@ -622,11 +622,17 @@ public class HSDFBuildLoops {
 			this.graph.removeEdge(e);
 		}
 		this.graph.removeVertex(left);
-		this.graph.removeVertex(right);		
+		this.graph.removeVertex(right);
+	
+		if(this.graph.isSchedulable() == true){
+			p("graph ok isSchedulable");
+		}else{
+			throw new SDF4JException("Bug found graph not schedulable while clustering"); 
+		}
 		return vertex;
 	}
 
-	public ClustSequence generateClustering(SDFGraph inGraph) throws WorkflowException {
+	public ClustSequence generateClustering(SDFGraph inGraph) throws WorkflowException, SDF4JException {
 
 		this.graph = inGraph.clone();
 		// copy vertexes
