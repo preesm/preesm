@@ -657,7 +657,18 @@ public class HSDFBuildLoops {
 
 	public ClustSequence generateClustering(SDFGraph inGraph) throws WorkflowException, SDF4JException {
 
-		this.graph = inGraph.clone();
+		// flat everything
+		IbsdfFlattener flattener = new IbsdfFlattener(inGraph,10);
+		SDFGraph resultGraph = null;
+		try {
+			flattener.flattenGraph();
+			resultGraph = flattener.getFlattenedGraph();
+		} catch (SDF4JException e) {
+			throw (new WorkflowException(e.getMessage()));
+		}
+		
+		// deep clone of graph SDF
+		this.graph = resultGraph.clone();
 		// copy vertexes
 		List<SDFAbstractVertex> vertexesCpy = new ArrayList<SDFAbstractVertex>();
 		for(SDFAbstractVertex v : graph.vertexSet()){
@@ -769,7 +780,7 @@ public class HSDFBuildLoops {
 			for(SDFEdge e : getOutEdges(clusteredVertex)){
 				graph.addEdge(e.getSource(), e.getTarget());
 			}*/
-			p("clusteredVertex " + clusteredVertex.getName());
+			//p("clusteredVertex " + clusteredVertex.getName());
 			lastClusteredVertex = clusteredVertex;
 		}
 		p("generateClustering ok");
