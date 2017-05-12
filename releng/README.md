@@ -138,23 +138,23 @@ During the Maven deploy phase, the content is automatically uploaded to those lo
 
 ### Releng Files
 
-| file under /releng/ | what it is
-|-
-| hooks/ | Git hooks and necessary dependencies
-| org.ietr.preesm.complete.site/ | The Maven module responsible for generating the update site and aggregating Javadoc and products
-| org.ietr.preesm.dev.feature/ | The feature referencing all Eclipse plugin required to setup a develop environment for Preesm
-| org.ietr.preesm.feature/ | The Preesm feature for end users
-| org.ietr.preesm.product/ | Maven module for generating the end user products
-| org.ietr.preesm.rcp.utils/ | Small Eclipse plugin for configuring the products
-| auto_convert_encoding_and_lineendings.sh | Bash script for converting all file line endings to Linux and charset to UTF-8
-| copyright_template.txt | Copyright template to include in file headers
-| fix_header_copyright_and_authors.sh | Bash script that replaces copyright template tokens (i.e. %%DATE%%) with data fetched from the git log
-| HowToRelease.md | Old release procedure
-| pom.xml | The main releng POM. Adds two P2 repositories for product and dev feature build.
-| README.md | This file
-| update-version.sh | Small Bash script that calls Maven with proper arguments to set a new version for all submodules.
-| VAADER_checkstyle.xml | Preesm Checkstyle cofniguration file
-| VAADER_eclipse_preferences.epf | Preesm Eclipse preferences file
+| file under /releng/ | what it is |
+|-----|----|
+| hooks/ | Git hooks and necessary dependencies |
+| org.ietr.preesm.complete.site/ | The Maven module responsible for generating the update site and aggregating Javadoc and products |
+| org.ietr.preesm.dev.feature/ | The feature referencing all Eclipse plugin required to setup a develop environment for Preesm |
+| org.ietr.preesm.feature/ | The Preesm feature for end users |
+| org.ietr.preesm.product/ | Maven module for generating the end user products |
+| org.ietr.preesm.rcp.utils/ | Small Eclipse plugin for configuring the products |
+| auto_convert_encoding_and_lineendings.sh | Bash script for converting all file line endings to Linux and charset to UTF-8 |
+| copyright_template.txt | Copyright template to include in file headers |
+| fix_header_copyright_and_authors.sh | Bash script that replaces copyright template tokens (i.e. %%DATE%%) with data fetched from the git log |
+| HowToRelease.md | Old release procedure |
+| pom.xml | The main releng POM. Adds two P2 repositories for product and dev feature build. |
+| README.md | This file |
+| update-version.sh | Small Bash script that calls Maven with proper arguments to set a new version for all submodules. |
+| VAADER_checkstyle.xml | Preesm Checkstyle cofniguration file |
+| VAADER_eclipse_preferences.epf | Preesm Eclipse preferences file |
 
 ## Build Process in Maven
 
