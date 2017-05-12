@@ -129,6 +129,17 @@ Dedicated Maven plugins used during project builds are also hosted there:
 
 Their use is detailled later in this document and in the [ExternalDeps Readme](https://github.com/preesm/externaldeps).
 
+#### Source code structure
+
+* src
+* test plugins : http://www.modumind.com/2007/06/20/unit-testing-plug-ins-with-fragments/
+* /releng/
+* ignored files (.gitignore)
+
+#### The .mailmap File
+
+TODO
+
 ### Generated content
 
 During the Maven deploy phase, the content is automatically uploaded to those locations:
