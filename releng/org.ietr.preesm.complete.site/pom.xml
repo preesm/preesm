@@ -10,13 +10,6 @@
     <version>2.2.9</version>
     <relativePath>..</relativePath>
   </parent>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>preesm</id>
-      <url>http://preesm.sourceforge.net/maven/</url>
-    </pluginRepository>
-  </pluginRepositories>
   
   <build>
     <plugins>
