@@ -17,20 +17,6 @@
       <url>http://preesm.sourceforge.net/maven/</url>
     </pluginRepository>
   </pluginRepositories>
-
-  <!-- 
-	Make sure the product is built first to copy its generated products. 
-	Make it a POM dependency to prevent compiler to fail finding java 
-	dependencies.
-	-->
-  <dependencies>
-    <dependency>
-      <groupId>org.ietr.preesm</groupId>
-      <artifactId>org.ietr.preesm.product</artifactId>
-      <version>2.2.9</version>
-      <type>eclipse-repository</type>
-    </dependency>
-  </dependencies>
   
   <build>
     <plugins>
@@ -118,15 +104,6 @@
                   link="${project.build.directory}/gensite/update-site/${project.groupId}-latest"
                   resource="${project.groupId}-${project.version}" />
                   
-                <!-- Copy products -->
-                <copy
-                  todir="${project.build.directory}/gensite/products/${project.version}/">
-                  <fileset dir="${project.basedir}/../org.ietr.preesm.product/target/products/" includes="*.zip, *.tar.gz" />
-                </copy>
-                <!-- Add symlink for latest product -->
-                <symlink
-                  link="${project.build.directory}/gensite/products/latest"
-                  resource="${project.version}" />
               </target>
               <exportAntProperties>true</exportAntProperties>
             </configuration>
