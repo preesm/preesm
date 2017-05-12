@@ -5,19 +5,19 @@ This document explains the build process of Preesm and its components (Graphiti,
 
 Old documentation is available in the [HowToRelease.md](HowToRelease.md) file.
 
+**TODO: sonar + jenkins @ copernic ?**
+
 - [Introduction](#introduction)
 	- [Documentation](#documentation)
 	- [Git](#git)
 	- [Maven](#maven)
-		- [Release Engineering](#release-engineering)
 	- [Eclipse IDE](#eclipse-ide)
 	- [Coding Style](#coding-style)
 	- [Dependency Management](#dependency-management)
 - [Project structure](#project-structure)
-	- [Preesm website](#preesm-website)
-		- [Documentation](#documentation)
-		- [Generated content](#generated-content)
+	- [Preesm website (Sourceforge)](#preesm-website-sourceforge)
 	- [Github](#github)
+	- [Generated content](#generated-content)
 	- [Releng Files](#releng-files)
 - [Build Process in Maven](#build-process-in-maven)
 - [Eclipse setup](#eclipse-setup)
@@ -30,12 +30,9 @@ Old documentation is available in the [HowToRelease.md](HowToRelease.md) file.
 - [Howto ?](#howto-)
 	- [Update project version](#update-project-version)
 
-
 ## Introduction
 
 Graphiti, DFTools and Preesm are sets of Eclipse plugins. Their source code is hosted on GitHub (see the [Preesm team](https://github.com/preesm) page). These projects are built using [Maven](https://maven.apache.org/) and the [Tycho](https://eclipse.org/tycho/) plugins, and mostly developed using the [Eclipse IDE](https://eclipse.org/). Facilities are provided to ease the interactions between these tools. The [Continuous Integration](https://en.wikipedia.org/wiki/Continuous_integration) server [Jenkins](https://jenkins.io/) is in charge of monitoring the git repositories and triggering builds upon source code modifications.
-
-**TODO: sonar + jenkins @ copernic ?**
 
 ### Documentation
 
@@ -103,22 +100,41 @@ For Graphiti, DFTools and Preesm, all the plain Java jars have been externalized
 
 ## Project structure
 
-### Preesm website
- (sf, gensite, products, update sites, github readme, ...)
+ExternalDeps, Graphiti, DFTools and Preesm resources are located in 2 places:
+* Preesm website on Sourceforge
+* Github repositories
 
-#### Documentation
+### Preesm website (Sourceforge)
 
-#### Generated content
-update site, javadoc API, products
-* Per Project
-* latest link
-* complete site
+Preesm main documentation is found on the Preesm website:
+* [Tutorials](http://preesm.sourceforge.net/website/index.php?id=tutorials);
+* [Developers doc](http://preesm.sourceforge.net/website/index.php?id=developer).
+
+Sourceforge also hosts the generated Javadoc API, the product releases and the update site (see links below).
 
 ### Github
-* external dependencies
-* Graphiti
-* DFTools
-* Preesm
+
+All the source code for the projects is hosted on Github (under [Preesm team](https://github.com/preesm)):
+ * ExternalDeps: https://github.com/preesm/externaldeps
+ * Graphiti: https://github.com/preesm/graphiti
+ * DFTools: https://github.com/preesm/dftools
+ * Preesm: https://github.com/preesm/preesm
+ * Preesm-apps (Preesm small use cases and tutorials): https://github.com/preesm/preesm-apps
+
+Documentation about the release process (this file) is in the Preesm git repository, under **releng/README.md**: https://github.com/preesm/preesm/blob/develop/releng/README.md
+
+Dedicated Maven plugins used during project builds are also hosted there:
+* Sftp Maven plugin: https://github.com/preesm/sftp-maven-plugin
+* GenFeature Maven plugin: https://github.com/preesm/genfeature-maven-plugin
+
+Their use is detailled later in this document and in the [ExternalDeps Readme](https://github.com/preesm/externaldeps).
+
+### Generated content
+
+During the Maven deploy phase, the content is automatically uploaded to those locations:
+* Javadoc API : http://preesm.sourceforge.net/gensite/API/
+* Update-site : http://preesm.sourceforge.net/eclipse/update-site/
+* Product releases : https://sourceforge.net/projects/preesm/files/Releases/
 
 ### Releng Files
 
