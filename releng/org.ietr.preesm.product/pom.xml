@@ -86,6 +86,59 @@
           </products>
         </configuration>
       </plugin>
+      
+
+      <plugin>
+        <!-- ## NOTE: make sure this is after the tycho-p2-extras-plugin
+          in the pom.xml text -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+          <execution>
+            <id>copy-products-before-deploy</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target name="Move products">
+                <!-- Copy products -->
+                <copy
+                  todir="${project.build.directory}/deploy/${project.version}/">
+                  <fileset dir="${project.basedir}/../org.ietr.preesm.product/target/products/" includes="*.zip, *.tar.gz" />
+                </copy>
+              </target>
+              <exportAntProperties>true</exportAntProperties>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <!-- Deploy product -->
+      <plugin>
+        <groupId>org.ietr.maven</groupId>
+        <artifactId>sftp-maven-plugin</artifactId>
+        <version>2.1.0</version>
+        <executions>
+          <execution>
+            <id>upload-product</id>
+            <phase>deploy</phase>
+            <configuration>
+              <serverId>sf-preesm-update-site</serverId>
+              <serverHost>frs.sourceforge.net</serverHost>
+              <strictHostKeyChecking>false</strictHostKeyChecking>
+              <transferThreadCount>1</transferThreadCount>
+              <mode>send</mode>
+              <remotePath>/home/pfs/project/preesm/Releases/${project.version}/</remotePath>
+              <localPath>${project.build.directory}/deploy/${project.version}/</localPath>
+            </configuration>
+            <goals>
+              <goal>sftp-transfert</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
