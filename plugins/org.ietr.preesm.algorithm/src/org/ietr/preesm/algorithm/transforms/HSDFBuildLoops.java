@@ -636,8 +636,8 @@ public class HSDFBuildLoops {
 	String clustSchedString = new String();
 	
 	private void recursivePrintClustSched(AbstractClust seq) throws SDF4JException{
-		if(seq instanceof ClustVextex){
-				clustSchedString += "(" + Integer.toString(seq.getRepeat()) + "-" + ((ClustVextex)seq).getVertex().getName() + ")";
+		if(seq instanceof ClustVertex){
+				clustSchedString += "(" + Integer.toString(seq.getRepeat()) + "-" + ((ClustVertex)seq).getVertex().getName() + ")";
 		}else if(seq instanceof ClustSequence){
 			clustSchedString += seq.getRepeat() + "(";
 			for(AbstractClust s : ((ClustSequence) seq).getSeq()){
@@ -723,7 +723,7 @@ public class HSDFBuildLoops {
 
 			}else if(seqLeft != null && seqRight == null){
 				// add clust vertex sequence with existing sequence on the right
-				ClustVextex vRight = new ClustVextex();
+				ClustVertex vRight = new ClustVertex();
 				vRight.setRepeat(repRight);
 				vRight.setVertex(current.get(1));
 				// set new repeat for seqLeft
@@ -740,7 +740,7 @@ public class HSDFBuildLoops {
 
 			}else if(seqLeft == null && seqRight != null){
 				// add clust vertex sequence with existing sequence on the left
-				ClustVextex vLeft = new ClustVextex();
+				ClustVertex vLeft = new ClustVertex();
 				vLeft.setRepeat(repLeft);
 				vLeft.setVertex(current.get(0));
 				// set new repeat for seqRight
@@ -757,10 +757,10 @@ public class HSDFBuildLoops {
 				
 			}else{ // (seqLeft == null && seqRight == null)
 				// new sequence (never visited)
-				ClustVextex vLeft = new ClustVextex();
+				ClustVertex vLeft = new ClustVertex();
 				vLeft.setRepeat(repLeft);
 				vLeft.setVertex(current.get(0));
-				ClustVextex vRight = new ClustVextex();
+				ClustVertex vRight = new ClustVertex();
 				vRight.setRepeat(repRight);
 				vRight.setVertex(current.get(1));
 				// create cluster vertex sequence
