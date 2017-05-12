@@ -655,7 +655,7 @@ public class HSDFBuildLoops {
 		clustSchedString = "";
 	}
 
-	public ClustSequence generateClustering(SDFGraph inGraph) throws WorkflowException, SDF4JException {
+	public ClustSequence generateClustering(SDFGraph inGraph) throws WorkflowException, SDF4JException, InvalidExpressionException {
 
 		// flat everything
 		IbsdfFlattener flattener = new IbsdfFlattener(inGraph,10);
@@ -669,11 +669,16 @@ public class HSDFBuildLoops {
 		
 		// deep clone of graph SDF
 		this.graph = resultGraph.clone();
+		this.graph.validateModel(WorkflowLogger.getLogger());
+		if(this.graph.isSchedulable() == false){
+			throw (new WorkflowException("Graph not schedulable"));
+		}
 		// copy vertexes
 		List<SDFAbstractVertex> vertexesCpy = new ArrayList<SDFAbstractVertex>();
 		for(SDFAbstractVertex v : graph.vertexSet()){
 			if(v instanceof SDFVertex){
 				vertexesCpy.add(v);
+				//p("Clustering actor " + v.getName() + " RV " + v.getNbRepeatAsInteger());
 			}
 		}
 
@@ -780,7 +785,7 @@ public class HSDFBuildLoops {
 			for(SDFEdge e : getOutEdges(clusteredVertex)){
 				graph.addEdge(e.getSource(), e.getTarget());
 			}*/
-			//p("clusteredVertex " + clusteredVertex.getName());
+			//p("clusteredVertex " + clusteredVertex.getName() + " left " + current.get(0).getName() + " right " + current.get(1).getName());
 			lastClusteredVertex = clusteredVertex;
 		}
 		p("generateClustering ok");

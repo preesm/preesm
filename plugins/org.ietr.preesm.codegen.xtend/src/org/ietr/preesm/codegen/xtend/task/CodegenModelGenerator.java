@@ -854,13 +854,15 @@ public class CodegenModelGenerator {
 			} catch (WorkflowException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-			} catch (SDF4JException e) {
+			} catch (SDF4JException e2) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				e2.printStackTrace();
+			} catch (InvalidExpressionException e3){
+				e3.printStackTrace();
 			}
 
 			//SDFRandomGraph sdfRandom = new SDFRandomGraph();
-			DirectedAcyclicGraphGenerator sdfRandom = new DirectedAcyclicGraphGenerator();
+			/*DirectedAcyclicGraphGenerator sdfRandom = new DirectedAcyclicGraphGenerator();
 			SDFGraph g = null;
 			g = sdfRandom.createAcyclicRandomGraph(40, 1, 20, 1, 20);
 			try {
@@ -871,7 +873,7 @@ public class CodegenModelGenerator {
 			} catch (SDF4JException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
 			//REPVertex r = repV;
 			//while(r != null){
 			//	//p(r.r + " (" + r.ra + " * " + r.a.getName() + " " + r.rb + " * " + r.b.getName() + ")");
