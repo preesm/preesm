@@ -5,12 +5,11 @@ This document explains the build process of Preesm and its components (Graphiti,
 
 Old documentation is available in the [HowToRelease.md](HowToRelease.md) file.
 
-TODO: setup sonar, configure jenkins
-
 - [Introduction](#introduction)
 	- [Documentation](#documentation)
 	- [Git](#git)
 	- [Maven](#maven)
+		- [Release Engineering](#release-engineering)
 	- [Eclipse IDE](#eclipse-ide)
 	- [Coding Style](#coding-style)
 	- [Dependency Management](#dependency-management)
@@ -19,20 +18,24 @@ TODO: setup sonar, configure jenkins
 		- [Documentation](#documentation)
 		- [Generated content](#generated-content)
 	- [Github](#github)
+	- [Releng Files](#releng-files)
 - [Build Process in Maven](#build-process-in-maven)
 - [Eclipse setup](#eclipse-setup)
+	- [Running Maven from Eclipse](#running-maven-from-eclipse)
 - [Releasing (deploy)](#releasing-deploy)
 	- [Update online update site](#update-online-update-site)
 - [Continuous integration](#continuous-integration)
 	- [Jenkins](#jenkins)
 	- [Sonar](#sonar)
 - [Howto ?](#howto-)
+	- [Update project version](#update-project-version)
+
 
 ## Introduction
 
 Graphiti, DFTools and Preesm are sets of Eclipse plugins. Their source code is hosted on GitHub (see the [Preesm team](https://github.com/preesm) page). These projects are built using [Maven](https://maven.apache.org/) and the [Tycho](https://eclipse.org/tycho/) plugins, and mostly developed using the [Eclipse IDE](https://eclipse.org/). Facilities are provided to ease the interactions between these tools. The [Continuous Integration](https://en.wikipedia.org/wiki/Continuous_integration) server [Jenkins](https://jenkins.io/) is in charge of monitoring the git repositories and triggering builds upon source code modifications.
 
-**TODO: sonar ?**
+**TODO: sonar + jenkins @ copernic ?**
 
 ### Documentation
 
@@ -117,6 +120,26 @@ update site, javadoc API, products
 * DFTools
 * Preesm
 
+### Releng Files
+
+| file under /releng/ | what it is
+|-
+| hooks/ | Git hooks and necessary dependencies
+| org.ietr.preesm.complete.site/ | The Maven module responsible for generating the update site and aggregating Javadoc and products
+| org.ietr.preesm.dev.feature/ | The feature referencing all Eclipse plugin required to setup a develop environment for Preesm
+| org.ietr.preesm.feature/ | The Preesm feature for end users
+| org.ietr.preesm.product/ | Maven module for generating the end user products
+| org.ietr.preesm.rcp.utils/ | Small Eclipse plugin for configuring the products
+| auto_convert_encoding_and_lineendings.sh | Bash script for converting all file line endings to Linux and charset to UTF-8
+| copyright_template.txt | Copyright template to include in file headers
+| fix_header_copyright_and_authors.sh | Bash script that replaces copyright template tokens (i.e. %%DATE%%) with data fetched from the git log
+| HowToRelease.md | Old release procedure
+| pom.xml | The main releng POM. Adds two P2 repositories for product and dev feature build.
+| README.md | This file
+| update-version.sh | Small Bash script that calls Maven with proper arguments to set a new version for all submodules.
+| VAADER_checkstyle.xml | Preesm Checkstyle cofniguration file
+| VAADER_eclipse_preferences.epf | Preesm Eclipse preferences file
+
 ## Build Process in Maven
 
 Defines how the project is built
@@ -137,6 +160,8 @@ Defines how the project is built
 * Checkstyle config (link to preesm website)
 * Graphiti & DFTools dev (link to preesm website)
 * warning source features
+
+### Running Maven from Eclipse
 
 ## Releasing (deploy)
 * versionning? (how/when update version)
@@ -173,6 +198,15 @@ Continuous integrations
 - code coverage
 
 ## Howto ?
+
+### Update project version
+
+In the root folder of the project, run `mvn -P releng org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=X.Y.Z
+`. This can be done from Eclipse (see procedure to [call Maven from Eclipse](#running-maven-from-eclipse)):
+
+![alt text](doc/setNewVersionWithMavenFromEclipse.png "Run configuration for calling 'mvn -P releng org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=X.Y.Z' from Eclipse.")
+
+Alternatively, from a shell, the script `/releng/update-version.sh X.Y.Z` wraps the maven call.
 
 * add a new third party library dependency
 * add a dependency to another update site
