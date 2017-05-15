@@ -14,32 +14,31 @@ Old documentation is available in the [HowToRelease.md](HowToRelease.md) file.
 
 - [Table of Content](#table-of-content)
 - [Introduction](#introduction)
-  - [Documentation](#documentation)
-  - [Git](#git)
-  - [Maven](#maven)
-  - [Eclipse IDE](#eclipse-ide)
-    - [Coding Style](#coding-style)
-  - [Dependency Management](#dependency-management)
+	- [Documentation](#documentation)
+	- [Git](#git)
+	- [Maven](#maven)
+	- [Eclipse IDE](#eclipse-ide)
+	- [Coding Style](#coding-style)
+	- [Dependency Management](#dependency-management)
 - [Project structure](#project-structure)
-  - [Github](#github)
-  - [Preesm website (Sourceforge)](#preesm-website-sourceforge)
-  - [Generated content](#generated-content)
-  - [Releng Files](#releng-files)
+	- [Github](#github)
+	- [Preesm website (Sourceforge)](#preesm-website-sourceforge)
+	- [Generated content](#generated-content)
+	- [Releng Files](#releng-files)
 - [Build Process in Maven](#build-process-in-maven)
-  - [Overview](#overview)
-  - [Dependencies](#dependencies)
-  - [Profiles](#profiles)
-  - [Phase Bindings](#phase-bindings)
-  - [Configuration Details](#configuration-details)
+	- [Overview](#overview)
+	- [Dependencies](#dependencies)
+	- [Profiles](#profiles)
+	- [Phase Binding and Configuration Details](#phase-binding-and-configuration-details)
 - [Eclipse setup](#eclipse-setup)
-  - [Running Maven from Eclipse](#running-maven-from-eclipse)
+	- [Running Maven from Eclipse](#running-maven-from-eclipse)
 - [Release Engineering in Maven](#release-engineering-in-maven)
-  - [Update online update site](#update-online-update-site)
+	- [Update online update site](#update-online-update-site)
 - [Continuous integration](#continuous-integration)
-  - [Jenkins](#jenkins)
-  - [Sonar](#sonar)
-- [Howto ?](#howto-)
-  - [Update project version](#update-project-version)
+	- [Jenkins](#jenkins)
+	- [Sonar](#sonar)
+- [Howto](#howto)
+	- [Update project version](#update-project-version)
 
 <!-- /TOC -->
 
@@ -78,7 +77,6 @@ Using the **releng** [Maven profile](http://maven.apache.org/guides/introduction
 * Generate [Eclipse products](https://wiki.eclipse.org/FAQ_What_is_an_Eclipse_product%3F) for Win32/64, Linux 32/64, OSX 64;
 * Generate an [Eclipse feature](https://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Fconcepts%2Fconcepts-25.htm) referencing all necessary development tools for a fast and easy setup of the IDE;
 * Deploy the generated Javadoc, update-site and products online.
-
 
 ### Eclipse IDE
 
@@ -255,8 +253,14 @@ In order to make sure anyone can build your version of the project, it is better
 **Note:** if Maven is called with a goal in the default lifecycle that is before the **package** goal (for instance **compile**), the dependencies will not be resolved since modules will not be packaged. Thus the Tycho plugin will try to resolve dependencies from the [local repository](https://www.mkyong.com/maven/where-is-maven-local-repository/) and then remote ones. This will cause failure is the required version is not available or if there has been changes in the API and the version did not increase. The same failure can occur if one tries to build one of the submodules independently from the others. To circumvent this, one could first **install** (see [goal doc.](http://maven.apache.org/plugins/maven-install-plugin/)) the dependencies to the local repository, then compile only or package a submodule only.
 
 ### Profiles
-* **releng**: see [Release Engineering in Maven](#release-engineering-in-maven)
-* **os-macosx**: The main purpose of this profile is to add some arguments to the JVM when running Eclipse plugin tests. The profile is automatically activated when running on Mac OSX family:
+
+Two [Maven build profiles](http://maven.apache.org/guides/introduction/introduction-to-profiles.html) are defined in the parent POM:
+#### releng
+A profile for enabling release engineering modules and plugins. See [Release Engineering in Maven](#release-engineering-in-maven).
+
+#### os-macosx
+
+The main purpose of this profile is to add some arguments to the JVM when running Eclipse plugin tests. The profile is automatically activated when running on Mac OSX family:
 ```XML
 <activation>
   <os>
@@ -267,30 +271,43 @@ In order to make sure anyone can build your version of the project, it is better
 The specific argument to add is defined as follows:
 `<tycho.surefire.extra.vmargs>-XstartOnFirstThread</tycho.surefire.extra.vmargs>` (see [this bug report](https://bugs.eclipse.org/bugs/show_bug.cgi?id=427693)).
 
-### Phase Bindings
+### Phase Binding and Configuration Details
 
-This section details what plugins are bound to which phases (including clean lifecycle and tests).
+This section details what plugins are bound to which phases (including clean lifecycle and tests, but not releng profile) and their configuration and role in the build process.
 
-* Checkstyle
-  * f
-* tests (structure, how to run, maven + eclipse)
+#### clean
 
-### Configuration Details
+* [maven-clean-plugin](https://maven.apache.org/plugins/maven-clean-plugin/): Add a pattern to clean the Xtend generated Java files under */xtend-gen/*.
 
-This section details how the different Maven plugins are configured.
+#### initialize
 
-Maven plugins from Maven Central:
-* [directory-maven-plugin](https://github.com/jdcasey/directory-maven-plugin):
-* tycho-maven-plugin
-* xtend-maven-plugin
-* maven-clean-plugin
-* maven-antrun-plugin
-* maven-checkstyle-plugin
-* maven-deploy-plugin
-* org.eclipse.m2e:lifecycle-mapping
-For testing:
-* tycho-surefire-plugin
-* jacoco-maven-plugin
+* [directory-maven-plugin](https://github.com/jdcasey/directory-maven-plugin): initialize the property **main.basedir** with the path to the parent project directory. This property is used in the Checkstyle configuration for having a consistent path to its configuration file from any submodule.
+* [jacoco-maven-plugin](http://www.eclemma.org/jacoco/trunk/doc/prepare-agent-mojo.html): Used for test coverage compuatin. See plugin documentation. Defined in the test fragments POM.
+* [org.eclipse.m2e:lifecycle-mapping](http://www.eclipse.org/m2e/documentation/m2e-execution-not-covered.html): Tell the Eclipse Maven Plugin to ignore some Maven plugins. More details in the [Eclipse setup](#eclipse-setup) section.
+
+#### generate-sources
+
+* [xtend-maven-plugin](https://eclipse.org/Xtext/documentation/350_continuous_integration.html): Compiles XTend source files from **/xtend-src** to Java files in **/xtend-gen**.
+
+#### process-sources
+
+* [maven-checkstyle-plugin](https://maven.apache.org/plugins/maven-checkstyle-plugin/): Checkstyle Maven plugin for checking code style compliance. Explicitly bound to **process-sources** phase. Force Checkstyle version (default version does not support Java 8 syntax). Add configuration file path.
+
+#### compile
+
+* [tycho-compiler-plugin](https://eclipse.org/tycho/sitedocs/tycho-compiler-plugin/compile-mojo.html): Compiles the Java sources using Eclipse dependencies.
+
+#### package
+
+* [tycho-packaging-plugin](https://eclipse.org/tycho/sitedocs/tycho-packaging-plugin/package-plugin-mojo.html): Bundle modules as Eclipse plugins.
+
+#### integration-test
+
+* [tycho-surefire-plugin](https://eclipse.org/tycho/sitedocs/tycho-surefire/tycho-surefire-plugin/test-mojo.html): Fire tests within an Eclipse runtime environment.
+
+#### deploy
+
+* [maven-deploy-plugin](http://maven.apache.org/plugins/maven-deploy-plugin/): disable the default deploy plugin. This is due to issues when deploying P2 repositories on Sourceforge. The actual deploy procedure is detailled in the [Release Engineering in Maven](#release-engineering-in-maven) section.
 
 ## Eclipse setup
 Developers setup (link SF website)
@@ -350,7 +367,7 @@ Continuous integrations
 
 - code coverage
 
-## Howto ?
+## Howto
 
 ### Update project version
 
