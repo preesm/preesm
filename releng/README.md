@@ -15,20 +15,26 @@ Old documentation is available in the [HowToRelease.md](HowToRelease.md) file.
 	- [Coding Style](#coding-style)
 	- [Dependency Management](#dependency-management)
 - [Project structure](#project-structure)
-	- [Preesm website (Sourceforge)](#preesm-website-sourceforge)
 	- [Github](#github)
+	- [Preesm website (Sourceforge)](#preesm-website-sourceforge)
 	- [Generated content](#generated-content)
 	- [Releng Files](#releng-files)
 - [Build Process in Maven](#build-process-in-maven)
+	- [Overview](#overview)
+	- [Dependencies](#dependencies)
+	- [Profiles](#profiles)
+	- [Phase Bindings](#phase-bindings)
+	- [Configuration Details](#configuration-details)
 - [Eclipse setup](#eclipse-setup)
 	- [Running Maven from Eclipse](#running-maven-from-eclipse)
-- [Releasing (deploy)](#releasing-deploy)
+- [Release Engineering in Maven](#release-engineering-in-maven)
 	- [Update online update site](#update-online-update-site)
 - [Continuous integration](#continuous-integration)
 	- [Jenkins](#jenkins)
 	- [Sonar](#sonar)
 - [Howto ?](#howto-)
 	- [Update project version](#update-project-version)
+
 
 ## Introduction
 
@@ -253,11 +259,15 @@ The specific argument to add is defined as follows:
 `<tycho.surefire.extra.vmargs>-XstartOnFirstThread</tycho.surefire.extra.vmargs>` (see [this bug report](https://bugs.eclipse.org/bugs/show_bug.cgi?id=427693)).
 
 ### Phase Bindings
+
+This section details what plugins are bound to which phases (including clean lifecycle and tests).
+
 * Checkstyle
 * tests (structure, how to run, maven + eclipse)
 
-
 ### Configuration Details
+
+This section details how the different Maven plugins are configured.
 
 Maven plugins from Maven Central:
 * [directory-maven-plugin](https://github.com/jdcasey/directory-maven-plugin):
