@@ -5,7 +5,7 @@ This document explains the build process of Preesm and its components (Graphiti,
 
 Old documentation is available in the [HowToRelease.md](HowToRelease.md) file.
 
-![alt text](https://img.shields.io/badge/TODO-Sonar + Jenkins-red.svg "Todo")
+TODO: Sonar+Jenkins
 
 
 ## Table of Content
@@ -20,10 +20,10 @@ Old documentation is available in the [HowToRelease.md](HowToRelease.md) file.
 	- [Eclipse IDE](#eclipse-ide)
 	- [Coding Style](#coding-style)
 	- [Dependency Management](#dependency-management)
-- [Project structure](#project-structure)
+- [Project Structure](#project-structure)
 	- [Git Repositories (Github)](#git-repositories-github)
-	- [Preesm website (Sourceforge)](#preesm-website-sourceforge)
-	- [Generated content](#generated-content)
+	- [Preesm Website (SourceForge)](#preesm-website-sourceforge)
+	- [Generated Content](#generated-content)
 	- [Releng Files](#releng-files)
 - [Build Process in Maven](#build-process-in-maven)
 	- [Overview](#overview)
@@ -114,7 +114,7 @@ In order to use a plain Java jar using this mechanism, it first needs to be conv
 
 For Graphiti, DFTools and Preesm, all the plain Java jars have been externalized in the [ExternalDeps](https://github.com/preesm/externaldeps) project. This project consists of a Maven POM file that is configured to fetch all the required jars from online Maven repositories and convert them into Eclipse plugin, before deploying them on the Preesm update site.
 
-## Project structure
+## Project Structure
 
 ExternalDeps, Graphiti, DFTools and Preesm resources are located in 2 places:
 * Github repositories
@@ -137,7 +137,7 @@ Dedicated Maven plugins used during project builds are also hosted there:
 
 Their use is detailled later in this document and in the [ExternalDeps Readme](https://github.com/preesm/externaldeps).
 
-#### Source code structure
+#### Source Code Structure
 
 The Git repositories are organized as follows:
 * **/plugins**: the source code of the projects (Graphiti, DFTools, Preesm);
@@ -163,7 +163,7 @@ Reading:
 * https://github.com/git/git/blob/master/Documentation/mailmap.txt
 
 
-### Preesm website (Sourceforge)
+### Preesm Website (SourceForge)
 
 Preesm main documentation is found on the Preesm website:
 * [Tutorials](http://preesm.sourceforge.net/website/index.php?id=tutorials);
@@ -173,7 +173,7 @@ Sourceforge also hosts the generated Javadoc API, the product releases and the u
 * [Release Files for Download](https://sourceforge.net/p/forge/documentation/Release%20Files%20for%20Download/): how to release files on SourceForge File Release Service;
 * [Shell Service](https://sourceforge.net/p/forge/documentation/Shell%20Service/): how to instanciate interactive shell on SourceForge servers;
 
-### Generated content
+### Generated Content
 
 During the Maven deploy phase, the content is automatically uploaded to those locations:
 * Javadoc API : http://preesm.sourceforge.net/gensite/API/
@@ -401,7 +401,7 @@ Continuous integrations
 In the root folder of the project, run `mvn -P releng org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=X.Y.Z
 `. This can be done from Eclipse (see procedure to [call Maven from Eclipse](#running-maven-from-eclipse)):
 
-![alt text](doc/setNewVersionWithMavenFromEclipse.png "Run configuration for calling 'mvn -P releng org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=X.Y.Z' from Eclipse.")
+![Run configuration for updating versions](doc/setNewVersionWithMavenFromEclipse.png "Run configuration for calling 'mvn -P releng org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=X.Y.Z' from Eclipse.")
 
 Alternatively, from a shell, the script `/releng/update-version.sh X.Y.Z` wraps the maven call.
 
