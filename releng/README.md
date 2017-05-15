@@ -101,16 +101,8 @@ For Graphiti, DFTools and Preesm, all the plain Java jars have been externalized
 ## Project structure
 
 ExternalDeps, Graphiti, DFTools and Preesm resources are located in 2 places:
-* Preesm website on Sourceforge
 * Github repositories
-
-### Preesm website (Sourceforge)
-
-Preesm main documentation is found on the Preesm website:
-* [Tutorials](http://preesm.sourceforge.net/website/index.php?id=tutorials);
-* [Developers doc](http://preesm.sourceforge.net/website/index.php?id=developer).
-
-Sourceforge also hosts the generated Javadoc API, the product releases and the update site (see links below).
+* Preesm website on Sourceforge
 
 ### Github
 
@@ -131,21 +123,49 @@ Their use is detailled later in this document and in the [ExternalDeps Readme](h
 
 #### Source code structure
 
-* src
-* test plugins : http://www.modumind.com/2007/06/20/unit-testing-plug-ins-with-fragments/
-* /releng/
-* ignored files (.gitignore)
+The Git repositories are organized as follows:
+* **/plugins**: the source code of the projects (Graphiti, DFTools, Preesm);
+* **/releng**: the release engineering files (see below);
+* **/test-fragments**: the [test plug-in fragments](http://www.modumind.com/2007/06/20/unit-testing-plug-ins-with-fragments/) for functional and unit testing;
+* **/test**: the integration and end-to-end tests
 
 #### The .mailmap File
 
-TODO
+At the root of the Git repositories lies a file named `.mailmap`.  This files is used to associate different author names and mail addresses to one unique identity.
+
+For instance let say Developer John Smith commits using **jsmith** name and **jsmith@company.com**  mail at work, and using **"John Smith"** name and **john.smith@public.net** mail from home. The git log would differentiate both users whereas they refer to the same identity. To have both of them show the proper entry (let say **"John Smith"** and **john.smith@company.com**), one would have the following `.mailmap` file at the root of the git repository:
+```bash
+# Format is :
+#   "Proper Name" "<proper mail>" "logged Name" "<logged mail>"
+John Smith john.smith@company.com jsmith jsmith@company.com
+John Smith john.smith@company.com John Smith john.smith@public.net
+```
+
+Reading:
+* https://git-scm.com/docs/git-shortlog#_mapping_authors
+* https://stacktoheap.com/blog/2013/01/06/using-mailmap-to-fix-authors-list-in-git/
+* https://github.com/git/git/blob/master/Documentation/mailmap.txt
+
+
+### Preesm website (Sourceforge)
+
+Preesm main documentation is found on the Preesm website:
+* [Tutorials](http://preesm.sourceforge.net/website/index.php?id=tutorials);
+* [Developers doc](http://preesm.sourceforge.net/website/index.php?id=developer).
+
+Sourceforge also hosts the generated Javadoc API, the product releases and the update site (see links below). For uploads, see Sourceforge Documentation:
+* [Release Files for Download](https://sourceforge.net/p/forge/documentation/Release%20Files%20for%20Download/): how to release files on SourceForge File Release Service;
+* [Shell Service](https://sourceforge.net/p/forge/documentation/Shell%20Service/): how to instanciate interactive shell on SourceForge servers;
 
 ### Generated content
 
 During the Maven deploy phase, the content is automatically uploaded to those locations:
 * Javadoc API : http://preesm.sourceforge.net/gensite/API/
+  * accessed on SourceForge servers under `/home/project-web/preesm/htdocs/gensite/API`
 * Update-site : http://preesm.sourceforge.net/eclipse/update-site/
+  * accessed on SourceForge servers under `/home/project-web/preesm/htdocs/gensite/update-site/complete` (`eclipse/update-site` is a link to `gensite/update-site/complete`)
 * Product releases : https://sourceforge.net/projects/preesm/files/Releases/
+  * accessed on SourceForge servers using the projects web interface or under `/home/frs/project/preesm/Releases`
 
 ### Releng Files
 
