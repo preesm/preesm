@@ -185,7 +185,7 @@ During the Maven deploy phase, the content is automatically uploaded to those lo
 
 ### Releng Files
 
-| file under /releng/ | what it is |
+| File under /releng/ | Description |
 |-----|----|
 | hooks/ | Git hooks and necessary dependencies |
 | org.ietr.preesm.complete.site/ | The Maven module responsible for generating the update site and aggregating Javadoc and products |
