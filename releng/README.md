@@ -21,7 +21,7 @@ Old documentation is available in the [HowToRelease.md](HowToRelease.md) file.
 	- [Coding Style](#coding-style)
 	- [Dependency Management](#dependency-management)
 - [Project structure](#project-structure)
-	- [Github](#github)
+	- [Git Repositories (Github)](#git-repositories-github)
 	- [Preesm website (Sourceforge)](#preesm-website-sourceforge)
 	- [Generated content](#generated-content)
 	- [Releng Files](#releng-files)
@@ -30,15 +30,20 @@ Old documentation is available in the [HowToRelease.md](HowToRelease.md) file.
 	- [Dependencies](#dependencies)
 	- [Profiles](#profiles)
 	- [Phase Binding and Configuration Details](#phase-binding-and-configuration-details)
-- [Eclipse setup](#eclipse-setup)
+- [Eclipse Setup](#eclipse-setup)
+	- [M2Eclipse](#m2eclipse)
+	- [Installing Dependencies](#installing-dependencies)
+	- [Eclipse Preferences](#eclipse-preferences)
 	- [Running Maven from Eclipse](#running-maven-from-eclipse)
+	- [Missing Source Features](#missing-source-features)
 - [Release Engineering in Maven](#release-engineering-in-maven)
 	- [Update online update site](#update-online-update-site)
 - [Continuous integration](#continuous-integration)
 	- [Jenkins](#jenkins)
 	- [Sonar](#sonar)
 - [Howto](#howto)
-	- [Update project version](#update-project-version)
+	- [Update Project Version](#update-project-version)
+	- [Deploy from Eclipse](#deploy-from-eclipse)
 
 <!-- /TOC -->
 
@@ -115,7 +120,7 @@ ExternalDeps, Graphiti, DFTools and Preesm resources are located in 2 places:
 * Github repositories
 * Preesm website on Sourceforge
 
-### Github
+### Git Repositories (Github)
 
 All the source code for the projects is hosted on Github (under [Preesm team](https://github.com/preesm)):
  * ExternalDeps: https://github.com/preesm/externaldeps
@@ -309,17 +314,39 @@ This section details what plugins are bound to which phases (including clean lif
 
 * [maven-deploy-plugin](http://maven.apache.org/plugins/maven-deploy-plugin/): disable the default deploy plugin. This is due to issues when deploying P2 repositories on Sourceforge. The actual deploy procedure is detailled in the [Release Engineering in Maven](#release-engineering-in-maven) section.
 
-## Eclipse setup
-Developers setup (link SF website)
+## Eclipse Setup
 
-* Link between maven and Eclipse: load as maven project (m2e)
-* Ignore some maven plugins in Eclipse
-* Eclipse setup + preferences
-* Checkstyle config (link to preesm website)
-* Graphiti & DFTools dev (link to preesm website)
-* warning source features
+Eclipse is the prefered IDE for developing Preesm. The developer setup is detailed on the [Sourceforge website](http://preesm.sourceforge.net/website/index.php?id=building-preesm). This section details the links between the Maven configuration and the Eclipse setup.
+
+**Note:** Eclipse should not be used to package or release.
+
+### M2Eclipse
+
+Most of the job is done by the [M2Eclipse Eclipse plugin](http://www.eclipse.org/m2e/). This plugin allows to import Maven projects in the Eclipse workspace. It also reads the POM files and configure Eclipse accordingly.
+
+Some Maven plugins are however not handled by the M2E plugin. This is the case for the **directory-maven-plugin**. This plugin should not affect the Eclipse build process, and is therefore add to the ignore list in M2E (see [initialize phase](#initialize)). Indeed the Checkstyle configuration for Eclipse is detailed [here](http://preesm.sourceforge.net/website/index.php?id=building-preesm) and does not need the **main.basedir** property.
+
+Some other Maven plugins need to be supported by Eclipse, as the Tycho plugin that sets some Eclipse plugin configuration up. Therefore we need to install some M2E extensions (called connector) to support them, using the [M2E Tycho connector](https://github.com/tesla/m2eclipse-tycho) (installed from this [update site](http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST/)).
+
+### Installing Dependencies
+
+The third party dependencies must be installed through update sites. All of them are bundled with the Dev Meta Feature generated during the release process (see below). It is also possible to setup an Eclipse for developping Preesm along with Graphiti and/or DFTools sources (see this [documentation](http://preesm.sourceforge.net/website/index.php?id=working-with-dftoolsgraphiti-source)).
+
+### Eclipse Preferences
+
+Eclipse comes with many development facilities. Among them is the code formatter. We provide an [Eclipse Preference File](https://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Ftasks%2Ftimpandexp.htm) that comes with a formatter configuration that respects the Checkstyle coding policy and that is called upon save.
+
+Various small configurations are also included in this preference file (see [source](VAADER_eclipse_preferences.epf)).
 
 ### Running Maven from Eclipse
+
+As aforementioned, the Eclipse IDE is best to develop with Preesm, but should not be used for packaging and releasing. Indeed the [Plugin Development Environment build tools](https://projects.eclipse.org/projects/eclipse.pde) provide all necessary components for the plugin development life. However the configuration differs from the Maven plugins (for instance the Eclipse update site builder uses a file named **site.xml** whereas the [tycho-p2-repository-plugin](http://www.eclipse.org/tycho/sitedocs/tycho-p2/tycho-p2-repository-plugin/assemble-repository-mojo.html) reads a file named **category.xml**). The release process is tuned for Maven build so that it can be called from a continuous integration platform.
+
+Thankfully, the M2E Eclipse plugins come with facilities to run Maven goals from the Eclipse IDE, without having to install a local Maven distribution. This is done by running any of the imported Maven project as "Maven build" (see example [here](https://books.sonatype.com/m2eclipse-book/reference/running-sect-running-maven-builds.html)). Goals, profiles and parameters can be set in the Eclipse interface. This should be used if one wants to [update project version](#update-project-version) or [release/deploy](#deploy-from-eclipse) Preesm from Eclipse.
+
+### Missing Source Features
+
+As mentioned on the [Preesm website](http://preesm.sourceforge.net/website/index.php?id=working-with-dftoolsgraphiti-source), some warnings can appear when working with Graphiti and DFTools source code. This is nothing to be wary of as these "missing" features are actually automatically generated during the **package** phase by the [tycho-source-feature-plugin](https://eclipse.org/tycho/sitedocs-extras/tycho-source-feature-plugin/source-feature-mojo.html).
 
 ## Release Engineering in Maven
 
@@ -369,7 +396,7 @@ Continuous integrations
 
 ## Howto
 
-### Update project version
+### Update Project Version
 
 In the root folder of the project, run `mvn -P releng org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=X.Y.Z
 `. This can be done from Eclipse (see procedure to [call Maven from Eclipse](#running-maven-from-eclipse)):
@@ -377,6 +404,8 @@ In the root folder of the project, run `mvn -P releng org.eclipse.tycho:tycho-ve
 ![alt text](doc/setNewVersionWithMavenFromEclipse.png "Run configuration for calling 'mvn -P releng org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=X.Y.Z' from Eclipse.")
 
 Alternatively, from a shell, the script `/releng/update-version.sh X.Y.Z` wraps the maven call.
+
+### Deploy from Eclipse
 
 * add a new third party library dependency
 * add a dependency to another update site
