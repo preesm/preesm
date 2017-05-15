@@ -7,34 +7,41 @@ Old documentation is available in the [HowToRelease.md](HowToRelease.md) file.
 
 ![alt text](https://img.shields.io/badge/TODO-Sonar + Jenkins-red.svg "Todo")
 
-- [Introduction](#introduction)
-	- [Documentation](#documentation)
-	- [Git](#git)
-	- [Maven](#maven)
-	- [Eclipse IDE](#eclipse-ide)
-	- [Coding Style](#coding-style)
-	- [Dependency Management](#dependency-management)
-- [Project structure](#project-structure)
-	- [Github](#github)
-	- [Preesm website (Sourceforge)](#preesm-website-sourceforge)
-	- [Generated content](#generated-content)
-	- [Releng Files](#releng-files)
-- [Build Process in Maven](#build-process-in-maven)
-	- [Overview](#overview)
-	- [Dependencies](#dependencies)
-	- [Profiles](#profiles)
-	- [Phase Bindings](#phase-bindings)
-	- [Configuration Details](#configuration-details)
-- [Eclipse setup](#eclipse-setup)
-	- [Running Maven from Eclipse](#running-maven-from-eclipse)
-- [Release Engineering in Maven](#release-engineering-in-maven)
-	- [Update online update site](#update-online-update-site)
-- [Continuous integration](#continuous-integration)
-	- [Jenkins](#jenkins)
-	- [Sonar](#sonar)
-- [Howto ?](#howto-)
-	- [Update project version](#update-project-version)
 
+## Table of Content
+<!-- Generated with Atom markdown-toc plugin -->
+<!-- TOC depthFrom:2 depthTo:3 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [Table of Content](#table-of-content)
+- [Introduction](#introduction)
+  - [Documentation](#documentation)
+  - [Git](#git)
+  - [Maven](#maven)
+  - [Eclipse IDE](#eclipse-ide)
+    - [Coding Style](#coding-style)
+  - [Dependency Management](#dependency-management)
+- [Project structure](#project-structure)
+  - [Github](#github)
+  - [Preesm website (Sourceforge)](#preesm-website-sourceforge)
+  - [Generated content](#generated-content)
+  - [Releng Files](#releng-files)
+- [Build Process in Maven](#build-process-in-maven)
+  - [Overview](#overview)
+  - [Dependencies](#dependencies)
+  - [Profiles](#profiles)
+  - [Phase Bindings](#phase-bindings)
+  - [Configuration Details](#configuration-details)
+- [Eclipse setup](#eclipse-setup)
+  - [Running Maven from Eclipse](#running-maven-from-eclipse)
+- [Release Engineering in Maven](#release-engineering-in-maven)
+  - [Update online update site](#update-online-update-site)
+- [Continuous integration](#continuous-integration)
+  - [Jenkins](#jenkins)
+  - [Sonar](#sonar)
+- [Howto ?](#howto-)
+  - [Update project version](#update-project-version)
+
+<!-- /TOC -->
 
 ## Introduction
 
@@ -141,8 +148,8 @@ At the root of the Git repositories lies a file named `.mailmap`.  This files is
 
 For instance let say Developer John Smith commits using **jsmith** name and **jsmith@company.com**  mail at work, and using **"John Smith"** name and **john.smith@public.net** mail from home. The git log would differentiate both users whereas they refer to the same identity. To have both of them show the proper entry (let say **"John Smith"** and **john.smith@company.com**), one would have the following `.mailmap` file at the root of the git repository:
 ```bash
-# Format is :
-#   "Proper Name" "<proper mail>" "logged Name" "<logged mail>"
+#### Format is :
+####   "Proper Name" "<proper mail>" "logged Name" "<logged mail>"
 John Smith john.smith@company.com jsmith jsmith@company.com
 John Smith john.smith@company.com John Smith john.smith@public.net
 ```
@@ -218,30 +225,32 @@ Third party plugins dependencies are resolved using external P2 repositories, su
 
 ```xml
 <properties>
-	<!-- ... -->
-	<complete.p2.repo>http://preesm.sourceforge.net/gensite/update-site/complete/</complete.p2.repo>
-	<eclipse.mirror>http://mirror.ibcp.fr/pub/eclipse/</eclipse.mirror>
+  <!-- ... -->
+  <complete.p2.repo>http://preesm.sourceforge.net/gensite/update-site/complete/</complete.p2.repo>
+  <eclipse.mirror>http://mirror.ibcp.fr/pub/eclipse/</eclipse.mirror>
 </properties>
 <!-- ... -->
 <repositories>
-	<!-- add Neon repository to resolve dependencies -->
-	<repository>
-		<id>Neon</id>
-		<layout>p2</layout>
-		<url>${eclipse.mirror}/releases/neon/</url>
-	</repository>
-	<!-- ... -->
-	<!-- add Preesm repository to resolve dependencies -->
-	<repository>
-		<id>Complete Repo</id>
-		<layout>p2</layout>
-		<url>${complete.p2.repo}</url>
-	</repository>
+  <!-- add Neon repository to resolve dependencies -->
+  <repository>
+    <id>Neon</id>
+    <layout>p2</layout>
+    <url>${eclipse.mirror}/releases/neon/</url>
+  </repository>
+  <!-- ... -->
+  <!-- add Preesm repository to resolve dependencies -->
+  <repository>
+    <id>Complete Repo</id>
+    <layout>p2</layout>
+    <url>${complete.p2.repo}</url>
+  </repository>
 </repositories>
 <!-- ... -->
 ```
 
 Dependencies between submodules are resolved on the fly during the build process. Once a module has been [packaged](https://eclipse.org/tycho/sitedocs/tycho-packaging-plugin/package-plugin-mojo.html) (triggered automatically when calling the **verify** goal), it becomes available for other plugins. The Tycho plugins add implicit dependencies between submodules in order for the [Maven Reactor](https://maven.apache.org/guides/mini/guide-multiple-modules.html) to compute a valid build order for all submodules.
+
+In order to make sure anyone can build your version of the project, it is better to clean the local repository before calling the build command. This will ensure you did not install temporary versions in your local repository that will not be available to other developers.
 
 **Note:** if Maven is called with a goal in the default lifecycle that is before the **package** goal (for instance **compile**), the dependencies will not be resolved since modules will not be packaged. Thus the Tycho plugin will try to resolve dependencies from the [local repository](https://www.mkyong.com/maven/where-is-maven-local-repository/) and then remote ones. This will cause failure is the required version is not available or if there has been changes in the API and the version did not increase. The same failure can occur if one tries to build one of the submodules independently from the others. To circumvent this, one could first **install** (see [goal doc.](http://maven.apache.org/plugins/maven-install-plugin/)) the dependencies to the local repository, then compile only or package a submodule only.
 
@@ -250,9 +259,9 @@ Dependencies between submodules are resolved on the fly during the build process
 * **os-macosx**: The main purpose of this profile is to add some arguments to the JVM when running Eclipse plugin tests. The profile is automatically activated when running on Mac OSX family:
 ```XML
 <activation>
-	<os>
-		<family>mac</family>
-	</os>
+  <os>
+    <family>mac</family>
+  </os>
 </activation>
 ```
 The specific argument to add is defined as follows:
@@ -263,6 +272,7 @@ The specific argument to add is defined as follows:
 This section details what plugins are bound to which phases (including clean lifecycle and tests).
 
 * Checkstyle
+  * f
 * tests (structure, how to run, maven + eclipse)
 
 ### Configuration Details
@@ -283,6 +293,8 @@ For testing:
 * jacoco-maven-plugin
 
 ## Eclipse setup
+Developers setup (link SF website)
+
 * Link between maven and Eclipse: load as maven project (m2e)
 * Ignore some maven plugins in Eclipse
 * Eclipse setup + preferences
