@@ -5,8 +5,10 @@ This document explains the build process of Preesm and its components (Graphiti,
 
 Old documentation is available in the [HowToRelease.md](HowToRelease.md) file.
 
-TODO: Sonar+Jenkins
-
+TODO:
+* Sonar+Jenkins
+* Howtos
+* Check dead links
 
 ## Table of Content
 <!-- Generated with Atom markdown-toc plugin -->
@@ -36,14 +38,25 @@ TODO: Sonar+Jenkins
 	- [Eclipse Preferences](#eclipse-preferences)
 	- [Running Maven from Eclipse](#running-maven-from-eclipse)
 	- [Missing Source Features](#missing-source-features)
-- [Release Engineering in Maven](#release-engineering-in-maven)
-	- [Update online update site](#update-online-update-site)
+- [Release Engineering](#release-engineering)
+	- [Overview](#overview)
+	- [Versionning](#versionning)
+	- [Javadoc](#javadoc)
+	- [Feature](#feature)
+	- [Dev Meta Feature](#dev-meta-feature)
+	- [Complete Site](#complete-site)
+	- [Update Online Update Site](#update-online-update-site)
+	- [Product](#product)
+	- [Deploy Phase](#deploy-phase)
 - [Continuous integration](#continuous-integration)
-	- [Jenkins](#jenkins)
-	- [Sonar](#sonar)
 - [Howto](#howto)
 	- [Update Project Version](#update-project-version)
 	- [Deploy from Eclipse](#deploy-from-eclipse)
+	- [Add New Dependency](#add-new-dependency)
+	- [Add New Repository](#add-new-repository)
+	- [Change Checkstyle Coding Style](#change-checkstyle-coding-style)
+	- [Move Online Resources](#move-online-resources)
+	- [Update to a New Eclipse Version](#update-to-a-new-eclipse-version)
 
 <!-- /TOC -->
 
@@ -348,51 +361,92 @@ Thankfully, the M2E Eclipse plugins come with facilities to run Maven goals from
 
 As mentioned on the [Preesm website](http://preesm.sourceforge.net/website/index.php?id=working-with-dftoolsgraphiti-source), some warnings can appear when working with Graphiti and DFTools source code. This is nothing to be wary of as these "missing" features are actually automatically generated during the **package** phase by the [tycho-source-feature-plugin](https://eclipse.org/tycho/sitedocs-extras/tycho-source-feature-plugin/source-feature-mojo.html).
 
-## Release Engineering in Maven
+## Release Engineering
 
-now P2 dependencies for Dev Meta Feature
-* Checkstyle
-* M2E
+This section explains what are the sources and targets of the deploy phase.
 
-maven-javadoc-plugin
-tycho-source-feature-plugin
-tycho-source-plugin
-tycho-p2-plugin
+### Overview
 
-sftp-maven-plugin @ preesm
+After the Preesm Eclipse plugins are built, they have to be bundled and deployed in order to be distributed to the end users. The common way to distribute Eclipse plugins is to use [update sites](http://agile.csc.ncsu.edu/SEMaterials/tutorials/install_plugin/index_v35.html). The Tycho Maven plugins provide such functionality and the releng (short term for release engineering) POM file produces one update site. The [tycho-p2-director-plugin](https://eclipse.org/tycho/sitedocs/tycho-p2/tycho-p2-director-plugin/plugin-info.html) also enable the construction of [Eclipse products](https://wiki.eclipse.org/FAQ_What_is_an_Eclipse_product%3F). Finally, for development purposes, the Javadoc API is also generated and integrated to the deployed content.
 
-* versionning? (how/when update version)
-* deploy process
-* How to deploy (windows, mac, linux)
-* Maven plugin repo (sftp plugin + genfeature plugin)
-* products (preesm + CDT + equinox + required)
-* releng scripts: auto fill header, convert charset and line endings, git hooks
-* doc
-* javadoc
-* feature
-* dev features (import vs include)
+### Versionning
 
-### Update online update site
+* How/when update version: [Semantic Versioning](http://semver.org/);
+* See [Update Project Version](#update-project-version). This procedure updates version in all the POM files, in the MANIFEST.MF file of all included submodules, and in the features. Generated site and product names are also impacted.
+
+### Javadoc
+
+The Javadoc is generated only when the releng profile is enabled. It is generated during the phase **process-sources** using the [maven-javadoc-plugin](https://maven.apache.org/plugins/maven-javadoc-plugin/). In order to facilitate browsing the Javadoc of several plugins, the submodule **complete.site** also enables the aggregation of the Javadoc of the plugins during the **package** phase.
+
+### Feature
+
+The most basic elements of an update site is an [Installable Unit (IU)](https://wiki.eclipse.org/Installable_Units). Eclipse plugins are IUs. However in order to install all plugins at once, an [Eclipse feature](https://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Fconcepts%2Fconcepts-25.htm) can be used.
+
+An Eclipse feature is declared as an Eclipse project, with a [feature.xml](https://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Freference%2Fmisc%2Ffeature_manifest.html) file defining various information, as the list of plugins it contains, the license, contacts, referenced update sites, etc. It can be built using the Tycho Maven plugins by specifying [eclipse-feature](https://wiki.eclipse.org/Tycho/Packaging_Types#eclipse-feature) the packaging type.
+
+The Preesm update site and product both use this feature during their build process.
+
+### Dev Meta Feature
+
+To ease the devloper  job, we provide another feature designed for setting up the development environment for Preesm. This feature actually imports other features. This can be seen as adding dependencies in the Eclipse IDE toward other features. This "meta" feature imports the following features:
+* ExternalDeps (third party dependencies);
+* Graphiti And Dftools features and source features;
+* Xtend, GEF, EMF and Graphiti (from eclipse.org) SDKs;
+* Git and Checkstyle integration;
+* M2Eclipse and its tycho connector.
+
+Note that these features have to be **imported** and not **included** in order to avoid install errors with conflicting versions.
+Requires new repositories from the feature to make sure latest releases are installed (even though the Preesm update site is self contained, it does not contain updates since last release):
+```XML
+<!-- The following section tells where to lookup missing imported features -->
+<url>
+  <!-- Eclipse main repos -->
+  <discovery label="Neon" url="http://mirror.ibcp.fr/pub/eclipse/releases/neon/"/>
+  <discovery label="Neon Updates" url="http://mirror.ibcp.fr/pub/eclipse/eclipse/updates/4.6"/>
+
+  <!-- TMF Repo for latest xtend -->
+  <discovery label="TMF Releases" url="http://mirror.ibcp.fr/pub/eclipse/modeling/tmf/xtext/updates/composite/releases/"/>
+
+  <!-- M2E extension -->
+  <discovery label="M2E Tycho" url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST/"/>
+  <!-- Eclipse main repos -->
+  <discovery label="Checkstyle" url="http://eclipse-cs.sf.net/update/"/>
+
+  <!-- Preesm Repo -->
+  <discovery label="Preesm" url="http://preesm.sourceforge.net/gensite/update-site/complete/"/>
+</url>
+```
+
+### Complete Site
+
+* tycho-source-feature-plugin
+* tycho-source-plugin
+* ant tasks
+
+
+### Update Online Update Site
 
 To update the online update site, the `tycho-p2-extras-plugin` is used, with the
 goal `mirror`
 
+* Mirror meta data only using http download: speed up deploy phase a lot
+* disable cache in [download-maven-plugin](https://github.com/maven-download-plugin/maven-download-plugin) to avoid overriding meta datas.
 
-* fucking skip the fucking cache during the fucking download of existing fucking content.xml :@@@@
+
+### Product
+
+* products (preesm + CDT + equinox + required)
+* Possibility to define dev products in the future...
+
+### Deploy Phase
+
+* How to deploy (windows, mac, linux)
+* deploy process
+* Maven plugin repo (sftp plugin + genfeature plugin)
 
 
 
 ## Continuous integration
-
-Continuous integrations
-
-### Jenkins
-
-
-
-### Sonar
-
-- code coverage
 
 ## Howto
 
@@ -407,8 +461,12 @@ Alternatively, from a shell, the script `/releng/update-version.sh X.Y.Z` wraps 
 
 ### Deploy from Eclipse
 
-* add a new third party library dependency
-* add a dependency to another update site
-* change checkstyle policy
-* change target update site location
-* update to a new Eclipse version (change repos, ...)
+### Add New Dependency
+
+### Add New Repository
+
+### Change Checkstyle Coding Style
+
+### Move Online Resources
+
+### Update to a New Eclipse Version
