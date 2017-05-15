@@ -5,7 +5,7 @@ This document explains the build process of Preesm and its components (Graphiti,
 
 Old documentation is available in the [HowToRelease.md](HowToRelease.md) file.
 
-**TODO: sonar + jenkins @ copernic ?**
+![alt text](https://img.shields.io/badge/TODO-Sonar + Jenkins-red.svg "Todo")
 
 - [Introduction](#introduction)
 	- [Documentation](#documentation)
@@ -189,16 +189,88 @@ During the Maven deploy phase, the content is automatically uploaded to those lo
 
 ## Build Process in Maven
 
-Defines how the project is built
-* use pom.xml files
-* profiles
-* repositories
+This section details how the Preesm project is built using Maven. Graphiti and DFtools are built using a similar process. The [ExternalDeps Readme](https://github.com/preesm/externaldeps/blob/master/README.md) details the specific parts of its process. For the site and products generation and deploy phases, please read the [Release Engineering in Maven](#release-engineering-in-maven) section.
+
+### Overview
+
+Maven build processes are definied in [POM files](https://maven.apache.org/guides/introduction/introduction-to-the-pom.html). The POM files can define build properties, reference external repositores, declare sub modules, call and configure Maven plugins, define profiles, etc.
+
+Each Eclipse plugin has its own POM file. On top of that, there is a [parent POM](http://www.javavillage.in/maven-parent-pom.php), that defines project wide properties, Maven plugin configuration, [Maven profiles](http://maven.apache.org/guides/introduction/introduction-to-profiles.html), and the list of [submodules](https://maven.apache.org/guides/mini/guide-multiple-modules.html). The projects also have few intermediate POM files (`releng/pom.xml`, `test-fragments/pom.xml`, ...). They add some configuration for dedicated parts of the test or release process that can be omitted during the packaging.
 
 
-* Maven build big picture
+The build of the project is triggered using the following command: `mvn clean verify`. This calls two Maven goals from two different [Maven Build Lifecycles](http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Build_Lifecycle_Basics):
+* The **clean** goal from the *clean* lifecycle: this goal cleans the current project and all its enabled submodules. This ensures no generated file is kept between builds.
+* The **verify** goals from the *default* lifecycle: this goal validates project configuration, generates sources, checks their compliance wrt. the coding policy, compiles them, packages them and finally fires the tests.
+
+The dependencies are all defined in MANIFEST.MF files within the Eclipse plugins and test fragments. The Tycho Maven plugin is responsible for resolving these Eclipse dependencies and fetch them from online remote P2 repositories (see below). All the Maven plugins used during the build process are available on the Maven Central repository (enabled by default, see [Super POM](https://maven.apache.org/guides/introduction/introduction-to-the-pom.html#Super_POM)). There should be no plain Java jar dependencies (see [Dependency Management](#dependency-management)).
+
+### Dependencies
+
+Preesm is a set a Eclipse plugins, thus its dependencies are OSGi dependencies. They are defined in the MANIFEST.MF file of every Eclipse plugin. The Tycho Maven plug-in is then reponsible for resolving such dependencies during the Maven build process. There should be no `<dependencies>` section in the POM files.
+
+Third party plugins dependencies are resolved using external P2 repositories, such as the [Eclipse project update site](http://ftp.fau.de/eclipse/releases/) for the core components of Eclipse, [TMF releases update site](http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/) for the XTend runtime libraries, or the [Preesm update site](http://preesm.sourceforge.net/eclipse/update-site/) for specific third party (see ExternalDeps project), Graphiti and DFTools dependencies. These repositories are definied in the parent POM file (at the root of the git repository):
+
+```xml
+<properties>
+	<!-- ... -->
+	<complete.p2.repo>http://preesm.sourceforge.net/gensite/update-site/complete/</complete.p2.repo>
+	<eclipse.mirror>http://mirror.ibcp.fr/pub/eclipse/</eclipse.mirror>
+</properties>
+<!-- ... -->
+<repositories>
+	<!-- add Neon repository to resolve dependencies -->
+	<repository>
+		<id>Neon</id>
+		<layout>p2</layout>
+		<url>${eclipse.mirror}/releases/neon/</url>
+	</repository>
+	<!-- ... -->
+	<!-- add Preesm repository to resolve dependencies -->
+	<repository>
+		<id>Complete Repo</id>
+		<layout>p2</layout>
+		<url>${complete.p2.repo}</url>
+	</repository>
+</repositories>
+<!-- ... -->
+```
+
+Dependencies between submodules are resolved on the fly during the build process. Once a module has been [packaged](https://eclipse.org/tycho/sitedocs/tycho-packaging-plugin/package-plugin-mojo.html) (triggered automatically when calling the **verify** goal), it becomes available for other plugins. The Tycho plugins add implicit dependencies between submodules in order for the [Maven Reactor](https://maven.apache.org/guides/mini/guide-multiple-modules.html) to compute a valid build order for all submodules.
+
+**Note:** if Maven is called with a goal in the default lifecycle that is before the **package** goal (for instance **compile**), the dependencies will not be resolved since modules will not be packaged. Thus the Tycho plugin will try to resolve dependencies from the [local repository](https://www.mkyong.com/maven/where-is-maven-local-repository/) and then remote ones. This will cause failure is the required version is not available or if there has been changes in the API and the version did not increase. The same failure can occur if one tries to build one of the submodules independently from the others. To circumvent this, one could first **install** (see [goal doc.](http://maven.apache.org/plugins/maven-install-plugin/)) the dependencies to the local repository, then compile only or package a submodule only.
+
+### Profiles
+* **releng**: see [Release Engineering in Maven](#release-engineering-in-maven)
+* **os-macosx**: The main purpose of this profile is to add some arguments to the JVM when running Eclipse plugin tests. The profile is automatically activated when running on Mac OSX family:
+```XML
+<activation>
+	<os>
+		<family>mac</family>
+	</os>
+</activation>
+```
+The specific argument to add is defined as follows:
+`<tycho.surefire.extra.vmargs>-XstartOnFirstThread</tycho.surefire.extra.vmargs>` (see [this bug report](https://bugs.eclipse.org/bugs/show_bug.cgi?id=427693)).
+
+### Phase Bindings
 * Checkstyle
 * tests (structure, how to run, maven + eclipse)
-* configuration details
+
+
+### Configuration Details
+
+Maven plugins from Maven Central:
+* [directory-maven-plugin](https://github.com/jdcasey/directory-maven-plugin):
+* tycho-maven-plugin
+* xtend-maven-plugin
+* maven-clean-plugin
+* maven-antrun-plugin
+* maven-checkstyle-plugin
+* maven-deploy-plugin
+* org.eclipse.m2e:lifecycle-mapping
+For testing:
+* tycho-surefire-plugin
+* jacoco-maven-plugin
 
 ## Eclipse setup
 * Link between maven and Eclipse: load as maven project (m2e)
@@ -210,7 +282,19 @@ Defines how the project is built
 
 ### Running Maven from Eclipse
 
-## Releasing (deploy)
+## Release Engineering in Maven
+
+now P2 dependencies for Dev Meta Feature
+* Checkstyle
+* M2E
+
+maven-javadoc-plugin
+tycho-source-feature-plugin
+tycho-source-plugin
+tycho-p2-plugin
+
+sftp-maven-plugin @ preesm
+
 * versionning? (how/when update version)
 * deploy process
 * How to deploy (windows, mac, linux)
