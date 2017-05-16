@@ -832,6 +832,7 @@ public class CodegenModelGenerator {
 			
 			// Check nb actor for loop generation as only one actor in the
 			// hierarchy is supported yet
+			p("Flattened Graph Results\n");
 			for (SDFAbstractVertex v : resultGraph.vertexSet()) {
 				if (v instanceof SDFVertex) {
 					//SDFAbstractVertex repVertex = v;
@@ -925,19 +926,90 @@ public class CodegenModelGenerator {
 			List<SDFAbstractVertex> inputRepVertexs = new ArrayList<SDFAbstractVertex>(); 
 			List<SDFAbstractVertex> outputRepVertexs = new ArrayList<SDFAbstractVertex>();
 			for (SDFInterfaceVertex i : interfaces) {
+				p("Current interface " + i.getName() + " dir " + i.getDirection());
 				for (SDFInterfaceVertex s : i.getSources()) {
-					outputRepVertexs.add(i.getAssociatedEdge(s).getSource());
-					p("Output target actor " + i.getAssociatedEdge(s).getSource().getName());
+					SDFAbstractVertex a = i.getAssociatedEdge(s).getTarget();
+					SDFAbstractVertex b = i.getAssociatedEdge(s).getSource();
+					if(a instanceof SDFVertex){
+						outputRepVertexs.add(a);
+						p("1 input target " + a.getName());
+					}
+					if(b instanceof SDFVertex){
+						inputRepVertexs.add(b);
+						p("2 input source " + b.getName());
+					}
 				}
 				for (SDFInterfaceVertex s : i.getSinks()) {
-					inputRepVertexs.add(i.getAssociatedEdge(s).getTarget());
-					p("Input target actor " + i.getAssociatedEdge(s).getTarget().getName());
+					SDFAbstractVertex a = i.getAssociatedEdge(s).getTarget();
+					SDFAbstractVertex b = i.getAssociatedEdge(s).getSource();
+					if(a instanceof SDFVertex){
+						inputRepVertexs.add(a);
+						p("3 output target " + a.getName());
+					}
+					if(b instanceof SDFVertex){
+						outputRepVertexs.add(b);
+						p("4 output source " + b.getName());
+					}
 				}
+				/*i.getInterfaces()
+				if(i.getDirection().toString().equals("Output") == true){
+					for (SDFInterfaceVertex s : i.getSources()) {
+						SDFAbstractVertex a = i.getAssociatedEdge(s).getTarget();
+						SDFAbstractVertex b = i.getAssociatedEdge(s).getSource();
+						if(a instanceof SDFVertex){
+							outputRepVertexs.add(a);
+						}
+						if(b instanceof SDFVertex){
+							outputRepVertexs.add(b);
+						}
+					}
+				}else if(i.getDirection().toString().equals("Input") == true){
+					for (SDFInterfaceVertex s : i.getSinks()) {
+						SDFAbstractVertex a = i.getAssociatedEdge(s).getTarget();
+						SDFAbstractVertex b = i.getAssociatedEdge(s).getSource();
+						if(a instanceof SDFVertex){
+							inputRepVertexs.add(a);
+						}
+						if(b instanceof SDFVertex){
+							inputRepVertexs.add(b);
+						}
+					}	
+				}*/
+				/*for (SDFInterfaceVertex s : i.getSources()) {
+					SDFAbstractVertex a = i.getAssociatedEdge(s).getTarget();
+					SDFAbstractVertex b = i.getAssociatedEdge(s).getSource();
+					if(a instanceof SDFVertex){
+						outputRepVertexs.add(a);
+					}
+					if(b instanceof SDFVertex){
+						outputRepVertexs.add(b);
+					}
+					p("Output Source actor " + i.getAssociatedEdge(s).getSource().getName() + " dir " + i.getDirection().toString());
+					p("Output Target actor " + i.getAssociatedEdge(s).getTarget().getName() + " dir " + i.getDirection().toString());
+				}
+				for (SDFInterfaceVertex s : i.getSinks()) {
+					SDFAbstractVertex a = i.getAssociatedEdge(s).getTarget();
+					SDFAbstractVertex b = i.getAssociatedEdge(s).getSource();
+					if(a instanceof SDFVertex){
+						outputRepVertexs.add(a);
+					}
+					if(b instanceof SDFVertex){
+						outputRepVertexs.add(b);
+					}
+					p("Input Source actor " + i.getAssociatedEdge(s).getSource().getName() + " dir " + i.getDirection().toString());
+					p("Input Target actor " + i.getAssociatedEdge(s).getTarget().getName() + " dir " + i.getDirection().toString());
+				}*/
 				//if (i.getSources().size() > 1 || i.getSinks().size() > 1) {
 				//	throw new CodegenException("Hierarchical codegen failed for hierarchical actor "
 				//			+ sdfVertex.getName() + " number of sinks " + i.getSinks().size() + " or sources "
 				//			+ i.getSources().size() + " is great than 1");
 				//}
+			}
+			for(SDFAbstractVertex s : inputRepVertexs){
+				p("Input Vertex " + s.getName());
+			}
+			for(SDFAbstractVertex s : outputRepVertexs){
+				p("Output Vertex " + s.getName());
 			}
 			//for (int i = 0; i < nbActor; i++) {
 			//	SDFAbstractVertex repVertex = sortedRepVertexs.get(i);
