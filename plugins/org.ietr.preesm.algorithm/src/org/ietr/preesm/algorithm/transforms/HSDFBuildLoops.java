@@ -83,23 +83,6 @@ public class HSDFBuildLoops {
 		return null;
 	}
 
-	private List <SDFAbstractVertex> getHierarchicalActor(SDFGraph graph) {
-		List<SDFAbstractVertex> l = new ArrayList<SDFAbstractVertex>();
-		for (SDFAbstractVertex v : graph.vertexSet()) {
-			Object refinement = v.getPropertyBean().getValue(AbstractVertex.REFINEMENT);
-			// If the actor is hierarchical
-			if (refinement instanceof AbstractGraph) {
-				//p("Found hierarchical " + v.getName());
-				l.add(v);
-				//p("getHierarchicalActor " + v.getName());
-			}
-			/*if( v instanceof SDFInterfaceVertex){ p("SDF Interface Vertex " +
-					 v.getName()); }else if( v instanceof SDFVertex){ p("SDF Vertex "
-					 + v.getName()); }else{ p("SDF Abs Vertex " + v.getName()); }*/
-		}
-		return l;
-	}
-
 	private List <SDFAbstractVertex> sortVertex(Set <SDFAbstractVertex> list, SDFAbstractVertex sdfVertex) throws WorkflowException {
 		List <SDFAbstractVertex> sortedRepVertexs = new ArrayList<SDFAbstractVertex>();
 		List <SDFAbstractVertex> inVertexs = new ArrayList<SDFAbstractVertex>();
@@ -183,60 +166,6 @@ public class HSDFBuildLoops {
 		//					+  " target " + e.getTargetLabel() + " actor " + e.getSource().getName());
 		//}
 		return listEdge;
-	}
-
-	private int setHierarchicalWorkingMemory(List <SDFAbstractVertex> list, SDFAbstractVertex topVertex) throws WorkflowException {
-		if(list.isEmpty()){
-			throw new WorkflowException("setHierarchicalWorkingMemory given list is empty");
-		}
-		int nbWorkingBufferAllocated = 0;
-		int bufSize = 0;
-		List <SDFEdge> allocEdge = new ArrayList<SDFEdge>();
-		for(SDFAbstractVertex v : list){
-			//p("setHierarchicalWorkingMemory check " + topVertex.getName() + " " + v.getName());
-			List <SDFEdge> l = getEdgeToAllocate(topVertex, v);
-			for(SDFEdge e : l){
-				if(allocEdge.contains(e) == false){
-					/* need to alloc working memory */
-					//p("setHierarchicalWorkingMemory need to alloc for " + v.getName());
-					//p("setHierarchicalWorkingMemory source " + e.getSourceLabel() + " actor " + e.getSource().getName() 
-					//		+  " target " + e.getTargetLabel() + " actor " + e.getSource().getName());
-					int nbRep = 0;
-					try {
-						nbRep = Integer.parseInt(e.getTarget().getNbRepeat().toString());
-					} catch (NumberFormatException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (InvalidExpressionException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					//Integer mem = 0;
-					int mem = 0;
-					try {
-						mem = nbRep*e.getCons().intValue();
-						//p("mem " + mem + " nbRep " + nbRep + " getCons " + e.getCons().intValue());
-					} catch (InvalidExpressionException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					/*try {
-						mem = new Integer(nbRep*e.getCons().intValue());
-					} catch (InvalidExpressionException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}*/
-					//e.getPropertyBean().setValue("working_memory", mem);
-					//p("buf size " + bufSize + " mem " + mem);
-					bufSize += mem;
-					nbWorkingBufferAllocated++;
-					allocEdge.add(e);
-				}
-			}
-			topVertex.getPropertyBean().setValue("working_memory", new Integer(bufSize));
-		}
-		//p("setHierarchicalWorkingMemory topVertex " + topVertex.getName() + " nbBuf " + nbWorkingBufferAllocated + " bufSize " + bufSize);
-		return nbWorkingBufferAllocated;
 	}
 
 	private int getPGCD(int a, int b){
@@ -956,25 +885,165 @@ public class HSDFBuildLoops {
 		this.chooseNewV.clear();
 		return repVertexs;*/
 	}
+	private List <SDFAbstractVertex> getHierarchicalActor(SDFGraph graph) {
+		List<SDFAbstractVertex> l = new ArrayList<SDFAbstractVertex>();
+		for (SDFAbstractVertex v : graph.vertexSet()) {
+			Object refinement = v.getPropertyBean().getValue(AbstractVertex.REFINEMENT);
+			// If the actor is hierarchical
+			if (refinement instanceof AbstractGraph) {
+				//p("Found hierarchical " + v.getName());
+				l.add(v);
+				//p("getHierarchicalActor " + v.getName());
+			}
+			/*if( v instanceof SDFInterfaceVertex){ p("SDF Interface Vertex " +
+					 v.getName()); }else if( v instanceof SDFVertex){ p("SDF Vertex "
+					 + v.getName()); }else{ p("SDF Abs Vertex " + v.getName()); }*/
+		}
+		return l;
+	}
+	
+	private int setHierarchicalWorkingMemory(List <SDFAbstractVertex> list, SDFAbstractVertex topVertex) throws WorkflowException {
+		if(list.isEmpty()){
+			throw new WorkflowException("setHierarchicalWorkingMemory given list is empty");
+		}
+		int nbWorkingBufferAllocated = 0;
+		int bufSize = 0;
+		List <SDFEdge> allocEdge = new ArrayList<SDFEdge>();
+		for(SDFAbstractVertex v : list){
+			//p("setHierarchicalWorkingMemory check " + topVertex.getName() + " " + v.getName());
+			List <SDFEdge> l = getEdgeToAllocate(topVertex, v);
+			for(SDFEdge e : l){
+				if(allocEdge.contains(e) == false){
+					/* need to alloc working memory */
+					//p("setHierarchicalWorkingMemory need to alloc for " + v.getName());
+					//p("setHierarchicalWorkingMemory source " + e.getSourceLabel() + " actor " + e.getSource().getName() 
+					//		+  " target " + e.getTargetLabel() + " actor " + e.getSource().getName());
+					int nbRep = 0;
+					try {
+						nbRep = Integer.parseInt(e.getTarget().getNbRepeat().toString());
+					} catch (NumberFormatException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (InvalidExpressionException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					//Integer mem = 0;
+					int mem = 0;
+					try {
+						mem = nbRep*e.getCons().intValue();
+						//p("mem " + mem + " nbRep " + nbRep + " getCons " + e.getCons().intValue());
+					} catch (InvalidExpressionException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					/*try {
+						mem = new Integer(nbRep*e.getCons().intValue());
+					} catch (InvalidExpressionException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}*/
+					//e.getPropertyBean().setValue("working_memory", mem);
+					//p("buf size " + bufSize + " mem " + mem);
+					bufSize += mem;
+					nbWorkingBufferAllocated++;
+					allocEdge.add(e);
+				}
+			}
+			topVertex.getPropertyBean().setValue("working_memory", new Integer(bufSize));
+		}
+		//p("setHierarchicalWorkingMemory topVertex " + topVertex.getName() + " nbBuf " + nbWorkingBufferAllocated + " bufSize " + bufSize);
+		return nbWorkingBufferAllocated;
+	}
 
 	public SDFGraph execute(SDFGraph inputGraph) throws WorkflowException {
 		//p("Executing");
-		List <SDFAbstractVertex> hierarchicalActorslist = getHierarchicalActor(inputGraph);
+		List <SDFAbstractVertex> list = getHierarchicalActor(inputGraph);
 		//p("nbHierarchicalActor " + hierarchicalActorslist.size());
-		List <List <SDFAbstractVertex>> list = new ArrayList<List <SDFAbstractVertex>>();
+		//List <List <SDFAbstractVertex>> list = new ArrayList<List <SDFAbstractVertex>>();
 
 		/* run through all hierarchical actors of graph inputGraph */
-		for(SDFAbstractVertex v : hierarchicalActorslist) {
+		/*for(SDFAbstractVertex v : hierarchicalActorslist) {
 			SDFGraph graph = (SDFGraph) v.getGraphDescription();
 			List <SDFAbstractVertex> sortedVertex = sortVertex(graph.vertexSet(), v);
 			list.add(sortedVertex);
-		}
+		}*/
 		
 		/* allocate internal working buffer for the hierarchical actor */
-		for(int i=0;i<list.size();i++){
-			//int ret = setHierarchicalWorkingMemory(list.get(i), hierarchicalActorslist.get(i));
-			setHierarchicalWorkingMemory(list.get(i), hierarchicalActorslist.get(i));
-			//p(hierarchicalActorslist.get(i).getName() + " nb internal buffer is " + ret);
+		for(SDFAbstractVertex g : list){
+			SDFGraph graph = ((SDFGraph) g.getGraphDescription()).clone();
+			IbsdfFlattener flattener = new IbsdfFlattener(graph,10);
+			SDFGraph resultGraph = null;
+			List <SDFEdge> allocEdge = new ArrayList<SDFEdge>();
+			try {
+				flattener.flattenGraph();
+				resultGraph = flattener.getFlattenedGraph();
+			} catch (SDF4JException e) {
+				throw (new WorkflowException(e.getMessage()));
+			}
+			try {
+				resultGraph.validateModel(WorkflowLogger.getLogger());
+			} catch (SDF4JException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} // compute repetition vectors
+			try {
+				if(resultGraph.isSchedulable() == false){
+					throw (new WorkflowException("HSDF Build Loops generate clustering: Graph not schedulable"));
+				}
+			} catch (SDF4JException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			List<SDFEdge> edgeUpperGraph = new ArrayList<SDFEdge>();
+			for(SDFAbstractVertex v : resultGraph.vertexSet()){
+				if(v instanceof SDFInterfaceVertex){
+					//v.getAssociatedEdge(((SDFInterfaceVertex)v).getSinks())
+					for(SDFInterfaceVertex i : v.getSources()){
+						edgeUpperGraph.add(v.getAssociatedEdge(i));
+					}
+					for(SDFInterfaceVertex i : v.getSinks()){
+						edgeUpperGraph.add(v.getAssociatedEdge(i));
+					}
+				}
+			}
+
+			int bufSize = 0;
+			int nbWorkingBufferAllocated = 0;
+			for(SDFAbstractVertex v : resultGraph.vertexSet()){
+				if(v instanceof SDFVertex){
+					List<SDFEdge> edge = new ArrayList<SDFEdge>();
+					edge.addAll(getInEdges(v));
+					edge.addAll(getOutEdges(v));
+					for(SDFEdge e : edge){
+						if(allocEdge.contains(e)/*already visited*/ == false && edgeUpperGraph.contains(e) /*allocation by Karol*/ == false){
+							int nbRep = 0;
+							try {
+								nbRep = Integer.parseInt(e.getTarget().getNbRepeat().toString());
+							} catch (NumberFormatException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (InvalidExpressionException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							int mem = 0;
+							try {
+								mem = nbRep*e.getCons().intValue();
+							} catch (InvalidExpressionException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							bufSize += mem;
+							nbWorkingBufferAllocated++;
+							allocEdge.add(e);
+						}
+					}
+				}
+			}
+			g.getPropertyBean().setValue("working_memory", new Integer(bufSize));
+			p("Internal working memory computation " + g.getName() + " number of allocation " + nbWorkingBufferAllocated + " byte allocated " + bufSize);
 		}
 		return inputGraph;
 	}
