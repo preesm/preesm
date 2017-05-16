@@ -6,11 +6,12 @@ This document explains the build process of Preesm and its components (Graphiti,
 Old documentation is available in the [HowToRelease.md](HowToRelease.md) file.
 
 TODO:
-* Sonar+Jenkins
-* Howtos
-* Check dead links
+*   Sonar+Jenkins
+*   Howtos
+*   Check dead links
 
-## Table of Content
+Table of Content
+----------------
 <!-- Generated with Atom markdown-toc plugin -->
 <!-- TOC depthFrom:2 depthTo:3 withLinks:1 updateOnSave:1 orderedList:0 -->
 
@@ -60,41 +61,42 @@ TODO:
 
 <!-- /TOC -->
 
-## Introduction
+Introduction
+------------
 
 Graphiti, DFTools and Preesm are sets of Eclipse plugins. Their source code is hosted on GitHub (see the [Preesm team](https://github.com/preesm) page). These projects are built using [Maven](https://maven.apache.org/) and the [Tycho](https://eclipse.org/tycho/) plugins, and mostly developed using the [Eclipse IDE](https://eclipse.org/). Facilities are provided to ease the interactions between these tools. The [Continuous Integration](https://en.wikipedia.org/wiki/Continuous_integration) server [Jenkins](https://jenkins.io/) is in charge of monitoring the git repositories and triggering builds upon source code modifications.
 
 ### Documentation
 
 The documentation is available in 3 places:
-* Online documentation about [how to use Preesm](http://preesm.sourceforge.net/website/index.php?id=tutorials) or [how to develop around Preesm](http://preesm.sourceforge.net/website/index.php?id=developer).
-* The generated Javadoc is automatically deployed online at this address http://preesm.sourceforge.net/gensite/API/.
-* Readme files at the root of the git repositories simply recall general and basic information, except for the [ExternalDeps](https://github.com/preesm/externaldeps) project. For this project, the readme file explains details of the build process. Part of it is recalled in the present document.
+*   Online documentation about [how to use Preesm](http://preesm.sourceforge.net/website/index.php?id=tutorials) or [how to develop around Preesm](http://preesm.sourceforge.net/website/index.php?id=developer).
+*   The generated Javadoc is automatically deployed [online](http://preesm.sourceforge.net/gensite/API/).
+*   Readme files at the root of the git repositories simply recall general and basic information, except for the [ExternalDeps](https://github.com/preesm/externaldeps) project. For this project, the readme file explains details of the build process. Part of it is recalled in the present document.
 
 ### Git
 
 All the source code is hosted on GitHub repositories (see [Preesm team](https://github.com/preesm)). The documentation about how to use git is already available on the Preesm website:
-* [Install and Configure git](http://preesm.sourceforge.net/website/index.php?id=install-and-configure-git) (also explains the development workflow)
-* [git tips & tricks](http://preesm.sourceforge.net/website/index.php?id=install-and-configure-git)
+*   [Install and Configure git](http://preesm.sourceforge.net/website/index.php?id=install-and-configure-git) (also explains the development workflow)
+*   [git tips & tricks](http://preesm.sourceforge.net/website/index.php?id=install-and-configure-git)
 
 ### Maven
 
 In order to specifically build Eclipse plugins using Maven, the build process heavily relies on the [Tycho](https://eclipse.org/tycho/) Maven plugins. The [POM](https://maven.apache.org/pom.html#What_is_the_POM) is configured to **automatically**:
 
-* Fetch dependencies from online repositories;
-* Check coding policy using [Checkstyle](http://checkstyle.sourceforge.net/);
-* Generate Java from [Xtend](https://eclipse.org/xtend/documentation/) files;
-* Run [tests within an OSGi runtime](https://eclipse.org/tycho/sitedocs/tycho-surefire/tycho-surefire-plugin/plugin-info.html) and compute [code coverage](http://www.eclemma.org/jacoco/);
+*   Fetch dependencies from online repositories;
+*   Check coding policy using [Checkstyle](http://checkstyle.sourceforge.net/);
+*   Generate Java from [Xtend](https://eclipse.org/xtend/documentation/) files;
+*   Run [tests within an OSGi runtime](https://eclipse.org/tycho/sitedocs/tycho-surefire/tycho-surefire-plugin/plugin-info.html) and compute [code coverage](http://www.eclemma.org/jacoco/);
 
 #### Release Engineering
 Using the **releng** [Maven profile](http://maven.apache.org/guides/introduction/introduction-to-profiles.html) (disabled by default), additional actions are available:
 
-* Generate the Javadoc for all plugins and aggregate it;
-* Generate [Eclipse source bundles](http://help.eclipse.org/luna/index.jsp?topic=%2Forg.eclipse.pde.doc.user%2Ftasks%2Fpde_individual_source.htm) for all the plugins;
-* Generate a P2 Repository ([Eclipse update-site](https://wiki.eclipse.org/Eclipse_Project_Update_Sites));
-* Generate [Eclipse products](https://wiki.eclipse.org/FAQ_What_is_an_Eclipse_product%3F) for Win32/64, Linux 32/64, OSX 64;
-* Generate an [Eclipse feature](https://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Fconcepts%2Fconcepts-25.htm) referencing all necessary development tools for a fast and easy setup of the IDE;
-* Deploy the generated Javadoc, update-site and products online.
+*   Generate the Javadoc for all plugins and aggregate it;
+*   Generate [Eclipse source bundles](http://help.eclipse.org/luna/index.jsp?topic=%2Forg.eclipse.pde.doc.user%2Ftasks%2Fpde_individual_source.htm) for all the plugins;
+*   Generate a P2 Repository ([Eclipse update-site](https://wiki.eclipse.org/Eclipse_Project_Update_Sites));
+*   Generate [Eclipse products](https://wiki.eclipse.org/FAQ_What_is_an_Eclipse_product%3F) for Win32/64, Linux 32/64, OSX 64;
+*   Generate an [Eclipse feature](https://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Fconcepts%2Fconcepts-25.htm) referencing all necessary development tools for a fast and easy setup of the IDE;
+*   Deploy the generated Javadoc, update-site and products online.
 
 ### Eclipse IDE
 
@@ -111,11 +113,11 @@ We arbitrarily decided to fork from the [Google Java Style](https://google.githu
 The coding style is automatically checked during the build process using the [Maven Checkstyle plugin](https://maven.apache.org/plugins/maven-checkstyle-plugin/) and within the Eclipse IDE using the [Eclipse Checkstyle plugin](http://eclipse-cs.sourceforge.net/). On top of that, we provide an [Eclipse Preferences File](https://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Ftasks%2Ftimpandexp.htm) that configures the [Eclipse Java Code Style](https://help.eclipse.org/neon/topic/org.eclipse.jdt.doc.user/reference/preferences/java/ref-preferences-code-style.htm) for that coding style. Using such automatic formatting tool (triggered on save), developers can focus on the implementation, not the style.
 
 Reading:
-* [Why I Have Given Up on Coding Standards](http://www.richardrodger.com/2012/11/03/why-i-have-given-up-on-coding-standards/) @www.richardrodger.com
-* [Why Coding Conventions?](https://msdn.microsoft.com/en-us/library/aa733744.aspx) @msdn.microsoft.com
-* [Why Coding Style Matters](https://www.smashingmagazine.com/2012/10/why-coding-style-matters/) @www.smashingmagazine.com
-* [Why You Need Coding Standards](https://www.sitepoint.com/coding-standards/) @www.sitepoint.com
-* [Why Coding Standards Matter](http://paul-m-jones.com/archives/3) @paul-m-jones.com
+*   [Why I Have Given Up on Coding Standards](http://www.richardrodger.com/2012/11/03/why-i-have-given-up-on-coding-standards/) @www.richardrodger.com
+*   [Why Coding Conventions?](https://msdn.microsoft.com/en-us/library/aa733744.aspx) @msdn.microsoft.com
+*   [Why Coding Style Matters](https://www.smashingmagazine.com/2012/10/why-coding-style-matters/) @www.smashingmagazine.com
+*   [Why You Need Coding Standards](https://www.sitepoint.com/coding-standards/) @www.sitepoint.com
+*   [Why Coding Standards Matter](http://paul-m-jones.com/archives/3) @paul-m-jones.com
 
 ### Dependency Management
 
@@ -127,36 +129,37 @@ In order to use a plain Java jar using this mechanism, it first needs to be conv
 
 For Graphiti, DFTools and Preesm, all the plain Java jars have been externalized in the [ExternalDeps](https://github.com/preesm/externaldeps) project. This project consists of a Maven POM file that is configured to fetch all the required jars from online Maven repositories and convert them into Eclipse plugin, before deploying them on the Preesm update site.
 
-## Project Structure
+Project Structure
+-----------------
 
 ExternalDeps, Graphiti, DFTools and Preesm resources are located in 2 places:
-* Github repositories
-* Preesm website on Sourceforge
+*   Github repositories
+*   Preesm website on Sourceforge
 
 ### Git Repositories (Github)
 
 All the source code for the projects is hosted on Github (under [Preesm team](https://github.com/preesm)):
- * ExternalDeps: https://github.com/preesm/externaldeps
- * Graphiti: https://github.com/preesm/graphiti
- * DFTools: https://github.com/preesm/dftools
- * Preesm: https://github.com/preesm/preesm
- * Preesm-apps (Preesm small use cases and tutorials): https://github.com/preesm/preesm-apps
+*   ExternalDeps: [https://github.com/preesm/externaldeps](https://github.com/preesm/externaldeps)
+*   Graphiti: [https://github.com/preesm/graphiti](https://github.com/preesm/graphiti)
+*   DFTools: [https://github.com/preesm/dftools](https://github.com/preesm/dftools)
+*   Preesm: [https://github.com/preesm/preesm](https://github.com/preesm/preesm)
+*   Preesm-apps (Preesm small use cases and tutorials): [https://github.com/preesm/preesm-apps](https://github.com/preesm/preesm-apps)
 
-Documentation about the release process (this file) is in the Preesm git repository, under **releng/README.md**: https://github.com/preesm/preesm/blob/develop/releng/README.md
+Documentation about the release process (this file) is in the Preesm git repository, under [**releng/README.md**](https://github.com/preesm/preesm/blob/develop/releng/README.md)
 
 Dedicated Maven plugins used during project builds are also hosted there:
-* Sftp Maven plugin: https://github.com/preesm/sftp-maven-plugin
-* GenFeature Maven plugin: https://github.com/preesm/genfeature-maven-plugin
+*   [Sftp Maven plugin](https://github.com/preesm/sftp-maven-plugin)
+*   [GenFeature Maven plugin](https://github.com/preesm/genfeature-maven-plugin)
 
 Their use is detailled later in this document and in the [ExternalDeps Readme](https://github.com/preesm/externaldeps).
 
 #### Source Code Structure
 
 The Git repositories are organized as follows:
-* **/plugins**: the source code of the projects (Graphiti, DFTools, Preesm);
-* **/releng**: the release engineering files (see below);
-* **/test-fragments**: the [test plug-in fragments](http://www.modumind.com/2007/06/20/unit-testing-plug-ins-with-fragments/) for functional and unit testing;
-* **/test**: the integration and end-to-end tests
+*   **/plugins**: the source code of the projects (Graphiti, DFTools, Preesm);
+*   **/releng**: the release engineering files (see below);
+*   **/test-fragments**: the [test plug-in fragments](http://www.modumind.com/2007/06/20/unit-testing-plug-ins-with-fragments/) for functional and unit testing;
+*   **/test**: the integration and end-to-end tests
 
 #### The .mailmap File
 
@@ -171,30 +174,30 @@ John Smith john.smith@company.com John Smith john.smith@public.net
 ```
 
 Reading:
-* https://git-scm.com/docs/git-shortlog#_mapping_authors
-* https://stacktoheap.com/blog/2013/01/06/using-mailmap-to-fix-authors-list-in-git/
-* https://github.com/git/git/blob/master/Documentation/mailmap.txt
+*   [git shortlog](https://git-scm.com/docs/git-shortlog#_mapping_authors)
+*   [using-mailmap-to-fix-authors-list-in-git](https://stacktoheap.com/blog/2013/01/06/using-mailmap-to-fix-authors-list-in-git/)
+*   [mailmap](https://github.com/git/git/blob/master/Documentation/mailmap.txt)
 
 
 ### Preesm Website (SourceForge)
 
 Preesm main documentation is found on the Preesm website:
-* [Tutorials](http://preesm.sourceforge.net/website/index.php?id=tutorials);
-* [Developers doc](http://preesm.sourceforge.net/website/index.php?id=developer).
+*   [Tutorials](http://preesm.sourceforge.net/website/index.php?id=tutorials);
+*   [Developers doc](http://preesm.sourceforge.net/website/index.php?id=developer).
 
 Sourceforge also hosts the generated Javadoc API, the product releases and the update site (see links below). For uploads, see Sourceforge Documentation:
-* [Release Files for Download](https://sourceforge.net/p/forge/documentation/Release%20Files%20for%20Download/): how to release files on SourceForge File Release Service;
-* [Shell Service](https://sourceforge.net/p/forge/documentation/Shell%20Service/): how to instanciate interactive shell on SourceForge servers;
+*   [Release Files for Download](https://sourceforge.net/p/forge/documentation/Release%20Files%20for%20Download/): how to release files on SourceForge File Release Service;
+*   [Shell Service](https://sourceforge.net/p/forge/documentation/Shell%20Service/): how to instanciate interactive shell on SourceForge servers;
 
 ### Generated Content
 
 During the Maven deploy phase, the content is automatically uploaded to those locations:
-* Javadoc API : http://preesm.sourceforge.net/gensite/API/
-  * accessed on SourceForge servers under `/home/project-web/preesm/htdocs/gensite/API`
-* Update-site : http://preesm.sourceforge.net/eclipse/update-site/
-  * accessed on SourceForge servers under `/home/project-web/preesm/htdocs/gensite/update-site/complete` (`eclipse/update-site` is a link to `gensite/update-site/complete`)
-* Product releases : https://sourceforge.net/projects/preesm/files/Releases/
-  * accessed on SourceForge servers using the projects web interface or under `/home/frs/project/preesm/Releases`
+*   [Javadoc API](http://preesm.sourceforge.net/gensite/API/)
+    *   accessed on SourceForge servers under `/home/project-web/preesm/htdocs/gensite/API`
+*   [Update-site](http://preesm.sourceforge.net/eclipse/update-site/)
+    *   accessed on SourceForge servers under `/home/project-web/preesm/htdocs/gensite/update-site/complete` (`eclipse/update-site` is a link to `gensite/update-site/complete`)
+*   [Product releases](https://sourceforge.net/projects/preesm/files/Releases/)
+    *   accessed on SourceForge servers using the projects web interface or under `/home/frs/project/preesm/Releases`
 
 ### Releng Files
 
@@ -216,7 +219,8 @@ During the Maven deploy phase, the content is automatically uploaded to those lo
 | VAADER_checkstyle.xml | Preesm Checkstyle cofniguration file |
 | VAADER_eclipse_preferences.epf | Preesm Eclipse preferences file |
 
-## Build Process in Maven
+Build Process in Maven
+----------------------
 
 This section details how the Preesm project is built using Maven. Graphiti and DFtools are built using a similar process. The [ExternalDeps Readme](https://github.com/preesm/externaldeps/blob/master/README.md) details the specific parts of its process. For the site and products generation and deploy phases, please read the [Release Engineering in Maven](#release-engineering-in-maven) section.
 
@@ -228,8 +232,8 @@ Each Eclipse plugin has its own POM file. On top of that, there is a [parent POM
 
 
 The build of the project is triggered using the following command: `mvn clean verify`. This calls two Maven goals from two different [Maven Build Lifecycles](http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Build_Lifecycle_Basics):
-* The **clean** goal from the *clean* lifecycle: this goal cleans the current project and all its enabled submodules. This ensures no generated file is kept between builds.
-* The **verify** goals from the *default* lifecycle: this goal validates project configuration, generates sources, checks their compliance wrt. the coding policy, compiles them, packages them and finally fires the tests.
+*   The **clean** goal from the *clean* lifecycle: this goal cleans the current project and all its enabled submodules. This ensures no generated file is kept between builds.
+*   The **verify** goals from the *default* lifecycle: this goal validates project configuration, generates sources, checks their compliance wrt. the coding policy, compiles them, packages them and finally fires the tests.
 
 The dependencies are all defined in MANIFEST.MF files within the Eclipse plugins and test fragments. The Tycho Maven plugin is responsible for resolving these Eclipse dependencies and fetch them from online remote P2 repositories (see below). All the Maven plugins used during the build process are available on the Maven Central repository (enabled by default, see [Super POM](https://maven.apache.org/guides/introduction/introduction-to-the-pom.html#Super_POM)). There should be no plain Java jar dependencies (see [Dependency Management](#dependency-management)).
 
@@ -295,39 +299,40 @@ This section details what plugins are bound to which phases (including clean lif
 
 #### clean
 
-* [maven-clean-plugin](https://maven.apache.org/plugins/maven-clean-plugin/): Add a pattern to clean the Xtend generated Java files under */xtend-gen/*.
+*   [maven-clean-plugin](https://maven.apache.org/plugins/maven-clean-plugin/): Add a pattern to clean the Xtend generated Java files under */xtend-gen/*.
 
 #### initialize
 
-* [directory-maven-plugin](https://github.com/jdcasey/directory-maven-plugin): initialize the property **main.basedir** with the path to the parent project directory. This property is used in the Checkstyle configuration for having a consistent path to its configuration file from any submodule.
-* [jacoco-maven-plugin](http://www.eclemma.org/jacoco/trunk/doc/prepare-agent-mojo.html): Used for test coverage compuatin. See plugin documentation. Defined in the test fragments POM.
-* [org.eclipse.m2e:lifecycle-mapping](http://www.eclipse.org/m2e/documentation/m2e-execution-not-covered.html): Tell the Eclipse Maven Plugin to ignore some Maven plugins. More details in the [Eclipse setup](#eclipse-setup) section.
+*   [directory-maven-plugin](https://github.com/jdcasey/directory-maven-plugin): initialize the property **main.basedir** with the path to the parent project directory. This property is used in the Checkstyle configuration for having a consistent path to its configuration file from any submodule.
+*   [jacoco-maven-plugin](http://www.eclemma.org/jacoco/trunk/doc/prepare-agent-mojo.html): Used for test coverage compuatin. See plugin documentation. Defined in the test fragments POM.
+*   [org.eclipse.m2e:lifecycle-mapping](http://www.eclipse.org/m2e/documentation/m2e-execution-not-covered.html): Tell the Eclipse Maven Plugin to ignore some Maven plugins. More details in the [Eclipse setup](#eclipse-setup) section.
 
 #### generate-sources
 
-* [xtend-maven-plugin](https://eclipse.org/Xtext/documentation/350_continuous_integration.html): Compiles XTend source files from **/xtend-src** to Java files in **/xtend-gen**.
+*   [xtend-maven-plugin](https://eclipse.org/Xtext/documentation/350_continuous_integration.html): Compiles XTend source files from **/xtend-src** to Java files in **/xtend-gen**.
 
 #### process-sources
 
-* [maven-checkstyle-plugin](https://maven.apache.org/plugins/maven-checkstyle-plugin/): Checkstyle Maven plugin for checking code style compliance. Explicitly bound to **process-sources** phase. Force Checkstyle version (default version does not support Java 8 syntax). Add configuration file path.
+*   [maven-checkstyle-plugin](https://maven.apache.org/plugins/maven-checkstyle-plugin/): Checkstyle Maven plugin for checking code style compliance. Explicitly bound to **process-sources** phase. Force Checkstyle version (default version does not support Java 8 syntax). Add configuration file path.
 
 #### compile
 
-* [tycho-compiler-plugin](https://eclipse.org/tycho/sitedocs/tycho-compiler-plugin/compile-mojo.html): Compiles the Java sources using Eclipse dependencies.
+*   [tycho-compiler-plugin](https://eclipse.org/tycho/sitedocs/tycho-compiler-plugin/compile-mojo.html): Compiles the Java sources using Eclipse dependencies.
 
 #### package
 
-* [tycho-packaging-plugin](https://eclipse.org/tycho/sitedocs/tycho-packaging-plugin/package-plugin-mojo.html): Bundle modules as Eclipse plugins.
+*   [tycho-packaging-plugin](https://eclipse.org/tycho/sitedocs/tycho-packaging-plugin/package-plugin-mojo.html): Bundle modules as Eclipse plugins.
 
 #### integration-test
 
-* [tycho-surefire-plugin](https://eclipse.org/tycho/sitedocs/tycho-surefire/tycho-surefire-plugin/test-mojo.html): Fire tests within an Eclipse runtime environment.
+*   [tycho-surefire-plugin](https://eclipse.org/tycho/sitedocs/tycho-surefire/tycho-surefire-plugin/test-mojo.html): Fire tests within an Eclipse runtime environment.
 
 #### deploy
 
-* [maven-deploy-plugin](http://maven.apache.org/plugins/maven-deploy-plugin/): disable the default deploy plugin. This is due to issues when deploying P2 repositories on Sourceforge. The actual deploy procedure is detailled in the [Release Engineering in Maven](#release-engineering-in-maven) section.
+*   [maven-deploy-plugin](http://maven.apache.org/plugins/maven-deploy-plugin/): disable the default deploy plugin. This is due to issues when deploying P2 repositories on Sourceforge. The actual deploy procedure is detailled in the [Release Engineering in Maven](#release-engineering-in-maven) section.
 
-## Eclipse Setup
+Eclipse Setup
+-------------
 
 Eclipse is the prefered IDE for developing Preesm. The developer setup is detailed on the [Sourceforge website](http://preesm.sourceforge.net/website/index.php?id=building-preesm). This section details the links between the Maven configuration and the Eclipse setup.
 
@@ -361,7 +366,8 @@ Thankfully, the M2E Eclipse plugins come with facilities to run Maven goals from
 
 As mentioned on the [Preesm website](http://preesm.sourceforge.net/website/index.php?id=working-with-dftoolsgraphiti-source), some warnings can appear when working with Graphiti and DFTools source code. This is nothing to be wary of as these "missing" features are actually automatically generated during the **package** phase by the [tycho-source-feature-plugin](https://eclipse.org/tycho/sitedocs-extras/tycho-source-feature-plugin/source-feature-mojo.html).
 
-## Release Engineering
+Release Engineering
+-------------------
 
 This section explains what are the sources and targets of the deploy phase.
 
@@ -371,8 +377,8 @@ After the Preesm Eclipse plugins are built, they have to be bundled and deployed
 
 ### Versionning
 
-* How/when update version: [Semantic Versioning](http://semver.org/);
-* See [Update Project Version](#update-project-version). This procedure updates version in all the POM files, in the MANIFEST.MF file of all included submodules, and in the features. Generated site and product names are also impacted.
+*   How/when update version: [Semantic Versioning](http://semver.org/);
+*   See [Update Project Version](#update-project-version). This procedure updates version in all the POM files, in the MANIFEST.MF file of all included submodules, and in the features. Generated site and product names are also impacted.
 
 ### Javadoc
 
@@ -389,11 +395,11 @@ The Preesm update site and product both use this feature during their build proc
 ### Dev Meta Feature
 
 To ease the devloper  job, we provide another feature designed for setting up the development environment for Preesm. This feature actually imports other features. This can be seen as adding dependencies in the Eclipse IDE toward other features. This "meta" feature imports the following features:
-* ExternalDeps (third party dependencies);
-* Graphiti And Dftools features and source features;
-* Xtend, GEF, EMF and Graphiti (from eclipse.org) SDKs;
-* Git and Checkstyle integration;
-* M2Eclipse and its tycho connector.
+*   ExternalDeps (third party dependencies);
+*   Graphiti And Dftools features and source features;
+*   Xtend, GEF, EMF and Graphiti (from eclipse.org) SDKs;
+*   Git and Checkstyle integration;
+*   M2Eclipse and its tycho connector.
 
 Note that these features have to be **imported** and not **included** in order to avoid install errors with conflicting versions.
 Requires new repositories from the feature to make sure latest releases are installed (even though the Preesm update site is self contained, it does not contain updates since last release):
@@ -419,9 +425,9 @@ Requires new repositories from the feature to make sure latest releases are inst
 
 ### Complete Site
 
-* tycho-source-feature-plugin
-* tycho-source-plugin
-* ant tasks
+*   tycho-source-feature-plugin
+*   tycho-source-plugin
+*   ant tasks
 
 
 ### Update Online Update Site
@@ -429,26 +435,28 @@ Requires new repositories from the feature to make sure latest releases are inst
 To update the online update site, the `tycho-p2-extras-plugin` is used, with the
 goal `mirror`
 
-* Mirror meta data only using http download: speed up deploy phase a lot
-* disable cache in [download-maven-plugin](https://github.com/maven-download-plugin/maven-download-plugin) to avoid overriding meta datas.
+*   Mirror meta data only using http download: speed up deploy phase a lot
+*   disable cache in [download-maven-plugin](https://github.com/maven-download-plugin/maven-download-plugin) to avoid overriding meta datas.
 
 
 ### Product
 
-* products (preesm + CDT + equinox + required)
-* Possibility to define dev products in the future...
+*   products (preesm + CDT + equinox + required)
+*   Possibility to define dev products in the future...
 
 ### Deploy Phase
 
-* How to deploy (windows, mac, linux)
-* deploy process
-* Maven plugin repo (sftp plugin + genfeature plugin)
+*   How to deploy (windows, mac, linux)
+*   deploy process
+*   Maven plugin repo (sftp plugin + genfeature plugin)
 
 
 
-## Continuous integration
+Continuous Integration
+----------------------
 
-## Howto
+Howto
+-----
 
 ### Update Project Version
 
