@@ -202,7 +202,7 @@ During the Maven deploy phase, the content is automatically uploaded to those lo
 ### Releng Files
 
 | File under /releng/ | Description |
-|-----|----|
+|-----------------------------|--------------------------------------------|
 | hooks/ | Git hooks and necessary dependencies |
 | org.ietr.preesm.complete.site/ | The Maven module responsible for generating the update site and aggregating Javadoc and products |
 | org.ietr.preesm.dev.feature/ | The feature referencing all Eclipse plugin required to setup a develop environment for Preesm |
@@ -304,7 +304,7 @@ This section details what plugins are bound to which phases (including clean lif
 #### initialize
 
 *   [directory-maven-plugin](https://github.com/jdcasey/directory-maven-plugin): initialize the property **main.basedir** with the path to the parent project directory. This property is used in the Checkstyle configuration for having a consistent path to its configuration file from any submodule.
-*   [jacoco-maven-plugin](http://www.eclemma.org/jacoco/trunk/doc/prepare-agent-mojo.html): Used for test coverage compuatin. See plugin documentation. Defined in the test fragments POM.
+*   [jacoco-maven-plugin](http://www.eclemma.org/jacoco/trunk/doc/prepare-agent-mojo.html): Used for test coverage computation. See plugin documentation. Defined in the test fragments POM.
 *   [org.eclipse.m2e:lifecycle-mapping](http://www.eclipse.org/m2e/documentation/m2e-execution-not-covered.html): Tell the Eclipse Maven Plugin to ignore some Maven plugins. More details in the [Eclipse setup](#eclipse-setup) section.
 
 #### generate-sources
@@ -375,9 +375,21 @@ This section explains what are the sources and targets of the deploy phase.
 
 After the Preesm Eclipse plugins are built, they have to be bundled and deployed in order to be distributed to the end users. The common way to distribute Eclipse plugins is to use [update sites](http://agile.csc.ncsu.edu/SEMaterials/tutorials/install_plugin/index_v35.html). The Tycho Maven plugins provide such functionality and the releng (short term for release engineering) POM file produces one update site. The [tycho-p2-director-plugin](https://eclipse.org/tycho/sitedocs/tycho-p2/tycho-p2-director-plugin/plugin-info.html) also enable the construction of [Eclipse products](https://wiki.eclipse.org/FAQ_What_is_an_Eclipse_product%3F). Finally, for development purposes, the Javadoc API is also generated and integrated to the deployed content.
 
+### releng Profile
+
+A Maven profile can be enabled to activate all release engineering steps:
+```bash
+mvn -P releng clean deploy
+```
+This profile adds:
+*   Javadoc generation: bound to the **process-sources** phase, it generates the Javadoc site using the [maven-javadoc-plugin](https://maven.apache.org/plugins/maven-javadoc-plugin/).
+*   Source plugin generation: During **prepare-packaging** phase, the [tycho-source-plugin](https://eclipse.org/tycho/sitedocs/tycho-source-plugin/plugin-source-mojo.html) generates, along with the binary package, an Eclipse bundle that contains the source code of every plugin. This is used for publishing SDks.
+*   **/releng/** intermediate POM: this submodule contains the plugins for the generation of the features, the site, and the product. This POM also enable the [Preesm Maven repository](http://preesm.sourceforge.net/maven/) for accessing the [sftp-maven-plugin](https://github.com/preesm/sftp-maven-plugin).
+
 ### Versionning
 
 *   How/when update version: [Semantic Versioning](http://semver.org/);
+    *   Can also add 4th level of version for hotfixes
 *   See [Update Project Version](#update-project-version). This procedure updates version in all the POM files, in the MANIFEST.MF file of all included submodules, and in the features. Generated site and product names are also impacted.
 
 ### Javadoc
@@ -423,37 +435,79 @@ Requires new repositories from the feature to make sure latest releases are inst
 </url>
 ```
 
+These references are used when installing the reference from an Eclipse installation. During the Mavan build, these repository should be added. The Preesm, TMF and Neons repositories are already included in the parent POM (see [Dependencies](#dependencies)). The extra development plugins, however, need to be found during the build process, for bundling the dev feature and generating the complete site. Therefore, intermediate releng POM declares new P2 repositories:
+```XML
+  <!-- Extra repositories for building the all-in-one dev feature -->
+  <repositories>
+    <repository>
+      <id>Tycho M2E extension</id>
+      <layout>p2</layout>
+      <url>http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST/</url>
+    </repository>
+    <repository>
+      <id>Checkstyle</id>
+      <layout>p2</layout>
+      <url>http://eclipse-cs.sf.net/update</url>
+    </repository>
+  </repositories>
+```
+
 ### Complete Site
 
-*   tycho-source-feature-plugin
-*   tycho-source-plugin
-*   ant tasks
+The complete site project is responsible for:
+*   The aggregation of the Javadoc of all the plugins thanks to the `<includeDependencySources>` configuration of the [maven-javadoc-plugin](https://maven.apache.org/plugins/maven-javadoc-plugin/).
+*   The generation of the Source Feature that include all generated source features using the [tycho-source-feature-plugin](https://eclipse.org/tycho/sitedocs-extras/tycho-source-feature-plugin/source-feature-mojo.html).
+*   The generation of the Update site for all Preesm features (Preesm, Source, Dev) with the dfault Tycho plugin with the type [eclipse-repository](https://wiki.eclipse.org/Tycho/eclipse-repository).
+*   Preparing and uploading the generated content using
+    *   [Maven Ant targets](http://maven.apache.org/plugins/maven-antrun-plugin/): copy generated sites (p2 repo & javadoc api) and create symlink;
+    *   [download-maven-plugin](https://github.com/maven-download-plugin/maven-download-plugin): fetch online P2 repository metadata
+    *   [tycho-p2-extras-plugin:mirror](https://eclipse.org/tycho/sitedocs-extras/tycho-p2-extras-plugin/mirror-mojo.html): merge online P2 metadata with generated P2 repo
+    *   [sftp-maven-plugin](https://github.com/preesm/sftp-maven-plugin): upload content
 
 
 ### Update Online Update Site
 
 To update the online update site, the `tycho-p2-extras-plugin` is used, with the
-goal `mirror`
+goal `mirror`  (see [tycho-p2-extras-plugin:mirror](https://eclipse.org/tycho/sitedocs-extras/tycho-p2-extras-plugin/mirror-mojo.html)). This goal allows to merge several P2 repositories into one, and if one P2 repository exists at the target location, to append the content.
 
-*   Mirror meta data only using http download: speed up deploy phase a lot
-*   disable cache in [download-maven-plugin](https://github.com/maven-download-plugin/maven-download-plugin) to avoid overriding meta datas.
+To avoid downloading the whole online update site, only the metadata or fetched using simple wget (see [download-maven-plugin](https://github.com/maven-download-plugin/maven-download-plugin)). Then the generated update site is appended to the copy of the online one, before being uploaded using the custom [sftp-maven-plugin](https://github.com/preesm/sftp-maven-plugin).
 
+The [download-maven-plugin](https://github.com/maven-download-plugin/maven-download-plugin) uses an internal cache for the downloaded files. When releasing several projects successively, this cache should be disabled or the online metadata will not reflect the actual content of the P2 repository.
 
 ### Product
 
-*   products (preesm + CDT + equinox + required)
-*   Possibility to define dev products in the future...
+The product project generates [Eclipse products](https://wiki.eclipse.org/FAQ_What_is_an_Eclipse_product%3F) that include the Preesm feature along with the default Eclipse environment and the CDT plugin for C/C++ editor. They are generated using the [tycho-p2-director-plugin](https://eclipse.org/tycho/sitedocs/tycho-p2/tycho-p2-director-plugin/plugin-info.html) that can materialize and archive Eclipse products. The
+[Maven Ant targets](http://maven.apache.org/plugins/maven-antrun-plugin/) and
+[sftp-maven-plugin](https://github.com/preesm/sftp-maven-plugin) are responsible for preparing and uploading the generated content online.
 
 ### Deploy Phase
 
-*   How to deploy (windows, mac, linux)
-*   deploy process
-*   Maven plugin repo (sftp plugin + genfeature plugin)
+The deploy phase is fully automated within the Maven POM files using the following command (see [Deploy from Eclipse](#deploy-from-eclipse) for running this command from Eclipse):
+*   `mvn -P releng clean deploy`
 
+The only data that should be given to Maven are the SourceForge credentials for authenticating on the sftp server. These credentials are provided by one of the [Maven settings file](https://maven.apache.org/settings.html#Servers), usually the one located in the user home: `${user.home}/.m2/settings.xml`:
+```xml
+<!-- ... -->
+<servers>
+<!-- ... -->
+  <server>
+    <id>sf-preesm-update-site</id>
+    <username>my_sourceforge_login</username>
+    <password>my_password</password>
+  </server>
+  <!-- ... -->
+</servers>
+<!-- ... -->
+```
 
+This will be used during the upload of the product and the complete site.
 
 Continuous Integration
 ----------------------
+
+### Jenkins
+
+### Sonar
 
 Howto
 -----
