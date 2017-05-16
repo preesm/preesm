@@ -655,30 +655,87 @@ public class HSDFBuildLoops {
 		clustSchedString = "";
 	}
 
-	public ClustSequence generateClustering(SDFGraph inGraph) throws WorkflowException, SDF4JException, InvalidExpressionException {
-
-		// flat everything
-		IbsdfFlattener flattener = new IbsdfFlattener(inGraph,10);
-		SDFGraph resultGraph = null;
-		try {
-			flattener.flattenGraph();
-			resultGraph = flattener.getFlattenedGraph();
-		} catch (SDF4JException e) {
-			throw (new WorkflowException(e.getMessage()));
+	private AbstractClust recursiveGetLoopClust(AbstractClust seq, List<AbstractClust> getLoopClusterList) throws SDF4JException{
+		if(seq instanceof ClustVertex){
+			if(getLoopClusterList.contains(seq) == false){
+				getLoopClusterList.add(seq);
+				return seq;
+			}
+		}else if(seq instanceof ClustSequence){
+			if(getLoopClusterList.contains(seq) == false){
+				getLoopClusterList.add(seq);
+			}
+			for(AbstractClust s : ((ClustSequence) seq).getSeq()){
+				recursiveGetLoopClust(s, getLoopClusterList);
+			}
+		}else{
+			throw new SDF4JException("Error while printed clustering schedule");
 		}
+		return null;
+	}
+
+	public List<AbstractClust> getLoopClust(AbstractClust a) throws SDF4JException{
+		List<AbstractClust> getLoopClusterList = null;
+		getLoopClusterList = new ArrayList<AbstractClust>();
+		getLoopClusterList.clear();
+		recursiveGetLoopClust(a, getLoopClusterList);
+		if(getLoopClusterList.size() == 0){
+			throw new SDF4JException("Finished !! Error while getting clustered schedule");
+		}
+		return getLoopClusterList;
+	}
+
+	private List<AbstractClust> getLoopClusterListV2 = null;
+
+	public AbstractClust getLoopClustFirstV2(AbstractClust a) throws SDF4JException{
+		this.getLoopClusterListV2 = new ArrayList<AbstractClust>();
+		this.getLoopClusterListV2.clear();
+		return getLoopClustV2(a);
+	}
+	
+	private AbstractClust recursiveGetLoopClustV2(AbstractClust seq, List<AbstractClust> getLoopClusterList) throws SDF4JException{
+		if(seq instanceof ClustVertex){
+			if(getLoopClusterList.contains(seq) == false){
+				getLoopClusterList.add(seq);
+				return seq;
+			}
+		}else if(seq instanceof ClustSequence){
+			if(getLoopClusterList.contains(seq) == false){
+				getLoopClusterList.add(seq);
+				return seq;
+			}
+			for(AbstractClust s : ((ClustSequence) seq).getSeq()){
+				AbstractClust ret = recursiveGetLoopClustV2(s, getLoopClusterList);
+				if(ret != null)
+				{
+					return ret;
+				}
+			}
+		}else{
+			throw new SDF4JException("recursiveGetLoopClustV2 failed");
+		}
+		return null;
+	}
+
+	public AbstractClust getLoopClustV2(AbstractClust a) throws SDF4JException{
+		AbstractClust ret = recursiveGetLoopClustV2(a, this.getLoopClusterListV2);
+		if(ret == null){
+			throw new SDF4JException("getLoopClustV2 failed ret null");
+		}
+		return ret;
+	}
+
+	public AbstractClust generateClustering(SDFGraph inGraph) throws WorkflowException, SDF4JException, InvalidExpressionException {
 		
 		// deep clone of graph SDF
-		this.graph = resultGraph.clone();
-		this.graph.validateModel(WorkflowLogger.getLogger());
-		if(this.graph.isSchedulable() == false){
-			throw (new WorkflowException("Graph not schedulable"));
-		}
+		this.graph = inGraph.clone();
+
 		// copy vertexes
 		List<SDFAbstractVertex> vertexesCpy = new ArrayList<SDFAbstractVertex>();
 		for(SDFAbstractVertex v : graph.vertexSet()){
 			if(v instanceof SDFVertex){
 				vertexesCpy.add(v);
-				//p("Clustering actor " + v.getName() + " RV " + v.getNbRepeatAsInteger());
+				p("Clustering actor " + v.getName() + " RV " + v.getNbRepeatAsInteger());
 			}
 		}
 
@@ -759,7 +816,7 @@ public class HSDFBuildLoops {
 				seq.getSeq().add(seqRight);
 				clustMap.put(clusteredVertex, seq); // add hash map
 				clustMap.remove(current.get(1));
-				
+
 			}else{ // (seqLeft == null && seqRight == null)
 				// new sequence (never visited)
 				ClustVertex vLeft = new ClustVertex();
@@ -777,7 +834,7 @@ public class HSDFBuildLoops {
 				seq.getSeq().add(vRight);
 				clustMap.put(clusteredVertex, seq); // add hash map
 			}
-			
+
 			//graph.addEdge(source, sourcePort, target, targetPort)
 			/*for(SDFEdge e : getInEdges(clusteredVertex)){
 				graph.addEdge(e.getSource(), e.getTarget());
@@ -788,9 +845,9 @@ public class HSDFBuildLoops {
 			//p("clusteredVertex " + clusteredVertex.getName() + " left " + current.get(0).getName() + " right " + current.get(1).getName());
 			lastClusteredVertex = clusteredVertex;
 		}
-		p("generateClustering ok");
-		printClusteringSchedule(clustMap.get(lastClusteredVertex));
-		return null;
+		//p("generateClustering ok");
+		//printClusteringSchedule(clustMap.get(lastClusteredVertex));
+		return clustMap.get(lastClusteredVertex);
 
 		//for(SDFAbstractVertex e : vertexs){
 			//getPredessecors(e);
