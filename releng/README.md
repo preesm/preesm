@@ -384,6 +384,8 @@ mvn -P releng clean deploy
 This profile adds:
 *   Javadoc generation: bound to the **process-sources** phase, it generates the Javadoc site using the [maven-javadoc-plugin](https://maven.apache.org/plugins/maven-javadoc-plugin/).
 *   Source plugin generation: During **prepare-packaging** phase, the [tycho-source-plugin](https://eclipse.org/tycho/sitedocs/tycho-source-plugin/plugin-source-mojo.html) generates, along with the binary package, an Eclipse bundle that contains the source code of every plugin. This is used for publishing SDks.
+*   
+This profile also activates the generation of the Source Feature that include all generated source plugins using the [tycho-source-feature-plugin](https://eclipse.org/tycho/sitedocs-extras/tycho-source-feature-plugin/source-feature-mojo.html).
 *   **/releng/** intermediate POM: this submodule contains the plugins for the generation of the features, the site, and the product. This POM also enable the [Preesm Maven repository](http://preesm.sourceforge.net/maven/) for accessing the [sftp-maven-plugin](https://github.com/preesm/sftp-maven-plugin).
 
 ### Versionning
@@ -435,7 +437,7 @@ Requires new repositories from the feature to make sure latest releases are inst
 </url>
 ```
 
-These references are used when installing the reference from an Eclipse installation. During the Mavan build, these repository should be added. The Preesm, TMF and Neons repositories are already included in the parent POM (see [Dependencies](#dependencies)). The extra development plugins, however, need to be found during the build process, for bundling the dev feature and generating the complete site. Therefore, intermediate releng POM declares new P2 repositories:
+These references are used when installing the reference from an Eclipse installation. During the Mavan build, these repository should be added. The Preesm, TMF and Neons repositories are already included in the parent POM (see [Dependencies](#dependencies)). The extra development plugins, however, need to be found during the build process, for bundling the dev feature and generating the complete site. Therefore, intermediate releng POM declares new P2 repositories (in order to share this configuration with the site project):
 ```XML
   <!-- Extra repositories for building the all-in-one dev feature -->
   <repositories>
@@ -456,7 +458,6 @@ These references are used when installing the reference from an Eclipse installa
 
 The complete site project is responsible for:
 *   The aggregation of the Javadoc of all the plugins thanks to the `<includeDependencySources>` configuration of the [maven-javadoc-plugin](https://maven.apache.org/plugins/maven-javadoc-plugin/).
-*   The generation of the Source Feature that include all generated source features using the [tycho-source-feature-plugin](https://eclipse.org/tycho/sitedocs-extras/tycho-source-feature-plugin/source-feature-mojo.html).
 *   The generation of the Update site for all Preesm features (Preesm, Source, Dev) with the dfault Tycho plugin with the type [eclipse-repository](https://wiki.eclipse.org/Tycho/eclipse-repository).
 *   Preparing and uploading the generated content using
     *   [Maven Ant targets](http://maven.apache.org/plugins/maven-antrun-plugin/): copy generated sites (p2 repo & javadoc api) and create symlink;
@@ -464,6 +465,7 @@ The complete site project is responsible for:
     *   [tycho-p2-extras-plugin:mirror](https://eclipse.org/tycho/sitedocs-extras/tycho-p2-extras-plugin/mirror-mojo.html): merge online P2 metadata with generated P2 repo
     *   [sftp-maven-plugin](https://github.com/preesm/sftp-maven-plugin): upload content
 
+Since this site includes all the necessary dependencies, it needs to be able to lookup the development plugins required by the Dev feature (see previous section).
 
 ### Update Online Update Site
 
@@ -514,8 +516,11 @@ Howto
 
 ### Update Project Version
 
-In the root folder of the project, run `mvn -P releng org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=X.Y.Z
-`. This can be done from Eclipse (see procedure to [call Maven from Eclipse](#running-maven-from-eclipse)):
+In the root folder of the project, run
+*   `mvn -P releng org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=X.Y.Z
+`
+
+This can be done from Eclipse (see procedure to [call Maven from Eclipse](#running-maven-from-eclipse)):
 
 ![Run configuration for updating versions](doc/setNewVersionWithMavenFromEclipse.png "Run configuration for calling 'mvn -P releng org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=X.Y.Z' from Eclipse.")
 
@@ -523,7 +528,19 @@ Alternatively, from a shell, the script `/releng/update-version.sh X.Y.Z` wraps 
 
 ### Deploy from Eclipse
 
+### Add a New Plugin
+
+*   create a new eclipse plugin in the plugin folder
+    *   do not add .project, .settings (everything should be configured in the Maven settings)
+*   copy POM template, tune it if necessary
+*   insert new module in parent pom
+*   add the plugin in the feature (the normal one)
+*   create test fragment
+    *   add module in test-fragment intermediate pom
+
 ### Add New Dependency
+
+### Apply a Fix in Graphiti/DFTools
 
 ### Add New Repository
 
