@@ -1031,11 +1031,11 @@ public class CodegenModelGenerator {
 
 			int forLoopIter = 0;
 			//for(int currentIdx = 0;currentIdx<listScheduleLoop.size();currentIdx++){
-			int nbClust = listScheduleLoop.size();
+			//int nbClust = listScheduleLoop.size();
 			AbstractClust current = loopBuilder.getLoopClustFirstV2(clust);
 			List <AbstractClust> prevs = new ArrayList<AbstractClust>();
 			List <FiniteLoopBlock> upperLoops = new ArrayList<FiniteLoopBlock>();
-			while(nbClust != 0){
+			while(current != null){
 				//AbstractClust current = listScheduleLoop.get(currentIdx);
 				if(current instanceof ClustVertex){
 					SDFAbstractVertex repVertex = ((ClustVertex) current).getVertex();
@@ -1117,10 +1117,11 @@ public class CodegenModelGenerator {
 					}
 				}
 				current = loopBuilder.getLoopClustV2(clust);
-				nbClust--;
+				//nbClust--;
 			}
 			this.linkHSDFEdgeBuffer.clear();
 			this.currentWorkingMemOffset = 0;
+			p("hierarchial actor dump done ok");
 		}
 		return 0;
 	}
@@ -1942,13 +1943,13 @@ public class CodegenModelGenerator {
 					buf = CodegenFactory.eINSTANCE.createSubBuffer();
 					//p("linkHSDFEdgeBuffer buffer Name " + e.getValue().getName() + " "  + e.getKey() + " coretype " + operatorBlock.getCoreType() + " corename " + operatorBlock.getName());
 					//currentIterVar.setName(upperLoopOffsets + " + " + currentIterVar.getName());
-					buf.setName(workingMemBuf.getName() + "_" + Integer.toString(currentWorkingMemOffset));
+					buf.setName(workingMemBuf.getName() + "_" + Integer.toString(this.currentWorkingMemOffset));
 					buf.setContainer(workingMemBuf);
-					buf.setOffset(currentWorkingMemOffset);
+					buf.setOffset(this.currentWorkingMemOffset);
 					buf.setSize(bufSize);
 					buf.setType("char");
 					buf.setTypeSize(1);
-					currentWorkingMemOffset += bufSize;
+					this.currentWorkingMemOffset += bufSize;
 					//p("Internal working buffer " + buf.getName());
 					this.linkHSDFEdgeBuffer.put(currentEdge, buf);
 				}
@@ -1960,7 +1961,7 @@ public class CodegenModelGenerator {
 				throw new CodegenException("Edge connected to " + arg.getDirection() + " port " + arg.getName()
 						+ " of DAG Actor " + dagVertex + " is not present in the input MemEx.\n"
 						+ "There is something wrong in the Memory Allocation task.");
-			}	
+			}
 
 			String upperLoopOffsets = new String();
 			if(upperLoops.size() != 0){

@@ -641,16 +641,16 @@ public class HSDFBuildLoops {
 				}
 			}
 		}else{
-			throw new SDF4JException("recursiveGetLoopClustV2 failed");
+			//throw new SDF4JException("recursiveGetLoopClustV2 failed");
 		}
 		return null;
 	}
 
 	public AbstractClust getLoopClustV2(AbstractClust a) throws SDF4JException{
 		AbstractClust ret = recursiveGetLoopClustV2(a, this.getLoopClusterListV2);
-		if(ret == null){
+		/*if(ret == null){
 			throw new SDF4JException("getLoopClustV2 failed ret null");
-		}
+		}*/
 		return ret;
 	}
 
