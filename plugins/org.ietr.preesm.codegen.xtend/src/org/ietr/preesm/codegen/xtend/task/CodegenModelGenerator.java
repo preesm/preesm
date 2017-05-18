@@ -1069,7 +1069,7 @@ public class CodegenModelGenerator {
 						// retrieve and set variables to be called by the function
 						SDFAbstractVertex repVertexCallVar = resultGraph.getVertex(((ClustVertex) current).getVertex().getName());
 						Entry<List<Variable>, List<PortDirection>> callVars = generateRepeatedCallVariables(operatorBlock,
-								forLoop, dagVertex, repVertexCallVar, loopPrototype, var, inputRepVertexs, outputRepVertexs,
+								forLoop, upperLoops, dagVertex, repVertexCallVar, loopPrototype, var, inputRepVertexs, outputRepVertexs,
 								interfaces);
 						// logger.log(Level.INFO, "generateFunctionCall name " + dagVertex.getName());
 						// Put Variables in the function call
@@ -1089,7 +1089,7 @@ public class CodegenModelGenerator {
 						// operatorBlock.getLoopBlock().getCodeElts().add(repFunc);
 						// Save the functionCall in the dagvertexFunctionCall Map
 						dagVertexCalls.put(dagVertex, repFunc);
-						
+
 						if(upperLoops.size() != 0){
 							upperLoops.get(upperLoops.size()-1).getCodeElts().add(forLoop);
 						}
@@ -1739,7 +1739,7 @@ public class CodegenModelGenerator {
 	 *             </ul>
 	 */
 	protected Entry<List<Variable>, List<PortDirection>> generateRepeatedCallVariables(CoreBlock operatorBlock,
-			FiniteLoopBlock loopBlock, DAGVertex dagVertex, SDFAbstractVertex sdfAbsVertex, Prototype prototype,
+			FiniteLoopBlock loopBlock, List <FiniteLoopBlock> upperLoops, DAGVertex dagVertex, SDFAbstractVertex sdfAbsVertex, Prototype prototype,
 			IntVar iterVar, List<SDFAbstractVertex> inputRepVertexs, List<SDFAbstractVertex> outputRepVertexs,
 			List<SDFInterfaceVertex> interfaces) throws CodegenException {
 		// Retrieve the sdf vertex and the refinement.
@@ -1758,7 +1758,6 @@ public class CodegenModelGenerator {
 		TreeMap<Integer, Variable> variableList = new TreeMap<Integer, Variable>();
 		TreeMap<Integer, PortDirection> directionList = new TreeMap<Integer, PortDirection>();
 
-		IntVar currentIterVar = iterVar;
 		boolean isInputActor = false;
 		boolean isOutputActor = false;
 		for (SDFAbstractVertex v : inputRepVertexs) {
@@ -1779,6 +1778,8 @@ public class CodegenModelGenerator {
 		// Retrieve the Variable corresponding to the arguments of the prototype
 		// This loop manages only buffers (data buffer and NOT parameters)
 		for (CodeGenArgument arg : prototype.getArguments().keySet()) {
+			IntVar currentIterVar = CodegenFactory.eINSTANCE.createIntVar();
+			currentIterVar.setName(iterVar.getName());
 
 			PortDirection dir = null;
 			boolean isInputActorTmp = isInputActor;
@@ -1940,6 +1941,7 @@ public class CodegenModelGenerator {
 				if (buf == null) {
 					buf = CodegenFactory.eINSTANCE.createSubBuffer();
 					//p("linkHSDFEdgeBuffer buffer Name " + e.getValue().getName() + " "  + e.getKey() + " coretype " + operatorBlock.getCoreType() + " corename " + operatorBlock.getName());
+					//currentIterVar.setName(upperLoopOffsets + " + " + currentIterVar.getName());
 					buf.setName(workingMemBuf.getName() + "_" + Integer.toString(currentWorkingMemOffset));
 					buf.setContainer(workingMemBuf);
 					buf.setOffset(currentWorkingMemOffset);
@@ -1952,11 +1954,22 @@ public class CodegenModelGenerator {
 				}
 				var = buf;
 			}
+
 			BufferIterator bufIter = CodegenFactory.eINSTANCE.createBufferIterator();
 			if (var == null) {
 				throw new CodegenException("Edge connected to " + arg.getDirection() + " port " + arg.getName()
 						+ " of DAG Actor " + dagVertex + " is not present in the input MemEx.\n"
 						+ "There is something wrong in the Memory Allocation task.");
+			}	
+
+			String upperLoopOffsets = new String();
+			if(upperLoops.size() != 0){
+				upperLoopOffsets = "(" + Integer.toString(loopBlock.getNbIter()) + "*" + Integer.toString(bufIterSize) + ") * ( " + upperLoops.get(upperLoops.size()-1).getIter().getName();
+				for(int i = 0; i<upperLoops.size()-1;i++){
+					upperLoopOffsets += " + (" + upperLoops.get(upperLoops.size()-2-i).getIter().getName() + "*" + Integer.toString(upperLoops.get(upperLoops.size()-1-i).getNbIter()) + ")";
+				}
+				upperLoopOffsets += " )";
+				currentIterVar.setName(upperLoopOffsets + " + " + currentIterVar.getName());
 			}
 
 			bufIter.setName(var.getName());
