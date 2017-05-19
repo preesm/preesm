@@ -63,6 +63,7 @@
     <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
     <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
     <sonar.jacoco.reportPaths>../../target/jacoco.exec</sonar.jacoco.reportPaths>
+    <sonar.exclusions>**/tests/**, **/test-fragments/**, **/releng/**</sonar.exclusions>
   </properties>
 
 	<repositories>
@@ -132,6 +133,11 @@
 						 <!-- Where to put jacoco coverage report -->
 						 <destFile>${main.basedir}/target/jacoco.exec</destFile>
 						 <append>true</append>
+						<excludes>
+							<exclude>**/tests/**</exclude>
+							<exclude>**/test-fragments/**</exclude>
+							<exclude>**/releng/**</exclude>
+						</excludes>
 					 </configuration>
 				  </execution>
 				</executions>
