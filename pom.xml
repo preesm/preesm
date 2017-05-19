@@ -315,6 +315,7 @@
     <module>plugins/org.ietr.preesm.ui</module>
 
     <module>test-fragments</module>
+    <module>tests</module>
   </modules>
 
   <profiles>
