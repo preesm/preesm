@@ -35,13 +35,14 @@ public class WorkflowRunner {
     project.create(null);
     project.open(null);
 
+    DFToolsWorkflowLogger.runFromCLI();
     final WorkflowLogger logger = WorkflowLogger.getLogger();
     logger.setLevel(Level.ALL);
-    DFToolsWorkflowLogger.runFromCLI();
 
     // run workflow
     WorkflowRunner.copyFiles(new File(WorkflowRunner.PROJECT_RESOURCES_LOCAL_PATH + "/" + projectName + "/"), project);
     final WorkflowManager workflowManager = new WorkflowManager();
+    workflowManager.setDebug(true);
     final String workflowPath = "/" + projectName + workflowFilePathStr;
     final String scenarioPath = "/" + projectName + scenarioFilePathStr;
 
