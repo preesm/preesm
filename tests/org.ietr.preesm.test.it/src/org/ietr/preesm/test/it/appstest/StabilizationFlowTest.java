@@ -26,7 +26,7 @@ import org.junit.Test;
  */
 public class StabilizationFlowTest {
 
-  private static final String PROJECT_NAME = "org.ietr.preesm.stabilization";
+  private static final String PROJECT_NAME = "org.ietr.preesm.stereo";
 
   /**
    *
@@ -77,10 +77,10 @@ public class StabilizationFlowTest {
 
     final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
     final IProject project = root.getProject(StabilizationFlowTest.PROJECT_NAME);
-    copyFiles(new File("resources/org.ietr.preesm.stabilization/"), project);
+    copyFiles(new File("resources/org.ietr.preesm.stereo/"), project);
     final WorkflowManager workflowManager = new WorkflowManager();
-    final String workflowPath = "/" + StabilizationFlowTest.PROJECT_NAME + "/Workflows/Codegen.workflow";
-    final String scenarioPath = "/" + StabilizationFlowTest.PROJECT_NAME + "/Scenarios/4coresX86.scenario";
+    final String workflowPath = "/" + StabilizationFlowTest.PROJECT_NAME + "/Workflows/StaticPiMMCodegen.workflow";
+    final String scenarioPath = "/" + StabilizationFlowTest.PROJECT_NAME + "/Scenarios/1core.scenario";
 
     final boolean success = workflowManager.execute(workflowPath, scenarioPath, null);
     Assert.assertTrue(success);
