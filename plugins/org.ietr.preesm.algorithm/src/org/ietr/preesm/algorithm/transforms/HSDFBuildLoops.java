@@ -646,7 +646,7 @@ public class HSDFBuildLoops {
 		for(SDFAbstractVertex v : graph.vertexSet()){
 			if(v instanceof SDFVertex){
 				vertexesCpy.add(v);
-				p("Clustering actor " + v.getName() + " RV " + v.getNbRepeatAsInteger());
+				//p("Clustering actor " + v.getName() + " RV " + v.getNbRepeatAsInteger());
 			}
 		}
 

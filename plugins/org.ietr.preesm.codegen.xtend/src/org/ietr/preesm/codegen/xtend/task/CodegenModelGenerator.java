@@ -806,7 +806,7 @@ public class CodegenModelGenerator {
 		SDFVertex sdfVertex = (SDFVertex) dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFVertex.class);
 		Object refinement = sdfVertex.getPropertyBean().getValue(AbstractVertex.REFINEMENT);
 
-		p("Generating code for hierarchical actor " + sdfVertex.getName());
+		//p("Generating code for hierarchical actor " + sdfVertex.getName());
 		if (refinement instanceof AbstractGraph) {
 			// p(sdfVertex.getName());
 			// pv(sdfVertex);
@@ -831,16 +831,16 @@ public class CodegenModelGenerator {
 			
 			// Check nb actor for loop generation as only one actor in the
 			// hierarchy is supported yet
-			p("Flattened Graph Results\n");
+			//p("Flattened Graph Results\n");
 			for (SDFAbstractVertex v : resultGraph.vertexSet()) {
 				if (v instanceof SDFVertex) {
 					repVertexs.add(v);
 					//nbActor++;
-					p("Actor " +  v.getName() + " repeated " + getSDFVertexNbRepeated(v));
+					//p("Actor " +  v.getName() + " repeated " + getSDFVertexNbRepeated(v));
 				}
 				if (v instanceof SDFInterfaceVertex) {
 					interfaces.add((SDFInterfaceVertex) v);
-					p("Interface Vertex " + v.getName());
+					//p("Interface Vertex " + v.getName());
 				}
 			}
 
@@ -912,17 +912,17 @@ public class CodegenModelGenerator {
 			List<SDFAbstractVertex> inputRepVertexs = new ArrayList<SDFAbstractVertex>(); 
 			List<SDFAbstractVertex> outputRepVertexs = new ArrayList<SDFAbstractVertex>();
 			for (SDFInterfaceVertex i : interfaces) {
-				p("Current interface " + i.getName() + " dir " + i.getDirection());
+				//p("Current interface " + i.getName() + " dir " + i.getDirection());
 				for (SDFInterfaceVertex s : i.getSources()) {
 					SDFAbstractVertex a = i.getAssociatedEdge(s).getTarget();
 					SDFAbstractVertex b = i.getAssociatedEdge(s).getSource();
 					if(a instanceof SDFVertex){
 						outputRepVertexs.add(a);
-						p("1 input target " + a.getName());
+						//p("1 input target " + a.getName());
 					}
 					if(b instanceof SDFVertex){
 						inputRepVertexs.add(b);
-						p("2 input source " + b.getName());
+						//p("2 input source " + b.getName());
 					}
 				}
 				for (SDFInterfaceVertex s : i.getSinks()) {
@@ -930,11 +930,11 @@ public class CodegenModelGenerator {
 					SDFAbstractVertex b = i.getAssociatedEdge(s).getSource();
 					if(a instanceof SDFVertex){
 						inputRepVertexs.add(a);
-						p("3 output target " + a.getName());
+						//p("3 output target " + a.getName());
 					}
 					if(b instanceof SDFVertex){
 						outputRepVertexs.add(b);
-						p("4 output source " + b.getName());
+						//p("4 output source " + b.getName());
 					}
 				}
 				/*i.getInterfaces()
@@ -991,12 +991,12 @@ public class CodegenModelGenerator {
 				//			+ i.getSources().size() + " is great than 1");
 				//}
 			}
-			for(SDFAbstractVertex s : inputRepVertexs){
+			/*for(SDFAbstractVertex s : inputRepVertexs){
 				p("Input Vertex " + s.getName());
 			}
 			for(SDFAbstractVertex s : outputRepVertexs){
 				p("Output Vertex " + s.getName());
-			}
+			}*/
 			//for (int i = 0; i < nbActor; i++) {
 			//	SDFAbstractVertex repVertex = sortedRepVertexs.get(i);
 			//	p("Codegen Model Vertex " + repVertex.getName());				
@@ -1005,15 +1005,15 @@ public class CodegenModelGenerator {
 			
 			for(AbstractClust c : listScheduleLoop){
 				if(c instanceof ClustVertex){
-					p("ListScheduleLoop ClustVertex " + ((ClustVertex)c).getVertex().getName() + " repeat " + getSDFVertexNbRepeated(((ClustVertex)c).getVertex()) + " rep clust " + ((ClustVertex)c).getRepeat());
+					//p("ListScheduleLoop ClustVertex " + ((ClustVertex)c).getVertex().getName() + " repeat " + getSDFVertexNbRepeated(((ClustVertex)c).getVertex()) + " rep clust " + ((ClustVertex)c).getRepeat());
 				}else if(c instanceof ClustSequence){
-					p("ListScheduleLoop ClustSequence ForLoop iter " + ((ClustSequence)c).getRepeat());
+					//p("ListScheduleLoop ClustSequence ForLoop iter " + ((ClustSequence)c).getRepeat());
 				}else{
-					p("ListScheduleLoop Failed to dump cluster");
+					//p("ListScheduleLoop Failed to dump cluster");
 				}
 			}
 			
-			p("Printing Code\n");
+			//p("Printing Code\n");
 
 			int forLoopIter = 0;
 			//for(int currentIdx = 0;currentIdx<listScheduleLoop.size();currentIdx++){
@@ -1107,7 +1107,7 @@ public class CodegenModelGenerator {
 			}
 			this.linkHSDFEdgeBuffer.clear();
 			this.currentWorkingMemOffset = 0;
-			p("hierarchial actor dump done ok");
+			//p("hierarchial actor dump done ok");
 		}
 		return 0;
 	}
