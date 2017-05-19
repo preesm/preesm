@@ -234,6 +234,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 		return newNode;
 	};
 	
+	@SuppressWarnings("unused")
 	private void p(String s) {
 		Logger logger = WorkflowLogger.getLogger();
 		logger.log(Level.INFO, "Memory Exclusion Graph " + s);

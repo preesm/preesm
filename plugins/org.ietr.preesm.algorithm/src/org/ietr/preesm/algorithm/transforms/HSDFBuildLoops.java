@@ -2,18 +2,11 @@ package org.ietr.preesm.algorithm.transforms;
 
 //import java.awt.List;
 import java.util.List;
-import java.awt.Choice;
-import java.awt.color.CMMException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.xtext.xbase.lib.Pair;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
@@ -24,24 +17,18 @@ import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.transformations.IbsdfFlattener;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
-import org.ietr.dftools.algorithm.model.sdf.visitors.ConsistencyChecker;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
-import org.ietr.dftools.algorithm.model.visitors.VisitorOutput;
 import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.elements.Workflow;
-import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-//import org.ietr.preesm.codegen.xtend.task.CodegenException;
 
 public class HSDFBuildLoops {
 
-	@SuppressWarnings("unused")
 	private void p(String s) {
 		Logger logger = WorkflowLogger.getLogger();
 		logger.log(Level.INFO, "HSDFBuildLoops " + s);
 	}
 
-	private SDFEdge hasCommonEdges(SDFAbstractVertex prev, SDFAbstractVertex check, SDFAbstractVertex top) {
+	/*private SDFEdge hasCommonEdges(SDFAbstractVertex prev, SDFAbstractVertex check, SDFAbstractVertex top) {
 		if(prev == top)
 		{
 			//p("Hierarchical hasCommonEdges " + prev.getName() + " " + check.getName());
@@ -49,8 +36,8 @@ public class HSDFBuildLoops {
 			{
 				for(int j=0;j<check.getSources().size();j++)
 				{
-					SDFEdge edgePrev = prev.getAssociatedEdge(prev.getSources().get(i)); /* left actor */
-					SDFEdge edgeCheck = check.getAssociatedEdge(check.getSources().get(j)); /* right actor */
+					SDFEdge edgePrev = prev.getAssociatedEdge(prev.getSources().get(i)); //left actor
+					SDFEdge edgeCheck = check.getAssociatedEdge(check.getSources().get(j)); //right actor
 					//if(edgePrev.getTargetLabel().hashCode() == edgeCheck.getSourceLabel().hashCode())
 					if(edgePrev.getTargetLabel() == edgeCheck.getSourceLabel())
 					{
@@ -67,8 +54,8 @@ public class HSDFBuildLoops {
 			{
 				for(int j=0;j<check.getSources().size();j++)
 				{
-					SDFEdge edgePrev = prev.getAssociatedEdge(prev.getSinks().get(i)); /* left actor */
-					SDFEdge edgeCheck = check.getAssociatedEdge(check.getSources().get(j)); /* right actor */
+					SDFEdge edgePrev = prev.getAssociatedEdge(prev.getSinks().get(i)); //left actor
+					SDFEdge edgeCheck = check.getAssociatedEdge(check.getSources().get(j)); //right actor
 					//if(edgePrev.getTargetLabel().hashCode() == edgeCheck.getTargetLabel().hashCode())
 					if(edgePrev.getTargetLabel() == edgeCheck.getTargetLabel())
 					{
@@ -81,9 +68,9 @@ public class HSDFBuildLoops {
 			}
 		}
 		return null;
-	}
+	}*/
 
-	private List <SDFAbstractVertex> sortVertex(Set <SDFAbstractVertex> list, SDFAbstractVertex sdfVertex) throws WorkflowException {
+	/*private List <SDFAbstractVertex> sortVertex(Set <SDFAbstractVertex> list, SDFAbstractVertex sdfVertex) throws WorkflowException {
 		List <SDFAbstractVertex> sortedRepVertexs = new ArrayList<SDFAbstractVertex>();
 		List <SDFAbstractVertex> inVertexs = new ArrayList<SDFAbstractVertex>();
 		for(SDFAbstractVertex v : list)
@@ -120,7 +107,7 @@ public class HSDFBuildLoops {
 		return sortedRepVertexs;
 	}
 
-	/*private SDFEdge hasCommonSink(SDFAbstractVertex top, SDFAbstractVertex v){
+	private SDFEdge hasCommonSink(SDFAbstractVertex top, SDFAbstractVertex v){
 		for(int i=0;i<top.getSources().size();i++) {
 			for(int j=0;j<v.getSources().size();j++) {
 				SDFEdge edgeTop = top.getAssociatedEdge(top.getSources().get(i));
@@ -176,11 +163,6 @@ public class HSDFBuildLoops {
 			b = r;
 		}
 		return a;
-	}
-
-	private int pg(String s){
-		p("generateClustering " + s);
-		return 0;
 	}
 
 	private List<SDFAbstractVertex> getPredessecors(SDFAbstractVertex v){
@@ -301,13 +283,13 @@ public class HSDFBuildLoops {
 	}
 
 	//private List<Pair<SDFAbstractVertex, SDFAbstractVertex>> clusteredVertexs = new ArrayList<Pair<SDFAbstractVertex,SDFAbstractVertex>>();
-	private HashMap<SDFAbstractVertex, List<SDFAbstractVertex>> clusteredVertexs = new HashMap<SDFAbstractVertex, List<SDFAbstractVertex>>();
-	private List<SDFAbstractVertex> visitedClusteredVertexs = new ArrayList<SDFAbstractVertex>();
-	private List <SDFAbstractVertex> chooseNewV = new ArrayList<SDFAbstractVertex>();
-	private SDFAbstractVertex leftVertex = null;
-	private SDFAbstractVertex rightVertex = null;
+	//private HashMap<SDFAbstractVertex, List<SDFAbstractVertex>> clusteredVertexs = new HashMap<SDFAbstractVertex, List<SDFAbstractVertex>>();
+	//private List<SDFAbstractVertex> visitedClusteredVertexs = new ArrayList<SDFAbstractVertex>();
+	//private List <SDFAbstractVertex> chooseNewV = new ArrayList<SDFAbstractVertex>();
+	//private SDFAbstractVertex leftVertex = null;
+	//private SDFAbstractVertex rightVertex = null;
 
-	private int simpleClusteringHeuristic(List<SDFAbstractVertex> inV, List<SDFAbstractVertex> outV, SDFAbstractVertex current){
+	/*private int simpleClusteringHeuristic(List<SDFAbstractVertex> inV, List<SDFAbstractVertex> outV, SDFAbstractVertex current){
 
 		List<SDFAbstractVertex> ongoingList = this.clusteredVertexs.get(current);
 		if(ongoingList == null){
@@ -315,12 +297,12 @@ public class HSDFBuildLoops {
 			this.clusteredVertexs.put(current, ongoingList);
 		}
 
-		/* leftVertex ---> rightVertex */
-		/* AN HEURISTIC CAN BE PLACED HERE */
+		// leftVertex ---> rightVertex
+		// AN HEURISTIC CAN BE PLACED HERE
 		for(SDFAbstractVertex v : inV){
 			if((ongoingList.contains(v)) == false && (isMergeable(v, current) == true)){
 				
-				/* set vertex order */
+				//set vertex order
 				this.rightVertex = current;
 				this.leftVertex = v;
 				
@@ -342,7 +324,7 @@ public class HSDFBuildLoops {
 		for(SDFAbstractVertex v : outV){
 			if((ongoingList.contains(v) == false) && (isMergeable(v, current) == true)){
 				
-				/* set vertex order */
+				//set vertex order
 				this.leftVertex = current;
 				this.rightVertex = v;
 				
@@ -367,7 +349,7 @@ public class HSDFBuildLoops {
 	private Map<SDFAbstractVertex, List<SDFAbstractVertex>> linkPred;
 	private Map<SDFAbstractVertex, List<SDFAbstractVertex>> linkSucc;
 
-	/*public ClustSequence generateClustering(Set<SDFAbstractVertex> vertexs) throws InvalidExpressionException{
+	public ClustSequence generateClustering(Set<SDFAbstractVertex> vertexs) throws InvalidExpressionException{
 		List<SDFAbstractVertex> l = new ArrayList<SDFAbstractVertex>();
 		for(SDFAbstractVertex v : vertexs){
 			if (v instanceof SDFVertex) {
@@ -902,7 +884,7 @@ public class HSDFBuildLoops {
 		return l;
 	}
 	
-	private int setHierarchicalWorkingMemory(List <SDFAbstractVertex> list, SDFAbstractVertex topVertex) throws WorkflowException {
+	/*private int setHierarchicalWorkingMemory(List <SDFAbstractVertex> list, SDFAbstractVertex topVertex) throws WorkflowException {
 		if(list.isEmpty()){
 			throw new WorkflowException("setHierarchicalWorkingMemory given list is empty");
 		}
@@ -914,7 +896,7 @@ public class HSDFBuildLoops {
 			List <SDFEdge> l = getEdgeToAllocate(topVertex, v);
 			for(SDFEdge e : l){
 				if(allocEdge.contains(e) == false){
-					/* need to alloc working memory */
+					// need to alloc working memory
 					//p("setHierarchicalWorkingMemory need to alloc for " + v.getName());
 					//p("setHierarchicalWorkingMemory source " + e.getSourceLabel() + " actor " + e.getSource().getName() 
 					//		+  " target " + e.getTargetLabel() + " actor " + e.getSource().getName());
@@ -937,12 +919,6 @@ public class HSDFBuildLoops {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-					/*try {
-						mem = new Integer(nbRep*e.getCons().intValue());
-					} catch (InvalidExpressionException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}*/
 					//e.getPropertyBean().setValue("working_memory", mem);
 					//p("buf size " + bufSize + " mem " + mem);
 					bufSize += mem;
@@ -954,7 +930,7 @@ public class HSDFBuildLoops {
 		}
 		//p("setHierarchicalWorkingMemory topVertex " + topVertex.getName() + " nbBuf " + nbWorkingBufferAllocated + " bufSize " + bufSize);
 		return nbWorkingBufferAllocated;
-	}
+	}*/
 
 	public SDFGraph execute(SDFGraph inputGraph) throws WorkflowException {
 		//p("Executing");
@@ -1010,7 +986,7 @@ public class HSDFBuildLoops {
 			}
 
 			int bufSize = 0;
-			int nbWorkingBufferAllocated = 0;
+			//int nbWorkingBufferAllocated = 0;
 			for(SDFAbstractVertex v : resultGraph.vertexSet()){
 				if(v instanceof SDFVertex){
 					List<SDFEdge> edge = new ArrayList<SDFEdge>();
@@ -1036,14 +1012,14 @@ public class HSDFBuildLoops {
 								e1.printStackTrace();
 							}
 							bufSize += mem;
-							nbWorkingBufferAllocated++;
+							//nbWorkingBufferAllocated++;
 							allocEdge.add(e);
 						}
 					}
 				}
 			}
 			g.getPropertyBean().setValue("working_memory", new Integer(bufSize));
-			p("Internal working memory computation " + g.getName() + " number of allocation " + nbWorkingBufferAllocated + " byte allocated " + bufSize);
+			//p("Internal working memory computation " + g.getName() + " number of allocation " + nbWorkingBufferAllocated + " byte allocated " + bufSize);
 		}
 		return inputGraph;
 	}

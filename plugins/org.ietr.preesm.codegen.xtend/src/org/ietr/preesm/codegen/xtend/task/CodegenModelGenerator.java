@@ -141,7 +141,6 @@ import org.ietr.preesm.memory.allocation.MemoryAllocator;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.ietr.preesm.memory.script.Range;
-import org.w3c.dom.ls.LSInput;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -737,16 +736,16 @@ public class CodegenModelGenerator {
 		return null;
 	}
 
-	private SDFEdge hasCommonEdges(SDFAbstractVertex prev, SDFAbstractVertex check, SDFAbstractVertex top) {
+	/*private SDFEdge hasCommonEdges(SDFAbstractVertex prev, SDFAbstractVertex check, SDFAbstractVertex top) {
 		if (prev == top) {
 			// p("Hierarchical hasCommonEdges " + prev.getName() + " " +
 			// check.getName());
 			for (int i = 0; i < prev.getSources().size(); i++) {
 				for (int j = 0; j < check.getSources().size(); j++) {
 					SDFEdge edgePrev = prev.getAssociatedEdge(
-							prev.getSources().get(i)); /* left actor */
+							prev.getSources().get(i)); // left actor
 					SDFEdge edgeCheck = check.getAssociatedEdge(
-							check.getSources().get(j)); /* right actor */
+							check.getSources().get(j)); // right actor 
 					// if(edgePrev.getTargetLabel().hashCode() ==
 					// edgeCheck.getSourceLabel().hashCode())
 					if (edgePrev.getTargetLabel() == edgeCheck.getSourceLabel()) {
@@ -765,9 +764,9 @@ public class CodegenModelGenerator {
 			for (int i = 0; i < prev.getSinks().size(); i++) {
 				for (int j = 0; j < check.getSources().size(); j++) {
 					SDFEdge edgePrev = prev.getAssociatedEdge(
-							prev.getSinks().get(i)); /* left actor */
+							prev.getSinks().get(i)); //left actor 
 					SDFEdge edgeCheck = check.getAssociatedEdge(
-							check.getSources().get(j)); /* right actor */
+							check.getSources().get(j)); // right actor
 					// if(edgePrev.getTargetLabel().hashCode() ==
 					// edgeCheck.getTargetLabel().hashCode())
 					if (edgePrev.getTargetLabel() == edgeCheck.getTargetLabel()) {
@@ -782,7 +781,7 @@ public class CodegenModelGenerator {
 			}
 		}
 		return null;
-	}
+	}*/
 
 	@SuppressWarnings("unused")
 	private void pv(SDFAbstractVertex v) {
@@ -812,7 +811,7 @@ public class CodegenModelGenerator {
 			// p(sdfVertex.getName());
 			// pv(sdfVertex);
 			SDFGraph graph = (SDFGraph) sdfVertex.getGraphDescription();
-			int nbActor = 0;
+			//int nbActor = 0;
 			List<SDFAbstractVertex> repVertexs = new ArrayList<SDFAbstractVertex>();
 			List<SDFInterfaceVertex> interfaces = new ArrayList<SDFInterfaceVertex>();
 
@@ -835,27 +834,14 @@ public class CodegenModelGenerator {
 			p("Flattened Graph Results\n");
 			for (SDFAbstractVertex v : resultGraph.vertexSet()) {
 				if (v instanceof SDFVertex) {
-					//SDFAbstractVertex repVertex = v;
 					repVertexs.add(v);
-					nbActor++;
+					//nbActor++;
 					p("Actor " +  v.getName() + " repeated " + getSDFVertexNbRepeated(v));
-					// pv(v);
-					// SDFInterfaceVertex iV = null; if((iV = hasCommonSources(v, sdfVertex)) != null) {
-					// p("hasCommonSources: " + iV + " Actors " + v.getName() +
-					// " and " + sdfVertex.getName()); } if((iV = hasCommonSinks(v, sdfVertex)) != null) {
-					// p("hasCommonSinks: " + iV + " Actors " + v.getName() + " and " + sdfVertex.getName()); }
 				}
 				if (v instanceof SDFInterfaceVertex) {
 					interfaces.add((SDFInterfaceVertex) v);
 					p("Interface Vertex " + v.getName());
 				}
-				//if (v instanceof SDFInterfaceVertex) {
-				//	
-				//} else if (v instanceof SDFVertex) {
-				//	p("\tSDF Vertex " + v.getName());
-				//} else {
-				//	p("\tSDF Abs Vertex " + v.getName());
-				//}
 			}
 
 			HSDFBuildLoops loopBuilder = new HSDFBuildLoops();
@@ -1033,7 +1019,7 @@ public class CodegenModelGenerator {
 			//for(int currentIdx = 0;currentIdx<listScheduleLoop.size();currentIdx++){
 			//int nbClust = listScheduleLoop.size();
 			AbstractClust current = loopBuilder.getLoopClustFirstV2(clust);
-			List <AbstractClust> prevs = new ArrayList<AbstractClust>();
+			//List <AbstractClust> prevs = new ArrayList<AbstractClust>();
 			List <FiniteLoopBlock> upperLoops = new ArrayList<FiniteLoopBlock>();
 			while(current != null){
 				//AbstractClust current = listScheduleLoop.get(currentIdx);

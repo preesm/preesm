@@ -59,7 +59,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Block
 import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter
 import org.ietr.preesm.codegen.xtend.model.codegen.Direction
-import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator
 import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
 
 class MPPA2ExplicitPrinter extends CPrinter {
