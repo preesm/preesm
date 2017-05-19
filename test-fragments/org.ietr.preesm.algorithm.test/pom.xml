@@ -6,7 +6,7 @@
 
 	<parent>
 		<groupId>org.ietr.preesm</groupId>
-		<artifactId>org.ietr.preesm.test</artifactId>
+		<artifactId>org.ietr.preesm.test-fragments</artifactId>
 		<version>2.2.10-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
