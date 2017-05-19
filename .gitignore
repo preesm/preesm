@@ -45,6 +45,7 @@ lib/
 /plugins/org.ietr.preesm.codegen.xtend/xtend-gen/
 *~
 *._trace
+*.orig
 
 # PREESM generated files #
 ##########################
@@ -54,3 +55,9 @@ DAG/*.graphml
 stats/xml/
 stats/mat/algo/
 stats/mat/archi/
+
+# Eclipse files #
+#################
+**/.settings
+**/.project
+**/.checkstyle
