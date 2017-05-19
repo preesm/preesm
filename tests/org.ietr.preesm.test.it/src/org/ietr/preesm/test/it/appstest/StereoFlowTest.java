@@ -24,7 +24,7 @@ import org.junit.Test;
 /**
  *
  */
-public class StabilizationFlowTest {
+public class StereoFlowTest {
 
   private static final String PROJECT_NAME = "org.ietr.preesm.stereo";
 
@@ -34,7 +34,7 @@ public class StabilizationFlowTest {
   @Before
   public final void initProject() throws CoreException {
     final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-    final IProject project = root.getProject(StabilizationFlowTest.PROJECT_NAME);
+    final IProject project = root.getProject(StereoFlowTest.PROJECT_NAME);
     project.create(null);
     project.open(null);
 
@@ -49,7 +49,7 @@ public class StabilizationFlowTest {
   @After
   public final void deleteProject() throws CoreException {
     final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-    final IProject project = root.getProject(StabilizationFlowTest.PROJECT_NAME);
+    final IProject project = root.getProject(StereoFlowTest.PROJECT_NAME);
     project.delete(true, true, null);
   }
 
@@ -76,11 +76,11 @@ public class StabilizationFlowTest {
   public void testStabilizationFlow() throws FileNotFoundException, InvalidModelException, CoreException {
 
     final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-    final IProject project = root.getProject(StabilizationFlowTest.PROJECT_NAME);
+    final IProject project = root.getProject(StereoFlowTest.PROJECT_NAME);
     copyFiles(new File("resources/org.ietr.preesm.stereo/"), project);
     final WorkflowManager workflowManager = new WorkflowManager();
-    final String workflowPath = "/" + StabilizationFlowTest.PROJECT_NAME + "/Workflows/StaticPiMMCodegen.workflow";
-    final String scenarioPath = "/" + StabilizationFlowTest.PROJECT_NAME + "/Scenarios/1core.scenario";
+    final String workflowPath = "/" + StereoFlowTest.PROJECT_NAME + "/Workflows/StaticPiMMCodegen.workflow";
+    final String scenarioPath = "/" + StereoFlowTest.PROJECT_NAME + "/Scenarios/1core.scenario";
 
     final boolean success = workflowManager.execute(workflowPath, scenarioPath, null);
     Assert.assertTrue(success);
