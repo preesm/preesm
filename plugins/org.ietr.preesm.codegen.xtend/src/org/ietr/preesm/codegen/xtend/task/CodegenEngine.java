@@ -234,7 +234,9 @@ public class CodegenEngine {
       try {
         this.workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
         final IFolder f = this.workspace.getRoot().getFolder(new Path(this.codegenPath));
-        f.create(true, true, null);
+        if (!f.exists()) {
+          f.create(true, true, null);
+        }
         final File folder = new File(f.getRawLocation().toOSString());
         if (!folder.exists()) {
           throw new FileNotFoundException("Target generation folder [" + folder.getAbsolutePath() + "] does not exist");
