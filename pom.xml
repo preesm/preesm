@@ -59,6 +59,10 @@
     <!-- http://artfiles.org/eclipse.org/ -->
     <!-- http://mirror.switch.ch/eclipse/ -->
     <eclipse.mirror>http://mirror.ibcp.fr/pub/eclipse/</eclipse.mirror>
+    
+    <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
+    <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+    <sonar.jacoco.reportPaths>../../target/jacoco.exec</sonar.jacoco.reportPaths>
   </properties>
 
 	<repositories>
@@ -124,6 +128,11 @@
 					 <goals>
 						<goal>prepare-agent</goal>
 					 </goals>
+					 <configuration>
+						 <!-- Where to put jacoco coverage report -->
+						 <destFile>${main.basedir}/target/jacoco.exec</destFile>
+						 <append>true</append>
+					 </configuration>
 				  </execution>
 				</executions>
 			</plugin>
