@@ -38,6 +38,7 @@ package org.ietr.preesm.codegen.xtend.task;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,6 +50,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -224,25 +226,32 @@ public class CodegenEngine {
       try {
         printer = (CodegenAbstractPrinter) printerAndBlocks.getKey().createExecutableExtension("class");
       } catch (final CoreException e) {
-        throw new WorkflowException(e.getMessage());
+        throw new WorkflowException(e.getMessage(), e);
       }
 
       // Erase previous files with extension
       // Lists all files in folder
-      final IFolder f = this.workspace.getRoot().getFolder(new Path(this.codegenPath));
-      final File folder = new File(f.getRawLocation().toOSString());
-      final File[] fList = folder.listFiles();
-      if (fList != null) {
-        // Searches .extension
-        for (final File element : fList) {
-          final String pes = element.getName();
-          if (pes.endsWith(extension)) {
-            // and deletes
-            element.delete();
+      try {
+        this.workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
+        final IFolder f = this.workspace.getRoot().getFolder(new Path(this.codegenPath));
+        f.create(true, true, null);
+        final File folder = new File(f.getRawLocation().toOSString());
+        if (!folder.exists()) {
+          throw new FileNotFoundException("Target generation folder [" + folder.getAbsolutePath() + "] does not exist");
+        }
+        final File[] fList = folder.listFiles();
+        if (fList != null) {
+          // Searches .extension
+          for (final File element : fList) {
+            final String pes = element.getName();
+            if (pes.endsWith(extension)) {
+              // and deletes
+              element.delete();
+            }
           }
         }
-      } else {
-        throw new WorkflowException("The code generation directory was not found.");
+      } catch (CoreException | FileNotFoundException e) {
+        throw new WorkflowException("Could not access target directory [" + this.codegenPath + "] during code generation", e);
       }
 
       // Do the pre-processing
