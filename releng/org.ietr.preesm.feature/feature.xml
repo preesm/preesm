@@ -40,7 +40,7 @@
 <feature
       id="org.ietr.preesm.feature"
       label="PREESM"
-      version="2.2.9"
+      version="2.2.10.qualifier"
       provider-name="IETR/INSA Rennes">
 
    <description url="http://preesm.sourceforge.net/website/">
@@ -67,98 +67,98 @@ The fact that you are presently reading this means that you have had knowledge o
          id="org.ietr.preesm.algorithm"
          download-size="0"
          install-size="0"
-         version="2.2.9"
+         version="2.2.10.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.ietr.preesm.architecture"
          download-size="0"
          install-size="0"
-         version="2.2.9"
+         version="2.2.10.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.ietr.preesm.codegen"
          download-size="0"
          install-size="0"
-         version="2.2.9"
+         version="2.2.10.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.ietr.preesm.codegen.xtend"
          download-size="0"
          install-size="0"
-         version="2.2.9"
+         version="2.2.10.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.ietr.preesm.core"
          download-size="0"
          install-size="0"
-         version="2.2.9"
+         version="2.2.10.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.ietr.preesm.experiment.model"
          download-size="0"
          install-size="0"
-         version="2.2.9"
+         version="2.2.10.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.ietr.preesm.mapper"
          download-size="0"
          install-size="0"
-         version="2.2.9"
+         version="2.2.10.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.ietr.preesm.memory"
          download-size="0"
          install-size="0"
-         version="2.2.9"
+         version="2.2.10.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.ietr.preesm.ui"
          download-size="0"
          install-size="0"
-         version="2.2.9"
+         version="2.2.10.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.ietr.preesm.utils"
          download-size="0"
          install-size="0"
-         version="2.2.9"
+         version="2.2.10.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.ietr.preesm.cli"
          download-size="0"
          install-size="0"
-         version="2.2.9"
+         version="2.2.10.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.ietr.preesm.pimm.algorithm"
          download-size="0"
          install-size="0"
-         version="2.2.9"
+         version="2.2.10.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.ietr.preesm.evaluator"
          download-size="0"
          install-size="0"
-         version="2.2.9"
+         version="2.2.10.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.ietr.preesm.rcp.utils"
          download-size="0"
          install-size="0"
-         version="2.2.9"
+         version="2.2.10.qualifier"
          unpack="false"/>
 
 </feature>
