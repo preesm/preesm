@@ -59,6 +59,9 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
+import org.ietr.preesm.codegen.xtend.model.codegen.IntVar
+import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
+import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator
 import org.ietr.preesm.codegen.xtend.model.codegen.util.CodegenSwitch
 import org.ietr.preesm.codegen.xtend.task.CodegenException
 import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt
@@ -421,6 +424,16 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 		return printConstantString(constant)
 	}
 
+	override caseIntVar(IntVar intVar) {
+		if (state.equals(PrinterState::PRINTING_DEFINITIONS))
+			return printIntVarDefinition(intVar)
+
+		if (state.equals(PrinterState::PRINTING_DECLARATIONS))
+			return printIntVarDeclaration(intVar)
+
+		return printIntVar(intVar)
+	}
+
 	override defaultCase(EObject object) {
 		throw new CodegenException(
 			"Object " + object + " is not supported by the printer" + this + "in its current state. "
@@ -454,7 +467,37 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 
 		return result.join('')
 	}
-	
+
+	override caseFiniteLoopBlock(FiniteLoopBlock loopBlock) {
+		var result = new StringConcatenation
+		var indentation = ""
+		var boolean hasNewLine
+
+		val finiteLoopBlockheader = printFiniteLoopBlockHeader(loopBlock)
+		result.append(finiteLoopBlockheader,indentation)
+
+		if (finiteLoopBlockheader.length > 0) {
+				indentation = result.lastLineIndentation
+				result = result.trimLastEOL
+				hasNewLine = result.endWithEOL
+			} else {
+				indentation = indentation
+				hasNewLine = false
+			}
+
+		// Visit all codeElements
+		result.append(loopBlock.codeElts.map[doSwitch].join(''), indentation)
+
+		if (hasNewLine) {
+			result.newLineIfNotEmpty()
+			result.append(indentation)
+		}
+
+		result.append(printFiniteLoopBlockFooter(loopBlock), "")
+
+		result
+	}
+
 	override caseNullBuffer(NullBuffer nullBuffer) {
 		if (state.equals(PrinterState::PRINTING_DEFINITIONS))
 			return printNullBufferDefinition(nullBuffer)
@@ -493,6 +536,16 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 			return printSubBufferDeclaration(subBuffer)
 
 		return printSubBuffer(subBuffer)
+	}
+
+	override caseBufferIterator(BufferIterator bufferIterator) {
+		if (state.equals(PrinterState::PRINTING_DEFINITIONS))
+			return printBufferIteratorDefinition(bufferIterator)
+
+		if (state.equals(PrinterState::PRINTING_DECLARATIONS))
+			return printBufferIteratorDeclaration(bufferIterator)
+
+		return printBufferIterator(bufferIterator)
 	}
 
 	/**
@@ -675,6 +728,40 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printConstantStringDefinition(ConstantString constant)
+
+	/**
+	 * Method called to print a {@link IntVar} outside the
+	 * {@link CoreBlock#getDefinitions() definition} or the
+	 * {@link CoreBlock#getDeclarations() declaration} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param intVar
+	 *            the {@link IntVar} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printIntVar(IntVar intVar)
+
+	/**
+	 * Method called to print a {@link IntVar} within the
+	 * {@link CoreBlock#getDeclarations() declaration} {@link CallBlock} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param intVar
+	 *            the {@link IntVar} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printIntVarDeclaration(IntVar intVar)
+
+	/**
+	 * Method called to print a {@link IntVar} within the
+	 * {@link CoreBlock#getDefinitions() definition} {@link LoopBlock} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param intVar
+	 *            the {@link IntVar} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printIntVarDefinition(IntVar intVar)
 
 	/**
 	 * Method called after printing all code belonging 
@@ -882,7 +969,29 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printLoopBlockHeader(LoopBlock block)
-	
+
+	/**
+	 * Method called after printing all {@link CodeElement} belonging
+	 * to a {@link LoopBlock}.
+	 * 
+	 * @param block
+	 *            the {@link FiniteLoopBlock} whose {@link CodeElement} were 
+	 * 			  printed before calling this method.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printFiniteLoopBlockFooter(FiniteLoopBlock block)
+
+	/**
+	 * Method called before printing all {@link CodeElement} belonging
+	 * to a {@link FiniteLoopBlock}.
+	 * 
+	 * @param block
+	 *            the {@link FiniteLoopBlock} whose {@link CodeElement} will be
+	 * 			  printed after calling this method.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printFiniteLoopBlockHeader(FiniteLoopBlock block)
+
 	/**
 	 * Method called to print a {@link NullBuffer} outside the
 	 * {@link CoreBlock#getDefinitions() definition} or the
@@ -1015,5 +1124,39 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printSubBufferDefinition(SubBuffer subBuffer)
+
+	/**
+	 * Method called to print a {@link BufferIterator} outside the
+	 * {@link CoreBlock#getDefinitions() definition} or the
+	 * {@link CoreBlock#getDeclarations() declaration} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param bufferIterator
+	 *            the {@link BufferIterator} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printBufferIterator(BufferIterator bufferIterator)
+
+	/**
+	 * Method called to print a {@link BufferIterator} within the
+	 * {@link CoreBlock#getDeclarations() declaration} {@link CallBlock} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param bufferIterator
+	 *            the {@link BufferIterator} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printBufferIteratorDeclaration(BufferIterator bufferIterator)
+
+	/**
+	 * Method called to print a {@link BufferIterator} within the
+	 * {@link CoreBlock#getDefinitions() definition} {@link CallBlock} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param bufferIterator
+	 *            the {@link BufferIterator} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printBufferIteratorDefinition(BufferIterator bufferIterator)
 
 }

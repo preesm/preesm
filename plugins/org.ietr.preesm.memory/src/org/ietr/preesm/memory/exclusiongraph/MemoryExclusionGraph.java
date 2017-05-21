@@ -485,6 +485,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       final Integer wMem = (Integer) vertexDAG.getCorrespondingSDFVertex().getPropertyBean().getValue("working_memory");
       if (wMem != null) {
         final MemoryExclusionVertex workingMemoryNode = new MemoryExclusionVertex(vertexDAG.getName(), vertexDAG.getName(), wMem);
+        workingMemoryNode.setVertex(vertexDAG);
         addVertex(workingMemoryNode);
         // Currently, there is no special alignment for working memory.
         // So we always assume a unitary typesize.

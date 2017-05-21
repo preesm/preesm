@@ -1,3 +1,4 @@
+<<<<<<< HEAD:plugins/org.ietr.preesm.codegen.xtend/xtend-src/org/ietr/preesm/codegen/xtend/printer/DefaultPrinter.xtend
 /**
  * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
  * Karol Desnos, Julien Heulot
@@ -104,6 +105,12 @@ class DefaultPrinter extends CodegenAbstractPrinter {
 
 	override printConstantStringDefinition(ConstantString constant) ''''''
 
+	override printIntVar(IntVar intVar) ''''''
+
+	override printIntVarDeclaration(IntVar intVar) ''''''
+
+	override printIntVarDefinition(IntVar intVar) ''''''
+
 	override printCoreBlockFooter(CoreBlock block) ''''''
 
 	override printCoreBlockHeader(CoreBlock block) ''''''
@@ -135,6 +142,10 @@ class DefaultPrinter extends CodegenAbstractPrinter {
 	override printLoopBlockFooter(LoopBlock block) ''''''
 
 	override printLoopBlockHeader(LoopBlock block) ''''''
+
+	override printFiniteLoopBlockFooter(FiniteLoopBlock block) ''''''
+
+	override printFiniteLoopBlockHeader(FiniteLoopBlock block) ''''''
 	
 	override printNullBuffer(NullBuffer Buffer) ''''''
 
@@ -159,5 +170,11 @@ class DefaultPrinter extends CodegenAbstractPrinter {
 	override printSubBufferDeclaration(SubBuffer buffer) ''''''
 
 	override printSubBufferDefinition(SubBuffer buffer) ''''''
-	
+
+	override printBufferIterator(BufferIterator bufferIterator) ''''''
+
+	override printBufferIteratorDeclaration(BufferIterator bufferIterator) ''''''
+
+	override printBufferIteratorDefinition(BufferIterator bufferIterator) ''''''
+
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD:plugins/org.ietr.preesm.codegen.xtend/xtend-src/org/ietr/preesm/codegen/xtend/printer/DevelopperPrinter.xtend
 /**
  * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
  * Karol Desnos, Julien Heulot
@@ -136,7 +137,11 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printLoopBlockFooter(LoopBlock block) '''<Loop_Block_Foot>'''
 
 	override printLoopBlockHeader(LoopBlock block) '''<Loop_Block_Head>'''
-	
+
+	override printFiniteLoopBlockFooter(FiniteLoopBlock block) '''<Finite_Loop_Block_Foot>'''
+
+	override printFiniteLoopBlockHeader(FiniteLoopBlock block) '''<Finite_Loop_Block_Head>'''
+
 	override printNullBuffer(NullBuffer nullBuffer) '''<NullBuffer>'''
 
 	override printNullBufferDeclaration(NullBuffer buffer) '''<NullBuffer_Declaration>'''
@@ -160,5 +165,17 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printSubBufferDeclaration(SubBuffer buffer) '''<Sub_Buffer_Declaration>'''
 
 	override printSubBufferDefinition(SubBuffer buffer) '''<Sub_Buffer_Definition>'''
+
+	override printIntVar(IntVar intVar) '''<IntVar>'''
+
+	override printIntVarDeclaration(IntVar intVar) '''<IntVar_Declaration>'''
+
+	override printIntVarDefinition(IntVar intVar) '''<IntVar_Definition>'''
+
+	override printBufferIterator(BufferIterator bufferIterator) '''<BufferIterator>'''
+
+	override printBufferIteratorDeclaration(BufferIterator bufferIterator) '''<BufferIterator_Declaration>'''
+
+	override printBufferIteratorDefinition(BufferIterator bufferIterator) '''<BufferIterator_Definition>'''
 	
 }

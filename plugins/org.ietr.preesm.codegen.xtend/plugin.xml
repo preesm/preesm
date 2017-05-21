@@ -90,6 +90,20 @@
                   type="c6678">
             </core_type>
          </printer>
+         <printer
+               class="org.ietr.preesm.codegen.xtend.printer.c.MPPA2Printer"
+               extension=".c">
+            <core_type
+                  type="MPPA2">
+            </core_type>
+         </printer>
+         <printer
+               class="org.ietr.preesm.codegen.xtend.printer.c.MPPA2ExplicitPrinter"
+               extension=".c">
+            <core_type
+                  type="MPPA2Explicit">
+            </core_type>
+         </printer>
       </printers>
       <printers
             language="InstrumentedC">
