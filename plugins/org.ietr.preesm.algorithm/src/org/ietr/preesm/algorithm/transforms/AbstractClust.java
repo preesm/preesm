@@ -1,6 +1,9 @@
 package org.ietr.preesm.algorithm.transforms;
 
 /**
+ * Abstract class used to represent the repetition vector of loops.
+ *
+ * @author jhascoet
  */
 public abstract class AbstractClust {
 

@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Class representing a sequence of repeated clustered actors and sequences of actors.
  *
- *
+ * @author jhascoet
  */
 public class ClustSequence extends AbstractClust {
 
