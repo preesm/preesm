@@ -64,7 +64,7 @@ public class InterfaceActorImpl extends AbstractActorImpl implements InterfaceAc
   /**
    * The cached value of the '{@link #getGraphPort() <em>Graph Port</em>}' reference. <!-- begin-user-doc --> This {@link Port} is the corresponding
    * {@link Port} of the {@link PiGraph} containing this {@link Interface} instance. <!-- end-user-doc -->
-   * 
+   *
    * @see #getGraphPort()
    * @generated
    * @ordered
@@ -73,7 +73,7 @@ public class InterfaceActorImpl extends AbstractActorImpl implements InterfaceAc
 
   /**
    * The default value of the '{@link #getKind() <em>Kind</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getKind()
    * @generated
    * @ordered
@@ -82,7 +82,7 @@ public class InterfaceActorImpl extends AbstractActorImpl implements InterfaceAc
 
   /**
    * The cached value of the '{@link #getKind() <em>Kind</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getKind()
    * @generated
    * @ordered

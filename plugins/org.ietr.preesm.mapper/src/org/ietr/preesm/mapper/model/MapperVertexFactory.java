@@ -99,8 +99,7 @@ public class MapperVertexFactory extends ModelVertexFactory<DAGVertex> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.factories.ModelVertexFactory#createInterface(java.lang.String,
-   * int)
+   * @see org.ietr.dftools.algorithm.factories.ModelVertexFactory#createInterface(java.lang.String, int)
    */
   @Override
   public IInterface createInterface(final String name, final int dir) {

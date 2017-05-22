@@ -97,8 +97,7 @@ public class GanttData {
    *          the duration
    * @return true, if successful
    */
-  private boolean insertTask(final String taskId, final String componentId, final long startTime,
-      final long duration) {
+  private boolean insertTask(final String taskId, final String componentId, final long startTime, final long duration) {
     final GanttComponent cmp = getComponent(componentId);
     final GanttTask task = new GanttTask(startTime, duration, taskId, cmp);
     return cmp.insertTask(task);
@@ -121,15 +120,12 @@ public class GanttData {
       if (cmp != DesignTools.NO_COMPONENT_INSTANCE) {
         final long startTime = currentVertex.getTiming().getTLevel();
         final long duration = currentVertex.getTiming().getCost();
-        final String id = currentVertex.getName() + " (x" + currentVertex.getInit().getNbRepeat()
-            + ")";
+        final String id = currentVertex.getName() + " (x" + currentVertex.getInit().getNbRepeat() + ")";
         if (!insertTask(id, cmp.getInstanceName(), startTime, duration)) {
           return false;
         }
       } else {
-        WorkflowLogger.getLogger().log(Level.SEVERE,
-            "Gantt: task can not be displayed in Gantt because it has no component: "
-                + currentVertex);
+        WorkflowLogger.getLogger().log(Level.SEVERE, "Gantt: task can not be displayed in Gantt because it has no component: " + currentVertex);
       }
     }
     return true;

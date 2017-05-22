@@ -66,7 +66,7 @@ public interface ISetter extends EObject {
    * If the meaning of the '<em>Outgoing Dependencies</em>' reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Outgoing Dependencies</em>' reference list.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getISetter_OutgoingDependencies()
    * @see org.ietr.preesm.experiment.model.pimm.Dependency#getSetter

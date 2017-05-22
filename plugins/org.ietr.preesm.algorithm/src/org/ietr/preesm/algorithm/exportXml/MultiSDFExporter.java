@@ -64,36 +64,30 @@ public class MultiSDFExporter extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
-   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
-   * org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs,
-      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
-      final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
     String sXmlPath;
     IPath xmlPath;
 
     @SuppressWarnings("unchecked")
-    final Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs
-        .get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPHS_SET);
+    final Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPHS_SET);
     final SDF2GraphmlExporter exporter = new SDF2GraphmlExporter();
 
     for (final SDFGraph algorithm : algorithms) {
 
-      sXmlPath = PathTools.getAbsolutePath(
-          parameters.get(MultiSDFExporter.PATH_KEY) + "/" + algorithm.getName() + ".graphml",
-          workflow.getProjectName());
+      sXmlPath = PathTools.getAbsolutePath(parameters.get(MultiSDFExporter.PATH_KEY) + "/" + algorithm.getName() + ".graphml", workflow.getProjectName());
       xmlPath = new Path(sXmlPath);
       // Get a complete valid path with all folders existing
       try {
         ContainersManager.createMissingFolders(xmlPath.removeFileExtension().removeLastSegments(1));
 
       } catch (CoreException | IllegalArgumentException e) {
-        throw new WorkflowException(
-            "Path " + sXmlPath + " is not a valid path for export.\n" + e.getMessage());
+        throw new WorkflowException("Path " + sXmlPath + " is not a valid path for export.\n" + e.getMessage());
       }
 
       exporter.export(algorithm, xmlPath);

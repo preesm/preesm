@@ -43,9 +43,8 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 // TODO: Auto-generated Javadoc
 /**
- * MapperDAG stores mapping properties shared by several of its vertices that have relative
- * constraints. If the mapping of a vertex in the group is modified, all mappings of the vertices in
- * the group are modified.
+ * MapperDAG stores mapping properties shared by several of its vertices that have relative constraints. If the mapping of a vertex in the group is modified,
+ * all mappings of the vertices in the group are modified.
  *
  * @author mpelcat
  */
@@ -124,8 +123,7 @@ public class DAGMappings {
   }
 
   /**
-   * Cloning the common mappings of vertices and ensuring that several vertices with same group
-   * share the same mapping object.
+   * Cloning the common mappings of vertices and ensuring that several vertices with same group share the same mapping object.
    *
    * @return the object
    */

@@ -91,10 +91,8 @@ public class MyGanttRenderer extends GanttRenderer {
    *          the column index (zero-based).
    */
   @Override
-  protected void drawTasks(final Graphics2D g2, final CategoryItemRendererState state,
-      final Rectangle2D dataArea, final CategoryPlot plot, final CategoryAxis domainAxis,
-      final ValueAxis rangeAxis, final GanttCategoryDataset dataset, final int row,
-      final int column) {
+  protected void drawTasks(final Graphics2D g2, final CategoryItemRendererState state, final Rectangle2D dataArea, final CategoryPlot plot,
+      final CategoryAxis domainAxis, final ValueAxis rangeAxis, final GanttCategoryDataset dataset, final int row, final int column) {
 
     final int count = dataset.getSubIntervalCount(row, column);
     if (count == 0) {
@@ -110,16 +108,14 @@ public class MyGanttRenderer extends GanttRenderer {
       if (value0 == null) {
         return;
       }
-      double translatedValue0 = rangeAxis.valueToJava2D(value0.doubleValue(), dataArea,
-          rangeAxisLocation);
+      double translatedValue0 = rangeAxis.valueToJava2D(value0.doubleValue(), dataArea, rangeAxisLocation);
 
       // value 1
       final Number value1 = dataset.getEndValue(row, column, subinterval);
       if (value1 == null) {
         return;
       }
-      double translatedValue1 = rangeAxis.valueToJava2D(value1.doubleValue(), dataArea,
-          rangeAxisLocation);
+      double translatedValue1 = rangeAxis.valueToJava2D(value1.doubleValue(), dataArea, rangeAxisLocation);
 
       if (translatedValue1 < translatedValue0) {
         final double temp = translatedValue1;
@@ -127,25 +123,21 @@ public class MyGanttRenderer extends GanttRenderer {
         translatedValue0 = temp;
       }
 
-      final double rectStart = calculateBarW0(plot, plot.getOrientation(), dataArea, domainAxis,
-          state, row, column);
+      final double rectStart = calculateBarW0(plot, plot.getOrientation(), dataArea, domainAxis, state, row, column);
       final double rectLength = Math.abs(translatedValue1 - translatedValue0);
       final double rectBreadth = state.getBarWidth();
 
       // DRAW THE BARS...
       RoundRectangle2D bar = null;
 
-      bar = new RoundRectangle2D.Double(translatedValue0, rectStart, rectLength, rectBreadth, 10.0,
-          10.0);
+      bar = new RoundRectangle2D.Double(translatedValue0, rectStart, rectLength, rectBreadth, 10.0, 10.0);
 
       /* Paint seriesPaint = */getItemPaint(row, column);
 
       if (((TaskSeriesCollection) dataset).getSeriesCount() > 0) {
         if (((TaskSeriesCollection) dataset).getSeries(0).getItemCount() > column) {
-          if (((TaskSeriesCollection) dataset).getSeries(0).get(column)
-              .getSubtaskCount() > subinterval) {
-            g2.setPaint(getRandomBrightColor(((TaskSeriesCollection) dataset).getSeries(0)
-                .get(column).getSubtask(subinterval).getDescription()));
+          if (((TaskSeriesCollection) dataset).getSeries(0).get(column).getSubtaskCount() > subinterval) {
+            g2.setPaint(getRandomBrightColor(((TaskSeriesCollection) dataset).getSeries(0).get(column).getSubtask(subinterval).getDescription()));
 
           }
         }
@@ -162,14 +154,12 @@ public class MyGanttRenderer extends GanttRenderer {
       // available
       if (getToolTipGenerator(row, column) != null) {
         // Getting the string to display
-        final String tip = getToolTipGenerator(row, column).generateToolTip(dataset, subinterval,
-            column);
+        final String tip = getToolTipGenerator(row, column).generateToolTip(dataset, subinterval, column);
 
         // Truncting the string if it is too long
         String subtip = "";
         if (rectLength > 0) {
-          final double percent = (g2.getFontMetrics().getStringBounds(tip, g2).getWidth() + 10)
-              / rectLength;
+          final double percent = (g2.getFontMetrics().getStringBounds(tip, g2).getWidth() + 10) / rectLength;
 
           if (percent > 1.0) {
             subtip = tip.substring(0, (int) (tip.length() / percent));
@@ -184,8 +174,7 @@ public class MyGanttRenderer extends GanttRenderer {
 
           // Testing width and displaying
           if (!subtip.isEmpty()) {
-            g2.drawString(subtip, (int) translatedValue0 + 5,
-                (int) rectStart + g2.getFontMetrics().getHeight());
+            g2.drawString(subtip, (int) translatedValue0 + 5, (int) rectStart + g2.getFontMetrics().getHeight());
           }
         }
       }
@@ -202,8 +191,7 @@ public class MyGanttRenderer extends GanttRenderer {
           if (getItemURLGenerator(row, column) != null) {
             url = getItemURLGenerator(row, column).generateURL(dataset, row, column);
           }
-          final CategoryItemEntity entity = new CategoryItemEntity(bar, tip, url, dataset,
-              dataset.getRowKey(row), dataset.getColumnKey(column));
+          final CategoryItemEntity entity = new CategoryItemEntity(bar, tip, url, dataset, dataset.getRowKey(row), dataset.getColumnKey(column));
           entities.add(entity);
         }
       }

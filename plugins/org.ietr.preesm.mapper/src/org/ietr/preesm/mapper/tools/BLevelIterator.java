@@ -45,8 +45,7 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 // TODO: Auto-generated Javadoc
 /**
- * Iterates the graph in ascending or descending BLevel order. Uses abc implementation to retrieve b
- * levels.
+ * Iterates the graph in ascending or descending BLevel order. Uses abc implementation to retrieve b levels.
  *
  * @author mpelcat
  */
@@ -69,8 +68,8 @@ public class BLevelIterator extends ImplementationIterator {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.mapper.tools.ImplementationIterator#compare(org.ietr.preesm.mapper.model.
-   * MapperDAGVertex, org.ietr.preesm.mapper.model.MapperDAGVertex)
+   * @see org.ietr.preesm.mapper.tools.ImplementationIterator#compare(org.ietr.preesm.mapper.model. MapperDAGVertex,
+   * org.ietr.preesm.mapper.model.MapperDAGVertex)
    */
   @Override
   public int compare(MapperDAGVertex arg0, MapperDAGVertex arg1) {

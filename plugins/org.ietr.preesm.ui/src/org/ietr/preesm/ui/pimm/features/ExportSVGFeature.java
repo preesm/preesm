@@ -694,10 +694,10 @@ public class ExportSVGFeature extends AbstractCustomFeature {
       if (ciiPes == null) {
         throw new IllegalStateException();
       }
-      int x = ciiPes[2].getGraphicsAlgorithm().getX();
-      int y = ciiPes[2].getGraphicsAlgorithm().getY();
-      int width = ciiPes[2].getGraphicsAlgorithm().getWidth();
-      int height = ciiPes[2].getGraphicsAlgorithm().getHeight();
+      final int x = ciiPes[2].getGraphicsAlgorithm().getX();
+      final int y = ciiPes[2].getGraphicsAlgorithm().getY();
+      final int width = ciiPes[2].getGraphicsAlgorithm().getWidth();
+      final int height = ciiPes[2].getGraphicsAlgorithm().getHeight();
 
       this.totalWidth = java.lang.Math.max(x + width, this.totalWidth);
       this.totalHeight = java.lang.Math.max(y + height, this.totalHeight);
@@ -707,7 +707,7 @@ public class ExportSVGFeature extends AbstractCustomFeature {
       ciiNode.setAttribute("id", cii.getName());
       ciiNode.setAttribute("transform", "translate(" + x + "," + y + ")");
       final Element polygon = this.doc.createElement("polygon");
-      PictogramElement pictogramElement = ciiPes[0];
+      final PictogramElement pictogramElement = ciiPes[0];
       final Polygon polyPe = (Polygon) pictogramElement.getGraphicsAlgorithm();
       ciiNode.appendChild(polygon);
       String points = "";

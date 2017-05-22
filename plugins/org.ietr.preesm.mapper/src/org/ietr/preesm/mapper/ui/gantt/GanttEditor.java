@@ -86,8 +86,7 @@ public class GanttEditor extends EditorPart {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.ui.part.EditorPart#init(org.eclipse.ui.IEditorSite,
-   * org.eclipse.ui.IEditorInput)
+   * @see org.eclipse.ui.part.EditorPart#init(org.eclipse.ui.IEditorSite, org.eclipse.ui.IEditorInput)
    */
   @Override
   public void init(final IEditorSite site, final IEditorInput input) throws PartInitException {

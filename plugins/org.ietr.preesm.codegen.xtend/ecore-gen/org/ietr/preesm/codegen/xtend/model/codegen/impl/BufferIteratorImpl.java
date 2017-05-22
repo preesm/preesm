@@ -58,7 +58,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator {
   /**
    * The default value of the '{@link #getIterSize() <em>Iter Size</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getIterSize()
    * @generated
    * @ordered
@@ -67,7 +67,7 @@ public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator 
 
   /**
    * The cached value of the '{@link #getIterSize() <em>Iter Size</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getIterSize()
    * @generated
    * @ordered
@@ -76,7 +76,7 @@ public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator 
 
   /**
    * The cached value of the '{@link #getIter() <em>Iter</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getIter()
    * @generated
    * @ordered
@@ -85,7 +85,7 @@ public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator 
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   protected BufferIteratorImpl() {
@@ -94,7 +94,7 @@ public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator 
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -104,7 +104,7 @@ public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator 
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -114,7 +114,7 @@ public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator 
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -128,7 +128,7 @@ public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator 
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -147,7 +147,7 @@ public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator 
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   public IntVar basicGetIter() {
@@ -156,7 +156,7 @@ public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator 
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -170,7 +170,7 @@ public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator 
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -189,7 +189,7 @@ public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator 
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -207,7 +207,7 @@ public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator 
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -225,7 +225,7 @@ public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator 
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -241,7 +241,7 @@ public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator 
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override

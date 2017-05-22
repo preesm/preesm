@@ -60,8 +60,7 @@ import org.ietr.preesm.mapper.params.PFastAlgoParameters;
 
 // TODO: Auto-generated Javadoc
 /**
- * PFAST is a parallel mapping/scheduling method based on list scheduling followed by a neighborhood
- * search phase. It was invented by Y-K Kwok.
+ * PFAST is a parallel mapping/scheduling method based on list scheduling followed by a neighborhood search phase. It was invented by Y-K Kwok.
  *
  * @author mwipliez
  * @author pmenuet
@@ -96,14 +95,12 @@ public class PFASTMapping extends AbstractMapping {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.mapper.AbstractMapping#execute(java.util.Map, java.util.Map,
-   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * @see org.ietr.preesm.mapper.AbstractMapping#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
    * org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs,
-      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
-      final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
     final Map<String, Object> outputs = new HashMap<>();
     final Design architecture = (Design) inputs.get("architecture");
@@ -123,8 +120,7 @@ public class PFASTMapping extends AbstractMapping {
     // time to other operator
     calculateSpan(dag, architecture, scenario, abcParameters);
 
-    final IAbc simu = new InfiniteHomogeneousAbc(abcParameters, dag, architecture,
-        abcParameters.getSimulatorType().getTaskSchedType(), scenario);
+    final IAbc simu = new InfiniteHomogeneousAbc(abcParameters, dag, architecture, abcParameters.getSimulatorType().getTaskSchedType(), scenario);
 
     final InitialLists initial = new InitialLists();
 
@@ -139,8 +135,7 @@ public class PFASTMapping extends AbstractMapping {
 
     final PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
 
-    dag = pfastAlgorithm.map(dag, architecture, scenario, initial, abcParameters, pFastParams,
-        false, 0, pFastParams.isDisplaySolutions(), null, taskSched);
+    dag = pfastAlgorithm.map(dag, architecture, scenario, initial, abcParameters, pFastParams, false, 0, pFastParams.isDisplaySolutions(), null, taskSched);
 
     simu2.setDAG(dag);
 

@@ -46,8 +46,7 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 // TODO: Auto-generated Javadoc
 /**
- * Vertex corresponding to sending a data. This vertex is mapped on the sender of the corresponding
- * route step.
+ * Vertex corresponding to sending a data. This vertex is mapped on the sender of the corresponding route step.
  *
  * @author mpelcat
  */
@@ -75,8 +74,8 @@ public class SendVertex extends TransferVertex {
    * @param nodeIndex
    *          the node index
    */
-  public SendVertex(final String id, final MapperDAG base, final MapperDAGVertex source,
-      final MapperDAGVertex target, final int routeStepIndex, final int nodeIndex) {
+  public SendVertex(final String id, final MapperDAG base, final MapperDAGVertex source, final MapperDAGVertex target, final int routeStepIndex,
+      final int nodeIndex) {
     super(id, base, source, target, routeStepIndex, nodeIndex);
   }
 

@@ -70,8 +70,7 @@ public abstract class AbstractEdgeSched implements IEdgeSched {
    *          the order manager
    * @return single instance of AbstractEdgeSched
    */
-  public static IEdgeSched getInstance(final EdgeSchedType edgeSchedType,
-      final OrderManager orderManager) {
+  public static IEdgeSched getInstance(final EdgeSchedType edgeSchedType, final OrderManager orderManager) {
 
     AbstractEdgeSched edgeSched = null;
 

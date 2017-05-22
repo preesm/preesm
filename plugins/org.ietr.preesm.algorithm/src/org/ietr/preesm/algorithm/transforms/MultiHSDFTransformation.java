@@ -64,19 +64,16 @@ public class MultiHSDFTransformation extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
-   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
-   * org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs,
-      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
-      final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
     final Set<SDFGraph> result = new HashSet<>();
     @SuppressWarnings("unchecked")
-    final Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs
-        .get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPHS_SET);
+    final Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPHS_SET);
 
     for (final SDFGraph algorithm : algorithms) {
 
@@ -105,8 +102,7 @@ public class MultiHSDFTransformation extends AbstractTaskImplementation {
           }
           logger.log(Level.FINER, "HSDF transformation complete");
 
-          logger.log(Level.INFO, "HSDF with " + hsdf.vertexSet().size() + " vertices and "
-              + hsdf.edgeSet().size() + " edges.");
+          logger.log(Level.INFO, "HSDF with " + hsdf.vertexSet().size() + " vertices and " + hsdf.edgeSet().size() + " edges.");
 
           String explImplSuppr;
           if ((explImplSuppr = parameters.get("ExplodeImplodeSuppr")) != null) {
@@ -120,8 +116,7 @@ public class MultiHSDFTransformation extends AbstractTaskImplementation {
 
           result.add(hsdf);
         } else {
-          throw (new WorkflowException(
-              "Graph " + algorithm.getName() + " not valid, not schedulable"));
+          throw (new WorkflowException("Graph " + algorithm.getName() + " not valid, not schedulable"));
         }
       } catch (final SDF4JException e) {
         throw (new WorkflowException(e.getMessage()));

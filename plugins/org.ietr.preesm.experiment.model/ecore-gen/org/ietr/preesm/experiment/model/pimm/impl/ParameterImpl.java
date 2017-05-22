@@ -78,7 +78,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 public class ParameterImpl extends AbstractVertexImpl implements Parameter {
   /**
    * The cached value of the '{@link #getOutgoingDependencies() <em>Outgoing Dependencies</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getOutgoingDependencies()
    * @generated
    * @ordered
@@ -90,7 +90,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 
   /**
    * The default value of the '{@link #isConfigurationInterface() <em>Configuration Interface</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #isConfigurationInterface()
    * @generated
    * @ordered
@@ -99,7 +99,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 
   /**
    * The cached value of the '{@link #isConfigurationInterface() <em>Configuration Interface</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #isConfigurationInterface()
    * @generated
    * @ordered
@@ -108,7 +108,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 
   /**
    * The cached value of the '{@link #getGraphPort() <em>Graph Port</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getGraphPort()
    * @generated
    * @ordered
@@ -117,7 +117,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 
   /**
    * The cached value of the '{@link #getExpression() <em>Expression</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getExpression()
    * @generated
    * @ordered

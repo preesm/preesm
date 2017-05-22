@@ -74,7 +74,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 public class ActorImpl extends ExecutableActorImpl implements Actor {
   /**
    * The cached value of the '{@link #getRefinement() <em>Refinement</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getRefinement()
    * @generated
    * @ordered
@@ -83,7 +83,7 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
 
   /**
    * The default value of the '{@link #isConfigurationActor() <em>Configuration Actor</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #isConfigurationActor()
    * @generated
    * @ordered
@@ -92,7 +92,7 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
 
   /**
    * The default value of the '{@link #getMemoryScriptPath() <em>Memory Script Path</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getMemoryScriptPath()
    * @generated
    * @ordered
@@ -101,7 +101,7 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
 
   /**
    * The cached value of the '{@link #getMemoryScriptPath() <em>Memory Script Path</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getMemoryScriptPath()
    * @generated
    * @ordered

@@ -98,9 +98,8 @@ public class PGeneticAlgoParameters {
       this.fastNumber = Integer.valueOf(textParameters.get("fastNumber"));
     }
 
-    WorkflowLogger.getLogger().log(Level.INFO,
-        "The Genetic algo parameters are: generationNumber; populationSize;"
-            + "procNumber; pfastused2makepopulation=true/false; fastTime in seconds; fastLocalSearchTime in seconds; fastNumber");
+    WorkflowLogger.getLogger().log(Level.INFO, "The Genetic algo parameters are: generationNumber; populationSize;"
+        + "procNumber; pfastused2makepopulation=true/false; fastTime in seconds; fastLocalSearchTime in seconds; fastNumber");
   }
 
   /**

@@ -62,7 +62,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 public abstract class AbstractVertexImpl extends ParameterizableImpl implements AbstractVertex {
   /**
    * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getName()
    * @generated
    * @ordered
@@ -71,7 +71,7 @@ public abstract class AbstractVertexImpl extends ParameterizableImpl implements 
 
   /**
    * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getName()
    * @generated
    * @ordered

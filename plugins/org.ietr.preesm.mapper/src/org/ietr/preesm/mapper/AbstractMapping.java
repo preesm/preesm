@@ -62,14 +62,12 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
-   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
-   * org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs,
-      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
-      final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
     final Design architecture = (Design) inputs.get("architecture");
     final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
@@ -118,8 +116,8 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
   }
 
   /**
-   * Calculates the DAG span length on the architecture main operator (the tasks that cannot be
-   * executed by the main operator are deported without transfer time to other operator).
+   * Calculates the DAG span length on the architecture main operator (the tasks that cannot be executed by the main operator are deported without transfer time
+   * to other operator).
    *
    * @param dag
    *          the dag
@@ -132,11 +130,10 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
    * @throws WorkflowException
    *           the workflow exception
    */
-  protected void calculateSpan(final MapperDAG dag, final Design archi,
-      final PreesmScenario scenario, final AbcParameters parameters) throws WorkflowException {
+  protected void calculateSpan(final MapperDAG dag, final Design archi, final PreesmScenario scenario, final AbcParameters parameters)
+      throws WorkflowException {
 
-    final SpanLengthCalculator spanCalc = new SpanLengthCalculator(parameters, dag, archi,
-        parameters.getSimulatorType().getTaskSchedType(), scenario);
+    final SpanLengthCalculator spanCalc = new SpanLengthCalculator(parameters, dag, archi, parameters.getSimulatorType().getTaskSchedType(), scenario);
     spanCalc.resetDAG();
 
   }

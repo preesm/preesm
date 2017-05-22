@@ -61,18 +61,15 @@ public class SDFExporter extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
-   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
-   * org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs,
-      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
-      final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
     final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
-    final String sXmlPath = PathTools.getAbsolutePath(parameters.get("path"),
-        workflow.getProjectName());
+    final String sXmlPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
     IPath xmlPath = new Path(sXmlPath);
     // Get a complete valid path with all folders existing
     try {
@@ -83,8 +80,7 @@ public class SDFExporter extends AbstractTaskImplementation {
         xmlPath = xmlPath.append(algorithm.getName() + ".graphml");
       }
     } catch (CoreException | IllegalArgumentException e) {
-      throw new WorkflowException(
-          "Path " + sXmlPath + " is not a valid path for export.\n" + e.getMessage());
+      throw new WorkflowException("Path " + sXmlPath + " is not a valid path for export.\n" + e.getMessage());
     }
 
     final SDF2GraphmlExporter exporter = new SDF2GraphmlExporter();

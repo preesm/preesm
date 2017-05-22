@@ -61,7 +61,7 @@ public interface FunctionPrototype extends PiMMVisitable {
    * If the meaning of the '<em>Name</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Name</em>' attribute.
    * @see #setName(String)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getFunctionPrototype_Name()
@@ -73,7 +73,7 @@ public interface FunctionPrototype extends PiMMVisitable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.FunctionPrototype#getName <em>Name</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Name</em>' attribute.
    * @see #getName()
@@ -88,7 +88,7 @@ public interface FunctionPrototype extends PiMMVisitable {
    * If the meaning of the '<em>Parameters</em>' reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Parameters</em>' reference list.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getFunctionPrototype_Parameters()
    * @model

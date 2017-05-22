@@ -54,8 +54,7 @@ import org.ietr.preesm.mapper.ui.Messages;
 
 // TODO: Auto-generated Javadoc
 /**
- * This page displays the quality of the current implementation compared to the theoretic achievable
- * time.
+ * This page displays the quality of the current implementation compared to the theoretic achievable time.
  *
  * @author mpelcat
  */
@@ -79,8 +78,7 @@ public class PerformancePage extends FormPage {
    * @param title
    *          the title
    */
-  public PerformancePage(final StatGenerator statGen, final FormEditor editor, final String id,
-      final String title) {
+  public PerformancePage(final StatGenerator statGen, final FormEditor editor, final String id, final String title) {
     super(editor, id, title);
 
     this.statGen = statGen;
@@ -104,12 +102,10 @@ public class PerformancePage extends FormPage {
 
     // Explanation on how to read the chart
     /*
-     * createExplanationSection(managedForm, Messages.getString("Performance.Explanation.title"),
-     * Messages.getString("Performance.Explanation.description"));
+     * createExplanationSection(managedForm, Messages.getString("Performance.Explanation.title"), Messages.getString("Performance.Explanation.description"));
      */
     try {
-      createChartSection(managedForm, Messages.getString("Performance.Chart.title"),
-          Messages.getString("Performance.Chart.description"));
+      createChartSection(managedForm, Messages.getString("Performance.Chart.title"), Messages.getString("Performance.Chart.description"));
     } catch (final WorkflowException e) {
       e.printStackTrace();
     }
@@ -132,13 +128,12 @@ public class PerformancePage extends FormPage {
    *          the grid data
    * @return the composite
    */
-  public Composite createSection(final IManagedForm mform, final String title, final String desc,
-      final int numColumns, final GridData gridData) {
+  public Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns, final GridData gridData) {
 
     final ScrolledForm form = mform.getForm();
     final FormToolkit toolkit = mform.getToolkit();
-    final Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
-        | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    final Section section = toolkit.createSection(form.getBody(),
+        ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
     section.setText(title);
     section.setDescription(desc);
     toolkit.createCompositeSeparator(section);
@@ -173,8 +168,7 @@ public class PerformancePage extends FormPage {
   /*
    * private void createExplanationSection(IManagedForm mform, String title, String desc) {
    *
-   * GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
-   * gridData.heightHint = 500;
+   * GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING); gridData.heightHint = 500;
    *
    * Composite client = createSection(mform, title, desc, 1, gridData);
    *
@@ -191,8 +185,7 @@ public class PerformancePage extends FormPage {
    * @param desc
    *          description of the section
    */
-  private void createChartSection(final IManagedForm mform, final String title, final String desc)
-      throws WorkflowException {
+  private void createChartSection(final IManagedForm mform, final String title, final String desc) throws WorkflowException {
 
     final long workLength = this.statGen.getDAGWorkLength();
     final long spanLength = this.statGen.getDAGSpanLength();
@@ -201,8 +194,8 @@ public class PerformancePage extends FormPage {
     final int resultNbMainCores = this.statGen.getNbMainTypeOperators();
 
     final String currentValuesDisplay = String.format(
-        "work length: %d, span length: %d, implementation length: %d, implementation number of main type operators: %d.",
-        workLength, spanLength, resultTime, resultNbMainCores);
+        "work length: %d, span length: %d, implementation length: %d, implementation number of main type operators: %d.", workLength, spanLength, resultTime,
+        resultNbMainCores);
 
     // GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
     final GridData gridData = new GridData();

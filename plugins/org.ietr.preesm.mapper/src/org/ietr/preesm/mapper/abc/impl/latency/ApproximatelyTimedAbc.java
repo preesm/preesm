@@ -54,10 +54,8 @@ import org.ietr.preesm.mapper.params.AbcParameters;
 
 // TODO: Auto-generated Javadoc
 /**
- * An approximately timed architecture simulator associates a complex cost to each inter-core
- * communication. This cost is composed of an overhead on the sender, a transfer time on the medium
- * and a reception time on the receiver. Scheduling transfer vertices are added and mapped to the
- * media architecture components
+ * An approximately timed architecture simulator associates a complex cost to each inter-core communication. This cost is composed of an overhead on the sender,
+ * a transfer time on the medium and a reception time on the receiver. Scheduling transfer vertices are added and mapped to the media architecture components
  *
  * @author mpelcat
  */
@@ -67,8 +65,7 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
   List<Integer> types = null;
 
   /**
-   * Constructor of the simulator from a "blank" implementation where every vertex has not been
-   * mapped yet.
+   * Constructor of the simulator from a "blank" implementation where every vertex has not been mapped yet.
    *
    * @param params
    *          the params
@@ -81,8 +78,7 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
    * @param scenario
    *          the scenario
    */
-  public ApproximatelyTimedAbc(final AbcParameters params, final MapperDAG dag, final Design archi,
-      final AbcType abcType, final PreesmScenario scenario) {
+  public ApproximatelyTimedAbc(final AbcParameters params, final MapperDAG dag, final Design archi, final AbcType abcType, final PreesmScenario scenario) {
     super(params, dag, archi, abcType, scenario);
 
     this.types = new ArrayList<>();

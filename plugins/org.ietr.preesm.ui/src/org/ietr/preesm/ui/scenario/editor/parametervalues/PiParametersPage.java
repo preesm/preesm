@@ -194,7 +194,7 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
             switch (param.getType()) {
               case INDEPENDENT:
                 final String newValue = (String) value;
-                if (! newValue.equals(param.getValue())) {
+                if (!newValue.equals(param.getValue())) {
                   param.setValue(newValue);
                   propertyChanged(this, IEditorPart.PROP_DIRTY);
                 }

@@ -65,25 +65,20 @@ public class MultiSDF3Exporter extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
-   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
-   * org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs,
-      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
-      final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
     // Retrieve the inputs
     @SuppressWarnings("unchecked")
-    final Set<SDFGraph> sdfs = (Set<SDFGraph>) inputs
-        .get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPHS_SET);
-    final PreesmScenario scenario = (PreesmScenario) inputs
-        .get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final Set<SDFGraph> sdfs = (Set<SDFGraph>) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPHS_SET);
+    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final Design archi = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     // Locate the output file
-    final String sPath = PathTools.getAbsolutePath(parameters.get("path"),
-        workflow.getProjectName());
+    final String sPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
     final IPath path = new Path(sPath);
 
     for (final SDFGraph sdf : sdfs) {

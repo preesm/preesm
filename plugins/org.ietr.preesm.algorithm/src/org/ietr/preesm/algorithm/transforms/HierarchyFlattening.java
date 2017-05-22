@@ -65,14 +65,12 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
-   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
-   * org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs,
-      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
-      final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
     final Map<String, Object> outputs = new HashMap<>();
     final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
@@ -86,7 +84,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
     }
 
     final Logger logger = WorkflowLogger.getLogger();
-    HSDFBuildLoops loopBuilder = new HSDFBuildLoops();
+    final HSDFBuildLoops loopBuilder = new HSDFBuildLoops();
 
     if (depth == 0) {
       outputs.put("SDF", loopBuilder.execute(algorithm.clone())); /* we now extract repetition vector into non-flattened hierarchical actors. */
@@ -98,8 +96,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
     VisitorOutput.setLogger(logger);
     final ConsistencyChecker checkConsistent = new ConsistencyChecker();
     if (checkConsistent.verifyGraph(algorithm)) {
-      logger.log(Level.FINER,
-          "flattening application " + algorithm.getName() + " at level " + depth);
+      logger.log(Level.FINER, "flattening application " + algorithm.getName() + " at level " + depth);
 
       final IbsdfFlattener flattener = new IbsdfFlattener(algorithm, depth);
       VisitorOutput.setLogger(logger);

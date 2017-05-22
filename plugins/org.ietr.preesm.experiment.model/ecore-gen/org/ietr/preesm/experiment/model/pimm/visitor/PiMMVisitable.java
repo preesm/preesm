@@ -15,7 +15,7 @@ import org.eclipse.emf.ecore.EObject;
 public interface PiMMVisitable extends EObject {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @model subjectRequired="true"
    * @generated
    */

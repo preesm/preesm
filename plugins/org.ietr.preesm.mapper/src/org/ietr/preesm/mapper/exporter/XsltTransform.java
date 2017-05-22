@@ -63,28 +63,23 @@ public class XsltTransform extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
-   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
-   * org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs,
-      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
-      final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
-    String sInputPath = PathTools.getAbsolutePath(parameters.get("inputFile"),
-        workflow.getProjectName());
+    String sInputPath = PathTools.getAbsolutePath(parameters.get("inputFile"), workflow.getProjectName());
     if (parameters.get("inputFile").equals("")) {
       sInputPath = PathTools.getAbsolutePath((String) inputs.get("xml"), workflow.getProjectName());
     }
     final Path inputPath = new Path(sInputPath);
 
-    final String sOutputPath = PathTools.getAbsolutePath(parameters.get("outputFile"),
-        workflow.getProjectName());
+    final String sOutputPath = PathTools.getAbsolutePath(parameters.get("outputFile"), workflow.getProjectName());
     final Path outputPath = new Path(sOutputPath);
 
-    final String sxslPath = PathTools.getAbsolutePath(parameters.get("xslFile"),
-        workflow.getProjectName());
+    final String sxslPath = PathTools.getAbsolutePath(parameters.get("xslFile"), workflow.getProjectName());
     final Path xslPath = new Path(sxslPath);
 
     if (!inputPath.isEmpty() && !outputPath.isEmpty() && !xslPath.isEmpty()) {

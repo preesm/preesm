@@ -84,21 +84,16 @@ public class ListSchedulingMapping extends AbstractMapping {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.mapper.AbstractMapping#execute(java.util.Map, java.util.Map,
-   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * @see org.ietr.preesm.mapper.AbstractMapping#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
    * org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs,
-      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
-      final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
-    final Design architecture = (Design) inputs
-        .get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
-    final SDFGraph algorithm = (SDFGraph) inputs
-        .get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH);
-    final PreesmScenario scenario = (PreesmScenario) inputs
-        .get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
+    final SDFGraph algorithm = (SDFGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH);
+    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     super.execute(inputs, parameters, monitor, nodeName, workflow);
 
@@ -111,8 +106,7 @@ public class ListSchedulingMapping extends AbstractMapping {
     // without transfer time to other operator)
     calculateSpan(dag, architecture, scenario, abcParameters);
 
-    final IAbc simu = new InfiniteHomogeneousAbc(abcParameters, dag, architecture,
-        abcParameters.getSimulatorType().getTaskSchedType(), scenario);
+    final IAbc simu = new InfiniteHomogeneousAbc(abcParameters, dag, architecture, abcParameters.getSimulatorType().getTaskSchedType(), scenario);
 
     final InitialLists initial = new InitialLists();
 

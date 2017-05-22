@@ -62,7 +62,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 public class FunctionParameterImpl extends EObjectImpl implements FunctionParameter {
   /**
    * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getName()
    * @generated
    * @ordered
@@ -71,7 +71,7 @@ public class FunctionParameterImpl extends EObjectImpl implements FunctionParame
 
   /**
    * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getName()
    * @generated
    * @ordered
@@ -80,7 +80,7 @@ public class FunctionParameterImpl extends EObjectImpl implements FunctionParame
 
   /**
    * The default value of the '{@link #getDirection() <em>Direction</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getDirection()
    * @generated
    * @ordered
@@ -89,7 +89,7 @@ public class FunctionParameterImpl extends EObjectImpl implements FunctionParame
 
   /**
    * The cached value of the '{@link #getDirection() <em>Direction</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getDirection()
    * @generated
    * @ordered
@@ -98,7 +98,7 @@ public class FunctionParameterImpl extends EObjectImpl implements FunctionParame
 
   /**
    * The default value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getType()
    * @generated
    * @ordered
@@ -107,7 +107,7 @@ public class FunctionParameterImpl extends EObjectImpl implements FunctionParame
 
   /**
    * The cached value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getType()
    * @generated
    * @ordered

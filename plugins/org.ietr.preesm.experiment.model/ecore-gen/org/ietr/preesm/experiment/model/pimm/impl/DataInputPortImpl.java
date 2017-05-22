@@ -64,7 +64,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 public class DataInputPortImpl extends DataPortImpl implements DataInputPort {
   /**
    * The cached value of the '{@link #getIncomingFifo() <em>Incoming Fifo</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getIncomingFifo()
    * @generated
    * @ordered

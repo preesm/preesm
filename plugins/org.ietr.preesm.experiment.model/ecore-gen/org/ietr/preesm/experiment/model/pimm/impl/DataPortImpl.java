@@ -61,7 +61,7 @@ import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 public abstract class DataPortImpl extends PortImpl implements DataPort {
   /**
    * The cached value of the '{@link #getExpression() <em>Expression</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getExpression()
    * @generated
    * @ordered
@@ -70,7 +70,7 @@ public abstract class DataPortImpl extends PortImpl implements DataPort {
 
   /**
    * The default value of the '{@link #getAnnotation() <em>Annotation</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getAnnotation()
    * @generated
    * @ordered
@@ -79,7 +79,7 @@ public abstract class DataPortImpl extends PortImpl implements DataPort {
 
   /**
    * The cached value of the '{@link #getAnnotation() <em>Annotation</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getAnnotation()
    * @generated
    * @ordered

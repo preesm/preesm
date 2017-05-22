@@ -98,8 +98,8 @@ public class TransferVertex extends MapperDAGVertex {
    * @param nodeIndex
    *          the node index
    */
-  public TransferVertex(final String id, final MapperDAG base, final MapperDAGVertex source,
-      final MapperDAGVertex target, final int routeStepIndex, final int nodeIndex) {
+  public TransferVertex(final String id, final MapperDAG base, final MapperDAGVertex source, final MapperDAGVertex target, final int routeStepIndex,
+      final int nodeIndex) {
     super(id, base);
     this.source = source;
     this.target = target;
@@ -131,8 +131,7 @@ public class TransferVertex extends MapperDAGVertex {
   }
 
   /**
-   * A transfer vertex follows only one vertex. Returning the transfer predecessor if it is an
-   * overhead vertex
+   * A transfer vertex follows only one vertex. Returning the transfer predecessor if it is an overhead vertex
    *
    * @return the preceding overhead
    */

@@ -14,7 +14,7 @@ import org.eclipse.emf.ecore.EPackage;
  * <li>and each data type</li>
  * </ul>
  * <!-- end-user-doc -->
- * 
+ *
  * @see org.ietr.preesm.experiment.model.pimm.visitor.VisitorFactory
  * @model kind="package"
  * @generated
@@ -22,28 +22,28 @@ import org.eclipse.emf.ecore.EPackage;
 public interface VisitorPackage extends EPackage {
   /**
    * The package name. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   String eNAME = "visitor";
 
   /**
    * The package namespace URI. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   String eNS_URI = "http://org.ietr.preesm/experiment/model/pimm/visitor";
 
   /**
    * The package namespace name. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   String eNS_PREFIX = "org.ietr.preesm.experiment.pimm.visitor";
 
   /**
    * The singleton instance of the package. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   VisitorPackage eINSTANCE = org.ietr.preesm.experiment.model.pimm.visitor.impl.VisitorPackageImpl.init();
@@ -51,7 +51,7 @@ public interface VisitorPackage extends EPackage {
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable <em>Pi MM Visitable</em>}' class. <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable
    * @see org.ietr.preesm.experiment.model.pimm.visitor.impl.VisitorPackageImpl#getPiMMVisitable()
    * @generated
@@ -60,7 +60,7 @@ public interface VisitorPackage extends EPackage {
 
   /**
    * The number of structural features of the '<em>Pi MM Visitable</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -69,7 +69,7 @@ public interface VisitorPackage extends EPackage {
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.visitor.impl.PiMMVisitorImpl <em>Pi MM Visitor</em>}' class. <!-- begin-user-doc
    * --> <!-- end-user-doc -->
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.visitor.impl.PiMMVisitorImpl
    * @see org.ietr.preesm.experiment.model.pimm.visitor.impl.VisitorPackageImpl#getPiMMVisitor()
    * @generated
@@ -78,7 +78,7 @@ public interface VisitorPackage extends EPackage {
 
   /**
    * The number of structural features of the '<em>Pi MM Visitor</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -87,7 +87,7 @@ public interface VisitorPackage extends EPackage {
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable <em>Pi MM Visitable</em>}'. <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for class '<em>Pi MM Visitable</em>'.
    * @see org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable
    * @generated
@@ -97,7 +97,7 @@ public interface VisitorPackage extends EPackage {
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor <em>Pi MM Visitor</em>}'. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @return the meta object for class '<em>Pi MM Visitor</em>'.
    * @see org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor
    * @generated
@@ -106,7 +106,7 @@ public interface VisitorPackage extends EPackage {
 
   /**
    * Returns the factory that creates the instances of the model. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the factory that creates the instances of the model.
    * @generated
    */
@@ -121,14 +121,14 @@ public interface VisitorPackage extends EPackage {
    * <li>and each data type</li>
    * </ul>
    * <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   interface Literals {
     /**
      * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable <em>Pi MM Visitable</em>}' class. <!-- begin-user-doc
      * --> <!-- end-user-doc -->
-     * 
+     *
      * @see org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable
      * @see org.ietr.preesm.experiment.model.pimm.visitor.impl.VisitorPackageImpl#getPiMMVisitable()
      * @generated

@@ -63,8 +63,7 @@ import org.ietr.preesm.mapper.params.FastAlgoParameters;
 
 // TODO: Auto-generated Javadoc
 /**
- * FAST is a sequential mapping/scheduling method based on list scheduling followed by a
- * neighborhood search phase. It was invented by Y-K Kwok.
+ * FAST is a sequential mapping/scheduling method based on list scheduling followed by a neighborhood search phase. It was invented by Y-K Kwok.
  *
  * @author pmenuet
  * @author mpelcat
@@ -95,14 +94,12 @@ public class FASTMapping extends AbstractMapping {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.mapper.AbstractMapping#execute(java.util.Map, java.util.Map,
-   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * @see org.ietr.preesm.mapper.AbstractMapping#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
    * org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs,
-      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
-      final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
     final Map<String, Object> outputs = new HashMap<>();
     final Design architecture = (Design) inputs.get("architecture");
@@ -126,8 +123,7 @@ public class FASTMapping extends AbstractMapping {
     // time to other operator
     calculateSpan(dag, architecture, scenario, abcParams);
 
-    final IAbc simu = new InfiniteHomogeneousAbc(abcParams, dag, architecture,
-        abcParams.getSimulatorType().getTaskSchedType(), scenario);
+    final IAbc simu = new InfiniteHomogeneousAbc(abcParams, dag, architecture, abcParams.getSimulatorType().getTaskSchedType(), scenario);
 
     final InitialLists initialLists = new InitialLists();
     if (!initialLists.constructInitialLists(dag, simu)) {
@@ -141,8 +137,7 @@ public class FASTMapping extends AbstractMapping {
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
 
-    dag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false,
-        fastParams.isDisplaySolutions(), monitor, taskSched);
+    dag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false, fastParams.isDisplaySolutions(), monitor, taskSched);
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
 

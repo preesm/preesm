@@ -63,7 +63,7 @@ public interface Refinement extends PiMMVisitable {
    * If the meaning of the '<em>File Name</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>File Name</em>' attribute.
    * @see #setFileName(String)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getRefinement_FileName()
@@ -90,7 +90,7 @@ public interface Refinement extends PiMMVisitable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Refinement#getFileName <em>File Name</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>File Name</em>' attribute.
    * @see #getFileName()

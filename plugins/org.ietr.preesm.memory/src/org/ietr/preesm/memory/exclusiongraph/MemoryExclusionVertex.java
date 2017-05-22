@@ -161,8 +161,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   private DAGEdge edge;
 
   /**
-   * The {@link DAGVertex} that corresponds to the actor in the DAG
-   * associated to this working memory {@link MemoryExclusionVertex}.
+   * The {@link DAGVertex} that corresponds to the actor in the DAG associated to this working memory {@link MemoryExclusionVertex}.
    */
   private DAGVertex vertex;
 
@@ -345,7 +344,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   /**
    * Sets the vertex.
    */
-  public void setVertex(DAGVertex vertex) {
+  public void setVertex(final DAGVertex vertex) {
     this.vertex = vertex;
   }
 

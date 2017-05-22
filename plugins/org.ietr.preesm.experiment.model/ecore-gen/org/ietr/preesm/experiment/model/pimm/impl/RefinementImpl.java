@@ -72,7 +72,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 public class RefinementImpl extends EObjectImpl implements Refinement {
   /**
    * The default value of the '{@link #getFileName() <em>File Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getFileName()
    * @generated
    * @ordered
@@ -81,7 +81,7 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 
   /**
    * The cached value of the '{@link #getFileName() <em>File Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getFileName()
    * @generated
    * @ordered
@@ -90,7 +90,7 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 
   /**
    * The default value of the '{@link #getFilePath() <em>File Path</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getFilePath()
    * @generated
    * @ordered

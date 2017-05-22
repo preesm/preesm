@@ -96,7 +96,7 @@ public class MemoryScriptTask extends AbstractMemoryScriptTask {
     try {
       engine.runScripts(dag, dataTypes, checkString);
     } catch (CoreException | IOException | URISyntaxException | EvalError e) {
-      String message = "An error occurred during memory scripts execution";
+      final String message = "An error occurred during memory scripts execution";
       WorkflowLogger.getLogger().log(Level.SEVERE, message, e);
       throw new WorkflowException(message, e);
     }

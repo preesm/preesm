@@ -87,8 +87,7 @@ public class SDF3ImporterEngine {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public SDFGraph importFrom(final IPath path, final PreesmScenario scenario,
-      final Design architecture, final Logger logger) throws WorkflowException {
+  public SDFGraph importFrom(final IPath path, final PreesmScenario scenario, final Design architecture, final Logger logger) throws WorkflowException {
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
     final IFile iFile = workspace.getRoot().getFile(path);
 
@@ -132,23 +131,20 @@ public class SDF3ImporterEngine {
    * @param architecture
    *          the architecture
    */
-  private void updateScenario(final SDFGraph graph, final PreesmScenario scenario,
-      final Design architecture) {
+  private void updateScenario(final SDFGraph graph, final PreesmScenario scenario, final Design architecture) {
     // Update the input scenario so that all task can be scheduled
     // on all operators, and all have the same runtime.
     final ConstraintGroupManager constraint = scenario.getConstraintGroupManager();
     // For each operator of the architecture
     for (final ComponentInstance component : architecture.getComponentInstances()) {
       // for each actor of the graph
-      for (final Entry<SDFAbstractVertex, Integer> entry : this.sdf3Parser.getActorExecTimes()
-          .entrySet()) {
+      for (final Entry<SDFAbstractVertex, Integer> entry : this.sdf3Parser.getActorExecTimes().entrySet()) {
         // Add the operator to the available operator for the
         // current actor
         entry.getKey().setInfo(entry.getKey().getName());
         constraint.addConstraint(component.getInstanceName(), entry.getKey());
         // Set the timing of the actor
-        final Timing t = scenario.getTimingManager().addTiming(entry.getKey().getName(),
-            component.getComponent().getVlnv().getName());
+        final Timing t = scenario.getTimingManager().addTiming(entry.getKey().getName(), component.getComponent().getVlnv().getName());
         t.setTime(entry.getValue());
       }
     }

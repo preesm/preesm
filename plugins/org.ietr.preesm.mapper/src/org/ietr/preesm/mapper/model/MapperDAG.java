@@ -55,8 +55,7 @@ import org.ietr.preesm.mapper.model.property.DAGTimings;
  *
  * @author mpelcat
  *
- *         This class represents a Directed Acyclic Graph in the mapper. It holds mapping and
- *         scheduling information
+ *         This class represents a Directed Acyclic Graph in the mapper. It holds mapping and scheduling information
  */
 public class MapperDAG extends DirectedAcyclicGraph {
 
@@ -191,8 +190,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
 
       final String sourceName = source.getName();
       final String targetName = target.getName();
-      final MapperDAGEdge newEdge = (MapperDAGEdge) newDAG.addEdge(newDAG.getVertex(sourceName),
-          newDAG.getVertex(targetName));
+      final MapperDAGEdge newEdge = (MapperDAGEdge) newDAG.addEdge(newDAG.getVertex(sourceName), newDAG.getVertex(targetName));
       newEdge.setInit(origEdge.getInit().clone());
       newEdge.setTiming(origEdge.getTiming().clone());
       newEdge.copyProperties(origEdge);
@@ -278,8 +276,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
       currentvertex = (MapperDAGVertex) currentv;
 
       // Special vertices have null info
-      if ((currentvertex.getCorrespondingSDFVertex().getInfo() != null)
-          && currentvertex.getCorrespondingSDFVertex().getInfo().equals(sdfvertex.getInfo())) {
+      if ((currentvertex.getCorrespondingSDFVertex().getInfo() != null) && currentvertex.getCorrespondingSDFVertex().getInfo().equals(sdfvertex.getInfo())) {
         currentset.add(currentvertex);
       }
     }

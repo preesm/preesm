@@ -63,7 +63,7 @@ public interface Parameter extends AbstractVertex, ISetter {
    * If the meaning of the '<em>Locally Static</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @model kind="operation"
    * @generated
    */
@@ -84,7 +84,7 @@ public interface Parameter extends AbstractVertex, ISetter {
    * If the meaning of the '<em>Configuration Interface</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Configuration Interface</em>' attribute.
    * @see #setConfigurationInterface(boolean)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameter_ConfigurationInterface()
@@ -110,7 +110,7 @@ public interface Parameter extends AbstractVertex, ISetter {
    * If the meaning of the '<em>Graph Port</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Graph Port</em>' reference.
    * @see #setGraphPort(ConfigInputPort)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameter_GraphPort()
@@ -122,7 +122,7 @@ public interface Parameter extends AbstractVertex, ISetter {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Parameter#getGraphPort <em>Graph Port</em>}' reference. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Graph Port</em>' reference.
    * @see #getGraphPort()
@@ -136,7 +136,7 @@ public interface Parameter extends AbstractVertex, ISetter {
    * If the meaning of the '<em>Expression</em>' containment reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Expression</em>' containment reference.
    * @see #setExpression(Expression)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameter_Expression()

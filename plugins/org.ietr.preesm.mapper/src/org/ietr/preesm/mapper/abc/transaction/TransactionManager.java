@@ -42,8 +42,7 @@ import java.util.List;
 
 // TODO: Auto-generated Javadoc
 /**
- * This is a transaction container that enables the consecutive execution of several listed
- * transactions.
+ * This is a transaction container that enables the consecutive execution of several listed transactions.
  *
  * @author mpelcat
  */

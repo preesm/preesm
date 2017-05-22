@@ -166,8 +166,7 @@ public class VertexOrderList {
    */
   public int orderOf(final String name) {
     if (this.nameMap.get(name) == null) {
-      WorkflowLogger.getLogger().log(Level.SEVERE,
-          "Vertex could not be scheduled, check constraints: " + name);
+      WorkflowLogger.getLogger().log(Level.SEVERE, "Vertex could not be scheduled, check constraints: " + name);
     } else {
       return this.nameMap.get(name).getOrder();
     }

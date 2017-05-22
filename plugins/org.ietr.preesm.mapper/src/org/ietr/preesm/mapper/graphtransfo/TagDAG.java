@@ -87,8 +87,7 @@ public class TagDAG {
   }
 
   /**
-   * tag adds the send and receive operations necessary to the code generation. It also adds the
-   * necessary properies.
+   * tag adds the send and receive operations necessary to the code generation. It also adds the necessary properies.
    *
    * @param dag
    *          the dag
@@ -103,8 +102,8 @@ public class TagDAG {
    * @throws InvalidExpressionException
    *           the invalid expression exception
    */
-  public void tag(final MapperDAG dag, final Design architecture, final PreesmScenario scenario,
-      final IAbc simu, final EdgeSchedType edgeSchedType) throws InvalidExpressionException {
+  public void tag(final MapperDAG dag, final Design architecture, final PreesmScenario scenario, final IAbc simu, final EdgeSchedType edgeSchedType)
+      throws InvalidExpressionException {
 
     final PropertyBean bean = dag.getPropertyBean();
     bean.setValue(ImplementationPropertyNames.Graph_AbcReferenceType, simu.getType());
@@ -126,14 +125,13 @@ public class TagDAG {
    * @param scenario
    *          the scenario
    */
-  public void addSendReceive(final MapperDAG dag, final Design architecture,
-      final PreesmScenario scenario) {
+  public void addSendReceive(final MapperDAG dag, final Design architecture, final PreesmScenario scenario) {
 
     final OrderManager orderMgr = new OrderManager(architecture);
     orderMgr.reconstructTotalOrderFromDAG(dag);
 
-    final CommunicationRouter comRouter = new CommunicationRouter(architecture, scenario, dag,
-        AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr), orderMgr);
+    final CommunicationRouter comRouter = new CommunicationRouter(architecture, scenario, dag, AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr),
+        orderMgr);
     comRouter.routeAll(dag, CommunicationRouter.sendReceiveType);
     orderMgr.tagDAG(dag);
   }
@@ -164,33 +162,27 @@ public class TagDAG {
 
       if (currentVertex instanceof SendVertex) {
 
-        final MapperDAGEdge incomingEdge = (MapperDAGEdge) ((SendVertex) currentVertex)
-            .incomingEdges().toArray()[0];
+        final MapperDAGEdge incomingEdge = (MapperDAGEdge) ((SendVertex) currentVertex).incomingEdges().toArray()[0];
 
         // Setting the vertex type
         bean.setValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.SEND);
 
         // Setting the operator on which vertex is executed
-        bean.setValue(ImplementationPropertyNames.Vertex_Operator,
-            ((SendVertex) currentVertex).getRouteStep().getSender());
+        bean.setValue(ImplementationPropertyNames.Vertex_Operator, ((SendVertex) currentVertex).getRouteStep().getSender());
 
         // Setting the medium transmitting the current data
         final AbstractRouteStep sendRs = ((SendVertex) currentVertex).getRouteStep();
         bean.setValue(ImplementationPropertyNames.SendReceive_routeStep, sendRs);
 
         // Setting the size of the transmitted data
-        bean.setValue(ImplementationPropertyNames.SendReceive_dataSize,
-            incomingEdge.getInit().getDataSize());
+        bean.setValue(ImplementationPropertyNames.SendReceive_dataSize, incomingEdge.getInit().getDataSize());
 
         // Setting the name of the data sending vertex
-        bean.setValue(ImplementationPropertyNames.Send_senderGraphName,
-            incomingEdge.getSource().getName());
+        bean.setValue(ImplementationPropertyNames.Send_senderGraphName, incomingEdge.getSource().getName());
 
         // Setting the address of the operator on which vertex is
         // executed
-        final String baseAddress = DesignTools.getParameter(
-            ((SendVertex) currentVertex).getRouteStep().getSender(),
-            DesignTools.OPERATOR_BASE_ADDRESS);
+        final String baseAddress = DesignTools.getParameter(((SendVertex) currentVertex).getRouteStep().getSender(), DesignTools.OPERATOR_BASE_ADDRESS);
 
         if (baseAddress != null) {
           bean.setValue(ImplementationPropertyNames.SendReceive_Operator_address, baseAddress);
@@ -198,32 +190,27 @@ public class TagDAG {
 
       } else if (currentVertex instanceof ReceiveVertex) {
 
-        final MapperDAGEdge outgoingEdge = (MapperDAGEdge) ((ReceiveVertex) currentVertex)
-            .outgoingEdges().toArray()[0];
+        final MapperDAGEdge outgoingEdge = (MapperDAGEdge) ((ReceiveVertex) currentVertex).outgoingEdges().toArray()[0];
 
         // Setting the vertex type
         bean.setValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.RECEIVE);
 
         // Setting the operator on which vertex is executed
-        bean.setValue(ImplementationPropertyNames.Vertex_Operator,
-            ((ReceiveVertex) currentVertex).getRouteStep().getReceiver());
+        bean.setValue(ImplementationPropertyNames.Vertex_Operator, ((ReceiveVertex) currentVertex).getRouteStep().getReceiver());
 
         // Setting the medium transmitting the current data
         final AbstractRouteStep rcvRs = ((ReceiveVertex) currentVertex).getRouteStep();
         bean.setValue(ImplementationPropertyNames.SendReceive_routeStep, rcvRs);
 
         // Setting the size of the transmitted data
-        bean.setValue(ImplementationPropertyNames.SendReceive_dataSize,
-            outgoingEdge.getInit().getDataSize());
+        bean.setValue(ImplementationPropertyNames.SendReceive_dataSize, outgoingEdge.getInit().getDataSize());
 
         // Setting the name of the data receiving vertex
-        bean.setValue(ImplementationPropertyNames.Receive_receiverGraphName,
-            outgoingEdge.getTarget().getName());
+        bean.setValue(ImplementationPropertyNames.Receive_receiverGraphName, outgoingEdge.getTarget().getName());
 
         // Setting the address of the operator on which vertex is
         // executed
-        final String baseAddress = DesignTools.getParameter(
-            ((ReceiveVertex) currentVertex).getRouteStep().getReceiver(), "BaseAddress");
+        final String baseAddress = DesignTools.getParameter(((ReceiveVertex) currentVertex).getRouteStep().getReceiver(), "BaseAddress");
 
         if (baseAddress != null) {
           bean.setValue(ImplementationPropertyNames.SendReceive_Operator_address, baseAddress);
@@ -231,14 +218,12 @@ public class TagDAG {
       } else {
 
         // Setting the operator on which vertex is executed
-        bean.setValue(ImplementationPropertyNames.Vertex_Operator,
-            currentVertex.getEffectiveOperator());
+        bean.setValue(ImplementationPropertyNames.Vertex_Operator, currentVertex.getEffectiveOperator());
 
         // Setting the vertex type
         bean.setValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.TASK);
 
-        bean.setValue(ImplementationPropertyNames.Vertex_originalVertexId,
-            currentVertex.getCorrespondingSDFVertex().getId());
+        bean.setValue(ImplementationPropertyNames.Vertex_originalVertexId, currentVertex.getCorrespondingSDFVertex().getId());
 
         // Setting the task duration
         final ComponentInstance effectiveOperator = currentVertex
@@ -257,8 +242,7 @@ public class TagDAG {
       }
 
       // Setting the scheduling total order
-      bean.setValue(ImplementationPropertyNames.Vertex_schedulingOrder,
-          currentVertex.getTotalOrder());
+      bean.setValue(ImplementationPropertyNames.Vertex_schedulingOrder, currentVertex.getTotalOrder());
     }
   }
 
@@ -272,8 +256,7 @@ public class TagDAG {
    * @throws InvalidExpressionException
    *           the invalid expression exception
    */
-  public void addAllAggregates(final MapperDAG dag, final PreesmScenario scenario)
-      throws InvalidExpressionException {
+  public void addAllAggregates(final MapperDAG dag, final PreesmScenario scenario) throws InvalidExpressionException {
 
     MapperDAGEdge edge;
 
@@ -283,8 +266,7 @@ public class TagDAG {
     while (iter.hasNext()) {
       edge = (MapperDAGEdge) iter.next();
 
-      if ((edge.getSource() instanceof TransferVertex)
-          || (edge.getTarget() instanceof TransferVertex)) {
+      if ((edge.getSource() instanceof TransferVertex) || (edge.getTarget() instanceof TransferVertex)) {
         addAggregateFromSDF(edge, scenario);
       } else {
         addAggregateFromSDF(edge, scenario);
@@ -293,8 +275,7 @@ public class TagDAG {
   }
 
   /**
-   * Aggregate is imported from the SDF edge. An aggregate in SDF is a set of sdf edges that were
-   * merged into one DAG edge.
+   * Aggregate is imported from the SDF edge. An aggregate in SDF is a set of sdf edges that were merged into one DAG edge.
    *
    * @param edge
    *          the edge
@@ -304,8 +285,7 @@ public class TagDAG {
    *           the invalid expression exception
    */
   @SuppressWarnings("unchecked")
-  public void addAggregateFromSDF(final MapperDAGEdge edge, final PreesmScenario scenario)
-      throws InvalidExpressionException {
+  public void addAggregateFromSDF(final MapperDAGEdge edge, final PreesmScenario scenario) throws InvalidExpressionException {
 
     final BufferAggregate agg = new BufferAggregate();
 
@@ -313,10 +293,8 @@ public class TagDAG {
     for (final AbstractEdge<SDFGraph, SDFAbstractVertex> aggMember : edge.getAggregate()) {
       final SDFEdge sdfAggMember = (SDFEdge) aggMember;
 
-      final DataType dataType = scenario.getSimulationManager()
-          .getDataType(sdfAggMember.getDataType().toString());
-      final BufferProperties props = new BufferProperties(dataType,
-          sdfAggMember.getSourceInterface().getName(), sdfAggMember.getTargetInterface().getName(),
+      final DataType dataType = scenario.getSimulationManager().getDataType(sdfAggMember.getDataType().toString());
+      final BufferProperties props = new BufferProperties(dataType, sdfAggMember.getSourceInterface().getName(), sdfAggMember.getTargetInterface().getName(),
           sdfAggMember.getProd().intValue());
 
       agg.add(props);

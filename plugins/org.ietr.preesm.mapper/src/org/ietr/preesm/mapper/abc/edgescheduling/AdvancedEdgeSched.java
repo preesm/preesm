@@ -68,19 +68,15 @@ public class AdvancedEdgeSched extends AbstractEdgeSched {
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched#schedule(org.ietr.preesm.mapper.model.
-   * special.TransferVertex, org.ietr.preesm.mapper.model.MapperDAGVertex,
-   * org.ietr.preesm.mapper.model.MapperDAGVertex)
+   * @see org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched#schedule(org.ietr.preesm.mapper.model. special.TransferVertex,
+   * org.ietr.preesm.mapper.model.MapperDAGVertex, org.ietr.preesm.mapper.model.MapperDAGVertex)
    */
   @Override
-  public void schedule(final TransferVertex vertex, final MapperDAGVertex source,
-      final MapperDAGVertex target) {
+  public void schedule(final TransferVertex vertex, final MapperDAGVertex source, final MapperDAGVertex target) {
 
     final ComponentInstance component = vertex.getEffectiveComponent();
     // intervalFinder.displayCurrentSchedule(vertex, source);
-    final Interval earliestInterval = this.intervalFinder.findEarliestNonNullInterval(component,
-        source, target);
+    final Interval earliestInterval = this.intervalFinder.findEarliestNonNullInterval(component, source, target);
 
     if (earliestInterval.getDuration() >= 0) {
       this.orderManager.insertAtIndex(earliestInterval.getTotalOrderIndex(), vertex);

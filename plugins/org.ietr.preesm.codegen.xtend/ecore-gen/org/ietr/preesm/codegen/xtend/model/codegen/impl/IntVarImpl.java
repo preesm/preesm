@@ -47,7 +47,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 public class IntVarImpl extends VariableImpl implements IntVar {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   protected IntVarImpl() {
@@ -56,7 +56,7 @@ public class IntVarImpl extends VariableImpl implements IntVar {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override

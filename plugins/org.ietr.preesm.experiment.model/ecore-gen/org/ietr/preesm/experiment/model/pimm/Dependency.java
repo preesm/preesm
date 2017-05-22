@@ -63,7 +63,7 @@ public interface Dependency extends PiMMVisitable {
    * If the meaning of the '<em>Setter</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Setter</em>' reference.
    * @see #setSetter(ISetter)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDependency_Setter()
@@ -76,7 +76,7 @@ public interface Dependency extends PiMMVisitable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Dependency#getSetter <em>Setter</em>}' reference. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Setter</em>' reference.
    * @see #getSetter()
@@ -91,7 +91,7 @@ public interface Dependency extends PiMMVisitable {
    * If the meaning of the '<em>Getter</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Getter</em>' reference.
    * @see #setGetter(ConfigInputPort)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDependency_Getter()
@@ -104,7 +104,7 @@ public interface Dependency extends PiMMVisitable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Dependency#getGetter <em>Getter</em>}' reference. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Getter</em>' reference.
    * @see #getGetter()

@@ -60,8 +60,7 @@ import org.ietr.preesm.core.types.ImplementationPropertyNames;
 
 // TODO: Auto-generated Javadoc
 /**
- * This class defines a method to load a new scenario and optionally change some constraints from an
- * output DAG.
+ * This class defines a method to load a new scenario and optionally change some constraints from an output DAG.
  *
  * @author mpelcat
  */
@@ -95,14 +94,12 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
-   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
-   * org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs,
-      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
-      final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
     final Map<String, Object> outputs = new HashMap<>();
 
@@ -172,19 +169,15 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 
         for (final SDFAbstractVertex dagV : graph.vertexSet()) {
           final String vName = (String) dagV.getPropertyBean().getValue("name");
-          final String opName = (String) dagV.getPropertyBean()
-              .getValue(ImplementationPropertyNames.Vertex_Operator);
-          final String timeStr = (String) dagV.getPropertyBean()
-              .getValue(ImplementationPropertyNames.Task_duration);
+          final String opName = (String) dagV.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
+          final String timeStr = (String) dagV.getPropertyBean().getValue(ImplementationPropertyNames.Task_duration);
           final SDFAbstractVertex sdfV = ((SDFGraph) outputs.get("SDF")).getVertex(vName);
-          final ComponentInstance op = DesignTools
-              .getComponentInstance((Design) outputs.get("architecture"), opName);
+          final ComponentInstance op = DesignTools.getComponentInstance((Design) outputs.get("architecture"), opName);
 
           if ((sdfV != null) && (op != null) && (op.getComponent() instanceof Operator)) {
-            ((PreesmScenario) outputs.get("scenario")).getConstraintGroupManager()
-                .addConstraint(opName, sdfV);
-            ((PreesmScenario) outputs.get("scenario")).getTimingManager().setTiming(sdfV.getName(),
-                op.getComponent().getVlnv().getName(), Long.parseLong(timeStr));
+            ((PreesmScenario) outputs.get("scenario")).getConstraintGroupManager().addConstraint(opName, sdfV);
+            ((PreesmScenario) outputs.get("scenario")).getTimingManager().setTiming(sdfV.getName(), op.getComponent().getVlnv().getName(),
+                Long.parseLong(timeStr));
           }
         }
 

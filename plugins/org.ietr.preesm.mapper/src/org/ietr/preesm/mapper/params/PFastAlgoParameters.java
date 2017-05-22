@@ -51,10 +51,8 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 public class PFastAlgoParameters {
 
   /**
-   * This variable is the one which fix the number of Nodes necessary for each processor to execute
-   * probabilistic jump locally(local refinement). The number of vertices present in the DAG is
-   * determinant for this parameter. More, if this number is too low the PFastAlgo become no
-   * efficient.
+   * This variable is the one which fix the number of Nodes necessary for each processor to execute probabilistic jump locally(local refinement). The number of
+   * vertices present in the DAG is determinant for this parameter. More, if this number is too low the PFastAlgo become no efficient.
    */
   private int nodesMin;
 
@@ -116,8 +114,7 @@ public class PFastAlgoParameters {
    * @param procNumber
    *          the proc number
    */
-  public PFastAlgoParameters(final int fastNumber, final int fastTime,
-      final int fastLocalSearchTime, final boolean displaySolutions, final int nodesmin,
+  public PFastAlgoParameters(final int fastNumber, final int fastTime, final int fastLocalSearchTime, final boolean displaySolutions, final int nodesmin,
       final int procNumber) {
 
     this.nodesMin = nodesmin;

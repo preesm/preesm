@@ -64,7 +64,7 @@ public interface Parameterizable extends PiMMVisitable {
    * If the meaning of the '<em>Config Input Ports</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Config Input Ports</em>' containment reference list.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameterizable_ConfigInputPorts()
    * @model containment="true"

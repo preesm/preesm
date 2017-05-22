@@ -95,8 +95,7 @@ public class BLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
     }
 
     // Synchronized vertices are taken into account to compute b-level
-    final List<MapperDAGVertex> synchroVertices = timing
-        .getVertices((MapperDAG) dagVertex.getBase());
+    final List<MapperDAGVertex> synchroVertices = timing.getVertices((MapperDAG) dagVertex.getBase());
     final Map<MapperDAGVertex, MapperDAGEdge> successors = new HashMap<>();
 
     for (final MapperDAGVertex v : synchroVertices) {
@@ -126,9 +125,7 @@ public class BLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.
-   * AbstractEdge)
+   * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model. AbstractEdge)
    */
   @Override
   public void visit(final MapperDAGEdge dagEdge) {

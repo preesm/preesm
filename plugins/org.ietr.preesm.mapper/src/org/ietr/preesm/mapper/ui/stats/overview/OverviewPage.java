@@ -66,8 +66,7 @@ import org.ietr.preesm.mapper.ui.stats.StatGenerator;
 
 // TODO: Auto-generated Javadoc
 /**
- * This page contains general informations of the scenario including current algorithm and current
- * architecture.
+ * This page contains general informations of the scenario including current algorithm and current architecture.
  *
  * @author mpelcat
  */
@@ -88,8 +87,7 @@ public class OverviewPage extends FormPage {
    * @param title
    *          the title
    */
-  public OverviewPage(final StatGenerator statGen, final FormEditor editor, final String id,
-      final String title) {
+  public OverviewPage(final StatGenerator statGen, final FormEditor editor, final String id, final String title) {
     super(editor, id, title);
 
     this.statGen = statGen;
@@ -111,8 +109,7 @@ public class OverviewPage extends FormPage {
     final GridLayout layout = new GridLayout();
     form.getBody().setLayout(layout);
 
-    CreatePropSection(managedForm, Messages.getString("Overview.properties.title"),
-        Messages.getString("Overview.properties.description"));
+    CreatePropSection(managedForm, Messages.getString("Overview.properties.title"), Messages.getString("Overview.properties.description"));
   }
 
   /**
@@ -130,13 +127,12 @@ public class OverviewPage extends FormPage {
    *          the grid data
    * @return the composite
    */
-  public Composite createSection(final IManagedForm mform, final String title, final String desc,
-      final int numColumns, final GridData gridData) {
+  public Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns, final GridData gridData) {
 
     final ScrolledForm form = mform.getForm();
     final FormToolkit toolkit = mform.getToolkit();
-    final Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
-        | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    final Section section = toolkit.createSection(form.getBody(),
+        ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
     section.setText(title);
     section.setDescription(desc);
     toolkit.createCompositeSeparator(section);
@@ -166,13 +162,11 @@ public class OverviewPage extends FormPage {
    * @param desc
    *          the desc
    */
-  private void CreatePropSection(final IManagedForm managedForm, final String title,
-      final String desc) {
+  private void CreatePropSection(final IManagedForm managedForm, final String title, final String desc) {
 
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
-    final Composite container = createSection(managedForm, title, desc, 1,
-        new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
+    final Composite container = createSection(managedForm, title, desc, 1, new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
     final FormToolkit toolkit = managedForm.getToolkit();
 
     final DeploymentProperties props = new DeploymentProperties(this.statGen);
@@ -192,13 +186,11 @@ public class OverviewPage extends FormPage {
    *          the props
    * @return the text
    */
-  private Text addPaceEditor(final Composite parent, final FormToolkit toolkit,
-      final DeploymentProperties props) {
+  private Text addPaceEditor(final Composite parent, final FormToolkit toolkit, final DeploymentProperties props) {
 
     toolkit.createLabel(parent, Messages.getString("Overview.properties.paceEditor.label"));
 
-    final Text text = toolkit.createText(parent, String.valueOf(props.getRepetitionPeriod()),
-        SWT.SINGLE);
+    final Text text = toolkit.createText(parent, String.valueOf(props.getRepetitionPeriod()), SWT.SINGLE);
 
     final GridData gd = new GridData();
     gd.widthHint = 400;
@@ -228,14 +220,12 @@ public class OverviewPage extends FormPage {
    * @param props
    *          the props
    */
-  protected void addTable(final Composite parent, final FormToolkit toolkit, final Text text,
-      final DeploymentProperties props) {
+  protected void addTable(final Composite parent, final FormToolkit toolkit, final Text text, final DeploymentProperties props) {
 
     final Composite tablecps = toolkit.createComposite(parent);
     tablecps.setVisible(true);
 
-    final TableViewer tableViewer = new TableViewer(tablecps,
-        SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
+    final TableViewer tableViewer = new TableViewer(tablecps, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
     final Table table = tableViewer.getTable();
     table.setLayout(new GridLayout());
     table.setLayoutData(new GridData(GridData.FILL_BOTH));

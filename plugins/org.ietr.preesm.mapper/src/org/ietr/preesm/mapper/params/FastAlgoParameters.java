@@ -91,8 +91,7 @@ public class FastAlgoParameters {
    *          the display solutions
    */
 
-  public FastAlgoParameters(final int fastTime, final int fastLocalSearchTime,
-      final boolean displaySolutions) {
+  public FastAlgoParameters(final int fastTime, final int fastLocalSearchTime, final boolean displaySolutions) {
 
     this.displaySolutions = displaySolutions;
     this.fastTime = fastTime;

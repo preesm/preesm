@@ -63,32 +63,27 @@ public class DAGExportTransform extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
-   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
-   * org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs,
-      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
-      final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
     final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 
-    final String sGraphmlPath = PathTools.getAbsolutePath(parameters.get("path"),
-        workflow.getProjectName());
+    final String sGraphmlPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
     IPath graphmlPath = new Path(sGraphmlPath);
     // Get a complete valid path with all folders existing
     try {
       if (graphmlPath.getFileExtension() != null) {
-        ContainersManager
-            .createMissingFolders(graphmlPath.removeFileExtension().removeLastSegments(1));
+        ContainersManager.createMissingFolders(graphmlPath.removeFileExtension().removeLastSegments(1));
       } else {
         ContainersManager.createMissingFolders(graphmlPath);
         graphmlPath = graphmlPath.append(dag.getName() + ".graphml");
       }
     } catch (CoreException | IllegalArgumentException e) {
-      throw new WorkflowException(
-          "Path " + sGraphmlPath + " is not a valid path for export.\n" + e.getMessage());
+      throw new WorkflowException("Path " + sGraphmlPath + " is not a valid path for export.\n" + e.getMessage());
     }
     // Exporting the DAG in a GraphML
     if (graphmlPath != null) {

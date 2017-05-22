@@ -80,7 +80,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
 public class CommunicationImpl extends CallImpl implements Communication {
   /**
    * The default value of the '{@link #getDirection() <em>Direction</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getDirection()
    * @generated
    * @ordered
@@ -89,7 +89,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getDirection() <em>Direction</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getDirection()
    * @generated
    * @ordered
@@ -98,7 +98,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The default value of the '{@link #getDelimiter() <em>Delimiter</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getDelimiter()
    * @generated
    * @ordered
@@ -107,7 +107,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getDelimiter() <em>Delimiter</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getDelimiter()
    * @generated
    * @ordered
@@ -116,7 +116,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getData() <em>Data</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getData()
    * @generated
    * @ordered
@@ -125,7 +125,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getSendStart() <em>Send Start</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getSendStart()
    * @generated
    * @ordered
@@ -134,7 +134,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getSendEnd() <em>Send End</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getSendEnd()
    * @generated
    * @ordered
@@ -143,7 +143,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getReceiveStart() <em>Receive Start</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getReceiveStart()
    * @generated
    * @ordered
@@ -152,7 +152,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getReceiveEnd() <em>Receive End</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getReceiveEnd()
    * @generated
    * @ordered
@@ -161,7 +161,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The default value of the '{@link #getId() <em>Id</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getId()
    * @generated
    * @ordered
@@ -170,7 +170,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getId() <em>Id</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getId()
    * @generated
    * @ordered
@@ -179,7 +179,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getNodes() <em>Nodes</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getNodes()
    * @generated
    * @ordered
@@ -188,7 +188,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getReceiveRelease() <em>Receive Release</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getReceiveRelease()
    * @generated
    * @ordered
@@ -197,7 +197,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getSendReserve() <em>Send Reserve</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getSendReserve()
    * @generated
    * @ordered

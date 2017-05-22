@@ -81,7 +81,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
  * <!-- begin-user-doc --> The <b>Switch</b> for the model's inheritance hierarchy. It supports the call {@link #doSwitch(EObject) doSwitch(object)} to invoke
  * the <code>caseXXX</code> method for each class of the model, starting with the actual class of the object and proceeding up the inheritance hierarchy until a
  * non-null result is returned, which is the result of the switch. <!-- end-user-doc -->
- * 
+ *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage
  * @generated
  */
@@ -96,7 +96,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 
   /**
    * Creates an instance of the switch. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   public PiMMSwitch() {
@@ -107,7 +107,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 
   /**
    * Checks whether this is a switch for the given package. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @param ePackage
    *          the package in question.
    * @return whether this is a switch for the given package.
@@ -121,7 +121,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Calls <code>caseXXX</code> for each class of the model until one returns a non null result; it yields that result. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @return the first non-null result returned by a <code>caseXXX</code> call.
    * @generated
    */
@@ -663,7 +663,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Parameterizable</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Parameterizable</em>'.
@@ -677,7 +677,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Abstract Vertex</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Abstract Vertex</em>'.
@@ -691,7 +691,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Abstract Actor</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Abstract Actor</em>'.
@@ -705,7 +705,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Pi Graph</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
    * non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Pi Graph</em>'.
@@ -719,7 +719,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Actor</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
    * non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Actor</em>'.
@@ -733,7 +733,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Port</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
    * non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Port</em>'.
@@ -747,7 +747,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Data Input Port</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Data Input Port</em>'.
@@ -761,7 +761,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Data Output Port</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Data Output Port</em>'.
@@ -775,7 +775,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Config Input Port</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Config Input Port</em>'.
@@ -789,7 +789,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Config Output Port</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Config Output Port</em>'.
@@ -803,7 +803,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Fifo</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
    * non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Fifo</em>'.
@@ -817,7 +817,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Interface Actor</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Interface Actor</em>'.
@@ -831,7 +831,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Data Input Interface</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Data Input Interface</em>'.
@@ -845,7 +845,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Data Output Interface</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Data Output Interface</em>'.
@@ -859,7 +859,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Config Output Interface</em>'. <!-- begin-user-doc --> This implementation returns
    * null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Config Output Interface</em>'.
@@ -873,7 +873,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Refinement</em>'. <!-- begin-user-doc --> This implementation returns null; returning
    * a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Refinement</em>'.
@@ -887,7 +887,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Parameter</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
    * non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Parameter</em>'.
@@ -901,7 +901,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Dependency</em>'. <!-- begin-user-doc --> This implementation returns null; returning
    * a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Dependency</em>'.
@@ -915,7 +915,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>ISetter</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
    * non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>ISetter</em>'.
@@ -929,7 +929,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Delay</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
    * non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Delay</em>'.
@@ -943,7 +943,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Expression</em>'. <!-- begin-user-doc --> This implementation returns null; returning
    * a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Expression</em>'.
@@ -957,7 +957,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>HRefinement</em>'. <!-- begin-user-doc --> This implementation returns null; returning
    * a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>HRefinement</em>'.
@@ -971,7 +971,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Function Prototype</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Function Prototype</em>'.
@@ -985,7 +985,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Function Parameter</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Function Parameter</em>'.
@@ -999,7 +999,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Data Port</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
    * non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Data Port</em>'.
@@ -1013,7 +1013,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Broadcast Actor</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Broadcast Actor</em>'.
@@ -1027,7 +1027,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Join Actor</em>'. <!-- begin-user-doc --> This implementation returns null; returning
    * a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Join Actor</em>'.
@@ -1041,7 +1041,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Fork Actor</em>'. <!-- begin-user-doc --> This implementation returns null; returning
    * a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Fork Actor</em>'.
@@ -1055,7 +1055,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Round Buffer Actor</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Round Buffer Actor</em>'.
@@ -1069,7 +1069,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Executable Actor</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Executable Actor</em>'.
@@ -1083,7 +1083,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Pi MM Visitable</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Pi MM Visitable</em>'.
@@ -1097,7 +1097,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Config Input Interface</em>'. <!-- begin-user-doc --> This implementation returns
    * null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Config Input Interface</em>'.
@@ -1111,7 +1111,7 @@ public class PiMMSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>EObject</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
    * non-null result will terminate the switch, but this is the last case anyway. <!-- end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>EObject</em>'.

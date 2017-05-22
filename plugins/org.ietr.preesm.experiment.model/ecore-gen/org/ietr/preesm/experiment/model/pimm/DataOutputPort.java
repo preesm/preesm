@@ -60,7 +60,7 @@ public interface DataOutputPort extends DataPort {
    * If the meaning of the '<em>Outgoing Fifo</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Outgoing Fifo</em>' reference.
    * @see #setOutgoingFifo(Fifo)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDataOutputPort_OutgoingFifo()
@@ -73,7 +73,7 @@ public interface DataOutputPort extends DataPort {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.DataOutputPort#getOutgoingFifo <em>Outgoing Fifo</em>}' reference. <!-- begin-user-doc
    * --> <!-- end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Outgoing Fifo</em>' reference.
    * @see #getOutgoingFifo()

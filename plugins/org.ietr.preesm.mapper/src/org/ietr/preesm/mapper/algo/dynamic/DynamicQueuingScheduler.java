@@ -71,8 +71,7 @@ public class DynamicQueuingScheduler {
    * @param textParameters
    *          the text parameters
    */
-  public DynamicQueuingScheduler(final VertexOrderList orderList,
-      final Map<String, String> textParameters) {
+  public DynamicQueuingScheduler(final VertexOrderList orderList, final Map<String, String> textParameters) {
     super();
     this.orderList = orderList;
     this.textParameters = textParameters;
@@ -98,8 +97,7 @@ public class DynamicQueuingScheduler {
     if (listType.equalsIgnoreCase("optimised")) {
 
       for (final VertexOrderList.OrderProperty vP : this.orderList.elements()) {
-        final MapperDAGVertex currentvertex = (MapperDAGVertex) abc.getDAG()
-            .getVertex(vP.getName());
+        final MapperDAGVertex currentvertex = (MapperDAGVertex) abc.getDAG().getVertex(vP.getName());
 
         mapOnBestOp(abc, currentvertex);
 
@@ -127,8 +125,7 @@ public class DynamicQueuingScheduler {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public void mapOnBestOp(final IAbc abc, final MapperDAGVertex currentvertex)
-      throws WorkflowException {
+  public void mapOnBestOp(final IAbc abc, final MapperDAGVertex currentvertex) throws WorkflowException {
 
     final List<ComponentInstance> adequateOps = abc.getCandidateOperators(currentvertex, true);
     long currentMinCost = Long.MAX_VALUE;
@@ -149,24 +146,20 @@ public class DynamicQueuingScheduler {
     // 04/12/2012 - commented out until semantics of special vertices is precise
 
     /*
-     * // If the currentVertex is a broadcast if
-     * (currentvertex.getKind().equals("dag_broadcast_vertex") &&
-     * !(currentvertex.getCorrespondingSDFVertex() instanceof SDFRoundBufferVertex)) { if
-     * (currentvertex.incomingEdges().size() > 1) { WorkflowLogger .getLogger() .log(Level.SEVERE,
-     * "Broadcast with several inputs: activate \"SuppressImplodeExplode\" in HSDF to solve this issue."
-     * ); } else { // Get the unique incoming edge of broadcast DAGEdge inEdge =
-     * currentvertex.incomingEdges().iterator() .next(); currentMinOp = abc
-     * .getEffectiveComponent((MapperDAGVertex) inEdge .getSource());
+     * // If the currentVertex is a broadcast if (currentvertex.getKind().equals("dag_broadcast_vertex") && !(currentvertex.getCorrespondingSDFVertex()
+     * instanceof SDFRoundBufferVertex)) { if (currentvertex.incomingEdges().size() > 1) { WorkflowLogger .getLogger() .log(Level.SEVERE,
+     * "Broadcast with several inputs: activate \"SuppressImplodeExplode\" in HSDF to solve this issue." ); } else { // Get the unique incoming edge of
+     * broadcast DAGEdge inEdge = currentvertex.incomingEdges().iterator() .next(); currentMinOp = abc .getEffectiveComponent((MapperDAGVertex) inEdge
+     * .getSource());
      *
      * } }
      *
-     * // If current vertex has a (or several) roundbuffer(s) as predecessor(s), // map the round
-     * buffer on the same component for(DAGEdge inEdge: currentvertex.incomingEdges()){
-     * if(inEdge.getSource().getCorrespondingSDFVertex() instanceof SDFRoundBufferVertex){
+     * // If current vertex has a (or several) roundbuffer(s) as predecessor(s), // map the round buffer on the same component for(DAGEdge inEdge:
+     * currentvertex.incomingEdges()){ if(inEdge.getSource().getCorrespondingSDFVertex() instanceof SDFRoundBufferVertex){
      * abc.map((MapperDAGVertex)inEdge.getSource(), currentMinOp, true); } }
      *
-     * // do not map Roundbuffers yet. They will be mapped with their successors if
-     * (!(currentvertex.getCorrespondingSDFVertex() instanceof SDFRoundBufferVertex)) {
+     * // do not map Roundbuffers yet. They will be mapped with their successors if (!(currentvertex.getCorrespondingSDFVertex() instanceof
+     * SDFRoundBufferVertex)) {
      */
     // -----------------End of the temp fix first half-----------------------------------
 
@@ -180,10 +173,9 @@ public class DynamicQueuingScheduler {
     // ------------------Second half of temp fix----------
 
     /*
-     * }else{ // Curent vertex is a RoundBuffer // Do not map round buffer until their immediate
-     * sucessor is mapped if(currentvertex.outgoingEdges().size()>1){ WorkflowLogger .getLogger()
-     * .log(Level.SEVERE, "RoundBuffer with several outputs: activate \"SuppressImplodeExplode\" in
-     * HSDF to solve this issue \n or it will be mapped with only one of its sucessors" ); } }
+     * }else{ // Curent vertex is a RoundBuffer // Do not map round buffer until their immediate sucessor is mapped if(currentvertex.outgoingEdges().size()>1){
+     * WorkflowLogger .getLogger() .log(Level.SEVERE, "RoundBuffer with several outputs: activate \"SuppressImplodeExplode\" in HSDF to solve this issue \n or
+     * it will be mapped with only one of its sucessors" ); } }
      */
     // ------------------end of Second half of temp fix----------
   }

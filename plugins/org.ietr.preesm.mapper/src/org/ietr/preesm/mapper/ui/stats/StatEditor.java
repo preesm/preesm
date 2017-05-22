@@ -83,13 +83,11 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
 
     if (input instanceof StatEditorInput) {
       final StatEditorInput statinput = (StatEditorInput) input;
-      this.statGen = new StatGenerator(statinput.getAbc(), statinput.getScenario(),
-          statinput.getParams());
+      this.statGen = new StatGenerator(statinput.getAbc(), statinput.getScenario(), statinput.getParams());
     }
     /*
-     * } catch (Exception e) { // Editor might not exist anymore if switching databases. So // just
-     * close it. PreesmLogger.getLogger().log(Level.SEVERE,e.getMessage());
-     * this.getEditorSite().getPage().closeEditor(this, false); }
+     * } catch (Exception e) { // Editor might not exist anymore if switching databases. So // just close it.
+     * PreesmLogger.getLogger().log(Level.SEVERE,e.getMessage()); this.getEditorSite().getPage().closeEditor(this, false); }
      */
   }
 
@@ -102,8 +100,7 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
     final IFormPage ganttPage = new GanttPage(this.statGen, this, "Gantt", "Gantt");
     final IFormPage overviewPage = new OverviewPage(this.statGen, this, "Loads", "Loads");
     overviewPage.addPropertyListener(this);
-    final PerformancePage performancePage = new PerformancePage(this.statGen, this, "Performance",
-        "Work, Span and Achieved Speedup");
+    final PerformancePage performancePage = new PerformancePage(this.statGen, this, "Performance", "Work, Span and Achieved Speedup");
     performancePage.addPropertyListener(this);
 
     try {

@@ -105,8 +105,7 @@ public class Activator extends AbstractUIPlugin {
     final ImageRegistry ir = Activator.plugin.getImageRegistry();
     Image image = ir.get(path);
     if (image == null) {
-      final ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID,
-          path);
+      final ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, path);
       image = id.createImage();
       ir.put(path, image);
     }

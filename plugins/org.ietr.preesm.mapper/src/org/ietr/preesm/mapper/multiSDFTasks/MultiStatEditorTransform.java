@@ -53,8 +53,7 @@ import org.ietr.preesm.mapper.ui.stats.StatEditorInput;
 
 // TODO: Auto-generated Javadoc
 /**
- * Transform class that can be called in workflow. The transform method displays the gantt chart of
- * the given mapped dag
+ * Transform class that can be called in workflow. The transform method displays the gantt chart of the given mapped dag
  *
  * @author mpelcat
  */
@@ -63,20 +62,16 @@ public class MultiStatEditorTransform extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
-   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
-   * org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs,
-      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
-      final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
     @SuppressWarnings("unchecked")
-    final Set<IAbc> simulators = (Set<IAbc>) inputs
-        .get(AbstractWorkflowNodeImplementation.KEY_SDF_ABC_SET);
-    final PreesmScenario scenario = (PreesmScenario) inputs
-        .get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final Set<IAbc> simulators = (Set<IAbc>) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_ABC_SET);
+    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     for (final IAbc abc : simulators) {
       final IEditorInput input = new StatEditorInput(abc, scenario, parameters);
