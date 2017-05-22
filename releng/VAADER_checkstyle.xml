@@ -142,4 +142,7 @@
   <module name="BeforeExecutionExclusionFileFilter">
     <property name="fileNamePattern" value="[/\\]((ecore-gen)|(xtend-gen)|(xtend-src)|(src-gen)|(target))[/\\]"/>
   </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern" value=".*(\.xml)|(\.properties)$"/>
+  </module>
 </module>
