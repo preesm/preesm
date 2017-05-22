@@ -21,12 +21,9 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
 /**
- * This class is used to perform the clusterization (loop IR builder and memory allocation).
- * It is used to set the working memory of each non flattened hierarchical actor.
- * It builds up the loops IR for each clusterized actor.
- * This class automates what is described in Shuvra's paper:
- * "APGAN and RPMC: Complementary Heuristics for Translation DSP Block Diagrams into Efficient Software Implementations"
- * See section 2.1 Clustering of the paper.
+ * This class is used to perform the clusterization (loop IR builder and memory allocation). It is used to set the working memory of each non flattened
+ * hierarchical actor. It builds up the loops IR for each clusterized actor. This class automates what is described in Shuvra's paper: "APGAN and RPMC:
+ * Complementary Heuristics for Translation DSP Block Diagrams into Efficient Software Implementations" See section 2.1 Clustering of the paper.
  *
  * @author jhascoet
  */
@@ -49,7 +46,7 @@ public class HSDFBuildLoops {
     return a;
   }
 
-  private List<SDFAbstractVertex> getPredessecors(final SDFAbstractVertex v) throws WorkflowException{
+  private List<SDFAbstractVertex> getPredessecors(final SDFAbstractVertex v) throws WorkflowException {
     final List<SDFAbstractVertex> l = new ArrayList<>();
     final List<SDFAbstractVertex> tmp = getInVertexs(v);
     boolean exit = false;
@@ -72,7 +69,7 @@ public class HSDFBuildLoops {
     return l;
   }
 
-  private List<SDFAbstractVertex> getSuccessors(final SDFAbstractVertex v) throws WorkflowException{
+  private List<SDFAbstractVertex> getSuccessors(final SDFAbstractVertex v) throws WorkflowException {
     final List<SDFAbstractVertex> l = new ArrayList<>();
     final List<SDFAbstractVertex> tmp = getOutVertexs(v);
     boolean exit = false;
@@ -384,8 +381,7 @@ public class HSDFBuildLoops {
   private List<AbstractClust> getLoopClusterListV2 = null;
 
   /**
-   * Clustering sequence getters.
-   * Initialized the sequence getters to retrieve loop sequence from a top level AbstractClust.
+   * Clustering sequence getters. Initialized the sequence getters to retrieve loop sequence from a top level AbstractClust.
    */
   public AbstractClust getLoopClustFirstV2(final AbstractClust a) throws SDF4JException {
     this.getLoopClusterListV2 = new ArrayList<>();
@@ -417,8 +413,7 @@ public class HSDFBuildLoops {
   }
 
   /**
-   * Gets the next sequence to print.
-   * Used in the code generator when printing hierarchical actors.
+   * Gets the next sequence to print. Used in the code generator when printing hierarchical actors.
    */
   public AbstractClust getLoopClustV2(final AbstractClust a) throws SDF4JException {
     final AbstractClust ret = recursiveGetLoopClustV2(a, this.getLoopClusterListV2);
@@ -429,8 +424,7 @@ public class HSDFBuildLoops {
   }
 
   /**
-   * Generate the clustered IR.
-   * It takes as input the hierarchical actor (graph) and returns the sequence of loops to generate.
+   * Generate the clustered IR. It takes as input the hierarchical actor (graph) and returns the sequence of loops to generate.
    */
   public AbstractClust generateClustering(final SDFGraph inGraph) throws WorkflowException, SDF4JException, InvalidExpressionException {
 
@@ -574,9 +568,9 @@ public class HSDFBuildLoops {
   }
 
   /**
-   * This method is used in the hierarchical flattener workflow to set the internal_working memory of each actors inside the hierarchical actors (graphs)
-   * The input memory and output memories of the hierarchical actor are set by the MEG.
-   * Only the internal memory is allocated here (see "working_memory" in the propertyBean of the hierarchical actor).
+   * This method is used in the hierarchical flattener workflow to set the internal_working memory of each actors inside the hierarchical actors (graphs) The
+   * input memory and output memories of the hierarchical actor are set by the MEG. Only the internal memory is allocated here (see "working_memory" in the
+   * propertyBean of the hierarchical actor).
    */
   public SDFGraph execute(final SDFGraph inputGraph) throws WorkflowException {
     // p("Executing");
