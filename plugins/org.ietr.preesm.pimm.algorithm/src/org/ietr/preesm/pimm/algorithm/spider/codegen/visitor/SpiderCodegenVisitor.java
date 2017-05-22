@@ -111,8 +111,6 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
   private final Map<String, DataType> dataTypes;
 
   private StringBuilder currentMethod;
-  private StringBuilder currentStaticDependentParams;
-  private StringBuilder currentDynamicDependentParams;
 
   private PiGraph       currentGraph;
   private List<PiGraph> currentSubGraphs;
@@ -216,6 +214,41 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
   }
 
   /**
+   * Class that sort parameters with dependencies
+   */
+  private class ParameterSorting {
+    private Map<Parameter, Integer> ParameterLevels = new HashMap<Parameter, Integer>();
+
+    private Integer getLevelParameter(Parameter p) {
+      if (ParameterLevels.containsKey(p)) {
+        return ParameterLevels.get(p);
+      }
+
+      int level = 0;
+      for (final ConfigInputPort port : p.getConfigInputPorts()) {
+        if (port.getIncomingDependency().getSetter() instanceof Parameter) {
+          Parameter incomingParameter = (Parameter) port.getIncomingDependency().getSetter();
+          if (!ParameterLevels.containsKey(incomingParameter)) {
+            getLevelParameter(incomingParameter);
+          }
+          level = Math.max(level, ParameterLevels.get(incomingParameter) + 1);
+        }
+      }
+      ParameterLevels.put(p, level);
+      return level;
+    }
+
+    public List<Parameter> sortParameters(List<Parameter> params) {
+      for (Parameter p : params) {
+        getLevelParameter(p);
+      }
+      params.sort((p1, p2) -> ParameterLevels.get(p1) - ParameterLevels.get(p2));
+      return params;
+    }
+
+  }
+
+  /**
    * Concatenate the signature of the method corresponding to a PiGraph to the currentMethod StringBuilder
    */
   private void generateMethodPrototype(final PiGraph pg) {
@@ -292,13 +325,14 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
 
     // Generating parameters
     append("\n\t/* Parameters */\n");
-    this.currentStaticDependentParams = new StringBuilder();
-    this.currentDynamicDependentParams = new StringBuilder();
-    for (final Parameter p : pg.getParameters()) {
+
+    final List<Parameter> params = new ArrayList<>(pg.getParameters());
+    ParameterSorting ps = new ParameterSorting();
+    final List<Parameter> sortedParams = ps.sortParameters(params);
+
+    for (final Parameter p : sortedParams) {
       p.accept(this);
     }
-    this.currentMethod.append(this.currentStaticDependentParams);
-    this.currentMethod.append(this.currentDynamicDependentParams);
 
     // Generating vertices
     append("\n\t/* Vertices */\n");
@@ -374,14 +408,16 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
     append("\t\t/*Name*/    \"" + aa.getName() + "\",\n");
     append("\t\t/*Graph*/   " + SpiderNameGenerator.getMethodName(subGraph) + "(");
 
-    final List<Parameter> l = new LinkedList<>();
-    l.addAll(subGraph.getAllParameters());
-    Collections.sort(l, (p1, p2) -> p1.getName().compareTo(p2.getName()));
-    for (final Parameter p : l) {
+    final List<Parameter> params = new LinkedList<>();
+    params.addAll(subGraph.getAllParameters());
+    Collections.sort(params, (p1, p2) -> p1.getName().compareTo(p2.getName()));
+    final List<String> paramStrings = new LinkedList<>();
+    for (final Parameter p : params) {
       if (p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()) {
-        append(", " + p.getName());
+        paramStrings.add(p.getName());
       }
     }
+    append(String.join(", ", paramStrings));
 
     append("),\n");
     append("\t\t/*InData*/  " + aa.getDataInputPorts().size() + ",\n");
@@ -584,8 +620,8 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
         append("\tPiSDFParam *" + paramName + " = Spider::addDynamicParam(graph, " + "\"" + p.getName() + "\"" + ");\n");
       } else {
         /* DYNAMIC DEPENDANT */
-        this.currentStaticDependentParams.append("\tPiSDFParam *" + paramName + " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName() + "\", \""
-            + p.getExpression().getString() + "\");\n");
+        append("\tPiSDFParam *" + paramName + " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName() + "\", \"" + p.getExpression().getString()
+            + "\");\n");
       }
     } else if (p.getGraphPort() instanceof ConfigInputPort) {
       /* HERITED */
@@ -595,8 +631,8 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
       append("\tPiSDFParam *" + paramName + " = Spider::addStaticParam(graph, " + "\"" + p.getName() + "\", " + p.getName() + ");\n");
     } else {
       /* STATIC DEPENDANT */
-      this.currentDynamicDependentParams.append("\tPiSDFParam *" + paramName + " = Spider::addStaticDependentParam(graph, " + "\"" + p.getName() + "\", \""
-          + p.getExpression().getString() + "\");\n");
+      append("\tPiSDFParam *" + paramName + " = Spider::addStaticDependentParam(graph, " + "\"" + p.getName() + "\", \"" + p.getExpression().getString()
+          + "\");\n");
     }
   }
 
