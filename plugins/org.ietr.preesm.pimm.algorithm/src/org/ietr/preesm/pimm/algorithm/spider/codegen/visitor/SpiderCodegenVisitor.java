@@ -408,14 +408,16 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
     append("\t\t/*Name*/    \"" + aa.getName() + "\",\n");
     append("\t\t/*Graph*/   " + SpiderNameGenerator.getMethodName(subGraph) + "(");
 
-    final List<Parameter> l = new LinkedList<>();
-    l.addAll(subGraph.getAllParameters());
-    Collections.sort(l, (p1, p2) -> p1.getName().compareTo(p2.getName()));
-    for (final Parameter p : l) {
+    final List<Parameter> params = new LinkedList<>();
+    params.addAll(subGraph.getAllParameters());
+    Collections.sort(params, (p1, p2) -> p1.getName().compareTo(p2.getName()));
+    final List<String> paramStrings = new LinkedList<>();
+    for (final Parameter p : params) {
       if (p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()) {
-        append(", " + p.getName());
+        paramStrings.add(p.getName());
       }
     }
+    append(String.join(", ", paramStrings));
 
     append("),\n");
     append("\t\t/*InData*/  " + aa.getDataInputPorts().size() + ",\n");
