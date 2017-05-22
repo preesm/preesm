@@ -1635,6 +1635,276 @@ public interface CodegenPackage extends EPackage {
   int NULL_BUFFER_FEATURE_COUNT = CodegenPackage.SUB_BUFFER_FEATURE_COUNT + 0;
 
   /**
+   * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FiniteLoopBlockImpl <em>Finite Loop Block</em>}' class. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.FiniteLoopBlockImpl
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getFiniteLoopBlock()
+   * @generated
+   */
+  int FINITE_LOOP_BLOCK = 22;
+
+  /**
+   * The feature id for the '<em><b>Code Elts</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int FINITE_LOOP_BLOCK__CODE_ELTS = CodegenPackage.LOOP_BLOCK__CODE_ELTS;
+
+  /**
+   * The feature id for the '<em><b>Declarations</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int FINITE_LOOP_BLOCK__DECLARATIONS = CodegenPackage.LOOP_BLOCK__DECLARATIONS;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int FINITE_LOOP_BLOCK__NAME = CodegenPackage.LOOP_BLOCK__NAME;
+
+  /**
+   * The feature id for the '<em><b>Definitions</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int FINITE_LOOP_BLOCK__DEFINITIONS = CodegenPackage.LOOP_BLOCK__DEFINITIONS;
+
+  /**
+   * The feature id for the '<em><b>Nb Iter</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int FINITE_LOOP_BLOCK__NB_ITER = CodegenPackage.LOOP_BLOCK_FEATURE_COUNT + 0;
+
+  /**
+   * The feature id for the '<em><b>Iter</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int FINITE_LOOP_BLOCK__ITER = CodegenPackage.LOOP_BLOCK_FEATURE_COUNT + 1;
+
+  /**
+   * The feature id for the '<em><b>In Buffers</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int FINITE_LOOP_BLOCK__IN_BUFFERS = CodegenPackage.LOOP_BLOCK_FEATURE_COUNT + 2;
+
+  /**
+   * The feature id for the '<em><b>Out Buffers</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int FINITE_LOOP_BLOCK__OUT_BUFFERS = CodegenPackage.LOOP_BLOCK_FEATURE_COUNT + 3;
+
+  /**
+   * The number of structural features of the '<em>Finite Loop Block</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int FINITE_LOOP_BLOCK_FEATURE_COUNT = CodegenPackage.LOOP_BLOCK_FEATURE_COUNT + 4;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.IntVarImpl <em>Int Var</em>}' class. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   * 
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.IntVarImpl
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getIntVar()
+   * @generated
+   */
+  int INT_VAR = 23;
+
+  /**
+   * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int INT_VAR__COMMENT = CodegenPackage.VARIABLE__COMMENT;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int INT_VAR__NAME = CodegenPackage.VARIABLE__NAME;
+
+  /**
+   * The feature id for the '<em><b>Type</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int INT_VAR__TYPE = CodegenPackage.VARIABLE__TYPE;
+
+  /**
+   * The feature id for the '<em><b>Creator</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int INT_VAR__CREATOR = CodegenPackage.VARIABLE__CREATOR;
+
+  /**
+   * The feature id for the '<em><b>Users</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int INT_VAR__USERS = CodegenPackage.VARIABLE__USERS;
+
+  /**
+   * The number of structural features of the '<em>Int Var</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int INT_VAR_FEATURE_COUNT = CodegenPackage.VARIABLE_FEATURE_COUNT + 0;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferIteratorImpl <em>Buffer Iterator</em>}' class. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferIteratorImpl
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getBufferIterator()
+   * @generated
+   */
+  int BUFFER_ITERATOR = 24;
+
+  /**
+   * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int BUFFER_ITERATOR__COMMENT = CodegenPackage.SUB_BUFFER__COMMENT;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int BUFFER_ITERATOR__NAME = CodegenPackage.SUB_BUFFER__NAME;
+
+  /**
+   * The feature id for the '<em><b>Type</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int BUFFER_ITERATOR__TYPE = CodegenPackage.SUB_BUFFER__TYPE;
+
+  /**
+   * The feature id for the '<em><b>Creator</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int BUFFER_ITERATOR__CREATOR = CodegenPackage.SUB_BUFFER__CREATOR;
+
+  /**
+   * The feature id for the '<em><b>Users</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int BUFFER_ITERATOR__USERS = CodegenPackage.SUB_BUFFER__USERS;
+
+  /**
+   * The feature id for the '<em><b>Size</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int BUFFER_ITERATOR__SIZE = CodegenPackage.SUB_BUFFER__SIZE;
+
+  /**
+   * The feature id for the '<em><b>Childrens</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int BUFFER_ITERATOR__CHILDRENS = CodegenPackage.SUB_BUFFER__CHILDRENS;
+
+  /**
+   * The feature id for the '<em><b>Type Size</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int BUFFER_ITERATOR__TYPE_SIZE = CodegenPackage.SUB_BUFFER__TYPE_SIZE;
+
+  /**
+   * The feature id for the '<em><b>Merged Range</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int BUFFER_ITERATOR__MERGED_RANGE = CodegenPackage.SUB_BUFFER__MERGED_RANGE;
+
+  /**
+   * The feature id for the '<em><b>Local</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int BUFFER_ITERATOR__LOCAL = CodegenPackage.SUB_BUFFER__LOCAL;
+
+  /**
+   * The feature id for the '<em><b>Container</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int BUFFER_ITERATOR__CONTAINER = CodegenPackage.SUB_BUFFER__CONTAINER;
+
+  /**
+   * The feature id for the '<em><b>Offset</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int BUFFER_ITERATOR__OFFSET = CodegenPackage.SUB_BUFFER__OFFSET;
+
+  /**
+   * The feature id for the '<em><b>Iter Size</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int BUFFER_ITERATOR__ITER_SIZE = CodegenPackage.SUB_BUFFER_FEATURE_COUNT + 0;
+
+  /**
+   * The feature id for the '<em><b>Iter</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int BUFFER_ITERATOR__ITER = CodegenPackage.SUB_BUFFER_FEATURE_COUNT + 1;
+
+  /**
+   * The number of structural features of the '<em>Buffer Iterator</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   * @ordered
+   */
+  int BUFFER_ITERATOR_FEATURE_COUNT = CodegenPackage.SUB_BUFFER_FEATURE_COUNT + 2;
+
+  /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Direction <em>Direction</em>}' enum. <!-- begin-user-doc --> <!--
    * end-user-doc -->
    * 
@@ -1642,7 +1912,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDirection()
    * @generated
    */
-  int DIRECTION = 22;
+  int DIRECTION = 25;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Delimiter <em>Delimiter</em>}' enum. <!-- begin-user-doc --> <!--
@@ -1652,7 +1922,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDelimiter()
    * @generated
    */
-  int DELIMITER = 23;
+  int DELIMITER = 26;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialType <em>Special Type</em>}' enum. <!-- begin-user-doc --> <!--
@@ -1662,7 +1932,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getSpecialType()
    * @generated
    */
-  int SPECIAL_TYPE = 24;
+  int SPECIAL_TYPE = 27;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation <em>Fifo Operation</em>}' enum. <!-- begin-user-doc --> <!--
@@ -1672,7 +1942,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getFifoOperation()
    * @generated
    */
-  int FIFO_OPERATION = 25;
+  int FIFO_OPERATION = 28;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.PortDirection <em>Port Direction</em>}' enum. <!-- begin-user-doc --> <!--
@@ -1682,7 +1952,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getPortDirection()
    * @generated
    */
-  int PORT_DIRECTION = 26;
+  int PORT_DIRECTION = 29;
 
   /**
    * The meta object id for the '<em>range</em>' data type. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1691,7 +1961,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getrange()
    * @generated
    */
-  int RANGE = 27;
+  int RANGE = 30;
 
   /**
    * Returns the meta object for class ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Block <em>Block</em>} '. <!-- begin-user-doc --> <!-- end-user-doc
@@ -2463,6 +2733,102 @@ public interface CodegenPackage extends EPackage {
   EClass getNullBuffer();
 
   /**
+   * Returns the meta object for class '{@link org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock <em>Finite Loop Block</em>}'. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * 
+   * @return the meta object for class '<em>Finite Loop Block</em>'.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
+   * @generated
+   */
+  EClass getFiniteLoopBlock();
+
+  /**
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock#getNbIter <em>Nb Iter</em>}'. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @return the meta object for the attribute '<em>Nb Iter</em>'.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock#getNbIter()
+   * @see #getFiniteLoopBlock()
+   * @generated
+   */
+  EAttribute getFiniteLoopBlock_NbIter();
+
+  /**
+   * Returns the meta object for the reference '{@link org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock#getIter <em>Iter</em>}'. <!-- begin-user-doc
+   * --> <!-- end-user-doc -->
+   * 
+   * @return the meta object for the reference '<em>Iter</em>'.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock#getIter()
+   * @see #getFiniteLoopBlock()
+   * @generated
+   */
+  EReference getFiniteLoopBlock_Iter();
+
+  /**
+   * Returns the meta object for the reference list '{@link org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock#getInBuffers <em>In Buffers</em>}'. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @return the meta object for the reference list '<em>In Buffers</em>'.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock#getInBuffers()
+   * @see #getFiniteLoopBlock()
+   * @generated
+   */
+  EReference getFiniteLoopBlock_InBuffers();
+
+  /**
+   * Returns the meta object for the reference list '{@link org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock#getOutBuffers <em>Out Buffers</em>}'.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @return the meta object for the reference list '<em>Out Buffers</em>'.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock#getOutBuffers()
+   * @see #getFiniteLoopBlock()
+   * @generated
+   */
+  EReference getFiniteLoopBlock_OutBuffers();
+
+  /**
+   * Returns the meta object for class '{@link org.ietr.preesm.codegen.xtend.model.codegen.IntVar <em>Int Var</em>}'. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
+   * 
+   * @return the meta object for class '<em>Int Var</em>'.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.IntVar
+   * @generated
+   */
+  EClass getIntVar();
+
+  /**
+   * Returns the meta object for class '{@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator <em>Buffer Iterator</em>}'. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * 
+   * @return the meta object for class '<em>Buffer Iterator</em>'.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator
+   * @generated
+   */
+  EClass getBufferIterator();
+
+  /**
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator#getIterSize <em>Iter Size</em>}'. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @return the meta object for the attribute '<em>Iter Size</em>'.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator#getIterSize()
+   * @see #getBufferIterator()
+   * @generated
+   */
+  EAttribute getBufferIterator_IterSize();
+
+  /**
+   * Returns the meta object for the reference '{@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator#getIter <em>Iter</em>}'. <!-- begin-user-doc
+   * --> <!-- end-user-doc -->
+   * 
+   * @return the meta object for the reference '<em>Iter</em>'.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator#getIter()
+   * @see #getBufferIterator()
+   * @generated
+   */
+  EReference getBufferIterator_Iter();
+
+  /**
    * Returns the meta object for enum '{@link org.ietr.preesm.codegen.xtend.model.codegen.Direction <em>Direction</em>}'. <!-- begin-user-doc --> <!--
    * end-user-doc -->
    * 
@@ -3112,6 +3478,78 @@ public interface CodegenPackage extends EPackage {
      * @generated
      */
     EClass NULL_BUFFER = CodegenPackage.eINSTANCE.getNullBuffer();
+
+    /**
+     * The meta object literal for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FiniteLoopBlockImpl <em>Finite Loop Block</em>}' class. <!--
+     * begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.FiniteLoopBlockImpl
+     * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getFiniteLoopBlock()
+     * @generated
+     */
+    EClass FINITE_LOOP_BLOCK = CodegenPackage.eINSTANCE.getFiniteLoopBlock();
+
+    /**
+     * The meta object literal for the '<em><b>Nb Iter</b></em>' attribute feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated
+     */
+    EAttribute FINITE_LOOP_BLOCK__NB_ITER = CodegenPackage.eINSTANCE.getFiniteLoopBlock_NbIter();
+
+    /**
+     * The meta object literal for the '<em><b>Iter</b></em>' reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated
+     */
+    EReference FINITE_LOOP_BLOCK__ITER = CodegenPackage.eINSTANCE.getFiniteLoopBlock_Iter();
+
+    /**
+     * The meta object literal for the '<em><b>In Buffers</b></em>' reference list feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated
+     */
+    EReference FINITE_LOOP_BLOCK__IN_BUFFERS = CodegenPackage.eINSTANCE.getFiniteLoopBlock_InBuffers();
+
+    /**
+     * The meta object literal for the '<em><b>Out Buffers</b></em>' reference list feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated
+     */
+    EReference FINITE_LOOP_BLOCK__OUT_BUFFERS = CodegenPackage.eINSTANCE.getFiniteLoopBlock_OutBuffers();
+
+    /**
+     * The meta object literal for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.IntVarImpl <em>Int Var</em>}' class. <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * 
+     * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.IntVarImpl
+     * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getIntVar()
+     * @generated
+     */
+    EClass INT_VAR = CodegenPackage.eINSTANCE.getIntVar();
+
+    /**
+     * The meta object literal for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferIteratorImpl <em>Buffer Iterator</em>}' class. <!--
+     * begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferIteratorImpl
+     * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getBufferIterator()
+     * @generated
+     */
+    EClass BUFFER_ITERATOR = CodegenPackage.eINSTANCE.getBufferIterator();
+
+    /**
+     * The meta object literal for the '<em><b>Iter Size</b></em>' attribute feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated
+     */
+    EAttribute BUFFER_ITERATOR__ITER_SIZE = CodegenPackage.eINSTANCE.getBufferIterator_IterSize();
+
+    /**
+     * The meta object literal for the '<em><b>Iter</b></em>' reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated
+     */
+    EReference BUFFER_ITERATOR__ITER = CodegenPackage.eINSTANCE.getBufferIterator_Iter();
 
     /**
      * The meta object literal for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Direction <em>Direction</em>}' enum. <!-- begin-user-doc --> <!--

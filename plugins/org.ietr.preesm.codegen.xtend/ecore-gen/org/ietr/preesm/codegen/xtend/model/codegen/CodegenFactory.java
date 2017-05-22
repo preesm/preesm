@@ -197,6 +197,30 @@ public interface CodegenFactory extends EFactory {
   NullBuffer createNullBuffer();
 
   /**
+   * Returns a new object of class '<em>Finite Loop Block</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @return a new object of class '<em>Finite Loop Block</em>'.
+   * @generated
+   */
+  FiniteLoopBlock createFiniteLoopBlock();
+
+  /**
+   * Returns a new object of class '<em>Int Var</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @return a new object of class '<em>Int Var</em>'.
+   * @generated
+   */
+  IntVar createIntVar();
+
+  /**
+   * Returns a new object of class '<em>Buffer Iterator</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @return a new object of class '<em>Buffer Iterator</em>'.
+   * @generated
+   */
+  BufferIterator createBufferIterator();
+
+  /**
    * Returns the package supported by this factory. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @return the package supported by this factory.

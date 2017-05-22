@@ -43,6 +43,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.ActorCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer;
+import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator;
 import org.ietr.preesm.codegen.xtend.model.codegen.Call;
 import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt;
@@ -54,7 +55,9 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Constant;
 import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString;
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall;
+import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
+import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
@@ -222,6 +225,21 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
     @Override
     public Adapter caseNullBuffer(final NullBuffer object) {
       return createNullBufferAdapter();
+    }
+
+    @Override
+    public Adapter caseFiniteLoopBlock(final FiniteLoopBlock object) {
+      return createFiniteLoopBlockAdapter();
+    }
+
+    @Override
+    public Adapter caseIntVar(final IntVar object) {
+      return createIntVarAdapter();
+    }
+
+    @Override
+    public Adapter caseBufferIterator(final BufferIterator object) {
+      return createBufferIteratorAdapter();
     }
 
     @Override
@@ -526,6 +544,45 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
    * @generated
    */
   public Adapter createNullBufferAdapter() {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock <em>Finite Loop Block</em>}'. <!--
+   * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
+   * all the cases anyway. <!-- end-user-doc -->
+   * 
+   * @return the new adapter.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
+   * @generated
+   */
+  public Adapter createFiniteLoopBlockAdapter() {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.IntVar <em>Int Var</em>}'. <!-- begin-user-doc --> This
+   * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
+   * end-user-doc -->
+   * 
+   * @return the new adapter.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.IntVar
+   * @generated
+   */
+  public Adapter createIntVarAdapter() {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator <em>Buffer Iterator</em>}'. <!--
+   * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
+   * all the cases anyway. <!-- end-user-doc -->
+   * 
+   * @return the new adapter.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator
+   * @generated
+   */
+  public Adapter createBufferIteratorAdapter() {
     return null;
   }
 

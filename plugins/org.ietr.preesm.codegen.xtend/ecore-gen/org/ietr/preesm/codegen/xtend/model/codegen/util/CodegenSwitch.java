@@ -42,6 +42,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.ActorCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer;
+import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator;
 import org.ietr.preesm.codegen.xtend.model.codegen.Call;
 import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt;
@@ -53,7 +54,9 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Constant;
 import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString;
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall;
+import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
+import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
@@ -407,6 +410,57 @@ public class CodegenSwitch<T> extends Switch<T> {
         }
         return result;
       }
+      case CodegenPackage.FINITE_LOOP_BLOCK: {
+        final FiniteLoopBlock finiteLoopBlock = (FiniteLoopBlock) theEObject;
+        T result = caseFiniteLoopBlock(finiteLoopBlock);
+        if (result == null) {
+          result = caseLoopBlock(finiteLoopBlock);
+        }
+        if (result == null) {
+          result = caseBlock(finiteLoopBlock);
+        }
+        if (result == null) {
+          result = caseCodeElt(finiteLoopBlock);
+        }
+        if (result == null) {
+          result = defaultCase(theEObject);
+        }
+        return result;
+      }
+      case CodegenPackage.INT_VAR: {
+        final IntVar intVar = (IntVar) theEObject;
+        T result = caseIntVar(intVar);
+        if (result == null) {
+          result = caseVariable(intVar);
+        }
+        if (result == null) {
+          result = caseCommentable(intVar);
+        }
+        if (result == null) {
+          result = defaultCase(theEObject);
+        }
+        return result;
+      }
+      case CodegenPackage.BUFFER_ITERATOR: {
+        final BufferIterator bufferIterator = (BufferIterator) theEObject;
+        T result = caseBufferIterator(bufferIterator);
+        if (result == null) {
+          result = caseSubBuffer(bufferIterator);
+        }
+        if (result == null) {
+          result = caseBuffer(bufferIterator);
+        }
+        if (result == null) {
+          result = caseVariable(bufferIterator);
+        }
+        if (result == null) {
+          result = caseCommentable(bufferIterator);
+        }
+        if (result == null) {
+          result = defaultCase(theEObject);
+        }
+        return result;
+      }
       default:
         return defaultCase(theEObject);
     }
@@ -717,6 +771,48 @@ public class CodegenSwitch<T> extends Switch<T> {
    * @generated
    */
   public T caseNullBuffer(final NullBuffer object) {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Finite Loop Block</em>'. <!-- begin-user-doc --> This implementation returns null;
+   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   * 
+   * @param object
+   *          the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Finite Loop Block</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseFiniteLoopBlock(final FiniteLoopBlock object) {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Int Var</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
+   * non-null result will terminate the switch. <!-- end-user-doc -->
+   * 
+   * @param object
+   *          the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Int Var</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseIntVar(final IntVar object) {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Buffer Iterator</em>'. <!-- begin-user-doc --> This implementation returns null;
+   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   * 
+   * @param object
+   *          the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Buffer Iterator</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseBufferIterator(final BufferIterator object) {
     return null;
   }
 
