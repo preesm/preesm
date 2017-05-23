@@ -60,4 +60,5 @@ stats/mat/archi/
 #################
 **/.settings
 **/.project
+**/.classpath
 **/.checkstyle

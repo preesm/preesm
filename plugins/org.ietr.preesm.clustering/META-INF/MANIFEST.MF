@@ -2,12 +2,12 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Clustering
 Bundle-SymbolicName: org.ietr.preesm.clustering;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 2.2.10.qualifier
 Bundle-Activator: org.ietr.preesm.clustering.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.ietr.dftools.workflow,
- org.jgrapht,
- org.ietr.dftools.algorithm
+ org.ietr.dftools.algorithm,
+ org.clojars.gilesc.jgrapht;bundle-version="0.8.2"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: IETR/INSA Rennes
