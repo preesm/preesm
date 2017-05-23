@@ -1,0 +1,1252 @@
+From 38eb38fe21ecb4b6c78d2f7ff369c0c2e0de6ac9 Mon Sep 17 00:00:00 2001
+From: kdesnos <kdesnos@insa-rennes.fr>
+Date: Fri, 3 Jul 2015 15:03:24 +0200
+Subject: [PATCH] (Sobel) Tutorial 1 result.
+
+---
+ .../org.ietr.preesm.sobel/Algo/top_display.diagram | 558 +++++++++++++++++++--
+ .../org.ietr.preesm.sobel/Algo/top_display.pi      |  67 ++-
+ .../org.ietr.preesm.sobel/Archi/4CoreX86.slam      |  83 +++
+ .../org.ietr.preesm.sobel/Code/CMakeLists.txt      |   2 +-
+ .../org.ietr.preesm.sobel/Code/include/sobel.h     |  31 ++
+ .../Code/include/splitMerge.h                      |  52 ++
+ tutorials/org.ietr.preesm.sobel/Code/include/x86.h |   2 +
+ tutorials/org.ietr.preesm.sobel/Code/src/sobel.c   |  38 ++
+ .../org.ietr.preesm.sobel/Code/src/splitMerge.c    |  53 ++
+ .../org.ietr.preesm.sobel/Scenarios/1core.scenario |   3 +
+ .../org.ietr.preesm.sobel/Scenarios/4core.scenario |  68 +++
+ 11 files changed, 907 insertions(+), 50 deletions(-)
+ create mode 100644 tutorials/org.ietr.preesm.sobel/Archi/4CoreX86.slam
+ create mode 100644 tutorials/org.ietr.preesm.sobel/Code/include/sobel.h
+ create mode 100644 tutorials/org.ietr.preesm.sobel/Code/include/splitMerge.h
+ create mode 100644 tutorials/org.ietr.preesm.sobel/Code/src/sobel.c
+ create mode 100644 tutorials/org.ietr.preesm.sobel/Code/src/splitMerge.c
+ create mode 100644 tutorials/org.ietr.preesm.sobel/Scenarios/4core.scenario
+
+diff --git a/tutorials/org.ietr.preesm.sobel/Algo/top_display.diagram b/tutorials/org.ietr.preesm.sobel/Algo/top_display.diagram
+index 91508d3..0183b09 100644
+--- a/tutorials/org.ietr.preesm.sobel/Algo/top_display.diagram
++++ b/tutorials/org.ietr.preesm.sobel/Algo/top_display.diagram
+@@ -1,12 +1,12 @@
+ <?xml version="1.0" encoding="ASCII"?>
+-<pi:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:al="http://eclipse.org/graphiti/mm/algorithms" xmlns:pi="http://eclipse.org/graphiti/mm/pictograms" visible="true" gridUnit="10" diagramTypeId="PiMM" name="top_display" snapToGrid="true" pictogramLinks="//@children.0/@link //@children.0/@children.0/@link //@children.0/@anchors.0/@link //@children.1/@link //@children.1/@children.0/@link //@children.1/@anchors.0/@link //@children.2/@link //@children.2/@children.0/@link //@children.3/@link //@children.3/@children.0/@link //@children.2/@anchors.1/@link //@children.3/@anchors.1/@link //@connections.0/@link //@children.2/@anchors.2/@link //@children.3/@anchors.2/@link //@connections.1/@link //@children.2/@anchors.0/@link //@children.3/@anchors.0/@link //@children.2/@anchors.4/@link //@connections.2/@link //@children.2/@anchors.3/@link //@connections.3/@link //@children.3/@anchors.4/@link //@connections.4/@link //@children.3/@anchors.3/@link //@connections.5/@link //@children.4/@link //@children.4/@children.0/@link //@children.4/@anchors.0/@link //@children.3/@anchors.5/@link //@connections.6/@link //@connections.7/@link //@children.2/@anchors.5/@link //@children.3/@anchors.6/@link" version="0.11.0">
++<pi:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:al="http://eclipse.org/graphiti/mm/algorithms" xmlns:pi="http://eclipse.org/graphiti/mm/pictograms" visible="true" gridUnit="10" diagramTypeId="PiMM" name="top_display" snapToGrid="true" pictogramLinks="//@children.0/@link //@children.0/@children.0/@link //@children.0/@anchors.0/@link //@children.1/@link //@children.1/@children.0/@link //@children.1/@anchors.0/@link //@children.2/@link //@children.2/@children.0/@link //@children.3/@link //@children.3/@children.0/@link //@children.2/@anchors.1/@link //@children.3/@anchors.1/@link //@connections.0/@link //@children.2/@anchors.2/@link //@children.3/@anchors.2/@link //@connections.1/@link //@children.2/@anchors.0/@link //@children.3/@anchors.0/@link //@children.2/@anchors.3/@link //@connections.2/@link //@children.2/@anchors.4/@link //@connections.3/@link //@children.3/@anchors.3/@link //@connections.4/@link //@children.3/@anchors.5/@link //@connections.5/@link //@children.4/@link //@children.4/@children.0/@link //@children.4/@anchors.0/@link //@children.3/@anchors.4/@link //@connections.6/@link //@connections.7/@link //@children.2/@anchors.5/@link //@children.3/@anchors.6/@link //@children.5/@link //@children.5/@children.0/@link //@children.5/@anchors.0/@link //@children.5/@anchors.1/@link //@children.5/@anchors.2/@link //@children.5/@anchors.3/@link //@children.5/@anchors.4/@link //@connections.8/@link //@connections.9/@link //@children.6/@link //@children.6/@children.0/@link //@children.6/@anchors.0/@link //@children.7/@link //@children.7/@children.0/@link //@children.7/@anchors.0/@link //@connections.10/@link //@connections.11/@link //@children.8/@link //@children.8/@children.0/@link //@children.8/@anchors.0/@link //@children.8/@anchors.1/@link //@children.8/@anchors.2/@link //@children.8/@anchors.5/@link //@children.8/@anchors.3/@link //@children.8/@anchors.4/@link //@children.9/@link //@children.9/@children.0/@link //@children.9/@anchors.0/@link //@children.9/@anchors.1/@link //@children.9/@anchors.2/@link //@children.9/@anchors.5/@link //@children.9/@anchors.3/@link //@children.9/@anchors.4/@link //@connections.12/@link //@connections.13/@link //@connections.14/@link //@connections.15/@link //@connections.16/@link //@connections.17/@link //@connections.18/@link //@connections.19/@link //@connections.20/@link" version="0.11.0">
+   <properties key="editor_version" value="3"/>
+   <graphicsAlgorithm xsi:type="al:Rectangle" background="//@colors.1" foreground="//@colors.0" lineWidth="1" transparency="0.0" width="1000" height="1000"/>
+   <link>
+     <businessObjects href="top_display.pi#/"/>
+   </link>
+   <children xsi:type="pi:ContainerShape" visible="true" active="true">
+-    <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.3" lineWidth="2" filled="true" transparency="0.0" width="37" height="40" x="133" y="76">
++    <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.3" lineWidth="2" filled="true" transparency="0.0" width="37" height="40" x="50" y="60">
+       <points x="18"/>
+       <points x="37" y="26"/>
+       <points x="37" y="40"/>
+@@ -16,7 +16,7 @@
+     <link>
+       <businessObjects href="top_display.pi#//@parameters.0"/>
+     </link>
+-    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.2 //@connections.4">
++    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.2 //@connections.4 //@connections.9 //@connections.13 //@connections.17">
+       <link>
+         <businessObjects href="top_display.pi#//@parameters.0"/>
+       </link>
+@@ -29,7 +29,7 @@
+     </children>
+   </children>
+   <children xsi:type="pi:ContainerShape" visible="true" active="true">
+-    <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.3" lineWidth="2" filled="true" transparency="0.0" width="41" height="40" x="50" y="76">
++    <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.3" lineWidth="2" filled="true" transparency="0.0" width="41" height="40" x="222" y="60">
+       <points x="20"/>
+       <points x="41" y="26"/>
+       <points x="41" y="40"/>
+@@ -39,7 +39,7 @@
+     <link>
+       <businessObjects href="top_display.pi#//@parameters.1"/>
+     </link>
+-    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.3 //@connections.5">
++    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.3 //@connections.5 //@connections.10 //@connections.12 //@connections.16">
+       <link>
+         <businessObjects href="top_display.pi#//@parameters.1"/>
+       </link>
+@@ -83,9 +83,9 @@
+         <businessObjects href="top_display.pi#//@vertices.0/@dataOutputPorts.2"/>
+       </link>
+     </anchors>
+-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.3" referencedGraphicsAlgorithm="//@children.2/@graphicsAlgorithm" relativeHeight="0.21348314606741572">
+-      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="39" height="14">
+-        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="31" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="height"/>
++    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.2" referencedGraphicsAlgorithm="//@children.2/@graphicsAlgorithm" relativeHeight="0.21348314606741572">
++      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="37" height="14">
++        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="29" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="width"/>
+         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="2">
+           <points/>
+           <points x="8" y="5"/>
+@@ -96,9 +96,9 @@
+         <businessObjects href="top_display.pi#//@vertices.0/@configInputPorts.0"/>
+       </link>
+     </anchors>
+-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.2" referencedGraphicsAlgorithm="//@children.2/@graphicsAlgorithm" relativeHeight="0.3707865168539326">
+-      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="37" height="14">
+-        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="29" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="width"/>
++    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.3" referencedGraphicsAlgorithm="//@children.2/@graphicsAlgorithm" relativeHeight="0.3707865168539326">
++      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="39" height="14">
++        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="31" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="height"/>
+         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="2">
+           <points/>
+           <points x="8" y="5"/>
+@@ -122,11 +122,11 @@
+     </children>
+   </children>
+   <children xsi:type="pi:ContainerShape" visible="true" active="true">
+-    <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="2" transparency="0.0" width="69" height="103" x="490" y="236" cornerHeight="5" cornerWidth="5"/>
++    <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="2" transparency="0.0" width="69" height="103" x="808" y="250" cornerHeight="5" cornerWidth="5"/>
+     <link>
+       <businessObjects href="top_display.pi#//@vertices.1"/>
+     </link>
+-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.7" referencedGraphicsAlgorithm="//@children.3/@graphicsAlgorithm" relativeHeight="0.5922330097087378">
++    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.19" referencedGraphicsAlgorithm="//@children.3/@graphicsAlgorithm" relativeHeight="0.5922330097087378">
+       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="16" height="14">
+         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="8" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="y"/>
+         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.8" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="3"/>
+@@ -153,9 +153,9 @@
+         <businessObjects href="top_display.pi#//@vertices.1/@dataInputPorts.2"/>
+       </link>
+     </anchors>
+-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.5" referencedGraphicsAlgorithm="//@children.3/@graphicsAlgorithm" relativeHeight="0.18446601941747573">
+-      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="39" height="14">
+-        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="31" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="height"/>
++    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.4" referencedGraphicsAlgorithm="//@children.3/@graphicsAlgorithm" relativeHeight="0.18446601941747573">
++      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="37" height="14">
++        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="29" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="width"/>
+         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="2">
+           <points/>
+           <points x="8" y="5"/>
+@@ -166,9 +166,9 @@
+         <businessObjects href="top_display.pi#//@vertices.1/@configInputPorts.0"/>
+       </link>
+     </anchors>
+-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.4" referencedGraphicsAlgorithm="//@children.3/@graphicsAlgorithm" relativeHeight="0.32038834951456313">
+-      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="37" height="14">
+-        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="29" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="width"/>
++    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.6" referencedGraphicsAlgorithm="//@children.3/@graphicsAlgorithm" relativeHeight="0.32038834951456313">
++      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="18" height="14">
++        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="10" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="id"/>
+         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="2">
+           <points/>
+           <points x="8" y="5"/>
+@@ -179,9 +179,9 @@
+         <businessObjects href="top_display.pi#//@vertices.1/@configInputPorts.1"/>
+       </link>
+     </anchors>
+-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.6" referencedGraphicsAlgorithm="//@children.3/@graphicsAlgorithm" relativeHeight="0.4563106796116505">
+-      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="18" height="14">
+-        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="10" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="id"/>
++    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.5" referencedGraphicsAlgorithm="//@children.3/@graphicsAlgorithm" relativeHeight="0.4563106796116505">
++      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="39" height="14">
++        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="31" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="height"/>
+         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="2">
+           <points/>
+           <points x="8" y="5"/>
+@@ -205,7 +205,7 @@
+     </children>
+   </children>
+   <children xsi:type="pi:ContainerShape" visible="true" active="true">
+-    <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.3" lineWidth="2" filled="true" transparency="0.0" width="35" height="40" x="216" y="76">
++    <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.3" lineWidth="2" filled="true" transparency="0.0" width="35" height="40" x="137" y="60">
+       <points x="17"/>
+       <points x="35" y="26"/>
+       <points x="35" y="40"/>
+@@ -227,6 +227,261 @@
+       </link>
+     </children>
+   </children>
++  <children xsi:type="pi:ContainerShape" visible="true" active="true">
++    <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="2" transparency="0.0" width="87" height="61" x="428" y="250" cornerHeight="5" cornerWidth="5"/>
++    <link>
++      <businessObjects href="top_display.pi#//@vertices.2"/>
++    </link>
++    <anchors xsi:type="pi:ChopboxAnchor">
++      <link>
++        <businessObjects href="top_display.pi#//@vertices.2"/>
++      </link>
++    </anchors>
++    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.15" referencedGraphicsAlgorithm="//@children.5/@graphicsAlgorithm" relativeHeight="0.7704918032786885">
++      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="33" height="14">
++        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="25" height="14" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="input"/>
++        <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.8" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="3"/>
++      </graphicsAlgorithm>
++      <link>
++        <businessObjects href="top_display.pi#//@vertices.2/@dataInputPorts.0"/>
++      </link>
++    </anchors>
++    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.8" referencedGraphicsAlgorithm="//@children.5/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.7704918032786885">
++      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="40" height="14" x="-40">
++        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="32" height="14" font="//@fonts.1" value="output"/>
++        <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="32" y="3"/>
++      </graphicsAlgorithm>
++      <link>
++        <businessObjects href="top_display.pi#//@vertices.2/@dataOutputPorts.0"/>
++      </link>
++    </anchors>
++    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.9" referencedGraphicsAlgorithm="//@children.5/@graphicsAlgorithm" relativeHeight="0.3114754098360656">
++      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="37" height="14">
++        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="29" height="14" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="width"/>
++        <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="2">
++          <points/>
++          <points x="8" y="5"/>
++          <points y="10"/>
++        </graphicsAlgorithmChildren>
++      </graphicsAlgorithm>
++      <link>
++        <businessObjects href="top_display.pi#//@vertices.2/@configInputPorts.0"/>
++      </link>
++    </anchors>
++    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.20" referencedGraphicsAlgorithm="//@children.5/@graphicsAlgorithm" relativeHeight="0.5409836065573771">
++      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="39" height="14">
++        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="31" height="14" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="height"/>
++        <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="2">
++          <points/>
++          <points x="8" y="5"/>
++          <points y="10"/>
++        </graphicsAlgorithmChildren>
++      </graphicsAlgorithm>
++      <link>
++        <businessObjects href="top_display.pi#//@vertices.2/@configInputPorts.1"/>
++      </link>
++    </anchors>
++    <children visible="true">
++      <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="87" height="20" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" value="Sobel"/>
++      <link>
++        <businessObjects href="top_display.pi#//@vertices.2"/>
++      </link>
++    </children>
++  </children>
++  <children xsi:type="pi:ContainerShape" visible="true" active="true">
++    <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.3" lineWidth="2" filled="true" transparency="0.0" width="67" height="40" x="409" y="120">
++      <points x="33"/>
++      <points x="67" y="26"/>
++      <points x="67" y="40"/>
++      <points y="40"/>
++      <points y="26"/>
++    </graphicsAlgorithm>
++    <link>
++      <businessObjects href="top_display.pi#//@parameters.3"/>
++    </link>
++    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.20" incomingConnections="//@connections.10 //@connections.11">
++      <link>
++        <businessObjects href="top_display.pi#//@parameters.3"/>
++      </link>
++    </anchors>
++    <children visible="true">
++      <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="67" height="20" y="22" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" value="sliceHeight"/>
++      <link>
++        <businessObjects href="top_display.pi#//@parameters.3"/>
++      </link>
++    </children>
++  </children>
++  <children xsi:type="pi:ContainerShape" visible="true" active="true">
++    <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.3" lineWidth="2" filled="true" transparency="0.0" width="46" height="40" x="313" y="60">
++      <points x="23"/>
++      <points x="46" y="26"/>
++      <points x="46" y="40"/>
++      <points y="40"/>
++      <points y="26"/>
++    </graphicsAlgorithm>
++    <link>
++      <businessObjects href="top_display.pi#//@parameters.4"/>
++    </link>
++    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.11 //@connections.14 //@connections.18">
++      <link>
++        <businessObjects href="top_display.pi#//@parameters.4"/>
++      </link>
++    </anchors>
++    <children visible="true">
++      <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="46" height="20" y="22" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" value="nbSlice"/>
++      <link>
++        <businessObjects href="top_display.pi#//@parameters.4"/>
++      </link>
++    </children>
++  </children>
++  <children xsi:type="pi:ContainerShape" visible="true" active="true">
++    <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="2" transparency="0.0" width="93" height="75" x="235" y="250" cornerHeight="5" cornerWidth="5"/>
++    <link>
++      <businessObjects href="top_display.pi#//@vertices.3"/>
++    </link>
++    <anchors xsi:type="pi:ChopboxAnchor">
++      <link>
++        <businessObjects href="top_display.pi#//@vertices.3"/>
++      </link>
++    </anchors>
++    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.7" referencedGraphicsAlgorithm="//@children.8/@graphicsAlgorithm" relativeHeight="0.8133333333333334">
++      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="33" height="14">
++        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="25" height="14" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="input"/>
++        <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.8" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="3"/>
++      </graphicsAlgorithm>
++      <link>
++        <businessObjects href="top_display.pi#//@vertices.3/@dataInputPorts.0"/>
++      </link>
++    </anchors>
++    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.15" referencedGraphicsAlgorithm="//@children.8/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.8133333333333334">
++      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="40" height="14" x="-40">
++        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="32" height="14" font="//@fonts.1" value="output"/>
++        <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="32" y="3"/>
++      </graphicsAlgorithm>
++      <link>
++        <businessObjects href="top_display.pi#//@vertices.3/@dataOutputPorts.0"/>
++      </link>
++    </anchors>
++    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.13" referencedGraphicsAlgorithm="//@children.8/@graphicsAlgorithm" relativeHeight="0.25333333333333335">
++      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="37" height="14">
++        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="29" height="14" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="width"/>
++        <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="2">
++          <points/>
++          <points x="8" y="5"/>
++          <points y="10"/>
++        </graphicsAlgorithmChildren>
++      </graphicsAlgorithm>
++      <link>
++        <businessObjects href="top_display.pi#//@vertices.3/@configInputPorts.0"/>
++      </link>
++    </anchors>
++    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.12" referencedGraphicsAlgorithm="//@children.8/@graphicsAlgorithm" relativeHeight="0.44">
++      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="39" height="14">
++        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="31" height="14" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="height"/>
++        <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="2">
++          <points/>
++          <points x="8" y="5"/>
++          <points y="10"/>
++        </graphicsAlgorithmChildren>
++      </graphicsAlgorithm>
++      <link>
++        <businessObjects href="top_display.pi#//@vertices.3/@configInputPorts.1"/>
++      </link>
++    </anchors>
++    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.14" referencedGraphicsAlgorithm="//@children.8/@graphicsAlgorithm" relativeHeight="0.6266666666666667">
++      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="45" height="14">
++        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="37" height="14" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="nbSlice"/>
++        <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="2">
++          <points/>
++          <points x="8" y="5"/>
++          <points y="10"/>
++        </graphicsAlgorithmChildren>
++      </graphicsAlgorithm>
++      <link>
++        <businessObjects href="top_display.pi#//@vertices.3/@configInputPorts.2"/>
++      </link>
++    </anchors>
++    <children visible="true">
++      <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="93" height="20" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" value="Split"/>
++      <link>
++        <businessObjects href="top_display.pi#//@vertices.3"/>
++      </link>
++    </children>
++  </children>
++  <children xsi:type="pi:ContainerShape" visible="true" active="true">
++    <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="2" transparency="0.0" width="93" height="75" x="615" y="250" cornerHeight="5" cornerWidth="5"/>
++    <link>
++      <businessObjects href="top_display.pi#//@vertices.4"/>
++    </link>
++    <anchors xsi:type="pi:ChopboxAnchor">
++      <link>
++        <businessObjects href="top_display.pi#//@vertices.4"/>
++      </link>
++    </anchors>
++    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.8" referencedGraphicsAlgorithm="//@children.9/@graphicsAlgorithm" relativeHeight="0.8133333333333334">
++      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="33" height="14">
++        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="25" height="14" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="input"/>
++        <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.8" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="3"/>
++      </graphicsAlgorithm>
++      <link>
++        <businessObjects href="top_display.pi#//@vertices.4/@dataInputPorts.0"/>
++      </link>
++    </anchors>
++    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.19" referencedGraphicsAlgorithm="//@children.9/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.8133333333333334">
++      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="40" height="14" x="-40">
++        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="32" height="14" font="//@fonts.1" value="output"/>
++        <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="32" y="3"/>
++      </graphicsAlgorithm>
++      <link>
++        <businessObjects href="top_display.pi#//@vertices.4/@dataOutputPorts.0"/>
++      </link>
++    </anchors>
++    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.17" referencedGraphicsAlgorithm="//@children.9/@graphicsAlgorithm" relativeHeight="0.25333333333333335">
++      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="37" height="14">
++        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="29" height="14" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="width"/>
++        <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="2">
++          <points/>
++          <points x="8" y="5"/>
++          <points y="10"/>
++        </graphicsAlgorithmChildren>
++      </graphicsAlgorithm>
++      <link>
++        <businessObjects href="top_display.pi#//@vertices.4/@configInputPorts.0"/>
++      </link>
++    </anchors>
++    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.16" referencedGraphicsAlgorithm="//@children.9/@graphicsAlgorithm" relativeHeight="0.44">
++      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="39" height="14">
++        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="31" height="14" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="height"/>
++        <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="2">
++          <points/>
++          <points x="8" y="5"/>
++          <points y="10"/>
++        </graphicsAlgorithmChildren>
++      </graphicsAlgorithm>
++      <link>
++        <businessObjects href="top_display.pi#//@vertices.4/@configInputPorts.1"/>
++      </link>
++    </anchors>
++    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.18" referencedGraphicsAlgorithm="//@children.9/@graphicsAlgorithm" relativeHeight="0.6266666666666667">
++      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="45" height="14">
++        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="37" height="14" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="nbSlice"/>
++        <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="2">
++          <points/>
++          <points x="8" y="5"/>
++          <points y="10"/>
++        </graphicsAlgorithmChildren>
++      </graphicsAlgorithm>
++      <link>
++        <businessObjects href="top_display.pi#//@vertices.4/@configInputPorts.2"/>
++      </link>
++    </anchors>
++    <children visible="true">
++      <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="93" height="20" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" value="Merge"/>
++      <link>
++        <businessObjects href="top_display.pi#//@vertices.4"/>
++      </link>
++    </children>
++  </children>
+   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.1" end="//@children.3/@anchors.1">
+     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
+     <link>
+@@ -240,7 +495,11 @@
+       </graphicsAlgorithm>
+     </connectionDecorators>
+     <bendpoints x="155" y="316"/>
+-    <bendpoints x="470" y="316"/>
++    <bendpoints x="215" y="332"/>
++    <bendpoints x="348" y="332"/>
++    <bendpoints x="535" y="332"/>
++    <bendpoints x="728" y="332"/>
++    <bendpoints x="788" y="330"/>
+   </connections>
+   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.2" end="//@children.3/@anchors.2">
+     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
+@@ -255,9 +514,13 @@
+       </graphicsAlgorithm>
+     </connectionDecorators>
+     <bendpoints x="155" y="330"/>
+-    <bendpoints x="470" y="330"/>
++    <bendpoints x="215" y="346"/>
++    <bendpoints x="348" y="346"/>
++    <bendpoints x="535" y="346"/>
++    <bendpoints x="728" y="346"/>
++    <bendpoints x="788" y="344"/>
+   </connections>
+-  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.2/@anchors.4">
++  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.2/@anchors.3">
+     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
+     <link>
+       <businessObjects href="top_display.pi#//@dependencies.0"/>
+@@ -269,11 +532,11 @@
+         <points x="-10" y="-5"/>
+       </graphicsAlgorithm>
+     </connectionDecorators>
+-    <bendpoints x="151" y="192"/>
+-    <bendpoints x="26" y="192"/>
+-    <bendpoints x="26" y="289"/>
++    <bendpoints x="68" y="168"/>
++    <bendpoints x="30" y="168"/>
++    <bendpoints x="30" y="275"/>
+   </connections>
+-  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.2/@anchors.3">
++  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.2/@anchors.4">
+     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
+     <link>
+       <businessObjects href="top_display.pi#//@dependencies.1"/>
+@@ -285,11 +548,11 @@
+         <points x="-10" y="-5"/>
+       </graphicsAlgorithm>
+     </connectionDecorators>
+-    <bendpoints x="70" y="184"/>
+-    <bendpoints x="30" y="184"/>
+-    <bendpoints x="30" y="275"/>
++    <bendpoints x="242" y="184"/>
++    <bendpoints x="22" y="184"/>
++    <bendpoints x="22" y="289"/>
+   </connections>
+-  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.3/@anchors.4">
++  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.3/@anchors.3">
+     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
+     <link>
+       <businessObjects href="top_display.pi#//@dependencies.2"/>
+@@ -301,11 +564,11 @@
+         <points x="-10" y="-5"/>
+       </graphicsAlgorithm>
+     </connectionDecorators>
+-    <bendpoints x="151" y="192"/>
+-    <bendpoints x="466" y="192"/>
+-    <bendpoints x="466" y="275"/>
++    <bendpoints x="68" y="168"/>
++    <bendpoints x="788" y="168"/>
++    <bendpoints x="788" y="275"/>
+   </connections>
+-  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.3/@anchors.3">
++  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.3/@anchors.5">
+     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
+     <link>
+       <businessObjects href="top_display.pi#//@dependencies.3"/>
+@@ -317,11 +580,11 @@
+         <points x="-10" y="-5"/>
+       </graphicsAlgorithm>
+     </connectionDecorators>
+-    <bendpoints x="70" y="184"/>
+-    <bendpoints x="470" y="184"/>
+-    <bendpoints x="470" y="261"/>
++    <bendpoints x="242" y="184"/>
++    <bendpoints x="780" y="184"/>
++    <bendpoints x="780" y="303"/>
+   </connections>
+-  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.4/@anchors.0" end="//@children.3/@anchors.5">
++  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.4/@anchors.0" end="//@children.3/@anchors.4">
+     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
+     <link>
+       <businessObjects href="top_display.pi#//@dependencies.4"/>
+@@ -333,11 +596,11 @@
+         <points x="-10" y="-5"/>
+       </graphicsAlgorithm>
+     </connectionDecorators>
+-    <bendpoints x="233" y="200"/>
+-    <bendpoints x="462" y="200"/>
+-    <bendpoints x="462" y="289"/>
++    <bendpoints x="154" y="176"/>
++    <bendpoints x="784" y="176"/>
++    <bendpoints x="784" y="289"/>
+   </connections>
+-  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.3/@anchors.0">
++  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.8/@anchors.1">
+     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
+     <link>
+       <businessObjects href="top_display.pi#//@fifos.2"/>
+@@ -350,7 +613,208 @@
+       </graphicsAlgorithm>
+     </connectionDecorators>
+     <bendpoints x="155" y="303"/>
+-    <bendpoints x="470" y="303"/>
++    <bendpoints x="215" y="317"/>
++  </connections>
++  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.5/@anchors.2" end="//@children.9/@anchors.1">
++    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
++    <link>
++      <businessObjects href="top_display.pi#//@fifos.3"/>
++    </link>
++    <connectionDecorators visible="true" locationRelative="true" location="1.0">
++      <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
++        <points x="-10" y="5"/>
++        <points/>
++        <points x="-10" y="-5"/>
++      </graphicsAlgorithm>
++    </connectionDecorators>
++    <bendpoints x="535" y="303"/>
++    <bendpoints x="595" y="317"/>
++  </connections>
++  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.5/@anchors.3">
++    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
++    <link>
++      <businessObjects href="top_display.pi#//@dependencies.5"/>
++    </link>
++    <connectionDecorators visible="true" locationRelative="true" location="1.0">
++      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="UNSPECIFIED">
++        <points x="-10" y="5"/>
++        <points/>
++        <points x="-10" y="-5"/>
++      </graphicsAlgorithm>
++    </connectionDecorators>
++    <bendpoints x="68" y="168"/>
++    <bendpoints x="408" y="168"/>
++    <bendpoints x="408" y="275"/>
++  </connections>
++  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.6/@anchors.0">
++    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
++    <link>
++      <businessObjects href="top_display.pi#//@dependencies.6"/>
++    </link>
++    <connectionDecorators visible="true" locationRelative="true" location="1.0">
++      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="UNSPECIFIED">
++        <points x="-10" y="5"/>
++        <points/>
++        <points x="-10" y="-5"/>
++      </graphicsAlgorithm>
++    </connectionDecorators>
++    <bendpoints x="242" y="100"/>
++  </connections>
++  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.7/@anchors.0" end="//@children.6/@anchors.0">
++    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
++    <link>
++      <businessObjects href="top_display.pi#//@dependencies.7"/>
++    </link>
++    <connectionDecorators visible="true" locationRelative="true" location="1.0">
++      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="UNSPECIFIED">
++        <points x="-10" y="5"/>
++        <points/>
++        <points x="-10" y="-5"/>
++      </graphicsAlgorithm>
++    </connectionDecorators>
++    <bendpoints x="336" y="100"/>
++  </connections>
++  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.8/@anchors.4">
++    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
++    <link>
++      <businessObjects href="top_display.pi#//@dependencies.8"/>
++    </link>
++    <connectionDecorators visible="true" locationRelative="true" location="1.0">
++      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="UNSPECIFIED">
++        <points x="-10" y="5"/>
++        <points/>
++        <points x="-10" y="-5"/>
++      </graphicsAlgorithm>
++    </connectionDecorators>
++    <bendpoints x="242" y="184"/>
++    <bendpoints x="207" y="184"/>
++    <bendpoints x="207" y="289"/>
++  </connections>
++  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.8/@anchors.3">
++    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
++    <link>
++      <businessObjects href="top_display.pi#//@dependencies.9"/>
++    </link>
++    <connectionDecorators visible="true" locationRelative="true" location="1.0">
++      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="UNSPECIFIED">
++        <points x="-10" y="5"/>
++        <points/>
++        <points x="-10" y="-5"/>
++      </graphicsAlgorithm>
++    </connectionDecorators>
++    <bendpoints x="68" y="168"/>
++    <bendpoints x="215" y="168"/>
++    <bendpoints x="215" y="275"/>
++  </connections>
++  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.7/@anchors.0" end="//@children.8/@anchors.5">
++    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
++    <link>
++      <businessObjects href="top_display.pi#//@dependencies.10"/>
++    </link>
++    <connectionDecorators visible="true" locationRelative="true" location="1.0">
++      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="UNSPECIFIED">
++        <points x="-10" y="5"/>
++        <points/>
++        <points x="-10" y="-5"/>
++      </graphicsAlgorithm>
++    </connectionDecorators>
++    <bendpoints x="336" y="192"/>
++    <bendpoints x="203" y="192"/>
++    <bendpoints x="203" y="303"/>
++  </connections>
++  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.8/@anchors.2" end="//@children.5/@anchors.1">
++    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
++    <link>
++      <businessObjects href="top_display.pi#//@fifos.4"/>
++    </link>
++    <connectionDecorators visible="true" locationRelative="true" location="1.0">
++      <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
++        <points x="-10" y="5"/>
++        <points/>
++        <points x="-10" y="-5"/>
++      </graphicsAlgorithm>
++    </connectionDecorators>
++    <bendpoints x="348" y="317"/>
++    <bendpoints x="408" y="303"/>
++  </connections>
++  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.9/@anchors.4">
++    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
++    <link>
++      <businessObjects href="top_display.pi#//@dependencies.11"/>
++    </link>
++    <connectionDecorators visible="true" locationRelative="true" location="1.0">
++      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="UNSPECIFIED">
++        <points x="-10" y="5"/>
++        <points/>
++        <points x="-10" y="-5"/>
++      </graphicsAlgorithm>
++    </connectionDecorators>
++    <bendpoints x="242" y="184"/>
++    <bendpoints x="587" y="184"/>
++    <bendpoints x="587" y="289"/>
++  </connections>
++  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.9/@anchors.3">
++    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
++    <link>
++      <businessObjects href="top_display.pi#//@dependencies.12"/>
++    </link>
++    <connectionDecorators visible="true" locationRelative="true" location="1.0">
++      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="UNSPECIFIED">
++        <points x="-10" y="5"/>
++        <points/>
++        <points x="-10" y="-5"/>
++      </graphicsAlgorithm>
++    </connectionDecorators>
++    <bendpoints x="68" y="168"/>
++    <bendpoints x="595" y="168"/>
++    <bendpoints x="595" y="275"/>
++  </connections>
++  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.7/@anchors.0" end="//@children.9/@anchors.5">
++    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
++    <link>
++      <businessObjects href="top_display.pi#//@dependencies.13"/>
++    </link>
++    <connectionDecorators visible="true" locationRelative="true" location="1.0">
++      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="UNSPECIFIED">
++        <points x="-10" y="5"/>
++        <points/>
++        <points x="-10" y="-5"/>
++      </graphicsAlgorithm>
++    </connectionDecorators>
++    <bendpoints x="336" y="192"/>
++    <bendpoints x="583" y="192"/>
++    <bendpoints x="583" y="303"/>
++  </connections>
++  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.9/@anchors.2" end="//@children.3/@anchors.0">
++    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
++    <link>
++      <businessObjects href="top_display.pi#//@fifos.5"/>
++    </link>
++    <connectionDecorators visible="true" locationRelative="true" location="1.0">
++      <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
++        <points x="-10" y="5"/>
++        <points/>
++        <points x="-10" y="-5"/>
++      </graphicsAlgorithm>
++    </connectionDecorators>
++    <bendpoints x="728" y="317"/>
++    <bendpoints x="788" y="317"/>
++  </connections>
++  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.6/@anchors.0" end="//@children.5/@anchors.4">
++    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
++    <link>
++      <businessObjects href="top_display.pi#//@dependencies.14"/>
++    </link>
++    <connectionDecorators visible="true" locationRelative="true" location="1.0">
++      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="UNSPECIFIED">
++        <points x="-10" y="5"/>
++        <points/>
++        <points x="-10" y="-5"/>
++      </graphicsAlgorithm>
++    </connectionDecorators>
++    <bendpoints x="442" y="200"/>
++    <bendpoints x="392" y="200"/>
++    <bendpoints x="392" y="289"/>
+   </connections>
+   <colors red="227" green="238" blue="249"/>
+   <colors red="255" green="255" blue="255"/>
+diff --git a/tutorials/org.ietr.preesm.sobel/Algo/top_display.pi b/tutorials/org.ietr.preesm.sobel/Algo/top_display.pi
+index 8b116ec..2e9725d 100644
+--- a/tutorials/org.ietr.preesm.sobel/Algo/top_display.pi
++++ b/tutorials/org.ietr.preesm.sobel/Algo/top_display.pi
+@@ -10,6 +10,8 @@
+         <node expr="352" id="width" kind="param"/>
+         <node expr="288" id="height" kind="param"/>
+         <node expr="0" id="index" kind="param"/>
++        <node expr="height/nbSlice+2" id="sliceHeight" kind="param"/>
++        <node expr="8" id="nbSlice" kind="param"/>
+         <node id="Read_YUV" kind="actor">
+             <data key="graph_desc">Code/include/yuvRead.h</data>
+             <loop name="readYUV">
+@@ -23,8 +25,8 @@
+                 <param direction="IN" isConfig="true" name="width" type="int"/>
+                 <param direction="IN" isConfig="true" name="height" type="int"/>
+             </init>
+-            <port kind="cfg_input" name="height"/>
+             <port kind="cfg_input" name="width"/>
++            <port kind="cfg_input" name="height"/>
+             <port annotation="NONE" expr="height*width" kind="output" name="y"/>
+             <port annotation="NONE" expr="height/2*width/2"
+                 kind="output" name="u"/>
+@@ -44,23 +46,84 @@
+                 <param direction="IN" isConfig="true" name="width" type="int"/>
+                 <param direction="IN" isConfig="true" name="height" type="int"/>
+             </init>
+-            <port kind="cfg_input" name="height"/>
+             <port kind="cfg_input" name="width"/>
+             <port kind="cfg_input" name="id"/>
++            <port kind="cfg_input" name="height"/>
+             <port annotation="NONE" expr="height*width" kind="input" name="y"/>
+             <port annotation="NONE" expr="height/2*width/2" kind="input" name="u"/>
+             <port annotation="NONE" expr="height/2*width/2" kind="input" name="v"/>
+         </node>
++        <node id="Sobel" kind="actor">
++            <data key="graph_desc">Code/include/sobel.h</data>
++            <loop name="sobel">
++                <param direction="IN" isConfig="true" name="width" type="int"/>
++                <param direction="IN" isConfig="true" name="height" type="int"/>
++                <param direction="IN" isConfig="false" name="input" type="unsigned char"/>
++                <param direction="OUT" isConfig="false" name="output" type="unsigned char"/>
++            </loop>
++            <port kind="cfg_input" name="width"/>
++            <port kind="cfg_input" name="height"/>
++            <port annotation="NONE" expr="height*width" kind="input" name="input"/>
++            <port annotation="NONE" expr="height*width" kind="output" name="output"/>
++        </node>
++        <node id="Split" kind="actor">
++            <data key="graph_desc">Code/include/splitMerge.h</data>
++            <loop name="split">
++                <param direction="IN" isConfig="true" name="nbSlice" type="int"/>
++                <param direction="IN" isConfig="true" name="width" type="int"/>
++                <param direction="IN" isConfig="true" name="height" type="int"/>
++                <param direction="IN" isConfig="false" name="input" type="unsigned char"/>
++                <param direction="OUT" isConfig="false" name="output" type="unsigned char"/>
++            </loop>
++            <port kind="cfg_input" name="width"/>
++            <port kind="cfg_input" name="height"/>
++            <port kind="cfg_input" name="nbSlice"/>
++            <port annotation="NONE" expr="height*width" kind="input" name="input"/>
++            <port annotation="NONE"
++                expr="nbSlice*width*(height/nbSlice+2)" kind="output" name="output"/>
++        </node>
++        <node id="Merge" kind="actor">
++            <data key="graph_desc">Code/include/splitMerge.h</data>
++            <loop name="merge">
++                <param direction="IN" isConfig="true" name="nbSlice" type="int"/>
++                <param direction="IN" isConfig="true" name="width" type="int"/>
++                <param direction="IN" isConfig="true" name="height" type="int"/>
++                <param direction="IN" isConfig="false" name="input" type="unsigned char"/>
++                <param direction="OUT" isConfig="false" name="output" type="unsigned char"/>
++            </loop>
++            <port kind="cfg_input" name="width"/>
++            <port kind="cfg_input" name="height"/>
++            <port kind="cfg_input" name="nbSlice"/>
++            <port annotation="NONE"
++                expr="nbSlice*width*(height/nbSlice+2)" kind="input" name="input"/>
++            <port annotation="NONE" expr="height*width" kind="output" name="output"/>
++        </node>
+         <edge kind="fifo" source="Read_YUV" sourceport="u"
+             target="display" targetport="u" type="uchar"/>
+         <edge kind="fifo" source="Read_YUV" sourceport="v"
+             target="display" targetport="v" type="uchar"/>
+         <edge kind="fifo" source="Read_YUV" sourceport="y"
++            target="Split" targetport="input" type="uchar"/>
++        <edge kind="fifo" source="Sobel" sourceport="output"
++            target="Merge" targetport="input" type="uchar"/>
++        <edge kind="fifo" source="Split" sourceport="output"
++            target="Sobel" targetport="input" type="uchar"/>
++        <edge kind="fifo" source="Merge" sourceport="output"
+             target="display" targetport="y" type="uchar"/>
+         <edge kind="dependency" source="width" target="Read_YUV" targetport="width"/>
+         <edge kind="dependency" source="height" target="Read_YUV" targetport="height"/>
+         <edge kind="dependency" source="width" target="display" targetport="width"/>
+         <edge kind="dependency" source="height" target="display" targetport="height"/>
+         <edge kind="dependency" source="index" target="display" targetport="id"/>
++        <edge kind="dependency" source="width" target="Sobel" targetport="width"/>
++        <edge kind="dependency" source="height" target="sliceHeight"/>
++        <edge kind="dependency" source="nbSlice" target="sliceHeight"/>
++        <edge kind="dependency" source="height" target="Split" targetport="height"/>
++        <edge kind="dependency" source="width" target="Split" targetport="width"/>
++        <edge kind="dependency" source="nbSlice" target="Split" targetport="nbSlice"/>
++        <edge kind="dependency" source="height" target="Merge" targetport="height"/>
++        <edge kind="dependency" source="width" target="Merge" targetport="width"/>
++        <edge kind="dependency" source="nbSlice" target="Merge" targetport="nbSlice"/>
++        <edge kind="dependency" source="sliceHeight" target="Sobel" targetport="height"/>
+     </graph>
+ </graphml>
+diff --git a/tutorials/org.ietr.preesm.sobel/Archi/4CoreX86.slam b/tutorials/org.ietr.preesm.sobel/Archi/4CoreX86.slam
+new file mode 100644
+index 0000000..9f2885b
+--- /dev/null
++++ b/tutorials/org.ietr.preesm.sobel/Archi/4CoreX86.slam
+@@ -0,0 +1,83 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
++    <spirit:vendor>ietr</spirit:vendor>
++    <spirit:name>4CoreX86</spirit:name>
++    <spirit:library>preesm</spirit:library>
++    <spirit:version>1</spirit:version>
++    <spirit:componentInstances>
++        <spirit:componentInstance>
++            <spirit:instanceName>Core0</spirit:instanceName>
++            <spirit:componentRef spirit:library="" spirit:name="x86"
++                spirit:vendor="" spirit:version=""/>
++            <spirit:configurableElementValues/>
++        </spirit:componentInstance>
++        <spirit:componentInstance>
++            <spirit:instanceName>Core1</spirit:instanceName>
++            <spirit:componentRef spirit:library="" spirit:name="x86"
++                spirit:vendor="" spirit:version=""/>
++            <spirit:configurableElementValues/>
++        </spirit:componentInstance>
++        <spirit:componentInstance>
++            <spirit:instanceName>Core3</spirit:instanceName>
++            <spirit:componentRef spirit:library="" spirit:name="x86"
++                spirit:vendor="" spirit:version=""/>
++            <spirit:configurableElementValues/>
++        </spirit:componentInstance>
++        <spirit:componentInstance>
++            <spirit:instanceName>Core2</spirit:instanceName>
++            <spirit:componentRef spirit:library="" spirit:name="x86"
++                spirit:vendor="" spirit:version=""/>
++            <spirit:configurableElementValues/>
++        </spirit:componentInstance>
++        <spirit:componentInstance>
++            <spirit:instanceName>shared_mem</spirit:instanceName>
++            <spirit:componentRef spirit:library=""
++                spirit:name="SHARED_MEM" spirit:vendor="" spirit:version=""/>
++            <spirit:configurableElementValues/>
++        </spirit:componentInstance>
++    </spirit:componentInstances>
++    <spirit:interconnections>
++        <spirit:interconnection>
++            <spirit:name>2</spirit:name>
++            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
++            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Core1"/>
++        </spirit:interconnection>
++        <spirit:interconnection>
++            <spirit:name>4</spirit:name>
++            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
++            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Core3"/>
++        </spirit:interconnection>
++        <spirit:interconnection>
++            <spirit:name>3</spirit:name>
++            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Core2"/>
++            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
++        </spirit:interconnection>
++        <spirit:interconnection>
++            <spirit:name>1</spirit:name>
++            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Core0"/>
++            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
++        </spirit:interconnection>
++    </spirit:interconnections>
++    <spirit:hierConnections/>
++    <spirit:vendorExtensions>
++        <slam:componentDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
++            <slam:componentDescription slam:componentRef="x86"
++                slam:componentType="Operator" slam:refinement=""/>
++            <slam:componentDescription slam:componentRef="SHARED_MEM"
++                slam:componentType="parallelComNode" slam:refinement="" slam:speed="1000000000"/>
++        </slam:componentDescriptions>
++        <slam:linkDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
++            <slam:linkDescription slam:directedLink="undirected"
++                slam:linkType="DataLink" slam:referenceId="2"/>
++            <slam:linkDescription slam:directedLink="undirected"
++                slam:linkType="DataLink" slam:referenceId="4"/>
++            <slam:linkDescription slam:directedLink="undirected"
++                slam:linkType="DataLink" slam:referenceId="3"/>
++            <slam:linkDescription slam:directedLink="undirected"
++                slam:linkType="DataLink" slam:referenceId="1"/>
++        </slam:linkDescriptions>
++        <slam:designDescription xmlns:slam="http://sourceforge.net/projects/dftools/slam">
++            <slam:parameters/>
++        </slam:designDescription>
++    </spirit:vendorExtensions>
++</spirit:design>
+diff --git a/tutorials/org.ietr.preesm.sobel/Code/CMakeLists.txt b/tutorials/org.ietr.preesm.sobel/Code/CMakeLists.txt
+index a4d4434..51f404c 100644
+--- a/tutorials/org.ietr.preesm.sobel/Code/CMakeLists.txt
++++ b/tutorials/org.ietr.preesm.sobel/Code/CMakeLists.txt
+@@ -16,7 +16,7 @@ endif()
+ 
+ project(Sobel)
+ set(LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+-set(CMAKE_C_FLAGS "-DX1_CORE") 
++set(CMAKE_C_FLAGS "-DX4_CORES")
+
+ # *******************************************
+ # ************** SDL LIBRARY ****************
+diff --git a/tutorials/org.ietr.preesm.sobel/Code/include/sobel.h b/tutorials/org.ietr.preesm.sobel/Code/include/sobel.h
+new file mode 100644
+index 0000000..7029d02
+--- /dev/null
++++ b/tutorials/org.ietr.preesm.sobel/Code/include/sobel.h
+@@ -0,0 +1,31 @@
++/*
++	============================================================================
++	Name        : sobel.h
++	Author      : kdesnos
++	Version     : 1.1
++	Copyright   : CeCILL-C
++	Description : 2D Sobel filtering function
++	============================================================================
++*/
++
++#ifndef SOBEL_H
++#define SOBEL_H
++
++#include "preesm.h"
++
++/**
++* Function to apply the sobel filter to an image of size width*height.
++* The 1 pixel-wide border of the image will not be computed.
++*
++* @param width
++*        The width of the processed image
++* @param width
++*        The heigth of the processed image
++* @param input
++*        The input image
++* @param output
++*        The output image
++*/
++void sobel(int width, int height, IN unsigned char *input, OUT unsigned char *output);
++
++#endif
+diff --git a/tutorials/org.ietr.preesm.sobel/Code/include/splitMerge.h b/tutorials/org.ietr.preesm.sobel/Code/include/splitMerge.h
+new file mode 100644
+index 0000000..83ba97d
+--- /dev/null
++++ b/tutorials/org.ietr.preesm.sobel/Code/include/splitMerge.h
+@@ -0,0 +1,52 @@
++/*
++	============================================================================
++	Name        : splitMerge.h
++	Author      : kdesnos
++	Version     : 1.1
++	Copyright   : CECILL-C
++	Description : Function used to split an image into overlapping slices and
++                  merge them back together.
++	============================================================================
++*/
++
++#ifndef SPLIT_MERGE_H
++#define SPLIT_MERGE_H
++
++#include "preesm.h"
++
++/**
++* Function used to split an input image of size width*height into nbSlices
++* slices of size width*(height/nbSlice+2). It is the developper responsibility
++* to ensure that height is a multiple of nbSlice.
++*
++* @param nbSlice
++*        the number of slices produced
++* @param width
++*        the width of the input image
++* @param height
++*        the height of the input image
++* @param input
++*        the input image of size width*height
++* @param output
++*        the output buffer of size nbSlice*[width*(height/nbSlice+2)]
++*/
++void split(int nbSlice, int width, int height, IN unsigned char *input, OUT unsigned char *output);
++
++/**
++* Function used to assemble nbSlices slices of size width*(height/nbSlice+2)
++* into an output image of size width*height.
++*
++* @param nbSlice
++*        the number of slices assembled
++* @param width
++*        the width of the output image
++* @param height
++*        the height of the output image
++* @param input
++*        the input image slices
++* @param output
++*        the output image of size width*height
++*/
++void merge(int nbSlice, int width, int height, IN unsigned char *input, OUT unsigned char *output);
++
++#endif
+diff --git a/tutorials/org.ietr.preesm.sobel/Code/include/x86.h b/tutorials/org.ietr.preesm.sobel/Code/include/x86.h
+index 93f5f28..876170a 100644
+--- a/tutorials/org.ietr.preesm.sobel/Code/include/x86.h
++++ b/tutorials/org.ietr.preesm.sobel/Code/include/x86.h
+@@ -39,6 +39,8 @@
+ 
+ #include "yuvRead.h"
+ #include "yuvDisplay.h"
++#include "sobel.h"
++#include "splitMerge.h"
+ 
+ typedef unsigned char uchar;
+ 
+diff --git a/tutorials/org.ietr.preesm.sobel/Code/src/sobel.c b/tutorials/org.ietr.preesm.sobel/Code/src/sobel.c
+new file mode 100644
+index 0000000..6c5f92b
+--- /dev/null
++++ b/tutorials/org.ietr.preesm.sobel/Code/src/sobel.c
+@@ -0,0 +1,36 @@
++/*
++	============================================================================
++	Name        : sobel.c
++	Author      : kdesnos
++	Version     : 1.1
++	Copyright   : CECILL-C
++	Description :
++	============================================================================
++*/
++
++#include <string.h>
++#include <stdlib.h>
++
++#include "sobel.h"
++
++void sobel(int width, int height, unsigned char *input, unsigned char *output){
++    int i,j;
++
++    // Apply the filter
++    for(j=1; j<height-1; j++){
++        for(i=1; i<width-1; i++){
++            int gx = -input[(j-1)*width + i-1] -2*input[  j*width + i-1] -input[(j+1)*width + i-1]
++                     +input[(j-1)*width + i+1] +2*input[  j*width + i+1] +input[(j+1)*width + i+1];
++            int gy = -input[(j-1)*width + i-1] -2*input[(j-1)*width + i] -input[(j-1)*width + i+1]
++                     +input[(j+1)*width + i-1] +2*input[(j+1)*width + i] +input[(j+1)*width + i+1];
++
++            output[j*width + i] = (abs(gx) + abs(gy))/8;
++        }
++    }
++
++    // Fill the left and right sides
++    for(j=0; j<height ; j++){
++        output[j*width] = 0;
++        output[(j+1)*width-1] = 0;
++    }
++}
+diff --git a/tutorials/org.ietr.preesm.sobel/Code/src/splitMerge.c b/tutorials/org.ietr.preesm.sobel/Code/src/splitMerge.c
+new file mode 100644
+index 0000000..bc47509
+--- /dev/null
++++ b/tutorials/org.ietr.preesm.sobel/Code/src/splitMerge.c
+@@ -0,0 +1,52 @@
++/*
++============================================================================
++Name        : splitMerge.c
++Author      : kdesnos
++Version     : 1.1
++Copyright   : CECILL-C
++Description :
++============================================================================
++*/
++
++#include <string.h>
++#include <stdlib.h>
++
++#include "splitMerge.h"
++
++void split(int nbSlice, int width, int height, unsigned char *input, unsigned char *output){
++    int i,j;
++    int sliceSize =  width*height/nbSlice;
++    // Fill first and last line with 0
++    memset(output,0,width);
++    // First Slice
++    memcpy(output+width, input, sliceSize);
++    // Copy next line if several slice
++    if (nbSlice > 1){
++        memcpy(output +  width + sliceSize , input + sliceSize, width);
++    }
++    // Slice other than first and last
++    for(i=1; i<nbSlice-1; i++){
++        int destIndex = i*(sliceSize+2*width);
++        memcpy(output + destIndex, input+i*sliceSize-width, sliceSize+2*width);
++    }
++    // Last Slice
++    i = nbSlice-1;
++    if(nbSlice > 1){
++        // we have i = nbSlice -1;
++        int destIndex = i*(sliceSize+2*width);
++        memcpy(output + destIndex, input+i*sliceSize-width, sliceSize+width);
++    }
++    // Last line
++    memset(output + (height+nbSlice*2-1)*width,0,width);
++}
++
++
++void merge(int nbSlice, int width, int height, unsigned char *input, unsigned char *output){
++    int i;
++    int sliceSize =  width*height/nbSlice;
++    // Copy the slice content except the first and last lines
++    for(i = 0; i< nbSlice; i++){
++        int idx = i*(sliceSize+2*width);
++        memcpy(output+i*sliceSize, input+idx+width, sliceSize);
++    }
++}
+diff --git a/tutorials/org.ietr.preesm.sobel/Scenarios/1core.scenario b/tutorials/org.ietr.preesm.sobel/Scenarios/1core.scenario
+index 250f2c2..a6ec93f 100644
+--- a/tutorials/org.ietr.preesm.sobel/Scenarios/1core.scenario
++++ b/tutorials/org.ietr.preesm.sobel/Scenarios/1core.scenario
+@@ -9,8 +9,11 @@
+         <constraintGroup>
+             <operator name="Core0"/>
+             <task name="top_display/Read_YUV"/>
++            <task name="top_display/Merge"/>
+             <task name="top_display/display"/>
+             <task name="top_display"/>
++            <task name="top_display/Split"/>
++            <task name="top_display/Sobel"/>
+         </constraintGroup>
+     </constraints>
+     <relativeconstraints excelUrl=""/>
+diff --git a/tutorials/org.ietr.preesm.sobel/Scenarios/4core.scenario b/tutorials/org.ietr.preesm.sobel/Scenarios/4core.scenario
+new file mode 100644
+index 0000000..daa2718
+--- /dev/null
++++ b/tutorials/org.ietr.preesm.sobel/Scenarios/4core.scenario
+@@ -0,0 +1,68 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<scenario>
++    <files>
++        <algorithm url="/org.ietr.preesm.sobel/Algo/top_display.pi"/>
++        <architecture url="/org.ietr.preesm.sobel/Archi/4CoreX86.slam"/>
++        <codegenDirectory url="/org.ietr.preesm.sobel/Code/generated"/>
++    </files>
++    <constraints excelUrl="">
++        <constraintGroup>
++            <operator name="Core0"/>
++            <task name="top_display/Merge"/>
++            <task name="top_display/Read_YUV"/>
++            <task name="top_display/display"/>
++            <task name="top_display"/>
++            <task name="top_display/Split"/>
++            <task name="top_display/Sobel"/>
++        </constraintGroup>
++        <constraintGroup>
++            <operator name="Core1"/>
++            <task name="top_display/Merge"/>
++            <task name="top_display/Read_YUV"/>
++            <task name="top_display/display"/>
++            <task name="top_display"/>
++            <task name="top_display/Split"/>
++            <task name="top_display/Sobel"/>
++        </constraintGroup>
++        <constraintGroup>
++            <operator name="Core2"/>
++            <task name="top_display/Merge"/>
++            <task name="top_display/Read_YUV"/>
++            <task name="top_display/display"/>
++            <task name="top_display"/>
++            <task name="top_display/Split"/>
++            <task name="top_display/Sobel"/>
++        </constraintGroup>
++        <constraintGroup>
++            <operator name="Core3"/>
++            <task name="top_display/Merge"/>
++            <task name="top_display/Read_YUV"/>
++            <task name="top_display/display"/>
++            <task name="top_display"/>
++            <task name="top_display/Split"/>
++            <task name="top_display/Sobel"/>
++        </constraintGroup>
++    </constraints>
++    <relativeconstraints excelUrl=""/>
++    <timings excelUrl="">
++        <memcpyspeed opname="x86" setuptime="1" timeperunit="3.3333334E-5"/>
++    </timings>
++    <simuParams>
++        <mainCore>Core0</mainCore>
++        <mainComNode>shared_mem</mainComNode>
++        <averageDataSize>1000</averageDataSize>
++        <dataTypes>
++            <dataType name="uchar" size="1"/>
++            <dataType name="char" size="1"/>
++        </dataTypes>
++        <specialVertexOperators>
++            <specialVertexOperator path="Core3"/>
++            <specialVertexOperator path="Core0"/>
++            <specialVertexOperator path="Core1"/>
++            <specialVertexOperator path="Core2"/>
++        </specialVertexOperators>
++        <numberOfTopExecutions>1</numberOfTopExecutions>
++    </simuParams>
++    <variables excelUrl=""/>
++    <parameterValues/>
++</scenario>
+-- 
+1.8.3.msysgit.0
+

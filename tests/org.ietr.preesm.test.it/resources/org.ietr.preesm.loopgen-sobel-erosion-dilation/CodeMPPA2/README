@@ -1,0 +1,10 @@
+Set the PREESM generated path to the directory ./geneerated/
+
+#mount your PREESM project to an mppa-dev
+ssh accesscore@mppa-dev
+mkdir ~/some_path/project
+sshfs name@your_ip:/path/to/your/preesm/project ~/some_path/project
+cd some_path/project
+
+#run by jtag
+make run_pcie_hw -j8

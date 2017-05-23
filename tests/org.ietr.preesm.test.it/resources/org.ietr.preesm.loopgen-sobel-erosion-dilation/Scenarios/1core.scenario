@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/org.ietr.preesm.loopgen-sobel-erosion-dilation/Algo/myapp.pi"/>
+        <architecture url="/org.ietr.preesm.loopgen-sobel-erosion-dilation/Archi/1CoreX86.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.loopgen-sobel-erosion-dilation/Code/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="myapp/hierarchical_sobel_median/input"/>
+            <task name="myapp/hierarchical_sobel_median"/>
+            <task name="myapp/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp/hierarchical_sobel_median/hierarchicalSplit"/>
+            <task name="myapp/hierarchical_sobel_median/Sobel"/>
+            <task name="myapp/hierarchical_sobel_median/output"/>
+            <task name="myapp/Split"/>
+            <task name="myapp/Read_YUV"/>
+            <task name="myapp/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp"/>
+            <task name="myapp/display"/>
+        </constraintGroup>
+    </constraints>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl="">
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="3.3333334E-5"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="uchar" size="1"/>
+            <dataType name="char" size="1"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+        <numberOfTopExecutions>1</numberOfTopExecutions>
+    </simuParams>
+    <variables excelUrl=""/>
+    <parameterValues/>
+</scenario>
