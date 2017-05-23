@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Preesm Integration Tests
+Bundle-SymbolicName: org.ietr.preesm.test.it
+Bundle-Version: 2.2.10.qualifier
+Bundle-Vendor: IETR/INSA Rennes
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.junit;bundle-version="4.12.0",
+ org.clojars.gilesc.jgrapht;bundle-version="0.8.2",
+ org.eclipse.core.resources;bundle-version="3.11.1",
+ org.eclipse.core.runtime;bundle-version="3.12.0",
+ org.ietr.preesm.core,
+ org.ietr.dftools.workflow,
+ org.ietr.dftools.algorithm,
+ org.ietr.dftools.ui,
+ org.ietr.preesm.algorithm,
+ org.ietr.preesm.architecture,
+ org.ietr.preesm.cli,
+ org.ietr.preesm.codegen,
+ org.ietr.preesm.codegen.xtend,
+ org.ietr.preesm.evaluator,
+ org.ietr.preesm.experiment.model,
+ org.ietr.preesm.mapper,
+ org.ietr.preesm.memory,
+ org.ietr.preesm.pimm.algorithm,
+ org.ietr.preesm.ui,
+ org.ietr.preesm.utils,
+ org.ietr.dftools.architecture,
+ org.ietr.dftools.architecture.ui
