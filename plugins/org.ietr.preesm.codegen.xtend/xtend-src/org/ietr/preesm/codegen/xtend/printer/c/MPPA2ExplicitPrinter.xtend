@@ -115,20 +115,18 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		extern long long total_put_cycles[];
 		extern mppa_async_segment_t shared_segment;
 
+		/* Scratchpad buffer ptr (will be malloced) */
+		char *local_buffer __attribute__((unused)) = NULL;
+		/* Scratchpad buffer size */
+		int local_buffer_size __attribute__((unused)) = 0;
+
 	'''
 
 	override printBufferDefinition(Buffer buffer) '''
 		«IF buffer.name == "Shared"»
 		//#define Shared ((char*)0x10000000ULL) 	/* Shared buffer in DDR */
 		«ELSE»
-		/* Scratchpad buffer size */
-		int «buffer.name»_size =
-		char *local_buffer;
 		«buffer.type» «buffer.name»[«buffer.size»] __attribute__ ((aligned(64))); // «buffer.comment» size:= «buffer.size»*«buffer.type» aligned on data cache line
-		«{	var out = ""
-			local_buffer_size = 0
-			scratch_pad_buffer = buffer.name
-			out}»
 		«ENDIF»
 	'''
 
@@ -158,7 +156,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		«{
 		var gets = ""
 		var local_offset = 0;
-			/* go through eventual out param fisrt because of foot FiniteLoopBlock */
+			/* go through eventual out param first because of foot FiniteLoopBlock */
 			for(param : block2.outBuffers){
 				var b = param.container;
 				var offset = param.offset;
@@ -609,8 +607,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	}
 
 	override postProcessing(CharSequence charSequence){
-		return charSequence.toString.replace(
-				"int " + scratch_pad_buffer + "_size = ",
-				"int " + scratch_pad_buffer + "_size = " + local_buffer_size + ";");
+		var ret = charSequence.toString.replace("int local_buffer_size __attribute__((unused)) = 0;", "int local_buffer_size __attribute__((unused)) = " + local_buffer_size + ";");
+		return ret;
 	}
 }
