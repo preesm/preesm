@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/org.ietr.preesm.stereo/Algo/yuv_stereo_top.pi"/>
+        <architecture url="/org.ietr.preesm.stereo/Archi/4CoreX86.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.stereo/Code/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="yuv_stereo_top/Display_RGB1"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/grayR"/>
+            <task name="yuv_stereo_top/Census_R"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/rawDisparity"/>
+            <task name="yuv_stereo_top/Display_rgb0"/>
+            <task name="yuv_stereo_top/Read_YUV_L"/>
+            <task name="yuv_stereo_top/lum2RGB"/>
+            <task name="yuv_stereo_top/Census_L"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/cenR"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/OffsetGen"/>
+            <task name="yuv_stereo_top/Median_Filter"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/DisparityGen"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/grayL"/>
+            <task name="yuv_stereo_top"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/cenL"/>
+            <task name="yuv_stereo_top/RGB2Gray_L"/>
+            <task name="yuv_stereo_top/Broadcast0"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast3"/>
+            <task name="yuv_stereo_top/Read_YUV_R"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast4"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast1"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast2"/>
+            <task name="yuv_stereo_top/Write_PPM"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/ComputeHorWeights"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast0"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/ComputeVertWeights"/>
+            <task name="yuv_stereo_top/RGB2Gray_R"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/AggregateCost"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/CostConstruction"/>
+            <task name="yuv_stereo_top/Split"/>
+            <task name="yuv_stereo_top/YUV2RGB_L"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast5"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/rgbL"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/disparitySelect"/>
+            <task name="yuv_stereo_top/broadcast1"/>
+            <task name="yuv_stereo_top/broadcast2"/>
+            <task name="yuv_stereo_top/YUV2RGB_R"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/grayR"/>
+            <task name="yuv_stereo_top/Census_R"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/rawDisparity"/>
+            <task name="yuv_stereo_top/Read_YUV_L"/>
+            <task name="yuv_stereo_top/lum2RGB"/>
+            <task name="yuv_stereo_top/Census_L"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/cenR"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/OffsetGen"/>
+            <task name="yuv_stereo_top/Median_Filter"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/DisparityGen"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/grayL"/>
+            <task name="yuv_stereo_top"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/cenL"/>
+            <task name="yuv_stereo_top/RGB2Gray_L"/>
+            <task name="yuv_stereo_top/Broadcast0"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast3"/>
+            <task name="yuv_stereo_top/Read_YUV_R"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast4"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast1"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast2"/>
+            <task name="yuv_stereo_top/Write_PPM"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/ComputeHorWeights"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast0"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/ComputeVertWeights"/>
+            <task name="yuv_stereo_top/RGB2Gray_R"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/AggregateCost"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/CostConstruction"/>
+            <task name="yuv_stereo_top/Split"/>
+            <task name="yuv_stereo_top/YUV2RGB_L"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast5"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/rgbL"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/disparitySelect"/>
+            <task name="yuv_stereo_top/broadcast1"/>
+            <task name="yuv_stereo_top/broadcast2"/>
+            <task name="yuv_stereo_top/YUV2RGB_R"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/grayR"/>
+            <task name="yuv_stereo_top/Census_R"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/rawDisparity"/>
+            <task name="yuv_stereo_top/Read_YUV_L"/>
+            <task name="yuv_stereo_top/lum2RGB"/>
+            <task name="yuv_stereo_top/Census_L"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/cenR"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/OffsetGen"/>
+            <task name="yuv_stereo_top/Median_Filter"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/DisparityGen"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/grayL"/>
+            <task name="yuv_stereo_top"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/cenL"/>
+            <task name="yuv_stereo_top/RGB2Gray_L"/>
+            <task name="yuv_stereo_top/Broadcast0"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast3"/>
+            <task name="yuv_stereo_top/Read_YUV_R"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast4"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast1"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast2"/>
+            <task name="yuv_stereo_top/Write_PPM"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/ComputeHorWeights"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast0"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/ComputeVertWeights"/>
+            <task name="yuv_stereo_top/RGB2Gray_R"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/AggregateCost"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/CostConstruction"/>
+            <task name="yuv_stereo_top/Split"/>
+            <task name="yuv_stereo_top/YUV2RGB_L"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast5"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/rgbL"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/disparitySelect"/>
+            <task name="yuv_stereo_top/broadcast1"/>
+            <task name="yuv_stereo_top/broadcast2"/>
+            <task name="yuv_stereo_top/YUV2RGB_R"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core2"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/grayR"/>
+            <task name="yuv_stereo_top/Census_R"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/rawDisparity"/>
+            <task name="yuv_stereo_top/Read_YUV_L"/>
+            <task name="yuv_stereo_top/lum2RGB"/>
+            <task name="yuv_stereo_top/Census_L"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/cenR"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/OffsetGen"/>
+            <task name="yuv_stereo_top/Median_Filter"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/DisparityGen"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/grayL"/>
+            <task name="yuv_stereo_top"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/cenL"/>
+            <task name="yuv_stereo_top/RGB2Gray_L"/>
+            <task name="yuv_stereo_top/Broadcast0"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast3"/>
+            <task name="yuv_stereo_top/Read_YUV_R"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast4"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast1"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast2"/>
+            <task name="yuv_stereo_top/Write_PPM"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/ComputeHorWeights"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast0"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/ComputeVertWeights"/>
+            <task name="yuv_stereo_top/RGB2Gray_R"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/AggregateCost"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/CostConstruction"/>
+            <task name="yuv_stereo_top/Split"/>
+            <task name="yuv_stereo_top/YUV2RGB_L"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/Broadcast5"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/rgbL"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work/disparitySelect"/>
+            <task name="yuv_stereo_top/broadcast1"/>
+            <task name="yuv_stereo_top/broadcast2"/>
+            <task name="yuv_stereo_top/YUV2RGB_R"/>
+            <task name="yuv_stereo_top/Cost_Parallel_Work"/>
+        </constraintGroup>
+    </constraints>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl="">
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="3.3333333E-7"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="uchar" size="1"/>
+            <dataType name="float" size="4"/>
+            <dataType name="int" size="4"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core3"/>
+            <specialVertexOperator path="Core0"/>
+            <specialVertexOperator path="Core1"/>
+            <specialVertexOperator path="Core2"/>
+        </specialVertexOperators>
+        <numberOfTopExecutions>1</numberOfTopExecutions>
+    </simuParams>
+    <variables excelUrl=""/>
+    <parameterValues/>
+</scenario>
