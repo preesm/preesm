@@ -272,56 +272,6 @@
         </configuration>
       </plugin>
     </plugins>
-
-    <!-- Disable m2e lifecycle mapping to avoid errors showing in Eclipse -->
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <!-- Disable Checkstyle (already covered by the Eclipse checkstyle
-                  plugin) -->
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <versionRange>[1.0.0,)</versionRange>
-                    <goals>
-                      <goal>checkstyle</goal>
-                      <goal>checkstyle-aggregate</goal>
-                      <goal>check</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore />
-                  </action>
-                </pluginExecution>
-
-                <!-- Disable directory maven plugin (unsupported and unused -->
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.commonjava.maven.plugins</groupId>
-                    <artifactId>directory-maven-plugin</artifactId>
-                    <versionRange>[0.0.0,)</versionRange>
-                    <goals>
-                      <goal>highest-basedir</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore />
-                  </action>
-                </pluginExecution>
-
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
 
   <modules>
@@ -438,5 +388,66 @@
         </plugins>
       </build>
     </profile>
+    
+    <!-- Specific profile for Eclipse related configuration -->
+    <profile>
+	  <id>only-eclipse</id>
+	  <activation>
+		<property>
+		  <name>m2e.version</name>
+		</property>
+	  </activation>
+	  <build>
+		<!-- Disable m2e lifecycle mapping to avoid errors showing in Eclipse -->
+		<pluginManagement>
+		  <plugins>
+			<plugin>
+			  <groupId>org.eclipse.m2e</groupId>
+			  <artifactId>lifecycle-mapping</artifactId>
+			  <version>1.0.0</version>
+			  <configuration>
+				<lifecycleMappingMetadata>
+				  <pluginExecutions>
+					<!-- Disable Checkstyle (already covered by the Eclipse checkstyle
+					  plugin) -->
+					<pluginExecution>
+					  <pluginExecutionFilter>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-checkstyle-plugin</artifactId>
+						<versionRange>[1.0.0,)</versionRange>
+						<goals>
+						  <goal>checkstyle</goal>
+						  <goal>checkstyle-aggregate</goal>
+						  <goal>check</goal>
+						</goals>
+					  </pluginExecutionFilter>
+					  <action>
+						<ignore />
+					  </action>
+					</pluginExecution>
+
+					<!-- Disable directory maven plugin (unsupported and unused -->
+					<pluginExecution>
+					  <pluginExecutionFilter>
+						<groupId>org.commonjava.maven.plugins</groupId>
+						<artifactId>directory-maven-plugin</artifactId>
+						<versionRange>[0.0.0,)</versionRange>
+						<goals>
+						  <goal>highest-basedir</goal>
+						</goals>
+					  </pluginExecutionFilter>
+					  <action>
+						<ignore />
+					  </action>
+					</pluginExecution>
+
+				  </pluginExecutions>
+				</lifecycleMappingMetadata>
+			  </configuration>
+			</plugin>
+		  </plugins>
+		</pluginManagement>
+	  </build>
+	</profile>
   </profiles>
 </project>
