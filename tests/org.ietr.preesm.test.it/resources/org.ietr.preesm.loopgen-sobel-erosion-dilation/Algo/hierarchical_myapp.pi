@@ -11,7 +11,7 @@
         <node id="width" kind="cfg_in_iface"/>
         <node expr="2" id="window" kind="param"/>
         <node expr="(2*window+1)" id="overlap" kind="param"/>
-        <node expr="4" id="nbSliceHierarchical" kind="param"/>
+        <node expr="16" id="nbSliceHierarchical" kind="param"/>
         <node expr="(pheight/nbSliceHierarchical+2*overlap)"
             id="heightSlice" kind="param"/>
         <node expr="640" id="pwidth" kind="param"/>

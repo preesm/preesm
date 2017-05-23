@@ -21,7 +21,7 @@
         <node id="height" kind="cfg_in_iface"/>
         <node expr="640" id="pwidth" kind="param"/>
         <node expr="5" id="poverlap" kind="param"/>
-        <node expr="130" id="pheight" kind="param"/>
+        <node expr="40" id="pheight" kind="param"/>
         <node expr="2" id="pwindow" kind="param"/>
         <node id="Sobel" kind="actor">
             <data key="graph_desc">Code/include/sobel.h</data>
