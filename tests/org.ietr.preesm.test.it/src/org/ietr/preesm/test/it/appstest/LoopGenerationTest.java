@@ -12,7 +12,7 @@ import org.junit.Test;
 /**
 *
 */
-public class LoopGenerationTests {
+public class LoopGenerationTest {
   @Test
   public void testLoopGenFlow() throws FileNotFoundException, InvalidModelException, CoreException {
     final String projectName = "org.ietr.preesm.loopgen-sobel-erosion-dilation";
@@ -32,10 +32,7 @@ public class LoopGenerationTests {
         final String workflowFilePathStr = "/Workflows/" + w + ".workflow";
         final String scenarioFilePathStr = "/Scenarios/" + s + ".scenario";
         final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        if (success == false) {
-          System.out.print("[FAILED] Workflow " + workflowFilePathStr + " Scenario " + scenarioFilePathStr);
-        }
-        Assert.assertTrue(success);
+        Assert.assertTrue("[FAILED] Workflow " + workflowFilePathStr + " Scenario " + scenarioFilePathStr, success);
       }
     }
   }
