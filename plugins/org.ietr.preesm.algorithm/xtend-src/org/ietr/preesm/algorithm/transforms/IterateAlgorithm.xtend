@@ -150,7 +150,6 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 					val relativeconstraintManager = scenario.relativeconstraintManager
 					for(Integer i : 0 .. nbIt - 1){
 						relativeconstraintManager.addConstraint(id,groupId)
-						if(i>=0){} // remove warning (unused)
 					}
 				}
 				groupId++
