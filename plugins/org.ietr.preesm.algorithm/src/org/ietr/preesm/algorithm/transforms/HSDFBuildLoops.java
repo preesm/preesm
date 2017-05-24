@@ -624,48 +624,60 @@ public class HSDFBuildLoops {
       final List<SDFEdge> edgeUpperGraph = new ArrayList<>();
       for (final SDFAbstractVertex v : resultGraph.vertexSet()) {
         if (v instanceof SDFInterfaceVertex) {
-          // v.getAssociatedEdge(((SDFInterfaceVertex)v).getSinks())
-          for (final SDFInterfaceVertex i : v.getSources()) {
-            edgeUpperGraph.add(v.getAssociatedEdge(i));
-          }
-          for (final SDFInterfaceVertex i : v.getSinks()) {
-            edgeUpperGraph.add(v.getAssociatedEdge(i));
-          }
+          p("Current interface: " + v.getName());
+          edgeUpperGraph.addAll(resultGraph.incomingEdgesOf(v));
+          edgeUpperGraph.addAll(resultGraph.outgoingEdgesOf(v));
         }
       }
 
+      // for (final SDFEdge i : edgeUpperGraph) {
+      // p("upperEdge: " + i.getSourceLabel() + " " + i.getTargetLabel());
+      // }
+
       int bufSize = 0;
-      // int nbWorkingBufferAllocated = 0;
+      int nbWorkingBufferAllocated = 0;
       for (final SDFAbstractVertex v : resultGraph.vertexSet()) {
-        if (v instanceof SDFVertex) {
-          final List<SDFEdge> edge = new ArrayList<>();
-          edge.addAll(getInEdges(v));
-          edge.addAll(getOutEdges(v));
-          for (final SDFEdge e : edge) {
-            if ((allocEdge.contains(e)/* already visited */ == false) && (edgeUpperGraph.contains(e) /* allocation by Karol */ == false)) {
+        // if (v instanceof SDFVertex) {
+        final List<SDFEdge> edge = new ArrayList<>();
+        edge.addAll(getInEdges(v));
+        edge.addAll(getOutEdges(v));
+        for (final SDFEdge e : edge) {
+          if ((allocEdge.contains(e)/* already visited */ == false) && (edgeUpperGraph.contains(e) /* allocation by Karol */ == false)) {
+            int mem = 0;
+            if (v instanceof SDFVertex) {
+              // p("Allocating Vertex" + v.getName());
               int nbRep = 0;
               try {
                 nbRep = Integer.parseInt(e.getTarget().getNbRepeat().toString());
               } catch (final NumberFormatException | InvalidExpressionException ex) {
                 // TODO Auto-generated catch block
                 ex.printStackTrace();
+                throw new WorkflowException("Internal Memory allocation failed for actor " + v.getName());
               }
-              int mem = 0;
               try {
                 mem = nbRep * e.getCons().intValue();
               } catch (final InvalidExpressionException ex) {
                 // TODO Auto-generated catch block
                 ex.printStackTrace();
+                throw new WorkflowException("Internal Memory allocation failed for actor " + v.getName());
               }
-              bufSize += mem;
-              // nbWorkingBufferAllocated++;
-              allocEdge.add(e);
+            } else if (v instanceof SDFBroadcastVertex || v instanceof SDFRoundBufferVertex) {
+              // p("Allocating Special Vertex: " + v.getName());
+              mem += e.getCons().intValue() * v.getNbRepeatAsInteger();
+            } else {
+              throw new WorkflowException("Internal Memory allocation failed for actor " + v.getName() + " unsupported special actor");
             }
+
+            bufSize += mem;
+            nbWorkingBufferAllocated++;
+            p("Internal memory allocation for edge " + e.getSourceLabel() + " " + e.getTargetLabel());
+            allocEdge.add(e);
           }
+          // }
         }
       }
       g.getPropertyBean().setValue("working_memory", new Integer(bufSize));
-      // p("Internal working memory computation " + g.getName() + " number of allocation " + nbWorkingBufferAllocated + " byte allocated " + bufSize);
+      p("Internal working memory computation " + g.getName() + " number of allocation " + nbWorkingBufferAllocated + " byte allocated " + bufSize);
     }
     return inputGraph;
   }

@@ -1032,11 +1032,11 @@ public class CodegenModelGenerator {
         for (final SDFInterfaceVertex s : i.getSources()) {
           final SDFAbstractVertex a = i.getAssociatedEdge(s).getTarget();
           final SDFAbstractVertex b = i.getAssociatedEdge(s).getSource();
-          if (a instanceof SDFVertex /* || a instanceof SDFRoundBufferVertex || a instanceof SDFBroadcastVertex */) {
+          if (a instanceof SDFVertex || a instanceof SDFRoundBufferVertex || a instanceof SDFBroadcastVertex) {
             outputRepVertexs.add(a);
             // p("1 input target " + a.getName());
           }
-          if (b instanceof SDFVertex /* || b instanceof SDFRoundBufferVertex || b instanceof SDFBroadcastVertex */) {
+          if (b instanceof SDFVertex || b instanceof SDFRoundBufferVertex || b instanceof SDFBroadcastVertex) {
             inputRepVertexs.add(b);
             // p("2 input source " + b.getName());
           }
@@ -1044,11 +1044,11 @@ public class CodegenModelGenerator {
         for (final SDFInterfaceVertex s : i.getSinks()) {
           final SDFAbstractVertex a = i.getAssociatedEdge(s).getTarget();
           final SDFAbstractVertex b = i.getAssociatedEdge(s).getSource();
-          if (a instanceof SDFVertex /* || a instanceof SDFRoundBufferVertex || a instanceof SDFBroadcastVertex */) {
+          if (a instanceof SDFVertex || a instanceof SDFRoundBufferVertex || a instanceof SDFBroadcastVertex) {
             inputRepVertexs.add(a);
             // p("3 output target " + a.getName());
           }
-          if (b instanceof SDFVertex /* || b instanceof SDFRoundBufferVertex || b instanceof SDFBroadcastVertex */) {
+          if (b instanceof SDFVertex || b instanceof SDFRoundBufferVertex || b instanceof SDFBroadcastVertex) {
             outputRepVertexs.add(b);
             // p("4 output source " + b.getName());
           }
