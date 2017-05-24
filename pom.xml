@@ -83,7 +83,7 @@
 		<repository>
 			<id>TMF Repo</id>
 			<layout>p2</layout>
-			<url>${eclipse.mirror}/modeling/tmf/xtext/updates/composite/releases/</url>
+			<url>${eclipse.mirror}/modeling/tmf/xtext/updates/releases/</url>
 		</repository>
 		<!-- add Preesm repository to resolve dependencies -->
 		<repository>
