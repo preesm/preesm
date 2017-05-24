@@ -53,7 +53,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 import org.ietr.preesm.codegen.xtend.task.CodegenException
-import java.util.ArrayList
 import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
 
@@ -233,48 +232,15 @@ class MPPA2Printer extends CPrinter {
 	'''
 
 	override printBroadcast(SpecialCall call) '''
-	// Broadcast «call.name»«var input = call.inputBuffers.head»«var index = 0»
-	{
-	«FOR output : call.outputBuffers»«var outputIdx = 0»
-		«FOR nbIter : 0..output.size/input.size+1/*Worst case is output.size exec of the loop */»
-			«IF outputIdx < output.size /* Execute loop core until all output for current buffer are produced */»
-				«val value = Math::min(output.size-outputIdx,input.size-index)»«
-				printMemcpy(output,outputIdx,input,index,value,output.type)»«
-				{index=(index+value)%input.size;outputIdx=(outputIdx+value); ""}»
-			«ENDIF»
-		«ENDFOR»
-	«ENDFOR»
-	}
+		«{
+			super.printBroadcast(call)
+		}»
 	'''
 
-
-
 	override printRoundBuffer(SpecialCall call) '''
-	// RoundBuffer «call.name»«var output = call.outputBuffers.head»«var index = 0»«var inputIdx = 0»
-	«/*Compute a list of useful memcpy (the one writing the outputed value) */
-	var copiedInBuffers = {var totalSize = call.inputBuffers.fold(0)[res, buf | res+buf.size]
-		 var lastInputs = new ArrayList
-		 inputIdx = totalSize
-		 var i = call.inputBuffers.size	- 1
-		 while(totalSize-inputIdx < output.size){
-		 	inputIdx = inputIdx - call.inputBuffers.get(i).size
-		 	lastInputs.add(0,call.inputBuffers.get(i))
-		 	i=i-1
-		 }
-		 inputIdx = inputIdx %  output.size
-		 lastInputs
-		 }»
-	{
-		«FOR input : copiedInBuffers»
-			«FOR nbIter : 0..input.size/output.size+1/*Worst number the loop exec */»
-				«IF inputIdx < input.size /* Execute loop core until all input for current buffer are produced */»
-					«val value = Math::min(input.size-inputIdx,output.size-index)»«
-					printMemcpy(output,index,input,inputIdx,value,input.type)»«
-					{index=(index+value)%output.size;inputIdx=(inputIdx+value); ""}»
-				«ENDIF»
-			«ENDFOR»
-		«ENDFOR»
-	}
+		«{
+			super.printRoundBuffer(call)
+		}»
 	'''
 
 	override printJoin(SpecialCall call) '''
