@@ -293,6 +293,19 @@
       <artifactId>checkstyle</artifactId>
 	  <version>${checkstyle-version}</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.codehaus.mojo/findbugs-maven-plugin -->
+	<dependency>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>findbugs-maven-plugin</artifactId>
+		<version>3.0.4</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.sonarsource.scanner.maven/sonar-maven-plugin -->
+	<dependency>
+		<groupId>org.sonarsource.scanner.maven</groupId>
+		<artifactId>sonar-maven-plugin</artifactId>
+		<version>3.3.0.603</version>
+	</dependency>
+
   </dependencies>
 
   <modules>
