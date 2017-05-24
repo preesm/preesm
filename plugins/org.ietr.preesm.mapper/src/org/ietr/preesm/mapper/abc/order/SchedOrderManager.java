@@ -54,9 +54,8 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 // TODO: Auto-generated Javadoc
 /**
- * The scheduling order manager keeps a total order of the vertices and a partial order in each
- * schedule. It is used by the schedule edge adder to insert schedule edges. The scheduling order
- * manager is observed by the time keeper and reports the vertices which timings need to be updated.
+ * The scheduling order manager keeps a total order of the vertices and a partial order in each schedule. It is used by the schedule edge adder to insert
+ * schedule edges. The scheduling order manager is observed by the time keeper and reports the vertices which timings need to be updated.
  *
  * @author mpelcat
  */
@@ -117,8 +116,7 @@ public class SchedOrderManager extends Observable {
   }
 
   /**
-   * Considering that vertex already has a total order (is already in total order list), inserts it
-   * at the appropriate position in its schedule.
+   * Considering that vertex already has a total order (is already in total order list), inserts it at the appropriate position in its schedule.
    *
    * @param vertex
    *          the vertex
@@ -129,8 +127,7 @@ public class SchedOrderManager extends Observable {
 
       final ComponentInstance cmp = vertex.getEffectiveComponent();
       final int newSchedulingTotalOrder = totalIndexOf(vertex);
-      final int maxPrec = findLastestPredIndexForOp(vertex.getEffectiveComponent(),
-          newSchedulingTotalOrder);
+      final int maxPrec = findLastestPredIndexForOp(vertex.getEffectiveComponent(), newSchedulingTotalOrder);
       // Testing a possible synchronized vertex
       MapperDAGVertex elt = get(newSchedulingTotalOrder);
       if ((elt == null) || elt.equals(vertex)) {
@@ -158,9 +155,8 @@ public class SchedOrderManager extends Observable {
   }
 
   /**
-   * If the input is a vertex, appends it at the end of one schedule and at the end of total order.
-   * If the input is synschronizedVertices, appends it at the end of all concerned schedules and at
-   * the end of total order.
+   * If the input is a vertex, appends it at the end of one schedule and at the end of total order. If the input is synschronizedVertices, appends it at the end
+   * of all concerned schedules and at the end of total order.
    *
    * @param elt
    *          the elt
@@ -412,8 +408,7 @@ public class SchedOrderManager extends Observable {
   }
 
   /**
-   * Reconstructs the total order using the total order stored in DAG. Creates synchronized vertices
-   * when several vertices have the same order
+   * Reconstructs the total order using the total order stored in DAG. Creates synchronized vertices when several vertices have the same order
    *
    * @param dag
    *          the dag
@@ -572,8 +567,7 @@ public class SchedOrderManager extends Observable {
   }
 
   /**
-   * Gets the mapperdag vertex list of a given component. Splits the synchronized vertices objects
-   * into their components
+   * Gets the mapperdag vertex list of a given component. Splits the synchronized vertices objects into their components
    *
    * @param cmp
    *          the cmp

@@ -41,8 +41,7 @@ import java.util.ResourceBundle;
 
 // TODO: Auto-generated Javadoc
 /**
- * This class is used to gather all texts displayed in scenario editor. The strings are stored in
- * message.properties and retrieved through {@link Messages}
+ * This class is used to gather all texts displayed in scenario editor. The strings are stored in message.properties and retrieved through {@link Messages}
  *
  * @author mpelcat
  */
@@ -53,8 +52,7 @@ public class Messages {
   private static final String BUNDLE_NAME = "messages"; //$NON-NLS-1$
 
   /** The Constant RESOURCE_BUNDLE. */
-  private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
-      .getBundle(Messages.class.getPackage().getName() + "." + Messages.BUNDLE_NAME);
+  private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(Messages.class.getPackage().getName() + "." + Messages.BUNDLE_NAME);
 
   /**
    * Instantiates a new messages.

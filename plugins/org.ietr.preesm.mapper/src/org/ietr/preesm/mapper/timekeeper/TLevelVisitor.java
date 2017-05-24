@@ -121,8 +121,7 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
   }
 
   /**
-   * Visiting a vertex to assign t-levels. Prececessors are considered already visited. Successors
-   * are accepted
+   * Visiting a vertex to assign t-levels. Prececessors are considered already visited. Successors are accepted
    *
    * @param dagVertex
    *          the dag vertex
@@ -135,8 +134,7 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
     final VertexTiming timing = dagVertex.getTiming();
 
     // Synchronized vertices are taken into account to compute t-level
-    final List<MapperDAGVertex> synchroVertices = timing
-        .getVertices((MapperDAG) dagVertex.getBase());
+    final List<MapperDAGVertex> synchroVertices = timing.getVertices((MapperDAG) dagVertex.getBase());
 
     if (dagVertex.incomingEdges().isEmpty()) {
       timing.setTLevel(0L);
@@ -154,8 +152,7 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
         final VertexTiming predTiming = pred.getTiming();
         final EdgeTiming edgeTiming = predecessors.get(pred).getTiming();
         if (predTiming.hasTLevel() && predTiming.hasCost() && edgeTiming.hasCost()) {
-          final long currentTLevel = predTiming.getTLevel() + predTiming.getCost()
-              + edgeTiming.getCost();
+          final long currentTLevel = predTiming.getTLevel() + predTiming.getCost() + edgeTiming.getCost();
           if (currentTLevel > maxTLevel) {
             maxTLevel = currentTLevel;
           }
@@ -173,9 +170,7 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.
-   * AbstractEdge)
+   * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model. AbstractEdge)
    */
   @Override
   public void visit(final MapperDAGEdge dagEdge) {

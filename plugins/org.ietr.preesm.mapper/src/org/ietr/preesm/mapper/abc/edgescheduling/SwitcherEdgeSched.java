@@ -45,8 +45,7 @@ import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 // TODO: Auto-generated Javadoc
 /**
- * An advanced edge scheduler. It looks for the largest free interval in scheduling and schedules
- * the new communication in this slot.
+ * An advanced edge scheduler. It looks for the largest free interval in scheduling and schedules the new communication in this slot.
  *
  * @author mpelcat
  */
@@ -70,19 +69,15 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched#schedule(org.ietr.preesm.mapper.model.
-   * special.TransferVertex, org.ietr.preesm.mapper.model.MapperDAGVertex,
-   * org.ietr.preesm.mapper.model.MapperDAGVertex)
+   * @see org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched#schedule(org.ietr.preesm.mapper.model. special.TransferVertex,
+   * org.ietr.preesm.mapper.model.MapperDAGVertex, org.ietr.preesm.mapper.model.MapperDAGVertex)
    */
   @Override
-  public void schedule(final TransferVertex vertex, final MapperDAGVertex source,
-      final MapperDAGVertex target) {
+  public void schedule(final TransferVertex vertex, final MapperDAGVertex source, final MapperDAGVertex target) {
 
     final ComponentInstance component = vertex.getEffectiveComponent();
     // intervalFinder.displayCurrentSchedule(vertex, source);
-    final Interval largestInterval = this.intervalFinder.findLargestFreeInterval(component, source,
-        target);
+    final Interval largestInterval = this.intervalFinder.findLargestFreeInterval(component, source, target);
 
     if (largestInterval.getDuration() > 0) {
       this.orderManager.insertAtIndex(largestInterval.getTotalOrderIndex(), vertex);
@@ -92,7 +87,7 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
 
       if ((targetIndex - sourceIndex) > 0) {
         final Random r = new Random();
-        int nextInt = r.nextInt(Integer.MAX_VALUE);
+        final int nextInt = r.nextInt(Integer.MAX_VALUE);
         int randomVal = Math.abs(nextInt);
         randomVal = randomVal % (targetIndex - sourceIndex);
         final int index = sourceIndex + randomVal;

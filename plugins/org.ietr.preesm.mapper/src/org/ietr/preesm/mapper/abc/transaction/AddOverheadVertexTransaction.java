@@ -98,8 +98,8 @@ public class AddOverheadVertexTransaction extends Transaction {
    * @param orderManager
    *          the order manager
    */
-  public AddOverheadVertexTransaction(final MapperDAGEdge edge, final MapperDAG implementation,
-      final AbstractRouteStep step, final long overheadTime, final OrderManager orderManager) {
+  public AddOverheadVertexTransaction(final MapperDAGEdge edge, final MapperDAG implementation, final AbstractRouteStep step, final long overheadTime,
+      final OrderManager orderManager) {
     super();
     this.edge = edge;
     this.implementation = implementation;
@@ -122,13 +122,11 @@ public class AddOverheadVertexTransaction extends Transaction {
     final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();
 
     if (this.edge instanceof PrecedenceEdge) {
-      WorkflowLogger.getLogger().log(Level.INFO,
-          "no overhead vertex corresponding to a schedule edge");
+      WorkflowLogger.getLogger().log(Level.INFO, "no overhead vertex corresponding to a schedule edge");
       return;
     }
 
-    final String overtexID = "__overhead (" + currentSource.getName() + ","
-        + currentTarget.getName() + ")";
+    final String overtexID = "__overhead (" + currentSource.getName() + "," + currentTarget.getName() + ")";
 
     if (this.overheadTime > 0) {
       this.oVertex = new OverheadVertex(overtexID, this.implementation);
@@ -154,8 +152,7 @@ public class AddOverheadVertexTransaction extends Transaction {
 
       // TODO: Look at switching possibilities
       /*
-       * if (true) { TaskSwitcher taskSwitcher = new TaskSwitcher();
-       * taskSwitcher.setOrderManager(orderManager); taskSwitcher.insertVertexBefore(currentTarget,
+       * if (true) { TaskSwitcher taskSwitcher = new TaskSwitcher(); taskSwitcher.setOrderManager(orderManager); taskSwitcher.insertVertexBefore(currentTarget,
        * oVertex); } else
        */
       this.orderManager.insertBefore(currentTarget, this.oVertex);

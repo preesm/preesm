@@ -9,7 +9,7 @@ import org.junit.Test;
  */
 public class JEPCustomFunctionTest {
 
-  private void testEvaluation(String input, long expected) {
+  private void testEvaluation(final String input, final long expected) {
     final long evaluate = ExpressionEvaluator.evaluate(input);
     Assert.assertEquals(expected, evaluate);
   }

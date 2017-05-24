@@ -12,13 +12,13 @@ import org.ietr.preesm.experiment.model.pimm.visitor.VisitorPackage;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!-- end-user-doc -->
- * 
+ *
  * @generated
  */
 public class VisitorFactoryImpl extends EFactoryImpl implements VisitorFactory {
   /**
    * Creates the default factory implementation. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   public static VisitorFactory init() {
@@ -35,7 +35,7 @@ public class VisitorFactoryImpl extends EFactoryImpl implements VisitorFactory {
 
   /**
    * Creates an instance of the factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   public VisitorFactoryImpl() {
@@ -44,7 +44,7 @@ public class VisitorFactoryImpl extends EFactoryImpl implements VisitorFactory {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -57,7 +57,7 @@ public class VisitorFactoryImpl extends EFactoryImpl implements VisitorFactory {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -67,7 +67,7 @@ public class VisitorFactoryImpl extends EFactoryImpl implements VisitorFactory {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @deprecated
    * @generated
    */

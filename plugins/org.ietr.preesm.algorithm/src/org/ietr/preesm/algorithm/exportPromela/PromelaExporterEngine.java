@@ -67,8 +67,8 @@ public class PromelaExporterEngine {
    * @param synchronousActor
    *          the synchronous actor
    */
-  public void printSDFGraphToPromelaFile(final SDFGraph sdf, final PreesmScenario scenario,
-      IPath path, final boolean fifoShared, final boolean synchronousActor) {
+  public void printSDFGraphToPromelaFile(final SDFGraph sdf, final PreesmScenario scenario, IPath path, final boolean fifoShared,
+      final boolean synchronousActor) {
     /// Create the exporter
     final PromelaPrinter exporter = new PromelaPrinter(sdf, scenario);
     exporter.setFifoSharedAlloc(fifoShared);

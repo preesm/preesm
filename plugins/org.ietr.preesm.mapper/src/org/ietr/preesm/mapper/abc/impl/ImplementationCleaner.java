@@ -93,8 +93,7 @@ public class ImplementationCleaner {
 
     for (final DAGVertex v : ImplementationCleaner.getAllTransfers(vertex)) {
       if (v instanceof TransferVertex) {
-        this.transactionManager.add(new RemoveVertexTransaction((MapperDAGVertex) v,
-            this.implementation, this.orderManager));
+        this.transactionManager.add(new RemoveVertexTransaction((MapperDAGVertex) v, this.implementation, this.orderManager));
 
       }
     }
@@ -116,8 +115,7 @@ public class ImplementationCleaner {
       if (v instanceof TransferVertex) {
         final MapperDAGVertex o = ((TransferVertex) v).getPrecedingOverhead();
         if ((o != null) && (o instanceof OverheadVertex)) {
-          this.transactionManager
-              .add(new RemoveVertexTransaction(o, this.implementation, this.orderManager));
+          this.transactionManager.add(new RemoveVertexTransaction(o, this.implementation, this.orderManager));
         }
       }
     }
@@ -139,8 +137,7 @@ public class ImplementationCleaner {
       if (v instanceof TransferVertex) {
         final MapperDAGVertex o = ((TransferVertex) v).getInvolvementVertex();
         if ((o != null) && (o instanceof InvolvementVertex)) {
-          this.transactionManager
-              .add(new RemoveVertexTransaction(o, this.implementation, this.orderManager));
+          this.transactionManager.add(new RemoveVertexTransaction(o, this.implementation, this.orderManager));
         }
       }
     }
@@ -150,8 +147,7 @@ public class ImplementationCleaner {
   }
 
   /**
-   * Removes the precedence edges scheduling a vertex and schedules its successor after its
-   * predecessor.
+   * Removes the precedence edges scheduling a vertex and schedules its successor after its predecessor.
    *
    * @param vertex
    *          the vertex
@@ -160,8 +156,7 @@ public class ImplementationCleaner {
 
     final MapperDAGVertex prev = this.orderManager.getPrevious(vertex);
     final MapperDAGVertex next = this.orderManager.getNext(vertex);
-    final PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(this.orderManager,
-        this.implementation);
+    final PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(this.orderManager, this.implementation);
 
     if (prev != null) {
       adder.removePrecedenceEdge(prev, vertex);
@@ -176,8 +171,7 @@ public class ImplementationCleaner {
 
     if (((prev != null) && (next != null)) && ((edges == null) || edges.isEmpty())) {
       // TODO: Remove, only for debug
-      if (! prev.getEffectiveOperator().getInstanceName().equals(next.getEffectiveOperator()
-          .getInstanceName())) {
+      if (!prev.getEffectiveOperator().getInstanceName().equals(next.getEffectiveOperator().getInstanceName())) {
         System.out.println("wrong!!");
       }
       adder.addPrecedenceEdge(prev, next);
@@ -186,8 +180,7 @@ public class ImplementationCleaner {
   }
 
   /**
-   * Gets all transfers from routes coming from or going to vertex. Do not execute if overheads are
-   * present
+   * Gets all transfers from routes coming from or going to vertex. Do not execute if overheads are present
    *
    * @param vertex
    *          the vertex

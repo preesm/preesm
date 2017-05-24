@@ -57,7 +57,7 @@ public interface SharedMemoryCommunication extends Communication {
    * If the meaning of the '<em>Semaphore</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Semaphore</em>' reference.
    * @see #setSemaphore(Semaphore)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSharedMemoryCommunication_Semaphore()

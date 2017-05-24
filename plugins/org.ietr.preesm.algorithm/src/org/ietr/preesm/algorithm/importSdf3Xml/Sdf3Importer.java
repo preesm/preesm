@@ -54,8 +54,7 @@ import org.ietr.preesm.utils.paths.PathTools;
 
 // TODO: Auto-generated Javadoc
 /**
- * This class is a {@link Workflow} task that parse a SDF in the SDF3 XML format and output its
- * corresponding {@link SDFGraph}.
+ * This class is a {@link Workflow} task that parse a SDF in the SDF3 XML format and output its corresponding {@link SDFGraph}.
  *
  * @author kdesnos
  *
@@ -71,27 +70,22 @@ public class Sdf3Importer extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
-   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
-   * org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs,
-      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
-      final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
     // Rem: Logger is used to display messages in the console
     final Logger logger = WorkflowLogger.getLogger();
 
     // Retrieve the inputs
-    final Design architecture = (Design) inputs
-        .get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
-    final PreesmScenario scenario = (PreesmScenario) inputs
-        .get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
+    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     // Locate the intput file
-    final String sPath = PathTools.getAbsolutePath(parameters.get("path"),
-        workflow.getProjectName());
+    final String sPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
     final IPath path = new Path(sPath);
 
     final SDF3ImporterEngine engine = new SDF3ImporterEngine();

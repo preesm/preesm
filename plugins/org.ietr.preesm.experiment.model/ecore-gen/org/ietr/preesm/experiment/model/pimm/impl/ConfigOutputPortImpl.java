@@ -67,7 +67,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 public class ConfigOutputPortImpl extends DataOutputPortImpl implements ConfigOutputPort {
   /**
    * The cached value of the '{@link #getOutgoingDependencies() <em>Outgoing Dependencies</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getOutgoingDependencies()
    * @generated
    * @ordered
@@ -267,8 +267,8 @@ public class ConfigOutputPortImpl extends DataOutputPortImpl implements ConfigOu
   @Override
   public EList<Dependency> getOutgoingDependencies() {
     if (this.outgoingDependencies == null) {
-      this.outgoingDependencies = new EObjectWithInverseResolvingEList<>(Dependency.class, this,
-          PiMMPackage.CONFIG_OUTPUT_PORT__OUTGOING_DEPENDENCIES, PiMMPackage.DEPENDENCY__SETTER);
+      this.outgoingDependencies = new EObjectWithInverseResolvingEList<>(Dependency.class, this, PiMMPackage.CONFIG_OUTPUT_PORT__OUTGOING_DEPENDENCIES,
+          PiMMPackage.DEPENDENCY__SETTER);
     }
     return this.outgoingDependencies;
   }

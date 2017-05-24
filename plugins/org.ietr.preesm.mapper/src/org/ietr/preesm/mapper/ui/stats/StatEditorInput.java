@@ -75,8 +75,7 @@ public class StatEditorInput implements IEditorInput {
    * @param params
    *          the params
    */
-  public StatEditorInput(final IAbc abc, final PreesmScenario scenario,
-      final Map<String, String> params) {
+  public StatEditorInput(final IAbc abc, final PreesmScenario scenario, final Map<String, String> params) {
     super();
     this.abc = abc;
     this.params = params;
@@ -151,8 +150,7 @@ public class StatEditorInput implements IEditorInput {
   public String getName() {
     if (this.abc instanceof LatencyAbc) {
       this.abc.updateFinalCosts();
-      return "Latency:" + ((LatencyAbc) this.abc).getFinalLatency() + " Cost:"
-          + this.abc.getFinalCost() + " " + WorkflowLogger.getFormattedTime();
+      return "Latency:" + ((LatencyAbc) this.abc).getFinalLatency() + " Cost:" + this.abc.getFinalCost() + " " + WorkflowLogger.getFormattedTime();
     } else {
       return "Stats " + WorkflowLogger.getFormattedTime();
     }

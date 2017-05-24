@@ -85,8 +85,7 @@ public class AddPrecedenceEdgeTransaction extends Transaction {
    * @param destination
    *          the destination
    */
-  public AddPrecedenceEdgeTransaction(final MapperDAG implementation, final MapperDAGVertex source,
-      final MapperDAGVertex destination) {
+  public AddPrecedenceEdgeTransaction(final MapperDAG implementation, final MapperDAGVertex source, final MapperDAGVertex destination) {
     super();
     this.destination = destination;
     this.implementation = implementation;

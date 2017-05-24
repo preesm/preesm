@@ -190,8 +190,7 @@ public class RouteCalculator {
    * @param alreadyVisitedNodes
    *          the already visited nodes
    */
-  private void exploreRoute(final ComponentInstance source, final ComponentInstance node,
-      final List<ComponentInstance> alreadyVisitedNodes) {
+  private void exploreRoute(final ComponentInstance source, final ComponentInstance node, final List<ComponentInstance> alreadyVisitedNodes) {
 
     // Iterating on outgoing and undirected edges
     final Set<Link> outgoingAndUndirected = new HashSet<>();
@@ -202,16 +201,14 @@ public class RouteCalculator {
       if (DesignTools.getOtherEnd(i, node).getComponent() instanceof ComNodeImpl) {
         final ComponentInstance newNode = DesignTools.getOtherEnd(i, node);
         if (!alreadyVisitedNodes.contains(newNode)) {
-          final List<ComponentInstance> newAlreadyVisitedNodes = new ArrayList<>(
-              alreadyVisitedNodes);
+          final List<ComponentInstance> newAlreadyVisitedNodes = new ArrayList<>(alreadyVisitedNodes);
           newAlreadyVisitedNodes.add(newNode);
           exploreRoute(source, newNode, newAlreadyVisitedNodes);
         }
       } else if ((DesignTools.getOtherEnd(i, node).getComponent() instanceof Operator)
           && !DesignTools.getOtherEnd(i, node).getInstanceName().equals(source.getInstanceName())) {
         final ComponentInstance target = DesignTools.getOtherEnd(i, node);
-        final AbstractRouteStep step = this.stepFactory.getRouteStep(source, alreadyVisitedNodes,
-            target);
+        final AbstractRouteStep step = this.stepFactory.getRouteStep(source, alreadyVisitedNodes, target);
         this.table.addRoute(source, target, new Route(step));
       }
     }
@@ -249,14 +246,12 @@ public class RouteCalculator {
             if ((routeSrcK != null) && (routeKTgt != null)) {
               final Route compoundRoute = new Route(routeSrcK, routeKTgt);
               if (compoundRoute.isSingleAppearance()) {
-                final long averageDataSize = this.scenario.getSimulationManager()
-                    .getAverageDataSize();
+                final long averageDataSize = this.scenario.getSimulationManager().getAverageDataSize();
                 // If this if statement is removed, several
                 // routes become available
                 if (table.getBestRoute(src, tgt) == null) {
                   table.addRoute(src, tgt, compoundRoute);
-                } else if (table.getBestRoute(src, tgt).evaluateTransferCost(
-                    averageDataSize) > compoundRoute.evaluateTransferCost(averageDataSize)) {
+                } else if (table.getBestRoute(src, tgt).evaluateTransferCost(averageDataSize) > compoundRoute.evaluateTransferCost(averageDataSize)) {
                   table.removeRoutes(src, tgt);
                   table.addRoute(src, tgt, compoundRoute);
                 }
@@ -295,8 +290,7 @@ public class RouteCalculator {
     final Route r = this.table.getBestRoute(op1, op2);
 
     if (r == null) {
-      WorkflowLogger.getLogger().log(Level.SEVERE,
-          "Did not find a route between " + op1 + " and " + op2 + ".");
+      WorkflowLogger.getLogger().log(Level.SEVERE, "Did not find a route between " + op1 + " and " + op2 + ".");
     }
 
     return r;

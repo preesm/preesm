@@ -62,14 +62,11 @@ public class SimpleEdgeSched extends AbstractEdgeSched {
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched#schedule(org.ietr.preesm.mapper.model.
-   * special.TransferVertex, org.ietr.preesm.mapper.model.MapperDAGVertex,
-   * org.ietr.preesm.mapper.model.MapperDAGVertex)
+   * @see org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched#schedule(org.ietr.preesm.mapper.model. special.TransferVertex,
+   * org.ietr.preesm.mapper.model.MapperDAGVertex, org.ietr.preesm.mapper.model.MapperDAGVertex)
    */
   @Override
-  public void schedule(final TransferVertex vertex, final MapperDAGVertex source,
-      final MapperDAGVertex target) {
+  public void schedule(final TransferVertex vertex, final MapperDAGVertex source, final MapperDAGVertex target) {
     this.orderManager.insertAfter(source, vertex);
 
   }

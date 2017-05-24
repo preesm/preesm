@@ -76,7 +76,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
   /**
    * The cached value of the '{@link #getVertices() <em>Vertices</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getVertices()
    * @generated
    * @ordered
@@ -85,7 +85,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 
   /**
    * The cached value of the '{@link #getFifos() <em>Fifos</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getFifos()
    * @generated
    * @ordered
@@ -94,7 +94,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 
   /**
    * The cached value of the '{@link #getParameters() <em>Parameters</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getParameters()
    * @generated
    * @ordered
@@ -103,7 +103,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 
   /**
    * The cached value of the '{@link #getDependencies() <em>Dependencies</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getDependencies()
    * @generated
    * @ordered

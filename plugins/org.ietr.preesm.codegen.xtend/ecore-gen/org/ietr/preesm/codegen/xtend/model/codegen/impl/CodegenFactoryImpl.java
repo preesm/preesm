@@ -46,6 +46,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.ActorCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer;
+import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator;
 import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
@@ -58,7 +59,9 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter;
 import org.ietr.preesm.codegen.xtend.model.codegen.Direction;
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation;
+import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
+import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
@@ -72,14 +75,14 @@ import org.ietr.preesm.memory.script.Range;
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!-- end-user-doc -->
- * 
+ *
  * @generated
  */
 public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
   /**
    * Creates the default factory implementation. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   public static CodegenFactory init() {
@@ -96,7 +99,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
   /**
    * Creates an instance of the factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   public CodegenFactoryImpl() {
@@ -150,6 +153,12 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
         return createConstantString();
       case CodegenPackage.NULL_BUFFER:
         return createNullBuffer();
+      case CodegenPackage.FINITE_LOOP_BLOCK:
+        return createFiniteLoopBlock();
+      case CodegenPackage.INT_VAR:
+        return createIntVar();
+      case CodegenPackage.BUFFER_ITERATOR:
+        return createBufferIterator();
       default:
         throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
     }
@@ -429,6 +438,39 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
   public NullBuffer createNullBuffer() {
     final NullBufferImpl nullBuffer = new NullBufferImpl();
     return nullBuffer;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public FiniteLoopBlock createFiniteLoopBlock() {
+    final FiniteLoopBlockImpl finiteLoopBlock = new FiniteLoopBlockImpl();
+    return finiteLoopBlock;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public IntVar createIntVar() {
+    final IntVarImpl intVar = new IntVarImpl();
+    return intVar;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public BufferIterator createBufferIterator() {
+    final BufferIteratorImpl bufferIterator = new BufferIteratorImpl();
+    return bufferIterator;
   }
 
   /**

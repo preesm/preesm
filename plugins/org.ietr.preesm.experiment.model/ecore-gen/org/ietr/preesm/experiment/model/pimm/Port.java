@@ -62,7 +62,7 @@ public interface Port extends PiMMVisitable {
    * If the meaning of the '<em>Name</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Name</em>' attribute.
    * @see #setName(String)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPort_Name()
@@ -73,7 +73,7 @@ public interface Port extends PiMMVisitable {
 
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Port#getName <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Name</em>' attribute.
    * @see #getName()
@@ -87,7 +87,7 @@ public interface Port extends PiMMVisitable {
    * If the meaning of the '<em>Kind</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Kind</em>' attribute.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPort_Kind()
    * @model required="true" changeable="false"

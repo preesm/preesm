@@ -65,7 +65,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 public class DependencyImpl extends EObjectImpl implements Dependency {
   /**
    * The cached value of the '{@link #getSetter() <em>Setter</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getSetter()
    * @generated
    * @ordered
@@ -74,7 +74,7 @@ public class DependencyImpl extends EObjectImpl implements Dependency {
 
   /**
    * The cached value of the '{@link #getGetter() <em>Getter</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getGetter()
    * @generated
    * @ordered

@@ -61,8 +61,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
 
   // Inputs
   /**
-   * Determining if the current involvement is executed by the sender or by the receiver of the
-   * transfer.
+   * Determining if the current involvement is executed by the sender or by the receiver of the transfer.
    */
   private final boolean isSender;
 
@@ -103,9 +102,8 @@ public class AddInvolvementVertexTransaction extends Transaction {
    * @param orderManager
    *          the order manager
    */
-  public AddInvolvementVertexTransaction(final boolean isSender, final MapperDAGEdge edge,
-      final MapperDAG implementation, final AbstractRouteStep step, final long involvementTime,
-      final OrderManager orderManager) {
+  public AddInvolvementVertexTransaction(final boolean isSender, final MapperDAGEdge edge, final MapperDAG implementation, final AbstractRouteStep step,
+      final long involvementTime, final OrderManager orderManager) {
     super();
     this.isSender = isSender;
     this.edge = edge;
@@ -129,13 +127,11 @@ public class AddInvolvementVertexTransaction extends Transaction {
     final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();
 
     if (this.edge instanceof PrecedenceEdge) {
-      WorkflowLogger.getLogger().log(Level.INFO,
-          "no involvement vertex corresponding to a schedule edge");
+      WorkflowLogger.getLogger().log(Level.INFO, "no involvement vertex corresponding to a schedule edge");
       return;
     }
 
-    final String ivertexID = "__involvement (" + currentSource.getName() + ","
-        + currentTarget.getName() + ")";
+    final String ivertexID = "__involvement (" + currentSource.getName() + "," + currentTarget.getName() + ")";
 
     if (this.involvementTime > 0) {
       this.iVertex = new InvolvementVertex(ivertexID, this.implementation);
@@ -154,8 +150,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
       }
 
       if (this.isSender) {
-        final MapperDAGEdge newInEdge = (MapperDAGEdge) this.implementation.addEdge(currentSource,
-            this.iVertex);
+        final MapperDAGEdge newInEdge = (MapperDAGEdge) this.implementation.addEdge(currentSource, this.iVertex);
         newInEdge.setInit(this.edge.getInit().clone());
         newInEdge.getTiming().setCost(0);
 
@@ -163,8 +158,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
         do {
           final Set<MapperDAGVertex> succs = receiverVertex.getSuccessors(false).keySet();
           if (succs.isEmpty() && (receiverVertex instanceof TransferVertex)) {
-            WorkflowLogger.getLogger().log(Level.SEVERE,
-                "Transfer has no successor: " + receiverVertex.getName());
+            WorkflowLogger.getLogger().log(Level.SEVERE, "Transfer has no successor: " + receiverVertex.getName());
           }
 
           for (final MapperDAGVertex next : receiverVertex.getSuccessors(false).keySet()) {
@@ -174,22 +168,19 @@ public class AddInvolvementVertexTransaction extends Transaction {
           }
         } while (receiverVertex instanceof TransferVertex);
 
-        final MapperDAGEdge newoutEdge = (MapperDAGEdge) this.implementation.addEdge(this.iVertex,
-            receiverVertex);
+        final MapperDAGEdge newoutEdge = (MapperDAGEdge) this.implementation.addEdge(this.iVertex, receiverVertex);
         newoutEdge.setInit(this.edge.getInit().clone());
         newoutEdge.getTiming().setCost(0);
 
         // TODO: Look at switching possibilities
         /*
-         * if (false) { TaskSwitcher taskSwitcher = new TaskSwitcher();
-         * taskSwitcher.setOrderManager(orderManager);
+         * if (false) { TaskSwitcher taskSwitcher = new TaskSwitcher(); taskSwitcher.setOrderManager(orderManager);
          * taskSwitcher.insertVertexBefore(currentTarget, iVertex); } else
          */
         this.orderManager.insertBefore(currentTarget, this.iVertex);
 
       } else {
-        final MapperDAGEdge newOutEdge = (MapperDAGEdge) this.implementation.addEdge(this.iVertex,
-            currentTarget);
+        final MapperDAGEdge newOutEdge = (MapperDAGEdge) this.implementation.addEdge(this.iVertex, currentTarget);
         newOutEdge.setInit(this.edge.getInit().clone());
         newOutEdge.getTiming().setCost(0);
 

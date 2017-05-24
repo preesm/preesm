@@ -15,20 +15,20 @@ import org.ietr.preesm.experiment.model.pimm.visitor.VisitorPackage;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Package</b>. <!-- end-user-doc -->
- * 
+ *
  * @generated
  */
 public class VisitorPackageImpl extends EPackageImpl implements VisitorPackage {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   private EClass piMMVisitableEClass = null;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   private EClass piMMVisitorEClass = null;
@@ -39,7 +39,7 @@ public class VisitorPackageImpl extends EPackageImpl implements VisitorPackage {
    * <p>
    * Note: the correct way to create the package is via the static factory method {@link #init init()}, which also performs initialization of the package, or
    * returns the registered package, if one already exists. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see org.eclipse.emf.ecore.EPackage.Registry
    * @see org.ietr.preesm.experiment.model.pimm.visitor.VisitorPackage#eNS_URI
    * @see #init()
@@ -51,7 +51,7 @@ public class VisitorPackageImpl extends EPackageImpl implements VisitorPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   private static boolean isInited = false;
@@ -62,7 +62,7 @@ public class VisitorPackageImpl extends EPackageImpl implements VisitorPackage {
    * <p>
    * This method is used to initialize {@link VisitorPackage#eINSTANCE} when that field is accessed. Clients should not invoke it directly. Instead, they should
    * simply access that field to obtain the package. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #eNS_URI
    * @see #createPackageContents()
    * @see #initializePackageContents()
@@ -101,7 +101,7 @@ public class VisitorPackageImpl extends EPackageImpl implements VisitorPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -111,7 +111,7 @@ public class VisitorPackageImpl extends EPackageImpl implements VisitorPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -121,7 +121,7 @@ public class VisitorPackageImpl extends EPackageImpl implements VisitorPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -131,7 +131,7 @@ public class VisitorPackageImpl extends EPackageImpl implements VisitorPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   private boolean isCreated = false;
@@ -139,7 +139,7 @@ public class VisitorPackageImpl extends EPackageImpl implements VisitorPackage {
   /**
    * Creates the meta-model objects for the package. This method is guarded to have no affect on any invocation but its first. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    */
   public void createPackageContents() {
@@ -156,7 +156,7 @@ public class VisitorPackageImpl extends EPackageImpl implements VisitorPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   private boolean isInitialized = false;

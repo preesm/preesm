@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.ietr.dftools.workflow.tasks">
+      <task
+            id="org.ietr.preesm.clustering.hierarchizer"
+            name="ClusteringWorkflowHierarchizerTask"
+            type="org.ietr.preesm.clustering.Clustering">
+         <outputs>
+            <output
+                  id="SDF"
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+            </output>
+         </outputs>
+         <inputs>
+            <input
+                  id="SDF"
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+            </input>
+         </inputs>
+      </task>
+   </extension>
+
+</plugin>

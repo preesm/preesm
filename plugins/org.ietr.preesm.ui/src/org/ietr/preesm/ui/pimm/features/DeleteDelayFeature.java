@@ -116,8 +116,8 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
 
     // Copy the bendpoints to the unique remaining connection.
     // Reconnect it.
-    EList<Point> preBendPoints = ((FreeFormConnection) preConnection).getBendpoints();
-    EList<Point> postBendPoints = ((FreeFormConnection) postConnection).getBendpoints();
+    final EList<Point> preBendPoints = ((FreeFormConnection) preConnection).getBendpoints();
+    final EList<Point> postBendPoints = ((FreeFormConnection) postConnection).getBendpoints();
     postBendPoints.addAll(0, preBendPoints);
     postConnection.setStart(preConnection.getStart());
 

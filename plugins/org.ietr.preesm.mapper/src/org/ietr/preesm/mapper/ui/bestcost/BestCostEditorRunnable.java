@@ -45,8 +45,7 @@ import org.eclipse.ui.PlatformUI;
 
 // TODO: Auto-generated Javadoc
 /**
- * Class used by the editor displaying the best latency found in time. Useful to run editor in
- * display thread.
+ * Class used by the editor displaying the best latency found in time. Useful to run editor in display thread.
  *
  * @author mpelcat
  */

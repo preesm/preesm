@@ -68,8 +68,7 @@ public class GanttTask {
    * @param component
    *          the component
    */
-  public GanttTask(final long startTime, final long duration, final String id,
-      final GanttComponent component) {
+  public GanttTask(final long startTime, final long duration, final String id, final GanttComponent component) {
     super();
     this.startTime = startTime;
     this.duration = duration;

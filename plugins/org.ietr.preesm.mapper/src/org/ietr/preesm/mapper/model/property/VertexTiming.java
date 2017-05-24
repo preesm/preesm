@@ -43,8 +43,7 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 // TODO: Auto-generated Javadoc
 /**
- * Property added to a DAG vertex to give its timing properties. Can be shared by several
- * synchronous vertices.
+ * Property added to a DAG vertex to give its timing properties. Can be shared by several synchronous vertices.
  *
  * @author pmenuet
  * @author mpelcat
@@ -58,8 +57,7 @@ public class VertexTiming extends GroupProperty {
   private long cost;
 
   /**
-   * B Level is the time between the vertex start and the total end of execution. Valid only with
-   * infinite homogeneous architecture simulator
+   * B Level is the time between the vertex start and the total end of execution. Valid only with infinite homogeneous architecture simulator
    */
   private long bLevel;
 
@@ -67,8 +65,8 @@ public class VertexTiming extends GroupProperty {
   private long tLevel;
 
   /**
-   * The total order range in the schedule. Each vertex ID is associated to its total order IDs must
-   * be consecutive to ensure possibility of synchronous scheduling!
+   * The total order range in the schedule. Each vertex ID is associated to its total order IDs must be consecutive to ensure possibility of synchronous
+   * scheduling!
    */
   private Map<String, Integer> totalOrders;
 

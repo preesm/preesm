@@ -64,7 +64,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
   /**
    * The cached value of the '{@link #getIncomingDependency() <em>Incoming Dependency</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getIncomingDependency()
    * @generated
    * @ordered

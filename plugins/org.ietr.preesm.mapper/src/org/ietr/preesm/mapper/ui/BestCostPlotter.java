@@ -161,8 +161,7 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
       this.datasets[i] = new TimeSeriesCollection(series);
       final NumberAxis rangeAxis = new NumberAxis("Schedule");
       rangeAxis.setAutoRangeIncludesZero(false);
-      final XYPlot subplot = new XYPlot(this.datasets[i], null, rangeAxis,
-          new XYLineAndShapeRenderer());
+      final XYPlot subplot = new XYPlot(this.datasets[i], null, rangeAxis, new XYLineAndShapeRenderer());
 
       subplot.setBackgroundPaint(Color.white);
       subplot.setDomainGridlinePaint(Color.lightGray);

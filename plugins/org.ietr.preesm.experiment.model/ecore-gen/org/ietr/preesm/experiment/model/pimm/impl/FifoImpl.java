@@ -71,7 +71,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 public class FifoImpl extends EObjectImpl implements Fifo {
   /**
    * The cached value of the '{@link #getSourcePort() <em>Source Port</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getSourcePort()
    * @generated
    * @ordered
@@ -80,7 +80,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 
   /**
    * The cached value of the '{@link #getTargetPort() <em>Target Port</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getTargetPort()
    * @generated
    * @ordered
@@ -89,7 +89,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 
   /**
    * The cached value of the '{@link #getDelay() <em>Delay</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getDelay()
    * @generated
    * @ordered
@@ -98,7 +98,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 
   /**
    * The default value of the '{@link #getId() <em>Id</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getId()
    * @generated
    * @ordered
@@ -107,7 +107,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 
   /**
    * The default value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getType()
    * @generated
    * @ordered
@@ -116,7 +116,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 
   /**
    * The cached value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getType()
    * @generated
    * @ordered

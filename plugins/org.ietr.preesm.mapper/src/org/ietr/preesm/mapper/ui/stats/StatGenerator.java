@@ -90,8 +90,7 @@ public class StatGenerator {
    * @param params
    *          the params
    */
-  public StatGenerator(final IAbc abc, final PreesmScenario scenario,
-      final Map<String, String> params) {
+  public StatGenerator(final IAbc abc, final PreesmScenario scenario, final Map<String, String> params) {
     super();
     this.params = params;
     this.scenario = scenario;
@@ -108,12 +107,10 @@ public class StatGenerator {
   }
 
   /**
-   * The span is the shortest possible execution time. It is theoretic because no communication time
-   * is taken into account. We consider that we have an infinity of cores of main type totally
-   * connected with perfect media. The span complex because the DAG is not serial-parallel but can
-   * be any DAG. It is retrieved from the DAG if it was set from the infinite homogeneous
-   * simulation. If there was no such simulation, the span length can not be recalculated because
-   * the original DAG without transfers is no more available.
+   * The span is the shortest possible execution time. It is theoretic because no communication time is taken into account. We consider that we have an infinity
+   * of cores of main type totally connected with perfect media. The span complex because the DAG is not serial-parallel but can be any DAG. It is retrieved
+   * from the DAG if it was set from the infinite homogeneous simulation. If there was no such simulation, the span length can not be recalculated because the
+   * original DAG without transfers is no more available.
    *
    * @return the DAG span length
    */
@@ -137,24 +134,21 @@ public class StatGenerator {
     long work = 0;
     final MapperDAG dag = this.abc.getDAG();
 
-    final ComponentInstance mainOp = DesignTools.getComponentInstance(this.abc.getArchitecture(),
-        this.scenario.getSimulationManager().getMainOperatorName());
+    final ComponentInstance mainOp = DesignTools.getComponentInstance(this.abc.getArchitecture(), this.scenario.getSimulationManager().getMainOperatorName());
 
     for (final DAGVertex vertex : dag.vertexSet()) {
-      if (!(vertex instanceof TransferVertex) && !(vertex instanceof OverheadVertex)
-          && !(vertex instanceof InvolvementVertex)) {
+      if (!(vertex instanceof TransferVertex) && !(vertex instanceof OverheadVertex) && !(vertex instanceof InvolvementVertex)) {
 
         // Looks for an operator able to execute currentvertex
         // (preferably
         // the given operator)
-        final ComponentInstance adequateOp = this.abc.findOperator((MapperDAGVertex) vertex, mainOp,
-            false);
+        final ComponentInstance adequateOp = this.abc.findOperator((MapperDAGVertex) vertex, mainOp, false);
 
         work += ((MapperDAGVertex) vertex).getInit().getTime(adequateOp);
 
         /*
-         * PreesmLogger.getLogger().log( Level.INFO, "task " + vertex.getName() + " duration " +
-         * ((MapperDAGVertex) vertex) .getInitialVertexProperty().getTime( adequateOp));
+         * PreesmLogger.getLogger().log( Level.INFO, "task " + vertex.getName() + " duration " + ((MapperDAGVertex) vertex) .getInitialVertexProperty().getTime(
+         * adequateOp));
          */
       }
     }
@@ -197,10 +191,8 @@ public class StatGenerator {
    */
   public int getNbMainTypeOperators() {
     int nbMainTypeOperators = 0;
-    final ComponentInstance mainOp = DesignTools.getComponentInstance(this.abc.getArchitecture(),
-        this.scenario.getSimulationManager().getMainOperatorName());
-    nbMainTypeOperators = DesignTools
-        .getInstancesOfComponent(this.abc.getArchitecture(), mainOp.getComponent()).size();
+    final ComponentInstance mainOp = DesignTools.getComponentInstance(this.abc.getArchitecture(), this.scenario.getSimulationManager().getMainOperatorName());
+    nbMainTypeOperators = DesignTools.getInstancesOfComponent(this.abc.getArchitecture(), mainOp.getComponent()).size();
     return nbMainTypeOperators;
   }
 
@@ -252,8 +244,7 @@ public class StatGenerator {
 
               .getEffectiveComponent();
 
-          if (srcOp.getInstanceName().equals(operator.getInstanceName())
-              || tgtOp.getInstanceName().equals(operator.getInstanceName())) {
+          if (srcOp.getInstanceName().equals(operator.getInstanceName()) || tgtOp.getInstanceName().equals(operator.getInstanceName())) {
             mem += me.getInit().getDataSize();
           }
         }

@@ -74,8 +74,7 @@ public class AbcParameters {
    * @param balanceLoads
    *          the balance loads
    */
-  public AbcParameters(final AbcType simulatorType, final EdgeSchedType edgeSchedType,
-      final boolean balanceLoads) {
+  public AbcParameters(final AbcType simulatorType, final EdgeSchedType edgeSchedType, final boolean balanceLoads) {
     this.textParameters = new HashMap<>();
     this.simulatorType = simulatorType;
     this.edgeSchedType = edgeSchedType;

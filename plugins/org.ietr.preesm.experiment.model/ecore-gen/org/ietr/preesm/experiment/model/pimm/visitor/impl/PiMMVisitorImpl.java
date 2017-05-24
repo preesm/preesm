@@ -47,7 +47,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.VisitorPackage;
 public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   protected PiMMVisitorImpl() {
@@ -56,7 +56,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -66,7 +66,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -76,7 +76,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -88,7 +88,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -100,7 +100,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -112,7 +112,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -124,7 +124,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -136,7 +136,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -148,7 +148,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -160,7 +160,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -172,7 +172,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -184,7 +184,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -196,7 +196,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -208,7 +208,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -220,7 +220,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -232,7 +232,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -244,7 +244,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -256,7 +256,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -268,7 +268,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -280,7 +280,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -292,7 +292,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -304,7 +304,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -316,7 +316,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -328,7 +328,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -340,7 +340,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -352,7 +352,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -364,7 +364,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -376,7 +376,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -388,7 +388,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -400,7 +400,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -412,7 +412,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -424,7 +424,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -436,7 +436,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override

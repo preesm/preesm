@@ -70,7 +70,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 public class HRefinementImpl extends RefinementImpl implements HRefinement {
   /**
    * The cached value of the '{@link #getLoopPrototype() <em>Loop Prototype</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getLoopPrototype()
    * @generated
    * @ordered
@@ -78,7 +78,7 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
   protected FunctionPrototype loopPrototype;
   /**
    * The cached value of the '{@link #getInitPrototype() <em>Init Prototype</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getInitPrototype()
    * @generated
    * @ordered

@@ -65,9 +65,8 @@ public class SpecialVertexManager {
       return false;
     }
 
-    if (kind.equalsIgnoreCase("dag_broadcast_vertex") || kind.equalsIgnoreCase("dag_fork_vertex")
-        || kind.equalsIgnoreCase("dag_join_vertex") || kind.equalsIgnoreCase("dag_init_vertex")
-        || kind.equalsIgnoreCase("dag_end_vertex")) {
+    if (kind.equalsIgnoreCase("dag_broadcast_vertex") || kind.equalsIgnoreCase("dag_fork_vertex") || kind.equalsIgnoreCase("dag_join_vertex")
+        || kind.equalsIgnoreCase("dag_init_vertex") || kind.equalsIgnoreCase("dag_end_vertex")) {
       return true;
     }
 

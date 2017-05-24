@@ -113,9 +113,8 @@ public class AddSendReceiveTransaction extends Transaction {
    * @param transferCost
    *          the transfer cost
    */
-  public AddSendReceiveTransaction(final MapperDAGEdge edge, final MapperDAG implementation,
-      final OrderManager orderManager, final int routeIndex, final AbstractRouteStep step,
-      final long transferCost) {
+  public AddSendReceiveTransaction(final MapperDAGEdge edge, final MapperDAG implementation, final OrderManager orderManager, final int routeIndex,
+      final AbstractRouteStep step, final long transferCost) {
     super();
     this.precedingTransaction = null;
     this.edge = edge;
@@ -144,9 +143,8 @@ public class AddSendReceiveTransaction extends Transaction {
    * @param transferCost
    *          the transfer cost
    */
-  public AddSendReceiveTransaction(final Transaction precedingTransaction, final MapperDAGEdge edge,
-      final MapperDAG implementation, final OrderManager orderManager, final int routeIndex,
-      final AbstractRouteStep step, final long transferCost) {
+  public AddSendReceiveTransaction(final Transaction precedingTransaction, final MapperDAGEdge edge, final MapperDAG implementation,
+      final OrderManager orderManager, final int routeIndex, final AbstractRouteStep step, final long transferCost) {
     super();
     this.precedingTransaction = precedingTransaction;
     this.edge = edge;
@@ -168,8 +166,7 @@ public class AddSendReceiveTransaction extends Transaction {
 
     MapperDAGVertex currentSource = null;
     final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();
-    if ((this.precedingTransaction != null)
-        && (this.precedingTransaction instanceof AddSendReceiveTransaction)) {
+    if ((this.precedingTransaction != null) && (this.precedingTransaction instanceof AddSendReceiveTransaction)) {
       currentSource = ((AddSendReceiveTransaction) this.precedingTransaction).receiveVertex;
 
       ((MapperDAG) currentSource.getBase()).removeAllEdges(currentSource, currentTarget);
@@ -178,24 +175,21 @@ public class AddSendReceiveTransaction extends Transaction {
     }
 
     // Careful!!! Those names are used in code generation
-    final String nameRadix = ((MapperDAGVertex) this.edge.getSource()).getName()
-        + currentTarget.getName() + "_" + this.routeIndex;
+    final String nameRadix = ((MapperDAGVertex) this.edge.getSource()).getName() + currentTarget.getName() + "_" + this.routeIndex;
 
     final String sendVertexID = "s_" + nameRadix;
 
     final String receiveVertexID = "r_" + nameRadix;
 
     if (this.edge instanceof PrecedenceEdge) {
-      WorkflowLogger.getLogger().log(Level.INFO,
-          "no transfer vertex corresponding to a schedule edge");
+      WorkflowLogger.getLogger().log(Level.INFO, "no transfer vertex corresponding to a schedule edge");
       return;
     }
 
     final ComponentInstance senderOperator = this.step.getSender();
     final ComponentInstance receiverOperator = this.step.getReceiver();
 
-    this.sendVertex = new SendVertex(sendVertexID, this.implementation,
-        (MapperDAGVertex) this.edge.getSource(), (MapperDAGVertex) this.edge.getTarget(), 0, 0);
+    this.sendVertex = new SendVertex(sendVertexID, this.implementation, (MapperDAGVertex) this.edge.getSource(), (MapperDAGVertex) this.edge.getTarget(), 0, 0);
     this.implementation.getTimings().dedicate(this.sendVertex);
     this.implementation.getMappings().dedicate(this.sendVertex);
     this.sendVertex.setRouteStep(this.step);
@@ -204,8 +198,8 @@ public class AddSendReceiveTransaction extends Transaction {
     this.sendVertex.setEffectiveOperator(senderOperator);
     this.orderManager.insertAfter(currentSource, this.sendVertex);
 
-    this.receiveVertex = new ReceiveVertex(receiveVertexID, this.implementation,
-        (MapperDAGVertex) this.edge.getSource(), (MapperDAGVertex) this.edge.getTarget(), 0, 0);
+    this.receiveVertex = new ReceiveVertex(receiveVertexID, this.implementation, (MapperDAGVertex) this.edge.getSource(),
+        (MapperDAGVertex) this.edge.getTarget(), 0, 0);
     this.implementation.getTimings().dedicate(this.receiveVertex);
     this.implementation.getMappings().dedicate(this.receiveVertex);
     this.receiveVertex.setRouteStep(this.step);
@@ -215,8 +209,7 @@ public class AddSendReceiveTransaction extends Transaction {
     this.orderManager.insertAfter(this.sendVertex, this.receiveVertex);
 
     this.newEdge1 = (MapperDAGEdge) this.implementation.addEdge(currentSource, this.sendVertex);
-    this.newEdge2 = (MapperDAGEdge) this.implementation.addEdge(this.sendVertex,
-        this.receiveVertex);
+    this.newEdge2 = (MapperDAGEdge) this.implementation.addEdge(this.sendVertex, this.receiveVertex);
     this.newEdge3 = (MapperDAGEdge) this.implementation.addEdge(this.receiveVertex, currentTarget);
 
     this.newEdge1.setInit(this.edge.getInit().clone());
@@ -233,12 +226,10 @@ public class AddSendReceiveTransaction extends Transaction {
 
     // TODO: Consider the need for transfer vertex rescheduling
     /*
-     * if (false) { // Remove original edges implementation.removeAllEdges(currentSource,
-     * currentTarget); }
+     * if (false) { // Remove original edges implementation.removeAllEdges(currentSource, currentTarget); }
      *
-     * if (false) { // Scheduling transfer vertex PrecedenceEdgeAdder adder = new
-     * PrecedenceEdgeAdder(orderManager, implementation); adder.scheduleVertex(sendVertex);
-     * adder.scheduleVertex(receiveVertex); }
+     * if (false) { // Scheduling transfer vertex PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager, implementation);
+     * adder.scheduleVertex(sendVertex); adder.scheduleVertex(receiveVertex); }
      */
 
     if (resultList != null) {

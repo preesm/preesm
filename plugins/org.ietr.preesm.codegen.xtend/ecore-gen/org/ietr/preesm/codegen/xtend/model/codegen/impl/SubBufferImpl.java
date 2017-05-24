@@ -62,7 +62,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
 public class SubBufferImpl extends BufferImpl implements SubBuffer {
   /**
    * The cached value of the '{@link #getContainer() <em>Container</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getContainer()
    * @generated
    * @ordered
@@ -71,7 +71,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 
   /**
    * The default value of the '{@link #getOffset() <em>Offset</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getOffset()
    * @generated
    * @ordered
@@ -80,7 +80,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 
   /**
    * The cached value of the '{@link #getOffset() <em>Offset</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getOffset()
    * @generated
    * @ordered

@@ -56,6 +56,9 @@ import org.ietr.preesm.codegen.xtend.task.CodegenException
 import java.util.ArrayList
 import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
+import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
+import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator
+import org.ietr.preesm.codegen.xtend.model.codegen.IntVar
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -157,7 +160,6 @@ class CPrinter extends DefaultPrinter {
 
 	'''
 
-
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
 		}
 	}
@@ -169,6 +171,22 @@ class CPrinter extends DefaultPrinter {
 	}
 	«ENDIF»
 	'''
+
+	//#pragma omp parallel for private(«block2.iter.name»)
+	override printFiniteLoopBlockHeader(FiniteLoopBlock block2) '''
+		
+		// Begin the for loop
+		{
+			int «block2.iter.name»;
+			for(«block2.iter.name»=0;«block2.iter.name»<«block2.nbIter»;«block2.iter.name»++){
+				
+	'''
+
+	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
+		}
+	}
+	'''
+
 	override String printFifoCall(FifoCall fifoCall) {
 		var result = "fifo" + fifoCall.operation.toString.toLowerCase.toFirstUpper + "("
 
@@ -341,6 +359,21 @@ class CPrinter extends DefaultPrinter {
 
 	override printSemaphoreDeclaration(Semaphore semaphore) '''
 	extern sem_t «semaphore.name»;
+	'''
+	override printBufferIterator(BufferIterator bufferIterator) '''«bufferIterator.name» + «printIntVar(bufferIterator.iter)» * «bufferIterator.iterSize»'''
+
+	override printBufferIteratorDeclaration(BufferIterator bufferIterator) ''''''
+
+	override printBufferIteratorDefinition(BufferIterator bufferIterator) ''''''
+
+	override printIntVar(IntVar intVar) '''«intVar.name»'''
+
+	override printIntVarDeclaration(IntVar intVar) '''
+	extern int «intVar.name»;
+	'''
+
+	override printIntVarDefinition(IntVar intVar) '''
+	int «intVar.name»;
 	'''
 
 }

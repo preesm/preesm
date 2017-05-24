@@ -64,7 +64,7 @@ public interface AbstractActor extends AbstractVertex {
    * If the meaning of the '<em>Data Input Ports</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Data Input Ports</em>' containment reference list.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getAbstractActor_DataInputPorts()
    * @model containment="true"
@@ -79,7 +79,7 @@ public interface AbstractActor extends AbstractVertex {
    * If the meaning of the '<em>Data Output Ports</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Data Output Ports</em>' containment reference list.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getAbstractActor_DataOutputPorts()
    * @model containment="true"
@@ -94,7 +94,7 @@ public interface AbstractActor extends AbstractVertex {
    * If the meaning of the '<em>Config Output Ports</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Config Output Ports</em>' containment reference list.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getAbstractActor_ConfigOutputPorts()
    * @model containment="true"

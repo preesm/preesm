@@ -78,14 +78,14 @@ import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!-- end-user-doc -->
- * 
+ *
  * @generated
  */
 public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 
   /**
    * Creates the default factory implementation. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   public static PiMMFactory init() {
@@ -102,7 +102,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 
   /**
    * Creates an instance of the factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   public PiMMFactoryImpl() {

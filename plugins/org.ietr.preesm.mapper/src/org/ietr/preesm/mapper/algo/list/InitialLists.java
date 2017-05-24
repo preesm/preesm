@@ -139,8 +139,7 @@ public class InitialLists implements Cloneable {
   }
 
   /**
-   * checkpredecessor: Choose the vertex necessary to continue the CPNdominantlist and add it in the
-   * CPN dominant list.
+   * checkpredecessor: Choose the vertex necessary to continue the CPNdominantlist and add it in the CPN dominant list.
    *
    * @param dag
    *          the dag
@@ -152,14 +151,12 @@ public class InitialLists implements Cloneable {
    *          the abc
    * @return : true if a vertex was found
    */
-  private boolean choosePredecessor(final MapperDAG dag, final MapperDAGVertex currentvertex,
-      final List<MapperDAGVertex> orderlist, final LatencyAbc abc) {
+  private boolean choosePredecessor(final MapperDAG dag, final MapperDAGVertex currentvertex, final List<MapperDAGVertex> orderlist, final LatencyAbc abc) {
 
     MapperDAGVertex cpnvertex = null;
 
     final DirectedGraph<DAGVertex, DAGEdge> castDag = dag;
-    final DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex = new DirectedNeighborIndex<>(
-        castDag);
+    final DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex = new DirectedNeighborIndex<>(castDag);
 
     final Set<DAGVertex> predset = new HashSet<>();
 
@@ -188,8 +185,7 @@ public class InitialLists implements Cloneable {
   }
 
   /**
-   * ibnChoice: Chooses among the node's predecessors, the vertex necessary to continue the
-   * algorithm.
+   * ibnChoice: Chooses among the node's predecessors, the vertex necessary to continue the algorithm.
    *
    * @param dag
    *          the dag
@@ -201,8 +197,7 @@ public class InitialLists implements Cloneable {
    *          the archi
    * @return : MapperDAGVertex
    */
-  private MapperDAGVertex ibnChoice(final MapperDAG dag, final Set<DAGVertex> predset,
-      final List<MapperDAGVertex> orderlist, final LatencyAbc archi) {
+  private MapperDAGVertex ibnChoice(final MapperDAG dag, final Set<DAGVertex> predset, final List<MapperDAGVertex> orderlist, final LatencyAbc archi) {
 
     final Iterator<DAGVertex> iter = predset.iterator();
     MapperDAGVertex currentvertex = null;
@@ -227,8 +222,7 @@ public class InitialLists implements Cloneable {
         blevelmax = bLevel;
         tlevelmax = tLevel;
       } else if (bLevel == -1) {
-        WorkflowLogger.getLogger().log(Level.SEVERE,
-            "CPN list construction: b-level can not be computed for vertex " + currentvertex);
+        WorkflowLogger.getLogger().log(Level.SEVERE, "CPN list construction: b-level can not be computed for vertex " + currentvertex);
       }
 
     }
@@ -238,8 +232,8 @@ public class InitialLists implements Cloneable {
   }
 
   /**
-   * constructCPN : Critical Path implemented in the CPN-DominantList (Critical Path Nodes= CPN) and
-   * the FCP-list (Final Critical Path = FCP). See YK Kwok thesis p.59
+   * constructCPN : Critical Path implemented in the CPN-DominantList (Critical Path Nodes= CPN) and the FCP-list (Final Critical Path = FCP). See YK Kwok
+   * thesis p.59
    *
    * @param dag
    *          the dag
@@ -251,8 +245,7 @@ public class InitialLists implements Cloneable {
    *          the abc
    * @return true, if successful
    */
-  public boolean constructCPN(final MapperDAG dag, final List<MapperDAGVertex> cpnDominant,
-      final List<MapperDAGVertex> criticalPath, final LatencyAbc abc) {
+  public boolean constructCPN(final MapperDAG dag, final List<MapperDAGVertex> cpnDominant, final List<MapperDAGVertex> criticalPath, final LatencyAbc abc) {
 
     WorkflowLogger.getLogger().log(Level.INFO, "Starting to build CPN list");
 
@@ -275,8 +268,7 @@ public class InitialLists implements Cloneable {
     }
 
     final DirectedGraph<DAGVertex, DAGEdge> castDag = dag;
-    final DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex = new DirectedNeighborIndex<>(
-        castDag);
+    final DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex = new DirectedNeighborIndex<>(castDag);
 
     final Set<DAGVertex> succset = new HashSet<>();
 
@@ -309,8 +301,7 @@ public class InitialLists implements Cloneable {
           commax = edgeCost;
           tempvertex = currentvertex;
         } else if (edgeCost == commax) {
-          if ((tempvertex == null)
-              || (abc.getTLevel(currentvertex, false) < abc.getTLevel(tempvertex, false))) {
+          if ((tempvertex == null) || (abc.getTLevel(currentvertex, false) < abc.getTLevel(tempvertex, false))) {
             tempvertex = currentvertex;
           }
         }
@@ -322,14 +313,12 @@ public class InitialLists implements Cloneable {
       succset.clear();
       succset.addAll(neighborindex.successorListOf(currentvertex));
       /*
-       * Search for the predecessor of the final critical path nodes because they must be mapped
-       * before their successors
+       * Search for the predecessor of the final critical path nodes because they must be mapped before their successors
        */
       while (!(cpnDominant.contains(currentvertex))) {
         // If no predecessor was found
         if (!choosePredecessor(dag, currentvertex, cpnDominant, abc)) {
-          WorkflowLogger.getLogger().log(Level.SEVERE,
-              "No predecessor was found for vertex: " + currentvertex.getName());
+          WorkflowLogger.getLogger().log(Level.SEVERE, "No predecessor was found for vertex: " + currentvertex.getName());
           return false;
         }
       }
@@ -341,8 +330,7 @@ public class InitialLists implements Cloneable {
   }
 
   /**
-   * constructCPNobn: Add to the CPN dominant list and the Blocking Node list all the remaining
-   * nodes in a decreasing order of b-level.
+   * constructCPNobn: Add to the CPN dominant list and the Blocking Node list all the remaining nodes in a decreasing order of b-level.
    *
    * @param dag
    *          the dag
@@ -352,8 +340,7 @@ public class InitialLists implements Cloneable {
    *          the abc
    * @return : void
    */
-  private void addCPNobn(final MapperDAG dag, final List<MapperDAGVertex> orderlist,
-      final IAbc abc) {
+  private void addCPNobn(final MapperDAG dag, final List<MapperDAGVertex> orderlist, final IAbc abc) {
 
     // Variables
     MapperDAGVertex currentvertex = null;
@@ -371,12 +358,11 @@ public class InitialLists implements Cloneable {
   }
 
   /**
-   * constructCPNDominantlist: Construct the CPN dominant List and the other lists necessary for the
-   * initial scheduler
+   * constructCPNDominantlist: Construct the CPN dominant List and the other lists necessary for the initial scheduler
    *
    * <p>
-   * A CPN is a node included in a critical path. An IBN is a node from which there is a path
-   * reaching a CPN. An OBN is a node which is neither a CPN nor an IBN.
+   * A CPN is a node included in a critical path. An IBN is a node from which there is a path reaching a CPN. An OBN is a node which is neither a CPN nor an
+   * IBN.
    * </p>
    *
    * @param dag
@@ -399,13 +385,11 @@ public class InitialLists implements Cloneable {
         return false;
       }
     } else {
-      WorkflowLogger.getLogger().log(Level.SEVERE,
-          "To construct initial lists, a latency ABC is needed.");
+      WorkflowLogger.getLogger().log(Level.SEVERE, "To construct initial lists, a latency ABC is needed.");
       return false;
     }
 
-    WorkflowLogger.getLogger().log(Level.INFO,
-        "Adding OBN actors to CPN and IBN actors in CPN dominant list");
+    WorkflowLogger.getLogger().log(Level.INFO, "Adding OBN actors to CPN and IBN actors in CPN dominant list");
     addCPNobn(dag, this.cpnDominant, simu);
 
     for (final DAGVertex v : dag.vertexSet()) {

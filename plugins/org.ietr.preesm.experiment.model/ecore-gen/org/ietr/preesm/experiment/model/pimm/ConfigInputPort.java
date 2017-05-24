@@ -61,7 +61,7 @@ public interface ConfigInputPort extends Port {
    * If the meaning of the '<em>Incoming Dependency</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Incoming Dependency</em>' reference.
    * @see #setIncomingDependency(Dependency)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getConfigInputPort_IncomingDependency()

@@ -58,8 +58,7 @@ import org.ietr.preesm.utils.paths.PathTools;
 
 // TODO: Auto-generated Javadoc
 /**
- * Workflow element taking a *Single-Rate* SDF and the scenario as inputs and writing the
- * corresponding graph in the DIF format as an output.
+ * Workflow element taking a *Single-Rate* SDF and the scenario as inputs and writing the corresponding graph in the DIF format as an output.
  *
  * @author kdesnos
  *
@@ -75,14 +74,12 @@ public class DIFExporter extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
-   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
-   * org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs,
-      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
-      final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
     // Rem: Logger is used to display messages in the console
     // Logger logger = WorkflowLogger.getLogger();
@@ -97,8 +94,7 @@ public class DIFExporter extends AbstractTaskImplementation {
     try {
 
       // Locate the output file
-      final String sPath = PathTools.getAbsolutePath(parameters.get("path"),
-          workflow.getProjectName());
+      final String sPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
       IPath path = new Path(sPath);
       if ((path.getFileExtension() == null) || !path.getFileExtension().equals("dif")) {
         path = path.addFileExtension("dif");

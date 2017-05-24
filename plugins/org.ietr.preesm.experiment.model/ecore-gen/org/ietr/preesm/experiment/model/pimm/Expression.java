@@ -62,7 +62,7 @@ public interface Expression extends PiMMVisitable {
    * If the meaning of the '<em>String</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>String</em>' attribute.
    * @see #setString(String)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getExpression_String()
@@ -74,7 +74,7 @@ public interface Expression extends PiMMVisitable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Expression#getString <em>String</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>String</em>' attribute.
    * @see #getString()

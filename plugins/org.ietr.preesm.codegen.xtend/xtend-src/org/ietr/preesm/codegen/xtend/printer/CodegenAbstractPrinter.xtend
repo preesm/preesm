@@ -1,24 +1,24 @@
 /**
  * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
  * Karol Desnos, Julien Heulot
- * 
+ *
  * [mpelcat,jnezan,kdesnos,jheulot]@insa-rennes.fr
- * 
+ *
  * This software is a computer program whose purpose is to prototype
  * parallel applications.
- * 
+ *
  * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use, 
+ * abiding by the rules of distribution of free software.  You can  use,
  * modify and/ or redistribute the software under the terms of the CeCILL-C
  * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info". 
- * 
+ * "http://www.cecill.info".
+ *
  * As a counterpart to the access to the source code and  rights to copy,
  * modify and redistribute granted by the license, users are provided only
  * with a limited warranty  and the software's author,  the holder of the
  * economic rights,  and the successive licensors  have only  limited
- * liability. 
- * 
+ * liability.
+ *
  * In this respect, the user's attention is drawn to the risks associated
  * with loading,  using,  modifying and/or developing or reproducing the
  * software by the user in light of its specific status of free software,
@@ -26,10 +26,10 @@
  * therefore means  that it is reserved for developers  and  experienced
  * professionals having in-depth computer knowledge. Users are therefore
  * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or 
- * data to be ensured and,  more generally, to use and operate it in the 
- * same conditions as regards security. 
- * 
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -59,6 +59,9 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
+import org.ietr.preesm.codegen.xtend.model.codegen.IntVar
+import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
+import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator
 import org.ietr.preesm.codegen.xtend.model.codegen.util.CodegenSwitch
 import org.ietr.preesm.codegen.xtend.task.CodegenException
 import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt
@@ -76,9 +79,9 @@ enum PrinterState {
  * Codegen model}. To use a printer, the following function calls should be used:<br>
  * 1. Call {@link #preProcessing(List)} on a {@link List} containing all printed {@link Block blocks}.<br>
  * 2. Call {@link #doSwitch()} on each {@link Block} to print.
- * 
+ *
  * @author kdesnos
- * 
+ *
  */
 abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 
@@ -88,7 +91,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * Method used to change the current state of the printer.
 	 * @param newState
 	 *	the new State of the printer
-	 * 
+	 *
 	 */
 	def protected void setState(PrinterState newState) {
 		this.state = newState;
@@ -152,13 +155,13 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 		//   tabulations, the indentation applied will be n tabulations in
 		//   addition to the indentation of the blockHeader
 		// - If the BlockHeader ends with a line containing something else
-		//   than tabulations, there will be no indentation (except the 
+		//   than tabulations, there will be no indentation (except the
 		//   one of the blockHeader that will also be applied to its content)
-		// 
+		//
 		// A line is skipped between the BlockContent and the BlockFooter
 		// if the last line of the BlockHeader is an empty line
 		// (with only spaces or tabulations characters)
-		//	
+		//
 		// String concatenation is done manually because of complex
 		// tabulation handling
 		var result = new StringConcatenation
@@ -272,11 +275,11 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	}
 
 	/**
-	 * Returns <code>True</code> if the {@link StringConcatenation} ends with 
+	 * Returns <code>True</code> if the {@link StringConcatenation} ends with
 	 * an empty line. (i.e. it ends with a \n)
 	 * @param concatenation
 	 * 		the {@link StringConcatenation} to test
-	 * @return <code>True</code> if the {@link StringConcatenation} ends with 
+	 * @return <code>True</code> if the {@link StringConcatenation} ends with
 	 * an empty line. (i.e. it ends with a \n)
 	 */
 	static def boolean endWithEOL(StringConcatenation concatenation) {
@@ -289,7 +292,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * line of the {@link StringConcatenation} is empty, the last "\r\n" (or
 	 * "\n") are removed from the returned {@link StringConcatenation}, else the
 	 * input {@link StringConcatenation} is returned as is
-	 * 
+	 *
 	 * @param sequence
 	 *            the {@link StringConcatenation} to process
 	 * @return the input {@link StringConcatenation} as is or without its final
@@ -321,7 +324,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * something else than tabulations, an empty {@link String} is returned<br>
 	 * <br>
 	 * Examples:<br>
-	 * "<code>I'm a line of 
+	 * "<code>I'm a line of
 	 * <br>		code</code>" <br>
 	 * returns ''<br>
 	 * <br>
@@ -333,7 +336,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * <br>\t\t<br>
 	 * </code>" <br>
 	 * returns '\t\t'
-	 * 
+	 *
 	 * @param input
 	 *            the processed {@link CharSequence}
 	 * @return the {@link String} containing only '\t' or nothing
@@ -421,6 +424,16 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 		return printConstantString(constant)
 	}
 
+	override caseIntVar(IntVar intVar) {
+		if (state.equals(PrinterState::PRINTING_DEFINITIONS))
+			return printIntVarDefinition(intVar)
+
+		if (state.equals(PrinterState::PRINTING_DECLARATIONS))
+			return printIntVarDeclaration(intVar)
+
+		return printIntVar(intVar)
+	}
+
 	override defaultCase(EObject object) {
 		throw new CodegenException(
 			"Object " + object + " is not supported by the printer" + this + "in its current state. "
@@ -454,7 +467,36 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 
 		return result.join('')
 	}
-	
+
+	override caseFiniteLoopBlock(FiniteLoopBlock loopBlock) {
+		var result = new StringConcatenation
+		var indentation = ""
+		var boolean hasNewLine
+
+		val finiteLoopBlockheader = printFiniteLoopBlockHeader(loopBlock)
+		result.append(finiteLoopBlockheader,indentation)
+
+		if (finiteLoopBlockheader.length > 0) {
+				indentation = result.lastLineIndentation
+				result = result.trimLastEOL
+				hasNewLine = result.endWithEOL
+			} else {
+				hasNewLine = false
+			}
+
+		// Visit all codeElements
+		result.append(loopBlock.codeElts.map[doSwitch].join(''), indentation)
+
+		if (hasNewLine) {
+			result.newLineIfNotEmpty()
+			result.append(indentation)
+		}
+
+		result.append(printFiniteLoopBlockFooter(loopBlock), "")
+
+		return result
+	}
+
 	override caseNullBuffer(NullBuffer nullBuffer) {
 		if (state.equals(PrinterState::PRINTING_DEFINITIONS))
 			return printNullBufferDefinition(nullBuffer)
@@ -495,6 +537,16 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 		return printSubBuffer(subBuffer)
 	}
 
+	override caseBufferIterator(BufferIterator bufferIterator) {
+		if (state.equals(PrinterState::PRINTING_DEFINITIONS))
+			return printBufferIteratorDefinition(bufferIterator)
+
+		if (state.equals(PrinterState::PRINTING_DECLARATIONS))
+			return printBufferIteratorDeclaration(bufferIterator)
+
+		return printBufferIterator(bufferIterator)
+	}
+
 	/**
 	 * Method called before printing a set of {@link Block blocks}. This method
 	 * can perform some printer specific modification on the blocks passed as
@@ -502,29 +554,46 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * primitives in the code. This method will NOT print the code of the
 	 * {@link Block blocks}, use {@link #doSwitch()} on each {@link Block} to
 	 * print after the pre-processing to do so.
-	 * 
+	 *
 	 * @param printerBlocks
 	 * 				The list of {@link Block blocks} that will be printer by the
 	 * 				printer
 	 * @param allBlocks
-	 * 				The list of all {@link Block blocks} printed during a workflow execution. 
+	 * 				The list of all {@link Block blocks} printed during a workflow execution.
 	 * 				This list includes all printerBlocks
 	 */
 	def void preProcessing(List<Block> printerBlocks, List<Block> allBlocks);
 
 	/**
-	 * This method is called after all the {@link Block blocks} have been 
+	 * Method called after printing a set of {@link Block blocks}. This method
+	 * can perform some printer specific modification on the blocks passed as
+	 * parameters. For example, it can be used to insert instrumentation
+	 * primitives in the code. This method will NOT print the code of the
+	 * {@link Block blocks}, use {@link #doSwitch()} on each {@link Block} to
+	 * print after the pre-processing to do so.
+	 *
+	 * @param printerBlocks
+	 * 				The list of {@link Block blocks} that will be printer by the
+	 * 				printer
+	 * @param allBlocks
+	 * 				The list of all {@link Block blocks} printed during a workflow execution.
+	 * 				This list includes all printerBlocks
+	 */
+	def CharSequence postProcessing(CharSequence charSeq);
+
+	/**
+	 * This method is called after all the {@link Block blocks} have been
 	 * printed by the printer to give the opportunity to print secondary
 	 * files. (eg. project files, main files, ...).<br>
-	 * This method returns a {@link Map} where each {@link Entry} associates 
+	 * This method returns a {@link Map} where each {@link Entry} associates
 	 * a {@link String} to a {@link CharSequence} respectively corresponding
 	 * to a file name (including the extension) and the its content.
-	 * 
+	 *
 	 * @param printerBlocks
 	 *   	The list of {@link Block blocks} that were printed by the
 	 * 		printer
 	 * @param allBlocks
-	 *		The list of all {@link Block blocks} printed during a workflow execution. 
+	 *		The list of all {@link Block blocks} printed during a workflow execution.
 	 *		This list includes all printerBlocks
 	 */
 	def Map<String, CharSequence> createSecondaryFiles(List<Block> printerBlocks, List<Block> allBlocks);
@@ -535,7 +604,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * method returns <code>null</code>, the result of
 	 * {@link #printSpecialCall(SpecialCall) } will be used
 	 * instead (in case the method is called through doSwitch).
-	 * 
+	 *
 	 * @param specialCall
 	 *            the printed {@link SpecialCall}.
 	 * @return the printed {@link CharSequence}
@@ -547,7 +616,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * {@link CoreBlock#getDefinitions() definition} or the
 	 * {@link CoreBlock#getDeclarations() declaration} of a
 	 * {@link CoreBlock}
-	 * 
+	 *
 	 * @param buffer
 	 *            the {@link Buffer} to print.
 	 * @return the printed {@link CharSequence}
@@ -559,7 +628,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * {@link CoreBlock#getDeclarations() declaration} of a
 	 * {@link CoreBlock}. If a {@link Buffer} was defined in
 	 * the current block, it will not be declared.
-	 * 
+	 *
 	 * @param buffer
 	 *            the {@link Buffer} to print.
 	 * @return the printed {@link CharSequence}
@@ -570,7 +639,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * Method called to print a {@link Buffer} within the
 	 * {@link CoreBlock#getDefinitions() definition} {@link LoopBlock} of a
 	 * {@link CoreBlock}
-	 * 
+	 *
 	 * @param buffer
 	 *            the {@link Buffer} to print.
 	 * @return the printed {@link CharSequence}
@@ -578,22 +647,22 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	def CharSequence printBufferDefinition(Buffer buffer)
 
 	/**
-	 * Method called after printing all {@link CodeElt} belonging 
+	 * Method called after printing all {@link CodeElt} belonging
 	 * to a {@link CallBlock}.
-	 * 
+	 *
 	 * @param callBlock
-	 *            the {@link CallBlock} whose {@link CodeElt} were 
+	 *            the {@link CallBlock} whose {@link CodeElt} were
 	 * 			  printed before calling this method.
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printCallBlockFooter(CallBlock callBlock)
 
 	/**
-	 * Method called before printing all {@link CodeElt} belonging 
+	 * Method called before printing all {@link CodeElt} belonging
 	 * to a {@link CallBlock}.
-	 * 
+	 *
 	 * @param callBlock
-	 *            the {@link CallBlock} whose {@link CodeElt} will be 
+	 *            the {@link CallBlock} whose {@link CodeElt} will be
 	 * 			  printed after calling this method.
 	 * @return the printed {@link CharSequence}
 	 */
@@ -601,7 +670,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 
 	/**
 	 * Method called to print a {@link Communication}.
-	 * 
+	 *
 	 * @param communication
 	 *             the printed {@link Communication}.
 	 * @return the printed {@link CharSequence}
@@ -613,7 +682,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * {@link CoreBlock#getDefinitions() definition} or the
 	 * {@link CoreBlock#getDeclarations() declaration} of a
 	 * {@link CoreBlock}
-	 * 
+	 *
 	 * @param constant
 	 *            the {@link Constant} to print.
 	 * @return the printed {@link CharSequence}
@@ -624,7 +693,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * Method called to print a {@link Constant} within the
 	 * {@link CoreBlock#getDeclarations() declaration} {@link CallBlock} of a
 	 * {@link CoreBlock}
-	 * 
+	 *
 	 * @param constant
 	 *            the {@link Constant} to print.
 	 * @return the printed {@link CharSequence}
@@ -635,19 +704,19 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * Method called to print a {@link Constant} within the
 	 * {@link CoreBlock#getDefinitions() definition} {@link LoopBlock} of a
 	 * {@link CoreBlock}
-	 * 
+	 *
 	 * @param constant
 	 *            the {@link Constant} to print.
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printConstantDefinition(Constant constant)
-	
+
 	/**
 	 * Method called to print a {@link ConstantString} outside the
 	 * {@link CoreBlock#getDefinitions() definition} or the
 	 * {@link CoreBlock#getDeclarations() declaration} of a
 	 * {@link CoreBlock}
-	 * 
+	 *
 	 * @param constant
 	 *            the {@link ConstantString} to print.
 	 * @return the printed {@link CharSequence}
@@ -658,7 +727,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * Method called to print a {@link ConstantString} within the
 	 * {@link CoreBlock#getDeclarations() declaration} {@link CallBlock} of a
 	 * {@link CoreBlock}
-	 * 
+	 *
 	 * @param constant
 	 *            the {@link ConstantString} to print.
 	 * @return the printed {@link CharSequence}
@@ -669,7 +738,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * Method called to print a {@link ConstantString} within the
 	 * {@link CoreBlock#getDefinitions() definition} {@link LoopBlock} of a
 	 * {@link CoreBlock}
-	 * 
+	 *
 	 * @param constant
 	 *            the {@link ConstantString} to print.
 	 * @return the printed {@link CharSequence}
@@ -677,44 +746,78 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	def CharSequence printConstantStringDefinition(ConstantString constant)
 
 	/**
-	 * Method called after printing all code belonging 
+	 * Method called to print a {@link IntVar} outside the
+	 * {@link CoreBlock#getDefinitions() definition} or the
+	 * {@link CoreBlock#getDeclarations() declaration} of a
+	 * {@link CoreBlock}
+	 *
+	 * @param intVar
+	 *            the {@link IntVar} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printIntVar(IntVar intVar)
+
+	/**
+	 * Method called to print a {@link IntVar} within the
+	 * {@link CoreBlock#getDeclarations() declaration} {@link CallBlock} of a
+	 * {@link CoreBlock}
+	 *
+	 * @param intVar
+	 *            the {@link IntVar} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printIntVarDeclaration(IntVar intVar)
+
+	/**
+	 * Method called to print a {@link IntVar} within the
+	 * {@link CoreBlock#getDefinitions() definition} {@link LoopBlock} of a
+	 * {@link CoreBlock}
+	 *
+	 * @param intVar
+	 *            the {@link IntVar} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printIntVarDefinition(IntVar intVar)
+
+	/**
+	 * Method called after printing all code belonging
 	 * to a {@link CoreBlock}.
-	 * 
+	 *
 	 * @param coreBlock
-	 *            the {@link CoreBlock} whose code was 
+	 *            the {@link CoreBlock} whose code was
 	 * 			  printed before calling this method.
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printCoreBlockFooter(CoreBlock coreBlock)
 
 	/**
-	 * Method called before printing all code belonging 
+	 * Method called before printing all code belonging
 	 * to a {@link CoreBlock}.
-	 * 
+	 *
 	 * @param coreBlock
-	 *            the {@link CoreBlock} whose code will be 
+	 *            the {@link CoreBlock} whose code will be
 	 * 			  printed after calling this method.
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printCoreBlockHeader(CoreBlock coreBlock)
 
 	/**
-	 * Method called after printing all {@link CodeElt} belonging 
-	 * to the {@link CoreBlock#getInitBlock() initBlock} {@link CallBlock} of 
+	 * Method called after printing all {@link CodeElt} belonging
+	 * to the {@link CoreBlock#getInitBlock() initBlock} {@link CallBlock} of
 	 * a {@link CoreBlock}.
-	 * 
+	 *
 	 * @param callBlock
-	 *            the {@link CallBlock} whose {@link CodeElt} were 
+	 *            the {@link CallBlock} whose {@link CodeElt} were
 	 * 			  printed before calling this method.
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printCoreInitBlockFooter(CallBlock callBlock)
 
 	/**
-	 * Method called before printing all {@link CodeElt} belonging 
-	 * to the {@link CoreBlock#getInitBlock() initBlock} {@link CallBlock} of 
+	 * Method called before printing all {@link CodeElt} belonging
+	 * to the {@link CoreBlock#getInitBlock() initBlock} {@link CallBlock} of
 	 * a {@link CoreBlock}.
-	 * 
+	 *
 	 * @param callBlock
 	 *            the {@link CallBlock} whose {@link CodeElt} will be
 	 * 			  printed after calling this method.
@@ -723,86 +826,86 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	def CharSequence printCoreInitBlockHeader(CallBlock callBlock)
 
 	/**
-	 * Method called after printing all {@link CodeElt} belonging 
-	 * to the {@link CoreBlock#getLoopBlock() loopBlock} {@link CallBlock} of 
+	 * Method called after printing all {@link CodeElt} belonging
+	 * to the {@link CoreBlock#getLoopBlock() loopBlock} {@link CallBlock} of
 	 * a {@link CoreBlock}.
-	 * 
+	 *
 	 * @param loopBlock
-	 *            the {@link LoopBlock} whose {@link CodeElt} were 
+	 *            the {@link LoopBlock} whose {@link CodeElt} were
 	 * 			  printed before calling this method.
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printCoreLoopBlockFooter(LoopBlock loopBlock)
 
 	/**
-	 * Method called before printing all {@link CodeElt} belonging 
-	 * to the {@link CoreBlock#getLoopBlock() loopBlock} {@link CallBlock} of 
+	 * Method called before printing all {@link CodeElt} belonging
+	 * to the {@link CoreBlock#getLoopBlock() loopBlock} {@link CallBlock} of
 	 * a {@link CoreBlock}.
-	 * 
+	 *
 	 * @param loopBlock
-	 *            the {@link LoopBlock} whose {@link CodeElt} will be 
+	 *            the {@link LoopBlock} whose {@link CodeElt} will be
 	 * 			  printed after calling this method.
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printCoreLoopBlockHeader(LoopBlock loopBlock)
 
 	/**
-	 * Method called after printing all {@link Variable} belonging 
-	 * to the {@link CoreBlock#getDeclarations() declarations} of 
+	 * Method called after printing all {@link Variable} belonging
+	 * to the {@link CoreBlock#getDeclarations() declarations} of
 	 * a {@link CoreBlock}.
-	 * 
+	 *
 	 * @param variableList
-	 *            the {@link List} of {@link Variable} that were 
+	 *            the {@link List} of {@link Variable} that were
 	 * 			  printed before calling this method.
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printDeclarationsFooter(List<Variable> variableList)
 
 	/**
-	 * Method called before printing all {@link Variable} belonging 
-	 * to the {@link CoreBlock#getDeclarations() declarations} of 
+	 * Method called before printing all {@link Variable} belonging
+	 * to the {@link CoreBlock#getDeclarations() declarations} of
 	 * a {@link CoreBlock}.
-	 * 
+	 *
 	 * @param variableList
-	 *            the {@link List} of {@link Variable} that will be 
+	 *            the {@link List} of {@link Variable} that will be
 	 * 			  printed after calling this method.
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printDeclarationsHeader(List<Variable> variableList)
 
 	/**
-	 * Method called after printing all {@link Variable} belonging 
-	 * to the {@link CoreBlock#getDefinitions() definitions} of 
+	 * Method called after printing all {@link Variable} belonging
+	 * to the {@link CoreBlock#getDefinitions() definitions} of
 	 * a {@link CoreBlock}.
-	 * 
+	 *
 	 * @param variableList
-	 *            the {@link List} of {@link Variable} that were 
+	 *            the {@link List} of {@link Variable} that were
 	 * 			  printed before calling this method.
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printDefinitionsFooter(List<Variable> variableList)
 
 	/**
-	 * Method called before printing all {@link Variable} belonging 
-	 * to the {@link CoreBlock#getDefinitions() definitions} of 
+	 * Method called before printing all {@link Variable} belonging
+	 * to the {@link CoreBlock#getDefinitions() definitions} of
 	 * a {@link CoreBlock}.
-	 * 
+	 *
 	 * @param variableList
-	 *            the {@link List} of {@link Variable} that will be 
+	 *            the {@link List} of {@link Variable} that will be
 	 * 			  printed after calling this method.
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printDefinitionsHeader(List<Variable> vaeiableList)
 
 	/**
- 	* This method should be called when printing a "printXXHeader" method 
- 	* when the desired behavior is to print nothing but indent the 
+ 	* This method should be called when printing a "printXXHeader" method
+ 	* when the desired behavior is to print nothing but indent the
  	* "content" of the Block (i.e. what will be printed between the header
  	*  and the corresponding footer")
- 	* 
- 	* @param n 
+ 	*
+ 	* @param n
  	*		the number of indentation desired for the block content
- 	* 
+ 	*
  	* @return a {@link CharSequence}
  	*/
 	static def CharSequence printEmptyHeaderWithNIndentation(int n) {
@@ -819,7 +922,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 
 	/**
 	 * Method called to print a {@link FifoCall}.
-	 * 
+	 *
 	 * @param communication
 	 *             the printed {@link FifoCall}.
 	 * @return the printed {@link CharSequence}
@@ -832,7 +935,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * method returns <code>null</code>, the result of
 	 * {@link #printSpecialCall(SpecialCall) } will be used
 	 * instead (in case the method is called through doSwitch).
-	 * 
+	 *
 	 * @param specialCall
 	 *            the printed {@link SpecialCall}.
 	 * @return the printed {@link CharSequence}
@@ -841,7 +944,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 
 	/**
 	 * Method called to print a {@link FunctionCall}.
-	 * 
+	 *
 	 * @param functionCall
 	 *             the printed {@link FunctionCall}.
 	 * @return the printed {@link CharSequence}
@@ -854,7 +957,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * method returns <code>null</code>, the result of
 	 * {@link #printSpecialCall(SpecialCall) } will be used
 	 * instead (in case the method is called through doSwitch).
-	 * 
+	 *
 	 * @param specialCall
 	 *            the printed {@link SpecialCall}.
 	 * @return the printed {@link CharSequence}
@@ -862,33 +965,55 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	def CharSequence printJoin(SpecialCall call)
 
 	/**
-	 * Method called after printing all {@link CodeElt} belonging 
+	 * Method called after printing all {@link CodeElt} belonging
 	 * to a {@link LoopBlock}.
-	 * 
+	 *
 	 * @param loopBlock
-	 *            the {@link LoopBlock} whose {@link CodeElt} were 
+	 *            the {@link LoopBlock} whose {@link CodeElt} were
 	 * 			  printed before calling this method.
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printLoopBlockFooter(LoopBlock loopBlock)
 
 	/**
-	 * Method called before printing all {@link CodeElt} belonging 
+	 * Method called before printing all {@link CodeElt} belonging
 	 * to a {@link LoopBlock}.
-	 * 
+	 *
 	 * @param loopBlock
-	 *            the {@link LoopBlock} whose {@link CodeElt} will be 
+	 *            the {@link LoopBlock} whose {@link CodeElt} will be
 	 * 			  printed after calling this method.
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printLoopBlockHeader(LoopBlock block)
-	
+
+	/**
+	 * Method called after printing all {@link CodeElt} belonging
+	 * to a {@link LoopBlock}.
+	 *
+	 * @param block
+	 *            the {@link FiniteLoopBlock} whose {@link CodeElt} were
+	 * 			  printed before calling this method.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printFiniteLoopBlockFooter(FiniteLoopBlock block)
+
+	/**
+	 * Method called before printing all {@link CodeElt} belonging
+	 * to a {@link FiniteLoopBlock}.
+	 *
+	 * @param block
+	 *            the {@link FiniteLoopBlock} whose {@link CodeElt} will be
+	 * 			  printed after calling this method.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printFiniteLoopBlockHeader(FiniteLoopBlock block)
+
 	/**
 	 * Method called to print a {@link NullBuffer} outside the
 	 * {@link CoreBlock#getDefinitions() definition} or the
 	 * {@link CoreBlock#getDeclarations() declaration} of a
 	 * {@link CoreBlock}
-	 * 
+	 *
 	 * @param nullBuffer
 	 *            the {@link NullBuffer} to print.
 	 * @return the printed {@link CharSequence}
@@ -899,7 +1024,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * Method called to print a {@link NullBuffer} within the
 	 * {@link CoreBlock#getDeclarations() declaration} {@link CallBlock} of a
 	 * {@link CoreBlock}
-	 * 
+	 *
 	 * @param nullBuffer
 	 *            the {@link NullBuffer} to print.
 	 * @return the printed {@link CharSequence}
@@ -910,7 +1035,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * Method called to print a {@link NullBuffer} within the
 	 * {@link CoreBlock#getDefinitions() definition} {@link CallBlock} of a
 	 * {@link CoreBlock}
-	 * 
+	 *
 	 * @param nullBuffer
 	 *            the {@link NullBuffer} to print.
 	 * @return the printed {@link CharSequence}
@@ -923,7 +1048,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * method returns <code>null</code>, the result of
 	 * {@link #printSpecialCall(SpecialCall) } will be used
 	 * instead (in case the method is called through doSwitch).
-	 * 
+	 *
 	 * @param specialCall
 	 *            the printed {@link SpecialCall}.
 	 * @return the printed {@link CharSequence}
@@ -935,7 +1060,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * {@link CoreBlock#getDefinitions() definition} or the
 	 * {@link CoreBlock#getDeclarations() declaration} of a
 	 * {@link CoreBlock}
-	 * 
+	 *
 	 * @param semaphore
 	 *            the {@link Semaphore} to print.
 	 * @return the printed {@link CharSequence}
@@ -946,7 +1071,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * Method called to print a {@link Semaphore} within the
 	 * {@link CoreBlock#getDeclarations() declaration} {@link CallBlock} of a
 	 * {@link CoreBlock}
-	 * 
+	 *
 	 * @param semaphore
 	 *            the {@link Semaphore} to print.
 	 * @return the printed {@link CharSequence}
@@ -957,7 +1082,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * Method called to print a {@link Semaphore} within the
 	 * {@link CoreBlock#getDefinitions() definition} {@link CallBlock} of a
 	 * {@link CoreBlock}
-	 * 
+	 *
 	 * @param semaphore
 	 *            the {@link Semaphore} to print.
 	 * @return the printed {@link CharSequence}
@@ -966,7 +1091,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 
 	/**
 	 * ethod called to print a {@link SharedMemoryCommunication}.
-	 * 
+	 *
 	 * @param communication
 	 *             the printed {@link SharedMemoryCommunication}.
 	 * @return the printed {@link CharSequence}
@@ -975,7 +1100,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 
 	/**
 	 * Method called to print a {@link SpecialCall}.
-	 * 
+	 *
 	 * @param specialCall
 	 *             the printed {@link SpecialCall}.
 	 * @return the printed {@link CharSequence}
@@ -987,7 +1112,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * {@link CoreBlock#getDefinitions() definition} or the
 	 * {@link CoreBlock#getDeclarations() declaration} of a
 	 * {@link CoreBlock}
-	 * 
+	 *
 	 * @param subBuffer
 	 *            the {@link SubBuffer} to print.
 	 * @return the printed {@link CharSequence}
@@ -998,7 +1123,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * Method called to print a {@link SubBuffer} within the
 	 * {@link CoreBlock#getDeclarations() declaration} {@link CallBlock} of a
 	 * {@link CoreBlock}
-	 * 
+	 *
 	 * @param subBuffer
 	 *            the {@link SubBuffer} to print.
 	 * @return the printed {@link CharSequence}
@@ -1009,11 +1134,45 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * Method called to print a {@link SubBuffer} within the
 	 * {@link CoreBlock#getDefinitions() definition} {@link CallBlock} of a
 	 * {@link CoreBlock}
-	 * 
+	 *
 	 * @param subBuffer
 	 *            the {@link SubBuffer} to print.
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printSubBufferDefinition(SubBuffer subBuffer)
+
+	/**
+	 * Method called to print a {@link BufferIterator} outside the
+	 * {@link CoreBlock#getDefinitions() definition} or the
+	 * {@link CoreBlock#getDeclarations() declaration} of a
+	 * {@link CoreBlock}
+	 *
+	 * @param bufferIterator
+	 *            the {@link BufferIterator} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printBufferIterator(BufferIterator bufferIterator)
+
+	/**
+	 * Method called to print a {@link BufferIterator} within the
+	 * {@link CoreBlock#getDeclarations() declaration} {@link CallBlock} of a
+	 * {@link CoreBlock}
+	 *
+	 * @param bufferIterator
+	 *            the {@link BufferIterator} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printBufferIteratorDeclaration(BufferIterator bufferIterator)
+
+	/**
+	 * Method called to print a {@link BufferIterator} within the
+	 * {@link CoreBlock#getDefinitions() definition} {@link CallBlock} of a
+	 * {@link CoreBlock}
+	 *
+	 * @param bufferIterator
+	 *            the {@link BufferIterator} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printBufferIteratorDefinition(BufferIterator bufferIterator)
 
 }

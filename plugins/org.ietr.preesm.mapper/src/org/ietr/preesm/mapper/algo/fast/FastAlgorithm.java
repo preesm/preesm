@@ -129,23 +129,20 @@ public class FastAlgorithm extends Observable {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public MapperDAG map(final String threadName, final AbcParameters abcParams,
-      final FastAlgoParameters fastParams, final MapperDAG dag, final Design archi,
-      final boolean alreadyMapped, final boolean pfastused, final boolean displaySolutions,
-      final IProgressMonitor monitor, final AbstractTaskSched taskSched) throws WorkflowException {
+  public MapperDAG map(final String threadName, final AbcParameters abcParams, final FastAlgoParameters fastParams, final MapperDAG dag, final Design archi,
+      final boolean alreadyMapped, final boolean pfastused, final boolean displaySolutions, final IProgressMonitor monitor, final AbstractTaskSched taskSched)
+      throws WorkflowException {
 
     final List<MapperDAGVertex> cpnDominantList = this.initialLists.getCpnDominant();
     final List<MapperDAGVertex> blockingNodesList = this.initialLists.getBlockingNodes();
     final List<MapperDAGVertex> finalcriticalpathList = this.initialLists.getCriticalpath();
 
-    return map(threadName, abcParams, fastParams, dag, archi, alreadyMapped, pfastused,
-        displaySolutions, monitor, cpnDominantList, blockingNodesList, finalcriticalpathList,
-        taskSched);
+    return map(threadName, abcParams, fastParams, dag, archi, alreadyMapped, pfastused, displaySolutions, monitor, cpnDominantList, blockingNodesList,
+        finalcriticalpathList, taskSched);
   }
 
   /**
-   * map : do the FAST algorithm by Kwok without the initialization of the list which must be done
-   * before this algorithm.
+   * map : do the FAST algorithm by Kwok without the initialization of the list which must be done before this algorithm.
    *
    * @param threadName
    *          the thread name
@@ -177,13 +174,10 @@ public class FastAlgorithm extends Observable {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public MapperDAG map(final String threadName, final AbcParameters abcParams,
-      final FastAlgoParameters fastParams, final MapperDAG dag, final Design archi,
-      final boolean alreadyMapped, final boolean pfastused, final boolean displaySolutions,
-      final IProgressMonitor monitor, final List<MapperDAGVertex> cpnDominantList,
-      final List<MapperDAGVertex> blockingNodesList,
-      final List<MapperDAGVertex> finalcriticalpathList, final AbstractTaskSched taskSched)
-      throws WorkflowException {
+  public MapperDAG map(final String threadName, final AbcParameters abcParams, final FastAlgoParameters fastParams, final MapperDAG dag, final Design archi,
+      final boolean alreadyMapped, final boolean pfastused, final boolean displaySolutions, final IProgressMonitor monitor,
+      final List<MapperDAGVertex> cpnDominantList, final List<MapperDAGVertex> blockingNodesList, final List<MapperDAGVertex> finalcriticalpathList,
+      final AbstractTaskSched taskSched) throws WorkflowException {
 
     final Random randomGenerator = new Random(System.nanoTime());
 
@@ -208,11 +202,9 @@ public class FastAlgorithm extends Observable {
     // the same level, in alphabetical name order
     simulator.setTaskScheduler(taskSched);
 
-    final Iterator<MapperDAGVertex> vertexiter = new RandomIterator<>(blockingNodesList,
-        randomGenerator);
+    final Iterator<MapperDAGVertex> vertexiter = new RandomIterator<>(blockingNodesList, randomGenerator);
 
-    final RandomIterator<MapperDAGVertex> iter = new RandomIterator<>(finalcriticalpathList,
-        randomGenerator);
+    final RandomIterator<MapperDAGVertex> iter = new RandomIterator<>(finalcriticalpathList, randomGenerator);
     MapperDAGVertex currentvertex = null;
     MapperDAGVertex fcpvertex = null;
     ComponentInstance operatortest;
@@ -288,8 +280,7 @@ public class FastAlgorithm extends Observable {
       simulator.updateFinalCosts();
 
       // FAST local search is stopped after a time given in seconds
-      final long fastLocalSearchStopTime = System.currentTimeMillis()
-          + (1000 * fastParams.getFastLocalSearchTime());
+      final long fastLocalSearchStopTime = System.currentTimeMillis() + (1000 * fastParams.getFastLocalSearchTime());
 
       // step 6 : neighborhood search
       do {
@@ -330,18 +321,14 @@ public class FastAlgorithm extends Observable {
         operatorprec = simulator.getEffectiveComponent(currentvertex);
 
         if (operatortest == null) {
-          WorkflowLogger.getLogger().log(Level.SEVERE,
-              "FAST algorithm has difficulties to find a valid component for vertex: "
-                  + currentvertex);
+          WorkflowLogger.getLogger().log(Level.SEVERE, "FAST algorithm has difficulties to find a valid component for vertex: " + currentvertex);
         }
 
         // step 9
         simulator.map(currentvertex, operatortest, false, true);
 
         if (!currentvertex.hasEffectiveComponent()) {
-          WorkflowLogger.getLogger().log(Level.SEVERE,
-              "FAST algorithm has difficulties to find a valid component for vertex: "
-                  + currentvertex);
+          WorkflowLogger.getLogger().log(Level.SEVERE, "FAST algorithm has difficulties to find a valid component for vertex: " + currentvertex);
         }
 
         // step 10
@@ -361,8 +348,7 @@ public class FastAlgorithm extends Observable {
 
         searchStep++;
         // step 11
-      } while ((searchStep < maxStep) && (localCounter < margin)
-          && (System.currentTimeMillis() < fastLocalSearchStopTime));
+      } while ((searchStep < maxStep) && (localCounter < margin) && (System.currentTimeMillis() < fastLocalSearchStopTime));
 
       // step 12
       simulator.updateFinalCosts();
@@ -401,14 +387,12 @@ public class FastAlgorithm extends Observable {
       } while ((operatorList.size() < 2) && (nonBlockingIndex < 100));
 
       // Choosing an operator different from the current vertex operator
-      final ComponentInstance currentOp = dagfinal.getMapperDAGVertex(fcpvertex.getName())
-          .getEffectiveOperator();
+      final ComponentInstance currentOp = dagfinal.getMapperDAGVertex(fcpvertex.getName()).getEffectiveOperator();
 
       do {
         final int randomIndex = randomGenerator.nextInt(operatorList.size());
         operatorfcp = (ComponentInstance) operatorList.toArray()[randomIndex];
-      } while (operatorfcp.getInstanceName().equals(currentOp.getInstanceName())
-          && (operatorList.size() > 1));
+      } while (operatorfcp.getInstanceName().equals(currentOp.getInstanceName()) && (operatorList.size() > 1));
 
       // step 15
       List<MapperDAGVertex> toRemapList = cpnDominantList;

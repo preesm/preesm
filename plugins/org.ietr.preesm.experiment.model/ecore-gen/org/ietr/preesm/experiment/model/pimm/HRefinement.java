@@ -59,7 +59,7 @@ public interface HRefinement extends Refinement {
    * If the meaning of the '<em>Loop Prototype</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Loop Prototype</em>' reference.
    * @see #setLoopPrototype(FunctionPrototype)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getHRefinement_LoopPrototype()
@@ -71,7 +71,7 @@ public interface HRefinement extends Refinement {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.HRefinement#getLoopPrototype <em>Loop Prototype</em>}' reference. <!-- begin-user-doc
    * --> <!-- end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Loop Prototype</em>' reference.
    * @see #getLoopPrototype()
@@ -85,7 +85,7 @@ public interface HRefinement extends Refinement {
    * If the meaning of the '<em>Init Prototype</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Init Prototype</em>' reference.
    * @see #setInitPrototype(FunctionPrototype)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getHRefinement_InitPrototype()
@@ -97,7 +97,7 @@ public interface HRefinement extends Refinement {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.HRefinement#getInitPrototype <em>Init Prototype</em>}' reference. <!-- begin-user-doc
    * --> <!-- end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Init Prototype</em>' reference.
    * @see #getInitPrototype()

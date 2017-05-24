@@ -83,21 +83,21 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
 /**
  * <!-- begin-user-doc --> The <b>Adapter Factory</b> for the model. It provides an adapter <code>createXXX</code> method for each class of the model. <!--
  * end-user-doc -->
- * 
+ *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage
  * @generated
  */
 public class PiMMAdapterFactory extends AdapterFactoryImpl {
   /**
    * The cached model package. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   protected static PiMMPackage modelPackage;
 
   /**
    * Creates an instance of the adapter factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   public PiMMAdapterFactory() {
@@ -109,7 +109,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
   /**
    * Returns whether this factory is applicable for the type of the object. <!-- begin-user-doc --> This implementation returns <code>true</code> if the object
    * is either the model's package or is an instance object of the model. <!-- end-user-doc -->
-   * 
+   *
    * @return whether this factory is applicable for the type of the object.
    * @generated
    */
@@ -126,7 +126,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 
   /**
    * The switch that delegates to the <code>createXXX</code> methods. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   protected PiMMSwitch<Adapter> modelSwitch = new PiMMSwitch<Adapter>() {
@@ -298,7 +298,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 
   /**
    * Creates an adapter for the <code>target</code>. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @param target
    *          the object to adapt.
    * @return the adapter for the <code>target</code>.
@@ -313,7 +313,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.Parameterizable <em>Parameterizable</em>}'. <!-- begin-user-doc
    * --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases
    * anyway. <!-- end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.Parameterizable
    * @generated
@@ -326,7 +326,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.AbstractVertex <em>Abstract Vertex</em>}'. <!-- begin-user-doc
    * --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases
    * anyway. <!-- end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.AbstractVertex
    * @generated
@@ -339,7 +339,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.AbstractActor <em>Abstract Actor</em>}'. <!-- begin-user-doc -->
    * This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway.
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.AbstractActor
    * @generated
@@ -352,7 +352,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.PiGraph <em>Pi Graph</em>}'. <!-- begin-user-doc --> This
    * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
    * end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.PiGraph
    * @generated
@@ -365,7 +365,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.Actor <em>Actor</em>}'. <!-- begin-user-doc --> This default
    * implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
    * end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.Actor
    * @generated
@@ -378,7 +378,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.Port <em>Port</em>}'. <!-- begin-user-doc --> This default
    * implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
    * end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.Port
    * @generated
@@ -391,7 +391,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.DataInputPort <em>Data Input Port</em>}'. <!-- begin-user-doc
    * --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases
    * anyway. <!-- end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.DataInputPort
    * @generated
@@ -404,7 +404,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.DataOutputPort <em>Data Output Port</em>}'. <!-- begin-user-doc
    * --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases
    * anyway. <!-- end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.DataOutputPort
    * @generated
@@ -443,7 +443,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.Fifo <em>Fifo</em>}'. <!-- begin-user-doc --> This default
    * implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
    * end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.Fifo
    * @generated
@@ -456,7 +456,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.InterfaceActor <em>Interface Actor</em>}'. <!-- begin-user-doc
    * --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases
    * anyway. <!-- end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.InterfaceActor
    * @generated
@@ -508,7 +508,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.Refinement <em>Refinement</em>}'. <!-- begin-user-doc --> This
    * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
    * end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.Refinement
    * @generated
@@ -521,7 +521,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.Parameter <em>Parameter</em>}'. <!-- begin-user-doc --> This
    * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
    * end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.Parameter
    * @generated
@@ -534,7 +534,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.Dependency <em>Dependency</em>}'. <!-- begin-user-doc --> This
    * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
    * end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.Dependency
    * @generated
@@ -547,7 +547,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.ISetter <em>ISetter</em>}'. <!-- begin-user-doc --> This default
    * implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
    * end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.ISetter
    * @generated
@@ -560,7 +560,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.Delay <em>Delay</em>}'. <!-- begin-user-doc --> This default
    * implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
    * end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.Delay
    * @generated
@@ -573,7 +573,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.Expression <em>Expression</em>}'. <!-- begin-user-doc --> This
    * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
    * end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.Expression
    * @generated
@@ -586,7 +586,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.HRefinement <em>HRefinement</em>}'. <!-- begin-user-doc --> This
    * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
    * end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.HRefinement
    * @generated
@@ -625,7 +625,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.DataPort <em>Data Port</em>}'. <!-- begin-user-doc --> This
    * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
    * end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.DataPort
    * @generated
@@ -638,7 +638,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.BroadcastActor <em>Broadcast Actor</em>}'. <!-- begin-user-doc
    * --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases
    * anyway. <!-- end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.BroadcastActor
    * @generated
@@ -651,7 +651,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.JoinActor <em>Join Actor</em>}'. <!-- begin-user-doc --> This
    * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
    * end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.JoinActor
    * @generated
@@ -664,7 +664,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.ForkActor <em>Fork Actor</em>}'. <!-- begin-user-doc --> This
    * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
    * end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.ForkActor
    * @generated
@@ -690,7 +690,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.ExecutableActor <em>Executable Actor</em>}'. <!-- begin-user-doc
    * --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases
    * anyway. <!-- end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @see org.ietr.preesm.experiment.model.pimm.ExecutableActor
    * @generated
@@ -727,7 +727,7 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 
   /**
    * Creates a new adapter for the default case. <!-- begin-user-doc --> This default implementation returns null. <!-- end-user-doc -->
-   * 
+   *
    * @return the new adapter.
    * @generated
    */

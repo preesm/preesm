@@ -49,8 +49,7 @@ import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 // TODO: Auto-generated Javadoc
 /**
- * During edge scheduling, one needs to find intervals to fit the transfers. This class deals with
- * intervals in the transfer scheduling
+ * During edge scheduling, one needs to find intervals to fit the transfers. This class deals with intervals in the transfer scheduling
  *
  * @author mpelcat
  */
@@ -113,8 +112,7 @@ public class IntervalFinder {
    *          the max vertex
    * @return the interval
    */
-  public Interval findLargestFreeInterval(final ComponentInstance component,
-      final MapperDAGVertex minVertex, final MapperDAGVertex maxVertex) {
+  public Interval findLargestFreeInterval(final ComponentInstance component, final MapperDAGVertex minVertex, final MapperDAGVertex maxVertex) {
 
     return findInterval(component, minVertex, maxVertex, FindType.largestFreeInterval, 0);
 
@@ -131,8 +129,7 @@ public class IntervalFinder {
    *          the max vertex
    * @return the interval
    */
-  public Interval findEarliestNonNullInterval(final ComponentInstance component,
-      final MapperDAGVertex minVertex, final MapperDAGVertex maxVertex) {
+  public Interval findEarliestNonNullInterval(final ComponentInstance component, final MapperDAGVertex minVertex, final MapperDAGVertex maxVertex) {
 
     return findInterval(component, minVertex, maxVertex, FindType.earliestBigEnoughInterval, 0);
 
@@ -151,8 +148,8 @@ public class IntervalFinder {
    *          the size
    * @return the interval
    */
-  public Interval findEarliestBigEnoughInterval(final ComponentInstance component,
-      final MapperDAGVertex minVertex, final MapperDAGVertex maxVertex, final long size) {
+  public Interval findEarliestBigEnoughInterval(final ComponentInstance component, final MapperDAGVertex minVertex, final MapperDAGVertex maxVertex,
+      final long size) {
 
     return findInterval(component, minVertex, maxVertex, FindType.earliestBigEnoughInterval, size);
 
@@ -173,8 +170,8 @@ public class IntervalFinder {
    *          the data
    * @return the interval
    */
-  public Interval findInterval(final ComponentInstance component, final MapperDAGVertex minVertex,
-      final MapperDAGVertex maxVertex, final FindType type, final long data) {
+  public Interval findInterval(final ComponentInstance component, final MapperDAGVertex minVertex, final MapperDAGVertex maxVertex, final FindType type,
+      final long data) {
 
     final List<MapperDAGVertex> schedule = this.orderManager.getVertexList(component);
 
@@ -210,8 +207,7 @@ public class IntervalFinder {
 
           // newInt is the interval corresponding to the execution of
           // the vertex v: a non free interval
-          newInt = new Interval(props.getCost(), props.getTLevel(),
-              this.orderManager.totalIndexOf(v));
+          newInt = new Interval(props.getCost(), props.getTLevel(), this.orderManager.totalIndexOf(v));
 
           // end of the preceding non free interval
           final long oldEnd = oldInt.getStartTime() + oldInt.getDuration();
@@ -223,29 +219,25 @@ public class IntervalFinder {
 
           if (type == FindType.largestFreeInterval) {
             // Verifying that newInt is in the interval of search
-            if ((newInt.getTotalOrderIndex() > minIndex)
-                && (newInt.getTotalOrderIndex() <= maxIndex)) {
+            if ((newInt.getTotalOrderIndex() > minIndex) && (newInt.getTotalOrderIndex() <= maxIndex)) {
 
               if (freeIntervalSize > freeInterval.getDuration()) {
                 // The free interval takes the index of its
                 // following task v.
                 // Inserting a vertex in this interval means
                 // inserting it before v.
-                freeInterval = new Interval(freeIntervalSize, available,
-                    newInt.getTotalOrderIndex());
+                freeInterval = new Interval(freeIntervalSize, available, newInt.getTotalOrderIndex());
               }
             }
           } else if (type == FindType.earliestBigEnoughInterval) {
-            if ((newInt.getTotalOrderIndex() > minIndex)
-                && (newInt.getTotalOrderIndex() <= maxIndex)) {
+            if ((newInt.getTotalOrderIndex() > minIndex) && (newInt.getTotalOrderIndex() <= maxIndex)) {
 
               if (freeIntervalSize >= data) {
                 // The free interval takes the index of its
                 // following task v.
                 // Inserting a vertex in this interval means
                 // inserting it before v.
-                freeInterval = new Interval(freeIntervalSize, available,
-                    newInt.getTotalOrderIndex());
+                freeInterval = new Interval(freeIntervalSize, available, newInt.getTotalOrderIndex());
                 break;
               }
             }

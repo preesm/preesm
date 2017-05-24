@@ -67,8 +67,7 @@ public class GanttPage extends FormPage {
    * @param title
    *          the title
    */
-  public GanttPage(final StatGenerator statGen, final FormEditor editor, final String id,
-      final String title) {
+  public GanttPage(final StatGenerator statGen, final FormEditor editor, final String id, final String title) {
     super(editor, id, title);
 
     this.statGen = statGen;

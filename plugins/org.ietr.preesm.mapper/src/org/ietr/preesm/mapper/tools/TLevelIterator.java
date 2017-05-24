@@ -62,8 +62,8 @@ public class TLevelIterator extends ImplementationIterator {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.mapper.tools.ImplementationIterator#compare(org.ietr.preesm.mapper.model.
-   * MapperDAGVertex, org.ietr.preesm.mapper.model.MapperDAGVertex)
+   * @see org.ietr.preesm.mapper.tools.ImplementationIterator#compare(org.ietr.preesm.mapper.model. MapperDAGVertex,
+   * org.ietr.preesm.mapper.model.MapperDAGVertex)
    */
   @Override
   public int compare(final MapperDAGVertex arg0, final MapperDAGVertex arg1) {

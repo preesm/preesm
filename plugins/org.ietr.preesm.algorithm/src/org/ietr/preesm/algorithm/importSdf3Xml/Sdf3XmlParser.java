@@ -56,8 +56,7 @@ import org.w3c.dom.NodeList;
 
 // TODO: Auto-generated Javadoc
 /**
- * This class is used to parse a {@link File} in the SDF3 (SDF For Free) Xml format indo the
- * corresponding {@link SDFGraph}.
+ * This class is used to parse a {@link File} in the SDF3 (SDF For Free) Xml format indo the corresponding {@link SDFGraph}.
  *
  * @author kdesnos
  * @see http://www.es.ele.tue.nl/sdf3/manuals/xml/sdf
@@ -70,8 +69,7 @@ public class Sdf3XmlParser {
   protected Map<String, Integer> dataTypes = new HashMap<>();
 
   /**
-   * This {@link Map} associates the name of an edge from the SDF3 file to its corresponding
-   * {@link SDFEdge}.
+   * This {@link Map} associates the name of an edge from the SDF3 file to its corresponding {@link SDFEdge}.
    */
   protected Map<String, SDFEdge> edges = new HashMap<>();
 
@@ -81,8 +79,7 @@ public class Sdf3XmlParser {
   protected Map<SDFAbstractVertex, Integer> actorExecTimes = new HashMap<>();
 
   /**
-   * Find the unique {@link Element} with the specified name in the children of the given
-   * {@link Element}.
+   * Find the unique {@link Element} with the specified name in the children of the given {@link Element}.
    *
    * @param elt
    *          the {@link Element} whose childs are scanned.
@@ -90,18 +87,16 @@ public class Sdf3XmlParser {
    *          the name of the searched {@link Element}
    * @return the searched {@link Element}
    * @throws RuntimeException
-   *           if the given {@link Element} has no child Element with the appropriate name or has
-   *           more than one child with this name.
+   *           if the given {@link Element} has no child Element with the appropriate name or has more than one child with this name.
    */
   protected Element findElement(final Element elt, final String elementName) {
     final NodeList nodes = elt.getElementsByTagName(elementName);
     if (nodes.getLength() == 0) {
-      throw new RuntimeException(
-          "Parsed " + elt.getLocalName() + " does not contain any " + elementName + " element");
+      throw new RuntimeException("Parsed " + elt.getLocalName() + " does not contain any " + elementName + " element");
     }
     if (nodes.getLength() > 1) {
-      throw new RuntimeException("Parsed " + elt.getLocalName() + " contains too many "
-          + elementName + " elements (expected 1, found " + nodes.getLength() + ")");
+      throw new RuntimeException(
+          "Parsed " + elt.getLocalName() + " contains too many " + elementName + " elements (expected 1, found " + nodes.getLength() + ")");
     }
     return (Element) nodes.item(0);
   }
@@ -109,8 +104,7 @@ public class Sdf3XmlParser {
   /**
    * Get the execution times of all actors parsed during call to {@link #parse(InputStream)}.<br>
    * <br>
-   * The returned {@link Map} associates the {@link SDFVertex} of the parsed graph to their
-   * execution time.
+   * The returned {@link Map} associates the {@link SDFVertex} of the parsed graph to their execution time.
    *
    * @return actorExecTimes the execution time of the parsed graph actors
    */
@@ -119,8 +113,7 @@ public class Sdf3XmlParser {
   }
 
   /**
-   * Get all the data types encountered while parsing the graph with
-   * {@link #parse(InputStream)}.<br>
+   * Get all the data types encountered while parsing the graph with {@link #parse(InputStream)}.<br>
    * <br>
    * The return {@link Map} associates each data type of the graph {@link SDFEdge} to their size.
    *
@@ -276,8 +269,7 @@ public class Sdf3XmlParser {
     }
     final SDFInterfaceVertex srcPort = srcActor.getInterface(srcPortName);
     if ((srcPort == null) || !(srcPort instanceof SDFSinkInterfaceVertex)) {
-      throw new RuntimeException(
-          "Source port " + srcPortName + " does not exists for actor " + srcActorName);
+      throw new RuntimeException("Source port " + srcPortName + " does not exists for actor " + srcActorName);
     }
 
     // Get Target actor and port
@@ -295,18 +287,15 @@ public class Sdf3XmlParser {
     }
     final SDFInterfaceVertex tgtPort = tgtActor.getInterface(tgtPortName);
     if ((tgtPort == null) || !(tgtPort instanceof SDFSourceInterfaceVertex)) {
-      throw new RuntimeException(
-          "Destination port " + tgtPortName + " does not exists for actor " + tgtActorName);
+      throw new RuntimeException("Destination port " + tgtPortName + " does not exists for actor " + tgtActorName);
     }
 
     // Create the edge
     final SDFEdge edge = graph.addEdge(srcActor, srcPort, tgtActor, tgtPort);
 
     // Set the prod/consumption rates
-    edge.setProd(
-        new SDFIntEdgePropertyType((Integer) srcPort.getPropertyBean().getValue("port_rate")));
-    edge.setCons(
-        new SDFIntEdgePropertyType((Integer) tgtPort.getPropertyBean().getValue("port_rate")));
+    edge.setProd(new SDFIntEdgePropertyType((Integer) srcPort.getPropertyBean().getValue("port_rate")));
+    edge.setCons(new SDFIntEdgePropertyType((Integer) tgtPort.getPropertyBean().getValue("port_rate")));
 
     // Give a name to the edge (not really usefull in SDFGraphs but since
     // the name exists in SDF3, we might as well keep track of it
@@ -328,8 +317,7 @@ public class Sdf3XmlParser {
   }
 
   /**
-   * Parse the ChannelProperties {@link Element} corresponding to an {@link SDFEdge} of the parsed
-   * {@link SDFGraph}.
+   * Parse the ChannelProperties {@link Element} corresponding to an {@link SDFEdge} of the parsed {@link SDFGraph}.
    *
    * @param channelPtyElt
    *          the {@link Element} containing the parsed properties
@@ -453,8 +441,7 @@ public class Sdf3XmlParser {
     }
     final String version = rootElt.getAttribute("version");
     if (!version.equals("1.0")) {
-      throw new RuntimeException(
-          "Graph version " + version + " is not supported (only version 1.0 is)");
+      throw new RuntimeException("Graph version " + version + " is not supported (only version 1.0 is)");
     }
 
     final Element appGraphElt = findElement(rootElt, "applicationGraph");

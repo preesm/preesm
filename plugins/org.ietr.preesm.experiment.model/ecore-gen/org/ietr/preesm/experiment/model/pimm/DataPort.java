@@ -58,7 +58,7 @@ public interface DataPort extends Port {
    * If the meaning of the '<em>Expression</em>' containment reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Expression</em>' containment reference.
    * @see #setExpression(Expression)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDataPort_Expression()
@@ -70,7 +70,7 @@ public interface DataPort extends Port {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.DataPort#getExpression <em>Expression</em>}' containment reference. <!-- begin-user-doc
    * --> <!-- end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Expression</em>' containment reference.
    * @see #getExpression()
@@ -85,7 +85,7 @@ public interface DataPort extends Port {
    * If the meaning of the '<em>Annotation</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Annotation</em>' attribute.
    * @see org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation
    * @see #setAnnotation(PortMemoryAnnotation)
@@ -98,7 +98,7 @@ public interface DataPort extends Port {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.DataPort#getAnnotation <em>Annotation</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Annotation</em>' attribute.
    * @see org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation

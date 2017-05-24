@@ -110,8 +110,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
    * Inits the data.
    */
   private void initData() {
-    final Set<ComponentInstance> opSet = DesignTools
-        .getOperatorInstances(this.statGen.getAbc().getArchitecture());
+    final Set<ComponentInstance> opSet = DesignTools.getOperatorInstances(this.statGen.getAbc().getArchitecture());
 
     for (final ComponentInstance cmp : opSet) {
       this.loads.put(cmp, this.statGen.getLoad(cmp));
@@ -134,11 +133,9 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
     if (this.columnOrder.equals(Messages.getString("Overview.properties.opColumn"))) {
       comparator = (o1, o2) -> o1.getInstanceName().compareTo(o2.getInstanceName());
     } else if (this.columnOrder.equals(Messages.getString("Overview.properties.loadColumn"))) {
-      comparator = (o1, o2) -> (int) (DeploymentProperties.this.loads.get(o1)
-          - DeploymentProperties.this.loads.get(o2));
+      comparator = (o1, o2) -> (int) (DeploymentProperties.this.loads.get(o1) - DeploymentProperties.this.loads.get(o2));
     } else if (this.columnOrder.equals(Messages.getString("Overview.properties.memColumn"))) {
-      comparator = (o1, o2) -> DeploymentProperties.this.memoryNeeds.get(o1)
-          - DeploymentProperties.this.memoryNeeds.get(o2);
+      comparator = (o1, o2) -> DeploymentProperties.this.memoryNeeds.get(o1) - DeploymentProperties.this.memoryNeeds.get(o2);
     }
 
     Collections.sort(elements, comparator);
@@ -159,8 +156,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer,
-   * java.lang.Object, java.lang.Object)
+   * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
    */
   @Override
   public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
@@ -212,8 +208,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.
-   * ILabelProviderListener)
+   * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers. ILabelProviderListener)
    */
   @Override
   public void addListener(final ILabelProviderListener listener) {
@@ -223,8 +218,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object,
-   * java.lang.String)
+   * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
    */
   @Override
   public boolean isLabelProperty(final Object element, final String property) {
@@ -234,8 +228,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.
-   * ILabelProviderListener)
+   * @see org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers. ILabelProviderListener)
    */
   @Override
   public void removeListener(final ILabelProviderListener listener) {

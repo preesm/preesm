@@ -130,8 +130,7 @@ public class PFastAlgorithm extends Observable {
      * @param scenario
      *          the scenario
      */
-    public FinalTimeComparator(final AbcParameters abcParams, final MapperDAG dag,
-        final Design archi, final PreesmScenario scenario) {
+    public FinalTimeComparator(final AbcParameters abcParams, final MapperDAG dag, final Design archi, final PreesmScenario scenario) {
       super();
     }
 
@@ -145,8 +144,8 @@ public class PFastAlgorithm extends Observable {
   }
 
   /**
-   * chooseNbCores : Determine how many processors will be used among the available ones and return
-   * the set of nodes on which each processor will perform the fast algorithm.
+   * chooseNbCores : Determine how many processors will be used among the available ones and return the set of nodes on which each processor will perform the
+   * fast algorithm.
    *
    * @param initialLists
    *          the initial lists
@@ -158,8 +157,7 @@ public class PFastAlgorithm extends Observable {
    *          // Set with the partial BlockingNodesLists
    * @return integer
    */
-  public int chooseNbCores(final InitialLists initialLists, final int nboperator,
-      final int nodesmin, final Set<Set<String>> subSet) {
+  public int chooseNbCores(final InitialLists initialLists, final int nboperator, final int nodesmin, final Set<Set<String>> subSet) {
 
     // initialization
     int nbsubsets = 0;
@@ -172,8 +170,7 @@ public class PFastAlgorithm extends Observable {
     nbsubsets = setThreadNumber(blockingNodelist, nboperator, nodesmin);
 
     if (nbsubsets == 0) {
-      WorkflowLogger.getLogger().log(Level.SEVERE,
-          "Not enough nodes to execute PFAST. Try reducing nodesmin in workflow or use another mapper.");
+      WorkflowLogger.getLogger().log(Level.SEVERE, "Not enough nodes to execute PFAST. Try reducing nodesmin in workflow or use another mapper.");
     }
 
     // find number of nodes per thread
@@ -183,12 +180,12 @@ public class PFastAlgorithm extends Observable {
     // Put the nodes of the BlockingNodes List in the Sublist
     for (int i = 0; i < nbsubsets; i++) {
       subSet.add(new HashSet<String>());
-      Iterator<Set<String>> itera = subSet.iterator();
-      Set<String> tempSet = itera.next();
+      final Iterator<Set<String>> itera = subSet.iterator();
+      final Set<String> tempSet = itera.next();
       for (int j = 0; j < nbnodes; j++) {
         if (!(subSet.containsAll(blockingNodelist))) {
-          Iterator<MapperDAGVertex> riter = blockingNodelist.iterator();
-          MapperDAGVertex currentvertex = riter.next();
+          final Iterator<MapperDAGVertex> riter = blockingNodelist.iterator();
+          final MapperDAGVertex currentvertex = riter.next();
           tempSet.add(new String(currentvertex.getName()));
           blockingNodelist.remove(currentvertex);
 
@@ -200,8 +197,7 @@ public class PFastAlgorithm extends Observable {
   }
 
   /**
-   * setnumber : return the number of processor(thread) necessary to process the PFastAlgorithm with
-   * the List of Vertex.
+   * setnumber : return the number of processor(thread) necessary to process the PFastAlgorithm with the List of Vertex.
    *
    * @param BLlist
    *          // BlockingNodesList
@@ -212,8 +208,7 @@ public class PFastAlgorithm extends Observable {
    * @return integer
    */
 
-  public int setThreadNumber(final List<MapperDAGVertex> BLlist, int nboperator,
-      final int nodesmin) {
+  public int setThreadNumber(final List<MapperDAGVertex> BLlist, int nboperator, final int nodesmin) {
 
     final int nbnodes = BLlist.size();
     int nbsubsets;
@@ -280,8 +275,7 @@ public class PFastAlgorithm extends Observable {
    * map = perform the Pfast Algo (it is the main thread)
    *
    * <p>
-   * // Determine if we want the Pfast solution or a population of good solution to perform another
-   * algorithm.
+   * // Determine if we want the Pfast solution or a population of good solution to perform another algorithm.
    * </p>
    *
    * @param dag
@@ -299,8 +293,7 @@ public class PFastAlgorithm extends Observable {
    * @param population
    *          the population
    * @param populationsize
-   *          // if we want a population this parameter determine how many individuals we want in
-   *          the population
+   *          // if we want a population this parameter determine how many individuals we want in the population
    * @param isDisplaySolutions
    *          the is display solutions
    * @param populationList
@@ -311,11 +304,9 @@ public class PFastAlgorithm extends Observable {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public MapperDAG map(MapperDAG dag, final Design archi, final PreesmScenario scenario,
-      final InitialLists initialLists, final AbcParameters abcParams,
-      final PFastAlgoParameters pFastParams, final boolean population, int populationsize,
-      final boolean isDisplaySolutions, final List<MapperDAG> populationList,
-      final AbstractTaskSched taskSched) throws WorkflowException {
+  public MapperDAG map(MapperDAG dag, final Design archi, final PreesmScenario scenario, final InitialLists initialLists, final AbcParameters abcParams,
+      final PFastAlgoParameters pFastParams, final boolean population, int populationsize, final boolean isDisplaySolutions,
+      final List<MapperDAG> populationList, final AbstractTaskSched taskSched) throws WorkflowException {
 
     int i = 0;
     if (populationsize < 1) {
@@ -324,23 +315,21 @@ public class PFastAlgorithm extends Observable {
     int k = 0;
 
     final Vector<MapperDAGVertex> cpnDominantVector = new Vector<>(initialLists.getCpnDominant());
-    final Vector<MapperDAGVertex> blockingnodeVector = new Vector<>(
-        initialLists.getBlockingNodes());
+    final Vector<MapperDAGVertex> blockingnodeVector = new Vector<>(initialLists.getBlockingNodes());
     final Vector<MapperDAGVertex> fcpVector = new Vector<>(initialLists.getCriticalpath());
     MapperDAG dagfinal;
     final KwokListScheduler scheduler = new KwokListScheduler();
     final IAbc archisimu = AbstractAbc.getInstance(abcParams, dag, archi, scenario);
     final Set<Set<String>> subSet = new HashSet<>();
 
-    final FastAlgoParameters fastParams = new FastAlgoParameters(pFastParams.getFastTime(),
-        pFastParams.getFastLocalSearchTime(), pFastParams.isDisplaySolutions());
+    final FastAlgoParameters fastParams = new FastAlgoParameters(pFastParams.getFastTime(), pFastParams.getFastLocalSearchTime(),
+        pFastParams.isDisplaySolutions());
 
     // if only one operator the fast must be used
     if (pFastParams.getProcNumber() == 0) {
       final FastAlgorithm algorithm = new FastAlgorithm(initialLists, scenario);
 
-      dag = algorithm.map("Fast", abcParams, fastParams, dag, archi, false, false, false, null,
-          cpnDominantVector, blockingnodeVector, fcpVector, taskSched);
+      dag = algorithm.map("Fast", abcParams, fastParams, dag, archi, false, false, false, null, cpnDominantVector, blockingnodeVector, fcpVector, taskSched);
       return dag;
     }
 
@@ -369,12 +358,10 @@ public class PFastAlgorithm extends Observable {
     dagfinal.setScheduleCost(iBest);
     dag.setScheduleCost(iBest);
     // step 3/4
-    final int nbCores = chooseNbCores(initialLists, pFastParams.getProcNumber(),
-        pFastParams.getNodesmin(), subSet);
+    final int nbCores = chooseNbCores(initialLists, pFastParams.getProcNumber(), pFastParams.getNodesmin(), subSet);
 
     Iterator<Set<String>> subiter = subSet.iterator();
-    final ConcurrentSkipListSet<MapperDAG> mappedDAGSet = new ConcurrentSkipListSet<>(
-        new FinalTimeComparator(abcParams, dagfinal, archi, scenario));
+    final ConcurrentSkipListSet<MapperDAG> mappedDAGSet = new ConcurrentSkipListSet<>(new FinalTimeComparator(abcParams, dagfinal, archi, scenario));
 
     // step 5/7/8
     int totalsearchcount = 0;
@@ -392,8 +379,7 @@ public class PFastAlgorithm extends Observable {
         final String name = String.format("thread%d", i);
 
         // step 9/11
-        final PFastCallable thread = new PFastCallable(name, dag, archi, subiter.next(),
-            isDisplaySolutions, true, abcParams, fastParams, scenario);
+        final PFastCallable thread = new PFastCallable(name, dag, archi, subiter.next(), isDisplaySolutions, true, abcParams, fastParams, scenario);
 
         final FutureTask<MapperDAG> task = new FutureTask<>(thread);
         futureTasks.add(task);
@@ -462,8 +448,7 @@ public class PFastAlgorithm extends Observable {
 
     }
 
-    this.bestTotalOrder = (VertexOrderList) mappedDAGSet.first().getPropertyBean()
-        .getValue("bestTotalOrder");
+    this.bestTotalOrder = (VertexOrderList) mappedDAGSet.first().getPropertyBean().getValue("bestTotalOrder");
     dagfinal = mappedDAGSet.first().clone();
 
     return dagfinal;

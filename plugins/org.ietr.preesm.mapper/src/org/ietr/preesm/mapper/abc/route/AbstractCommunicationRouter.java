@@ -78,8 +78,7 @@ public abstract class AbstractCommunicationRouter {
    * @param orderManager
    *          the order manager
    */
-  public AbstractCommunicationRouter(final MapperDAG implementation, final IEdgeSched edgeScheduler,
-      final OrderManager orderManager) {
+  public AbstractCommunicationRouter(final MapperDAG implementation, final IEdgeSched edgeScheduler, final OrderManager orderManager) {
     super();
     this.implementers = new HashMap<>();
     setManagers(implementation, edgeScheduler, orderManager);
@@ -93,8 +92,7 @@ public abstract class AbstractCommunicationRouter {
    * @param implementer
    *          the implementer
    */
-  protected void addImplementer(final String name,
-      final CommunicationRouterImplementer implementer) {
+  protected void addImplementer(final String name, final CommunicationRouterImplementer implementer) {
     this.implementers.put(name, implementer);
   }
 
@@ -146,8 +144,7 @@ public abstract class AbstractCommunicationRouter {
    * @param orderManager
    *          the order manager
    */
-  public void setManagers(final MapperDAG implementation, final IEdgeSched edgeScheduler,
-      final OrderManager orderManager) {
+  public void setManagers(final MapperDAG implementation, final IEdgeSched edgeScheduler, final OrderManager orderManager) {
     this.implementation = implementation;
     this.edgeScheduler = edgeScheduler;
     this.orderManager = orderManager;
@@ -164,8 +161,7 @@ public abstract class AbstractCommunicationRouter {
   public abstract void routeAll(MapperDAG implementation, Integer type);
 
   /**
-   * adds all the necessary communication vertices with the given type affected by the mapping of
-   * newVertex.
+   * adds all the necessary communication vertices with the given type affected by the mapping of newVertex.
    *
    * @param newVertex
    *          the new vertex

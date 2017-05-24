@@ -64,8 +64,7 @@ public class SchedulingOrderIterator extends ImplementationIterator {
    * @param directOrder
    *          the direct order
    */
-  public SchedulingOrderIterator(final MapperDAG implementation, final IAbc abc,
-      final boolean directOrder) {
+  public SchedulingOrderIterator(final MapperDAG implementation, final IAbc abc, final boolean directOrder) {
     this.abc = abc;
     super.initParams(null, implementation, directOrder);
   }
@@ -73,8 +72,7 @@ public class SchedulingOrderIterator extends ImplementationIterator {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.plugin.mapper.tools.ImplantationIterator#compare(org.
-   * ietr.preesm.plugin.mapper.model.MapperDAGVertex,
+   * @see org.ietr.preesm.plugin.mapper.tools.ImplantationIterator#compare(org. ietr.preesm.plugin.mapper.model.MapperDAGVertex,
    * org.ietr.preesm.plugin.mapper.model.MapperDAGVertex)
    */
   @Override

@@ -92,9 +92,7 @@ public class GanttComponent {
         }
         // Checking for multiple concurrent insertions
         if (t.equals(task)) {
-          WorkflowLogger.getLogger().log(Level.SEVERE,
-              "Gantt: Trying to add to the Gantt chart several identical tasks: " + t + " and "
-                  + task);
+          WorkflowLogger.getLogger().log(Level.SEVERE, "Gantt: Trying to add to the Gantt chart several identical tasks: " + t + " and " + task);
           return false;
         }
       }
@@ -110,8 +108,7 @@ public class GanttComponent {
         if (index > 0) {
           final GanttTask precedingTask = this.tasks.get(index - 1);
           if ((precedingTask.getStartTime() + precedingTask.getDuration()) > task.getStartTime()) {
-            WorkflowLogger.getLogger().log(Level.SEVERE,
-                "Gantt: Two tasks are overlapping: " + precedingTask + " and " + task);
+            WorkflowLogger.getLogger().log(Level.SEVERE, "Gantt: Two tasks are overlapping: " + precedingTask + " and " + task);
             return false;
           }
         }

@@ -69,7 +69,7 @@ public interface PiGraph extends AbstractActor {
    * If the meaning of the '<em>Vertices</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Vertices</em>' containment reference list.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiGraph_Vertices()
    * @model containment="true"
@@ -84,7 +84,7 @@ public interface PiGraph extends AbstractActor {
    * If the meaning of the '<em>Fifos</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Fifos</em>' containment reference list.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiGraph_Fifos()
    * @model containment="true"
@@ -99,7 +99,7 @@ public interface PiGraph extends AbstractActor {
    * If the meaning of the '<em>Parameters</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Parameters</em>' containment reference list.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiGraph_Parameters()
    * @model containment="true"
@@ -114,7 +114,7 @@ public interface PiGraph extends AbstractActor {
    * If the meaning of the '<em>Dependencies</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Dependencies</em>' containment reference list.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiGraph_Dependencies()
    * @model containment="true"

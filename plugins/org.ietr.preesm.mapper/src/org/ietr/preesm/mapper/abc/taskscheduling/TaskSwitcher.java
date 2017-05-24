@@ -42,8 +42,7 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 // TODO: Auto-generated Javadoc
 /**
- * The task switcher adds a processing to the mapping algorithm. When a vertex is mapped, it looks
- * for the best place to schedule it.
+ * The task switcher adds a processing to the mapping algorithm. When a vertex is mapped, it looks for the best place to schedule it.
  *
  * @author mpelcat
  */
@@ -62,9 +61,7 @@ public class TaskSwitcher extends AbstractTaskSched {
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#setOrderManager(org.ietr.preesm.
-   * mapper.abc.order.OrderManager)
+   * @see org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#setOrderManager(org.ietr.preesm. mapper.abc.order.OrderManager)
    */
   @Override
   public void setOrderManager(final OrderManager orderManager) {
@@ -98,9 +95,7 @@ public class TaskSwitcher extends AbstractTaskSched {
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#insertVertex(org.ietr.preesm.mapper
-   * .model.MapperDAGVertex)
+   * @see org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#insertVertex(org.ietr.preesm.mapper .model.MapperDAGVertex)
    */
   @Override
   public void insertVertex(final MapperDAGVertex vertex) {

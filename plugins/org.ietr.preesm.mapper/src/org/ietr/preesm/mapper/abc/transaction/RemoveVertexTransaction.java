@@ -72,8 +72,7 @@ public class RemoveVertexTransaction extends Transaction {
    * @param orderManager
    *          the order manager
    */
-  public RemoveVertexTransaction(final MapperDAGVertex vertex, final MapperDAG implementation,
-      final OrderManager orderManager) {
+  public RemoveVertexTransaction(final MapperDAGVertex vertex, final MapperDAG implementation, final OrderManager orderManager) {
     super();
     this.vertex = vertex;
     this.implementation = implementation;
@@ -92,8 +91,7 @@ public class RemoveVertexTransaction extends Transaction {
     // Unscheduling first
     final MapperDAGVertex prev = this.orderManager.getPrevious(this.vertex);
     final MapperDAGVertex next = this.orderManager.getNext(this.vertex);
-    final PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(this.orderManager,
-        this.implementation);
+    final PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(this.orderManager, this.implementation);
 
     if (prev != null) {
       adder.removePrecedenceEdge(prev, this.vertex);

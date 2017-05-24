@@ -64,7 +64,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 public class FunctionPrototypeImpl extends EObjectImpl implements FunctionPrototype {
   /**
    * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getName()
    * @generated
    * @ordered
@@ -73,7 +73,7 @@ public class FunctionPrototypeImpl extends EObjectImpl implements FunctionProtot
 
   /**
    * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getName()
    * @generated
    * @ordered
@@ -82,7 +82,7 @@ public class FunctionPrototypeImpl extends EObjectImpl implements FunctionProtot
 
   /**
    * The cached value of the '{@link #getParameters() <em>Parameters</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getParameters()
    * @generated
    * @ordered

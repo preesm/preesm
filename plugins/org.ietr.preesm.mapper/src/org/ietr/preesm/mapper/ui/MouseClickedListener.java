@@ -49,8 +49,7 @@ import org.jfree.chart.ChartMouseListener;
  *
  * @author mpelcat
  */
-public class MouseClickedListener
-    implements MouseMotionListener, ChartMouseListener, MouseListener {
+public class MouseClickedListener implements MouseMotionListener, ChartMouseListener, MouseListener {
 
   /** The frame. */
   private final Frame frame;

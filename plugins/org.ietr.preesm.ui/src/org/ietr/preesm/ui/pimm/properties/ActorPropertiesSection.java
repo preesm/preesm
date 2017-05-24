@@ -508,7 +508,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
       if (bo instanceof ExecutableActor) {
         final ExecutableActor exexcutableActor = (ExecutableActor) bo;
         this.txtNameObj.setEnabled(false);
-        if ((exexcutableActor.getName() == null) && (! this.txtNameObj.getText().isEmpty())) {
+        if ((exexcutableActor.getName() == null) && (!this.txtNameObj.getText().isEmpty())) {
           this.txtNameObj.setText("");
         } else if (this.txtNameObj.getText().compareTo(exexcutableActor.getName()) != 0) {
           this.txtNameObj.setText(exexcutableActor.getName());

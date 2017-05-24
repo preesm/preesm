@@ -66,7 +66,7 @@ public interface Fifo extends PiMMVisitable {
    * If the meaning of the '<em>Source Port</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Source Port</em>' reference.
    * @see #setSourcePort(DataOutputPort)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getFifo_SourcePort()
@@ -79,7 +79,7 @@ public interface Fifo extends PiMMVisitable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Fifo#getSourcePort <em>Source Port</em>}' reference. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Source Port</em>' reference.
    * @see #getSourcePort()
@@ -94,7 +94,7 @@ public interface Fifo extends PiMMVisitable {
    * If the meaning of the '<em>Target Port</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Target Port</em>' reference.
    * @see #setTargetPort(DataInputPort)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getFifo_TargetPort()
@@ -107,7 +107,7 @@ public interface Fifo extends PiMMVisitable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Fifo#getTargetPort <em>Target Port</em>}' reference. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Target Port</em>' reference.
    * @see #getTargetPort()
@@ -121,7 +121,7 @@ public interface Fifo extends PiMMVisitable {
    * If the meaning of the '<em>Delay</em>' containment reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Delay</em>' containment reference.
    * @see #setDelay(Delay)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getFifo_Delay()
@@ -133,7 +133,7 @@ public interface Fifo extends PiMMVisitable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Fifo#getDelay <em>Delay</em>}' containment reference. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Delay</em>' containment reference.
    * @see #getDelay()
@@ -147,7 +147,7 @@ public interface Fifo extends PiMMVisitable {
    * If the meaning of the '<em>Id</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Id</em>' attribute.
    * @see #isSetId()
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getFifo_Id()
@@ -159,7 +159,7 @@ public interface Fifo extends PiMMVisitable {
   /**
    * Returns whether the value of the '{@link org.ietr.preesm.experiment.model.pimm.Fifo#getId <em>Id</em>}' attribute is set. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @return whether the value of the '<em>Id</em>' attribute is set.
    * @see #getId()
    * @generated
@@ -172,7 +172,7 @@ public interface Fifo extends PiMMVisitable {
    * If the meaning of the '<em>Type</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Type</em>' attribute.
    * @see #setType(String)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getFifo_Type()
@@ -183,7 +183,7 @@ public interface Fifo extends PiMMVisitable {
 
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Fifo#getType <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Type</em>' attribute.
    * @see #getType()

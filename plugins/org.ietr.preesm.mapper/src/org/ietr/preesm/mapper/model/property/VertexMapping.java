@@ -50,8 +50,7 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 // TODO: Auto-generated Javadoc
 /**
- * Properties of a mapped vertex. Can be shared by multiple vertices that have the same relative
- * constraints
+ * Properties of a mapped vertex. Can be shared by multiple vertices that have the same relative constraints
  *
  * @author mpelcat
  */
@@ -77,9 +76,8 @@ public class VertexMapping extends GroupProperty {
   }
 
   /**
-   * Returns a list of components, computed from initial and relative constraints. If the boolean
-   * considerGroupMapping is true, one mapped vertex in the group causes the return of its effective
-   * operator.
+   * Returns a list of components, computed from initial and relative constraints. If the boolean considerGroupMapping is true, one mapped vertex in the group
+   * causes the return of its effective operator.
    *
    * @param vertex
    *          the vertex
@@ -87,8 +85,7 @@ public class VertexMapping extends GroupProperty {
    *          the consider group mapping
    * @return the candidate components
    */
-  public List<ComponentInstance> getCandidateComponents(final MapperDAGVertex vertex,
-      final boolean considerGroupMapping) {
+  public List<ComponentInstance> getCandidateComponents(final MapperDAGVertex vertex, final boolean considerGroupMapping) {
 
     final List<ComponentInstance> operators = new ArrayList<>();
     final MapperDAG dag = (MapperDAG) vertex.getBase();
@@ -126,8 +123,7 @@ public class VertexMapping extends GroupProperty {
     }
 
     if (operators.isEmpty()) {
-      WorkflowLogger.getLogger().log(Level.SEVERE,
-          "Relative constraint with no operator." + relatedVertices);
+      WorkflowLogger.getLogger().log(Level.SEVERE, "Relative constraint with no operator." + relatedVertices);
     }
 
     return operators;

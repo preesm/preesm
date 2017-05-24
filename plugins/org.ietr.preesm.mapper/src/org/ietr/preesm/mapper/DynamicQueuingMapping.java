@@ -81,8 +81,7 @@ import org.ietr.preesm.mapper.params.AbcParameters;
 
 // TODO: Auto-generated Javadoc
 /**
- * Plug-in class for dynamic queuing scheduling. Dynamic queuing is a type of list scheduling that
- * enables study of multiple graph iterations.
+ * Plug-in class for dynamic queuing scheduling. Dynamic queuing is a type of list scheduling that enables study of multiple graph iterations.
  *
  * @author mpelcat
  * @author kdesnos (minor bugfix)
@@ -116,14 +115,12 @@ public class DynamicQueuingMapping extends AbstractMapping {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.mapper.AbstractMapping#execute(java.util.Map, java.util.Map,
-   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * @see org.ietr.preesm.mapper.AbstractMapping#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
    * org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs,
-      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
-      final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
     final Map<String, Object> outputs = new HashMap<>();
     final Design architecture = (Design) inputs.get("architecture");
@@ -158,8 +155,7 @@ public class DynamicQueuingMapping extends AbstractMapping {
 
       // Connecting the virtual component to all cores
       for (final ComponentInstance cmp : DesignTools.getComponentInstances(architecture)) {
-        if ((cmp.getComponent() instanceof Operator)
-            && !cmp.getInstanceName().equals("VirtualDelayManager")) {
+        if ((cmp.getComponent() instanceof Operator) && !cmp.getInstanceName().equals("VirtualDelayManager")) {
           final VLNV v2 = AttributesFactory.eINSTANCE.createVLNV();
           v.setVendor("nobody");
           v.setLibrary("none");
@@ -196,8 +192,8 @@ public class DynamicQueuingMapping extends AbstractMapping {
 
     // Repeating the graph to simulate several calls.
     if (iterationNr != 0) {
-      WorkflowLogger.getLogger().log(Level.INFO, "Repetition of the graph " + iterationNr
-          + " time(s) with period " + iterationPeriod + " required in dynamic scheduling");
+      WorkflowLogger.getLogger().log(Level.INFO,
+          "Repetition of the graph " + iterationNr + " time(s) with period " + iterationPeriod + " required in dynamic scheduling");
 
       // Creating virtual actors to delay iterations
       MapperDAGVertex lastCreatedVertex = null;
@@ -213,8 +209,7 @@ public class DynamicQueuingMapping extends AbstractMapping {
         v.setId("VirtualDelay" + "__@" + (i + 2));
         v.setNbRepeat(new DAGDefaultVertexPropertyType(1));
         v.getInit().addOperator(virtualDelayManager);
-        final Timing timing = new Timing(virtualDelayManager.getComponent().getVlnv().getName(),
-            sdfV.getName(), iterationPeriod);
+        final Timing timing = new Timing(virtualDelayManager.getComponent().getVlnv().getName(), sdfV.getName(), iterationPeriod);
         v.getInit().addTiming(timing);
         dag.addVertex(v);
 
@@ -230,8 +225,7 @@ public class DynamicQueuingMapping extends AbstractMapping {
       for (int i = 0; i < iterationNr; i++) {
         final MapperDAG clone = dag.clone();
 
-        final MapperDAGVertex correspondingVirtualVertex = (MapperDAGVertex) dag
-            .getVertex("VirtualDelay" + "__@" + (i + 2));
+        final MapperDAGVertex correspondingVirtualVertex = (MapperDAGVertex) dag.getVertex("VirtualDelay" + "__@" + (i + 2));
 
         // Copy cloned vertices into dag
         for (final DAGVertex v : clone.vertexSet()) {
@@ -257,8 +251,7 @@ public class DynamicQueuingMapping extends AbstractMapping {
         // Copy cloned edges into dag
         final String currentPostFix = "__@" + (i + 2);
         for (final DAGEdge e : clone.edgeSet()) {
-          if (e.getSource().getName().contains(currentPostFix)
-              && e.getTarget().getName().contains(currentPostFix)) {
+          if (e.getSource().getName().contains(currentPostFix) && e.getTarget().getName().contains(currentPostFix)) {
             dag.addEdge(e.getSource(), e.getTarget(), e);
           }
         }
@@ -272,8 +265,7 @@ public class DynamicQueuingMapping extends AbstractMapping {
     calculateSpan(dag, architecture, scenario, abcParameters);
 
     // Generating the vertex list in correct order
-    final IAbc simu = new InfiniteHomogeneousAbc(abcParameters, dag, architecture,
-        abcParameters.getSimulatorType().getTaskSchedType(), scenario);
+    final IAbc simu = new InfiniteHomogeneousAbc(abcParameters, dag, architecture, abcParameters.getSimulatorType().getTaskSchedType(), scenario);
 
     WorkflowLogger.getLogger().log(Level.INFO, "Dynamic Scheduling");
 
@@ -284,8 +276,7 @@ public class DynamicQueuingMapping extends AbstractMapping {
     // operator
     simu2.resetDAG();
 
-    final DynamicQueuingScheduler dynamicSched = new DynamicQueuingScheduler(simu.getTotalOrder(),
-        parameters);
+    final DynamicQueuingScheduler dynamicSched = new DynamicQueuingScheduler(simu.getTotalOrder(), parameters);
     dynamicSched.mapVertices(simu2);
 
     simu2.retrieveTotalOrder();

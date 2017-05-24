@@ -109,8 +109,8 @@ public class VertexInit {
   }
 
   /**
-   * Enabling the current vertex on the given operator. The operation is straightforward for normal
-   * vertices. For special vertices, a test is done on the neighbors.
+   * Enabling the current vertex on the given operator. The operation is straightforward for normal vertices. For special vertices, a test is done on the
+   * neighbors.
    *
    * @param operator
    *          the operator
@@ -155,8 +155,8 @@ public class VertexInit {
   }
 
   /**
-   * Returns all the operators that can execute the vertex. Special vertices are originally enabled
-   * on every operator but their status is updated depending on the mapping of their neighbors
+   * Returns all the operators that can execute the vertex. Special vertices are originally enabled on every operator but their status is updated depending on
+   * the mapping of their neighbors
    *
    * @return the initial operator list
    */
@@ -165,8 +165,8 @@ public class VertexInit {
   }
 
   /**
-   * Checks in the vertex initial properties if it can be mapped on the given operator. For special
-   * vertices, the predecessors and successor mapping possibilities are studied
+   * Checks in the vertex initial properties if it can be mapped on the given operator. For special vertices, the predecessors and successor mapping
+   * possibilities are studied
    *
    * @param operator
    *          the operator
@@ -193,8 +193,7 @@ public class VertexInit {
   }
 
   /**
-   * Returns the timing of the operation = number of repetitions * scenario time. Special vertices
-   * have specific time computation
+   * Returns the timing of the operation = number of repetitions * scenario time. Special vertices have specific time computation
    *
    * @param operator
    *          the operator

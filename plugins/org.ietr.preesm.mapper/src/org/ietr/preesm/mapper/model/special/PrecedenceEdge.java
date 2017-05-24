@@ -43,8 +43,7 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 // TODO: Auto-generated Javadoc
 /**
- * A precedence edge is automatically generated and expresses the sequential execution of successive
- * vertices in a single component.
+ * A precedence edge is automatically generated and expresses the sequential execution of successive vertices in a single component.
  *
  * @author mpelcat
  */

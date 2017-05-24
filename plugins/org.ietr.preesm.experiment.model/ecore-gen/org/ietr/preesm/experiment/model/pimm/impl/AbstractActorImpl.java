@@ -71,7 +71,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 public abstract class AbstractActorImpl extends AbstractVertexImpl implements AbstractActor {
   /**
    * The cached value of the '{@link #getDataInputPorts() <em>Data Input Ports</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getDataInputPorts()
    * @generated
    * @ordered
@@ -91,7 +91,7 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements Ab
   /**
    * The cached value of the '{@link #getConfigOutputPorts() <em>Config Output Ports</em>}' containment reference list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getConfigOutputPorts()
    * @generated
    * @ordered

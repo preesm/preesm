@@ -71,7 +71,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
 public class BlockImpl extends EObjectImpl implements Block {
   /**
    * The cached value of the '{@link #getCodeElts() <em>Code Elts</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getCodeElts()
    * @generated
    * @ordered
@@ -80,7 +80,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 
   /**
    * The cached value of the '{@link #getDeclarations() <em>Declarations</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getDeclarations()
    * @generated
    * @ordered
@@ -89,7 +89,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 
   /**
    * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getName()
    * @generated
    * @ordered
@@ -98,7 +98,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 
   /**
    * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getName()
    * @generated
    * @ordered
@@ -107,7 +107,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 
   /**
    * The cached value of the '{@link #getDefinitions() <em>Definitions</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getDefinitions()
    * @generated
    * @ordered
@@ -199,8 +199,7 @@ public class BlockImpl extends EObjectImpl implements Block {
   @Override
   public EList<Variable> getDefinitions() {
     if (this.definitions == null) {
-      this.definitions = new EObjectContainmentWithInverseEList<>(Variable.class, this, CodegenPackage.BLOCK__DEFINITIONS,
-          CodegenPackage.VARIABLE__CREATOR);
+      this.definitions = new EObjectContainmentWithInverseEList<>(Variable.class, this, CodegenPackage.BLOCK__DEFINITIONS, CodegenPackage.VARIABLE__CREATOR);
     }
     return this.definitions;
   }

@@ -280,7 +280,9 @@ public class CodegenEngine {
           if (!iFile.exists()) {
             iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
           }
-          iFile.setContents(new ByteArrayInputStream(printer.doSwitch(b).toString().getBytes()), true, false, new NullProgressMonitor());
+          iFile.setContents(new ByteArrayInputStream(printer.postProcessing(printer.doSwitch(b)).toString().getBytes()), true, false,
+              new NullProgressMonitor());
+
         } catch (final CoreException ex) {
           ex.printStackTrace();
         }

@@ -65,7 +65,7 @@ public class DelayImpl extends ParameterizableImpl implements Delay {
 
   /**
    * The cached value of the '{@link #getExpression() <em>Expression</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getExpression()
    * @generated
    * @ordered

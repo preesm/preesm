@@ -51,8 +51,7 @@ import org.jgrapht.traverse.AbstractGraphIterator;
  *
  * @author mpelcat
  */
-public class CustomTopologicalIterator
-    extends AbstractGraphIterator<MapperDAGVertex, MapperDAGEdge> {
+public class CustomTopologicalIterator extends AbstractGraphIterator<MapperDAGVertex, MapperDAGEdge> {
 
   /** The direct order. */
   protected boolean directOrder;

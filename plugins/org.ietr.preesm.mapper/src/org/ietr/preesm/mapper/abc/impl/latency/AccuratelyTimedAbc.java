@@ -64,8 +64,7 @@ public class AccuratelyTimedAbc extends LatencyAbc {
   List<Integer> types = null;
 
   /**
-   * Constructor of the simulator from a "blank" implementation where every vertex has not been
-   * mapped yet.
+   * Constructor of the simulator from a "blank" implementation where every vertex has not been mapped yet.
    *
    * @param params
    *          the params
@@ -78,8 +77,7 @@ public class AccuratelyTimedAbc extends LatencyAbc {
    * @param scenario
    *          the scenario
    */
-  public AccuratelyTimedAbc(final AbcParameters params, final MapperDAG dag, final Design archi,
-      final AbcType abcType, final PreesmScenario scenario) {
+  public AccuratelyTimedAbc(final AbcParameters params, final MapperDAG dag, final Design archi, final AbcType abcType, final PreesmScenario scenario) {
     super(params, dag, archi, abcType, scenario);
 
     this.types = new ArrayList<>();
