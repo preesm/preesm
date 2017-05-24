@@ -14,6 +14,8 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.ietr.dftools.algorithm.model.sdf.transformations.IbsdfFlattener;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
@@ -438,6 +440,14 @@ public class HSDFBuildLoops {
         vertexesCpy.add(v);
         // p("Clustering actor " + v.getName() + " RV " + v.getNbRepeatAsInteger());
       }
+      if (v instanceof SDFBroadcastVertex) {
+        vertexesCpy.add(v);
+        // p("Clustering actor " + v.getName() + " RV " + v.getNbRepeatAsInteger());
+      }
+      if (v instanceof SDFRoundBufferVertex) {
+        vertexesCpy.add(v);
+        // p("Clustering actor " + v.getName() + " RV " + v.getNbRepeatAsInteger());
+      }
     }
 
     final HashMap<SDFAbstractVertex, AbstractClust> clustMap = new HashMap<>();
@@ -544,8 +554,8 @@ public class HSDFBuildLoops {
       // p("clusteredVertex " + clusteredVertex.getName() + " left " + current.get(0).getName() + " right " + current.get(1).getName());
       lastClusteredVertex = clusteredVertex;
     }
-    // p("generateClustering ok");
-    // printClusteringSchedule(clustMap.get(lastClusteredVertex));
+    p("HSDF LoopBuider Hierarchical actor: " + inGraph.getName());
+    printClusteringSchedule(clustMap.get(lastClusteredVertex));
     return clustMap.get(lastClusteredVertex);
   }
 

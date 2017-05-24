@@ -108,7 +108,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
           } catch (final SDF4JException e) {
             throw (new WorkflowException(e.getMessage()));
           }
-          logger.log(Level.FINER, "flattening complete");
+          logger.log(Level.INFO, "Flattening complete with depth " + depth);
           final SDFGraph resultGraph = flattener.getFlattenedGraph();// flatHier.getOutput();
           outputs.put("SDF", loopBuilder.execute(resultGraph));
         } else {
