@@ -621,10 +621,11 @@ public class HSDFBuildLoops {
         e.printStackTrace();
       }
 
+      // getting edges that are allocated by Karol
       final List<SDFEdge> edgeUpperGraph = new ArrayList<>();
       for (final SDFAbstractVertex v : resultGraph.vertexSet()) {
         if (v instanceof SDFInterfaceVertex) {
-          p("Current interface: " + v.getName());
+          // p("Current interface: " + v.getName());
           edgeUpperGraph.addAll(resultGraph.incomingEdgesOf(v));
           edgeUpperGraph.addAll(resultGraph.outgoingEdgesOf(v));
         }
@@ -635,7 +636,7 @@ public class HSDFBuildLoops {
       // }
 
       int bufSize = 0;
-      int nbWorkingBufferAllocated = 0;
+      // int nbWorkingBufferAllocated = 0;
       for (final SDFAbstractVertex v : resultGraph.vertexSet()) {
         // if (v instanceof SDFVertex) {
         final List<SDFEdge> edge = new ArrayList<>();
@@ -669,15 +670,14 @@ public class HSDFBuildLoops {
             }
 
             bufSize += mem;
-            nbWorkingBufferAllocated++;
-            p("Internal memory allocation for edge " + e.getSourceLabel() + " " + e.getTargetLabel());
+            // nbWorkingBufferAllocated++;
+            // p("Internal memory allocation for edge " + e.getSourceLabel() + " " + e.getTargetLabel());
             allocEdge.add(e);
           }
-          // }
         }
       }
       g.getPropertyBean().setValue("working_memory", new Integer(bufSize));
-      p("Internal working memory computation " + g.getName() + " number of allocation " + nbWorkingBufferAllocated + " byte allocated " + bufSize);
+      // p("Internal working memory computation " + g.getName() + " number of allocation " + nbWorkingBufferAllocated + " byte allocated " + bufSize);
     }
     return inputGraph;
   }
