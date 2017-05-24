@@ -4,7 +4,7 @@ def javaToolID = "JDK-${javaVersion}"
 
 def mavenVersion = "3.5.0"
 def mavenToolID = "Maven-${mavenVersion}"
-def mavenOpts = "-e"
+def mavenOpts = "-e -Dmaven.repo.local=m2-repository"
 
 // tell Jenkins to remove 7 days old artifacts/builds and keep only 7 last ones
 properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '7', artifactNumToKeepStr: '7', daysToKeepStr: '7', numToKeepStr: '7']]]);
@@ -22,11 +22,15 @@ node {
 		stage ('Checkstyle') {
 			sh "java -jar releng/hooks/checkstyle-7.6.1-all.jar -c releng/VAADER_checkstyle.xml plugins/"
 		}
-		stage ('Checkout maven plugins') {
-			sh "mvn -P releng dependency:resolve-plugins -Dtycho.mode=maven"
+		stage ('Resolve Dependencies') {
+			// resolve Maven dependencies (jars, plugins)
+			sh "mvn ${mavenOpts} -P releng dependency:go-offline -Dtycho.mode=maven"
+
+			// resolve P2 dependencies
+			sh "mvn ${mavenOpts} -P releng clean"
 			stash excludes: '**/.git/**', name: 'sourceCode'
-			cleanWs()
 		}
+		cleanWs()
 	}
 }
 
