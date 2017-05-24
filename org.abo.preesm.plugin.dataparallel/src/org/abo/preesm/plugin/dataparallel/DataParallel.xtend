@@ -14,7 +14,7 @@ class DataParallel extends AbstractTaskImplementation {
 	override execute(Map<String, Object> inputs, Map<String, String> parameters, IProgressMonitor monitor, String nodeName, Workflow workflow) throws WorkflowException {
 		val sdf = inputs.get("SDF") as SDFGraph
 		
-		val dagGen = new DAGConstructor(sdf, WorkflowLogger.logger as Logger)
+		val dagGen = new SDF2DAG(sdf, WorkflowLogger.logger as Logger)
 		val dag = dagGen.outputGraph
 		
 		return newHashMap("SDF" -> dag)
