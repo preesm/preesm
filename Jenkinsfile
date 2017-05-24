@@ -32,11 +32,11 @@ node {
 		def javaTool = tool javaToolID
 		def mavenTool = tool mavenToolID
 
-		withEnv(["JAVA_HOME=${javaTool}", "PATH=${javaTool}/bin:${mavenTool}/bin:${env.PATH}"]) {
+		withEnv(["JAVA_HOME=${javaTool}", "PATH=${javaTool}/bin:${env.PATH}"]) {
 			stage ('Build and Package') {
 				cleanWs()
 				unstash 'sourceCode'
-				sh "mvn ${mavenOpts} package"
+				sh "mvn --offline ${mavenOpts} package"
 				cleanWs()
 			}
 		}
@@ -46,13 +46,13 @@ node {
 		def javaTool = tool javaToolID
 		def mavenTool = tool mavenToolID
 
-		withEnv(["JAVA_HOME=${javaTool}", "PATH=${javaTool}/bin:${mavenTool}/bin:${env.PATH}"]) {
+		withEnv(["JAVA_HOME=${javaTool}", "PATH=${javaTool}/bin:${env.PATH}"]) {
 			stage ('Test and Code Quality') {
 				cleanWs()
 				unstash 'sourceCode'
 				
 				// actually wants verify, but use install so that code quality analyses do not need to rebuild everything
-				sh "mvn ${mavenOpts} verify findbugs:findbugs sonar:sonar"
+				sh "mvn --offline ${mavenOpts} verify findbugs:findbugs sonar:sonar"
 				
 				junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
 				step([$class: 'JacocoPublisher'])
@@ -66,14 +66,14 @@ node {
 		def javaTool = tool javaToolID
 		def mavenTool = tool mavenToolID
 
-		withEnv(["JAVA_HOME=${javaTool}", "PATH=${javaTool}/bin:${mavenTool}/bin:${env.PATH}"]) {
+		withEnv(["JAVA_HOME=${javaTool}", "PATH=${javaTool}/bin:${env.PATH}"]) {
 			stage ('Check Releng Package') {
 				cleanWs()
 				unstash 'sourceCode'
 				
 				// final stage to check that the products and site can be packaged
 				// noneed to redo all tests there
-				sh "mvn ${mavenOpts} -Dmaven.test.skip=true -P releng package"
+				sh "mvn --offline ${mavenOpts} -Dmaven.test.skip=true -P releng package"
 				cleanWs()
 			}
 		}
