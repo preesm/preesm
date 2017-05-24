@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.architecture.slam.Design;
@@ -152,6 +153,10 @@ public class MultiSDFListSchedulingMapping extends AbstractMapping {
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC_SET, abcs);
 
     super.clean(architecture, scenario);
+    for (DirectedAcyclicGraph dag : dags) {
+      super.checkSchedulingResult(parameters, dag);
+    }
+
     return outputs;
   }
 }
