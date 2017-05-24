@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ASCII"?>
-<pi:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:al="http://eclipse.org/graphiti/mm/algorithms" xmlns:pi="http://eclipse.org/graphiti/mm/pictograms" visible="true" gridUnit="10" diagramTypeId="PiMM" name="myapp2" snapToGrid="true" pictogramLinks="//@children.0/@link //@children.0/@children.0/@link //@children.0/@anchors.0/@link //@children.1/@link //@children.1/@children.0/@link //@children.1/@anchors.0/@link //@children.2/@link //@children.2/@children.0/@link //@children.3/@link //@children.3/@children.0/@link //@children.2/@anchors.1/@link //@children.3/@anchors.1/@link //@connections.0/@link //@children.2/@anchors.2/@link //@children.3/@anchors.2/@link //@connections.1/@link //@children.2/@anchors.0/@link //@children.3/@anchors.0/@link //@children.2/@anchors.3/@link //@connections.2/@link //@children.2/@anchors.4/@link //@connections.3/@link //@children.3/@anchors.3/@link //@connections.4/@link //@children.3/@anchors.5/@link //@connections.5/@link //@children.4/@link //@children.4/@children.0/@link //@children.4/@anchors.0/@link //@children.3/@anchors.4/@link //@connections.6/@link //@children.2/@anchors.5/@link //@children.3/@anchors.6/@link //@children.5/@link //@children.5/@children.0/@link //@children.5/@anchors.0/@link //@children.5/@anchors.1/@link //@children.5/@anchors.2/@link //@children.5/@anchors.3/@link //@children.5/@anchors.4/@link //@connections.7/@link //@connections.8/@link //@connections.9/@link //@connections.10/@link" version="0.12.0">
+<pi:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:al="http://eclipse.org/graphiti/mm/algorithms" xmlns:pi="http://eclipse.org/graphiti/mm/pictograms" visible="true" gridUnit="10" diagramTypeId="PiMM" name="myapp2" snapToGrid="true" pictogramLinks="//@children.0/@link //@children.0/@children.0/@link //@children.0/@anchors.0/@link //@children.1/@link //@children.1/@children.0/@link //@children.1/@anchors.0/@link //@children.2/@link //@children.2/@children.0/@link //@children.3/@link //@children.3/@children.0/@link //@children.2/@anchors.1/@link //@children.3/@anchors.1/@link //@connections.0/@link //@children.2/@anchors.2/@link //@children.3/@anchors.2/@link //@connections.1/@link //@children.2/@anchors.0/@link //@children.3/@anchors.0/@link //@children.2/@anchors.3/@link //@connections.2/@link //@children.2/@anchors.4/@link //@connections.3/@link //@children.3/@anchors.3/@link //@connections.4/@link //@children.3/@anchors.5/@link //@connections.5/@link //@children.4/@link //@children.4/@children.0/@link //@children.4/@anchors.0/@link //@children.3/@anchors.4/@link //@connections.6/@link //@children.2/@anchors.5/@link //@children.3/@anchors.6/@link //@children.5/@link //@children.5/@children.0/@link //@children.5/@anchors.0/@link //@children.5/@anchors.1/@link //@children.5/@anchors.2/@link //@children.5/@anchors.3/@link //@children.5/@anchors.4/@link //@connections.7/@link //@connections.8/@link //@connections.9/@link //@connections.10/@link" version="0.13.0">
   <properties key="editor_version" value="3"/>
   <graphicsAlgorithm xsi:type="al:Rectangle" background="//@colors.1" foreground="//@colors.0" lineWidth="1" transparency="0.0" width="1000" height="1000"/>
   <link>
@@ -228,7 +228,7 @@
     </children>
   </children>
   <children xsi:type="pi:ContainerShape" visible="true" active="true">
-    <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.1" foreground="//@colors.9" lineWidth="2" transparency="0.0" width="117" height="53" x="235" y="250" cornerHeight="5" cornerWidth="5"/>
+    <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.1" foreground="//@colors.9" lineWidth="2" transparency="0.0" width="127" height="53" x="235" y="250" cornerHeight="5" cornerWidth="5"/>
     <link>
       <businessObjects href="myapp2.pi#//@vertices.2"/>
     </link>
@@ -238,8 +238,8 @@
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.10" referencedGraphicsAlgorithm="//@children.5/@graphicsAlgorithm" relativeHeight="0.7735849056603774">
-      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="33" height="12">
-        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="25" height="12" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="input"/>
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="55" height="12">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="47" height="12" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="topInputs"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.8" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
       </graphicsAlgorithm>
       <link>
@@ -247,9 +247,9 @@
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.7" referencedGraphicsAlgorithm="//@children.5/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.7735849056603774">
-      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="40" height="12" x="-40">
-        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="32" height="12" font="//@fonts.1" value="output"/>
-        <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="32" y="2"/>
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="64" height="12" x="-64">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="56" height="12" font="//@fonts.1" value="topOutputs"/>
+        <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="56" y="2"/>
       </graphicsAlgorithm>
       <link>
         <businessObjects href="myapp2.pi#//@vertices.2/@dataOutputPorts.0"/>
@@ -282,7 +282,7 @@
       </link>
     </anchors>
     <children visible="true">
-      <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="117" height="20" font="//@fonts.2" horizontalAlignment="ALIGNMENT_CENTER" value="hierarchical_app"/>
+      <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="127" height="20" font="//@fonts.2" horizontalAlignment="ALIGNMENT_CENTER" value="hierarchical_app"/>
       <link>
         <businessObjects href="myapp2.pi#//@vertices.2"/>
       </link>

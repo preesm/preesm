@@ -55,17 +55,17 @@
             <data key="graph_desc">Algo/hierarchical_myapp.pi</data>
             <port kind="cfg_input" name="height"/>
             <port kind="cfg_input" name="width"/>
-            <port annotation="NONE" expr="height*width" kind="input" name="input"/>
-            <port annotation="NONE" expr="(height*width)" kind="output" name="output"/>
+            <port annotation="NONE" expr="height*width" kind="input" name="topInputs"/>
+            <port annotation="NONE" expr="(height*width)" kind="output" name="topOutputs"/>
         </node>
         <edge kind="fifo" source="Read_YUV" sourceport="u"
             target="display" targetport="u" type="uchar"/>
         <edge kind="fifo" source="Read_YUV" sourceport="v"
             target="display" targetport="v" type="uchar"/>
-        <edge kind="fifo" source="hierarchical_app" sourceport="output"
-            target="display" targetport="y" type="uchar"/>
+        <edge kind="fifo" source="hierarchical_app"
+            sourceport="topOutputs" target="display" targetport="y" type="uchar"/>
         <edge kind="fifo" source="Read_YUV" sourceport="y"
-            target="hierarchical_app" targetport="input" type="uchar"/>
+            target="hierarchical_app" targetport="topInputs" type="uchar"/>
         <edge kind="dependency" source="width" target="Read_YUV" targetport="width"/>
         <edge kind="dependency" source="height" target="Read_YUV" targetport="height"/>
         <edge kind="dependency" source="width" target="display" targetport="width"/>
