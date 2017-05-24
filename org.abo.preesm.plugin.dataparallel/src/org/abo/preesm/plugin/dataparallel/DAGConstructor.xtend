@@ -42,11 +42,13 @@ class DAGConstructor {
 	 * Map of all actors with instance. Does not contain implodes and explodes
 	 * This is used as intermediate variable while creating linked edges
 	 */
+	@Accessors(PUBLIC_GETTER, PROTECTED_SETTER)
 	private val Map<SDFAbstractVertex, List<SDFAbstractVertex>> actor2Instances;
 	
 	/**
 	 * Map of all actors with instance, including implodes and explodes
 	 */
+	@Accessors(PUBLIC_GETTER, PROTECTED_SETTER)
 	private val Map<SDFAbstractVertex, List<SDFAbstractVertex>> actor2InstancesAll;
 	
 	/**
@@ -58,13 +60,14 @@ class DAGConstructor {
 	/**
 	 * Hold the DAG
 	 */
-	@Accessors
-	public var SDFGraph outputGraph;	
+	@Accessors(PUBLIC_GETTER, PROTECTED_SETTER)
+	private var SDFGraph outputGraph;	
 	
 	/**
 	 * Check if the input SDF graph has changed
 	 */
-	public val boolean hasChanged;
+	@Accessors(PUBLIC_GETTER, PROTECTED_SETTER)
+	private val boolean hasChanged;
 	
 	new(SDFGraph sdf, Logger logger) {
 		this.logger = logger
