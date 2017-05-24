@@ -21,6 +21,9 @@ node {
 		}
 		stage ('Checkstyle') {
 			sh "java -jar releng/hooks/checkstyle-7.6.1-all.jar -c releng/VAADER_checkstyle.xml plugins/"
+		}
+		stage ('Checkout maven plugins') {
+			sh "mvn -P releng dependency:resolve-plugins -Dtycho.mode=maven"
 			stash excludes: '**/.git/**', name: 'sourceCode'
 			cleanWs()
 		}
