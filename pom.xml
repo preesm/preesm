@@ -91,6 +91,10 @@
 			<layout>p2</layout>
 			<url>${complete.p2.repo}</url>
 		</repository>
+		<repository>
+			<id>preesm</id>
+			<url>http://preesm.sourceforge.net/maven/</url>
+		</repository>
 	</repositories>
 
   <build>
