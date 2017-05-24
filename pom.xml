@@ -43,6 +43,7 @@
   <properties>
     <jacoco-version>0.7.9</jacoco-version>
     <tycho-version>1.0.0</tycho-version>
+    <checkstyle-version>7.6.1</checkstyle-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <complete.p2.repo>http://preesm.sourceforge.net/gensite/update-site/complete/</complete.p2.repo>
     
@@ -251,7 +252,7 @@
             <!-- Override checkstyle version -->
             <groupId>com.puppycrawl.tools</groupId>
             <artifactId>checkstyle</artifactId>
-            <version>7.6.1</version>
+            <version>${checkstyle-version}</version>
           </dependency>
         </dependencies>
         <executions>
@@ -284,6 +285,15 @@
       
     </plugins>
   </build>
+
+  <dependencies>
+    <dependency>
+      <!-- Override checkstyle version -->
+      <groupId>com.puppycrawl.tools</groupId>
+      <artifactId>checkstyle</artifactId>
+	  <version>${checkstyle-version}</version>
+    </dependency>
+  </dependencies>
 
   <modules>
     <module>plugins/org.ietr.preesm.utils</module>
