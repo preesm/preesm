@@ -585,17 +585,11 @@ public class CodegenModelGenerator {
                 generateActorFiring(operatorBlock, vert);
                 break;
               case DAGForkVertex.DAG_FORK_VERTEX:
-                generateSpecialCall(operatorBlock, vert);
-                break;
               case DAGJoinVertex.DAG_JOIN_VERTEX:
-                generateSpecialCall(operatorBlock, vert);
-                break;
               case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
                 generateSpecialCall(operatorBlock, vert);
                 break;
               case DAGInitVertex.DAG_INIT_VERTEX:
-                generateFifoCall(operatorBlock, vert);
-                break;
               case DAGEndVertex.DAG_END_VERTEX:
                 generateFifoCall(operatorBlock, vert);
                 break;
