@@ -759,9 +759,9 @@ public class CodegenModelGenerator {
             for (final DAGEdge edge : edges) {
               final BufferAggregate bufferAggregate = (BufferAggregate) edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
               for (final BufferProperties buffProperty : bufferAggregate) {
-                if (buffProperty.getSourceOutputPortID().equals(arg.getName())) {
-                  // check that this edge is not connected to a
-                  // receive vertex
+                String portHsdfName = sdfVertex.getAssociatedEdge(port).getTargetLabel();
+                if (buffProperty.getSourceOutputPortID().equals(portHsdfName)) {
+                  // check that this edge is not connected to a receive vertex
                   if (edge.getTarget().getKind() != null) {
                     dagEdge = edge;
                     subBufferProperties = buffProperty;
@@ -776,10 +776,9 @@ public class CodegenModelGenerator {
             for (final DAGEdge edge : edges) {
               final BufferAggregate bufferAggregate = (BufferAggregate) edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
               for (final BufferProperties buffProperty : bufferAggregate) {
-                if (buffProperty.getDestInputPortID().equals(arg.getName())) {
-                  // check that this edge is not connected to a
-                  // send
-                  // vertex
+                String portHsdfName = sdfVertex.getAssociatedEdge(port).getSourceLabel();
+                if (buffProperty.getDestInputPortID().equals(portHsdfName)) {
+                  // check that this edge is not connected to a send vertex
                   if (edge.getSource().getKind() != null) {
                     dagEdge = edge;
                     subBufferProperties = buffProperty;
@@ -796,11 +795,11 @@ public class CodegenModelGenerator {
          * logger.log(Level.INFO, "Edge " + dagEdge.getSource().getName() + " " + dagEdge.getTarget().getName() + " to args " +
          * subBufferProperties.getDestInputPortID() + " " + subBufferProperties.getSourceOutputPortID() + " " + subBufferProperties.getDataType() );
          */
-
         if ((dagEdge == null) || (subBufferProperties == null)) {
-          throw new CodegenException("The DAGEdge connected to the port  " + port + " of Actor (" + dagVertex + ") does not exist.\n"
-              + "Possible cause is that the DAG" + " was altered before entering" + " the Code generation.\n" + "This error may also happen if the port type "
-              + "in the graph and in the IDL are not identical");
+          throw new CodegenException(
+              "The DAGEdge connected to the port  " + port + " of Hierarchical Actor (" + dagVertex + ") does not exist for\nrepeated actor " + sdfVertex
+                  + ".\n" + "DagEdge " + dagEdge + " subBuffer " + subBufferProperties + ".\nPossible cause is that the DAG" + " was altered before entering"
+                  + " the Code generation.\n" + "This error may also happen if the port type " + "in the graph and in the IDL are not identical");
         }
       }
 
@@ -977,9 +976,7 @@ public class CodegenModelGenerator {
     // p("Generating code for hierarchical actor " + sdfVertex.getName());
     if (refinement instanceof AbstractGraph) {
       // p(sdfVertex.getName());
-      // pv(sdfVertex);
       final SDFGraph graph = (SDFGraph) sdfVertex.getGraphDescription();
-      // int nbActor = 0;
       final List<SDFAbstractVertex> repVertexs = new ArrayList<>();
       final List<SDFInterfaceVertex> interfaces = new ArrayList<>();
 
@@ -998,17 +995,18 @@ public class CodegenModelGenerator {
       }
 
       // Check nb actor for loop generation as only one actor in the
-      // hierarchy is supported yet
-      // p("Flattened Graph Results\n");
       for (final SDFAbstractVertex v : resultGraph.vertexSet()) {
         if (v instanceof SDFVertex) {
           repVertexs.add(v);
-          // nbActor++;
-          // p("Actor " + v.getName() + " repeated " + getSDFVertexNbRepeated(v));
+          p("Actor " + v.getName() + " repeated " + getSDFVertexNbRepeated(v));
         }
+        /*
+         * if (v instanceof SDFBroadcastVertex) { repVertexs.add(v); p("Broadcast Actor " + v.getName()); } if (v instanceof SDFRoundBufferVertex) {
+         * repVertexs.add(v); p("Round Buffer Actor " + v.getName()); }
+         */
         if (v instanceof SDFInterfaceVertex) {
           interfaces.add((SDFInterfaceVertex) v);
-          // p("Interface Vertex " + v.getName());
+          p("Interface Vertex " + v.getName());
         }
       }
 
@@ -1022,48 +1020,10 @@ public class CodegenModelGenerator {
         ex.printStackTrace();
       }
 
-      // SDFRandomGraph sdfRandom = new SDFRandomGraph();
       /*
-       * DirectedAcyclicGraphGenerator sdfRandom = new DirectedAcyclicGraphGenerator(); SDFGraph g = null; g = sdfRandom.createAcyclicRandomGraph(40, 1, 20, 1,
-       * 20); try { loopBuilder.generateClustering(g); } catch (WorkflowException e) { // TODO Auto-generated catch block e.printStackTrace(); } catch
-       * (SDF4JException e) { // TODO Auto-generated catch block e.printStackTrace(); }
+       * SDFRandomGraph sdfRandom = new SDFRandomGraph(); DirectedAcyclicGraphGenerator sdfRandom = new DirectedAcyclicGraphGenerator(); SDFGraph g = null; g =
+       * sdfRandom.createAcyclicRandomGraph(40, 1, 20, 1, 20);
        */
-      // REPVertex r = repV;
-      // while(r != null){
-      // //p(r.r + " (" + r.ra + " * " + r.a.getName() + " " + r.rb + " * " + r.b.getName() + ")");
-      // if(r.get != null){
-      // r = r.repVertex;
-      // }else{
-      // break;
-      // }
-      // }
-
-      // put vertex in the hierarchical actor in right order
-      // List<SDFAbstractVertex> sortedRepVertexs = new ArrayList<SDFAbstractVertex>();
-      // SDFAbstractVertex prev = sdfVertex;
-      // for (int nbActorLeft = 0; nbActorLeft < nbActor; nbActorLeft++) {
-      // int success = 0;
-      // // p("Try find right actor for actor " + prev.getName());
-      // for (SDFAbstractVertex v : repVertexs) {
-      // // p("Test left actor " + v.getName() + " with right actor "
-      // // + prev.getName());
-      // if (hasCommonEdges(prev, v, sdfVertex) != null) {
-      // sortedRepVertexs.add(v);
-      // repVertexs.remove(v);
-      // prev = v;
-      // success = 1;
-      // break;
-      // }
-      // }
-      // if (success == 0) {
-      // throw new CodegenException(
-      // "Hierarchical codegen failed to find right actor for actor " + prev.getName());
-      // }
-      // }
-      // for(SDFAbstractVertex v : sortedRepVertexs){
-      // p("Sorted Vertex " + v.getName() + " rep " +
-      // getSDFVertexNbRepeated(v));
-      // }
       // check that hierarchical actor interfaces sinks or sources size is
       final List<SDFAbstractVertex> inputRepVertexs = new ArrayList<>();
       final List<SDFAbstractVertex> outputRepVertexs = new ArrayList<>();
@@ -1072,11 +1032,11 @@ public class CodegenModelGenerator {
         for (final SDFInterfaceVertex s : i.getSources()) {
           final SDFAbstractVertex a = i.getAssociatedEdge(s).getTarget();
           final SDFAbstractVertex b = i.getAssociatedEdge(s).getSource();
-          if (a instanceof SDFVertex) {
+          if (a instanceof SDFVertex /* || a instanceof SDFRoundBufferVertex || a instanceof SDFBroadcastVertex */) {
             outputRepVertexs.add(a);
             // p("1 input target " + a.getName());
           }
-          if (b instanceof SDFVertex) {
+          if (b instanceof SDFVertex /* || b instanceof SDFRoundBufferVertex || b instanceof SDFBroadcastVertex */) {
             inputRepVertexs.add(b);
             // p("2 input source " + b.getName());
           }
@@ -1084,129 +1044,92 @@ public class CodegenModelGenerator {
         for (final SDFInterfaceVertex s : i.getSinks()) {
           final SDFAbstractVertex a = i.getAssociatedEdge(s).getTarget();
           final SDFAbstractVertex b = i.getAssociatedEdge(s).getSource();
-          if (a instanceof SDFVertex) {
+          if (a instanceof SDFVertex /* || a instanceof SDFRoundBufferVertex || a instanceof SDFBroadcastVertex */) {
             inputRepVertexs.add(a);
             // p("3 output target " + a.getName());
           }
-          if (b instanceof SDFVertex) {
+          if (b instanceof SDFVertex /* || b instanceof SDFRoundBufferVertex || b instanceof SDFBroadcastVertex */) {
             outputRepVertexs.add(b);
             // p("4 output source " + b.getName());
           }
         }
-        /*
-         * i.getInterfaces() if(i.getDirection().toString().equals("Output") == true){ for (SDFInterfaceVertex s : i.getSources()) { SDFAbstractVertex a =
-         * i.getAssociatedEdge(s).getTarget(); SDFAbstractVertex b = i.getAssociatedEdge(s).getSource(); if(a instanceof SDFVertex){ outputRepVertexs.add(a); }
-         * if(b instanceof SDFVertex){ outputRepVertexs.add(b); } } }else if(i.getDirection().toString().equals("Input") == true){ for (SDFInterfaceVertex s :
-         * i.getSinks()) { SDFAbstractVertex a = i.getAssociatedEdge(s).getTarget(); SDFAbstractVertex b = i.getAssociatedEdge(s).getSource(); if(a instanceof
-         * SDFVertex){ inputRepVertexs.add(a); } if(b instanceof SDFVertex){ inputRepVertexs.add(b); } } }
-         */
-        /*
-         * for (SDFInterfaceVertex s : i.getSources()) { SDFAbstractVertex a = i.getAssociatedEdge(s).getTarget(); SDFAbstractVertex b =
-         * i.getAssociatedEdge(s).getSource(); if(a instanceof SDFVertex){ outputRepVertexs.add(a); } if(b instanceof SDFVertex){ outputRepVertexs.add(b); }
-         * p("Output Source actor " + i.getAssociatedEdge(s).getSource().getName() + " dir " + i.getDirection().toString()); p("Output Target actor " +
-         * i.getAssociatedEdge(s).getTarget().getName() + " dir " + i.getDirection().toString()); } for (SDFInterfaceVertex s : i.getSinks()) {
-         * SDFAbstractVertex a = i.getAssociatedEdge(s).getTarget(); SDFAbstractVertex b = i.getAssociatedEdge(s).getSource(); if(a instanceof SDFVertex){
-         * outputRepVertexs.add(a); } if(b instanceof SDFVertex){ outputRepVertexs.add(b); } p("Input Source actor " +
-         * i.getAssociatedEdge(s).getSource().getName() + " dir " + i.getDirection().toString()); p("Input Target actor " +
-         * i.getAssociatedEdge(s).getTarget().getName() + " dir " + i.getDirection().toString()); }
-         */
-        // if (i.getSources().size() > 1 || i.getSinks().size() > 1) {
-        // throw new CodegenException("Hierarchical codegen failed for hierarchical actor "
-        // + sdfVertex.getName() + " number of sinks " + i.getSinks().size() + " or sources "
-        // + i.getSources().size() + " is great than 1");
-        // }
       }
-      /*
-       * for(SDFAbstractVertex s : inputRepVertexs){ p("Input Vertex " + s.getName()); } for(SDFAbstractVertex s : outputRepVertexs){ p("Output Vertex " +
-       * s.getName()); }
-       */
-      // for (int i = 0; i < nbActor; i++) {
-      // SDFAbstractVertex repVertex = sortedRepVertexs.get(i);
-      // p("Codegen Model Vertex " + repVertex.getName());
-      // }
-      final List<AbstractClust> listScheduleLoop = loopBuilder.getLoopClust(clust);
 
-      for (final AbstractClust c : listScheduleLoop) {
-        if (c instanceof ClustVertex) {
-          // p("ListScheduleLoop ClustVertex " + ((ClustVertex)c).getVertex().getName() + " repeat " + getSDFVertexNbRepeated(((ClustVertex)c).getVertex()) + "
-          // rep clust " + ((ClustVertex)c).getRepeat());
-        } else if (c instanceof ClustSequence) {
-          // p("ListScheduleLoop ClustSequence ForLoop iter " + ((ClustSequence)c).getRepeat());
-        } else {
-          // p("ListScheduleLoop Failed to dump cluster");
-        }
+      for (SDFAbstractVertex s : inputRepVertexs) {
+        p("Hierarchical Input Vertex: " + s.getName());
       }
+      for (SDFAbstractVertex s : outputRepVertexs) {
+        p("Hierarchical Output Vertex " + s.getName());
+      }
+
+      /*
+       * final List<AbstractClust> listScheduleLoop = loopBuilder.getLoopClust(clust); for (final AbstractClust c : listScheduleLoop) { if (c instanceof
+       * ClustVertex) { // p("ListScheduleLoop ClustVertex " + ((ClustVertex)c).getVertex().getName() + " repeat " +
+       * getSDFVertexNbRepeated(((ClustVertex)c).getVertex()) + " // rep clust " + ((ClustVertex)c).getRepeat()); } else if (c instanceof ClustSequence) { //
+       * p("ListScheduleLoop ClustSequence ForLoop iter " + ((ClustSequence)c).getRepeat()); } else { // p("ListScheduleLoop Failed to dump cluster"); } }
+       */
 
       // p("Printing Code\n");
-
       int forLoopIter = 0;
-      // for(int currentIdx = 0;currentIdx<listScheduleLoop.size();currentIdx++){
-      // int nbClust = listScheduleLoop.size();
       AbstractClust current = loopBuilder.getLoopClustFirstV2(clust);
-      // List <AbstractClust> prevs = new ArrayList<AbstractClust>();
       final List<FiniteLoopBlock> upperLoops = new ArrayList<>();
       while (current != null) {
         // AbstractClust current = listScheduleLoop.get(currentIdx);
         if (current instanceof ClustVertex) {
           final SDFAbstractVertex repVertex = ((ClustVertex) current).getVertex();
-          p("ClustVertex " + repVertex.getName() + " repetition vector " + getSDFVertexNbRepeated(repVertex));
-          // p("Codegen Model Generator " + repVertex.getName());
-          ActorPrototypes prototypes = null;
-          final Object vertex_ref = repVertex.getPropertyBean().getValue(AbstractVertex.REFINEMENT);
-          if (vertex_ref instanceof ActorPrototypes) {
-            prototypes = (ActorPrototypes) vertex_ref;
-          }
-          if (prototypes != null) {
-            final String iteratorIndex = new String("iteratorIndex" + Integer.toString(forLoopIter++));
-            final Prototype loopPrototype = prototypes.getLoopPrototype();
-            /* get repetition vector */
-            // int vertexRep = getSDFVertexNbRepeated(repVertex);
-            final int vertexRep = current.getRepeat();
-            // p("Actor " + repVertex.getName() + " Repeat " +
-            // vertexRep);
 
-            // create code elements and setup them
-            final FunctionCall repFunc = CodegenFactory.eINSTANCE.createFunctionCall();
-            final FiniteLoopBlock forLoop = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
-            final IntVar var = CodegenFactory.eINSTANCE.createIntVar();
-            var.setName(iteratorIndex);
-            forLoop.setIter(var);
-            forLoop.setNbIter(vertexRep);
-            operatorBlock.getLoopBlock().getCodeElts().add(forLoop);
-            repFunc.setName(loopPrototype.getFunctionName());
-            // Function call set to the hierarchical actor
-            repFunc.setActorName(dagVertex.getName());
-
-            // retrieve and set variables to be called by the function
-            final SDFAbstractVertex repVertexCallVar = resultGraph.getVertex(((ClustVertex) current).getVertex().getName());
-            final Entry<List<Variable>, List<PortDirection>> callVars = generateRepeatedCallVariables(operatorBlock, forLoop, upperLoops, dagVertex,
-                repVertexCallVar, loopPrototype, var, inputRepVertexs, outputRepVertexs, interfaces);
-            // logger.log(Level.INFO, "generateFunctionCall name " + dagVertex.getName());
-            // Put Variables in the function call
-            for (int idx = 0; idx < callVars.getKey().size(); idx++) {
-              repFunc.addParameter(callVars.getKey().get(idx), callVars.getValue().get(idx));
-              // p("Called var " + idx + " " + callVars.getKey().get(idx).getName() + " " + callVars.getValue().get(idx).getName());
+          if (repVertex instanceof SDFVertex) {
+            p("ClustVertex " + repVertex.getName() + " repetition vector " + getSDFVertexNbRepeated(repVertex));
+            // p("Codegen Model Generator " + repVertex.getName());
+            ActorPrototypes prototypes = null;
+            final Object vertex_ref = repVertex.getPropertyBean().getValue(AbstractVertex.REFINEMENT);
+            if (vertex_ref instanceof ActorPrototypes) {
+              prototypes = (ActorPrototypes) vertex_ref;
             }
-            // identifyMergedInputRange(callVars); //NOT SUPPORTED YET
-            // for (CodeGenArgument arg : loopPrototype.getArguments().keySet()) { p("Arg Buffer "
-            // + arg.getName()); } for (CodeGenParameter param : loopPrototype.getParameters().keySet()) {
-            // p("Arg Parameter " + param.getName()); }
+            if (prototypes != null) {
+              final String iteratorIndex = new String("iteratorIndex" + Integer.toString(forLoopIter++));
+              final Prototype loopPrototype = prototypes.getLoopPrototype();
+              final int vertexRep = current.getRepeat();
+              // p("Actor " + repVertex.getName() + " Repeat " + vertexRep);
+              // create code elements and setup them
+              final FunctionCall repFunc = CodegenFactory.eINSTANCE.createFunctionCall();
+              final FiniteLoopBlock forLoop = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
+              final IntVar var = CodegenFactory.eINSTANCE.createIntVar();
+              var.setName(iteratorIndex);
+              forLoop.setIter(var);
+              forLoop.setNbIter(vertexRep);
+              operatorBlock.getLoopBlock().getCodeElts().add(forLoop);
+              repFunc.setName(loopPrototype.getFunctionName());
+              repFunc.setActorName(dagVertex.getName()); // Function call set to the hierarchical actor
 
-            // Add the function call to the for loop block
-            forLoop.getCodeElts().add(repFunc);
+              // retrieve and set variables to be called by the function
+              final SDFAbstractVertex repVertexCallVar = resultGraph.getVertex(((ClustVertex) current).getVertex().getName());
+              final Entry<List<Variable>, List<PortDirection>> callVars = generateRepeatedCallVariables(operatorBlock, forLoop, upperLoops, dagVertex,
+                  repVertexCallVar, loopPrototype, var, inputRepVertexs, outputRepVertexs, interfaces);
+              for (int idx = 0; idx < callVars.getKey().size(); idx++) {
+                repFunc.addParameter(callVars.getKey().get(idx), callVars.getValue().get(idx)); // Put Variables in the function call
+                // p("Called var " + idx + " " + callVars.getKey().get(idx).getName() + " " + callVars.getValue().get(idx).getName());
+              }
+              // identifyMergedInputRange(callVars); //NOT SUPPORTED YET
+              // for (CodeGenArgument arg : loopPrototype.getArguments().keySet()) { p("Arg Buffer "
+              // + arg.getName()); } for (CodeGenParameter param : loopPrototype.getParameters().keySet()) {
+              // p("Arg Parameter " + param.getName()); }
+              forLoop.getCodeElts().add(repFunc); // Add the function call to the for loop block
+              registerCallVariableToCoreBlock(operatorBlock, repFunc); // for declaration in the file
+              this.dagVertexCalls.put(dagVertex, repFunc); // Save the functionCall in the dagvertexFunctionCall Map
 
-            registerCallVariableToCoreBlock(operatorBlock, repFunc); // for declaration in the file
-            // operatorBlock.getLoopBlock().getCodeElts().add(repFunc);
-            // Save the functionCall in the dagvertexFunctionCall Map
-            this.dagVertexCalls.put(dagVertex, repFunc);
+              if (upperLoops.size() != 0) {
+                upperLoops.get(upperLoops.size() - 1).getCodeElts().add(forLoop);
+              }
 
-            if (upperLoops.size() != 0) {
-              upperLoops.get(upperLoops.size() - 1).getCodeElts().add(forLoop);
+            } else {
+              throw new CodegenException("Actor (" + sdfVertex + ") has no valid refinement (.idl, .h or .graphml)."
+                  + " Associate a refinement to this actor before generating code.");
             }
-
+          } else if (repVertex instanceof SDFBroadcastVertex || repVertex instanceof SDFRoundBufferVertex) {
+            p("Got Broadcast or RoundBuffer " + repVertex.getName());
           } else {
-            throw new CodegenException(
-                "Actor (" + sdfVertex + ") has no valid refinement (.idl, .h or .graphml)." + " Associate a refinement to this actor before generating code.");
+            throw new CodegenException("Unsupported codegen for Actor: " + sdfVertex + " (Should be Fork or Join).");
           }
         } else if (current instanceof ClustSequence) {
           if (current.getRepeat() != 1) {
