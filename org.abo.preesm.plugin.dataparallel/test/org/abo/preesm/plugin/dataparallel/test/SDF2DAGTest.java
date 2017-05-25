@@ -25,31 +25,31 @@ public final class SDF2DAGTest {
   public void sdfIsNotHSDF() {
     SDFGraph sdf = ExampleGraphs.acyclicTwoActors();
     SDF2DAG dagGen = new SDF2DAG(sdf);
-    Assert.assertFalse(dagGen.checkDAG());
+    Assert.assertFalse(dagGen.checkInputIsValid());
 
     sdf = ExampleGraphs.twoActorSelfLoop();
     dagGen = new SDF2DAG(sdf);
-    Assert.assertFalse(dagGen.checkDAG());
+    Assert.assertFalse(dagGen.checkInputIsValid());
 
     sdf = ExampleGraphs.twoActorLoop();
     dagGen = new SDF2DAG(sdf);
-    Assert.assertFalse(dagGen.checkDAG());
+    Assert.assertFalse(dagGen.checkInputIsValid());
 
     sdf = ExampleGraphs.semanticallyAcyclicCycle();
     dagGen = new SDF2DAG(sdf);
-    Assert.assertFalse(dagGen.checkDAG());
+    Assert.assertFalse(dagGen.checkInputIsValid());
 
     sdf = ExampleGraphs.strictlyCyclic();
     dagGen = new SDF2DAG(sdf);
-    Assert.assertFalse(dagGen.checkDAG());
+    Assert.assertFalse(dagGen.checkInputIsValid());
 
     sdf = ExampleGraphs.mixedNetwork1();
     dagGen = new SDF2DAG(sdf);
-    Assert.assertFalse(dagGen.checkDAG());
+    Assert.assertFalse(dagGen.checkInputIsValid());
 
     sdf = ExampleGraphs.mixedNetwork2();
     dagGen = new SDF2DAG(sdf);
-    Assert.assertFalse(dagGen.checkDAG());
+    Assert.assertFalse(dagGen.checkInputIsValid());
   }
 
   @Test(expected = SDF4JException.class)

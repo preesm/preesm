@@ -48,7 +48,7 @@ class SDF2DAG extends AbstractDAGConstructor {
 		inputGraph = sdf.clone
 		actor2InstancesLocal = newHashMap()
 		
-		val isHSDF = checkDAG()
+		val isHSDF = checkInputIsValid()
 		
 		if(!isHSDF) {
 			hasChanged = true
@@ -68,7 +68,7 @@ class SDF2DAG extends AbstractDAGConstructor {
 	/**
 	 * Check if the graph needs transformation
 	 */
-	public def boolean checkDAG() throws SDF4JException {
+	public override boolean checkInputIsValid() throws SDF4JException {
 		// Check if DAG is flattened
 		for(vertex: inputGraph.vertexSet) {
 			if( (vertex.graphDescription !== null) && (vertex.graphDescription instanceof SDFGraph)) {

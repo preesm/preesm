@@ -4,6 +4,7 @@ import java.util.Map
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import java.util.List
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 
 interface DAGConstructor {
 	
@@ -32,4 +33,9 @@ interface DAGConstructor {
 	 * Return the DAG that is constructed
 	 */
 	public def SDFGraph getOutputGraph()
+	
+	/**
+	 * Check whether the input is valid
+	 */
+	public def boolean checkInputIsValid() throws SDF4JException
 }
