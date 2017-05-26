@@ -1,13 +1,12 @@
 package org.abo.preesm.plugin.dataparallel
 
-import org.abo.preesm.plugin.dataparallel.DAGConstructor
+import java.util.List
+import java.util.Map
+import java.util.logging.Level
 import java.util.logging.Logger
 import org.eclipse.xtend.lib.annotations.Accessors
-import java.util.Map
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import java.util.List
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import java.util.logging.Level
 
 public abstract class AbstractDAGConstructor implements DAGConstructor {
 	

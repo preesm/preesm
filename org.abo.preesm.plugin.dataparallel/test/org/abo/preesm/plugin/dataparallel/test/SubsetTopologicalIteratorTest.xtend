@@ -15,7 +15,7 @@ class SubsetTopologicalIteratorTest {
 	 * all the root node based DAG subset, its targets/successors should also
 	 * occur `n' times
 	 */
-	protected def boolean checkSuccBelongsNRootNodes(DAGConstructor dagGen) throws AssertionError {
+	protected def boolean checkSuccBelongsNRootNodes(DAGConstructor dagGen) {
 		val occurence = newHashMap() // The lookup table
 		val instanceTargets = newHashMap()
 		// Get the targets of each node
