@@ -43,8 +43,27 @@ interface DAGOperations {
 	 * So throws exception when invalid graph is sent
 	 * 
 	 * @return lookup table of levels of nodes
-	 * @throws OperationNotSupportedException if an invalid graph is sent in
+	 * @throws UnsupportedOpertaionException if an invalid graph is sent in
 	 */
 	public def Map<SDFAbstractVertex, Integer> getAllLevels() throws UnsupportedOperationException
 	
+	/**
+	 * Get the maximum depth/level of the graph. 
+	 * Does not generic DAGs. Need a specific instance
+	 * 
+	 * @return Maximum level of the graph
+	 * @throws UnsupportedOperationException if an invalid graph is sent in 
+	 */
+	public def int getMaxLevel() throws UnsupportedOperationException
+	
+	/**
+	 * Get all the level sets for a given DAG. A level set is a set of all instances
+	 * seen at a particular level. Instead of set, we represent them as a list for
+	 * space saving reason. The index of the level set, in this way, represents the level
+	 * at which the set exists. 
+	 * 
+	 * @return list of lists of instances seen at the level given by the index of the outer list
+	 * @throws UnsupportedOperationException if it is an invalid graph
+	 */
+	public def List<List<SDFAbstractVertex>> getLevelSets() throws UnsupportedOperationException
 }

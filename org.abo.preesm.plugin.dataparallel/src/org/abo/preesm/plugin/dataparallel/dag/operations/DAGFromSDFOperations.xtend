@@ -10,6 +10,7 @@ import org.eclipse.xtend.lib.annotations.Accessors
 import java.util.List
 import org.jgrapht.traverse.GraphIterator
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
+import java.util.ArrayList
 
 class DAGFromSDFOperations extends GenericDAGOperations {
 	
@@ -53,7 +54,7 @@ class DAGFromSDFOperations extends GenericDAGOperations {
 		forkJoinOrigInstance = dagGen.explodeImplodeOrigInstances
 	}
 	
-	public override Map<SDFAbstractVertex, Integer> getAllLevels() {
+	public override Map<SDFAbstractVertex, Integer> getAllLevels() throws UnsupportedOperationException {
 		if(!computeLevels){
 			while(iterator.hasNext()) {
 				val seenNode = iterator.next()
@@ -80,4 +81,15 @@ class DAGFromSDFOperations extends GenericDAGOperations {
 		return levels
 	}
 	
+	public override int getMaxLevel() throws UnsupportedOperationException {
+		return (getAllLevels.values.max + 1)
+	}
+	
+	public override List<List<SDFAbstractVertex>> getLevelSets() throws UnsupportedOperationException {
+		val List<List<SDFAbstractVertex>> levelSet = new ArrayList(getMaxLevel)
+		getAllLevels.forEach[instance, level | 
+			levelSet.get(level).add(instance)
+		]
+		return levelSet
+	}
 }

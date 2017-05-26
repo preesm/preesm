@@ -1,13 +1,12 @@
 package org.abo.preesm.plugin.dataparallel.dag.operations
 
+import java.util.Map
 import java.util.logging.Level
 import java.util.logging.Logger
 import org.abo.preesm.plugin.dataparallel.DAGConstructor
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import javax.naming.OperationNotSupportedException
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import java.util.Map
 import org.eclipse.xtend.lib.annotations.Accessors
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 
 /**
  * Implementation that does not concern it self if the DAG is a subset or
@@ -63,6 +62,16 @@ class GenericDAGOperations implements DAGOperations {
 	
 	override Map<SDFAbstractVertex, Integer> getAllLevels() throws UnsupportedOperationException {
 		throw new UnsupportedOperationException("Can't compute all levels for a generic graph.\n The graph must be "
+													+ "constructed using specific DAGConstructor instance")
+	}
+	
+	override getLevelSets() throws UnsupportedOperationException {
+		throw new UnsupportedOperationException("Can't compute level sets for a generic DAG graph.\n The graph must be "
+													+ "constructed using specific DAGConstructor instance")
+	}
+	
+	override getMaxLevel() throws UnsupportedOperationException {
+		throw new UnsupportedOperationException("Can't compute level sets for a generic DAG graph.\n The graph must be "
 													+ "constructed using specific DAGConstructor instance")
 	}
 	
