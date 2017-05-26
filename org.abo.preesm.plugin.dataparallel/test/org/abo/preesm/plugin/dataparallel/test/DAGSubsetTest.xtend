@@ -1,10 +1,10 @@
 package org.abo.preesm.plugin.dataparallel.test
 
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
-import org.abo.preesm.plugin.dataparallel.dag.operations.GenericDAGOperations
 import org.abo.preesm.plugin.dataparallel.DAGSubset
 import org.abo.preesm.plugin.dataparallel.SubsetTopologicalIterator
 import org.junit.Assert
+import org.abo.preesm.plugin.dataparallel.dag.operations.DAGFromSDFOperations
 
 class DAGSubsetTest {
 	/**
@@ -17,7 +17,7 @@ class DAGSubsetTest {
 		Util.provideAllGraphs
 		.map[sdf | new SDF2DAG(sdf)]
 		.forEach[dagGen | 
-			new GenericDAGOperations(dagGen).rootInstances.forEach[rootNode |
+			new DAGFromSDFOperations(dagGen).rootInstances.forEach[rootNode |
 				val subsetActor2Instances = new DAGSubset(dagGen, rootNode).actor2Instances
 				val seenNodes = new SubsetTopologicalIterator(dagGen, rootNode).instanceSources.keySet
 				dagGen.actor2Instances.forEach[actor, instances|
@@ -45,7 +45,7 @@ class DAGSubsetTest {
 		Util.provideAllGraphs
 		.map[sdf | new SDF2DAG(sdf)]
 		.forEach[dagGen |
-			new GenericDAGOperations(dagGen).rootInstances.forEach[rootNode |
+			new DAGFromSDFOperations(dagGen).rootInstances.forEach[rootNode |
 				val subsetInstance2Actor = new DAGSubset(dagGen, rootNode).instance2Actor
 				val seenNodes = new SubsetTopologicalIterator(dagGen, rootNode).instanceSources.keySet
 				dagGen.instance2Actor.forEach[instance, actor |

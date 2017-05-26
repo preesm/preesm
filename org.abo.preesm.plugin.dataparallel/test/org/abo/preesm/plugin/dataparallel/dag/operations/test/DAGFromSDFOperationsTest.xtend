@@ -1,171 +1,69 @@
 package org.abo.preesm.plugin.dataparallel.dag.operations.test
 
-import java.util.Collection
-import java.util.List
-import java.util.Map
-import org.abo.preesm.plugin.dataparallel.DAGConstructor
-import org.abo.preesm.plugin.dataparallel.SDF2DAG
-import org.abo.preesm.plugin.dataparallel.dag.operations.DAGFromSDFOperations
-import org.abo.preesm.plugin.dataparallel.test.Util
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
-import org.jgrapht.traverse.BreadthFirstIterator
-import org.jgrapht.traverse.GraphIterator
-import org.jgrapht.traverse.TopologicalOrderIterator
-import org.junit.Assert
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import java.util.ArrayList
+import org.abo.preesm.plugin.dataparallel.dag.operations.DAGFromSDFOperations
+import java.util.List
+import java.util.Collection
+import org.abo.preesm.plugin.dataparallel.test.ExampleGraphs
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import org.abo.preesm.plugin.dataparallel.SDF2DAG
+import org.abo.preesm.plugin.dataparallel.DAGConstructor
+import org.junit.Assert
 
+/**
+ * @author Sudeep Kanur
+ */
 @RunWith(Parameterized)
 class DAGFromSDFOperationsTest {
+	protected val DAGConstructor dagGen
 	
-	val DAGConstructor dagGen
-	val DAGFromSDFOperations dagOps
-	val GraphIterator<SDFAbstractVertex, SDFEdge> iterator
-	val Map<SDFAbstractVertex, List<SDFAbstractVertex>> instanceSources
+	protected val List<String> rootNodeNames
 	
-	new(DAGConstructor dagGen, DAGFromSDFOperations dagOps, GraphIterator<SDFAbstractVertex, SDFEdge> iterator, Map<SDFAbstractVertex, List<SDFAbstractVertex>> instanceSources) {
+	protected val List<String> exitNodeNames
+	
+	protected val List<String> actorNames
+	
+	new(DAGConstructor dagGen, List<String> rootNodeNames, List<String> exitNodeNames, List<String> actorNames) {
 		this.dagGen = dagGen
-		this.dagOps = dagOps
-		this.iterator = iterator
-		this.instanceSources = instanceSources
+		this.rootNodeNames = rootNodeNames
+		this.exitNodeNames = exitNodeNames
+		this.actorNames = actorNames
 	}
 	
 	@Parameterized.Parameters
 	public static def Collection<Object[]> instancesToTest() {
-		val parameters = newArrayList() 
-		Util.provideAllGraphs
-			.map[sdf | new SDF2DAG(sdf)]
-			.forEach[dagGen | 
-				val instance2Sources = newHashMap()
-				new BreadthFirstIterator<SDFAbstractVertex, SDFEdge>(dagGen.outputGraph).forEach[node |
-					instance2Sources.put(node, newArrayList())	
-				]
-				instance2Sources.forEach[node, sources|
-					sources.addAll(dagGen.outputGraph.incomingEdgesOf(node)
-					.map[edge | edge.source]
-					.filter[source | instance2Sources.keySet.contains(source)]
-					.toList)
-				]
-				
-				parameters.add(#[dagGen, new DAGFromSDFOperations(dagGen), new TopologicalOrderIterator<SDFAbstractVertex, SDFEdge>(dagGen.outputGraph), instance2Sources])
-			]
+		val parameters = newArrayList()
+		val parameterArray = #[
+			#[ExampleGraphs.acyclicTwoActors, #["a_0", "a_1", "a_2", "a_3", "a_4", "b_0"], #["b_1", "b_2"], #["a", "b"]],
+			#[ExampleGraphs.twoActorSelfLoop, #["a_0", "b_0"], #["a_4", "b_1", "b_2"], #["a", "b"]],
+			#[ExampleGraphs.twoActorLoop, #["a_0", "a_1" ], #["b_2"], #["a"]],
+			#[ExampleGraphs.semanticallyAcyclicCycle, #["c_0", "c_1", "c_2", "d_0"], #["b_0", "b_1"], #["c", "d"]],
+			#[ExampleGraphs.strictlyCyclic, #["a_0", "c_0"], #["a_2", "b_1", "d_1"], #["a", "c"]],
+			#[ExampleGraphs.mixedNetwork1, #["b_0", "c_0", "z_0", "z_1", "z_2", "z_3", "z_4", "z_5"], #["a_1", "a_2", "b_1", "e_0", "e_1", "e_2"], #["b", "c", "z"]],
+			#[ExampleGraphs.mixedNetwork2, #["b_0", "z_0", "z_1", "z_2", "z_3", "z_4", "z_5"], #["a_1", "a_2", "e_0", "e_1", "e_2"], #["b", "z"]]
+		]
+		parameterArray.forEach[
+			parameters.add(#[new SDF2DAG(it.get(0) as SDFGraph), it.get(1) as List<String>, it.get(2) as List<String>, it.get(3) as List<String>])
+		]
 		return parameters
 	}
 	
-	/**
-	 * Check that the levels of source instances and its associated implode
-	 * explode instances have level 0
-	 */
-	@Test
-	public def void levelsOfRootIsZero() {
-		val rootInstances = dagOps.rootInstances
-		rootInstances.addAll(dagGen.explodeImplodeOrigInstances.filter[explodeImplode, instance |
-			rootInstances.contains(instance)
-		].keySet)
-		val allLevels = dagOps.allLevels
-		// Test if all the root instances belong to level 0
-		rootInstances.forEach[instance | 
-			Assert.assertEquals(allLevels.get(instance), 0)
-		]
-		// Test if all the level 0 are root instances
-		allLevels.forEach[instance, level |
-			if(level == 0) Assert.assertTrue(rootInstances.contains(instance))
-		]
+	@org.junit.Test
+	public def void checkRootInstances() {
+		Assert.assertEquals(rootNodeNames, 
+			new DAGFromSDFOperations(dagGen).rootInstances.map[node | node.name])
 	}
 	
-	/**
-	 * Check that all the predecessor levels (except the source) have levels
-	 * less than the current ones
-	 */
-	@Test
-	public def void levelsOfSourcesLessThanCurrent() {
-		val forkJoinOrigInstance = dagGen.explodeImplodeOrigInstances
-		// Get sources of all the instances
-		val instanceSources = newHashMap()
-		dagGen.outputGraph.vertexSet.forEach[node | 
-			instanceSources.put(node, dagGen.outputGraph.incomingEdgesOf(node).map[edge | edge.source].toList)
-		]
-		val allLevels = dagOps.allLevels
-		instanceSources.forEach[node, sources| 
-			sources.forEach[source | 
-				if(forkJoinOrigInstance.keySet.contains(source))
-					if(forkJoinOrigInstance.keySet.contains(node))
-						if(forkJoinOrigInstance.get(source) == forkJoinOrigInstance.get(node))
-							Assert.assertTrue(allLevels.get(source) == allLevels.get(node))
-						else
-							Assert.assertTrue(allLevels.get(source) <= allLevels.get(node) - 1)
-					else 
-						if(forkJoinOrigInstance.get(source) == node)
-							Assert.assertTrue(allLevels.get(source) <= allLevels.get(node))
-						else
-							Assert.assertTrue(allLevels.get(source) <= allLevels.get(node) - 1)
-				else 
-					if(forkJoinOrigInstance.keySet.contains(node))
-						if(source == forkJoinOrigInstance.get(node))
-							Assert.assertTrue(allLevels.get(source) <= allLevels.get(node))
-						else
-							Assert.assertTrue(allLevels.get(source) <= allLevels.get(node) - 1)
-					else 
-						Assert.assertTrue(allLevels.get(source) <= allLevels.get(node) - 1)
-			]
-		]
+	@org.junit.Test
+	public def void checkExitInstances() {
+		Assert.assertEquals(exitNodeNames, 
+			new DAGFromSDFOperations(dagGen).exitInstances.map[node | node.name])
 	}
 	
-	/**
-	 * Verify the calculation of level set using branch set. A branch set is the collection
-	 * of all the paths from the node to all of its root node. Once we have a branch set,
-	 * we can compute the level of the node by taking the maximum number of nodes seen in the
-	 * path. Computing branch sets becomes intractable for large graphs, so although this was
-	 * the way level sets are defined in the literature, we compute it in other way. This test
-	 * verifies both way of computation gives same results. 
-	 * 
-	 * Warning! Computing branch sets can result in memory overflow for large graph (stereo vision application)
-	 * 
-	 * Branch sets are calculated by keeping track of all the predecessors and inserting the current node in its
-	 * path (memoization)
-	 */
-	@Test
-	public def void instancesInEachPathAreInCorrectLevels() {
-		val forkJoinOrigInstance = dagGen.explodeImplodeOrigInstances
-		val instance2Paths = newHashMap() // holds the predecessors seen for each node
-		val newLevels = newHashMap()  // The new levels are stored here
-		// Compute levels seen at each node using maximum number of instances seen in
-		// previous paths
-		iterator.forEach[node | 
-			val sourceList = instanceSources.get(node)
-			newLevels.put(node, 0)
-			if(sourceList.isEmpty) {
-				val paths = #[#[node]]
-				instance2Paths.put(node, paths)
-			} else {
-				val newPaths = newArrayList()
-				sourceList.forEach[source |
-					instance2Paths.get(source).forEach[path |
-						val newPath = new ArrayList(path)
-						newPath.add(node)
-						newPaths.add(newPath)
-					] 
-				]
-				instance2Paths.put(node, newPaths)
-				// remember that each path contains the current node as well
-				newLevels.put(node, newPaths.map[path | 
-					path.filter[source | !forkJoinOrigInstance.keySet.contains(source)].size
-				].max - 1) 
-			}
-		]
-		
-		// Now adjust the levels of implode and explodes
-		newLevels.forEach[node, level| 
-			if(forkJoinOrigInstance.keySet.contains(node))
-				newLevels.put(node, newLevels.get(forkJoinOrigInstance.get(node)))
-		]
-
-		// Now check if calculation done in this way is same as computed levels
-		newLevels.forEach[node, level|
-			Assert.assertEquals(level, dagOps.allLevels.get(node))
-		]
+	@org.junit.Test
+	public def void checkActors() {
+		Assert.assertEquals(actorNames,
+			new DAGFromSDFOperations(dagGen).rootActors.map[node | node.name])
 	}
 }

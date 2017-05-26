@@ -10,8 +10,8 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.alg.CycleDetector
-import org.abo.preesm.plugin.dataparallel.dag.operations.GenericDAGOperations
 import javax.naming.OperationNotSupportedException
+import org.abo.preesm.plugin.dataparallel.dag.operations.DAGFromSDFOperations
 
 /**
  * A subset of DAG is the set of all the instances that has a reachable path 
@@ -55,9 +55,8 @@ class DAGSubset extends AbstractDAGConstructor {
 		}
 		
 		this.rootNode = rootNode
-		checkInputIsValid()
-		
 		this.dagGen = dagGen
+		checkInputIsValid()
 				
 		// Create subset of the new root node
 		this.seenNodes = new SubsetTopologicalIterator(dagGen, rootNode).toList
@@ -152,7 +151,8 @@ class DAGSubset extends AbstractDAGConstructor {
 			throw new SDF4JException("Root node " + rootNode.name + " does not exist in the graph")
 		}
 		
-		if(!new GenericDAGOperations(dagGen).rootInstances.contains(rootNode)) {
+		// The root instance should belong to the original DAG 
+		if(!new DAGFromSDFOperations(dagGen).rootInstances.contains(rootNode)) {
 			throw new SDF4JException("Node " + rootNode.name + " is not a root node of the graph")
 		}
 		

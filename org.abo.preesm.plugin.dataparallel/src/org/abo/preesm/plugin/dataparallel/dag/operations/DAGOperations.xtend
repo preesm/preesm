@@ -8,7 +8,7 @@ import java.util.Map
  * All supported operations that can be performed on Graphs constructed by classes that
  * implement DAGConstructor interface
  * 
- * @author Sudeep
+ * @author Sudeep Kanur
  */
 interface DAGOperations {
 	/**
@@ -39,22 +39,18 @@ interface DAGOperations {
 	 * Get all the levels of the nodes as a lookup table. Considers implode and 
 	 * explode instance of an actor to be at the same level of its respective
 	 * instance 
-	 * Can't compute on generic DAGs without knowing how its constructed.
-	 * So throws exception when invalid graph is sent
 	 * 
 	 * @return lookup table of levels of nodes
-	 * @throws UnsupportedOpertaionException if an invalid graph is sent in
 	 */
-	public def Map<SDFAbstractVertex, Integer> getAllLevels() throws UnsupportedOperationException
+	public def Map<SDFAbstractVertex, Integer> getAllLevels()
 	
 	/**
 	 * Get the maximum depth/level of the graph. 
 	 * Does not generic DAGs. Need a specific instance
 	 * 
 	 * @return Maximum level of the graph
-	 * @throws UnsupportedOperationException if an invalid graph is sent in 
 	 */
-	public def int getMaxLevel() throws UnsupportedOperationException
+	public def int getMaxLevel()
 	
 	/**
 	 * Get all the level sets for a given DAG. A level set is a set of all instances
@@ -63,7 +59,6 @@ interface DAGOperations {
 	 * at which the set exists. 
 	 * 
 	 * @return list of lists of instances seen at the level given by the index of the outer list
-	 * @throws UnsupportedOperationException if it is an invalid graph
 	 */
-	public def List<List<SDFAbstractVertex>> getLevelSets() throws UnsupportedOperationException
+	public def List<List<SDFAbstractVertex>> getLevelSets()
 }
