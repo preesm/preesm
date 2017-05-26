@@ -4,9 +4,9 @@ import java.util.NoSuchElementException
 import org.abo.preesm.plugin.dataparallel.DAGConstructor
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
 import org.abo.preesm.plugin.dataparallel.SubsetTopologicalIterator
-import org.abo.preesm.plugin.dataparallel.dag.operations.GenericDAGOperations
 import org.junit.Assert
 import org.junit.Test
+import org.abo.preesm.plugin.dataparallel.dag.operations.DAGFromSDFOperations
 
 class SubsetTopologicalIteratorTest {
 	/**
@@ -22,7 +22,7 @@ class SubsetTopologicalIteratorTest {
 		dagGen.outputGraph.vertexSet.forEach[node | 
 			instanceTargets.put(node, dagGen.outputGraph.outgoingEdgesOf(node).map[edge | edge.target].toList)
 		]
-		val dagOps = new GenericDAGOperations(dagGen)
+		val dagOps = new DAGFromSDFOperations(dagGen)
 		// Initialize the lookup table
 		dagGen.outputGraph.vertexSet.forEach[node | occurence.put(node, 0)]
 		// Mark the occurence for each root node/subset of DAG
@@ -58,7 +58,7 @@ class SubsetTopologicalIteratorTest {
 		Util.provideAllGraphs
 		.map[graph | new SDF2DAG(graph)]
 		.forEach[dagGen |
-			val rootNodes = new GenericDAGOperations(dagGen).rootInstances
+			val rootNodes = new DAGFromSDFOperations(dagGen).rootInstances
 			val nonRootNode = dagGen.outputGraph.vertexSet.filter[node | !rootNodes.contains(node)].toList.get(0)
 			if(nonRootNode === null) {
 				throw new NoSuchElementException("Non-Root nodes can't be null. Bug in the code!")
@@ -82,7 +82,7 @@ class SubsetTopologicalIteratorTest {
 		Util.provideAllGraphs
 		.map[graph | new SDF2DAG(graph)]
 		.forEach[dagGen |
-			new GenericDAGOperations(dagGen).rootInstances.forEach[ rootNode |
+			new DAGFromSDFOperations(dagGen).rootInstances.forEach[ rootNode |
 				val instanceSources = newHashMap()
 				val sit = new SubsetTopologicalIterator(dagGen, rootNode)
 				sit.forEach[seenNode | instanceSources.put(seenNode, newArrayList())]

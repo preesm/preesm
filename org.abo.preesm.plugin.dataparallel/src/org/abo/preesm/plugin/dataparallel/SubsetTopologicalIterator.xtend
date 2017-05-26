@@ -8,7 +8,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.jgrapht.traverse.BreadthFirstIterator
 import java.util.NoSuchElementException
-import org.abo.preesm.plugin.dataparallel.dag.operations.GenericDAGOperations
+import org.abo.preesm.plugin.dataparallel.dag.operations.DAGFromSDFOperations
 
 class SubsetTopologicalIterator extends BreadthFirstIterator<SDFAbstractVertex, SDFEdge> {
 	
@@ -40,7 +40,7 @@ class SubsetTopologicalIterator extends BreadthFirstIterator<SDFAbstractVertex, 
 		this.instanceSources = newHashMap()
 		this.instanceEncountered = newArrayList()
 		
-		if(!new GenericDAGOperations(dagGen).rootInstances.contains(rootNode)){
+		if(!new DAGFromSDFOperations(dagGen).rootInstances.contains(rootNode)){
 			if(!dagGen.outputGraph.vertexSet.contains(rootNode)) {
 				throw new NoSuchElementException("Node " + rootNode.name + " does not exist in the DAG!")
 			} else {
@@ -81,7 +81,7 @@ class SubsetTopologicalIterator extends BreadthFirstIterator<SDFAbstractVertex, 
 			super.encounterVertex(node, edge)
 		} else {
 			// Check if all the nodes have been visited
-			if(sources.filter[instanceEncountered.contains(it)].size > 0){
+			if(sources.filter[!instanceEncountered.contains(it)].size == 0){
 				instanceEncountered.add(node)
 				super.encounterVertex(node, edge)
 			}
