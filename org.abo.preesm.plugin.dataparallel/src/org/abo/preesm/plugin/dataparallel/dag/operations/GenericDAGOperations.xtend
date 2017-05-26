@@ -4,6 +4,10 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import org.abo.preesm.plugin.dataparallel.DAGConstructor
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import javax.naming.OperationNotSupportedException
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import java.util.Map
+import org.eclipse.xtend.lib.annotations.Accessors
 
 /**
  * Implementation that does not concern it self if the DAG is a subset or
@@ -13,8 +17,10 @@ class GenericDAGOperations implements DAGOperations {
 	
 	val Logger logger
 	
+	@Accessors(PROTECTED_GETTER, PRIVATE_SETTER)
 	val SDFGraph inputGraph
 	
+	@Accessors(PROTECTED_GETTER, PRIVATE_SETTER)
 	val DAGConstructor dagGen
 	
 	/**
@@ -53,6 +59,11 @@ class GenericDAGOperations implements DAGOperations {
 		return inputGraph.vertexSet.filter[instance |
 			 inputGraph.outgoingEdgesOf(instance).size == 0 && !rootInstances.contains(instance)
 		].toList
+	}
+	
+	override Map<SDFAbstractVertex, Integer> getAllLevels() throws UnsupportedOperationException {
+		throw new UnsupportedOperationException("Can't compute all levels for a generic graph.\n The graph must be "
+													+ "constructed using specific DAGConstructor instance")
 	}
 	
 }
