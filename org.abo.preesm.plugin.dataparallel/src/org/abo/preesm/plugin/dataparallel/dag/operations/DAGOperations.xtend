@@ -3,6 +3,7 @@ package org.abo.preesm.plugin.dataparallel.dag.operations
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import java.util.List
 import java.util.Map
+import java.util.Set
 
 /**
  * All supported operations that can be performed on Graphs constructed by classes that
@@ -61,4 +62,21 @@ interface DAGOperations {
 	 * @return list of lists of instances seen at the level given by the index of the outer list
 	 */
 	public def List<List<SDFAbstractVertex>> getLevelSets()
+	
+	/**
+	 * Check if the DAG is instance independent. A DAG is instance independent if no
+	 * instance of an actor depends on another instance of the same actor. 
+	 * 
+	 * @return True if DAG is instance independent
+	 */
+	public def boolean isDAGInd()
+	
+	/**
+	 * Get a set of actors that are the cause for non-parallelism in the DAG
+	 * The list contains actors only if isDAGInd() returns false
+	 * 
+	 * @return actors that have instances dependencies. Empty if there are no such 
+	 * actors
+	 */
+	public def Set<SDFAbstractVertex> getNonParallelActors()
 }

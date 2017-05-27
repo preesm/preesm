@@ -185,4 +185,53 @@ class DAGOperationsTest {
 			Assert.assertEquals(level, dagOps.allLevels.get(node))
 		]
 	}
+	
+	/**
+	 * Check if each DAG and its subsets are DAG independent.
+	 * We calculate branch set as outlined in previous test. If an instance
+	 * dependency is found in a set, then the actor is non parallel. Calculating
+	 * branch set can becoming expensive very soon. So the actual calculation is
+	 * done only using level set information. This test compares both approach. 
+	 * If this test passes, then both DAGSubsetOperations as well as 
+	 * DAGFromSDFOperations must be true
+	 * 
+	 * Warning! Branch set calculation can blow up for complicated graphs (with
+	 * too many branches per instances like broadcast)
+	 */
+	@org.junit.Test
+	public def void establishDagIndependenceUsingBranchSets() {
+		val instance2Paths = newHashMap() // Holds the predecessor levels of each node
+		val nonParallelActors = newHashSet() // Holds non-parallel actors
+		val dagIndState = new ArrayList(#[true]) // Holds the state of the dagInd
+		val forkJoinInstance = dagGen.explodeImplodeOrigInstances.keySet 
+		iterator.forEach[node |
+			val sourceList = instanceSources.get(node)
+			val actor = dagGen.instance2Actor.get(node)
+			if(sourceList.isEmpty) {
+				val paths = #[#[node]]
+				instance2Paths.put(node, paths)
+			} else {
+				val newPaths = newArrayList()
+					sourceList.forEach[source |
+					instance2Paths.get(source).forEach[path |
+						val actorsInPath = new ArrayList(path)
+											.filter[instance | !forkJoinInstance.contains(instance)]
+											.map[instance | dagGen.instance2Actor.get(instance)].toList
+						if(!forkJoinInstance.contains(node) && actorsInPath.contains(actor)) {
+							dagIndState.set(0, false)
+							nonParallelActors.add(actor)	
+						}
+						val newPath = new ArrayList(path)
+						newPath.add(node)
+						newPaths.add(newPath)
+					]
+				]
+				instance2Paths.put(node, newPaths)
+			}
+		]
+		
+		// Now check if DAGInd calculation is correct
+		Assert.assertEquals(dagOps.isDAGInd, dagIndState.get(0))
+		Assert.assertEquals(dagOps.getNonParallelActors, nonParallelActors)
+	}
 }

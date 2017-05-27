@@ -1,8 +1,8 @@
 package org.abo.preesm.plugin.dataparallel.dag.operations
 
-import java.util.ArrayList
 import java.util.List
 import java.util.Map
+import java.util.Set
 import java.util.logging.Level
 import java.util.logging.Logger
 import org.abo.preesm.plugin.dataparallel.DAGConstructor
@@ -39,6 +39,8 @@ class DAGFromSDFOperations implements DAGOperations {
 	
 	protected var List<SDFAbstractVertex> seenNodes
 	
+	protected val Set<SDFAbstractVertex> nonParallelActors
+	
 	new(DAGConstructor dagGen) {
 		this(dagGen, null)
 	}
@@ -58,6 +60,7 @@ class DAGFromSDFOperations implements DAGOperations {
 		]
 		// Anything above this line should be overridden
 		levels = newHashMap()
+		nonParallelActors = newHashSet()
 		computeLevels = false
 	}
 	
@@ -119,10 +122,25 @@ class DAGFromSDFOperations implements DAGOperations {
 	}
 	
 	public override List<List<SDFAbstractVertex>> getLevelSets() {
-		val List<List<SDFAbstractVertex>> levelSet = new ArrayList(getMaxLevel)
+		val List<List<SDFAbstractVertex>> levelSet = newArrayList()
+		(0..<getMaxLevel).forEach[levelSet.add(newArrayList)]
 		getAllLevels.forEach[instance, level | 
 			levelSet.get(level).add(instance)
 		]
 		return levelSet
+	}
+	
+	override boolean isDAGInd() {
+		val dagIndState = newArrayList
+		rootInstances.forEach[rootNode |
+			val dagOps = new DAGSubsetOperations(dagGen, rootNode)
+			dagIndState.add(dagOps.isDAGInd)
+			nonParallelActors.addAll(dagOps.getNonParallelActors)
+		]
+		return dagIndState.forall[state | state == true]
+	} 
+	
+	override getNonParallelActors() {
+		return nonParallelActors
 	}
 }
