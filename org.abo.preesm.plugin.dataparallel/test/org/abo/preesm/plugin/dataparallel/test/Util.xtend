@@ -1,15 +1,17 @@
 package org.abo.preesm.plugin.dataparallel.test
 
 import java.util.List
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import java.util.NoSuchElementException
-import org.abo.preesm.plugin.dataparallel.DAGConstructor
+import org.abo.preesm.plugin.dataparallel.SDF2DAG
 import org.abo.preesm.plugin.dataparallel.SubsetTopologicalIterator
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 
 /**
  * Utility class that holds many useful static functions
  * used for unit testing
+ * 
+ * @author Sudeep Kanur
  */
 class Util {
 	/**
@@ -21,6 +23,7 @@ class Util {
 	 * strictlyCyclic
 	 * mixedNetwork1
 	 * mixedNetowrk2
+	 * 
 	 * @return List of all example SDF graphs
 	 */
 	public static def List<SDFGraph> provideAllGraphs() {
@@ -37,6 +40,7 @@ class Util {
 	
 	/**
 	 * Return a vertex that has the name supplied
+	 * 
 	 * @param graph Search the vertex in this graph
 	 * @param vertexName Name of the vertex
 	 * @returns the vertex of the name vertexName
@@ -52,11 +56,12 @@ class Util {
 	
 	/**
 	 * Return the array of names of nodes seen in the subset of DAG created by given root node
+	 * 
 	 * @param dagGen the dag constructor object holding the main DAG
 	 * @param rootName the name of the root node
 	 * @returns array of names of nodes seen in the subset of the DAG
 	 */
-	public static def String[] getNodes(DAGConstructor dagGen, String rootName) {
+	public static def String[] getNodes(SDF2DAG dagGen, String rootName) {
 		val rootNode = Util.getRootNode(dagGen.outputGraph, rootName)
 		return new SubsetTopologicalIterator(dagGen, rootNode).toList.map[node | node.name]
 	}

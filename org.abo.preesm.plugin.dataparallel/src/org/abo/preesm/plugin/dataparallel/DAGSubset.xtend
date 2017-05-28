@@ -18,7 +18,8 @@ import org.abo.preesm.plugin.dataparallel.dag.operations.DAGFromSDFOperations
  * from the specified root instances to all the reachable exit nodes
  * The class does not create a new DAG, but only filters the current ones to
  * give relevant actor to instances table, explode/implode to relevant instance table
- * and instance to actor table. 
+ * and instance to actor table.
+ *  
  * @autor Sudeep Kanur
  */
 class DAGSubset extends AbstractDAGConstructor {
@@ -28,23 +29,30 @@ class DAGSubset extends AbstractDAGConstructor {
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	private val SDFGraph inputGraph
 	
-	@Accessors(NONE)
+	/**
+	 * Holds the root node
+	 */
 	private val SDFAbstractVertex rootNode
 	
-	@Accessors(NONE)
-	private val DAGConstructor dagGen
+	/**
+	 * Holds the original DAG constructor
+	 */
+	private val SDF2DAG dagGen
 	
-	@Accessors(NONE)
+	/**
+	 * List of nodes that are seen in the current subset of DAG
+	 */
 	private val List<SDFAbstractVertex> seenNodes
 	
 	/**
 	 * Constructor
-	 * @param dagGen DAGConstructor object containing original dag
+	 * 
+	 * @param dagGen {@link SDF2DAG} instance containing original DAG
 	 * @param rootNode A root node that is used to construct subset of DAG
 	 * @param logger Logger instance to log debug messages to output
 	 * @throws SDF4JException If the input graph is not valid
 	 */
-	new(DAGConstructor dagGen, SDFAbstractVertex rootNode, Logger logger) throws SDF4JException {
+	new(SDF2DAG dagGen, SDFAbstractVertex rootNode, Logger logger) throws SDF4JException {
 		super(logger)
 		
 		// Check if input is valid
@@ -65,11 +73,11 @@ class DAGSubset extends AbstractDAGConstructor {
 	/**
 	 * Constructor
 	 * 
-	 * @param dagGen DAGConstructor object containing original dag
+	 * @param dagGen {@link SDF2DAG} object containing original dag
 	 * @param rootNode A root node that is used to construct subset of DAG
 	 * @throws SDF4JException If the input graph is not valid
 	 */
-	new(DAGConstructor dagGen, SDFAbstractVertex rootNode) throws SDF4JException {
+	new(SDF2DAG dagGen, SDFAbstractVertex rootNode) throws SDF4JException {
 		this(dagGen, rootNode, null)
 	}
 	
@@ -112,6 +120,13 @@ class DAGSubset extends AbstractDAGConstructor {
 		return new HashMap(dagGen.getExplodeImplodeOrigInstances.filter[key, value | seenNodes.contains(value)])
 	}
 	
+	/**
+	 * The class does not modify the input DAG, but only the associated data-structures.
+	 * No there is nothing to return. Either use the inputGraph or original 
+	 * DAG that was passed
+	 * 
+	 * @throws OperationNotSupportedException 
+	 */
 	public override SDFGraph getOutputGraph() {
 		throw new OperationNotSupportedException("This object does not construct subset. Nothing to return")
 	}
@@ -119,6 +134,8 @@ class DAGSubset extends AbstractDAGConstructor {
 	/**
 	 * Check whether the input is valid. Following checks are made
 	 * Cycles, delays and repetition vector, root node exist and is valid root node
+	 * 
+	 * @return true if input is valid, or exception is thrown (false is never returned)
 	 * @throws SDF4JException if the input graph is not a valid DAG or if root node does not exist
 	 */
 	override checkInputIsValid() throws SDF4JException {

@@ -20,6 +20,11 @@ import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
 import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 
+/**
+ * Construct DAG from a SDF Graph
+ * 
+ * @author Sudeep Kanur
+ */
 class SDF2DAG extends AbstractDAGConstructor {
 	
 	/**
@@ -31,16 +36,22 @@ class SDF2DAG extends AbstractDAGConstructor {
 	 * Map of all actors with instance. Does not contain implodes and explodes
 	 * This is used as intermediate variable while creating linked edges
 	 */
-	@Accessors(PROTECTED_GETTER, PROTECTED_SETTER)
-	private val Map<SDFAbstractVertex, List<SDFAbstractVertex>> actor2InstancesLocal;
+	protected val Map<SDFAbstractVertex, List<SDFAbstractVertex>> actor2InstancesLocal;
 	
 	/**
 	 * Check if the input SDF graph has changed
 	 */
 	@Accessors(PUBLIC_GETTER, PROTECTED_SETTER)
-	private val boolean hasChanged;
+	protected val boolean hasChanged;
 	
-	new(SDFGraph sdf, Logger logger) {
+	/**
+	 * Constructor. Mainly used in the plugin
+	 * 
+	 * @param sdf the sdf graph for which DAG is created
+	 * @param logger log messages to console
+	 * @throws SDF4JException If the input sdf graph is not schedulable 
+	 */
+	new(SDFGraph sdf, Logger logger) throws SDF4JException {
 		super(logger)
 		if(!sdf.isSchedulable) {
 			throw new SDF4JException("Graph " + sdf + " not schedulable")
@@ -48,9 +59,7 @@ class SDF2DAG extends AbstractDAGConstructor {
 		inputGraph = sdf.clone
 		actor2InstancesLocal = newHashMap()
 		
-		val isHSDF = checkInputIsValid()
-		
-		if(!isHSDF) {
+		if(checkInputIsValid) {
 			hasChanged = true
 			createInstances()
 			linkEdges()
@@ -61,12 +70,24 @@ class SDF2DAG extends AbstractDAGConstructor {
 		outputGraph.propertyBean.setValue("schedulable", true)
 	}
 	
-	new(SDFGraph sdf) {
+	/**
+	 * Constructor without logging information. Mainly used for test 
+	 * setup
+	 * 
+	 * @param sdf the sdf graph for which DAG is created
+	 * @throws SDF4JException If the input sdf graph is not schedulable 
+	 */
+	new(SDFGraph sdf) throws SDF4JException {
 		this(sdf, null)
 	}
 	
 	/**
-	 * Check if the graph needs transformation
+	 * Check if the input is valid and transformation is needed
+	 * Checks the following conditions
+	 * DAG is flattened, repetition vector is greater than 1, delay tokens exist
+	 * 
+	 * @return boolean True if input is valid, false if input is already a DAG
+	 * @throws SDF4JException if the input graph is not flattened
 	 */
 	public override boolean checkInputIsValid() throws SDF4JException {
 		// Check if DAG is flattened
@@ -77,19 +98,21 @@ class SDF2DAG extends AbstractDAGConstructor {
 		}		
 		// Check if repetition vector is greater than 1
 		for(vertex: inputGraph.vertexSet) {
-			if(vertex.nbRepeatAsInteger > 1) return false
+			if(vertex.nbRepeatAsInteger > 1) return true
 		}		
 		// Check if delay tokens exist. DAG should not have any of those
 		for(edge: inputGraph.edgeSet) {
-			if(edge.delay.intValue > 0) return false
+			if(edge.delay.intValue > 0) return true
 		}
-		return true
+		// Its already a DAG
+		return false
 	}
 	
 	/**
-	 * Create relevant instances
+	 * Create instances according to the repetition count. Also rename the 
+	 * instances
 	 */
-	 protected def void createInstances() throws SDF4JException {
+	 protected def void createInstances() {
 	 	// Create instances repetition vector times
 	 	for(actor: inputGraph.vertexSet) {
 	 		val instances = newArrayList()
@@ -112,7 +135,7 @@ class SDF2DAG extends AbstractDAGConstructor {
 	 }
 	 
 	 /**
-	  * Link the relevant instances
+	  * Link the instances created by {@link SDF2DAG#createInstances}
 	  */
 	protected def void linkEdges() {
 		// Edges that have delay tokens greater than buffer size need not have any
@@ -421,6 +444,9 @@ class SDF2DAG extends AbstractDAGConstructor {
 		SpecialActorPortsIndexer.sortIndexedPorts(outputGraph)
 	}
 	
+	/**
+	 * Update the relevant data-structures associated with the class. 
+	 */
 	protected def void updateMaps(SDFAbstractVertex sourceInstance, SDFAbstractVertex exImInstance) {
 		exImOrigInstance.put(exImInstance, sourceInstance)
 		val actor = instance2Actor.get(sourceInstance)

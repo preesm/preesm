@@ -19,6 +19,7 @@ import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import org.abo.preesm.plugin.dataparallel.dag.operations.DAGOperations
 
 /**
  * Test setup for DAGFromSDFOperations and its subclasses
@@ -29,19 +30,22 @@ import org.junit.runners.Parameterized
 class DAGOperationsTest {
 	protected val DAGConstructor dagGen
 	
-	protected val DAGFromSDFOperations dagOps
+	protected val DAGOperations dagOps
 	
 	protected val Map<SDFAbstractVertex, List<SDFAbstractVertex>> instanceSources
 	
 	protected val GraphIterator<SDFAbstractVertex, SDFEdge> iterator
 	
-	new(DAGConstructor dagGen, DAGFromSDFOperations dagOps, GraphIterator<SDFAbstractVertex, SDFEdge> iterator, Map<SDFAbstractVertex, List<SDFAbstractVertex>> instanceSources) {
+	new(DAGConstructor dagGen, DAGOperations dagOps, GraphIterator<SDFAbstractVertex, SDFEdge> iterator, Map<SDFAbstractVertex, List<SDFAbstractVertex>> instanceSources) {
 		this.dagGen = dagGen
 		this.dagOps = dagOps
 		this.iterator = iterator
 		this.instanceSources = instanceSources
 	}
 	
+	/**
+	 * Construct parameters for testing all the implementations of DAGOperations
+	 */
 	@Parameterized.Parameters
 	public static def Collection<Object[]> instancesToTest() {
 		val parameters = newArrayList() 

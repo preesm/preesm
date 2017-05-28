@@ -1,17 +1,27 @@
 package org.abo.preesm.plugin.dataparallel.dag.operations
 
+import java.util.ArrayList
 import java.util.Set
 import java.util.logging.Logger
-import org.abo.preesm.plugin.dataparallel.DAGConstructor
 import org.abo.preesm.plugin.dataparallel.DAGSubset
 import org.abo.preesm.plugin.dataparallel.SubsetTopologicalIterator
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import java.util.ArrayList
-import org.jgrapht.traverse.BreadthFirstIterator
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
+import org.ietr.dftools.workflow.tools.WorkflowLogger
+import org.jgrapht.traverse.BreadthFirstIterator
+import org.abo.preesm.plugin.dataparallel.SDF2DAG
 
+/**
+ * Implement DAGOperations for subsets of DAG. The class does not modify
+ * the original DAG, but only uses/modifies the associated data-structures
+ * 
+ * @author Sudeep Kanur
+ */
 class DAGSubsetOperations extends DAGFromSDFOperations {
 	
+	/**
+	 * Holds the root node
+	 */
 	private val SDFAbstractVertex rootNode
 	
 	/**
@@ -20,7 +30,14 @@ class DAGSubsetOperations extends DAGFromSDFOperations {
 	 */
 	private var boolean computeNonParallelActors 
 	
-	new(DAGConstructor dagGen, SDFAbstractVertex rootNode, Logger logger) {
+	/**
+	 * Constructor used in plugins
+	 * 
+	 * @param dagGen {@link SDF2DAG} instance
+	 * @param rootNode The root node with which subset of DAG is constructed
+	 * @param logger {@link WorkflowLogger} instance
+	 */
+	new(SDF2DAG dagGen, SDFAbstractVertex rootNode, Logger logger) {
 		super(dagGen, logger)
 		this.rootNode = rootNode
 		val sit = new SubsetTopologicalIterator(dagGen, rootNode)
@@ -31,12 +48,18 @@ class DAGSubsetOperations extends DAGFromSDFOperations {
 		computeNonParallelActors = false
 	}
 	
-	new(DAGConstructor dagGen, SDFAbstractVertex rootNode) {
+	/**
+	 * Constructor used for testing purposes
+	 * 
+	 * @param dagGen {@link SDF2DAG} instance
+	 * @param rootNode The root node with which subset of DAG is constructed
+	 */
+	new(SDF2DAG dagGen, SDFAbstractVertex rootNode) {
 		this(dagGen, rootNode, null)
 	}
 	
 	/**
-	 * Compute if DAG is instance independent
+	 * Compute if DAG is instance independent. Overrides {@link DAGOperations#isDAGInd}
 	 * 
 	 * @returns True if DAG is instance independent
 	 */

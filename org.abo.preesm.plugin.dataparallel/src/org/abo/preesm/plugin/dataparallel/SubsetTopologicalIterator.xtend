@@ -10,6 +10,11 @@ import org.jgrapht.traverse.BreadthFirstIterator
 import java.util.NoSuchElementException
 import org.abo.preesm.plugin.dataparallel.dag.operations.DAGFromSDFOperations
 
+/**
+ * A topological order iterator that traverses a subset of DAG
+ * 
+ * @author Sudeep Kanur 
+ */
 class SubsetTopologicalIterator extends BreadthFirstIterator<SDFAbstractVertex, SDFEdge> {
 	
 	/**
@@ -28,13 +33,14 @@ class SubsetTopologicalIterator extends BreadthFirstIterator<SDFAbstractVertex, 
 	private val SDFGraph inputGraph
 	
 	/**
-	 * Constructor
-	 * @param dagGen DAGGenerator instance containing a DAG
+	 * Constructor. Mainly used in plugin
+	 * 
+	 * @param dagGen {@link SDF2DAG} instance containing original DAG
 	 * @param rootNode Root node
 	 * @param logger For loggin purposes
 	 * @throws NoSuchElementException If root node does not exist or is not a root node
 	 */
-	new(DAGConstructor dagGen, SDFAbstractVertex rootNode, Logger logger) throws NoSuchElementException {
+	new(SDF2DAG dagGen, SDFAbstractVertex rootNode, Logger logger) throws NoSuchElementException {
 		super(dagGen.getOutputGraph, rootNode)
 		this.inputGraph = dagGen.getOutputGraph
 		this.instanceSources = newHashMap()
@@ -64,15 +70,21 @@ class SubsetTopologicalIterator extends BreadthFirstIterator<SDFAbstractVertex, 
 	}
 	
 	/**
-	 * Constructor
-	 * @param dagGen DAGGenerator instance containing a DAG
+	 * Constructor used in Test setup
+	 * 
+	 * @param dagGen {@link SDF2DAG} instance containing a original DAG
 	 * @param rootNode Root node
 	 * @throws NoSuchElementException If root node does not exist or is not a root node
 	 */
-	new(DAGConstructor dagGen, SDFAbstractVertex rootNode) throws NoSuchElementException {
+	new(SDF2DAG dagGen, SDFAbstractVertex rootNode) throws NoSuchElementException {
 		this(dagGen, rootNode, null)
 	}
 	
+	/**
+	 * Overrides {@link BreadthFirstIterator#encounterVertex}
+	 * Run encounterVertex only when all of the source nodes (that is seen in the 
+	 * subset of the DAG) is encountered before
+	 */
 	protected override encounterVertex(SDFAbstractVertex node, SDFEdge edge) {
 		val sources = instanceSources.get(node)
 		if(sources.isEmpty) {
@@ -90,6 +102,7 @@ class SubsetTopologicalIterator extends BreadthFirstIterator<SDFAbstractVertex, 
 	
 	/**
 	 * Get a look up table of instances and its associated sources
+	 * 
 	 * @return Instances mapped to a list of its sources
 	 */
 	public def Map<SDFAbstractVertex, List<SDFAbstractVertex>> getInstanceSources() {

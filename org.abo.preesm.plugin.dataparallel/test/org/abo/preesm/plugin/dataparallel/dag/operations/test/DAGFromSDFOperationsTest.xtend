@@ -1,22 +1,25 @@
 package org.abo.preesm.plugin.dataparallel.dag.operations.test
 
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
-import org.abo.preesm.plugin.dataparallel.dag.operations.DAGFromSDFOperations
-import java.util.List
 import java.util.Collection
+import java.util.List
+import org.abo.preesm.plugin.dataparallel.SDF2DAG
+import org.abo.preesm.plugin.dataparallel.dag.operations.DAGFromSDFOperations
 import org.abo.preesm.plugin.dataparallel.test.ExampleGraphs
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.abo.preesm.plugin.dataparallel.SDF2DAG
-import org.abo.preesm.plugin.dataparallel.DAGConstructor
 import org.junit.Assert
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
 
 /**
+ * Test setup for {@link DAGFromSDFOperations}
+ * 
  * @author Sudeep Kanur
  */
 @RunWith(Parameterized)
 class DAGFromSDFOperationsTest {
-	protected val DAGConstructor dagGen
+	
+	protected val SDF2DAG dagGen
 	
 	protected val List<String> rootNodeNames
 	
@@ -24,13 +27,17 @@ class DAGFromSDFOperationsTest {
 	
 	protected val List<String> actorNames
 	
-	new(DAGConstructor dagGen, List<String> rootNodeNames, List<String> exitNodeNames, List<String> actorNames) {
+	new(SDF2DAG dagGen, List<String> rootNodeNames, List<String> exitNodeNames, List<String> actorNames) {
 		this.dagGen = dagGen
 		this.rootNodeNames = rootNodeNames
 		this.exitNodeNames = exitNodeNames
 		this.actorNames = actorNames
 	}
 	
+	/**
+	 * Manually specify the names of root nodes, exit nodes and actor names for every
+	 * SDF graph in question
+	 */
 	@Parameterized.Parameters
 	public static def Collection<Object[]> instancesToTest() {
 		val parameters = newArrayList()
@@ -49,19 +56,28 @@ class DAGFromSDFOperationsTest {
 		return parameters
 	}
 	
-	@org.junit.Test
+	/**
+	 * Check that the manually determined root instances match the computed ones
+	 */
+	@Test
 	public def void checkRootInstances() {
 		Assert.assertEquals(rootNodeNames, 
 			new DAGFromSDFOperations(dagGen).rootInstances.map[node | node.name])
 	}
 	
-	@org.junit.Test
+	/**
+	 * Check that the manually determined exit instances match the computed ones
+	 */
+	@Test
 	public def void checkExitInstances() {
 		Assert.assertEquals(exitNodeNames, 
 			new DAGFromSDFOperations(dagGen).exitInstances.map[node | node.name])
 	}
 	
-	@org.junit.Test
+	/**
+	 * Check that the manually determined actors match the computed ones
+	 */
+	@Test
 	public def void checkActors() {
 		Assert.assertEquals(actorNames,
 			new DAGFromSDFOperations(dagGen).rootActors.map[node | node.name])

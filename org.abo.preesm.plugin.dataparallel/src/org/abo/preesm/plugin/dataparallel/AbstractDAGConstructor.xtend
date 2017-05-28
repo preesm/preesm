@@ -4,10 +4,14 @@ import java.util.List
 import java.util.Map
 import java.util.logging.Level
 import java.util.logging.Logger
-import org.eclipse.xtend.lib.annotations.Accessors
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 
+/**
+ * Implement common getter methods and instance variables for {@link DAGConstructor} class
+ * 
+ * @author Sudeep Kanur
+ */
 public abstract class AbstractDAGConstructor implements DAGConstructor {
 	
 	/**
@@ -18,22 +22,21 @@ public abstract class AbstractDAGConstructor implements DAGConstructor {
 	/**
 	 * Map of actor and all of its instances (including implode/explode)
 	 */
-	@Accessors(NONE)
 	protected val Map<SDFAbstractVertex, List<SDFAbstractVertex>> actor2Instances
 	
 	/**
 	 * Map of instance and its corresponding actor
 	 */
-	@Accessors(NONE)
 	protected val Map<SDFAbstractVertex, SDFAbstractVertex> instance2Actor
 	
 	/**
 	 * Holds constructed DAG
 	 */
-	@Accessors(NONE)
 	protected var SDFGraph outputGraph
 	
-	@Accessors(NONE)
+	/**
+	 * Map of implode/explode instances to its original instance
+	 */
 	protected val Map<SDFAbstractVertex, SDFAbstractVertex> exImOrigInstance
 	
 	protected new(Logger logger){
@@ -48,22 +51,38 @@ public abstract class AbstractDAGConstructor implements DAGConstructor {
 		this(null)
 	}
 	
+	/**
+	 * {@link DAGConstructor#log}
+	 */
 	public override void log(String message) {
 		logger?.log(Level.INFO, message)
 	}
 	
+	/**
+	 * {@link DAGConstructor#getActor2Instances}
+	 * @return Lookup table of actors and their corresponding instances
+	 */
 	public override Map<SDFAbstractVertex, List<SDFAbstractVertex>> getActor2Instances() {
 		return actor2Instances
 	}
 	
+	/**
+	 * {@link DAGConstructor#getInstance2Actor}
+	 */
 	public override Map<SDFAbstractVertex, SDFAbstractVertex> getInstance2Actor() {
 		return instance2Actor
 	}
 	
+	/**
+	 * {@link DAGConstructor#getOutputGraph}
+	 */
 	public override SDFGraph getOutputGraph() {
 		return outputGraph
 	}
 	
+	/**
+	 * {@link DAGConstructor#getExplodeImplodeOrigInstances}
+	 */
 	public override Map<SDFAbstractVertex, SDFAbstractVertex> getExplodeImplodeOrigInstances() {
 		return exImOrigInstance
 	}
