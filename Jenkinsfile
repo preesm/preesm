@@ -28,7 +28,7 @@ node {
 		}
 		stage ('Resolve Maven Dependencies') {
 			// resolve Maven dependencies (jars, plugins) for all modules
-			sh "mvn ${mavenOpts} -P releng dependency:go-offline -Dtycho.mode=maven"
+			sh "mvn ${mavenOpts} -T 2C -P releng dependency:go-offline -Dtycho.mode=maven"
 		}
 		stage ('Resolve P2 Dependencies') {
 			// Resolve P2 dependencies
@@ -37,7 +37,7 @@ node {
 			// We have to call maven with a nop goal to simply load the
 			// tycho P2 resolver that will load all required dependencies
 			// This will allow to run next stages in offline mode
-			sh "mvn ${mavenOpts} -P releng help:help -q"
+			sh "mvn ${mavenOpts} -T 8C -P releng help:help"
 			stash excludes: '**/.git/**', name: sourceAndRepoStash
 		}
 		cleanWs()
