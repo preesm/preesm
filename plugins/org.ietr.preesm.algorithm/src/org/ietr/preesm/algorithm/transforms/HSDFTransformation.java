@@ -120,7 +120,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
         throw (new WorkflowException("Graph not valid, not schedulable"));
       }
     } catch (final SDF4JException e) {
-      throw (new WorkflowException(e.getMessage()));
+      throw (new WorkflowException(e.getMessage(), e));
     }
 
     return outputs;
