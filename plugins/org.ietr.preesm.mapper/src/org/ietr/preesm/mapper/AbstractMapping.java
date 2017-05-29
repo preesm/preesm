@@ -40,6 +40,7 @@ package org.ietr.preesm.mapper;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
@@ -47,6 +48,7 @@ import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.impl.latency.SpanLengthCalculator;
 import org.ietr.preesm.mapper.abc.route.calcul.RouteCalculator;
+import org.ietr.preesm.mapper.checker.CommunicationOrderChecker;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.params.AbcParameters;
 
@@ -56,8 +58,18 @@ import org.ietr.preesm.mapper.params.AbcParameters;
  *
  * @author pmenuet
  * @author mpelcat
+ * @author kdesnos
  */
 public abstract class AbstractMapping extends AbstractTaskImplementation {
+
+  /** The Constant PARAM_CHECK. */
+  public static final String PARAM_CHECK = "Check";
+
+  /** The Constant VALUE_CHECK_FALSE. */
+  public static final String VALUE_CHECK_FALSE = "False";
+
+  /** The Constant VALUE_CHECK_TRUE. */
+  public static final String VALUE_CHECK_TRUE = "True";
 
   /*
    * (non-Javadoc)
@@ -99,6 +111,7 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
     parameters.put("simulatorType", "LooselyTimed");
     parameters.put("edgeSchedType", "Simple");
     parameters.put("balanceLoads", "false");
+    parameters.put(PARAM_CHECK, VALUE_CHECK_TRUE);
     return parameters;
   }
 
@@ -113,6 +126,20 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
   protected void clean(final Design architecture, final PreesmScenario scenario) {
     // Asking to delete route
     RouteCalculator.deleteRoutes(architecture, scenario);
+  }
+
+  /**
+   * This method performs optional checks to verify the integrity of a schedule. It should be call at the end of all scheduler implementations.
+   * 
+   * @param parameters
+   *          {@link Map} of parameters values that were given to the mapper workflow task.
+   * @param dag
+   *          Scheduled {@link DirectedAcyclicGraph}.
+   */
+  protected void checkSchedulingResult(final Map<String, String> parameters, DirectedAcyclicGraph dag) {
+    if (parameters.get(PARAM_CHECK).equals(VALUE_CHECK_TRUE)) {
+      CommunicationOrderChecker.checkCommunicationOrder(dag);
+    }
   }
 
   /**

@@ -157,6 +157,8 @@ public class PFASTMapping extends AbstractMapping {
     outputs.put("ABC", simu2);
 
     super.clean(architecture, scenario);
+    super.checkSchedulingResult(parameters, dag);
+
     return outputs;
   }
 

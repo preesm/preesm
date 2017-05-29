@@ -144,6 +144,8 @@ public class ListSchedulingMapping extends AbstractMapping {
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, simu2);
 
     super.clean(architecture, scenario);
+    super.checkSchedulingResult(parameters, dag);
+
     return outputs;
   }
 
