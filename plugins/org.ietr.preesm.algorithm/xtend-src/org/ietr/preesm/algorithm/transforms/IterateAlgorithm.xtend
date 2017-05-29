@@ -148,9 +148,7 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 				// Adding relative constraints to the scenario if present
 				if(scenario !== null){
 					val relativeconstraintManager = scenario.relativeconstraintManager
-					for(Integer i : 0 .. nbIt - 1){
-						relativeconstraintManager.addConstraint(id,groupId)
-					}
+					relativeconstraintManager.addConstraint(id,groupId)
 				}
 				groupId++
 			}
