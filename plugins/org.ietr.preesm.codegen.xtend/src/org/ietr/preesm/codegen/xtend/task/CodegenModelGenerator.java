@@ -977,14 +977,13 @@ public class CodegenModelGenerator {
       f.setType(SpecialType.ROUND_BUFFER);
     } else if (repVertex instanceof SDFBroadcastVertex) {
       f.setType(SpecialType.BROADCAST);
+    } else {
+      throw new CodegenException("DAGVertex " + dagVertex + " has an unknown type: " + vertexType);
     }
     /*
      * else if (repVertex instanceof SDFForkVertex) { f.setType(SpecialType.FORK); } else if (repVertex instanceof SDFJoinVertex) { f.setType(SpecialType.JOIN);
      * }
      */
-    else {
-      throw new CodegenException("DAGVertex " + dagVertex + " has an unknown type: " + vertexType);
-    }
 
     final List<SDFInterfaceVertex> repVertexInterfaces = new ArrayList<SDFInterfaceVertex>();
     repVertexInterfaces.addAll(repVertex.getSources());
