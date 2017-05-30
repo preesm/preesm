@@ -619,7 +619,7 @@ The Jenkinsfile (see [../Jenkinsfile](../Jenkinsfile)) describes how the reposit
 
 #### Initial Setup
 
-After a fresh install with recommended plugins, the current pipeline makes use of two Jenkins plugins in order to run properly:
+After a fresh install with recommended plugins, the current pipeline makes use of two additional Jenkins plugins in order to run properly:
 
 *   [JaCoCo](https://wiki.jenkins-ci.org/display/JENKINS/JaCoCo+Plugin): this plugin looks up for JaCoCo report files in the workspace and publishes them in the project page. It is called in the Jenkinsfile by the line `step([$class: 'JacocoPublisher'])`.
 *   [FindBugs](https://wiki.jenkins-ci.org/display/JENKINS/FindBugs+Plugin): similarly, the FindBugs plugin publishes the reports found in the workspace. It is called by `findbugs canComputeNew: false, defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', pattern: '**/findbugsXml.xml', unHealthy: ''`.
@@ -631,12 +631,35 @@ Also, the pipeline requires two tools to run:
 
 These tools should be installed with the exact same name (build will fail otherwise) in the **Manage Jenkins/Global Tool Configuration** menus.
 
+Once the required plugins and tools are configured, a new Multibranch Pipeline project can be created, simply referencing the Git repository. The project will configure itself using the Jenkinsfile. The only part that needs to be manually configured is the **Scan Multibranch Pipeline Triggers** section. This defined at what interval will Jenkins look for changes on the Git repository.
+
 On top of the default view, the [Blue Ocean](https://jenkins.io/doc/book/blueocean/) project can add a prettier interface:
 
 ![toto](doc/blueocean.png)
 
-TODO: mail notifications
+#### Pipeline Design
 
+The pipeline for Preesm projects is cut in several stages:
+
+*   Cleanup the workspace: make sure a fresh workspace is used to avoid polution;
+*   Checkout source code and check coding policy;
+*   Resolve Maven plugins and P2 dependencies: Every build uses fresh Maven local repository to avoid side effects from previous builds. Since Maven plugins and dependencies are fetched from online repositories, there is no guaranty that the Internet chanel will fail. Thus, fetching them may cause a failure that is not related to the changes in the repository. Therefore these steps are separated from the actual build steps, that are run offline.
+*   To differentiates build failure and test failure, they are run in different successive stages. These stages are run offline, which significantly reduces the build time.
+*   The packaging of the product and update site and the code quality analysis are run simultaneously. They both flags the build as UNSTABLE upon failure.
+*   At the end of the pipeline, the workspace is cleaned again, whatever happened before (see the `finally` block). Since some continuous integration platforms have little storage space, this is to prevent failures due to low disk space.
+
+All the Maven commands are run with the following options:
+
+*   `--errors` : prints Java error stacks;
+*   `--batch-mode` : Disable interactive mode;
+*   `-Dmaven.repo.local=m2-repository` : use **./m2-repository** as Maven repository instead of **~/.m2/repository**. This ensures the Maven local repository is fresh;
+*   `-T 1C` : use multithreaded build with 1 thread per physical core.
+
+Also, some arguments are given to the JVM to speed up the process a bit more (see [this page](https://zeroturnaround.com/rebellabs/your-maven-build-is-slow-speed-it-up/)) :
+
+*   `-XX:+TieredCompilation -XX:TieredStopAtLevel=1`
+
+TODO: mail notifications
 
 Howto
 -----
