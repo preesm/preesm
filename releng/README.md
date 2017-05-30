@@ -177,7 +177,7 @@ The Git repositories are organized as follows:
 *   **/plugins**: the source code of the projects (Graphiti, DFTools, Preesm);
 *   **/releng**: the release engineering files (see below);
 *   **/test-fragments**: the [test plug-in fragments](http://www.modumind.com/2007/06/20/unit-testing-plug-ins-with-fragments/) for functional and unit testing;
-*   **/test**: the integration and end-to-end tests
+*   **/tests**: the integration and end-to-end tests
 
 #### The .gitignore Files
 
@@ -323,6 +323,10 @@ The main purpose of this profile is to add some arguments to the JVM when runnin
 The specific argument to add is defined as follows:
 `<tycho.surefire.extra.vmargs>-XstartOnFirstThread</tycho.surefire.extra.vmargs>` (see [this bug report](https://bugs.eclipse.org/bugs/show_bug.cgi?id=427693)).
 
+#### only-eclipse
+
+This profile is activated when a property named `m2e.version` is given to Maven. This is the case when Maven is called by the M2Eclipse Eclipse plugins (see below). The profile enables the configuration of the M2Eclipse plugin for Eclipse. It is disabled outside Eclipse because it can cause some warnings/errors during a normal Maven build.
+
 ### Phase Binding and Configuration Details
 
 This section details what plugins are bound to which phases (including clean lifecycle and tests, but not releng profile) and their configuration and role in the build process. Take a look at their use in the POM files for more details.
@@ -335,7 +339,7 @@ This section details what plugins are bound to which phases (including clean lif
 
 *   [directory-maven-plugin](https://github.com/jdcasey/directory-maven-plugin): initialize the property **main.basedir** with the path to the parent project directory. This property is used in the Checkstyle configuration for having a consistent path to its configuration file from any submodule.
 *   [jacoco-maven-plugin](http://www.eclemma.org/jacoco/trunk/doc/prepare-agent-mojo.html): Used for test coverage computation. See plugin documentation. Defined in the test fragments POM.
-*   [org.eclipse.m2e:lifecycle-mapping](http://www.eclipse.org/m2e/documentation/m2e-execution-not-covered.html): Tell the Eclipse Maven Plugin to ignore some Maven plugins. More details in the [Eclipse setup](#eclipse-setup) section.
+*   [org.eclipse.m2e:lifecycle-mapping](http://www.eclipse.org/m2e/documentation/m2e-execution-not-covered.html): Tell the Eclipse Maven Plugin to ignore some Maven plugins. More details in the [Eclipse setup](#eclipse-setup) section. This goal is only active in Eclipse (see [only-eclipse](#only-eclipse) profile).
 
 #### generate-sources
 
