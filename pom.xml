@@ -12,6 +12,7 @@
     <findbugs-version>3.0.4</findbugs-version>
     <sonar-version>3.3.0.603</sonar-version>
     <checkstyle-version>7.6.1</checkstyle-version>
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <complete.p2.repo>http://preesm.sourceforge.net/gensite/update-site/complete/</complete.p2.repo>
 
@@ -214,6 +215,7 @@
         <version>2.17</version>
         <configuration>
           <configLocation>${main.basedir}/releng/VAADER_checkstyle.xml</configLocation>
+          <failsOnError>true</failsOnError>
         </configuration>
         <dependencies>
           <dependency>
