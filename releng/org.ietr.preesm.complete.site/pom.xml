@@ -10,7 +10,7 @@
     <version>2.2.10-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
-  
+
   <build>
     <plugins>
       <!-- This plugins builds the update site for the current release and
@@ -96,7 +96,6 @@
                 <symlink
                   link="${project.build.directory}/gensite/update-site/${project.groupId}-latest"
                   resource="${project.groupId}-${project.version}" />
-                  
               </target>
               <exportAntProperties>true</exportAntProperties>
             </configuration>

@@ -7,7 +7,6 @@ Old documentation is available in the [HowToRelease.md](HowToRelease.md) file.
 
 TODO:
 
-*   Sonar+Jenkins
 *   Howtos
 *   Check dead links
 
@@ -25,7 +24,7 @@ Table of Content
 	- [Coding Style](#coding-style)
 	- [Dependency Management](#dependency-management)
 - [Project Structure](#project-structure)
-	- [Git Repositories (Github)](#git-repositories-github)
+	- [Git Repositories (GitHub)](#git-repositories-github)
 	- [Preesm Website (SourceForge)](#preesm-website-sourceforge)
 	- [Generated Content](#generated-content)
 	- [Releng Files](#releng-files)
@@ -34,6 +33,7 @@ Table of Content
 	- [Dependencies](#dependencies)
 	- [Profiles](#profiles)
 	- [Phase Binding and Configuration Details](#phase-binding-and-configuration-details)
+	- [The tycho.mode setting](#the-tychomode-setting)
 - [Eclipse Setup](#eclipse-setup)
 	- [M2Eclipse](#m2eclipse)
 	- [Installing Dependencies](#installing-dependencies)
@@ -42,7 +42,7 @@ Table of Content
 	- [Missing Source Features](#missing-source-features)
 - [Release Engineering](#release-engineering)
 	- [Overview](#overview)
-	- [Versionning](#versionning)
+	- [Versioning](#versioning)
 	- [Javadoc](#javadoc)
 	- [Feature](#feature)
 	- [Dev Meta Feature](#dev-meta-feature)
@@ -51,9 +51,12 @@ Table of Content
 	- [Product](#product)
 	- [Deploy Phase](#deploy-phase)
 - [Continuous integration](#continuous-integration)
+	- [SonarQube](#sonarqube)
+	- [Jenkins](#jenkins)
 - [Howto](#howto)
+	- [Check Coding Policy](#check-coding-policy1)
 	- [Update Project Version](#update-project-version)
-	- [Deploy from Eclipse](#deploy-from-eclipse)
+	- [Deploy](#deploy)
 	- [Add New Dependency](#add-new-dependency)
 	- [Add New Repository](#add-new-repository)
 	- [Change Checkstyle Coding Style](#change-checkstyle-coding-style)
@@ -100,6 +103,10 @@ In order to specifically build Eclipse plugins using Maven, the build process he
 *   Check coding policy using [Checkstyle](http://checkstyle.sourceforge.net/);
 *   Generate Java from [Xtend](https://eclipse.org/xtend/documentation/) files;
 *   Run [tests within an OSGi runtime](https://eclipse.org/tycho/sitedocs/tycho-surefire/tycho-surefire-plugin/plugin-info.html) and compute [code coverage](http://www.eclemma.org/jacoco/);
+
+A full build (including product and update site) is triggered with the following command:
+
+-   `mvn -P releng clean verify`
 
 #### Release Engineering
 Using the **releng** [Maven profile](http://maven.apache.org/guides/introduction/introduction-to-profiles.html) (disabled by default), additional actions are available:
@@ -177,7 +184,7 @@ The Git repositories are organized as follows:
 *   **/plugins**: the source code of the projects (Graphiti, DFTools, Preesm);
 *   **/releng**: the release engineering files (see below);
 *   **/test-fragments**: the [test plug-in fragments](http://www.modumind.com/2007/06/20/unit-testing-plug-ins-with-fragments/) for functional and unit testing;
-*   **/test**: the integration and end-to-end tests
+*   **/tests**: the integration and end-to-end tests
 
 #### The .gitignore Files
 
@@ -238,26 +245,26 @@ During the Maven deploy phase, the content is automatically uploaded to those lo
 | org.ietr.preesm.product/ | Maven module for generating the end user products |
 | org.ietr.preesm.rcp.utils/ | Small Eclipse plugin for configuring the products |
 | auto_convert_encoding_and_lineendings.sh | Bash script for converting all file line endings to Linux and charset to UTF-8 |
+| run_checkstyle.sh | Small Bash script that calls Maven with proper arguments to check the coding policy |
 | copyright_template.txt | Copyright template to include in file headers |
 | fix_header_copyright_and_authors.sh | Bash script that replaces copyright template tokens (i.e. %%DATE%%) with data fetched from the git log |
 | HowToRelease.md | Old release procedure |
 | pom.xml | The main releng POM. Adds two P2 repositories for product and dev feature build. |
 | README.md | This file |
 | update-version.sh | Small Bash script that calls Maven with proper arguments to set a new version for all submodules. |
-| VAADER_checkstyle.xml | Preesm Checkstyle configuration file |
-| VAADER_eclipse_preferences.epf | Preesm Eclipse preferences file |
+| VAADER_checkstyle.xml | Preesm Checkstyle configuration file (developed by VAADER team) |
+| VAADER_eclipse_preferences.epf | Preesm Eclipse preferences file (developed by VAADER team) |
 
 Build Process in Maven
 ----------------------
 
-This section details how the Preesm project is built using Maven. Graphiti and DFTools are built using a similar process to the Preesm one. For the site and products generation and deploy phases, please read the [Release Engineering in Maven](#release-engineering-in-maven) section.
+This section details how the Preesm project is built using Maven. Graphiti and DFTools are built using a similar process to the Preesm one. For the site and products generation and deploy phases, please read the [Release Engineering](#release-engineering) section.
 
 ### Overview
 
 The Maven build process is defined in [POM files](https://maven.apache.org/guides/introduction/introduction-to-the-pom.html). The POM files can define build properties, reference external repositories, declare sub modules, call and configure Maven plugins, define profiles, etc.
 
 Each Eclipse plugin in the Preesm project has its own POM file. On top of that, there is a [parent POM](http://www.javavillage.in/maven-parent-pom.php), that defines project wide properties, Maven plugin configuration, [Maven profiles](http://maven.apache.org/guides/introduction/introduction-to-profiles.html), and the list of [submodules](https://maven.apache.org/guides/mini/guide-multiple-modules.html). The projects also have few intermediate POM files (`releng/pom.xml`, `test-fragments/pom.xml`, ...). They add some configuration for dedicated parts of the test or release process.
-
 
 The build of the project is triggered using the following command: `mvn clean verify`. This calls two Maven goals from two different [Maven Build Lifecycles](http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Build_Lifecycle_Basics):
 
@@ -308,7 +315,7 @@ Dependencies between submodules are resolved on the fly during the build process
 Two [Maven build profiles](http://maven.apache.org/guides/introduction/introduction-to-profiles.html) are defined in the parent POM:
 
 #### releng
-A profile for enabling release engineering modules and plugins. See [Release Engineering in Maven](#release-engineering-in-maven).
+A profile for enabling release engineering modules and plugins. See [Release Engineering](#release-engineering).
 
 #### os-macosx
 
@@ -323,6 +330,10 @@ The main purpose of this profile is to add some arguments to the JVM when runnin
 The specific argument to add is defined as follows:
 `<tycho.surefire.extra.vmargs>-XstartOnFirstThread</tycho.surefire.extra.vmargs>` (see [this bug report](https://bugs.eclipse.org/bugs/show_bug.cgi?id=427693)).
 
+#### only-eclipse
+
+This profile is activated when a property named `m2e.version` is given to Maven. This is the case when Maven is called by the M2Eclipse Eclipse plugins (see below). The profile enables the configuration of the M2Eclipse plugin for Eclipse. It is disabled outside Eclipse because it can cause some warnings/errors during a normal Maven build.
+
 ### Phase Binding and Configuration Details
 
 This section details what plugins are bound to which phases (including clean lifecycle and tests, but not releng profile) and their configuration and role in the build process. Take a look at their use in the POM files for more details.
@@ -334,8 +345,18 @@ This section details what plugins are bound to which phases (including clean lif
 #### initialize
 
 *   [directory-maven-plugin](https://github.com/jdcasey/directory-maven-plugin): initialize the property **main.basedir** with the path to the parent project directory. This property is used in the Checkstyle configuration for having a consistent path to its configuration file from any submodule.
-*   [jacoco-maven-plugin](http://www.eclemma.org/jacoco/trunk/doc/prepare-agent-mojo.html): Used for test coverage computation. See plugin documentation. Defined in the test fragments POM.
-*   [org.eclipse.m2e:lifecycle-mapping](http://www.eclipse.org/m2e/documentation/m2e-execution-not-covered.html): Tell the Eclipse Maven Plugin to ignore some Maven plugins. More details in the [Eclipse setup](#eclipse-setup) section.
+*   [jacoco-maven-plugin](http://www.eclemma.org/jacoco/trunk/doc/prepare-agent-mojo.html): Used for [code coverage](https://en.wikipedia.org/wiki/Code_coverage) computation. See plugin documentation. The configuration outputs the report in the target folder of the parent project. All the submodules append their report in that file. It is later used by [Sonar](#sonarqube). Test and releng modules are ignored during when computing code coverage.
+```XML
+<destFile>${main.basedir}/target/jacoco.exec</destFile>
+<append>true</append>
+<excludes>
+    <exclude>**/tests/**</exclude>
+    <exclude>**/test-fragments/**</exclude>
+    <exclude>**/releng/**</exclude>
+</excludes>
+```
+
+*   [org.eclipse.m2e:lifecycle-mapping](http://www.eclipse.org/m2e/documentation/m2e-execution-not-covered.html): Tell the Eclipse Maven Plugin to ignore some Maven plugins. More details in the [Eclipse setup](#eclipse-setup) section. This goal is only active in Eclipse (see [only-eclipse](#only-eclipse) profile).
 
 #### generate-sources
 
@@ -359,7 +380,16 @@ This section details what plugins are bound to which phases (including clean lif
 
 #### deploy
 
-*   [maven-deploy-plugin](http://maven.apache.org/plugins/maven-deploy-plugin/): disable the default deploy plugin. This is due to issues when deploying P2 repositories on SourceForge. The actual deploy procedure is detailed in the [Release Engineering in Maven](#release-engineering-in-maven) section.
+*   [maven-deploy-plugin](http://maven.apache.org/plugins/maven-deploy-plugin/): disable the default deploy plugin. This is due to issues when deploying P2 repositories on SourceForge. The actual deploy procedure is detailed in the [Release Engineering](#release-engineering) section.
+
+### The tycho.mode setting
+
+The Tycho Maven plugins active them self by default when calling Maven. More specifically, the P2 dependency resolver activates itself when the [reactor](https://maven.apache.org/guides/mini/guide-multiple-modules.html) computes a build order. This resolver "converts" dependencies between Eclipse plugins into implicit Maven dependencies, and fetch them from P2 repositories (Eclipse update sites). The main issue is the time it takes.
+
+Since some Maven goals do not need dependency resolution (for instance clean, or set-version), it is advised to disable it by setting the property **tycho.mode** to **maven**.
+
+
+*   [Eclipse Tycho](http://www.vogella.com/tutorials/EclipseTycho/article.html#setting-version-numbers)
 
 Eclipse Setup
 -------------
@@ -390,7 +420,7 @@ Various small configurations are also included in this preference file (see [sou
 
 As aforementioned, the Eclipse IDE is best to develop with Preesm, but should not be used for packaging and releasing. Indeed the [Plugin Development Environment build tools](https://projects.eclipse.org/projects/eclipse.pde) provide all necessary components for the plugin development life. However the configuration differs from the Maven plugins (for instance the Eclipse update site builder uses a file named **site.xml** whereas the [tycho-p2-repository-plugin](http://www.eclipse.org/tycho/sitedocs/tycho-p2/tycho-p2-repository-plugin/assemble-repository-mojo.html) reads a file named **category.xml**). The release process is tuned for Maven build so that it can be called from a continuous integration platform.
 
-Thankfully, the M2E Eclipse plugins come with facilities to run Maven goals from the Eclipse IDE, without having to install a local Maven distribution. This is done by running any of the imported Maven project as "Maven build" (see example [here](https://books.sonatype.com/m2eclipse-book/reference/running-sect-running-maven-builds.html)). Goals, profiles and parameters can be set in the Eclipse interface. This should be used if one wants to [update project version](#update-project-version) or [release/deploy](#deploy-from-eclipse) Preesm from Eclipse.
+Thankfully, the M2E Eclipse plugins come with facilities to run Maven goals from the Eclipse IDE, without having to install a local Maven distribution. This is done by running any of the imported Maven project as "Maven build" (see example [here](https://books.sonatype.com/m2eclipse-book/reference/running-sect-running-maven-builds.html)). Goals, profiles and parameters can be set in the Eclipse interface. This should be used if one wants to [update project version](#update-project-version) or [release/deploy](#deploy) Preesm from Eclipse.
 
 ### Missing Source Features
 
@@ -415,7 +445,7 @@ This profile adds:
 
 *   Javadoc generation: bound to the **process-sources** phase, it generates the Javadoc site using the [maven-javadoc-plugin](https://maven.apache.org/plugins/maven-javadoc-plugin/).
 *   Source plugin generation: During **prepare-packaging** phase, the [tycho-source-plugin](https://eclipse.org/tycho/sitedocs/tycho-source-plugin/plugin-source-mojo.html) generates, along with the binary package, an Eclipse bundle that contains the source code of every plugin. This is used for publishing SDKs.
-*   
+*
 This profile also activates the generation of the Source Feature that include all generated source plugins using the [tycho-source-feature-plugin](https://eclipse.org/tycho/sitedocs-extras/tycho-source-feature-plugin/source-feature-mojo.html).
 *   **/releng/** intermediate POM: this submodule contains the plugins for the generation of the features, the site, and the product. This POM also enable the [Preesm Maven repository](http://preesm.sourceforge.net/maven/) for accessing the [sftp-maven-plugin](https://github.com/preesm/sftp-maven-plugin).
 
@@ -524,7 +554,7 @@ The product is configured with the **org.ietr.preesm.product** file. It can be e
 
 ### Deploy Phase
 
-The deploy phase is fully automated within the Maven POM files using the following command (see [Deploy from Eclipse](#deploy-from-eclipse) for running this command from Eclipse):
+The deploy phase is fully automated within the Maven POM files using the following command (see [Deploy](#deploy) for running this command from Eclipse):
 
 *   `mvn -P releng clean deploy`
 
@@ -547,36 +577,117 @@ This will be used during the upload of the product and the complete site.
 
 The site deploy phase is configured in the POM file of the complete site module. It uploads the aggregated Javadoc API, the update site for the current release, and the appended metadata for the full P2 repository.
 
-The product deploy phase is configured in the POM file of the product module. The content is uploaded to the [SoruceForge File Release System](https://sourceforge.net/p/forge/documentation/Release%20Files%20for%20Download/) to avoid the 20MB file size limitation. Note that the update site cannot be accessed by Eclipse P2 director from there.
+The product deploy phase is configured in the POM file of the product module. The content is uploaded to the [SourceForge File Release System](https://sourceforge.net/p/forge/documentation/Release%20Files%20for%20Download/) to avoid the 20MB file size limitation. Note that the update site cannot be accessed by Eclipse P2 director from there.
 
 Continuous Integration
 ----------------------
 
-TODO
+[Continuous Integration](https://en.wikipedia.org/wiki/Continuous_integration) is a practice that consists in integrating everyhing that is pushed to the source code repository. This include compiling, testing, coding policy checking, etc. This helps uncovering integration issues as soon as possible. For the Preesm project, we rely on the [Jenkins](https://jenkins.io/) program to continously integrate changes.
+
+Continuous integration can check for the [quality of the code](https://en.wikipedia.org/wiki/Software_quality) and report failure upon low code quality (see [Quality Gates](https://docs.sonarqube.org/display/SONAR/Quality+Gates)). The current build process does not fail upon such criteria. However, since having reports about quality can give hints and help solving bugs, it is designed to run along with SonarQube.
+
+### SonarQube
+
+[SonarQube](https://www.sonarqube.org/) is a client/server tool that analyses source code and reports bugs, code smells, code coverage, and various other metrics about its quality.
+
+The client scans the code and send relevant data to the server. The server then analyses the code and reports (for instance JaCoCo reports) and produces an online centralized reporting website. The scanner can be called from Maven with goal **sonar:sonar** (used by Jenkins), using the [sonar-scanner](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner), or the [Jenkins Sonar plugin](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner+for+Jenkins).
+
+In order to run, a server needs to be running and the scanner needs to know the URL of that server. When the server and the scanner both run on the same host, [no specific configuration is required](https://docs.sonarqube.org/display/SONAR/Analysis+Parameters#AnalysisParameters-Server). When the scanner runs on a different host, the **sonar.host.url** property needs to be set. When scanning from Maven, it can be set using several ways:
+
+*   in the command line arguments using `-Dsonar.host.url=http://my.url.or.ip:9000/`;
+*   in the settings.xml file (see [SonarQube documentation](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner+for+Maven#AnalyzingwithSonarQubeScannerforMaven-GlobalSettings));
+*   directly in the pom.xml file (not recommended).
+
+SonarQube uses many analysers of its own and can reuse reports generated by other tools. This is the case with [JaCoCo](#initialize) reports for [code coverage](https://en.wikipedia.org/wiki/Code_coverage). Some properties must be set in the parent POM.xml file to tell Sonar where to look for the JaCoCo report:
+
+```XML
+<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
+<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+<sonar.jacoco.reportPaths>../../target/jacoco.exec</sonar.jacoco.reportPaths>
+<sonar.exclusions>**/tests/**, **/test-fragments/**, **/releng/**</sonar.exclusions>
+```
+
+**Note:** The path to the JaCoCo report is hardcoded. It works at the time of writing since all plugins are at a depth of 2 in the repository. The **${main.basedir}** can not be used here since the properties are assigned before the execution of **directory-maven-plugin**.
+
+**TODO**: find another way to set this property dynamically.
 
 ### Jenkins
 
-TODO
+[Jenkins](https://jenkins.io/) is a Java program running as a daemon that automates the continuous integration processes. It embbeds a web server for its administration and provides many plugins for customizing the integration processes. For the Preesm project, we rely on the [pipeline](https://jenkins.io/doc/book/pipeline/) multibranch projects. This allow to projects configured using a [Jenkinsfile](https://jenkins.io/doc/book/pipeline/jenkinsfile/) and keep the configuration within the SCM.
 
-### Sonar
+The Jenkinsfile (see [../Jenkinsfile](../Jenkinsfile)) describes how the repository under integration should be built using a [DSL](https://en.wikipedia.org/wiki/Domain-specific_language) (extension to the Groovy language with constructions specific to Jenkins Pipelines).
 
-TODO
+#### Initial Setup
+
+After a fresh install with recommended plugins, the current pipeline makes use of two additional Jenkins plugins in order to run properly:
+
+*   [JaCoCo](https://wiki.jenkins-ci.org/display/JENKINS/JaCoCo+Plugin): this plugin looks up for JaCoCo report files in the workspace and publishes them in the project page. It is called in the Jenkinsfile by the line `step([$class: 'JacocoPublisher'])`.
+*   [FindBugs](https://wiki.jenkins-ci.org/display/JENKINS/FindBugs+Plugin): similarly, the FindBugs plugin publishes the reports found in the workspace. It is called by `findbugs canComputeNew: false, defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', pattern: '**/findbugsXml.xml', unHealthy: ''`.
+
+Also, the pipeline requires two tools to run:
+
+*   **javaTool** (`def javaTool = tool javaToolID`): JDK-1.8
+*   **mavenTool** (`def mavenTool = tool mavenToolID`): Maven-3.5.0
+
+These tools should be installed with the exact same name (build will fail otherwise) in the **Manage Jenkins/Global Tool Configuration** menus.
+
+Once the required plugins and tools are configured, a new Multibranch Pipeline project can be created, simply referencing the Git repository. The project will configure itself using the Jenkinsfile. The only part that needs to be manually configured is the **Scan Multibranch Pipeline Triggers** section. This defined at what interval will Jenkins look for changes on the Git repository.
+
+On top of the default view, the [Blue Ocean](https://jenkins.io/doc/book/blueocean/) project can add a prettier interface:
+
+![toto](doc/blueocean.png)
+
+#### Pipeline Design
+
+The pipeline for Preesm projects is cut in several stages:
+
+*   Cleanup the workspace: make sure a fresh workspace is used to avoid polution;
+*   Checkout source code and check coding policy;
+*   Resolve Maven plugins and P2 dependencies: Every build uses fresh Maven local repository to avoid side effects from previous builds. Since Maven plugins and dependencies are fetched from online repositories, there is no guaranty that the Internet chanel will fail. Thus, fetching them may cause a failure that is not related to the changes in the repository. Therefore these steps are separated from the actual build steps, that are run offline.
+*   To differentiates build failure and test failure, they are run in different successive stages. These stages are run offline, which significantly reduces the build time.
+*   The packaging of the product and update site and the code quality analysis are run simultaneously. They both flags the build as UNSTABLE upon failure.
+*   At the end of the pipeline, the workspace is cleaned again, whatever happened before (see the `finally` block). Since some continuous integration platforms have little storage space, this is to prevent failures due to low disk space.
+
+All the Maven commands are run with the following options:
+
+*   `--errors` : prints Java error stacks;
+*   `--batch-mode` : Disable interactive mode;
+*   `-Dmaven.repo.local=m2-repository` : use **./m2-repository** as Maven repository instead of **~/.m2/repository**. This ensures the Maven local repository is fresh;
+*   `-T 1C` : use multithreaded build with 1 thread per physical core.
+
+Also, some arguments are given to the JVM to speed up the process a bit more (see [this page](https://zeroturnaround.com/rebellabs/your-maven-build-is-slow-speed-it-up/)) :
+
+*   `-XX:+TieredCompilation -XX:TieredStopAtLevel=1`
+
+TODO: mail notifications
 
 Howto
 -----
+
+### Check Coding Policy
+
+In the root folder of the project, run
+
+`mvn -P releng -Dtycho.mode=maven -Dmain.basedir=. checkstyle:check`
+
+Alternatively, from a shell, the script `/releng/run_checkstyle.sh` wraps the Maven call.
+
+To check the coding policy from Eclipse, the [developer page](http://preesm.sourceforge.net/website/index.php?id=building-preesm) explains how to set up the Checkstyle Eclipse Plugin.
 
 ### Update Project Version
 
 In the root folder of the project, run
 
-*   `mvn -P releng org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=X.Y.Z
+*   `mvn -Dtycho.mode=maven -P releng org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=X.Y.Z
 `
+
+**Note:** The variable **tycho.mode** set to **maven** disable Tycho dependency resolver. Resolving P2 dependencies takes a long time is useless for setting the new version, thus we can skip it.
 
 This can be done from Eclipse (see procedure to [call Maven from Eclipse](#running-maven-from-eclipse)):
 
 ![Run configuration for updating versions](doc/setNewVersionWithMavenFromEclipse.png "Run configuration for calling 'mvn -P releng org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=X.Y.Z' from Eclipse.")
 
-Alternatively, from a shell, the script `/releng/update-version.sh X.Y.Z` wraps the maven call.
+Alternatively, from a shell, the script `/releng/update-version.sh X.Y.Z` wraps the Maven call.
 
 ### Deploy
 

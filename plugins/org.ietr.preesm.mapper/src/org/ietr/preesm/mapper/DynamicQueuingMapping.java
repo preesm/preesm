@@ -294,6 +294,7 @@ public class DynamicQueuingMapping extends AbstractMapping {
     outputs.put("ABC", simu2);
 
     super.clean(architecture, scenario);
+    super.checkSchedulingResult(parameters, dag);
 
     WorkflowLogger.getLogger().log(Level.INFO, "End of Dynamic Scheduling");
 

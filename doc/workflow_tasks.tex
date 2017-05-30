@@ -29,7 +29,7 @@
 \pgfsetlayers{bg,main}  % set the order of the layers (main is the standard layer)
 
 \newcommand{\preesm}{P\textsc{reesm}\xspace}
-\newcommand{\version}{version 2.2.4\xspace}
+\newcommand{\version}{version 2.2.10\xspace}
 
 
 \title{{\Huge\preesm Documentation} \\ 
@@ -372,7 +372,15 @@
 	\label{sec:list_scheduler}
 	\tabBrief{List Scheduler}{architecture, scenario, SDF}{ABC, DAG}{Map and schedule the dataflow graph on the architecture.}{org.ietr.preesm.plugin.mapper.listscheduling}
 	
-	\tabParam{\textit{balanceLoads} & \multicolumn{2}{p{13.00cm}|}{			
+	\tabParam{
+		\textit{Check} & \multicolumn{2}{p{13.00cm}|}{			
+			Specify whether an automated verification of the mapping validity should be performed. This verification should be activated when trying to develop a new scheduling algorithm, but can be deactivated for Preesm users.} \\
+		\tabValue{
+			\valueDef{\texttt{True}}{Activate the verification.}
+			\valueDef{\texttt{false}}{Deactivate verification.}	
+		} \\
+	    \hline
+		\textit{balanceLoads} & \multicolumn{2}{p{13.00cm}|}{			
 			Specify whether the mapping and scheduling algorithm should try to distribute the computational load fairly among cores. Computational load is measured as the amount of time during which a processing element is executing an actor.} \\
 		\tabValue{
 			\valueDef{\texttt{true}}{Load balancing will be an objective of the mapping algorithm.}
@@ -414,7 +422,10 @@
 	\subsection{FAST Scheduler}
 		\tabBrief{FAST Scheduler}{architecture, scenario, SDF}{ABC, DAG}{Map and schedule the dataflow graph on the architecture using an iterative algorithm.}{org.ietr.preesm.plugin.mapper.fast}
 		
-		\tabParam{\textit{balanceLoads} & \multicolumn{2}{p{13.00cm}|}{see List Scheduler (Section~\ref{sec:list_scheduler}).} \\
+		\tabParam{
+			\textit{Check} & \multicolumn{2}{p{13.00cm}|}{see List Scheduler (Section~\ref{sec:list_scheduler}).} \\
+			\hline	
+			\textit{balanceLoads} & \multicolumn{2}{p{13.00cm}|}{see List Scheduler (Section~\ref{sec:list_scheduler}).} \\
 			\hline	
 			\textit{edgeSchedType} & \multicolumn{2}{p{13.00cm}|}{see List Scheduler (Section~\ref{sec:list_scheduler}).} \\
 			\hline
