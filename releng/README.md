@@ -619,7 +619,7 @@ The Jenkinsfile (see [../Jenkinsfile](../Jenkinsfile)) describes how the reposit
 
 #### Initial Setup
 
-The current Jenkinsfile makes use of two Jenkins plugins in order to run properly (:
+After a fresh install with recommended plugins, the current pipeline makes use of two Jenkins plugins in order to run properly:
 
 *   [JaCoCo](https://wiki.jenkins-ci.org/display/JENKINS/JaCoCo+Plugin): this plugin looks up for JaCoCo report files in the workspace and publishes them in the project page. It is called in the Jenkinsfile by the line `step([$class: 'JacocoPublisher'])`.
 *   [FindBugs](https://wiki.jenkins-ci.org/display/JENKINS/FindBugs+Plugin): similarly, the FindBugs plugin publishes the reports found in the workspace. It is called by `findbugs canComputeNew: false, defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', pattern: '**/findbugsXml.xml', unHealthy: ''`.
