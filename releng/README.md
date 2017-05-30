@@ -34,6 +34,7 @@ Table of Content
 	- [Dependencies](#dependencies)
 	- [Profiles](#profiles)
 	- [Phase Binding and Configuration Details](#phase-binding-and-configuration-details)
+	- [The tycho.mode setting](#the-tycho-mode-setting)
 - [Eclipse Setup](#eclipse-setup)
 	- [M2Eclipse](#m2eclipse)
 	- [Installing Dependencies](#installing-dependencies)
@@ -370,6 +371,15 @@ This section details what plugins are bound to which phases (including clean lif
 *   [maven-deploy-plugin](http://maven.apache.org/plugins/maven-deploy-plugin/): disable the default deploy plugin. This is due to issues when deploying P2 repositories on SourceForge. The actual deploy procedure is detailed in the [Release Engineering](#release-engineering) section.
 
 ### The tycho.mode setting
+
+The Tycho Maven plugins active them self by default when calling Maven. More specifically, the P2 dependency resolver activates itself when the [reactor](https://maven.apache.org/guides/mini/guide-multiple-modules.html) computes a build order. This resolver "converts" dependencies between Eclipse plugins into implicit Maven dependencies, and fetch them from P2 repositories (Eclipse update sites). The main issue is the time it takes.
+
+Since some Maven goals do not need dependency resolution (for instance clean, or set-version), it is advised to disable it by setting the property **tycho.mode** to **maven**.
+
+
+*   [Eclipse Tycho](http://www.vogella.com/tutorials/EclipseTycho/article.html#setting-version-numbers)
+
+
 
 
 
