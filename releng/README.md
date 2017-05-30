@@ -101,6 +101,10 @@ In order to specifically build Eclipse plugins using Maven, the build process he
 *   Generate Java from [Xtend](https://eclipse.org/xtend/documentation/) files;
 *   Run [tests within an OSGi runtime](https://eclipse.org/tycho/sitedocs/tycho-surefire/tycho-surefire-plugin/plugin-info.html) and compute [code coverage](http://www.eclemma.org/jacoco/);
 
+A full build (including product and update site) is triggered with the following command:
+
+-   `mvn -P releng clean verify`
+
 #### Release Engineering
 Using the **releng** [Maven profile](http://maven.apache.org/guides/introduction/introduction-to-profiles.html) (disabled by default), additional actions are available:
 
@@ -238,14 +242,15 @@ During the Maven deploy phase, the content is automatically uploaded to those lo
 | org.ietr.preesm.product/ | Maven module for generating the end user products |
 | org.ietr.preesm.rcp.utils/ | Small Eclipse plugin for configuring the products |
 | auto_convert_encoding_and_lineendings.sh | Bash script for converting all file line endings to Linux and charset to UTF-8 |
+| run_checkstyle.sh | Small Bash script that calls Maven with proper arguments to check the coding policy |
 | copyright_template.txt | Copyright template to include in file headers |
 | fix_header_copyright_and_authors.sh | Bash script that replaces copyright template tokens (i.e. %%DATE%%) with data fetched from the git log |
 | HowToRelease.md | Old release procedure |
 | pom.xml | The main releng POM. Adds two P2 repositories for product and dev feature build. |
 | README.md | This file |
 | update-version.sh | Small Bash script that calls Maven with proper arguments to set a new version for all submodules. |
-| VAADER_checkstyle.xml | Preesm Checkstyle configuration file |
-| VAADER_eclipse_preferences.epf | Preesm Eclipse preferences file |
+| VAADER_checkstyle.xml | Preesm Checkstyle configuration file (developed by VAADER team) |
+| VAADER_eclipse_preferences.epf | Preesm Eclipse preferences file (developed by VAADER team) |
 
 Build Process in Maven
 ----------------------
@@ -257,7 +262,6 @@ This section details how the Preesm project is built using Maven. Graphiti and D
 The Maven build process is defined in [POM files](https://maven.apache.org/guides/introduction/introduction-to-the-pom.html). The POM files can define build properties, reference external repositories, declare sub modules, call and configure Maven plugins, define profiles, etc.
 
 Each Eclipse plugin in the Preesm project has its own POM file. On top of that, there is a [parent POM](http://www.javavillage.in/maven-parent-pom.php), that defines project wide properties, Maven plugin configuration, [Maven profiles](http://maven.apache.org/guides/introduction/introduction-to-profiles.html), and the list of [submodules](https://maven.apache.org/guides/mini/guide-multiple-modules.html). The projects also have few intermediate POM files (`releng/pom.xml`, `test-fragments/pom.xml`, ...). They add some configuration for dedicated parts of the test or release process.
-
 
 The build of the project is triggered using the following command: `mvn clean verify`. This calls two Maven goals from two different [Maven Build Lifecycles](http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Build_Lifecycle_Basics):
 
@@ -364,6 +368,10 @@ This section details what plugins are bound to which phases (including clean lif
 #### deploy
 
 *   [maven-deploy-plugin](http://maven.apache.org/plugins/maven-deploy-plugin/): disable the default deploy plugin. This is due to issues when deploying P2 repositories on SourceForge. The actual deploy procedure is detailed in the [Release Engineering in Maven](#release-engineering-in-maven) section.
+
+### The tycho.mode setting
+
+
 
 Eclipse Setup
 -------------
@@ -571,16 +579,20 @@ Howto
 
 ### Update Project Version
 
+### Update Project Version
+
 In the root folder of the project, run
 
-*   `mvn -P releng org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=X.Y.Z
+*   `mvn -Dtycho.mode=maven -P releng org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=X.Y.Z
 `
+
+**Note:** The variable **tycho.mode** set to **maven** disable Tycho dependency resolver. Resolving P2 dependencies takes a long time is useless for setting the new version, thus we can skip it.
 
 This can be done from Eclipse (see procedure to [call Maven from Eclipse](#running-maven-from-eclipse)):
 
 ![Run configuration for updating versions](doc/setNewVersionWithMavenFromEclipse.png "Run configuration for calling 'mvn -P releng org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=X.Y.Z' from Eclipse.")
 
-Alternatively, from a shell, the script `/releng/update-version.sh X.Y.Z` wraps the maven call.
+Alternatively, from a shell, the script `/releng/update-version.sh X.Y.Z` wraps the Maven call.
 
 ### Deploy
 
