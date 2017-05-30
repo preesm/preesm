@@ -224,6 +224,8 @@ public class HSDFBuildLoops {
 
     dst.setTargetInterface(src.getTargetInterface());
     dst.setSourceInterface(src.getSourceInterface());
+
+    dst.copyProperties(src);
     return 0;
   }
 
@@ -678,6 +680,7 @@ public class HSDFBuildLoops {
       }
       g.getPropertyBean().setValue("working_memory", new Integer(bufSize));
       // p("Internal working memory computation " + g.getName() + " number of allocation " + nbWorkingBufferAllocated + " byte allocated " + bufSize);
+      p("Internal Working Memory Graph " + g.getName() + " has allocated " + bufSize + " bytes");
     }
     return inputGraph;
   }
