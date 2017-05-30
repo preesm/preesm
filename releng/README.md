@@ -53,6 +53,7 @@ Table of Content
 	- [Deploy Phase](#deploy-phase)
 - [Continuous integration](#continuous-integration)
 - [Howto](#howto)
+	- [Check Coding Policy](#check-coding-policy1)
 	- [Update Project Version](#update-project-version)
 	- [Deploy](#deploy)
 	- [Add New Dependency](#add-new-dependency)
@@ -583,7 +584,15 @@ TODO
 Howto
 -----
 
-### Update Project Version
+### Check Coding Policy
+
+In the root folder of the project, run
+
+`mvn -P releng -Dtycho.mode=maven -Dmain.basedir=. checkstyle:check`
+
+Alternatively, from a shell, the script `/releng/run_checkstyle.sh` wraps the Maven call.
+
+To check the coding policy from Eclipse, the [developer page](http://preesm.sourceforge.net/website/index.php?id=building-preesm) explains how to set up the Checkstyle Eclipse Plugin.
 
 ### Update Project Version
 
