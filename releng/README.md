@@ -7,7 +7,6 @@ Old documentation is available in the [HowToRelease.md](HowToRelease.md) file.
 
 TODO:
 
-*   Sonar+Jenkins
 *   Howtos
 *   Check dead links
 
