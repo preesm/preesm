@@ -583,7 +583,9 @@ The product deploy phase is configured in the POM file of the product module. Th
 Continuous Integration
 ----------------------
 
-[Continuous Integration](https://en.wikipedia.org/wiki/Continuous_integration) defines a 
+[Continuous Integration](https://en.wikipedia.org/wiki/Continuous_integration) is a practice that consists in integrating everyhing that is pushed to the source code repository. This include compiling, testing, coding policy checking, etc. This helps uncovering integration issues as soon as possible. For the Preesm project, we rely on the [Jenkins](https://jenkins.io/) program to continously integrate changes.
+
+Continuous integration can check for the [quality of the code](https://en.wikipedia.org/wiki/Software_quality) and report failure upon low code quality (see [Quality Gates](https://docs.sonarqube.org/display/SONAR/Quality+Gates)). The current build process does not fail upon such criteria. However, since having reports about quality can give hints and help solving bugs, it is designed to run along with SonarQube.
 
 ### SonarQube
 
