@@ -25,7 +25,7 @@ Table of Content
 	- [Coding Style](#coding-style)
 	- [Dependency Management](#dependency-management)
 - [Project Structure](#project-structure)
-	- [Git Repositories (Github)](#git-repositories-github)
+	- [Git Repositories (GitHub)](#git-repositories-github)
 	- [Preesm Website (SourceForge)](#preesm-website-sourceforge)
 	- [Generated Content](#generated-content)
 	- [Releng Files](#releng-files)
@@ -34,7 +34,7 @@ Table of Content
 	- [Dependencies](#dependencies)
 	- [Profiles](#profiles)
 	- [Phase Binding and Configuration Details](#phase-binding-and-configuration-details)
-	- [The tycho.mode setting](#the-tycho-mode-setting)
+	- [The tycho.mode setting](#the-tychomode-setting)
 - [Eclipse Setup](#eclipse-setup)
 	- [M2Eclipse](#m2eclipse)
 	- [Installing Dependencies](#installing-dependencies)
@@ -378,10 +378,6 @@ Since some Maven goals do not need dependency resolution (for instance clean, or
 
 
 *   [Eclipse Tycho](http://www.vogella.com/tutorials/EclipseTycho/article.html#setting-version-numbers)
-
-
-
-
 
 Eclipse Setup
 -------------
