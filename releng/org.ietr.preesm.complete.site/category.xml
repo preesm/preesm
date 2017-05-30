@@ -1,25 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature id="org.ietr.preesm.feature">
-      <category name="PREESM"/>
-   </feature>
-   <feature id="org.ietr.preesm.dev.feature">
-      <category name="dev_components"/>
-   </feature>
-   <feature id="org.ietr.preesm.feature.source">
-      <category name="dev_components"/>
-      <category name="PREESM"/>
-   </feature>
+  <feature id="org.ietr.preesm.feature">
+    <category name="PREESM" />
+  </feature>
+  <feature id="org.ietr.preesm.dev.feature">
+    <category name="dev_components" />
+  </feature>
+  <feature id="org.ietr.preesm.feature.source">
+    <category name="dev_components" />
+    <category name="PREESM" />
+  </feature>
 
-   <category-def name="dev_components" label="Developer Resources">
-      <description>
-         Developper resources (source code bundles).
-      </description>
-   </category-def>
+  <category-def name="dev_components" label="Developer Resources">
+    <description>
+      Developper resources (source code bundles).
+    </description>
+  </category-def>
 
-   <category-def name="PREESM" label="PREESM">
-      <description>
-         PREESM (the Parallel and Real-time Embedded Executives Scheduling Method) is an open source rapid prototyping and code generation tool. It is primarily employed to simulate signal processing applications and generate code for multi-core Digital Signal Processors. PREESM is developed at the Institute of Electronics and Telecommunications-Rennes (IETR) in collaboration with Texas Instruments France in Nice.
-      </description>
-   </category-def>
+  <category-def name="PREESM" label="PREESM">
+    <description>
+      PREESM (the Parallel and Real-time Embedded Executives Scheduling Method)
+      is an open source rapid prototyping and code generation tool. It
+      is primarily employed to simulate signal processing applications
+      and generate code for multi-core Digital Signal Processors. PREESM
+      is developed at the Institute of Electronics and
+      Telecommunications-Rennes (IETR) in collaboration with Texas
+      Instruments France in Nice.
+    </description>
+  </category-def>
 </site>
