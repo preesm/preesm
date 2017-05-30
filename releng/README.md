@@ -42,7 +42,7 @@ Table of Content
 	- [Missing Source Features](#missing-source-features)
 - [Release Engineering](#release-engineering)
 	- [Overview](#overview)
-	- [Versionning](#versionning)
+	- [Versioning](#versioning)
 	- [Javadoc](#javadoc)
 	- [Feature](#feature)
 	- [Dev Meta Feature](#dev-meta-feature)
@@ -53,7 +53,7 @@ Table of Content
 - [Continuous integration](#continuous-integration)
 - [Howto](#howto)
 	- [Update Project Version](#update-project-version)
-	- [Deploy from Eclipse](#deploy-from-eclipse)
+	- [Deploy](#deploy)
 	- [Add New Dependency](#add-new-dependency)
 	- [Add New Repository](#add-new-repository)
 	- [Change Checkstyle Coding Style](#change-checkstyle-coding-style)
@@ -255,7 +255,7 @@ During the Maven deploy phase, the content is automatically uploaded to those lo
 Build Process in Maven
 ----------------------
 
-This section details how the Preesm project is built using Maven. Graphiti and DFTools are built using a similar process to the Preesm one. For the site and products generation and deploy phases, please read the [Release Engineering in Maven](#release-engineering-in-maven) section.
+This section details how the Preesm project is built using Maven. Graphiti and DFTools are built using a similar process to the Preesm one. For the site and products generation and deploy phases, please read the [Release Engineering](#release-engineering) section.
 
 ### Overview
 
@@ -312,7 +312,7 @@ Dependencies between submodules are resolved on the fly during the build process
 Two [Maven build profiles](http://maven.apache.org/guides/introduction/introduction-to-profiles.html) are defined in the parent POM:
 
 #### releng
-A profile for enabling release engineering modules and plugins. See [Release Engineering in Maven](#release-engineering-in-maven).
+A profile for enabling release engineering modules and plugins. See [Release Engineering](#release-engineering).
 
 #### os-macosx
 
@@ -367,7 +367,7 @@ This section details what plugins are bound to which phases (including clean lif
 
 #### deploy
 
-*   [maven-deploy-plugin](http://maven.apache.org/plugins/maven-deploy-plugin/): disable the default deploy plugin. This is due to issues when deploying P2 repositories on SourceForge. The actual deploy procedure is detailed in the [Release Engineering in Maven](#release-engineering-in-maven) section.
+*   [maven-deploy-plugin](http://maven.apache.org/plugins/maven-deploy-plugin/): disable the default deploy plugin. This is due to issues when deploying P2 repositories on SourceForge. The actual deploy procedure is detailed in the [Release Engineering](#release-engineering) section.
 
 ### The tycho.mode setting
 
@@ -402,7 +402,7 @@ Various small configurations are also included in this preference file (see [sou
 
 As aforementioned, the Eclipse IDE is best to develop with Preesm, but should not be used for packaging and releasing. Indeed the [Plugin Development Environment build tools](https://projects.eclipse.org/projects/eclipse.pde) provide all necessary components for the plugin development life. However the configuration differs from the Maven plugins (for instance the Eclipse update site builder uses a file named **site.xml** whereas the [tycho-p2-repository-plugin](http://www.eclipse.org/tycho/sitedocs/tycho-p2/tycho-p2-repository-plugin/assemble-repository-mojo.html) reads a file named **category.xml**). The release process is tuned for Maven build so that it can be called from a continuous integration platform.
 
-Thankfully, the M2E Eclipse plugins come with facilities to run Maven goals from the Eclipse IDE, without having to install a local Maven distribution. This is done by running any of the imported Maven project as "Maven build" (see example [here](https://books.sonatype.com/m2eclipse-book/reference/running-sect-running-maven-builds.html)). Goals, profiles and parameters can be set in the Eclipse interface. This should be used if one wants to [update project version](#update-project-version) or [release/deploy](#deploy-from-eclipse) Preesm from Eclipse.
+Thankfully, the M2E Eclipse plugins come with facilities to run Maven goals from the Eclipse IDE, without having to install a local Maven distribution. This is done by running any of the imported Maven project as "Maven build" (see example [here](https://books.sonatype.com/m2eclipse-book/reference/running-sect-running-maven-builds.html)). Goals, profiles and parameters can be set in the Eclipse interface. This should be used if one wants to [update project version](#update-project-version) or [release/deploy](#deploy) Preesm from Eclipse.
 
 ### Missing Source Features
 
@@ -427,7 +427,7 @@ This profile adds:
 
 *   Javadoc generation: bound to the **process-sources** phase, it generates the Javadoc site using the [maven-javadoc-plugin](https://maven.apache.org/plugins/maven-javadoc-plugin/).
 *   Source plugin generation: During **prepare-packaging** phase, the [tycho-source-plugin](https://eclipse.org/tycho/sitedocs/tycho-source-plugin/plugin-source-mojo.html) generates, along with the binary package, an Eclipse bundle that contains the source code of every plugin. This is used for publishing SDKs.
-*   
+*
 This profile also activates the generation of the Source Feature that include all generated source plugins using the [tycho-source-feature-plugin](https://eclipse.org/tycho/sitedocs-extras/tycho-source-feature-plugin/source-feature-mojo.html).
 *   **/releng/** intermediate POM: this submodule contains the plugins for the generation of the features, the site, and the product. This POM also enable the [Preesm Maven repository](http://preesm.sourceforge.net/maven/) for accessing the [sftp-maven-plugin](https://github.com/preesm/sftp-maven-plugin).
 
@@ -536,7 +536,7 @@ The product is configured with the **org.ietr.preesm.product** file. It can be e
 
 ### Deploy Phase
 
-The deploy phase is fully automated within the Maven POM files using the following command (see [Deploy from Eclipse](#deploy-from-eclipse) for running this command from Eclipse):
+The deploy phase is fully automated within the Maven POM files using the following command (see [Deploy](#deploy) for running this command from Eclipse):
 
 *   `mvn -P releng clean deploy`
 
