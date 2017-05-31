@@ -248,6 +248,47 @@
       </plugin>
 
       <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>3.0</version>
+        <configuration>
+          <!-- Indicate the path to a file containing the license header -->
+          <header>releng/copyright_template.txt</header>
+          <!-- List of default excludes -->
+          <useDefaultExcludes>true</useDefaultExcludes>
+          <!-- Custom excludes -->
+          <excludes>
+            <exclude>LICENSE</exclude>
+            <exclude>**/README.md</exclude>
+            <exclude>**/resources/**</exclude>
+            <exclude>**/ecore-gen/**</exclude>
+            <exclude>**/xtend-gen/**</exclude>
+            <exclude>**/target/**</exclude>
+            <exclude>**/bin/**</exclude>
+            <exclude>libs/**</exclude>
+            <exclude>doc/**</exclude>
+            <exclude>**/*.sh</exclude>
+            <exclude>**/*.css</exclude>
+            <exclude>**/*.xsl</exclude>
+          </excludes>
+          <!-- Additional extensions to support -->
+          <mapping>
+            <ecore>XML_STYLE</ecore>
+            <genmodel>XML_STYLE</genmodel>
+            <xtend>JAVADOC_STYLE</xtend>
+            <bsh>JAVADOC_STYLE</bsh>
+          </mapping>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>format</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <version>3.0.1</version>
