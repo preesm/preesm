@@ -43,6 +43,7 @@ Table of Content
 - [Release Engineering](#release-engineering-1)
 	- [Overview](#overview-1)
 	- [Versioning](#versioning)
+	- [Licensing](#licensing)
 	- [Javadoc](#javadoc)
 	- [Feature](#feature)
 	- [Dev Meta Feature](#dev-meta-feature)
@@ -460,6 +461,52 @@ This profile adds:
     *   Can also add 4th level of version for hotfixes (example: 2.2.28.hotfix1);
     *   Can also append **qualifier**, to be replaced with current timestamp (example: 2.2.8.qualifier). This is usually used for snaphot releases.
 *   See [Update Project Version](#update-project-version). This procedure updates version in all the POM files, in the MANIFEST.MF file of all included submodules, and in the features. Generated site and product names are also impacted.
+
+### Licensing
+
+The projects license is [CeCILL-C V1](http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html). The [../LICENSE](../LICENSE) file recall its articles. Also, as [recommended](http://www.cecill.info/placer.en.html), all source files must have a header that indicates that they are covered by the selected license.
+
+Making sure all the files in the repository have such a header is tedious. Fortunately, some tools exist to help having the job done. Especially, the [License Maven Plugin](http://code.mycila.com/license-maven-plugin/) is designed to insert/replace headers of all the source files it encouters. 
+
+The configuration is as follows (for the list of default excludes, see [this blob](https://github.com/mycila/license-maven-plugin/blob/master/license-maven-plugin/src/main/java/com/mycila/maven/plugin/license/Default.java)) :
+
+```XML
+<!-- Indicate the path to a file containing the license header -->
+<header>releng/copyright_template.txt</header>
+<!-- List of default excludes -->
+<useDefaultExcludes>true</useDefaultExcludes>
+<!-- Custom excludes -->
+<excludes>
+  <exclude>LICENSE</exclude>
+  <exclude>**/README.md</exclude>
+  <exclude>**/resources/**</exclude>
+  <exclude>**/ecore-gen/**</exclude>
+  <exclude>**/xtend-gen/**</exclude>
+  <exclude>**/target/**</exclude>
+  <exclude>**/bin/**</exclude>
+  <exclude>libs/**</exclude>
+  <exclude>doc/**</exclude>
+  <exclude>**/*.sh</exclude>
+  <exclude>**/*.css</exclude>
+  <exclude>**/*.xsl</exclude>
+</excludes>
+<!-- Additional extensions to support -->
+<mapping>
+  <ecore>XML_STYLE</ecore>
+  <genmodel>XML_STYLE</genmodel>
+  <xtend>JAVADOC_STYLE</xtend>
+  <bsh>JAVADOC_STYLE</bsh>
+</mapping>
+```
+
+The current header file has two tokens that should be replaced :
+
+*   **%%DATE%%**: the year interval from file creation to last edit
+*   **%%AUTHORS%%**: the list of authors who contributed to this file
+
+This tokens can be automatically filled from git logs. 
+
+The script **releng/fix_header_copyright_and_authors.sh** is in charge of calling the Maven plugin with proper arguments and to replace the tokens automatically.
 
 ### Javadoc
 
