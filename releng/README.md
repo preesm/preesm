@@ -40,8 +40,8 @@ Table of Content
 	- [Eclipse Preferences](#eclipse-preferences)
 	- [Running Maven from Eclipse](#running-maven-from-eclipse)
 	- [Missing Source Features](#missing-source-features)
-- [Release Engineering](#release-engineering)
-	- [Overview](#overview)
+- [Release Engineering](#release-engineering-1)
+	- [Overview](#overview-1)
 	- [Versioning](#versioning)
 	- [Javadoc](#javadoc)
 	- [Feature](#feature)
@@ -54,9 +54,9 @@ Table of Content
 	- [SonarQube](#sonarqube)
 	- [Jenkins](#jenkins)
 - [Howto](#howto)
-	- [Check Coding Policy](#check-coding-policy1)
+	- [Check Coding Policy](#check-coding-policy)
 	- [Update Project Version](#update-project-version)
-	- [Deploy](#deploy)
+	- [Deploy](#deploy-1)
 	- [Add New Dependency](#add-new-dependency)
 	- [Add New Repository](#add-new-repository)
 	- [Change Checkstyle Coding Style](#change-checkstyle-coding-style)
@@ -149,6 +149,10 @@ This dependency mechanism is very similar to the [Maven dependency mechanism](ht
 In order to use a plain Java jar using this mechanism, it first needs to be converted into an Eclipse plugin. As explained in this [article](www.vogella.com/tutorials/EclipseJarToPlugin/article.html), it can be done manually within the Eclipse IDE or automatically using the [p2-maven-plugin](https://github.com/reficio/p2-maven-plugin) or [Gradle](https://gradle.org/).
 
 For Graphiti, DFTools and Preesm, all the plain Java jars have been externalized in the [ExternalDeps](https://github.com/preesm/externaldeps) project. This project consists of a Maven POM file that is configured to fetch all the required jars from online Maven repositories and convert them into Eclipse plugin, before deploying them on the Preesm update site.
+
+#### Note About P2 Repositories
+
+**Avoid composite repositories** : Composite P2 repositories consist of a list of references to other P2 repositories. The Tycho P2 resolving time depends on the number of P2 repositories referenced from the POM files. The more repositories, the longer it takes. To speed up the build process, the number of P2 repository references has to be as low as possible, and composite repositories should be avoided.
 
 Project Structure
 -----------------
@@ -277,7 +281,7 @@ The dependencies are all defined in MANIFEST.MF files within the Eclipse plugins
 
 Preesm is a set a Eclipse plugins, thus its dependencies are OSGi dependencies. They are defined in the MANIFEST.MF file of every Eclipse plugin. The Tycho Maven plug-in is then responsible for resolving such dependencies during the Maven build process. There should be no `<dependencies>` section in the POM files.
 
-Third party plugins dependencies are resolved using external P2 repositories, such as the [Eclipse project update site](http://ftp.fau.de/eclipse/releases/) for the core components of Eclipse, [TMF releases update site](http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/) for the Xtend runtime libraries, or the [Preesm update site](http://preesm.sourceforge.net/eclipse/update-site/) for specific third party (see [ExternalDeps](https://github.com/preesm/externaldeps) project), Graphiti and DFTools dependencies. These repositories are defined in the parent POM file (at the root of the git repository):
+Third party plugins dependencies are resolved using external P2 repositories, such as the [Eclipse project update site](http://ftp.fau.de/eclipse/releases/) for the core components of Eclipse, [TMF releases update site](http://download.eclipse.org/modeling/tmf/xtext/updates/releases/) for the Xtend runtime libraries, or the [Preesm update site](http://preesm.sourceforge.net/eclipse/update-site/) for specific third party (see [ExternalDeps](https://github.com/preesm/externaldeps) project), Graphiti and DFTools dependencies. These repositories are defined in the parent POM file (at the root of the git repository):
 
 ```xml
 <properties>
@@ -445,8 +449,7 @@ This profile adds:
 
 *   Javadoc generation: bound to the **process-sources** phase, it generates the Javadoc site using the [maven-javadoc-plugin](https://maven.apache.org/plugins/maven-javadoc-plugin/).
 *   Source plugin generation: During **prepare-packaging** phase, the [tycho-source-plugin](https://eclipse.org/tycho/sitedocs/tycho-source-plugin/plugin-source-mojo.html) generates, along with the binary package, an Eclipse bundle that contains the source code of every plugin. This is used for publishing SDKs.
-*
-This profile also activates the generation of the Source Feature that include all generated source plugins using the [tycho-source-feature-plugin](https://eclipse.org/tycho/sitedocs-extras/tycho-source-feature-plugin/source-feature-mojo.html).
+*   This profile also activates the generation of the Source Feature that include all generated source plugins using the [tycho-source-feature-plugin](https://eclipse.org/tycho/sitedocs-extras/tycho-source-feature-plugin/source-feature-mojo.html).
 *   **/releng/** intermediate POM: this submodule contains the plugins for the generation of the features, the site, and the product. This POM also enable the [Preesm Maven repository](http://preesm.sourceforge.net/maven/) for accessing the [sftp-maven-plugin](https://github.com/preesm/sftp-maven-plugin).
 
 ### Versioning
@@ -490,7 +493,7 @@ The feature requires new repositories to make sure latest releases are installed
   <discovery label="Neon Updates" url="http://mirror.ibcp.fr/pub/eclipse/eclipse/updates/4.6"/>
 
   <!-- TMF Repo for latest xtend -->
-  <discovery label="TMF Releases" url="http://mirror.ibcp.fr/pub/eclipse/modeling/tmf/xtext/updates/composite/releases/"/>
+  <discovery label="TMF Releases" url="http://mirror.ibcp.fr/pub/eclipse/modeling/tmf/xtext/updates/releases/"/>
 
   <!-- M2E extension -->
   <discovery label="M2E Tycho" url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST/"/>
@@ -642,10 +645,11 @@ On top of the default view, the [Blue Ocean](https://jenkins.io/doc/book/blueoce
 The pipeline for Preesm projects is cut in several stages:
 
 *   Cleanup the workspace: make sure a fresh workspace is used to avoid polution;
-*   Checkout source code and check coding policy;
-*   Resolve Maven plugins and P2 dependencies: Every build uses fresh Maven local repository to avoid side effects from previous builds. Since Maven plugins and dependencies are fetched from online repositories, there is no guaranty that the Internet chanel will fail. Thus, fetching them may cause a failure that is not related to the changes in the repository. Therefore these steps are separated from the actual build steps, that are run offline.
+*   Checkout source code;
+*   Check coding policy and validate POM files;
+*   Resolve Maven plugins and P2 dependencies: Every build uses fresh Maven local repository to avoid side effects from previous builds. Since Maven plugins and dependencies are fetched from online repositories, there is no guaranty that the Internet chanel will fail. Thus, fetching them may cause a failure that is not related to the changes in the repository. Therefore these steps are separated from the actual build steps, that are run offline;
 *   To differentiates build failure and test failure, they are run in different successive stages. These stages are run offline, which significantly reduces the build time.
-*   The packaging of the product and update site and the code quality analysis are run simultaneously. They both flags the build as UNSTABLE upon failure.
+*   The packaging of the product and update site and the code quality analysis are run simultaneously. They both flags the build as UNSTABLE upon failure;
 *   At the end of the pipeline, the workspace is cleaned again, whatever happened before (see the `finally` block). Since some continuous integration platforms have little storage space, this is to prevent failures due to low disk space.
 
 All the Maven commands are run with the following options:
@@ -654,6 +658,8 @@ All the Maven commands are run with the following options:
 *   `--batch-mode` : Disable interactive mode;
 *   `-Dmaven.repo.local=m2-repository` : use **./m2-repository** as Maven repository instead of **~/.m2/repository**. This ensures the Maven local repository is fresh;
 *   `-T 1C` : use multithreaded build with 1 thread per physical core.
+
+**Note:** the `-X` option enables Jenkins debug mode. Usually, this does not provide any usefull information when failure occurs while generates tons of log (more than 150MB at during try).
 
 Also, some arguments are given to the JVM to speed up the process a bit more (see [this page](https://zeroturnaround.com/rebellabs/your-maven-build-is-slow-speed-it-up/)) :
 
