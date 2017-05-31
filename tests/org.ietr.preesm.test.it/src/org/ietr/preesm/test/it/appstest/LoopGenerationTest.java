@@ -18,17 +18,17 @@ public class LoopGenerationTest {
     final String projectName = "org.ietr.preesm.loopgen-sobel-erosion-dilation";
 
     // fill workflows to set
-    final List<String> workflows = new ArrayList<String>();
+    final List<String> workflows = new ArrayList<>();
     workflows.add("CodegenDistribNoFlat");
     workflows.add("CodegenDistribFlat1");
 
     // fill scenarios to set
-    final List<String> scenarios = new ArrayList<String>();
+    final List<String> scenarios = new ArrayList<>();
     scenarios.add("4core");
     scenarios.add("4core2");
 
-    for (String w : workflows) {
-      for (String s : scenarios) {
+    for (final String w : workflows) {
+      for (final String s : scenarios) {
         final String workflowFilePathStr = "/Workflows/" + w + ".workflow";
         final String scenarioFilePathStr = "/Scenarios/" + s + ".scenario";
         final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);

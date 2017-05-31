@@ -34,7 +34,7 @@ public class HSDFBuildLoops {
   final Logger logger = WorkflowLogger.getLogger();
 
   private void p(final String s) {
-    Logger logger = this.logger;
+    final Logger logger = this.logger;
     logger.log(Level.INFO, "HSDFBuildLoops " + s);
   }
 
@@ -131,7 +131,7 @@ public class HSDFBuildLoops {
           inV.add(vv);
           // p("getInVertexs " + vv.getName() + " -> " + v.getName());
         } else {
-          logger.log(Level.SEVERE, "HSDFBuildLoops Delays not supported when generating clustering");
+          this.logger.log(Level.SEVERE, "HSDFBuildLoops Delays not supported when generating clustering");
           throw new WorkflowException("HSDFBuildLoops Delays not supported when generating clustering");
         }
       }
@@ -149,7 +149,7 @@ public class HSDFBuildLoops {
           outV.add(vv);
           // p("getOutVertexs " + v.getName() + " -> " + vv.getName());
         } else {
-          logger.log(Level.SEVERE, "HSDFBuildLoops Delays not supported when generating clustering");
+          this.logger.log(Level.SEVERE, "HSDFBuildLoops Delays not supported when generating clustering");
           throw new WorkflowException("HSDFBuildLoops Delays not supported when generating clustering");
         }
       }
@@ -664,7 +664,7 @@ public class HSDFBuildLoops {
                 ex.printStackTrace();
                 throw new WorkflowException("Internal Memory allocation failed for actor " + v.getName());
               }
-            } else if (v instanceof SDFBroadcastVertex || v instanceof SDFRoundBufferVertex) {
+            } else if ((v instanceof SDFBroadcastVertex) || (v instanceof SDFRoundBufferVertex)) {
               // p("Allocating Special Vertex: " + v.getName());
               mem += e.getCons().intValue() * v.getNbRepeatAsInteger();
             } else {
