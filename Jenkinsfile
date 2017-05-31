@@ -29,9 +29,19 @@ node {
 				checkout scm
 			}
 			
-			stage ('Checkstyle') {
-				sh "java -jar releng/hooks/checkstyle-7.6.1-all.jar -c releng/VAADER_checkstyle.xml plugins/"
-			}
+			parallel (
+				'Checkstyle': {
+					stage ('Checkstyle') {
+						sh "java -jar releng/hooks/checkstyle-7.6.1-all.jar -c releng/VAADER_checkstyle.xml plugins/"
+					}
+				}
+			,
+				'Validate POM': {
+					stage ('Validate POM') {
+						sh "mvn ${mavenOpts} -P releng -Dtycho.mode=maven help:help -q"
+					}
+				}
+			)
 
 			parallel (
 				'Maven Plugins': {
