@@ -645,10 +645,11 @@ On top of the default view, the [Blue Ocean](https://jenkins.io/doc/book/blueoce
 The pipeline for Preesm projects is cut in several stages:
 
 *   Cleanup the workspace: make sure a fresh workspace is used to avoid polution;
-*   Checkout source code and check coding policy;
-*   Resolve Maven plugins and P2 dependencies: Every build uses fresh Maven local repository to avoid side effects from previous builds. Since Maven plugins and dependencies are fetched from online repositories, there is no guaranty that the Internet chanel will fail. Thus, fetching them may cause a failure that is not related to the changes in the repository. Therefore these steps are separated from the actual build steps, that are run offline.
+*   Checkout source code;
+*   Check coding policy and validate POM files;
+*   Resolve Maven plugins and P2 dependencies: Every build uses fresh Maven local repository to avoid side effects from previous builds. Since Maven plugins and dependencies are fetched from online repositories, there is no guaranty that the Internet chanel will fail. Thus, fetching them may cause a failure that is not related to the changes in the repository. Therefore these steps are separated from the actual build steps, that are run offline;
 *   To differentiates build failure and test failure, they are run in different successive stages. These stages are run offline, which significantly reduces the build time.
-*   The packaging of the product and update site and the code quality analysis are run simultaneously. They both flags the build as UNSTABLE upon failure.
+*   The packaging of the product and update site and the code quality analysis are run simultaneously. They both flags the build as UNSTABLE upon failure;
 *   At the end of the pipeline, the workspace is cleaned again, whatever happened before (see the `finally` block). Since some continuous integration platforms have little storage space, this is to prevent failures due to low disk space.
 
 All the Maven commands are run with the following options:
@@ -657,6 +658,8 @@ All the Maven commands are run with the following options:
 *   `--batch-mode` : Disable interactive mode;
 *   `-Dmaven.repo.local=m2-repository` : use **./m2-repository** as Maven repository instead of **~/.m2/repository**. This ensures the Maven local repository is fresh;
 *   `-T 1C` : use multithreaded build with 1 thread per physical core.
+
+**Note:** the `-X` option enables Jenkins debug mode. Usually, this does not provide any usefull information when failure occurs while generates tons of log (more than 150MB at during try).
 
 Also, some arguments are given to the JVM to speed up the process a bit more (see [this page](https://zeroturnaround.com/rebellabs/your-maven-build-is-slow-speed-it-up/)) :
 
