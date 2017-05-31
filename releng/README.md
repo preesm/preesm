@@ -704,9 +704,8 @@ All the Maven commands are run with the following options:
 *   `--errors` : prints Java error stacks;
 *   `--batch-mode` : Disable interactive mode;
 *   `-Dmaven.repo.local=m2-repository` : use **./m2-repository** as Maven repository instead of **~/.m2/repository**. This ensures the Maven local repository is fresh;
-*   `-T 1C` : use multithreaded build with 1 thread per physical core.
 
-**Note:** the `-X` option enables Jenkins debug mode. Usually, this does not provide any usefull information when failure occurs while generates tons of log (more than 150MB at during try).
+**Note:** the `-X` option enables Jenkins debug mode. Usually, this does not provide any usefull information when failure occurs while generates tons of log (more than 150MB at during try). Also, the `-T` option, for multithreading, should not be used since several Maven plugins used during the build process are not thread safe.
 
 Also, some arguments are given to the JVM to speed up the process a bit more (see [this page](https://zeroturnaround.com/rebellabs/your-maven-build-is-slow-speed-it-up/)) :
 
