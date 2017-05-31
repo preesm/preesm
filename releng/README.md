@@ -150,6 +150,10 @@ In order to use a plain Java jar using this mechanism, it first needs to be conv
 
 For Graphiti, DFTools and Preesm, all the plain Java jars have been externalized in the [ExternalDeps](https://github.com/preesm/externaldeps) project. This project consists of a Maven POM file that is configured to fetch all the required jars from online Maven repositories and convert them into Eclipse plugin, before deploying them on the Preesm update site.
 
+#### Note About P2 Repositories
+
+**Avoid composite repositories** : Composite P2 repositories consist of a list of references to other P2 repositories. The Tycho P2 resolving time depends on the number of P2 repositories referenced from the POM files. The more repositories, the longer it takes. To speed up the build process, the number of P2 repository references has to be as low as possible, and composite repositories should be avoided.
+
 Project Structure
 -----------------
 
@@ -277,7 +281,7 @@ The dependencies are all defined in MANIFEST.MF files within the Eclipse plugins
 
 Preesm is a set a Eclipse plugins, thus its dependencies are OSGi dependencies. They are defined in the MANIFEST.MF file of every Eclipse plugin. The Tycho Maven plug-in is then responsible for resolving such dependencies during the Maven build process. There should be no `<dependencies>` section in the POM files.
 
-Third party plugins dependencies are resolved using external P2 repositories, such as the [Eclipse project update site](http://ftp.fau.de/eclipse/releases/) for the core components of Eclipse, [TMF releases update site](http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/) for the Xtend runtime libraries, or the [Preesm update site](http://preesm.sourceforge.net/eclipse/update-site/) for specific third party (see [ExternalDeps](https://github.com/preesm/externaldeps) project), Graphiti and DFTools dependencies. These repositories are defined in the parent POM file (at the root of the git repository):
+Third party plugins dependencies are resolved using external P2 repositories, such as the [Eclipse project update site](http://ftp.fau.de/eclipse/releases/) for the core components of Eclipse, [TMF releases update site](http://download.eclipse.org/modeling/tmf/xtext/updates/releases/) for the Xtend runtime libraries, or the [Preesm update site](http://preesm.sourceforge.net/eclipse/update-site/) for specific third party (see [ExternalDeps](https://github.com/preesm/externaldeps) project), Graphiti and DFTools dependencies. These repositories are defined in the parent POM file (at the root of the git repository):
 
 ```xml
 <properties>
@@ -489,7 +493,7 @@ The feature requires new repositories to make sure latest releases are installed
   <discovery label="Neon Updates" url="http://mirror.ibcp.fr/pub/eclipse/eclipse/updates/4.6"/>
 
   <!-- TMF Repo for latest xtend -->
-  <discovery label="TMF Releases" url="http://mirror.ibcp.fr/pub/eclipse/modeling/tmf/xtext/updates/composite/releases/"/>
+  <discovery label="TMF Releases" url="http://mirror.ibcp.fr/pub/eclipse/modeling/tmf/xtext/updates/releases/"/>
 
   <!-- M2E extension -->
   <discovery label="M2E Tycho" url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST/"/>
