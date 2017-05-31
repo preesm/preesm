@@ -1,28 +1,28 @@
 #!/bin/bash
 
+echo ""
+
 #########
-##	
-## 	Automatically replace dates and author list
+##
+##  Automatically replace dates and author list
 ##  in files containing the corresponding patterns
 ##  (see {LOWDATE|UPPDATE|AUTHORS}PATTERN variable
 ##  below). Information is fetched from the git 
 ##  repository.
-##  
+##
 ##  Note: this script should be used after a pass of
 ##  https://wiki.eclipse.org/Development_Resources/How_to_Use_Eclipse_Copyright_Tool
 ##  with the correct header (see http://www.cecill.info/placer.en.html) 
 ##  with patterns (see copyright_template.txt file) and 
 ##  applying back the UTF-8 encoding.
-##	
+##
 #########
-
-echo ""
 
 DATEPATTERN="%%DATE%%"
 AUTHORSPATTERN="%%AUTHORS%%"
 
 TMPFILE=`mktemp --suffix=biglisttosed`
-grep "%%AUTHORS%%" -R | cut -d':' -f1 | sort -u > $TMPFILE
+grep "%%AUTHORS%%" -R | cut -d':' -f1 | sort -u | grep -v "copyright_template.txt" | grep -v "fix_header_copyright_and_authors.sh" | grep -v "VAADER_eclipse_preferences.epf" > $TMPFILE
 
 echo " Starting" 
 
@@ -46,7 +46,7 @@ do (
 			#"# "
 			COMMENT="# "
 			;;
-		XML)
+		XML | HTML)
 			#"    "
 			COMMENT="    "
 			;;
