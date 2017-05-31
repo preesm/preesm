@@ -44,7 +44,7 @@ do (
 			#"@rem "
 			COMMENT="@rem "
 			;;
-		C |	CPP | H | JAVA | XTEND)
+		C |	CPP | H | JAVA | XTEND | BSH)
 			#" * "
 			COMMENT=" * "
 			;;
