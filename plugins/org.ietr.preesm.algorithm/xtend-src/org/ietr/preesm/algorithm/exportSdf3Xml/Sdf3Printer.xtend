@@ -1,7 +1,3 @@
-/*********************************************************
- * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
- * Karol Desnos
-
 package org.ietr.preesm.algorithm.exportSdf3Xml
 
 import java.io.File

@@ -24,17 +24,9 @@ cd $DIR
 
 mvn -P releng -Dtycho.mode=maven license:format
 
-DATEPATTERN="%%DATE%%"
-AUTHORSPATTERN="%%AUTHORS%%"
+function fixFile {
+    file=$1
 
-TMPFILE=`mktemp --suffix=biglisttosed`
-grep "%%AUTHORS%%" -R | cut -d':' -f1 | sort -u | grep -v "copyright_template.txt" | grep -v "fix_header_copyright_and_authors.sh" | grep -v "VAADER_eclipse_preferences.epf" > $TMPFILE
-
-echo " Starting" 
-
-while read -r line
-do (
-	file="$line"
     BASENAME=$(basename "$file")
     EXTENSION="${BASENAME##*.}"
     EXTENSION=`echo $EXTENSION | tr [a-z] [A-Z]`
@@ -90,12 +82,30 @@ do (
 		
     cat "$TMPFILE2" | sed -e "s/$DATEPATTERN/$GLOBDATE/g" > "$file" 
     rm $TMPFILE2
-) & done < $TMPFILE
+}
 
-sleep 2
-echo " Waiting for the threads to finish ..."
+DATEPATTERN="%%DATE%%"
+AUTHORSPATTERN="%%AUTHORS%%"
+
+TMPFILE=`mktemp --suffix=biglisttosed`
+grep "%%AUTHORS%%" -R | cut -d':' -f1 | sort -u | grep -v "copyright_template.txt" | grep -v "fix_header_copyright_and_authors.sh" | grep -v "VAADER_eclipse_preferences.epf" > $TMPFILE
+
+NBFILES=`cat $TMPFILE | wc -l`
+
+echo " Starting (#files = $NBFILES)"
+
+time (
+NBCPUS=`grep -c ^processor /proc/cpuinfo`
+((NBTHREADS=NBCPUS*2))
+while read -r line
+do
+	((i=i%NBTHREADS)); ((i++==0)) && wait && echo "    $NBFILES left ..."
+	((NBFILES=NBFILES-1))
+	fixFile "$line" &
+done < $TMPFILE
 
 wait
+)
 rm $TMPFILE
 
 echo " Done."
