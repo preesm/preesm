@@ -1,6 +1,34 @@
 PREESM Changelog
 ================
 
+## Release version 2.2.10
+*XXXX.XX.XX*
+
+### New Feature
+* Add clustering
+* Add integration test API prototype
+* Add Scheduling checker
+
+### Changes
+* Update Spider codegen
+* Update MPPA codegen
+* For XTend version to 2.11+
+* Use feature import instead of inclusion
+* Add discovery sites in dev feature
+* Remove unsupported target environments
+* Update Checkstyle config file path in parent POM
+* Add Eclipse profile in parent POM to disable m2e configuration outside Eclipse
+* Update wrapper scripts
+* Cleanup releng files
+* Update licensing
+* Update headers
+* Remove use of composite P2 repositories
+* Add Jenkinsfile for Multibranch Pipeline projects
+* Major maintainer doc update
+* Change upload destination of products to Sourceforge File Release Service
+* Fix code coverage settings
+
+### Bug fix
 
 ## Release version 2.2.9
 *2017.05.10*
