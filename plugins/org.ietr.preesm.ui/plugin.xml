@@ -132,25 +132,21 @@
             icon="icons/workflow.png"
             id="org.ietr.dftools.ui.workflow.workflowLaunchShortcut"
             label="Preesm Workflow"
-            modes="run,debug">
+            modes="run">
          <description
                description="Launch a Preesm workflow"
                mode="run">
          </description>
          <contextualLaunch>
             <enablement>
-               <with
-                     variable="selection">
-                  <count
-                        value="1">
-                  </count>
+              <with variable="selection">
+                <count value="1"/>
                   <iterate>
-                     <and>
-                        <test
-                              forcePluginActivation="true"
-                              property="net.sf.dftools.isWorkflow">
-                        </test>
-                     </and>
+                    <adapt type="org.eclipse.core.resources.IResource">
+                      <and>
+                        <test property="org.eclipse.core.resources.name" value="*.workflow"/>
+                      </and>
+                    </adapt>
                   </iterate>
                </with>
             </enablement>
