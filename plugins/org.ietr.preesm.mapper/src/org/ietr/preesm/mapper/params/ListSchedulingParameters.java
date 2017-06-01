@@ -1,15 +1,16 @@
-/*******************************************************************************
- * Copyright or © or Copr. 2012 - 2017 IETR/INSA:
+/**
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Maxime Pelcat <Maxime.Pelcat@insa-rennes.fr> (2012)
+ * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
+ * This software is a computer program whose purpose is to help prototyping
+ * parallel applications using dataflow formalism.
  *
- * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use
- * modify and/ or redistribute the software under the terms of the CeCILL-C
+ * This software is governed by the CeCILL  license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/ or redistribute the software under the terms of the CeCILL
  * license as circulated by CEA, CNRS and INRIA at the following URL
  * "http://www.cecill.info".
  *
@@ -31,9 +32,8 @@
  * same conditions as regards security.
  *
  * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- *******************************************************************************/
-
+ * knowledge of the CeCILL license and that you accept its terms.
+ */
 package org.ietr.preesm.mapper.params;
 
 import java.util.Map;
