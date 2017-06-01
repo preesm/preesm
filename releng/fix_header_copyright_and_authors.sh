@@ -44,7 +44,7 @@ function fixFile {
 			#"# "
 			COMMENT="# "
 			;;
-		XML | HTML)
+		XML | HTML | ECORE | GENMODEL)
 			#"    "
 			COMMENT="    "
 			;;
