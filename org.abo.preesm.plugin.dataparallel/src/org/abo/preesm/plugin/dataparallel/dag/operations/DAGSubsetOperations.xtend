@@ -71,22 +71,26 @@ class DAGSubsetOperations extends DAGFromSDFOperations {
 		 * level, then that actor is not instance independent. We record that actor
 		 * in a special variable (nonParallelActors) and report it
 		 */
-		val actorsSeen = newHashSet
-		val isDAGInd = new ArrayList(#[true])
-		getLevelSets().forEach[levelSet |
-			val Set<SDFAbstractVertex> actorsSeenInLevelSet = newHashSet
-			levelSet.forEach[ instance |
-				actorsSeenInLevelSet.add(dagGen.instance2Actor.get(instance)) 
+		if(!computeDAGInd) {
+			val actorsSeen = newHashSet
+			val isDAGInd = new ArrayList(#[true])
+			getLevelSets().forEach[levelSet |
+				val Set<SDFAbstractVertex> actorsSeenInLevelSet = newHashSet
+				levelSet.forEach[ instance |
+					actorsSeenInLevelSet.add(dagGen.instance2Actor.get(instance)) 
+				]
+				actorsSeenInLevelSet.forEach[actor |
+					if(actorsSeen.contains(actor)) {
+						isDAGInd.set(0, false)
+						nonParallelActors.add(actor)
+					} 
+				]
+				actorsSeen.addAll(actorsSeenInLevelSet)
 			]
-			actorsSeenInLevelSet.forEach[actor |
-				if(actorsSeen.contains(actor)) {
-					isDAGInd.set(0, false)
-					nonParallelActors.add(actor)
-				} 
-			]
-			actorsSeen.addAll(actorsSeenInLevelSet)
-		]
-		return isDAGInd.get(0)
+			computeDAGInd = true
+			dagInd = isDAGInd.get(0)
+		}
+		return dagInd
 	}
 	
 	/**

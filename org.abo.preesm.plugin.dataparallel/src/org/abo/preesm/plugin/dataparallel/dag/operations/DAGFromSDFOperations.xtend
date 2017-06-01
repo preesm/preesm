@@ -75,6 +75,17 @@ class DAGFromSDFOperations implements DAGOperations {
 	protected val Set<SDFAbstractVertex> nonParallelActors
 	
 	/**
+	 * Flag to avoid recomputing dag independences. Its an
+	 * expensive operation
+	 */
+	protected var boolean computeDAGInd
+	
+	/**
+	 * Hold the value of computed DAGInd
+	 */
+	protected var boolean dagInd
+	
+	/**
 	 * Constructor used for test setup
 	 * 
 	 * @param dagGen The {@link DAGConstructor} instance
@@ -105,6 +116,8 @@ class DAGFromSDFOperations implements DAGOperations {
 		levels = newHashMap()
 		nonParallelActors = newHashSet()
 		computeLevels = false
+		dagInd = false
+		computeDAGInd = false
 	}
 	
 	/**
