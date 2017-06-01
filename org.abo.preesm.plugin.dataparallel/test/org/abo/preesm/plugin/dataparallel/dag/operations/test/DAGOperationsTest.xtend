@@ -20,6 +20,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.abo.preesm.plugin.dataparallel.dag.operations.DAGOperations
+import org.abo.preesm.plugin.dataparallel.DAGSubset
 
 /**
  * Test setup for DAGFromSDFOperations and its subclasses
@@ -36,11 +37,14 @@ class DAGOperationsTest {
 	
 	protected val GraphIterator<SDFAbstractVertex, SDFEdge> iterator
 	
-	new(DAGConstructor dagGen, DAGOperations dagOps, GraphIterator<SDFAbstractVertex, SDFEdge> iterator, Map<SDFAbstractVertex, List<SDFAbstractVertex>> instanceSources) {
+	protected val SDFAbstractVertex rootNode
+	
+	new(DAGConstructor dagGen, DAGOperations dagOps, GraphIterator<SDFAbstractVertex, SDFEdge> iterator, Map<SDFAbstractVertex, List<SDFAbstractVertex>> instanceSources, SDFAbstractVertex rootNode) {
 		this.dagGen = dagGen
 		this.dagOps = dagOps
 		this.iterator = iterator
 		this.instanceSources = instanceSources
+		this.rootNode = rootNode
 	}
 	
 	/**
@@ -63,7 +67,7 @@ class DAGOperationsTest {
 					.toList)
 				]
 				
-				parameters.add(#[dagGen, new DAGFromSDFOperations(dagGen), new TopologicalOrderIterator<SDFAbstractVertex, SDFEdge>(dagGen.outputGraph), instance2Sources])
+				parameters.add(#[dagGen, new DAGFromSDFOperations(dagGen), new TopologicalOrderIterator<SDFAbstractVertex, SDFEdge>(dagGen.outputGraph), instance2Sources, null])
 			]
 			
 		Util.provideAllGraphs
@@ -71,7 +75,7 @@ class DAGOperationsTest {
 			.forEach[dagGen |
 				new DAGFromSDFOperations(dagGen).rootInstances.forEach[rootNode |
 					val iterator = new SubsetTopologicalIterator(dagGen, rootNode)
-					parameters.add(#[dagGen, new DAGSubsetOperations(dagGen, rootNode), iterator, iterator.instanceSources])
+					parameters.add(#[dagGen, new DAGSubsetOperations(dagGen, rootNode), iterator, iterator.instanceSources, rootNode])
 				]
 			]
 		return parameters
@@ -237,5 +241,39 @@ class DAGOperationsTest {
 		// Now check if DAGInd calculation is correct
 		Assert.assertEquals(dagOps.isDAGInd, dagIndState.get(0))
 		Assert.assertEquals(dagOps.getNonParallelActors, nonParallelActors)
+	}
+	
+	/**
+	 * Verifies that none of the DAGs are data-parallel
+	 */
+	@org.junit.Test
+	public def void noneOfDAGisDataParallel() {
+		val seenActors = newHashSet()
+		val instance2Actor = newHashMap
+		if(dagOps instanceof DAGSubsetOperations) {
+			instance2Actor.putAll(new DAGSubset(dagGen as SDF2DAG, rootNode).instance2Actor)
+			if(dagOps.isDAGInd)
+				Assert.assertTrue(dagOps.isDAGParallel)
+			else
+				Assert.assertFalse(dagOps.isDAGParallel)
+		} else {
+			instance2Actor.putAll(dagGen.instance2Actor)
+			Assert.assertFalse(dagOps.isDAGParallel)
+		}
+		
+		dagOps.levelSets.forEach[levelSet |
+		val seenInLevel = newHashSet()
+		levelSet.forEach[ instance |
+				val actor = instance2Actor.get(instance)
+				if(actor === null) {
+					throw new RuntimeException("Bug!")
+				}
+				seenInLevel.add(actor)
+				if(dagOps instanceof DAGSubsetOperations && dagOps.isDAGInd) {
+					Assert.assertFalse(seenActors.contains(actor))
+				}
+			]
+			seenActors.addAll(seenInLevel)
+		]
 	}
 }

@@ -12,6 +12,8 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.jgrapht.traverse.GraphIterator
 import org.jgrapht.traverse.TopologicalOrderIterator
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
+import org.ietr.dftools.algorithm.model.visitors.SDF4JException
+import org.jgrapht.traverse.BreadthFirstIterator
 
 /**
  * Implementation of {@link DAGOperations} for DAGs constructed from
@@ -232,4 +234,112 @@ class DAGFromSDFOperations implements DAGOperations {
 	override getNonParallelActors() {
 		return nonParallelActors
 	}
+	
+	/**
+	 * Overrides {@link DAGOperations#isDAGParallel}
+	 */
+	override isDAGParallel() {
+		/*
+		 * Logic of implementation is that if all the instances
+		 * of an actor is not seen in a given level set, then other
+		 * instances must be elsewhere and will be subsequently seen.
+		 * When that happens, we return false, otherwise we return
+		 * true
+		 */
+		getLevelSets		
+		val instance2Actor = dagGen.instance2Actor
+		val seenActors = newHashSet()
+		for(levelSet: levelSets) {
+			val seenInLevel = newHashSet()
+			for(instance: levelSet) {
+				val actor = instance2Actor.get(instance)
+				if(actor === null) {
+					throw new SDF4JException("Bug! Contact Sudeep Kanur (skanur@abo.fi) with the graph that caused the issue")
+				}
+				if(seenActors.contains(actor)) {
+					return false
+				}
+				seenInLevel.add(actor)
+			}
+			seenActors.addAll(seenInLevel)
+		}
+		return true
+	}
+	
+	/**
+	 * Overrides {@link DAGOperations#rearrange}
+	 */
+	override rearrange() throws SDF4JException {
+		if(!DAGInd){
+			throw new SDF4JException("DAG is not instance independent. Rearraning is meaningless.")
+		}
+		return rearrangeAcyclic
+	}
+	
+	/**
+	 * Rearranges the acyclic DAG and returns the new
+	 * level set
+	 */
+	protected def List<List<SDFAbstractVertex>> rearrangeAcyclic() {
+		/*
+		 * Rearraning level set is same as rearraning levels
+		 * Getting level sets is computed based on levels. So 
+		 * we just manipulates the levels of the node
+		 */
+		getAllLevels
+		getRootInstances.forEach[rootNode |
+			val actor = dagGen.instance2Actor.get(rootNode)
+			if(actor === null) {
+				throw new SDF4JException("Bug! Contact Sudeep Kanur (skanur@abo.fi) with the graph that caused the exception")
+			}
+			if(getMaxActorLevel(actor) > 0) {
+				// All the instances of this actor needs rearranging
+				val instancesInRoot = rootInstances.filter[instance | dagGen.actor2Instances.get(actor).contains(instance)]
+				// Take each instance that needs rearranging as root node, construct
+				// a DAG subset and rearrange all the nodes seen in its path
+				instancesInRoot.forEach[instance |
+					val bit = new BreadthFirstIterator(dagGen.outputGraph, instance)
+					while(bit.hasNext) {
+						val node = bit.next()
+						val levelOfNode = levels.get(node)
+						val maxActorLevel = getMaxActorLevel(dagGen.instance2Actor.get(node))
+						if(levelOfNode != maxActorLevel) {
+							// Change the levels of this node and 
+							// associated fork/joins
+							val forkJoinInstances = dagGen.explodeImplodeOrigInstances.filter[forkJoin, origInstance |
+								origInstance == node
+							]
+							if(!forkJoinInstances.isEmpty) {
+								forkJoinInstances.forEach[forkJoin, level | 
+									levels.put(forkJoin, maxActorLevel)
+								]
+							}
+							levels.put(node, maxActorLevel)
+						}
+					}
+				]
+			}
+		]
+		return levelSets
+	}
+	
+	/**
+	 * Get maximum of all the instances of a given actor.
+	 * 
+	 * @param The actor 
+	 * @return maximum level of the actor
+	 */
+	protected def int getMaxActorLevel(SDFAbstractVertex actor) {
+		val levels = getAllLevels()
+		val instances = dagGen.actor2Instances.get(actor)
+		if(instances === null) {
+			throw new SDF4JException("Bug! Contact Sudeep Kanur (skanur@abo.fi) with the graph that caused the exception")
+		}
+		val levelsOfInstances = newArrayList()
+		instances.forEach[instance | 
+			levelsOfInstances.add(levels.get(instance))
+		]
+		return levelsOfInstances.max
+	}
+	
 }

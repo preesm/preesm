@@ -10,6 +10,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.workflow.tools.WorkflowLogger
 import org.jgrapht.traverse.BreadthFirstIterator
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
+import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 
 /**
  * Implement DAGOperations for subsets of DAG. The class does not modify
@@ -133,4 +134,31 @@ class DAGSubsetOperations extends DAGFromSDFOperations {
 		
 		return nonParallelActors
 	}
+	
+	/**
+	 * Overrides {@link DAGOperations#isDAGParallel}
+	 * Computation logic is that as it is a subset of a DAG, 
+	 * if it is instance independent, then  it must be parallel 
+	 * as well.
+	 */
+	override isDAGParallel() {
+		return isDAGInd()
+	}
+	
+	/**
+	 * Overrides {@link DAGOperations#rearrange}
+	 */
+	override rearrange() throws SDF4JException {
+		/*
+		 * If a subset of a DAG is instance independent, then
+		 * there is no need to rearrange. It was this property
+		 * that inspired computation of DAGInd anyways :)
+		 */
+		if(isDAGInd) {
+			return levelSets
+		} else {
+			throw new SDF4JException("DAG is not instance independent")
+		}
+	}
+	
 }

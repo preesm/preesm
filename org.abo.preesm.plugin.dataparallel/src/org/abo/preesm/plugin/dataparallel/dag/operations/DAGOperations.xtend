@@ -4,6 +4,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import java.util.List
 import java.util.Map
 import java.util.Set
+import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 
 /**
  * All supported operations that can be performed on Graphs constructed by classes that
@@ -79,4 +80,24 @@ interface DAGOperations {
 	 * actors
 	 */
 	public def Set<SDFAbstractVertex> getNonParallelActors()
+	
+	/**
+	 * Check if the DAG is data-parallel. A data-parallel DAG has a
+	 * level set where all instances of an actor are contained in
+	 * the same set
+	 * 
+	 * @return True if DAG is data-parallel as well
+	 */
+	public def boolean isDAGParallel()
+	
+	/**
+	 * Rearrange the level sets of DAG such that the DAG is 
+	 * data parallel as well. The function checks if DAG is
+	 * instance independent and returns the level set
+	 * after rearraning (if needed)
+	 * 
+	 * @return list of lists of instances seen at the level given by the index of the outer list
+	 * @throws SDF4JException if the DAG is not instance independent
+	 */
+	public def List<List<SDFAbstractVertex>> rearrange() throws SDF4JException
 }
