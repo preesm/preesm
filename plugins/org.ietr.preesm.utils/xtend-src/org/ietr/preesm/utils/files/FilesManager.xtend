@@ -280,11 +280,6 @@ class FilesManager {
 	 * 			An URL for an existing file, or null
 	 */
 	def static URL getUrl(String path, String bundleFilter) throws MalformedURLException , IOException {
-		val sanitizedPath = path.sanitize
-
-		val file = new File(sanitizedPath)
-		if (file.exists)
-			return file.toURI.toURL
 
 		// Search in all reachable bundles for the given path resource
 		val bundle = FrameworkUtil::getBundle(FilesManager)
@@ -480,4 +475,5 @@ class FilesManager {
 		}
 		d.delete
 	}
+
 }
