@@ -47,11 +47,19 @@ import org.junit.Test;
 public class TutorialsTest {
 
   @Test
-  public void testStereoFlow() throws FileNotFoundException, InvalidModelException, CoreException {
-    final String projectName = "org.ietr.preesm.stereo";
-    final String workflowFilePathStr = "/Workflows/StaticPiMMCodegen.workflow";
-    final String scenarioFilePathStr = "/Scenarios/1core.scenario";
-    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-    Assert.assertTrue(success);
+  public void testStereoFlow1() throws FileNotFoundException, InvalidModelException, CoreException {
+    final String[] scenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario", "lowMaxDisparity.scenario", "YUV4core.scenario" };
+    final String[] workflows = new String[] { "CodegenMemoryScriptsMixedMerged.workflow", "StaticPiMMCodegen.workflow",
+        "StaticPiMMCodegenMemoryScripts.workflow" };
+
+    for (final String workflow : workflows) {
+      for (final String scenario : scenarios) {
+        final String projectName = "org.ietr.preesm.stereo";
+        final String workflowFilePathStr = "/Workflows/" + workflow;
+        final String scenarioFilePathStr = "/Scenarios/" + scenario;
+        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+      }
+    }
   }
 }
