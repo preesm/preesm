@@ -54,8 +54,10 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.BufferProperties;
+import org.ietr.preesm.core.types.DataType;
 
 /**
  *
@@ -98,16 +100,28 @@ public class CodegenHierarchicalModelGenerator {
   private final BiMap<DAGVertex, Call> dagVertexCalls;
 
   /**
+   * {@link PreesmScenario Scenario}.
+   */
+  private final PreesmScenario scenario;
+
+  /**
    *
    */
-  public CodegenHierarchicalModelGenerator(final DirectedAcyclicGraph dag, final Map<DAGVertex, Buffer> linkHSDFVertexBuffer,
+  private final Map<String, DataType> dataTypes;
+
+  /**
+   *
+   */
+  public CodegenHierarchicalModelGenerator(final PreesmScenario scenario, final DirectedAcyclicGraph dag, final Map<DAGVertex, Buffer> linkHSDFVertexBuffer,
       final Map<BufferProperties, Buffer> srSDFEdgeBuffers, final BiMap<DAGVertex, Call> dagVertexCalls) {
     this.dag = dag;
     this.srSDFEdgeBuffers = srSDFEdgeBuffers;
     this.dagVertexCalls = dagVertexCalls;
     this.linkHSDFVertexBuffer = linkHSDFVertexBuffer;
+    this.scenario = scenario;
     this.linkHSDFEdgeBuffer = new HashMap<>();
     this.currentWorkingMemOffset = 0;
+    this.dataTypes = scenario.getSimulationManager().getDataTypes();
   }
 
   /**
@@ -155,7 +169,7 @@ public class CodegenHierarchicalModelGenerator {
         }
       }
 
-      final HSDFBuildLoops loopBuilder = new HSDFBuildLoops();
+      final HSDFBuildLoops loopBuilder = new HSDFBuildLoops(this.scenario);
       AbstractClust clust = null;
       try {
         clust = loopBuilder.generateClustering(resultGraph);
@@ -541,9 +555,9 @@ public class CodegenHierarchicalModelGenerator {
           buf.setContainer(workingMemBuf);
           buf.setOffset(this.currentWorkingMemOffset);
           buf.setSize(bufSize);
-          buf.setType("char");
-          buf.setTypeSize(1);
-          this.currentWorkingMemOffset += bufSize;
+          buf.setType(currentEdge.getDataType().toString());
+          buf.setTypeSize(this.dataTypes.get(currentEdge.getDataType().toString()).getSize()); // sorry lign of the death
+          this.currentWorkingMemOffset += bufSize * this.dataTypes.get(currentEdge.getDataType().toString()).getSize();
           // p("Internal working buffer " + buf.getName());
           this.linkHSDFEdgeBuffer.put(currentEdge, buf);
         }
@@ -763,9 +777,9 @@ public class CodegenHierarchicalModelGenerator {
           buf.setContainer(workingMemBuf);
           buf.setOffset(this.currentWorkingMemOffset);
           buf.setSize(bufSize);
-          buf.setType("char");
-          buf.setTypeSize(1);
-          this.currentWorkingMemOffset += bufSize;
+          buf.setType(currentEdge.getDataType().toString());
+          buf.setTypeSize(this.dataTypes.get(currentEdge.getDataType().toString()).getSize());
+          this.currentWorkingMemOffset += bufSize * this.dataTypes.get(currentEdge.getDataType().toString()).getSize();
           // p("Internal working buffer " + buf.getName());
           this.linkHSDFEdgeBuffer.put(currentEdge, buf);
         }

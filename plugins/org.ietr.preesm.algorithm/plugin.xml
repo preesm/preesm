@@ -319,5 +319,26 @@
             </input>
          </inputs>
       </task>
+      <task
+            id="org.ietr.preesm.algorithm.transforms.Clustering"
+            name="Clustering"
+            type="org.ietr.preesm.algorithm.transforms.Clustering">
+         <inputs>
+            <input
+                  id="SDF"
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="SDF"
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+            </output>
+         </outputs>
+      </task>
    </extension>
 </plugin>

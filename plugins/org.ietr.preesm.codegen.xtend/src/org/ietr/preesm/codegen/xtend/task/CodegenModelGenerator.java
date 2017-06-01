@@ -626,8 +626,8 @@ public class CodegenModelGenerator {
       // try to generate for loop on a hierarchical actor
       p("tryGenerateRepeatActorFiring " + dagVertex.getName());
       try {
-        final CodegenHierarchicalModelGenerator h = new CodegenHierarchicalModelGenerator(this.dag, this.linkHSDFVertexBuffer, this.srSDFEdgeBuffers,
-            this.dagVertexCalls);
+        final CodegenHierarchicalModelGenerator h = new CodegenHierarchicalModelGenerator(this.scenario, this.dag, this.linkHSDFVertexBuffer,
+            this.srSDFEdgeBuffers, this.dagVertexCalls);
         if (h.execute(operatorBlock, dagVertex) == 0) {
           p("Hierarchical actor " + dagVertex.getName() + " generation Successed");
         } else {

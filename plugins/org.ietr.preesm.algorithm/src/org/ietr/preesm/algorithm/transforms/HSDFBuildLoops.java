@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 //import java.awt.List;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
@@ -21,6 +22,8 @@ import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.types.DataType;
 
 /**
  * This class is used to perform the clusterization (loop IR builder and memory allocation). It is used to set the working memory of each non flattened
@@ -31,7 +34,13 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
  */
 public class HSDFBuildLoops {
 
-  final Logger logger = WorkflowLogger.getLogger();
+  private final Logger logger = WorkflowLogger.getLogger();
+
+  private final Map<String, DataType> dataTypes;
+
+  public HSDFBuildLoops(final PreesmScenario scenario) {
+    this.dataTypes = scenario.getSimulationManager().getDataTypes();
+  }
 
   private void p(final String s) {
     final Logger logger = this.logger;
@@ -650,6 +659,7 @@ public class HSDFBuildLoops {
             if (v instanceof SDFVertex) {
               // p("Allocating Vertex" + v.getName());
               int nbRep = 0;
+
               try {
                 nbRep = Integer.parseInt(e.getTarget().getNbRepeat().toString());
               } catch (final NumberFormatException | InvalidExpressionException ex) {
@@ -671,7 +681,11 @@ public class HSDFBuildLoops {
               throw new WorkflowException("Internal Memory allocation failed for actor " + v.getName() + " unsupported special actor");
             }
 
-            bufSize += mem;
+            final DataType d = this.dataTypes.get(e.getDataType().toString());
+            final int sizeType = d.getSize();
+            p("Buffer allocated edge " + e.getSourceLabel() + " to " + e.getTargetLabel() + " type " + e.getDataType() + " size " + sizeType);
+
+            bufSize += mem * sizeType;
             // nbWorkingBufferAllocated++;
             // p("Internal memory allocation for edge " + e.getSourceLabel() + " " + e.getTargetLabel());
             allocEdge.add(e);

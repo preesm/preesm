@@ -7,6 +7,7 @@
     <dftools:task
         pluginId="org.ietr.preesm.plugin.mapper.listscheduling" taskId="Scheduling">
         <dftools:data key="variables">
+            <dftools:variable name="Check" value="True"/>
             <dftools:variable name="balanceLoads" value="true"/>
             <dftools:variable name="displaySolutions" value="true"/>
             <dftools:variable name="edgeSchedType" value="Simple"/>
@@ -111,6 +112,10 @@
             <dftools:variable name="path" value="Algo/generated/toPisdf/"/>
         </dftools:data>
     </dftools:task>
+    <dftools:task
+        pluginId="org.ietr.preesm.algorithm.transforms.Clustering" taskId="Clustering">
+        <dftools:data key="variables"/>
+    </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="Display Gantt"/>
     <dftools:dataTransfer from="Scheduling" sourceport="ABC"
@@ -119,8 +124,6 @@
         targetport="architecture" to="Scheduling"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="Scheduling"/>
-    <dftools:dataTransfer from="HierarchyFlattening" sourceport="SDF"
-        targetport="SDF" to="Single-rate Transformation"/>
     <dftools:dataTransfer from="Single-rate Transformation"
         sourceport="SDF" targetport="SDF" to="srSDF Exporter"/>
     <dftools:dataTransfer from="Single-rate Transformation"
@@ -169,4 +172,10 @@
         targetport="scenario" to="Gantt Exporter"/>
     <dftools:dataTransfer from="StaticPiMM2SDF" sourceport="SDF"
         targetport="SDF" to="Flat SDF Exporter 2"/>
+    <dftools:dataTransfer from="HierarchyFlattening" sourceport="SDF"
+        targetport="SDF" to="Clustering"/>
+    <dftools:dataTransfer from="scenario" sourceport="scenario"
+        targetport="scenario" to="Clustering"/>
+    <dftools:dataTransfer from="Clustering" sourceport="SDF"
+        targetport="SDF" to="Single-rate Transformation"/>
 </dftools:workflow>
