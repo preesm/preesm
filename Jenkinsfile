@@ -8,7 +8,7 @@ def javaToolID = "JDK-${javaVersion}"
 
 def mavenVersion = "3.5.0"
 def mavenToolID = "Maven-${mavenVersion}"
-def mavenOpts = "--errors --batch-mode -Dmaven.repo.local=m2-repository -T 1C"
+def mavenOpts = "--errors --batch-mode -Dmaven.repo.local=m2-repository"
 def mavenEnvOpt = "MAVEN_OPT=-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
 
 // tell Jenkins to remove 7 days old artifacts/builds and keep only 7 last ones

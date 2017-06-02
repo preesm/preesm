@@ -1,15 +1,16 @@
 /**
- * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
- * Karol Desnos, Julien Heulot
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
  *
- * [mpelcat,jnezan,kdesnos,jheulot]@insa-rennes.fr
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Julien_Hascoet <jhascoet@kalray.eu> (2016 - 2017)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2015)
  *
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
+ * This software is a computer program whose purpose is to help prototyping
+ * parallel applications using dataflow formalism.
  *
- * This software is governed by the CeCILL-C license under French law and
+ * This software is governed by the CeCILL  license under French law and
  * abiding by the rules of distribution of free software.  You can  use,
- * modify and/ or redistribute the software under the terms of the CeCILL-C
+ * modify and/ or redistribute the software under the terms of the CeCILL
  * license as circulated by CEA, CNRS and INRIA at the following URL
  * "http://www.cecill.info".
  *
@@ -31,9 +32,8 @@
  * same conditions as regards security.
  *
  * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
+ * knowledge of the CeCILL license and that you accept its terms.
  */
-
 package org.ietr.preesm.codegen.xtend.printer.c
 
 import java.util.Date

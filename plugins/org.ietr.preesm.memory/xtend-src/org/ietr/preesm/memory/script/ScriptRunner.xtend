@@ -1,15 +1,16 @@
-/*******************************************************************************
- * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
- * Karol Desnos, Julien Heulot, Clément Guy
+/**
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
  *
- * [mpelcat,jnezan,kdesnos,jheulot,cguy]@insa-rennes.fr
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2014 - 2015)
  *
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
+ * This software is a computer program whose purpose is to help prototyping
+ * parallel applications using dataflow formalism.
  *
- * This software is governed by the CeCILL-C license under French law and
+ * This software is governed by the CeCILL  license under French law and
  * abiding by the rules of distribution of free software.  You can  use,
- * modify and/ or redistribute the software under the terms of the CeCILL-C
+ * modify and/ or redistribute the software under the terms of the CeCILL
  * license as circulated by CEA, CNRS and INRIA at the following URL
  * "http://www.cecill.info".
  *
@@ -31,8 +32,8 @@
  * same conditions as regards security.
  *
  * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- ******************************************************************************/
+ * knowledge of the CeCILL license and that you accept its terms.
+ */
 package org.ietr.preesm.memory.script
 
 import bsh.EvalError
@@ -40,6 +41,7 @@ import bsh.Interpreter
 import bsh.ParseException
 import java.io.File
 import java.io.IOException
+import java.net.URISyntaxException
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.List
@@ -48,6 +50,7 @@ import java.util.Set
 import java.util.logging.Level
 import java.util.logging.Logger
 import org.eclipse.core.resources.ResourcesPlugin
+import org.eclipse.core.runtime.CoreException
 import org.eclipse.core.runtime.IPath
 import org.eclipse.core.runtime.Path
 import org.eclipse.xtend.lib.annotations.Accessors
@@ -74,8 +77,6 @@ import org.ietr.preesm.utils.files.FilesManager
 
 import static extension org.ietr.preesm.memory.script.Buffer.*
 import static extension org.ietr.preesm.memory.script.Range.*
-import org.eclipse.core.runtime.CoreException
-import java.net.URISyntaxException
 
 enum CheckPolicy {
 	NONE,
@@ -381,9 +382,8 @@ class ScriptRunner {
 								scriptedVertices.put(dagVertex, scriptFile)
 								scriptFiles.put(pathString, scriptFile)
 							} else {
-								logger.log(Level.WARNING,
-									"Memory script of vertex " + sdfVertex.getName() + " is invalid: \"" +
-										pathString + "\". Change it in the graphml editor.")
+								val message = "Memory script of vertex " + sdfVertex.getName() + " is invalid: \"" +pathString + "\". Change it in the graphml editor."
+								logger.log(Level.WARNING, message)
 							}
 						}
 					}
@@ -416,13 +416,13 @@ class ScriptRunner {
 	 */
 	private def void associateScriptToSpecialVertex(DAGVertex dagVertex, String vertexName, File scriptFile) {
 
-		// Logger is used to display messages in the console
-		val logger = WorkflowLogger.getLogger
-		if (scriptFile === null || !scriptFile.exists)
-			logger.log(Level.SEVERE,
-				"Memory script of " + vertexName + " vertices not found. Please contact Preesm developers.")
-		else
+		if (scriptFile === null || !scriptFile.exists) {
+			val message = "Memory script [" + scriptFile + "] of [" + vertexName + "] vertices not found. Please contact Preesm developers."
+
+			throw new IllegalStateException(message);
+		} else {
 			scriptedVertices.put(dagVertex, scriptFile)
+		}
 	}
 
 	/**

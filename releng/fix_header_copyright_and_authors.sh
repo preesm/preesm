@@ -1,34 +1,32 @@
 #!/bin/bash
 
+echo ""
+
 #########
-##	
-## 	Automatically replace dates and author list
+##
+##  Automatically replace dates and author list
 ##  in files containing the corresponding patterns
 ##  (see {LOWDATE|UPPDATE|AUTHORS}PATTERN variable
 ##  below). Information is fetched from the git 
 ##  repository.
-##  
+##
 ##  Note: this script should be used after a pass of
 ##  https://wiki.eclipse.org/Development_Resources/How_to_Use_Eclipse_Copyright_Tool
 ##  with the correct header (see http://www.cecill.info/placer.en.html) 
 ##  with patterns (see copyright_template.txt file) and 
 ##  applying back the UTF-8 encoding.
-##	
+##
 #########
 
-echo ""
+DIR=$(cd `dirname $0` && echo `git rev-parse --show-toplevel`)
 
-DATEPATTERN="%%DATE%%"
-AUTHORSPATTERN="%%AUTHORS%%"
+cd $DIR
 
-TMPFILE=`mktemp --suffix=biglisttosed`
-grep "%%AUTHORS%%" -R | cut -d':' -f1 | sort -u > $TMPFILE
+mvn -P releng -Dtycho.mode=maven license:format
 
-echo " Starting" 
+function fixFile {
+    file=$1
 
-while read -r line
-do (
-	file="$line"
     BASENAME=$(basename "$file")
     EXTENSION="${BASENAME##*.}"
     EXTENSION=`echo $EXTENSION | tr [a-z] [A-Z]`
@@ -38,7 +36,7 @@ do (
 			#"@rem "
 			COMMENT="@rem "
 			;;
-		C |	CPP | H | JAVA | XTEND)
+		C |	CPP | H | JAVA | XTEND | BSH)
 			#" * "
 			COMMENT=" * "
 			;;
@@ -46,7 +44,7 @@ do (
 			#"# "
 			COMMENT="# "
 			;;
-		XML)
+		XML | HTML | ECORE | GENMODEL)
 			#"    "
 			COMMENT="    "
 			;;
@@ -84,12 +82,30 @@ do (
 		
     cat "$TMPFILE2" | sed -e "s/$DATEPATTERN/$GLOBDATE/g" > "$file" 
     rm $TMPFILE2
-) & done < $TMPFILE
+}
 
-sleep 2
-echo " Waiting for the threads to finish ..."
+DATEPATTERN="%%DATE%%"
+AUTHORSPATTERN="%%AUTHORS%%"
+
+TMPFILE=`mktemp --suffix=biglisttosed`
+grep "%%AUTHORS%%" -R | cut -d':' -f1 | sort -u | grep -v "copyright_template.txt" | grep -v "fix_header_copyright_and_authors.sh" | grep -v "VAADER_eclipse_preferences.epf" | grep -v "README" > $TMPFILE
+
+NBFILES=`cat $TMPFILE | wc -l`
+
+echo " Starting (#files = $NBFILES)"
+
+time (
+NBCPUS=`grep -c ^processor /proc/cpuinfo`
+((NBTHREADS=NBCPUS*2))
+while read -r line
+do
+	((i=i%NBTHREADS)); ((i++==0)) && wait && echo "    $NBFILES left ..."
+	((NBFILES=NBFILES-1))
+	fixFile "$line" &
+done < $TMPFILE
 
 wait
+)
 rm $TMPFILE
 
 echo " Done."
