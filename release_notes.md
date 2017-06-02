@@ -8,6 +8,7 @@ PREESM Changelog
 * Add clustering
 * Add integration test API prototype
 * Add Scheduling checker
+* Add new entry in Preesm menu to run Workflows
 
 ### Changes
 * Update Spider codegen
