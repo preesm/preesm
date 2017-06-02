@@ -20,12 +20,12 @@ public class WorkflowRunnerPopup extends AbstractHandler {
   final Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
 
   @Override
-  public Object execute(ExecutionEvent event) throws ExecutionException {
+  public Object execute(final ExecutionEvent event) throws ExecutionException {
 
     final TreeSelection activeMenuSelection = (TreeSelection) HandlerUtil.getActiveMenuSelection(event);
     final IFile workflowFile = (IFile) activeMenuSelection.getFirstElement();
 
-    ILaunchConfiguration configuration = WorkflowLaunchShortcut.createLaunchConfiguration(workflowFile);
+    final ILaunchConfiguration configuration = WorkflowLaunchShortcut.createLaunchConfiguration(workflowFile);
     if (configuration != null) {
       DebugUITools.launch(configuration, "run");
     }
