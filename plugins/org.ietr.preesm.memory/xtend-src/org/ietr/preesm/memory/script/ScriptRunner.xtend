@@ -41,6 +41,7 @@ import bsh.Interpreter
 import bsh.ParseException
 import java.io.File
 import java.io.IOException
+import java.net.URISyntaxException
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.List
@@ -49,6 +50,7 @@ import java.util.Set
 import java.util.logging.Level
 import java.util.logging.Logger
 import org.eclipse.core.resources.ResourcesPlugin
+import org.eclipse.core.runtime.CoreException
 import org.eclipse.core.runtime.IPath
 import org.eclipse.core.runtime.Path
 import org.eclipse.xtend.lib.annotations.Accessors
@@ -75,8 +77,6 @@ import org.ietr.preesm.utils.files.FilesManager
 
 import static extension org.ietr.preesm.memory.script.Buffer.*
 import static extension org.ietr.preesm.memory.script.Range.*
-import org.eclipse.core.runtime.CoreException
-import java.net.URISyntaxException
 
 enum CheckPolicy {
 	NONE,
@@ -382,9 +382,8 @@ class ScriptRunner {
 								scriptedVertices.put(dagVertex, scriptFile)
 								scriptFiles.put(pathString, scriptFile)
 							} else {
-								logger.log(Level.WARNING,
-									"Memory script of vertex " + sdfVertex.getName() + " is invalid: \"" +
-										pathString + "\". Change it in the graphml editor.")
+								val message = "Memory script of vertex " + sdfVertex.getName() + " is invalid: \"" +pathString + "\". Change it in the graphml editor."
+								logger.log(Level.WARNING, message)
 							}
 						}
 					}
@@ -417,13 +416,13 @@ class ScriptRunner {
 	 */
 	private def void associateScriptToSpecialVertex(DAGVertex dagVertex, String vertexName, File scriptFile) {
 
-		// Logger is used to display messages in the console
-		val logger = WorkflowLogger.getLogger
-		if (scriptFile === null || !scriptFile.exists)
-			logger.log(Level.SEVERE,
-				"Memory script of " + vertexName + " vertices not found. Please contact Preesm developers.")
-		else
+		if (scriptFile === null || !scriptFile.exists) {
+			val message = "Memory script [" + scriptFile + "] of [" + vertexName + "] vertices not found. Please contact Preesm developers."
+
+			throw new IllegalStateException(message);
+		} else {
 			scriptedVertices.put(dagVertex, scriptFile)
+		}
 	}
 
 	/**
