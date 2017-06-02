@@ -17,12 +17,11 @@
             <task name="myappBP1D/topHierarchicalBP1D/BP_ComputeFiEnergy"/>
             <task name="myappBP1D/topHierarchicalBP1D/BP_ComputePhi_B"/>
             <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
-            <task name="myappBP1D/topHierarchicalBP1D/grayScaleConversion"/>
         </constraintGroup>
     </constraints>
     <relativeconstraints excelUrl=""/>
     <timings excelUrl="">
-        <memcpyspeed opname="x86" setuptime="1" timeperunit="1.0"/>
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="1.0E-5"/>
     </timings>
     <simuParams>
         <mainCore>Core0</mainCore>

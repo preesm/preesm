@@ -16,8 +16,8 @@ endif()
 
 project(Sobel)
 set(LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
-set(CMAKE_C_FLAGS "-g -DX1_CORE -fopenmp -O3")
-#set(CMAKE_C_FLAGS "-g -DX4_CORES -fopenmp -O3")
+#set(CMAKE_C_FLAGS "-g -DX1_CORE -fopenmp -O3")
+set(CMAKE_C_FLAGS "-g -DX4_CORES -fopenmp -O3")
 set(CMAKE_L_FLAGS "-lm -fopenmp")
 
 # *******************************************
