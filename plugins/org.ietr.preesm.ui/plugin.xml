@@ -1272,10 +1272,13 @@
             allPopups="false"
             locationURI="popup:org.eclipse.ui.popup.any?before=additions">
          <menu
+               icon="icons/preesmProject.png"
                id="org.ietr.preesm.pimm.checker.menu1"
-               label="PREESM">
+               label="Preesm">
             <command
                   commandId="org.ietr.preesm.ui.command.PimmChecker"
+                  icon="icons/pi.gif"
+                  label="Check PiMM Model"
                   style="push">
                <visibleWhen
                      checkEnabled="true">
@@ -1301,6 +1304,8 @@
             </command>
             <command
                   commandId="org.ietr.preesm.ui.command.ScenarioGenerator"
+                  icon="icons/preesm4mini.PNG"
+                  label="Generate Scenario"
                   style="push">
                <visibleWhen
                      checkEnabled="true">
@@ -1320,6 +1325,35 @@
                   </with>
                </visibleWhen>
             </command>
+            <command
+                  commandId="org.ietr.preesm.ui.command.WorkflowRunner"
+                  icon="icons/workflow.png"
+                  label="Run Workflow"
+                  style="push"
+                  tooltip="Launch a Preesm workflow">
+               <visibleWhen
+                     checkEnabled="true">
+                  <with
+                        variable="selection">
+                     <and>
+                        <iterate
+                              ifEmpty="false"
+                              operator="and">
+                           <adapt
+                                 type="org.eclipse.core.resources.IResource">
+                              <test
+                                    property="org.eclipse.core.resources.extension"
+                                    value="workflow">
+                              </test>
+                           </adapt>
+                        </iterate>
+                        <count
+                              value="1">
+                        </count>
+                     </and>
+                  </with>
+               </visibleWhen>
+            </command>
          </menu>
       </menuContribution>
    </extension>
@@ -1333,6 +1367,10 @@
             id="org.ietr.preesm.ui.command.ScenarioGenerator"
             name="Scenario Generator">
       </command>
+      <command
+            id="org.ietr.preesm.ui.command.WorkflowRunner"
+            name="Workflow Runner">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -1343,6 +1381,10 @@
       <handler
             class="org.ietr.preesm.ui.pimm.checker.popup.actions.ScenariosGeneratorPopup"
             commandId="org.ietr.preesm.ui.command.ScenarioGenerator">
+      </handler>
+      <handler
+            class="org.ietr.preesm.ui.pimm.checker.popup.actions.WorkflowRunnerPopup"
+            commandId="org.ietr.preesm.ui.command.WorkflowRunner">
       </handler>
    </extension>
 
