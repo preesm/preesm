@@ -1,29 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenario>
     <files>
-        <algorithm url="/org.ietr.preesm.loopgen-sobel-erosion-dilation/Algo/myapp.pi"/>
-        <architecture url="/org.ietr.preesm.loopgen-sobel-erosion-dilation/Archi/1CoreX86.slam"/>
-        <codegenDirectory url="/org.ietr.preesm.loopgen-sobel-erosion-dilation/Code/generated"/>
+        <algorithm url="/org.ietr.preesm.bp1d/Algo/myappBP1D.pi"/>
+        <architecture url="/org.ietr.preesm.bp1d/Archi/1CoreX86.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.bp1d/Code/generated"/>
     </files>
     <constraints excelUrl="">
         <constraintGroup>
             <operator name="Core0"/>
-            <task name="myapp/hierarchical_sobel_median/input"/>
-            <task name="myapp/hierarchical_sobel_median"/>
-            <task name="myapp/hierarchical_sobel_median/Dilation"/>
-            <task name="myapp/hierarchical_sobel_median/hierarchicalSplit"/>
-            <task name="myapp/hierarchical_sobel_median/Sobel"/>
-            <task name="myapp/hierarchical_sobel_median/output"/>
-            <task name="myapp/Split"/>
-            <task name="myapp/Read_YUV"/>
-            <task name="myapp/hierarchical_sobel_median/Erosion"/>
-            <task name="myapp"/>
-            <task name="myapp/display"/>
+            <task name="myappBP1D/writePPM"/>
+            <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
+            <task name="myappBP1D"/>
+            <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
+            <task name="myappBP1D/topHierarchicalBP1D"/>
+            <task name="myappBP1D/ReadPPM"/>
+            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputeFiEnergy"/>
+            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputePhi_B"/>
+            <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
+            <task name="myappBP1D/topHierarchicalBP1D/grayScaleConversion"/>
         </constraintGroup>
     </constraints>
     <relativeconstraints excelUrl=""/>
     <timings excelUrl="">
-        <memcpyspeed opname="x86" setuptime="1" timeperunit="3.3333334E-5"/>
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="1.0"/>
     </timings>
     <simuParams>
         <mainCore>Core0</mainCore>
@@ -31,7 +30,8 @@
         <averageDataSize>1000</averageDataSize>
         <dataTypes>
             <dataType name="uchar" size="1"/>
-            <dataType name="char" size="1"/>
+            <dataType name="short" size="2"/>
+            <dataType name="PHI_B_TYPE" size="2"/>
         </dataTypes>
         <specialVertexOperators>
             <specialVertexOperator path="Core0"/>

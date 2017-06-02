@@ -45,7 +45,8 @@ void readPPMInit(int id, int height, int width, char* paths[]);
 * @param b
 *        Output array of size height*width for the blue component
 */
-void readPPM(int id,int height, int width, unsigned char *r, unsigned char *g, unsigned char *b);
+//void readPPM(int id,int height, int width, unsigned char *r, unsigned char *g, unsigned char *b);
+void readPPM(int height, int width, unsigned char *rgbLeft, unsigned char *rgbRight);
 
 /**
 * Write a gray image into a file.
@@ -56,6 +57,7 @@ void readPPM(int id,int height, int width, unsigned char *r, unsigned char *g, u
 * @param gray
 *        Height*width pixels to write.
 */
-void writePPM(int height, int width, unsigned char *gray, char* paths);
+//void writePPM(int height, int width, unsigned char *gray, char* paths);
+void writePPM(int height, int width, unsigned char *gray);
 
 #endif

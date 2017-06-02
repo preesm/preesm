@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">myappBP1D</data>
+        <node expr="450" id="width" kind="param"/>
+        <node expr="375" id="height" kind="param"/>
+        <node expr="1" id="topSlice" kind="param"/>
+        <node expr="height/topSlice" id="topHeightSlice" kind="param"/>
+        <node id="ReadPPM" kind="actor">
+            <data key="graph_desc">Code/src/ppm.h</data>
+            <loop name="readPPM">
+                <param direction="IN" isConfig="true" name="height" type="int"/>
+                <param direction="IN" isConfig="true" name="width" type="int"/>
+                <param direction="OUT" isConfig="false" name="rgbLeft" type="unsigned char "/>
+                <param direction="OUT" isConfig="false" name="rgbRight" type="unsigned char "/>
+            </loop>
+            <port kind="cfg_input" name="width"/>
+            <port kind="cfg_input" name="height"/>
+            <port annotation="NONE" expr="3*height*width" kind="output" name="rgbLeft"/>
+            <port annotation="NONE" expr="3*height*width" kind="output" name="rgbRight"/>
+        </node>
+        <node id="writePPM" kind="actor">
+            <data key="graph_desc">Code/src/ppm.h</data>
+            <loop name="writePPM">
+                <param direction="IN" isConfig="true" name="height" type="int"/>
+                <param direction="IN" isConfig="true" name="width" type="int"/>
+                <param direction="IN" isConfig="false" name="gray" type="unsigned char "/>
+            </loop>
+            <port kind="cfg_input" name="width"/>
+            <port kind="cfg_input" name="height"/>
+            <port annotation="NONE" expr="height*width" kind="input" name="gray"/>
+        </node>
+        <node id="topHierarchicalBP1D" kind="actor">
+            <data key="graph_desc">Algo/bp1d.pi</data>
+            <port kind="cfg_input" name="height"/>
+            <port kind="cfg_input" name="width"/>
+            <port annotation="NONE" expr="3*width*height" kind="input" name="rgbLeft"/>
+            <port annotation="NONE" expr="3*height*width" kind="input" name="rgbRight"/>
+            <port annotation="NONE" expr="(height*width)" kind="output" name="disparity"/>
+        </node>
+        <edge kind="fifo" source="topHierarchicalBP1D"
+            sourceport="disparity" target="writePPM" targetport="gray" type="uchar"/>
+        <edge kind="fifo" source="ReadPPM" sourceport="rgbLeft"
+            target="topHierarchicalBP1D" targetport="rgbLeft" type="uchar"/>
+        <edge kind="fifo" source="ReadPPM" sourceport="rgbRight"
+            target="topHierarchicalBP1D" targetport="rgbRight" type="uchar"/>
+        <edge kind="dependency" source="width" target="ReadPPM" targetport="width"/>
+        <edge kind="dependency" source="height" target="ReadPPM" targetport="height"/>
+        <edge kind="dependency" source="width" target="writePPM" targetport="width"/>
+        <edge kind="dependency" source="height" target="writePPM" targetport="height"/>
+        <edge kind="dependency" source="width"
+            target="topHierarchicalBP1D" targetport="width"/>
+        <edge kind="dependency" source="height" target="topHeightSlice"/>
+        <edge kind="dependency" source="topSlice" target="topHeightSlice"/>
+        <edge kind="dependency" source="topHeightSlice"
+            target="topHierarchicalBP1D" targetport="height"/>
+    </graph>
+</graphml>

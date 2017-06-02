@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">bp1d</data>
+        <node expr="450" id="pWidth" kind="param"/>
+        <node expr="375" id="pHeight" kind="param"/>
+        <node expr="1" id="pSlices" kind="param"/>
+        <node expr="1" id="SliceHeight" kind="param"/>
+        <node id="width" kind="cfg_in_iface"/>
+        <node id="height" kind="cfg_in_iface"/>
+        <node expr="61" id="nb_disp" kind="param"/>
+        <node id="BP_ComputePhi_B" kind="actor">
+            <data key="graph_desc">Code/src/BP1D.h</data>
+            <loop name="BP_ComputePhi_B">
+                <param direction="IN" isConfig="false" name="rgbLeft" type="unsigned char "/>
+                <param direction="IN" isConfig="false" name="rgbRight" type="unsigned char "/>
+                <param direction="OUT" isConfig="false" name="Phi_B" type="PHI_B_TYPE "/>
+            </loop>
+            <port kind="cfg_input" name="height"/>
+            <port kind="cfg_input" name="width"/>
+            <port kind="cfg_input" name="nb_disp"/>
+            <port annotation="NONE" expr="3*width" kind="input" name="rgbLeft"/>
+            <port annotation="NONE" expr="3*width" kind="input" name="rgbRight"/>
+            <port annotation="NONE"
+                expr="(width-(((nb_disp-1)/2)+1))*(nb_disp+1)"
+                kind="output" name="Phi_B"/>
+        </node>
+        <node id="rgbLeft" kind="src">
+            <port annotation="NONE" expr="3*pHeight*pWidth"
+                kind="output" name="rgbLeft"/>
+        </node>
+        <node id="rgbRight" kind="src">
+            <port annotation="NONE" expr="3*pHeight*pWidth"
+                kind="output" name="rgbRight"/>
+        </node>
+        <node id="BP_ComputeFiEnergy" kind="actor">
+            <data key="graph_desc">Code/src/BP1D.h</data>
+            <loop name="BP_ComputeFiEnergy">
+                <param direction="IN" isConfig="false" name="Phi_B" type="PHI_B_TYPE "/>
+                <param direction="OUT" isConfig="false" name="disparity" type="unsigned char "/>
+            </loop>
+            <port kind="cfg_input" name="height"/>
+            <port kind="cfg_input" name="width"/>
+            <port kind="cfg_input" name="nb_disp"/>
+            <port annotation="NONE"
+                expr="(width-(((nb_disp-1)/2)+1))*(nb_disp+1)"
+                kind="input" name="Phi_B"/>
+            <port annotation="NONE" expr="width" kind="output" name="disparity"/>
+        </node>
+        <node id="disparity" kind="snk">
+            <port annotation="NONE" expr="pHeight*pWidth" kind="input" name="disparity"/>
+        </node>
+        <edge kind="fifo" source="BP_ComputePhi_B" sourceport="Phi_B"
+            target="BP_ComputeFiEnergy" targetport="Phi_B" type="PHI_B_TYPE"/>
+        <edge kind="fifo" source="BP_ComputeFiEnergy"
+            sourceport="disparity" target="disparity"
+            targetport="disparity" type="uchar"/>
+        <edge kind="fifo" source="rgbLeft" sourceport="rgbLeft"
+            target="BP_ComputePhi_B" targetport="rgbLeft" type="uchar"/>
+        <edge kind="fifo" source="rgbRight" sourceport="rgbRight"
+            target="BP_ComputePhi_B" targetport="rgbRight" type="uchar"/>
+        <edge kind="dependency" source="pWidth" target="BP_ComputePhi_B" targetport="width"/>
+        <edge kind="dependency" source="pHeight" target="SliceHeight"/>
+        <edge kind="dependency" source="pSlices" target="SliceHeight"/>
+        <edge kind="dependency" source="pHeight" target="rgbLeft"/>
+        <edge kind="dependency" source="pWidth" target="rgbLeft"/>
+        <edge kind="dependency" source="pWidth" target="rgbRight"/>
+        <edge kind="dependency" source="pHeight" target="rgbRight"/>
+        <edge kind="dependency" source="SliceHeight"
+            target="BP_ComputeFiEnergy" targetport="height"/>
+        <edge kind="dependency" source="pWidth"
+            target="BP_ComputeFiEnergy" targetport="width"/>
+        <edge kind="dependency" source="pWidth" target="disparity"/>
+        <edge kind="dependency" source="pHeight" target="disparity"/>
+        <edge kind="dependency" source="width" target="pWidth"/>
+        <edge kind="dependency" source="height" target="pHeight"/>
+        <edge kind="dependency" source="nb_disp"
+            target="BP_ComputePhi_B" targetport="nb_disp"/>
+        <edge kind="dependency" source="nb_disp"
+            target="BP_ComputeFiEnergy" targetport="nb_disp"/>
+        <edge kind="dependency" source="SliceHeight"
+            target="BP_ComputePhi_B" targetport="height"/>
+    </graph>
+</graphml>

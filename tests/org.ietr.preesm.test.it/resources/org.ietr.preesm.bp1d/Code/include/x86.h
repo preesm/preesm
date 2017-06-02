@@ -43,6 +43,8 @@
 #include "splitMerge.h"
 #include "morph.h"
 
+#include "../src/define.h"
+
 #define test_func() 
 
 typedef unsigned char uchar;
@@ -55,5 +57,7 @@ void *computationThread_Core4(void *arg);
 void *computationThread_Core5(void *arg);
 void *computationThread_Core6(void *arg);
 void *computationThread_Core7(void *arg);
+
+#define LOOP_SIZE (1)
 
 #endif

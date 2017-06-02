@@ -34,17 +34,47 @@ static inline NODE_TYPE min3(NODE_TYPE val1, NODE_TYPE val2, NODE_TYPE val3)
 			return (val3);
 	}
 	else if(val2 < val3)
-			return (val2);
+		return (val2);
 	else
-			return (val3);
+		return (val3);
 }
 
 // BP_ComputePhi_B computes messages between the two images
 // there messages are stored in the Phi_B table
-static inline void BP_ComputePhi_B(unsigned char *leftR, unsigned char *leftG, unsigned char *leftB, unsigned char *rightR, unsigned char *rightG, unsigned char *rightB, PHI_B_TYPE *Phi_B)
+//static inline void BP_ComputePhi_B(unsigned char *leftR, unsigned char *leftG, unsigned char *leftB, unsigned char *rightR, unsigned char *rightG, unsigned char *rightB, PHI_B_TYPE *Phi_B)
+//{
+//	short x, dd, diffR, diffG, diffB ;
+//	short posL, posR, posL2;
+//
+//	for (x=0; x< WIDTH_PHI_B; x++)				
+//	{
+//		for (dd=0; dd < HALFDISPARITY + 1; dd++)
+//		{
+//			posL = dd + x;
+//			posR = HALFDISPARITY + x - dd;
+//			// compute Phi_B pour d = 2*dd
+//
+//			diffR = leftR[posL] - rightR[posR];
+//			diffG = leftG[posL] - rightG[posR];
+//			diffB = leftB[posL] - rightB[posR];
+//			Phi_B[x*(NB_DISP+1) + dd*2] = abs(diffR) + abs(diffG) + abs(diffB);
+//
+//			posL2 = posL + 1;				
+//			// compute Phi_B pour d = 2*dd + 1  			
+//			diffR = leftR[posL2] - rightR[posR];
+//			diffG = leftG[posL2] - rightG[posR];
+//			diffB = leftB[posL2] - rightB[posR];
+//			Phi_B[x*(NB_DISP+1) + dd*2 + 1] = abs(diffR) + abs(diffG) + abs(diffB); 
+//		}		
+//	}
+//}
+
+void BP_ComputePhi_B(unsigned char *rgbLeft, unsigned char *rgbRight, PHI_B_TYPE *Phi_B)
 {
-	short x, dd, diffR, diffG, diffB ;
-	short posL, posR, posL2;
+	int x, dd, diffR, diffG, diffB ;
+	int posL, posR, posL2;
+
+	rgbLeft += 3*SHIFT;
 
 	for (x=0; x< WIDTH_PHI_B; x++)				
 	{
@@ -52,26 +82,25 @@ static inline void BP_ComputePhi_B(unsigned char *leftR, unsigned char *leftG, u
 		{
 			posL = dd + x;							
 			posR = HALFDISPARITY + x - dd;
-			// compute Phi_B pour d = 2*dd
+			posL2 = posL + 1;
 
-			diffR = leftR[posL] - rightR[posR];
-			diffG = leftG[posL] - rightG[posR];
-			diffB = leftB[posL] - rightB[posR];	
+			diffR = rgbLeft[3*posL+0] - rgbRight[3*posR+0];
+			diffG = rgbLeft[3*posL+1] - rgbRight[3*posR+1];
+			diffB = rgbLeft[3*posL+2] - rgbRight[3*posR+2];
 			Phi_B[x*(NB_DISP+1) + dd*2] = abs(diffR) + abs(diffG) + abs(diffB);
-
-			posL2 = posL + 1;							
+			
 			// compute Phi_B pour d = 2*dd + 1  			
-			diffR = leftR[posL2] - rightR[posR];							// vérifier dans le code assembleur que rightR[posR] n'est pas rechargé, car déjà calculé juste avant
-			diffG = leftG[posL2] - rightG[posR];
-			diffB = leftB[posL2] - rightB[posR];
+			diffR = rgbLeft[3*posL2+0] - rgbRight[3*posR+0];
+			diffG = rgbLeft[3*posL2+1] - rgbRight[3*posR+1];
+			diffB = rgbLeft[3*posL2+2] - rgbRight[3*posR+2];
 			Phi_B[x*(NB_DISP+1) + dd*2 + 1] = abs(diffR) + abs(diffG) + abs(diffB); 
-		}		
+		}
 	}
 }
 
 // BP_ComputeFi computes the forward pass
 // forward messages are stored in the Fi table of node structure 
-static inline void BP_ComputeFi(PHI_B_TYPE *Phi_B, FI_TYPE *Fi)
+void BP_ComputeFi(PHI_B_TYPE *Phi_B, FI_TYPE *Fi)
 {
 	short x, dd;
 	NODE_TYPE MR_MR, B_MR;
@@ -82,7 +111,7 @@ static inline void BP_ComputeFi(PHI_B_TYPE *Phi_B, FI_TYPE *Fi)
 		Fi[dd].M = 0;																					
 		Fi[dd].B  = 0;											
 	}
-	
+
 	for (x=1; x < WIDTH_PHI_B; x++)						// initialisation of the Fi first lign and last lign
 	{
 		Fi[x*(NB_DISP + 2) + NB_DISP + 1].M = F_BIG;		// normalement inutile	=> pas d'après les tests !
@@ -106,34 +135,34 @@ static inline void BP_ComputeFi(PHI_B_TYPE *Phi_B, FI_TYPE *Fi)
 		B_B		= Fi[(x-1)*(NB_DISP+2)+1].B		+ Phi_B[(x-1)*(NB_DISP+1)];
 		ML_B	= Fi[(x-1)*(NB_DISP+2)].B		+ PHI_0;										
 		Fi[x*(NB_DISP+2)+1].B  = min3( ML_B , B_B , MR_B);											
-	
+
 		for (dd=0; dd < HALFDISPARITY; dd++)
 		{
 			// compute Fi even disparities (d = dd*2) using previous Fi and Phi_B
 			// values for d = 0 and d = 2 are required to compute d = 1
-				// Fi->ML
-				MR_MR	= Fi[(x-1)*(NB_DISP+2) + dd*2 + 4].M	+ PHI_0;
-				B_MR	= Fi[(x-1)*(NB_DISP+2) + dd*2 + 4].B	+ Phi_B[(x-1)*(NB_DISP+1) + dd*2 + 3];
-				Fi[x*(NB_DISP+2) + dd*2 + 3].M  = min2 (MR_MR , B_MR); 
+			// Fi->ML
+			MR_MR	= Fi[(x-1)*(NB_DISP+2) + dd*2 + 4].M	+ PHI_0;
+			B_MR	= Fi[(x-1)*(NB_DISP+2) + dd*2 + 4].B	+ Phi_B[(x-1)*(NB_DISP+1) + dd*2 + 3];
+			Fi[x*(NB_DISP+2) + dd*2 + 3].M  = min2 (MR_MR , B_MR); 
 
-				// Fi->B
-				MR_B	= Fi[(x-1)*(NB_DISP+2) + 2*dd + 3].M 	+ PHI_0;
-				B_B		= Fi[(x-1)*(NB_DISP+2) + 2*dd + 3].B	+ Phi_B[(x-1)*(NB_DISP+1) + 2*dd + 2];
-				ML_B	= Fi[(x-1)*(NB_DISP+2) + 2*dd + 2].B	+ PHI_0;										
-				Fi[x*(NB_DISP+2) + 2*dd + 3].B  = min3( ML_B , B_B , MR_B);				
-					
+			// Fi->B
+			MR_B	= Fi[(x-1)*(NB_DISP+2) + 2*dd + 3].M 	+ PHI_0;
+			B_B		= Fi[(x-1)*(NB_DISP+2) + 2*dd + 3].B	+ Phi_B[(x-1)*(NB_DISP+1) + 2*dd + 2];
+			ML_B	= Fi[(x-1)*(NB_DISP+2) + 2*dd + 2].B	+ PHI_0;										
+			Fi[x*(NB_DISP+2) + 2*dd + 3].B  = min3( ML_B , B_B , MR_B);				
+
 
 			// compute Fi for odd disparities (d = 2*dd + 1) using previous Fi and Phi_B	
-				// Fi->ML
-				MR_MR	= Fi[x*(NB_DISP+2) + (dd * 2 + 1) + 2].M	+ PHI_0;
-				B_MR = Fi[x*(NB_DISP + 2) + (dd * 2 + 1) + 2].B		+ Phi_B[x*(NB_DISP + 1) + (dd * 2 + 1) + 1];
-				Fi[x*(NB_DISP + 2) + (dd * 2 + 1) + 1].M = min2(MR_MR, B_MR);
+			// Fi->ML
+			MR_MR	= Fi[x*(NB_DISP+2) + (dd * 2 + 1) + 2].M	+ PHI_0;
+			B_MR = Fi[x*(NB_DISP + 2) + (dd * 2 + 1) + 2].B		+ Phi_B[x*(NB_DISP + 1) + (dd * 2 + 1) + 1];
+			Fi[x*(NB_DISP + 2) + (dd * 2 + 1) + 1].M = min2(MR_MR, B_MR);
 
-				// Fi->B
-				MR_B = Fi[(x - 1)*(NB_DISP + 2) + (dd * 2 + 1) + 1].M	+ PHI_0;
-				B_B = Fi[(x - 1)*(NB_DISP + 2)	+ (dd * 2 + 1) + 1].B	+ Phi_B[(x - 1)*(NB_DISP + 1) + (2 * dd) + 1];
-				ML_B = Fi[x*(NB_DISP + 2)		+ (dd * 2 + 1)].B		+ PHI_0;
-				Fi[x*(NB_DISP + 2) + (dd * 2 + 1) + 1].B = min3(ML_B, B_B, MR_B);
+			// Fi->B
+			MR_B = Fi[(x - 1)*(NB_DISP + 2) + (dd * 2 + 1) + 1].M	+ PHI_0;
+			B_B = Fi[(x - 1)*(NB_DISP + 2)	+ (dd * 2 + 1) + 1].B	+ Phi_B[(x - 1)*(NB_DISP + 1) + (2 * dd) + 1];
+			ML_B = Fi[x*(NB_DISP + 2)		+ (dd * 2 + 1)].B		+ PHI_0;
+			Fi[x*(NB_DISP + 2) + (dd * 2 + 1) + 1].B = min3(ML_B, B_B, MR_B);
 		}		
 	}
 }
@@ -141,7 +170,7 @@ static inline void BP_ComputeFi(PHI_B_TYPE *Phi_B, FI_TYPE *Fi)
 // BP_Compute_Energy computes the backward pass = energy for each node of the BVP
 // backward messages are stored in the GrandPhi table of node structure 
 // the energies are stored in the table Energy but it is not required 
-static inline void BP_Compute_Energy(PHI_B_TYPE *Phi_B, ENERGY_TYPE *Energy, FI_TYPE *Fi, unsigned char *DepthMap)
+void BP_Compute_Energy(PHI_B_TYPE *Phi_B, ENERGY_TYPE *Energy, FI_TYPE *Fi, unsigned char *DepthMap)
 {
 	short x, dd;
 	struct bp1d_node GrandPhi[NB_DISP+2];
@@ -177,45 +206,45 @@ static inline void BP_Compute_Energy(PHI_B_TYPE *Phi_B, ENERGY_TYPE *Energy, FI_
 		{
 			// compute GrandPhi message for odd disparities (d = 2*dd + 1) using previous GrandPhi and Phi_B		
 			// should start with odd disparities before even ones  
-				// GrandPhi->MR
-				ML_ML	=	GrandPhi[dd*2 + 3].M		+	PHI_0;
-				B_ML	=	GrandPhi[dd*2 + 3].B		+	Phi_B[(x+1)*(NB_DISP+1) + dd*2 + 2];
-				
-			
-				// GrandPhi->B
-				MR_B	=	GrandPhi[dd*2 + 1 ].B 		+	PHI_0;												
-				B_B		=	GrandPhi[dd*2 + 2 ].B		+	Phi_B[(x+1)*(NB_DISP+1) + dd*2 + 1];
-				ML_B	=	GrandPhi[dd*2 + 2 ].M 		+	PHI_0;	
+			// GrandPhi->MR
+			ML_ML	=	GrandPhi[dd*2 + 3].M		+	PHI_0;
+			B_ML	=	GrandPhi[dd*2 + 3].B		+	Phi_B[(x+1)*(NB_DISP+1) + dd*2 + 2];
 
-				GrandPhi[dd * 2 + 2].M = min2(ML_ML, B_ML); // Update : GrandPhi after computing ML_B
-				GrandPhi[dd*2 + 2].B  = min3( ML_B , B_B , MR_B);	
-				
 
-				Energy_B	=	GrandPhi[dd*2 + 2].B	+ Phi_B[x*(NB_DISP+1) + dd*2 + 1]	+ Fi[x * (NB_DISP + 2) + dd*2 + 2].B;
-				Energy_ML	= GrandPhi[dd*2 + 2].M		+ PHI_0								+ Fi[x * (NB_DISP + 2) + dd*2 + 2].B;
-				Energy_MR	= GrandPhi[dd*2 + 2].B		+ PHI_0								+ Fi[x * (NB_DISP + 2) + dd*2 + 2].M;
-				Energy[x * NB_DISP + 2*dd + 1]  = min3( Energy_B , Energy_ML , Energy_MR);
-			
+			// GrandPhi->B
+			MR_B	=	GrandPhi[dd*2 + 1 ].B 		+	PHI_0;												
+			B_B		=	GrandPhi[dd*2 + 2 ].B		+	Phi_B[(x+1)*(NB_DISP+1) + dd*2 + 1];
+			ML_B	=	GrandPhi[dd*2 + 2 ].M 		+	PHI_0;	
+
+			GrandPhi[dd * 2 + 2].M = min2(ML_ML, B_ML); // Update : GrandPhi after computing ML_B
+			GrandPhi[dd*2 + 2].B  = min3( ML_B , B_B , MR_B);	
+
+
+			Energy_B	=	GrandPhi[dd*2 + 2].B	+ Phi_B[x*(NB_DISP+1) + dd*2 + 1]	+ Fi[x * (NB_DISP + 2) + dd*2 + 2].B;
+			Energy_ML	= GrandPhi[dd*2 + 2].M		+ PHI_0								+ Fi[x * (NB_DISP + 2) + dd*2 + 2].B;
+			Energy_MR	= GrandPhi[dd*2 + 2].B		+ PHI_0								+ Fi[x * (NB_DISP + 2) + dd*2 + 2].M;
+			Energy[x * NB_DISP + 2*dd + 1]  = min3( Energy_B , Energy_ML , Energy_MR);
+
 			// compute GrandPhi message for even disparities (d = 2*dd) using previous GrandPhi and Phi_B
-				// GrandPhi->MR
-				ML_ML	=	GrandPhi[dd*2 + 2].M		+	PHI_0;
-				B_ML	=	GrandPhi[dd*2 + 2].B		+	Phi_B[x*(NB_DISP+1) + dd*2 + 1];
-				
-				
-				// GrandPhi->B
-				MR_B	= GrandPhi[dd*2].B 			+	PHI_0;												
-				B_B		= GrandPhi[dd*2 + 1].B		+	Phi_B[(x+1)*(NB_DISP+1) + dd*2];
-				ML_B	= GrandPhi[dd*2 + 1].M 		+	PHI_0;	
+			// GrandPhi->MR
+			ML_ML	=	GrandPhi[dd*2 + 2].M		+	PHI_0;
+			B_ML	=	GrandPhi[dd*2 + 2].B		+	Phi_B[x*(NB_DISP+1) + dd*2 + 1];
 
-				GrandPhi[dd * 2 + 1].M = min2(ML_ML, B_ML); // Update : GrandPhi after computing ML_B
-				GrandPhi[dd*2 + 1].B  = min3( ML_B , B_B , MR_B);		
 
-				Energy_B =	GrandPhi[dd*2 + 1].B	+ Phi_B[x*(NB_DISP+1) + dd*2]		+ Fi[x * (NB_DISP + 2) + dd*2 + 1].B;
-				Energy_ML = GrandPhi[dd*2 + 1].M	+ PHI_0								+ Fi[x * (NB_DISP + 2) + dd*2 + 1].B;
-				Energy_MR = GrandPhi[dd*2 + 1].B	+ PHI_0								+ Fi[x * (NB_DISP + 2) + dd*2 + 1].M;
+			// GrandPhi->B
+			MR_B	= GrandPhi[dd*2].B 			+	PHI_0;												
+			B_B		= GrandPhi[dd*2 + 1].B		+	Phi_B[(x+1)*(NB_DISP+1) + dd*2];
+			ML_B	= GrandPhi[dd*2 + 1].M 		+	PHI_0;	
 
-				Energy[x * NB_DISP + 2*dd] = min3( Energy_B , Energy_ML , Energy_MR);
-				
+			GrandPhi[dd * 2 + 1].M = min2(ML_ML, B_ML); // Update : GrandPhi after computing ML_B
+			GrandPhi[dd*2 + 1].B  = min3( ML_B , B_B , MR_B);		
+
+			Energy_B =	GrandPhi[dd*2 + 1].B	+ Phi_B[x*(NB_DISP+1) + dd*2]		+ Fi[x * (NB_DISP + 2) + dd*2 + 1].B;
+			Energy_ML = GrandPhi[dd*2 + 1].M	+ PHI_0								+ Fi[x * (NB_DISP + 2) + dd*2 + 1].B;
+			Energy_MR = GrandPhi[dd*2 + 1].B	+ PHI_0								+ Fi[x * (NB_DISP + 2) + dd*2 + 1].M;
+
+			Energy[x * NB_DISP + 2*dd] = min3( Energy_B , Energy_ML , Energy_MR);
+
 		}
 
 		// compute GrandPhi for the last disparity d = 2 * HALFDISPARITY+1
@@ -224,7 +253,7 @@ static inline void BP_Compute_Energy(PHI_B_TYPE *Phi_B, ENERGY_TYPE *Energy, FI_
 		{
 			ML_ML	=	GrandPhi[NB_DISP + 1].M		+ PHI_0;
 			B_ML	=	GrandPhi[NB_DISP + 1].B		+ Phi_B[x*(NB_DISP+1) + NB_DISP];
-			
+
 
 			// GrandPhi->B
 			MR_B	=	GrandPhi[NB_DISP - 1].B		+	PHI_0;
@@ -232,7 +261,7 @@ static inline void BP_Compute_Energy(PHI_B_TYPE *Phi_B, ENERGY_TYPE *Energy, FI_
 			ML_B	=	GrandPhi[NB_DISP].M 		+	PHI_0;										
 			GrandPhi[NB_DISP].M = min2(ML_ML, B_ML);  // Update : GrandPhi after computing ML_B
 			GrandPhi[NB_DISP].B  = min3( ML_B , B_B , MR_B);
-						
+
 			Energy_B	=	GrandPhi[NB_DISP].B		+ Phi_B[x*(NB_DISP+1) + NB_DISP - 1]	+ Fi[x * (NB_DISP + 2) + NB_DISP].B;
 			Energy_ML	=	GrandPhi[NB_DISP].M		+ PHI_0									+ Fi[x * (NB_DISP + 2) + NB_DISP].B;
 			Energy_MR	=	GrandPhi[NB_DISP].B		+ PHI_0									+ Fi[x * (NB_DISP + 2) + NB_DISP].M;
@@ -249,15 +278,15 @@ static inline void BP_Compute_Energy(PHI_B_TYPE *Phi_B, ENERGY_TYPE *Energy, FI_
 		{
 			if (Energy[x * NB_DISP + dd] < min)
 			{ 
-					min = Energy[x * NB_DISP + dd];
-					DepthMap[x] = dd  ; 
-					DepthMap[x] = DepthMap[x] * (255 / NB_DISP);			
+				min = Energy[x * NB_DISP + dd];
+				DepthMap[x] = dd  ; 
+				DepthMap[x] = DepthMap[x] * (255 / NB_DISP);			
 			}
 		}
 	}
 }
 
-static inline void BP_ComputeGrandPhi(PHI_B_TYPE *Phi_B, FI_TYPE *GrandPhi)
+void BP_ComputeGrandPhi(PHI_B_TYPE *Phi_B, FI_TYPE *GrandPhi)
 {
 	short x, dd;
 	NODE_TYPE ML_ML, B_ML;
@@ -288,7 +317,7 @@ static inline void BP_ComputeGrandPhi(PHI_B_TYPE *Phi_B, FI_TYPE *GrandPhi)
 			ML_ML = GrandPhi[(x + 1)*(NB_DISP + 2) + dd * 2 + 3].M + PHI_0;
 			B_ML = GrandPhi[(x + 1)*(NB_DISP + 2) + dd * 2 + 3].B + Phi_B[(x + 1)*(NB_DISP + 1) + dd * 2 + 2];
 			GrandPhi[x*(NB_DISP + 2) + dd * 2 + 2].M = min2(ML_ML, B_ML);
-			
+
 
 			// GrandPhi->B
 			MR_B = GrandPhi[(x + 1)*(NB_DISP + 2) + dd * 2 + 1].B + PHI_0;
@@ -324,7 +353,7 @@ static inline void BP_ComputeGrandPhi(PHI_B_TYPE *Phi_B, FI_TYPE *GrandPhi)
 	}
 }
 
-static inline void BP_Compute_Energy2(PHI_B_TYPE *Phi_B, ENERGY_TYPE *Energy, FI_TYPE *Fi, FI_TYPE *GrandPhi, unsigned char *DepthMap)
+void BP_Compute_Energy2(PHI_B_TYPE *Phi_B, ENERGY_TYPE *Energy, FI_TYPE *Fi, FI_TYPE *GrandPhi, unsigned char *DepthMap)
 {
 	short x, dd;
 	ENERGY_TYPE Energy_B, Energy_ML, Energy_MR;
@@ -349,7 +378,7 @@ static inline void BP_Compute_Energy2(PHI_B_TYPE *Phi_B, ENERGY_TYPE *Energy, FI
 }
 
 
-static inline void DispSelect(ENERGY_TYPE *Energy, unsigned char *DepthMap)
+void DispSelect(ENERGY_TYPE *Energy, unsigned char *DepthMap)
 {
 	short x, dd;
 	ENERGY_TYPE min;
@@ -370,6 +399,27 @@ static inline void DispSelect(ENERGY_TYPE *Energy, unsigned char *DepthMap)
 	}
 }
 
+void grayScaleConversion(int height, int width, unsigned char *rgbLeft, unsigned char *rgbRight, short *grayLeft, short *grayRight){
+	int idxPxl;
+	int write = 0;
+	for(idxPxl = 0; idxPxl < 3*height*width; idxPxl+=3) // well let's use the fpu...
+	{
+		#if 0
+		const float cr=0.2126f;
+		const float cg=0.7152f;
+		const float cb=0.0722f;
+		grayLeft[write] = (int) (cr*(float)rgbLeft[idxPxl+0] + cg*(float)rgbLeft[idxPxl+1] + cb*(float)rgbLeft[idxPxl+2]);
+		grayRight[write] = (int) (cr*(float)rgbRight[idxPxl+0] + cg*(float)rgbRight[idxPxl+1] + cb*(float)rgbRight[idxPxl+2]);
+		#endif
+		#if 1
+		grayLeft[write] = abs(rgbLeft[idxPxl+0]) + abs(rgbLeft[idxPxl+1]) + abs(rgbLeft[idxPxl+2]);
+		grayRight[write] = abs(rgbRight[idxPxl+0]) + abs(rgbRight[idxPxl+1]) + abs(rgbRight[idxPxl+2]);
+		#endif
+		write++;
+	}
+}
+
+#if 0
 void BP1D_image(unsigned char *leftR, unsigned char *leftG, unsigned char *leftB, unsigned char *rightR, unsigned char *rightG, unsigned char *rightB, unsigned char *disparity)
 {
 	int i;
@@ -390,6 +440,20 @@ void BP1D_image(unsigned char *leftR, unsigned char *leftG, unsigned char *leftB
 		//printf("IO%d lign %d / %d\n", __k1_get_cluster_id()/192, i, HEIGHT);
 	}
 	free(Phi_B_message);
+	free(Fi);
+	free(Energy_values);
+}
+#endif
+
+void BP_ComputeFiEnergy(PHI_B_TYPE *Phi_B, unsigned char *disparity)
+{
+	//printf("size %d byte type %d\n", WIDTH_PHI_B * (NB_DISP + 1));
+	FI_TYPE		*Fi = malloc(sizeof(FI_TYPE) *WIDTH_PHI_B * (NB_DISP + 2));
+	assert(Fi != NULL);
+	ENERGY_TYPE *Energy_values = malloc(sizeof(ENERGY_TYPE) * WIDTH_PHI_B * NB_DISP);
+	assert(Energy_values != NULL);
+	BP_ComputeFi(Phi_B, Fi);
+	BP_Compute_Energy(Phi_B, Energy_values, Fi, disparity);
 	free(Fi);
 	free(Energy_values);
 }
