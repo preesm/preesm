@@ -81,7 +81,8 @@ void communicationInit() {
 	#ifdef __nodeos__
 	omp_set_num_threads(NB_OMP_CORE);
 	#endif
-	int local_buffer_size = 0;
+	extern int local_buffer_size;
+	#if 0
 	switch (__k1_get_cluster_id()){
 		case 0:	local_buffer_size = Core0_size; break;
 		case 1:	local_buffer_size = Core1_size; break;
@@ -101,6 +102,7 @@ void communicationInit() {
 		case 15: local_buffer_size = Core15_size; break;
 		default: break;
 	}
+	#endif
 
 	local_buffer = (char*)malloc(local_buffer_size);
 
@@ -112,6 +114,8 @@ void communicationInit() {
 		printf("Cluster %d Local buffer ok %llx size %d\n", __k1_get_cluster_id(),(uint64_t)(uintptr_t)local_buffer, local_buffer_size);
 		#endif
 	}
+
+	memset(local_buffer, 0, local_buffer_size);
 
 	/* init token */
 	int i;

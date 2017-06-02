@@ -34,7 +34,7 @@ main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 		long long i;
 		for(i=0;i<(long long)((1<<30ULL)/sizeof(long long));i++)
 		{
-			ptr[i] = -1LL;
+			ptr[i] = 0;
 		}
 		__builtin_k1_wpurge();
 		__builtin_k1_fence();

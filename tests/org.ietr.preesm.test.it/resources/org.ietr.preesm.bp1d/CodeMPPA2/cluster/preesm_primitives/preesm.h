@@ -35,9 +35,11 @@
 #endif
 #define NB_OMP_CORE (16)
 
-#define GRAPH_ITERATION 200
+#define GRAPH_ITERATION 1
 
 #define VERBOSE
+
+#include "../define.h"
 
 //#define DISABLE_IO
 
