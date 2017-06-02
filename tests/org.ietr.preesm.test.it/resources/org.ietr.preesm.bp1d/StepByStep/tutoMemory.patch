@@ -1,0 +1,314 @@
+From 726ca53fbc4170e3aed38275ec665adab8efaded Mon Sep 17 00:00:00 2001
+From: kdesnos <kdesnos@insa-rennes.fr>
+Date: Thu, 16 Jul 2015 16:21:26 +0200
+Subject: [PATCH] (Sobel) Memory tutorials results.
+
+---
+ .../org.ietr.preesm.sobel/Algo/top_display.pi      |  5 +-
+ .../org.ietr.preesm.sobel/Code/Scripts/split.bsh   | 13 ++++
+ .../org.ietr.preesm.sobel/Code/src/splitMerge.c    | 58 +++++++++-------
+ .../CodeC6678/src/splitMerge.c                     | 79 +++++++++++-----------
+ .../Workflows/Codegen.workflow                     | 42 +++++++++++-
+ 5 files changed, 130 insertions(+), 67 deletions(-)
+ create mode 100644 tutorials/org.ietr.preesm.sobel/Code/Scripts/split.bsh
+
+diff --git a/tutorials/org.ietr.preesm.sobel/Algo/top_display.pi b/tutorials/org.ietr.preesm.sobel/Algo/top_display.pi
+index 2e9725d..8092527 100644
+--- a/tutorials/org.ietr.preesm.sobel/Algo/top_display.pi
++++ b/tutorials/org.ietr.preesm.sobel/Algo/top_display.pi
+@@ -5,6 +5,7 @@
+     <key attr.name="arguments" for="node" id="arguments"/>
+     <key attr.name="name" attr.type="string" for="graph"/>
+     <key attr.name="graph_desc" attr.type="string" for="node"/>
++    <key attr.name="memoryScript" attr.type="string" for="node"/>
+     <graph edgedefault="directed">
+         <data key="name">top_display</data>
+         <node expr="352" id="width" kind="param"/>
+@@ -63,7 +64,8 @@
+             </loop>
+             <port kind="cfg_input" name="width"/>
+             <port kind="cfg_input" name="height"/>
+-            <port annotation="NONE" expr="height*width" kind="input" name="input"/>
++            <port annotation="READ_ONLY" expr="height*width"
++                kind="input" name="input"/>
+             <port annotation="NONE" expr="height*width" kind="output" name="output"/>
+         </node>
+         <node id="Split" kind="actor">
+@@ -75,6 +77,7 @@
+                 <param direction="IN" isConfig="false" name="input" type="unsigned char"/>
+                 <param direction="OUT" isConfig="false" name="output" type="unsigned char"/>
+             </loop>
++            <data key="memoryScript">Code/Scripts/split.bsh</data>
+             <port kind="cfg_input" name="width"/>
+             <port kind="cfg_input" name="height"/>
+             <port kind="cfg_input" name="nbSlice"/>
+diff --git a/tutorials/org.ietr.preesm.sobel/Code/Scripts/split.bsh b/tutorials/org.ietr.preesm.sobel/Code/Scripts/split.bsh
+new file mode 100644
+index 0000000..1acac9d
+--- /dev/null
++++ b/tutorials/org.ietr.preesm.sobel/Code/Scripts/split.bsh
+@@ -0,0 +1,13 @@
++/**
++ * Split memory script
++ * Input buffer: i_input
++ * Output buffer: o_output
++ * Parameters: height, width, nbSlice
++ */
++int sliceSize = width*(height/nbSlice+2);
++for(int i=0; i<nbSlice ;i++){
++   o_output.matchWith( i*sliceSize,
++                      i_input,
++                      (i*height/nbSlice-1)*width,
++                      sliceSize);
++}
+\ No newline at end of file
+diff --git a/tutorials/org.ietr.preesm.sobel/Code/src/splitMerge.c b/tutorials/org.ietr.preesm.sobel/Code/src/splitMerge.c
+index c6d70f1..65c604a 100644
+--- a/tutorials/org.ietr.preesm.sobel/Code/src/splitMerge.c
++++ b/tutorials/org.ietr.preesm.sobel/Code/src/splitMerge.c
+@@ -2,7 +2,7 @@
+ ============================================================================
+ Name        : splitMerge.c
+ Author      : kdesnos
+-Version     : 1.1
++Version     : 1.2
+ Copyright   : CECILL-C
+ Description :
+ ============================================================================
+@@ -14,30 +14,38 @@ Description :
+ #include "splitMerge.h"
+ 
+ void split(int nbSlice, int width, int height, unsigned char *input, unsigned char *output){
+-    int i,j;
+-    int sliceSize =  width*height/nbSlice;
+-    // Fill first and last line with 0
+-    memset(output,0,width);
+-    // First Slice
+-    memcpy(output+width, input, sliceSize);
+-    // Copy next line if several slice
+-    if (nbSlice > 1){
+-        memcpy(output +  width + sliceSize , input + sliceSize, width);
+-    }
+-    // Slice other than first and last
+-    for(i=1; i<nbSlice-1; i++){
+-        int destIndex = i*(sliceSize+2*width);
+-        memcpy(output + destIndex, input+i*sliceSize-width, sliceSize+2*width);
+-    }
+-    // Last Slice
+-    i = nbSlice-1;
+-    if(nbSlice > 1){
+-        // we have i = nbSlice -1;
+-        int destIndex = i*(sliceSize+2*width);
+-        memcpy(output + destIndex, input+i*sliceSize-width, sliceSize+width);
+-    }
+-    // Last line
+-    memset(output + (height+nbSlice*2-1)*width,0,width);
++	if(output != NULL){
++		int i,j;
++		int sliceSize =  width*height/nbSlice;
++		// Fill first and last line with 0
++		memset(output,0,width);
++		// First Slice
++		memcpy(output+width, input, sliceSize);
++		// Copy next line if several slice
++		if (nbSlice > 1){
++			memcpy(output +  width + sliceSize , input + sliceSize, width);
++		}
++		// Slice other than first and last
++		for(i=1; i<nbSlice-1; i++){
++			int destIndex = i*(sliceSize+2*width);
++			memcpy(output + destIndex, input+i*sliceSize-width, sliceSize+2*width);
++		}
++		// Last Slice
++		i = nbSlice-1;
++		if(nbSlice > 1){
++			// we have i = nbSlice -1;
++			int destIndex = i*(sliceSize+2*width);
++			memcpy(output + destIndex, input+i*sliceSize-width, sliceSize+width);
++		}
++		// Last line
++		memset(output + (height+nbSlice*2-1)*width,0,width);
++	} else {
++		// Output has been splitted and is null
++		// Fill first and last line with 0
++		memset(input - width, 0, width);
++		// Last line
++		memset(input + height*width,0,width);
++	}
+ }
+ 
+ 
+diff --git a/tutorials/org.ietr.preesm.sobel/CodeC6678/src/splitMerge.c b/tutorials/org.ietr.preesm.sobel/CodeC6678/src/splitMerge.c
+index 532427e..6e1136f 100644
+--- a/tutorials/org.ietr.preesm.sobel/CodeC6678/src/splitMerge.c
++++ b/tutorials/org.ietr.preesm.sobel/CodeC6678/src/splitMerge.c
+@@ -2,7 +2,7 @@
+  ============================================================================
+  Name        : splitMerge.c
+  Author      : kdesnos
+- Version     : 1.1
++ Version     : 1.2
+  Copyright   : CECILL-C
+  Description :
+  ============================================================================
+@@ -13,45 +13,48 @@
+ #include "splitMerge.h"
+ #include <xdc/runtime/System.h>
+ 
+-void split(int nbSlice, int width, int height, unsigned char *input,
+-		unsigned char *output) {
+-	int i;
+-	int sliceSize = width * height / nbSlice;
+-
+-	// Fill first and last line with 0
+-	memset(output, 0, width);
+-	// First Slice
+-	memcpy(output + width, input, sliceSize);
+-	// Copy next line if several slice
+-	if (nbSlice > 1) {
+-		memcpy(output + width + sliceSize, input + sliceSize, width);
+-	}
+-	// Slice other than first and last
+-	for (i = 1; i < nbSlice - 1; i++) {
+-		int destIndex = i * (sliceSize + 2 * width);
+-		memcpy(output + destIndex, input + i * sliceSize - width,
+-				sliceSize + 2 * width);
++void split(int nbSlice, int width, int height, unsigned char *input, unsigned char *output){
++	if(output != NULL){
++		int i,j;
++		int sliceSize =  width*height/nbSlice;
++		// Fill first and last line with 0
++		memset(output,0,width);
++		// First Slice
++		memcpy(output+width, input, sliceSize);
++		// Copy next line if several slice
++		if (nbSlice > 1){
++			memcpy(output +  width + sliceSize , input + sliceSize, width);
++		}
++		// Slice other than first and last
++		for(i=1; i<nbSlice-1; i++){
++			int destIndex = i*(sliceSize+2*width);
++			memcpy(output + destIndex, input+i*sliceSize-width, sliceSize+2*width);
++		}
++		// Last Slice
++		i = nbSlice-1;
++		if(nbSlice > 1){
++			// we have i = nbSlice -1;
++			int destIndex = i*(sliceSize+2*width);
++			memcpy(output + destIndex, input+i*sliceSize-width, sliceSize+width);
++		}
++		// Last line
++		memset(output + (height+nbSlice*2-1)*width,0,width);
++	} else {
++		// Output has been splitted and is null
++		// Fill first and last line with 0
++		memset(input - width, 0, width);
++		// Last line
++		memset(input + height*width,0,width);
+ 	}
+-	// Last Slice
+-	i = nbSlice - 1;
+-	if (nbSlice > 1) {
+-		// we have i = nbSlice -1;
+-		int destIndex = i * (sliceSize + 2 * width);
+-		memcpy(output + destIndex, input + i * sliceSize - width,
+-				sliceSize + width);
+-	}
+-	// Last line
+-	memset(output + (height + nbSlice * 2 - 1) * width, 0, width);
+ }
+ 
+-void merge(int nbSlice, int width, int height, unsigned char *input,
+-		unsigned char *output) {
+-	int i;
+-	int sliceSize = width * height / nbSlice;
+ 
+-	// Copy the slice content except the first and last lines
+-	for (i = 0; i < nbSlice; i++) {
+-		int idx = i * (sliceSize + 2 * width);
+-		memcpy(output + i * sliceSize, input + idx + width, sliceSize);
+-	}
++void merge(int nbSlice, int width, int height, unsigned char *input, unsigned char *output){
++    int i;
++    int sliceSize =  width*height/nbSlice;
++    // Copy the slice content except the first and last lines
++    for(i = 0; i< nbSlice; i++){
++        int idx = i*(sliceSize+2*width);
++        memcpy(output+i*sliceSize, input+idx+width, sliceSize);
++    }
+ }
+diff --git a/tutorials/org.ietr.preesm.sobel/Workflows/Codegen.workflow b/tutorials/org.ietr.preesm.sobel/Workflows/Codegen.workflow
+index 11cb905..58226b5 100644
+--- a/tutorials/org.ietr.preesm.sobel/Workflows/Codegen.workflow
++++ b/tutorials/org.ietr.preesm.sobel/Workflows/Codegen.workflow
+@@ -52,7 +52,7 @@
+     <dftools:task
+         pluginId="org.ietr.preesm.memory.allocation.MemoryAllocatorTask" taskId="Memory Allocation">
+         <dftools:data key="variables">
+-            <dftools:variable name="Allocator(s)" value="Basic"/>
++            <dftools:variable name="Allocator(s)" value="FirstFit"/>
+             <dftools:variable name="Best/First Fit order" value="LargestFirst"/>
+             <dftools:variable name="Data alignment" value="None"/>
+             <dftools:variable name="Merge broadcasts" value="True"/>
+@@ -75,6 +75,30 @@
+             <dftools:variable name="path" value="Algo/generated/flatten"/>
+         </dftools:data>
+     </dftools:task>
++    <dftools:task
++        pluginId="org.ietr.preesm.memory.exclusiongraph.MemExUpdater" taskId="MEG Updater">
++        <dftools:data key="variables">
++            <dftools:variable name="Suppr Fork/Join" value="False"/>
++            <dftools:variable name="Update with MemObject lifetime" value="False"/>
++            <dftools:variable name="Verbose" value="True"/>
++        </dftools:data>
++    </dftools:task>
++    <dftools:task
++        pluginId="org.ietr.preesm.memory.bounds.MemoryBoundsEstimator" taskId="Memory Bounds Estimator">
++        <dftools:data key="variables">
++            <dftools:variable name="Solver" value="Heuristic"/>
++            <dftools:variable name="Verbose" value="False"/>
++        </dftools:data>
++    </dftools:task>
++    <dftools:task
++        pluginId="org.ietr.preesm.memory.script.MemoryScriptTask" taskId="Memory Scripts">
++        <dftools:data key="variables">
++            <dftools:variable name="Check" value="Thorough"/>
++            <dftools:variable name="Data alignment" value="None"/>
++            <dftools:variable name="Log Path" value="log_memoryScripts"/>
++            <dftools:variable name="Verbose" value="True"/>
++        </dftools:data>
++    </dftools:task>
+     <dftools:dataTransfer from="scenario" sourceport="scenario"
+         targetport="scenario" to="Display Gantt"/>
+     <dftools:dataTransfer from="Scheduling" sourceport="ABC"
+@@ -95,8 +119,6 @@
+         targetport="DAG" to="MEG Builder"/>
+     <dftools:dataTransfer from="scenario" sourceport="scenario"
+         targetport="scenario" to="MEG Builder"/>
+-    <dftools:dataTransfer from="MEG Builder" sourceport="MemEx"
+-        targetport="MemEx" to="Memory Allocation"/>
+     <dftools:dataTransfer from="Memory Allocation" sourceport="MemEx"
+         targetport="MemEx" to="Code Generation"/>
+     <dftools:dataTransfer from="scenario" sourceport="scenario"
+@@ -115,4 +137,18 @@
+         targetport="void" to="MEG Builder"/>
+     <dftools:dataTransfer from="HierarchyFlattening" sourceport="SDF"
+         targetport="SDF" to="Flat SDF Exporter"/>
++    <dftools:dataTransfer from="MEG Builder" sourceport="MemEx"
++        targetport="MemEx" to="MEG Updater"/>
++    <dftools:dataTransfer from="MEG Builder" sourceport="MemEx"
++        targetport="MemEx" to="Memory Bounds Estimator"/>
++    <dftools:dataTransfer from="Scheduling" sourceport="DAG"
++        targetport="DAG" to="MEG Updater"/>
++    <dftools:dataTransfer from="MEG Updater" sourceport="MemEx"
++        targetport="MemEx" to="Memory Scripts"/>
++    <dftools:dataTransfer from="Memory Scripts" sourceport="MemEx"
++        targetport="MemEx" to="Memory Allocation"/>
++    <dftools:dataTransfer from="scenario" sourceport="scenario"
++        targetport="scenario" to="Memory Scripts"/>
++    <dftools:dataTransfer from="Scheduling" sourceport="DAG"
++        targetport="DAG" to="Memory Scripts"/>
+ </dftools:workflow>
+-- 
+1.8.3.msysgit.0
+
