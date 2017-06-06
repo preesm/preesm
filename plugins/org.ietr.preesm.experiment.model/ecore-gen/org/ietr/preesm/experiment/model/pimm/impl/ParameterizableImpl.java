@@ -38,9 +38,8 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 import org.eclipse.emf.common.notify.NotificationChain;
+import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
@@ -109,6 +108,23 @@ public abstract class ParameterizableImpl extends EObjectImpl implements Paramet
       this.configInputPorts = new EObjectContainmentEList<>(ConfigInputPort.class, this, PiMMPackage.PARAMETERIZABLE__CONFIG_INPUT_PORTS);
     }
     return this.configInputPorts;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EList<Parameter> getInputParameters() {
+    final EList<Parameter> result = ECollections.newBasicEList();
+    for (final ConfigInputPort in : getConfigInputPorts()) {
+      final ISetter setter = in.getIncomingDependency().getSetter();
+      if (setter instanceof Parameter) {
+        result.add((Parameter) setter);
+      }
+    }
+    return result;
   }
 
   /**
@@ -216,23 +232,6 @@ public abstract class ParameterizableImpl extends EObjectImpl implements Paramet
   @Override
   public void accept(final PiMMVisitor v) {
     v.visitParameterizable(this);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.Parameterizable#getInputParameters()
-   */
-  @Override
-  public Set<Parameter> getInputParameters() {
-    final Set<Parameter> result = new HashSet<>();
-    for (final ConfigInputPort in : getConfigInputPorts()) {
-      final ISetter setter = in.getIncomingDependency().getSetter();
-      if (setter instanceof Parameter) {
-        result.add((Parameter) setter);
-      }
-    }
-    return result;
   }
 
 } // ParameterizableImpl

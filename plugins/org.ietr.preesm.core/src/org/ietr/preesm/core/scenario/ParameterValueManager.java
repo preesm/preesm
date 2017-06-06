@@ -36,6 +36,7 @@
 package org.ietr.preesm.core.scenario;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.emf.ecore.EObject;
@@ -172,8 +173,7 @@ public class ParameterValueManager {
     if (container instanceof PiGraph) {
       parent = ((PiGraph) container).getName();
     }
-    Set<Parameter> inputParameters = new HashSet<>();
-    inputParameters = param.getInputParameters();
+    final List<Parameter> inputParameters = param.getInputParameters();
 
     if (param.isLocallyStatic()) {
       if (param.isDependent()) {

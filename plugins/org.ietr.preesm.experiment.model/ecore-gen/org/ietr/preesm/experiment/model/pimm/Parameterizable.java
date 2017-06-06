@@ -37,7 +37,6 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
-import java.util.Set;
 import org.eclipse.emf.common.util.EList;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
 
@@ -73,10 +72,13 @@ public interface Parameterizable extends PiMMVisitable {
   EList<ConfigInputPort> getConfigInputPorts();
 
   /**
-   * Gets the input parameters.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the input parameters
+   * @model kind="operation" ordered="false" annotation="http://www.eclipse.org/emf/2002/GenModel body='final EList<Parameter> result =
+   *        ECollections.newBasicEList();\nfor (final ConfigInputPort in : getConfigInputPorts()) {\n final ISetter setter =
+   *        in.getIncomingDependency().getSetter();\n if (setter instanceof Parameter) {\n\tresult.add((Parameter) setter);\n }\n}\nreturn result;'"
+   * @generated
    */
-  public Set<Parameter> getInputParameters();
+  EList<Parameter> getInputParameters();
 
 } // Parameterizable
