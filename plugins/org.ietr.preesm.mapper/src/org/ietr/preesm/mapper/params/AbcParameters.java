@@ -38,7 +38,7 @@
  */
 package org.ietr.preesm.mapper.params;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
@@ -76,7 +76,7 @@ public class AbcParameters {
    *          the balance loads
    */
   public AbcParameters(final AbcType simulatorType, final EdgeSchedType edgeSchedType, final boolean balanceLoads) {
-    this.textParameters = new HashMap<>();
+    this.textParameters = new LinkedHashMap<>();
     this.simulatorType = simulatorType;
     this.edgeSchedType = edgeSchedType;
     this.balanceLoads = balanceLoads;

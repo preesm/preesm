@@ -39,7 +39,7 @@
  */
 package org.ietr.preesm.mapper;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -141,7 +141,7 @@ public class ListSchedulingMapping extends AbstractMapping {
       throw (new WorkflowException(e.getMessage()));
     }
 
-    final Map<String, Object> outputs = new HashMap<>();
+    final Map<String, Object> outputs = new LinkedHashMap<>();
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, simu2);
 

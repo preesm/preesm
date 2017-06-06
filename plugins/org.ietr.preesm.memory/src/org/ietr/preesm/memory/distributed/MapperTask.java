@@ -35,7 +35,7 @@
  */
 package org.ietr.preesm.memory.distributed;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -115,7 +115,7 @@ public class MapperTask extends AbstractTaskImplementation {
     }
 
     // Output output
-    final Map<String, Object> output = new HashMap<>();
+    final Map<String, Object> output = new LinkedHashMap<>();
     output.put(MapperTask.OUTPUT_KEY_MEM_EX, memExes);
     return output;
   }
@@ -127,7 +127,7 @@ public class MapperTask extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(MapperTask.PARAM_VERBOSE, MapperTask.VALUE_VERBOSE_DEFAULT);
     parameters.put(AbstractMemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY, AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
     return parameters;

@@ -39,7 +39,7 @@
 package org.ietr.preesm.core.workflow;
 
 import java.io.FileNotFoundException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -80,7 +80,7 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
   @Override
   public Map<String, Object> extractData(final String path) throws WorkflowException {
 
-    final Map<String, Object> outputs = new HashMap<>();
+    final Map<String, Object> outputs = new LinkedHashMap<>();
 
     // Retrieving the scenario from the given path
     final ScenarioParser scenarioParser = new ScenarioParser();

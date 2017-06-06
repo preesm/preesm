@@ -35,7 +35,7 @@
  */
 package org.ietr.preesm.core.scenario;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -60,7 +60,7 @@ public class ParameterValueManager {
    * Instantiates a new parameter value manager.
    */
   public ParameterValueManager() {
-    this.parameterValues = new HashSet<>();
+    this.parameterValues = new LinkedHashSet<>();
   }
 
   /**
@@ -134,7 +134,7 @@ public class ParameterValueManager {
    *          the parent
    */
   private void addParameterDependentParameterValue(final Parameter param, final String parent) {
-    final Set<String> inputParametersNames = new HashSet<>();
+    final Set<String> inputParametersNames = new LinkedHashSet<>();
     for (final Parameter p : param.getInputParameters()) {
       inputParametersNames.add(p.getName());
     }
@@ -188,7 +188,7 @@ public class ParameterValueManager {
       final boolean isActorDependent = inputParameters.size() < param.getConfigInputPorts().size();
 
       if (isActorDependent) {
-        final Set<Integer> values = new HashSet<>();
+        final Set<Integer> values = new LinkedHashSet<>();
         values.add(1);
         // Add an actor dependent value
         addActorDependentParameterValue(param, values, parent);

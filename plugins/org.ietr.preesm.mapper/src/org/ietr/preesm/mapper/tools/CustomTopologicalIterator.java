@@ -37,7 +37,7 @@
  */
 package org.ietr.preesm.mapper.tools;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.preesm.mapper.model.MapperDAG;
@@ -73,7 +73,7 @@ public class CustomTopologicalIterator extends AbstractGraphIterator<MapperDAGVe
   public CustomTopologicalIterator(final MapperDAG dag, final boolean directOrder) {
     this.directOrder = directOrder;
     this.dag = dag;
-    this.visitedVertices = new HashSet<>();
+    this.visitedVertices = new LinkedHashSet<>();
   }
 
   /*

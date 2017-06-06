@@ -39,7 +39,7 @@
  */
 package org.ietr.preesm.mapper.model;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
@@ -235,7 +235,7 @@ public class MapperDAGVertex extends DAGVertex {
    */
   public Map<MapperDAGVertex, MapperDAGEdge> getPredecessors(final boolean ignorePrecedence) {
 
-    final Map<MapperDAGVertex, MapperDAGEdge> preds = new HashMap<>();
+    final Map<MapperDAGVertex, MapperDAGEdge> preds = new LinkedHashMap<>();
     final Set<DAGEdge> incomingSet = incomingEdges();
 
     if (ignorePrecedence) {
@@ -263,7 +263,7 @@ public class MapperDAGVertex extends DAGVertex {
    */
   public Map<MapperDAGVertex, MapperDAGEdge> getSuccessors(final boolean ignorePrecedence) {
 
-    final Map<MapperDAGVertex, MapperDAGEdge> succs = new HashMap<>();
+    final Map<MapperDAGVertex, MapperDAGEdge> succs = new LinkedHashMap<>();
     final Set<DAGEdge> outgoingSet = outgoingEdges();
 
     if (ignorePrecedence) {

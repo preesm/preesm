@@ -37,8 +37,8 @@
  */
 package org.ietr.preesm.memory.allocation;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -99,7 +99,7 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 
     // Get total set of vertices after distribution
     final Set<MemoryExclusionVertex> verticesAfterDistribution = memEx.getTotalSetOfVertices();
-    final Set<MemoryExclusionVertex> verticesInMegs = new HashSet<>();
+    final Set<MemoryExclusionVertex> verticesInMegs = new LinkedHashSet<>();
     megs.forEach((bank, meg) -> {
       verticesInMegs.addAll(meg.getTotalSetOfVertices());
     });
@@ -132,7 +132,7 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
       }
     }
 
-    final Map<String, Object> output = new HashMap<>();
+    final Map<String, Object> output = new LinkedHashMap<>();
     output.put("MEGs", megs);
     return output;
   }

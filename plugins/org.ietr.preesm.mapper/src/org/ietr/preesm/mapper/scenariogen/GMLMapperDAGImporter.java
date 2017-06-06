@@ -117,7 +117,7 @@ public class GMLMapperDAGImporter extends GMLImporter<SDFGraph, SDFAbstractVerte
 
     SDFAbstractVertex vertex;
     /*
-     * HashMap<String, String> attributes = new HashMap<String, String>(); for (int i = 0; i < vertexElt.getAttributes().getLength(); i++) {
+     * LinkedHashMap<String, String> attributes = new LinkedHashMap<String, String>(); for (int i = 0; i < vertexElt.getAttributes().getLength(); i++) {
      * attributes.put(vertexElt.getAttributes().item(i).getNodeName(), vertexElt.getAttributes().item(i).getNodeValue()); }
      *
      * attributes.put("kind", SDFVertex.VERTEX);

@@ -38,7 +38,7 @@
  */
 package org.ietr.preesm.algorithm.exportXml;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -70,7 +70,7 @@ public class SDF4JGMLExporter extends AbstractTaskImplementation {
     final SDF2GraphmlExporter exporter = new SDF2GraphmlExporter();
     exporter.export(algorithm, xmlPath);
 
-    return new HashMap<>();
+    return new LinkedHashMap<>();
   }
 
   /*
@@ -80,7 +80,7 @@ public class SDF4JGMLExporter extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
 
     parameters.put("path", "");
     return parameters;

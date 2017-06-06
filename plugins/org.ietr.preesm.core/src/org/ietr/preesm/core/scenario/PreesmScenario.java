@@ -40,8 +40,8 @@ package org.ietr.preesm.core.scenario;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -121,7 +121,7 @@ public class PreesmScenario {
     this.codegenManager = new CodegenManager();
     this.variablesManager = new VariablesManager();
     this.parameterValueManager = new ParameterValueManager();
-    this.dags2sdfs = new HashMap<>();
+    this.dags2sdfs = new LinkedHashMap<>();
   }
 
   /**
@@ -171,7 +171,7 @@ public class PreesmScenario {
    * @return the SDF actor names
    */
   private Set<String> getSDFActorNames() {
-    final Set<String> result = new HashSet<>();
+    final Set<String> result = new LinkedHashSet<>();
     try {
       final SDFGraph graph = ScenarioParser.getSDFGraph(this.algorithmURL);
       for (final SDFAbstractVertex vertex : graph.vertexSet()) {
@@ -189,7 +189,7 @@ public class PreesmScenario {
    * @return the pi actor names
    */
   private Set<String> getPiActorNames() {
-    final Set<String> result = new HashSet<>();
+    final Set<String> result = new LinkedHashSet<>();
     try {
       final PiGraph graph = ScenarioParser.getPiGraph(this.algorithmURL);
       for (final AbstractActor vertex : graph.getVertices()) {
@@ -319,7 +319,7 @@ public class PreesmScenario {
    */
   public Set<String> getOperatorIds() {
     if (this.operatorIds == null) {
-      this.operatorIds = new HashSet<>();
+      this.operatorIds = new LinkedHashSet<>();
     }
     return this.operatorIds;
   }
@@ -343,7 +343,7 @@ public class PreesmScenario {
    */
   public Set<String> getOperatorDefinitionIds() {
     if (this.operatorDefinitionIds == null) {
-      this.operatorDefinitionIds = new HashSet<>();
+      this.operatorDefinitionIds = new LinkedHashSet<>();
     }
     return this.operatorDefinitionIds;
   }
@@ -375,7 +375,7 @@ public class PreesmScenario {
    */
   public Set<String> getComNodeIds() {
     if (this.comNodeIds == null) {
-      this.comNodeIds = new HashSet<>();
+      this.comNodeIds = new LinkedHashSet<>();
     }
     return this.comNodeIds;
   }

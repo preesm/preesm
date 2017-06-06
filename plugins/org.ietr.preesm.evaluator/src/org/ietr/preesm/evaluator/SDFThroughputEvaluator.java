@@ -36,7 +36,7 @@
 package org.ietr.preesm.evaluator;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.gnu.glpk.GLPK;
@@ -207,8 +207,8 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator {
    * @return true, if successful
    */
   private boolean has_periodic_schedule(final SDFGraph input) {
-    final HashMap<SDFAbstractVertex, Double> v = new HashMap<>();
-    final HashMap<SDFEdge, Double> e = new HashMap<>();
+    final Map<SDFAbstractVertex, Double> v = new LinkedHashMap<>();
+    final Map<SDFEdge, Double> e = new LinkedHashMap<>();
 
     // Init the weights on the edges (i,j) : w = M0 + gcd(i,j) - Zj
     for (final SDFEdge edge : input.edgeSet()) {

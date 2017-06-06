@@ -37,7 +37,7 @@
 package org.ietr.preesm.pimm.algorithm.pimm2sdf.visitor;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,7 +66,7 @@ public class DynamicPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
 
   /** The subgraphs. */
   // Set of subgraphs to visit afterwards
-  private final Set<PiGraph> subgraphs = new HashSet<>();
+  private final Set<PiGraph> subgraphs = new LinkedHashSet<>();
 
   /**
    * Instantiates a new dynamic pi MM 2 SDF visitor.

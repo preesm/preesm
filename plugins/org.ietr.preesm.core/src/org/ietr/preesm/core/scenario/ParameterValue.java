@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.core.scenario;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.nfunk.jep.JEP;
@@ -138,8 +138,8 @@ public class ParameterValue {
     setParameter(parameter);
     this.name = parameter.getName();
     this.type = type;
-    this.values = new HashSet<>();
-    this.inputParameters = new HashSet<>();
+    this.values = new LinkedHashSet<>();
+    this.inputParameters = new LinkedHashSet<>();
     this.parentVertex = parent;
   }
 

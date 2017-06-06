@@ -38,8 +38,6 @@
 package org.ietr.preesm.ui.pimm.layout;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -771,7 +769,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     }
     // Check if dependencies were not layouted
     final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(diagram);
-    final Set<Dependency> allDependencies = new HashSet<>(graph.getDependencies());
+    final Set<Dependency> allDependencies = new LinkedHashSet<>(graph.getDependencies());
     allDependencies.removeAll(processedDependencies);
 
     // Each remaining dependency is a configuration link
@@ -1158,7 +1156,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
    * @return the {@link Parameter} in their {@link #getParameterVerticalOrder(List)}.
    */
   protected List<Parameter> stageByStageParameterLayout(final Diagram diagram, final List<List<Parameter>> stagedParameters) {
-    this.paramXPositions = new HashMap<>();
+    this.paramXPositions = new LinkedHashMap<>();
 
     // 1. Sort the parameters so that each parameter has its own vertical
     // line

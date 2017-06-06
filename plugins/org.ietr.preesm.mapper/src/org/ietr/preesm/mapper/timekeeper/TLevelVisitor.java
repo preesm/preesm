@@ -38,7 +38,7 @@
  */
 package org.ietr.preesm.mapper.timekeeper;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -139,7 +139,7 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
     if (dagVertex.incomingEdges().isEmpty()) {
       timing.setTLevel(0L);
     } else {
-      final Map<MapperDAGVertex, MapperDAGEdge> predecessors = new HashMap<>();
+      final Map<MapperDAGVertex, MapperDAGEdge> predecessors = new LinkedHashMap<>();
 
       for (final MapperDAGVertex v : synchroVertices) {
         final Map<MapperDAGVertex, MapperDAGEdge> preds = v.getPredecessors(false);

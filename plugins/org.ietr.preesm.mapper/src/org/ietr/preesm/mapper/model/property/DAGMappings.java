@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.mapper.model.property;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
@@ -60,7 +60,7 @@ public class DAGMappings {
    */
   public DAGMappings() {
     super();
-    this.mappings = new HashMap<>();
+    this.mappings = new LinkedHashMap<>();
   }
 
   /**
@@ -129,7 +129,7 @@ public class DAGMappings {
    */
   @Override
   public Object clone() {
-    final Map<VertexMapping, VertexMapping> relateOldAndNew = new HashMap<>();
+    final Map<VertexMapping, VertexMapping> relateOldAndNew = new LinkedHashMap<>();
     final DAGMappings newMappings = new DAGMappings();
     for (final String s : this.mappings.keySet()) {
       final VertexMapping m = this.mappings.get(s);

@@ -36,8 +36,8 @@
 package org.ietr.preesm.pimm.algorithm.pimm2sdf;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -79,13 +79,13 @@ public class DynamicPiMM2SDFLauncher {
    * @return the sets the
    */
   public Set<SDFGraph> launch() {
-    final Set<SDFGraph> result = new HashSet<>();
+    final Set<SDFGraph> result = new LinkedHashSet<>();
 
     // Get all the available values for all the parameters
     final Map<String, List<Integer>> parametersValues = getParametersValues();
     // Get the values for Parameters directly contained by graph (top-level
     // parameters), if any
-    final Map<String, List<Integer>> outerParametersValues = new HashMap<>();
+    final Map<String, List<Integer>> outerParametersValues = new LinkedHashMap<>();
     // The number of time we need to execute, and thus visit graph
     final int nbExecutions = this.scenario.getSimulationManager().getNumberOfTopExecutions();
 
@@ -135,7 +135,7 @@ public class DynamicPiMM2SDFLauncher {
    * @return the parameters values
    */
   private Map<String, List<Integer>> getParametersValues() {
-    final Map<String, List<Integer>> result = new HashMap<>();
+    final Map<String, List<Integer>> result = new LinkedHashMap<>();
 
     for (final ParameterValue paramValue : this.scenario.getParameterValueManager().getParameterValues()) {
       switch (paramValue.getType()) {

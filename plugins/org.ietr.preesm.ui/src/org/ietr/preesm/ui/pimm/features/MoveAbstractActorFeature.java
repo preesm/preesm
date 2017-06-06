@@ -41,7 +41,7 @@ package org.ietr.preesm.ui.pimm.features;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import org.eclipse.emf.common.util.EList;
@@ -87,7 +87,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
   // List the delays that should be moved because both their fifo producer and
   /** The implicitly moved delay. */
   // consumers are selected to be moved.
-  Set<Delay> implicitlyMovedDelay = new HashSet<>();
+  Set<Delay> implicitlyMovedDelay = new LinkedHashSet<>();
 
   /**
    * Default constructor for {@link MoveAbstractActorFeature}.

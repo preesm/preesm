@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.algorithm.exportSdf3Xml;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.core.runtime.IPath;
@@ -87,7 +87,7 @@ public class MultiSDF3Exporter extends AbstractTaskImplementation {
       engine.printSDFGraphToSDF3File(sdf, scenario, archi, path);
     }
 
-    return new HashMap<>();
+    return new LinkedHashMap<>();
   }
 
   /*
@@ -97,7 +97,7 @@ public class MultiSDF3Exporter extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(MultiSDF3Exporter.PARAM_PATH, MultiSDF3Exporter.VALUE_PATH_DEFAULT);
     return parameters;
   }

@@ -36,7 +36,7 @@
 package org.ietr.preesm.pimm.algorithm.subgraph.connector;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.WorkflowException;
@@ -70,7 +70,7 @@ public class SubgraphConnectorTask extends AbstractTaskImplementation {
     connector.connectSubgraphs(pg);
 
     // Return pg
-    final Map<String, Object> outputs = new HashMap<>();
+    final Map<String, Object> outputs = new LinkedHashMap<>();
     outputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, pg);
     return outputs;
   }

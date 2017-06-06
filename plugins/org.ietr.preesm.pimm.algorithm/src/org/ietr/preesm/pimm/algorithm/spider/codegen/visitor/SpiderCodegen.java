@@ -40,8 +40,8 @@ package org.ietr.preesm.pimm.algorithm.spider.codegen.visitor;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -107,7 +107,7 @@ public class SpiderCodegen {
   private Map<Port, Integer> portMap;
 
   /** The constraints. */
-  private HashMap<AbstractActor, Set<String>> constraints;
+  private Map<AbstractActor, Set<String>> constraints;
 
   /**
    * Instantiates a new spider codegen.
@@ -134,13 +134,13 @@ public class SpiderCodegen {
     this.portMap = this.preprocessor.getPortMap();
     this.functionMap = this.preprocessor.getFunctionMap();
 
-    this.coreTypesIds = new HashMap<>();
+    this.coreTypesIds = new LinkedHashMap<>();
     int coreTypeId = 0;
     for (final String coreType : this.scenario.getOperatorDefinitionIds()) {
       this.coreTypesIds.put(coreType, coreTypeId++);
     }
 
-    this.coreIds = new HashMap<>();
+    this.coreIds = new LinkedHashMap<>();
     String mainOperator = this.scenario.getSimulationManager().getMainOperatorName();
     if ((mainOperator == null) || mainOperator.equals("")) {
       /* Warning */
@@ -157,25 +157,25 @@ public class SpiderCodegen {
 
     // Generate timings
     final Map<String, AbstractActor> actorsByNames = this.preprocessor.getActorNames();
-    this.timings = new HashMap<>();
+    this.timings = new LinkedHashMap<>();
     for (final Timing t : this.scenario.getTimingManager().getTimings()) {
       final String actorName = t.getVertexId();
       final AbstractActor aa = actorsByNames.get(actorName);
       if (aa != null) {
         if (!this.timings.containsKey(aa)) {
-          this.timings.put(aa, new HashMap<String, String>());
+          this.timings.put(aa, new LinkedHashMap<String, String>());
         }
         this.timings.get(aa).put(t.getOperatorDefinitionId(), t.getStringValue());
       }
     }
 
     // Generate constraints
-    this.constraints = new HashMap<>();
+    this.constraints = new LinkedHashMap<>();
     for (final ConstraintGroup cg : this.scenario.getConstraintGroupManager().getConstraintGroups()) {
       for (final String actorPath : cg.getVertexPaths()) {
         final AbstractActor aa = pg.getHierarchicalActorFromPath(actorPath);
         if (this.constraints.get(aa) == null) {
-          this.constraints.put(aa, new HashSet<String>());
+          this.constraints.put(aa, new LinkedHashSet<String>());
         }
         for (final String core : cg.getOperatorIds()) {
           this.constraints.get(aa).add(core);
@@ -186,7 +186,7 @@ public class SpiderCodegen {
     // Add Default timings if needed
     for (final AbstractActor aa : actorsByNames.values()) {
       if (!this.timings.containsKey(aa)) {
-        this.timings.put(aa, new HashMap<String, String>());
+        this.timings.put(aa, new LinkedHashMap<String, String>());
       }
       for (final String coreType : this.coreTypesIds.keySet()) {
         if (!this.timings.get(aa).containsKey(coreType)) {
@@ -336,7 +336,7 @@ public class SpiderCodegen {
     append("#include <spider/spider.h>\n");
     append("#include \"" + pg.getName() + ".h\"\n\n");
 
-    final Set<String> includeList = new HashSet<>();
+    final Set<String> includeList = new LinkedHashSet<>();
     for (final AbstractActor aa : this.functionMap.keySet()) {
       final Actor a = (Actor) aa;
       if (a.getRefinement() instanceof HRefinement) {

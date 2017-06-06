@@ -38,7 +38,7 @@
  */
 package org.ietr.preesm.memory.exclusiongraph;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
@@ -83,7 +83,7 @@ public class MemExUpdater extends AbstractMemExUpdater {
     engine.update(lifetime);
 
     // Generate output
-    final Map<String, Object> output = new HashMap<>();
+    final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_MEM_EX, memEx);
     return output;
   }
@@ -95,7 +95,7 @@ public class MemExUpdater extends AbstractMemExUpdater {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(AbstractMemExUpdater.PARAM_VERBOSE, AbstractMemExUpdater.VALUE_TRUE_FALSE_DEFAULT);
     parameters.put(AbstractMemExUpdater.PARAM_LIFETIME, AbstractMemExUpdater.VALUE_TRUE_FALSE_DEFAULT);
     parameters.put(AbstractMemExUpdater.PARAM_SUPPR_FORK_JOIN, AbstractMemExUpdater.VALUE_TRUE_FALSE_DEFAULT);

@@ -41,8 +41,9 @@ package org.ietr.preesm.experiment.model.pimm.serialize;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -100,10 +101,10 @@ public class PiWriter {
   private final URI documentURI;
 
   /**
-   * This HashMap associates a List to each <b>element</b> (graph, node, edge, port) of a Pi description. For each <b>element</b>, a list of {@link Key} s is
-   * associated. A {@link Key} can be seen as an attribute of this element.
+   * This LinkedHashMap associates a List to each <b>element</b> (graph, node, edge, port) of a Pi description. For each <b>element</b>, a list of {@link Key} s
+   * is associated. A {@link Key} can be seen as an attribute of this element.
    */
-  protected HashMap<String, List<Key>> elementKeys;
+  protected Map<String, List<Key>> elementKeys;
 
   /** Graph {@link Element} of the DOM {@link Document} of this Writer. */
   protected Element graphElement;
@@ -119,7 +120,7 @@ public class PiWriter {
    */
   public PiWriter(final URI uri) {
     // Instantiate an empty elementKeys Map
-    this.elementKeys = new HashMap<>();
+    this.elementKeys = new LinkedHashMap<>();
 
     // Initialize attributes to null
     this.rootElement = null;

@@ -37,8 +37,8 @@
  */
 package org.ietr.preesm.mapper.timekeeper;
 
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -85,7 +85,7 @@ public class TimeKeeper implements Observer {
     this.implementation = implementation;
     this.orderManager = orderManager;
     this.orderManager.addObserver(this);
-    this.dirtyVertices = new HashSet<>();
+    this.dirtyVertices = new LinkedHashSet<>();
   }
 
   /**

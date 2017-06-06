@@ -40,7 +40,8 @@ package org.ietr.preesm.algorithm.exportDif;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.ietr.dftools.algorithm.model.parameters.Argument;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.parameters.NoIntegerValueException;
@@ -89,13 +90,13 @@ public class DIFExporterVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVe
   // The Map of attributes associates the name of the attribute to
   /** The actor attributes. */
   // the attributes Objects.
-  protected HashMap<String, HashMap<String, Object>> actorAttributes;
+  protected Map<String, Map<String, Object>> actorAttributes;
 
   // Map associating an edge to its Map of DIF attributes
   // The Map of attributes associates the name of the attribute to
   /** The edge attributes. */
   // the attributes Objects. (eg. production, consumption rates)
-  protected HashMap<String, HashMap<String, Object>> edgeAttributes;
+  protected Map<String, Map<String, Object>> edgeAttributes;
 
   /**
    * Instantiates a new DIF exporter visitor.
@@ -105,8 +106,8 @@ public class DIFExporterVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVe
    */
   public DIFExporterVisitor(final PreesmScenario scenario) {
     // Initialize the attributes maps
-    this.actorAttributes = new HashMap<>();
-    this.edgeAttributes = new HashMap<>();
+    this.actorAttributes = new LinkedHashMap<>();
+    this.edgeAttributes = new LinkedHashMap<>();
     this.scenario = scenario;
     // Currently, all graph will have the sdf moc
     this.moc = "sdf";
@@ -132,7 +133,7 @@ public class DIFExporterVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVe
 
     // Add the edge entry to the actorAttributes Map
     // With an empty attributes map
-    final HashMap<String, Object> attributesMap = new HashMap<>();
+    final Map<String, Object> attributesMap = new LinkedHashMap<>();
     // Create the edge name := <source_name>__<target_name>
     final String edgeName = edge.getSource().getName() + "__" + edge.getTarget().getName();
 
@@ -186,7 +187,7 @@ public class DIFExporterVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVe
   public void visit(final SDFAbstractVertex vertex) throws SDF4JException {
     // Add the vertex entry to the actorAttributes Map
     // With an empty attributes map
-    final HashMap<String, Object> attributesMap = new HashMap<>();
+    final Map<String, Object> attributesMap = new LinkedHashMap<>();
     this.actorAttributes.put(vertex.getName(), attributesMap);
 
     // Fill the map with the vertex attributes

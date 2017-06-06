@@ -38,7 +38,7 @@
 package org.ietr.preesm.mapper.abc.route.calcul;
 
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
@@ -207,7 +207,7 @@ public class RoutingTable {
    */
   public RoutingTable(final PreesmScenario scenario) {
     super();
-    this.table = new HashMap<>();
+    this.table = new LinkedHashMap<>();
     this.scenario = scenario;
   }
 

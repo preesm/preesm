@@ -38,7 +38,7 @@
 package org.ietr.preesm.algorithm.optimization;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -93,7 +93,7 @@ public class MultiAlgorithmOptimizationTask extends AbstractTaskImplementation {
       }
     }
 
-    final Map<String, Object> outputs = new HashMap<>();
+    final Map<String, Object> outputs = new LinkedHashMap<>();
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPHS_SET, graphs);
     return outputs;
   }

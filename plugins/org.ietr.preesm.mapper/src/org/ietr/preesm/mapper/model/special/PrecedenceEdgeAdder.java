@@ -188,7 +188,7 @@ public class PrecedenceEdgeAdder {
   /*
    * public static void checkPrecedences(SchedOrderManager orderManager, MapperDAG implementation, MultiCoreArchitecture archi) {
    *
-   * Set<ArchitectureComponent> cmpSet = new HashSet<ArchitectureComponent>(); cmpSet.addAll(archi.getComponents(ArchitectureComponentType.medium));
+   * Set<ArchitectureComponent> cmpSet = new LinkedHashSet<ArchitectureComponent>(); cmpSet.addAll(archi.getComponents(ArchitectureComponentType.medium));
    * cmpSet.addAll(archi.getComponents(ArchitectureComponentType.operator));
    *
    * for (ArchitectureComponent o : cmpSet) { List<MapperDAGVertex> schedule = orderManager.getVertexList(o); if (schedule != null) { MapperDAGVertex pv = null;

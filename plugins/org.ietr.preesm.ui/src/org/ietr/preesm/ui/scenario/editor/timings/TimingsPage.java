@@ -40,7 +40,7 @@ package org.ietr.preesm.ui.scenario.editor.timings;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -142,7 +142,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
     // Timing file chooser section
     createFileSection(managedForm, Messages.getString("Timings.timingFile"), Messages.getString("Timings.timingFileDescription"),
         Messages.getString("Timings.timingFileEdit"), this.scenario.getTimingManager().getExcelFileURL(), Messages.getString("Timings.timingFileBrowseTitle"),
-        new HashSet<>(Arrays.asList("xls", "csv")));
+        new LinkedHashSet<>(Arrays.asList("xls", "csv")));
 
     createTimingsSection(managedForm, Messages.getString("Timings.title"), Messages.getString("Timings.description"));
 

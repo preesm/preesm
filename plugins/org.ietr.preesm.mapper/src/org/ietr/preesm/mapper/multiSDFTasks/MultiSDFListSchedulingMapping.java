@@ -36,8 +36,8 @@
  */
 package org.ietr.preesm.mapper.multiSDFTasks;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -98,8 +98,8 @@ public class MultiSDFListSchedulingMapping extends AbstractMapping {
 
     super.execute(inputs, parameters, monitor, nodeName, workflow);
 
-    final Set<MapperDAG> dags = new HashSet<>();
-    final Set<IAbc> abcs = new HashSet<>();
+    final Set<MapperDAG> dags = new LinkedHashSet<>();
+    final Set<IAbc> abcs = new LinkedHashSet<>();
 
     for (final SDFGraph algorithm : algorithms) {
 
@@ -149,7 +149,7 @@ public class MultiSDFListSchedulingMapping extends AbstractMapping {
       abcs.add(simu2);
     }
 
-    final Map<String, Object> outputs = new HashMap<>();
+    final Map<String, Object> outputs = new LinkedHashMap<>();
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG_SET, dags);
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC_SET, abcs);
 

@@ -38,7 +38,7 @@
  */
 package org.ietr.preesm.pimm.algorithm.pimm2sdf.visitor;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.ietr.dftools.algorithm.model.CodeRefinement;
 import org.ietr.dftools.algorithm.model.IRefinement;
@@ -115,15 +115,15 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
 
   /** The pi vx 2 SDF vx. */
   // Map from original PiMM vertices to generated SDF vertices
-  protected Map<AbstractVertex, SDFAbstractVertex> piVx2SDFVx = new HashMap<>();
+  protected Map<AbstractVertex, SDFAbstractVertex> piVx2SDFVx = new LinkedHashMap<>();
 
   /** The pi port 2 vx. */
   // Map from PiMM ports to their vertex (used for SDFEdge creation)
-  protected Map<Port, Parameterizable> piPort2Vx = new HashMap<>();
+  protected Map<Port, Parameterizable> piPort2Vx = new LinkedHashMap<>();
   // Map from original PiMM ports to generated SDF ports (used for SDFEdge
   /** The pi port 2 SDF port. */
   // creation)
-  protected Map<Port, SDFInterfaceVertex> piPort2SDFPort = new HashMap<>();
+  protected Map<Port, SDFInterfaceVertex> piPort2SDFPort = new LinkedHashMap<>();
 
   /** The current SDF refinement. */
   // Current SDF Refinement

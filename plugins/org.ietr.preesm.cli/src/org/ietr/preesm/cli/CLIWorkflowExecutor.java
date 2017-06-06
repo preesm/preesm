@@ -37,7 +37,7 @@
 package org.ietr.preesm.cli;
 
 import java.text.ParseException;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import org.apache.commons.cli.CommandLine;
@@ -127,9 +127,9 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
       String scenarioPath = line.getOptionValue('s');
 
       // Set of workflows to execute
-      Set<String> workflowPaths = new HashSet<>();
+      Set<String> workflowPaths = new LinkedHashSet<>();
       // Set of scenarios to execute
-      Set<String> scenarioPaths = new HashSet<>();
+      Set<String> scenarioPaths = new LinkedHashSet<>();
 
       // If paths to workflow and scenario are not specified using
       // options, find them in the project given as arguments
@@ -199,7 +199,7 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
    *           the core exception
    */
   private Set<String> getAllFilePathsIn(final String extension, final IProject project, final String folderName) throws CoreException {
-    final Set<String> filePaths = new HashSet<>();
+    final Set<String> filePaths = new LinkedHashSet<>();
     // Get the IFolder
     final IFolder folder = project.getFolder(folderName);
     // For each of its members

@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.algorithm.importSdf3Xml;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IPath;
@@ -97,7 +97,7 @@ public class Sdf3Importer extends AbstractTaskImplementation {
     // If there was no problem while parsing the graph
     if (graph != null) {
       // put it in the outputs
-      outputs = new HashMap<>();
+      outputs = new LinkedHashMap<>();
       outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH, graph);
       outputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
     }
@@ -112,7 +112,7 @@ public class Sdf3Importer extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(Sdf3Importer.PARAM_PATH, Sdf3Importer.VALUE_PATH_DEFAULT);
     return parameters;
   }

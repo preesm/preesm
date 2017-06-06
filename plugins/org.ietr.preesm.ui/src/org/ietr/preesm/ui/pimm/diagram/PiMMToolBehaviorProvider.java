@@ -38,7 +38,7 @@
 package org.ietr.preesm.ui.pimm.diagram;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
@@ -100,7 +100,7 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
    */
   public PiMMToolBehaviorProvider(final IDiagramTypeProvider diagramTypeProvider) {
     super(diagramTypeProvider);
-    this.toolTips = new HashMap<>();
+    this.toolTips = new LinkedHashMap<>();
     this.decoratorAdapter = new PiMMDecoratorAdapter(diagramTypeProvider);
 
     final IFeatureProvider featureProvider = getFeatureProvider();

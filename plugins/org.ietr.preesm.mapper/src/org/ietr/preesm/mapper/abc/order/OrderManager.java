@@ -40,8 +40,8 @@ package org.ietr.preesm.mapper.abc.order;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
@@ -78,7 +78,7 @@ public class OrderManager extends Observable {
    */
   public OrderManager(final Design archi) {
 
-    this.schedules = new HashMap<>();
+    this.schedules = new LinkedHashMap<>();
 
     // Adding one schedule per component
     for (final ComponentInstance cmp : DesignTools.getComponentInstances(archi)) {
@@ -152,7 +152,7 @@ public class OrderManager extends Observable {
     // Notifies the time keeper that it should update the successors
     Set<MapperDAGVertex> vSet = this.totalOrder.getSuccessors(vertex);
     if ((vSet == null) || vSet.isEmpty()) {
-      vSet = new HashSet<>();
+      vSet = new LinkedHashSet<>();
     }
     vSet.add(vertex);
     setChanged();
@@ -216,7 +216,7 @@ public class OrderManager extends Observable {
 
     // Notifies the time keeper that it should update the successors
     setChanged();
-    notifyObservers(new HashSet<>(this.totalOrder.getList()));
+    notifyObservers(new LinkedHashSet<>(this.totalOrder.getList()));
   }
 
   /**
@@ -360,7 +360,7 @@ public class OrderManager extends Observable {
     // Notifies the time keeper that it should update the successors
     Set<MapperDAGVertex> successors = this.totalOrder.getSuccessors(vertex);
     if (successors == null) {
-      successors = new HashSet<>();
+      successors = new LinkedHashSet<>();
     }
     successors.add(vertex);
     setChanged();

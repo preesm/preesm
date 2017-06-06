@@ -39,8 +39,8 @@
 package org.ietr.preesm.mapper.algo.list;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -159,7 +159,7 @@ public class InitialLists implements Cloneable {
     final DirectedGraph<DAGVertex, DAGEdge> castDag = dag;
     final DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex = new DirectedNeighborIndex<>(castDag);
 
-    final Set<DAGVertex> predset = new HashSet<>();
+    final Set<DAGVertex> predset = new LinkedHashSet<>();
 
     // check the parents of the current vertex
     cpnvertex = currentvertex;
@@ -271,7 +271,7 @@ public class InitialLists implements Cloneable {
     final DirectedGraph<DAGVertex, DAGEdge> castDag = dag;
     final DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex = new DirectedNeighborIndex<>(castDag);
 
-    final Set<DAGVertex> succset = new HashSet<>();
+    final Set<DAGVertex> succset = new LinkedHashSet<>();
 
     // the first CPNdominant is found
     // put it in the order list and the FCP list

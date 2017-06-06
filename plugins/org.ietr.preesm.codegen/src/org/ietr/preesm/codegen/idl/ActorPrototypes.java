@@ -37,7 +37,7 @@
  */
 package org.ietr.preesm.codegen.idl;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.ietr.dftools.algorithm.model.IRefinement;
@@ -69,7 +69,7 @@ public class ActorPrototypes implements IRefinement {
    *          the path
    */
   public ActorPrototypes(final String path) {
-    this.initPrototypes = new HashMap<>();
+    this.initPrototypes = new LinkedHashMap<>();
     this.path = path;
   }
 

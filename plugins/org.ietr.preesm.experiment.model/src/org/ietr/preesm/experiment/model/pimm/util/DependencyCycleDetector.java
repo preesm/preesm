@@ -38,8 +38,9 @@
 package org.ietr.preesm.experiment.model.pimm.util;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
@@ -59,7 +60,7 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
   /**
    * List of the {@link Parameter}s that were already visited and are not involved in cycles.
    */
-  protected HashSet<Parameter> visited;
+  protected Set<Parameter> visited;
 
   /**
    * List the parameter that are currently being visited. If one of them is met again, this means that there is a cycle.
@@ -90,7 +91,7 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
    */
   public DependencyCycleDetector(final boolean fastDetection) {
     this.fastDetection = fastDetection;
-    this.visited = new HashSet<>();
+    this.visited = new LinkedHashSet<>();
     this.branch = new ArrayList<>();
     this.cycles = new ArrayList<>();
   }

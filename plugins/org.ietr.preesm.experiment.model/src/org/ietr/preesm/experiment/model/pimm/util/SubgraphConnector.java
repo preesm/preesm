@@ -37,7 +37,7 @@
 package org.ietr.preesm.experiment.model.pimm.util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
@@ -86,7 +86,7 @@ public class SubgraphConnector extends PiMMDefaultVisitor {
   private AbstractActor currentActor = null;
 
   /** The graph replacements. */
-  private final Map<PiGraph, List<ActorByGraphReplacement>> graphReplacements = new HashMap<>();
+  private final Map<PiGraph, List<ActorByGraphReplacement>> graphReplacements = new LinkedHashMap<>();
 
   /**
    * Gets the graph replacements.

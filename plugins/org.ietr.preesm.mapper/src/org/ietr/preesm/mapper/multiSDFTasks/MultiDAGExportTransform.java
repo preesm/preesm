@@ -35,7 +35,7 @@
  */
 package org.ietr.preesm.mapper.multiSDFTasks;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
@@ -95,7 +95,7 @@ public class MultiDAGExportTransform extends AbstractTaskImplementation {
     }
     Activator.updateWorkspace();
 
-    return new HashMap<>();
+    return new LinkedHashMap<>();
   }
 
   /*
@@ -105,7 +105,7 @@ public class MultiDAGExportTransform extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
 
     parameters.put("path", "");
     return parameters;
