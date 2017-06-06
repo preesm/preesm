@@ -34,7 +34,7 @@
     </eOperations>
     <eOperations name="getActors" upperBound="-1" eType="#//Actor">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="body" value="return ECollections.newBasicEList(getVertices().stream().filter(v -> v instanceof Actor).map(v -> (Actor) v).collect(Collectors.toList()));"/>
+        <details key="body" value="return ECollections.newBasicEList(getVertices().stream().filter(Actor.class::isInstance).map(Actor.class::cast).collect(Collectors.toList()));"/>
       </eAnnotations>
     </eOperations>
     <eOperations name="getAllParameters" upperBound="-1" eType="#//Parameter">
