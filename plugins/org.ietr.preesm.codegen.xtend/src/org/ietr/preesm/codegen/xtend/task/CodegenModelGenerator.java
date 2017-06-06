@@ -636,11 +636,7 @@ public class CodegenModelGenerator {
               + "Flatten the graph completely before using this code-generation.");
         }
       } catch (final SDF4JException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (final WorkflowException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        throw new WorkflowException("Codegen for " + dagVertex.getName() + "failed.", e);
       }
     } else {
       ActorPrototypes prototypes = null;

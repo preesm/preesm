@@ -146,7 +146,7 @@ public class CodegenHierarchicalModelGenerator {
         flattener.flattenGraph();
         resultGraph = flattener.getFlattenedGraph();
       } catch (final SDF4JException e) {
-        throw (new WorkflowException(e.getMessage()));
+        throw (new WorkflowException(e.getMessage(), e));
       }
       resultGraph.validateModel(WorkflowLogger.getLogger()); // compute repetition vectors
       if (resultGraph.isSchedulable() == false) {
@@ -171,6 +171,9 @@ public class CodegenHierarchicalModelGenerator {
 
       final HSDFBuildLoops loopBuilder = new HSDFBuildLoops(this.scenario);
       final AbstractClust clust = graph.getPropertyBean().getValue(AbstractGraph.CLUSTERED_VERTEX, AbstractClust.class);
+      if (clust == null) {
+        throw (new WorkflowException("Loop Codegen failed. Please make sure the clustering workflow is run."));
+      }
 
       // check that hierarchical actor interfaces sinks or sources size is
       final List<SDFAbstractVertex> inputRepVertexs = new ArrayList<>();
