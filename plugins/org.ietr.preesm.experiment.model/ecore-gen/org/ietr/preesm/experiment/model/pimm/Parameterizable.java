@@ -74,9 +74,9 @@ public interface Parameterizable extends PiMMVisitable {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @model kind="operation" ordered="false" annotation="http://www.eclipse.org/emf/2002/GenModel body='final EList<Parameter> result =
-   *        ECollections.newBasicEList();\nfor (final ConfigInputPort in : getConfigInputPorts()) {\n final ISetter setter =
-   *        in.getIncomingDependency().getSetter();\n if (setter instanceof Parameter) {\n\tresult.add((Parameter) setter);\n }\n}\nreturn result;'"
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='final EList<Parameter> result = ECollections.newBasicEList();\nfor
+   *        (final ConfigInputPort in : getConfigInputPorts()) {\n final ISetter setter = in.getIncomingDependency().getSetter();\n if (setter instanceof
+   *        Parameter) {\n\tresult.add((Parameter) setter);\n }\n}\nreturn result;'"
    * @generated
    */
   EList<Parameter> getInputParameters();

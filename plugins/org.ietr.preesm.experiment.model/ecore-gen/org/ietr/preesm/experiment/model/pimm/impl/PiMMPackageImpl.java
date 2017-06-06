@@ -1476,7 +1476,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
         !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES,
         !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
-    addEOperation(this.parameterizableEClass, getParameter(), "getInputParameters", 0, -1, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_ORDERED);
+    addEOperation(this.parameterizableEClass, getParameter(), "getInputParameters", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     initEClass(this.abstractVertexEClass, AbstractVertex.class, "AbstractVertex", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
@@ -1509,6 +1509,14 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     initEReference(getPiGraph_Dependencies(), getDependency(), null, "dependencies", null, 0, -1, PiGraph.class, !EPackageImpl.IS_TRANSIENT,
         !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+
+    addEOperation(this.piGraphEClass, this.ecorePackage.getEString(), "getVerticesNames", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
+    addEOperation(this.piGraphEClass, this.ecorePackage.getEString(), "getParametersNames", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
+    addEOperation(this.piGraphEClass, getActor(), "getActors", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
+    addEOperation(this.piGraphEClass, getParameter(), "getAllParameters", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     initEClass(this.actorEClass, Actor.class, "Actor", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
     initEReference(getActor_Refinement(), getRefinement(), null, "refinement", null, 1, 1, Actor.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
