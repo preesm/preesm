@@ -1267,6 +1267,18 @@
       </context>
    </extension>
    <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.ietr.preesm.ui.perspective.PreesmPerspective"
+            fixed="false"
+            icon="icons/preesmProject.png"
+            id="org.ietr.preesm.ui.perspective"
+            name="Preesm">
+      </perspective>
+   </extension>
+
+
+   <extension
          point="org.eclipse.ui.menus">
       <menuContribution
             allPopups="false"
@@ -1326,11 +1338,11 @@
                </visibleWhen>
             </command>
             <command
-                  commandId="org.ietr.preesm.ui.command.WorkflowRunner"
+                  commandId="org.ietr.preesm.ui.command.RunWorkflow"
                   icon="icons/workflow.png"
                   label="Run Workflow"
                   style="push"
-                  tooltip="Launch a Preesm workflow">
+                  tooltip="Launch a Preesm Workflow">
                <visibleWhen
                      checkEnabled="true">
                   <with
@@ -1357,6 +1369,7 @@
          </menu>
       </menuContribution>
    </extension>
+
    <extension
          point="org.eclipse.ui.commands">
       <command
@@ -1368,10 +1381,11 @@
             name="Scenario Generator">
       </command>
       <command
-            id="org.ietr.preesm.ui.command.WorkflowRunner"
-            name="Workflow Runner">
+            id="org.ietr.preesm.ui.command.RunWorkflow"
+            name="Run Workflow">
       </command>
    </extension>
+
    <extension
          point="org.eclipse.ui.handlers">
       <handler
@@ -1384,18 +1398,7 @@
       </handler>
       <handler
             class="org.ietr.preesm.ui.pimm.checker.popup.actions.WorkflowRunnerPopup"
-            commandId="org.ietr.preesm.ui.command.WorkflowRunner">
+            commandId="org.ietr.preesm.ui.command.RunWorkflow">
       </handler>
-   </extension>
-
-   <extension
-         point="org.eclipse.ui.perspectives">
-      <perspective
-            class="org.ietr.preesm.ui.perspective.PreesmPerspective"
-            fixed="false"
-            icon="icons/preesmProject.png"
-            id="org.ietr.preesm.ui.perspective"
-            name="Preesm">
-      </perspective>
    </extension>
 </plugin>
