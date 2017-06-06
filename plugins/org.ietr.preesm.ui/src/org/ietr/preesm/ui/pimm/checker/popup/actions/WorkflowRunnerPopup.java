@@ -41,7 +41,7 @@ public class WorkflowRunnerPopup extends AbstractHandler {
       final StructuredSelection structuredSelection = (StructuredSelection) activeSelection;
       final Object firstElement = structuredSelection.getFirstElement();
       if (firstElement instanceof ITabbedPropertySheetPageContributor) {
-        ITabbedPropertySheetPageContributor graph = (ITabbedPropertySheetPageContributor) firstElement;
+        final ITabbedPropertySheetPageContributor graph = (ITabbedPropertySheetPageContributor) firstElement;
         final String contributorId = graph.getContributorId();
         if (org.ietr.dftools.graphiti.ui.properties.PropertiesConstants.CONTRIBUTOR_ID.equals(contributorId)) {
           // get there when the active selection is within a tab with id PropertiesConstants.CONTRIBUTOR_ID from Graphiti package.

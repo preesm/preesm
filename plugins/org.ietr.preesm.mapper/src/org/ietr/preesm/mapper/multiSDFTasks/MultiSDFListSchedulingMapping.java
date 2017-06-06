@@ -154,7 +154,7 @@ public class MultiSDFListSchedulingMapping extends AbstractMapping {
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC_SET, abcs);
 
     super.clean(architecture, scenario);
-    for (DirectedAcyclicGraph dag : dags) {
+    for (final DirectedAcyclicGraph dag : dags) {
       super.checkSchedulingResult(parameters, dag);
     }
 
