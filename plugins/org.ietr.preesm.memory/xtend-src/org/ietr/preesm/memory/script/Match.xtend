@@ -227,7 +227,7 @@ class Match {
 
 		// Forbidden because if a non final attribute is changed, then the hashcode changes.
 		// But if the Match is already stored in a map, its original hashcode will have been used
-		throw new UnsupportedOperationException("HashCode is not supported for Match class. Do not use HashMap.")
+		throw new UnsupportedOperationException("HashCode is not supported for Match class. Do not use LinkedHashMap.")
 
 	//index.hashCode.bitwiseXor(length.hashCode).bitwiseXor(buffer.hashCode) 	
 	}
@@ -283,7 +283,7 @@ class Match {
 	 */
 	@SuppressWarnings("unchecked")
 	def Map<Range, Pair<Buffer, Range>> getRoot() {
-		val result = newHashMap
+		val result = newLinkedHashMap
 		val remoteRange = this.getLocalIndivisibleRange.translate(this.getRemoteIndex - this.getLocalIndex)
 
 		// Termination case if the remote Buffer is not matched	

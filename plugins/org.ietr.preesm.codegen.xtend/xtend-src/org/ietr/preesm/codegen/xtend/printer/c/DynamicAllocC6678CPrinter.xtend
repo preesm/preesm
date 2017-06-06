@@ -53,7 +53,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter
 import java.util.List
 import org.ietr.preesm.codegen.xtend.model.codegen.Block
 import java.util.Set
-import java.util.HashSet
+import java.util.LinkedHashSet
 import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
 import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory
@@ -76,7 +76,7 @@ class DynamicAllocC6678CPrinter extends C6678CPrinter {
 
 	override printCoreBlockHeader(CoreBlock block) '''
 		«{ // Empty the printedMerge
-			printedMerged = new HashSet<Buffer>
+			printedMerged = new LinkedHashSet<Buffer>
 			super.printCoreBlockHeader(block)
 		}»
 		#include <stdlib.h>
