@@ -45,7 +45,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.transformations.IbsdfFlattener;
 import org.ietr.dftools.algorithm.model.sdf.visitors.ConsistencyChecker;
@@ -113,9 +112,9 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
           logger.log(Level.INFO, "Flattening complete with depth " + depth);
           final SDFGraph resultGraph = flattener.getFlattenedGraph();// flatHier.getOutput();
 
-          for (final SDFEdge e : resultGraph.edgeSet()) {
-            p("Flatenning " + e.getSourceLabel() + " " + e.getTargetLabel() + " rate " + e.getDataType().toString());
-          }
+          // for (final SDFEdge e : resultGraph.edgeSet()) {
+          // p("Flatenning " + e.getSourceLabel() + " " + e.getTargetLabel() + " rate " + e.getDataType().toString());
+          // }
 
           outputs.put("SDF", resultGraph);
         } else {
@@ -136,6 +135,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
   /**
    *
    */
+  @SuppressWarnings("unused")
   private void p(final String s) {
     final Logger logger = WorkflowLogger.getLogger();
     logger.log(Level.INFO, s);

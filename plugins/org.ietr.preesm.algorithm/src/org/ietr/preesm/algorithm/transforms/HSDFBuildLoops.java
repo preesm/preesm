@@ -667,6 +667,12 @@ public class HSDFBuildLoops {
         e.printStackTrace();
       }
 
+      AbstractClust clust = generateClustering(resultGraph);
+      if (clust == null) {
+        throw (new WorkflowException("HSDF Build Loops generate clustering: Failed to cluster the hierarchical actor " + resultGraph.getName()));
+      }
+      g.getGraphDescription().getPropertyBean().setValue(AbstractGraph.CLUSTERED_VERTEX, clust);
+
       // getting edges that are allocated by Karol
       final List<SDFEdge> edgeUpperGraph = new ArrayList<>();
       for (final SDFAbstractVertex v : resultGraph.vertexSet()) {
@@ -718,7 +724,7 @@ public class HSDFBuildLoops {
 
             final DataType d = this.dataTypes.get(e.getDataType().toString());
             final int sizeType = d.getSize();
-            p("Buffer allocated edge " + e.getSourceLabel() + " to " + e.getTargetLabel() + " type " + e.getDataType() + " size " + sizeType);
+            // p("Buffer allocated edge " + e.getSourceLabel() + " to " + e.getTargetLabel() + " type " + e.getDataType() + " size " + sizeType);
 
             bufSize += mem * sizeType;
             // nbWorkingBufferAllocated++;

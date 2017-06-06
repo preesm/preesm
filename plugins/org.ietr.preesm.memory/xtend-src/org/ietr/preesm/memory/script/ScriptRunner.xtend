@@ -366,11 +366,11 @@ class ScriptRunner {
 
 		// Identify all actors with a memory Script
 		for (dagVertex : dag.vertexSet) {
-			val sdfVertex = dagVertex.propertyBean.getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex) as SDFAbstractVertex
+			val sdfVertex = dagVertex.propertyBean.getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex)
 			if (dagVertex.kind !== null) {
 				switch (dagVertex.kind) {
 					case DAGVertex.DAG_VERTEX: {
-						val pathString = sdfVertex.propertyBean.getValue(SDFVertex.MEMORY_SCRIPT, String) as String
+						val pathString = sdfVertex.propertyBean.getValue(SDFVertex.MEMORY_SCRIPT, String)
 						if (pathString !== null) {
 
 							// Retrieve the script path as a relative path to the
@@ -1591,7 +1591,7 @@ class ScriptRunner {
 		classManager.cacheClassInfo("Buffer", Buffer);
 
 		// Retrieve the corresponding sdf vertex
-		val sdfVertex = dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex) as SDFAbstractVertex
+		val sdfVertex = dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex)
 
 		// Create the vertex parameter list
 		val Map<String, Integer> parameters = newHashMap

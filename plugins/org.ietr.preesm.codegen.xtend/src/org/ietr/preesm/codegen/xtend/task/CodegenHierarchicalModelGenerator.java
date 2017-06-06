@@ -139,7 +139,7 @@ public class CodegenHierarchicalModelGenerator {
       final List<SDFAbstractVertex> repVertexs = new ArrayList<>();
       final List<SDFInterfaceVertex> interfaces = new ArrayList<>();
 
-      // flat everything
+      // we need to flat everything here
       final IbsdfFlattener flattener = new IbsdfFlattener(graph, 10);
       SDFGraph resultGraph = null;
       try {
@@ -157,7 +157,7 @@ public class CodegenHierarchicalModelGenerator {
       for (final SDFAbstractVertex v : resultGraph.vertexSet()) {
         if (v instanceof SDFVertex) {
           repVertexs.add(v);
-          p("Actor " + v.getName() + " repeated " + getSDFVertexNbRepeated(v));
+          // p("Actor " + v.getName() + " repeated " + getSDFVertexNbRepeated(v));
         }
         /*
          * if (v instanceof SDFBroadcastVertex) { repVertexs.add(v); p("Broadcast Actor " + v.getName()); } if (v instanceof SDFRoundBufferVertex) {
@@ -165,24 +165,13 @@ public class CodegenHierarchicalModelGenerator {
          */
         if (v instanceof SDFInterfaceVertex) {
           interfaces.add((SDFInterfaceVertex) v);
-          p("Interface Vertex " + v.getName());
+          // p("Interface Vertex " + v.getName());
         }
       }
 
       final HSDFBuildLoops loopBuilder = new HSDFBuildLoops(this.scenario);
-      AbstractClust clust = null;
-      try {
-        clust = loopBuilder.generateClustering(resultGraph);
-        loopBuilder.printClusteringSchedule(clust);
-      } catch (final WorkflowException | SDF4JException ex) {
-        // TODO Auto-generated catch block
-        ex.printStackTrace();
-      }
+      final AbstractClust clust = graph.getPropertyBean().getValue(AbstractGraph.CLUSTERED_VERTEX, AbstractClust.class);
 
-      /*
-       * SDFRandomGraph sdfRandom = new SDFRandomGraph(); DirectedAcyclicGraphGenerator sdfRandom = new DirectedAcyclicGraphGenerator(); SDFGraph g = null; g =
-       * sdfRandom.createAcyclicRandomGraph(40, 1, 20, 1, 20);
-       */
       // check that hierarchical actor interfaces sinks or sources size is
       final List<SDFAbstractVertex> inputRepVertexs = new ArrayList<>();
       final List<SDFAbstractVertex> outputRepVertexs = new ArrayList<>();
@@ -214,12 +203,12 @@ public class CodegenHierarchicalModelGenerator {
         }
       }
 
-      for (final SDFAbstractVertex s : inputRepVertexs) {
-        p("Hierarchical Input Vertex: " + s.getName());
-      }
-      for (final SDFAbstractVertex s : outputRepVertexs) {
-        p("Hierarchical Output Vertex " + s.getName());
-      }
+      // for (final SDFAbstractVertex s : inputRepVertexs) {
+      // p("Hierarchical Input Vertex: " + s.getName());
+      // }
+      // for (final SDFAbstractVertex s : outputRepVertexs) {
+      // p("Hierarchical Output Vertex " + s.getName());
+      // }
 
       /*
        * final List<AbstractClust> listScheduleLoop = loopBuilder.getLoopClust(clust); for (final AbstractClust c : listScheduleLoop) { if (c instanceof
@@ -239,7 +228,7 @@ public class CodegenHierarchicalModelGenerator {
           // p("Printing " + repVertex.getName());
           // Vertex
           if (repVertex instanceof SDFVertex) {
-            p("ClustVertex " + repVertex.getName() + " repetition vector " + getSDFVertexNbRepeated(repVertex));
+            // p("ClustVertex " + repVertex.getName() + " repetition vector " + getSDFVertexNbRepeated(repVertex));
             // p("Codegen Model Generator " + repVertex.getName());
             ActorPrototypes prototypes = null;
             final Object vertex_ref = repVertex.getPropertyBean().getValue(AbstractVertex.REFINEMENT);
@@ -289,7 +278,7 @@ public class CodegenHierarchicalModelGenerator {
 
             // Special actors
           } else if ((repVertex instanceof SDFBroadcastVertex) || (repVertex instanceof SDFRoundBufferVertex)) {
-            p("Got Broadcast or RoundBuffer " + repVertex.getName());
+            // p("Got Broadcast or RoundBuffer " + repVertex.getName());
             final SDFAbstractVertex repVertexCallVar = resultGraph.getVertex(((ClustVertex) current).getVertex().getName());
             final String iteratorIndex = new String("iteratorIndex" + Integer.toString(forLoopIter++));
             final FiniteLoopBlock forLoop = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
@@ -322,7 +311,7 @@ public class CodegenHierarchicalModelGenerator {
               upperLoops.get(upperLoops.size() - 1).getCodeElts().add(forLoop);
             }
             upperLoops.add(forLoop);
-            p("ClustSequence ForLoop " + iteratorIndex + " repetition " + current.getRepeat());
+            // p("ClustSequence ForLoop " + iteratorIndex + " repetition " + current.getRepeat());
           }
         }
         current = loopBuilder.getLoopClustV2(clust);
