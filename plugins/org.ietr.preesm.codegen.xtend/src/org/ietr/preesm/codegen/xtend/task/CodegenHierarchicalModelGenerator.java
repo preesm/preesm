@@ -788,6 +788,7 @@ public class CodegenHierarchicalModelGenerator {
     logger.log(Level.INFO, s);
   }
 
+  @SuppressWarnings("unused")
   private int getSDFVertexNbRepeated(final SDFAbstractVertex s) {
     ActorPrototypes prototypes = null;
     int vertexRep = 1;
