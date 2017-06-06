@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.ietr.preesm.memory.exclusiongraph.IWeightedVertex;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
@@ -145,9 +146,8 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
    *
    * @return the heaviest clique found.
    */
-  @SuppressWarnings("unchecked")
-  public HashSet<V> getHeaviestClique() {
-    return (HashSet<V>) this.heaviestClique.clone();
+  public Set<V> getHeaviestClique() {
+    return new LinkedHashSet<V>(this.heaviestClique);
   }
 
   /**
