@@ -1368,6 +1368,22 @@
             </command>
          </menu>
       </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:net.sf.graphiti.GraphitiContextMenu">
+         <command
+               commandId="org.ietr.preesm.ui.command.RunWorkflow"
+               icon="icons/workflow.png"
+               label="Run Workflow"
+               style="push"
+               tooltip="Launch a Preesm Workflow">
+				<visibleWhen checkEnabled="true">
+					<with variable="activeEditorId">
+						<equals value="net.sf.dftools.ui.WorkflowEditor"/>
+					</with>
+				</visibleWhen>
+         </command>
+      </menuContribution>
    </extension>
 
    <extension
