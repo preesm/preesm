@@ -8,7 +8,7 @@
     <graph edgedefault="directed">
         <data key="name">bp1d</data>
         <node expr="450" id="pWidth" kind="param"/>
-        <node expr="15" id="pHeight" kind="param"/>
+        <node expr="25" id="pHeight" kind="param"/>
         <node expr="1" id="pSlices" kind="param"/>
         <node expr="1" id="SliceHeight" kind="param"/>
         <node id="width" kind="cfg_in_iface"/>

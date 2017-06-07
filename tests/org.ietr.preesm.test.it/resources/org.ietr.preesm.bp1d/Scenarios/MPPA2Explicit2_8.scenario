@@ -7,49 +7,34 @@
     </files>
     <constraints excelUrl="">
         <constraintGroup>
-            <operator name="Core0"/>
-            <task name="myappBP1D/writePPM"/>
-            <task name="myappBP1D"/>
-            <task name="myappBP1D/ReadPPM"/>
+            <operator name="Core9"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core13"/>
+            <operator name="Core1"/>
             <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
             <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
             <task name="myappBP1D/topHierarchicalBP1D"/>
+            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputeFiEnergy"/>
+            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputePhi_B"/>
+            <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="myappBP1D/writePPM"/>
+            <task name="myappBP1D"/>
+            <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
+            <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
+            <task name="myappBP1D/topHierarchicalBP1D"/>
+            <task name="myappBP1D/ReadPPM"/>
             <task name="myappBP1D/topHierarchicalBP1D/BP_ComputeFiEnergy"/>
             <task name="myappBP1D/topHierarchicalBP1D/BP_ComputePhi_B"/>
             <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core15"/>
-            <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
-            <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
-            <task name="myappBP1D/topHierarchicalBP1D"/>
-            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputeFiEnergy"/>
-            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputePhi_B"/>
-            <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core14"/>
-            <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
-            <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
-            <task name="myappBP1D/topHierarchicalBP1D"/>
-            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputeFiEnergy"/>
-            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputePhi_B"/>
-            <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core3"/>
-            <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
-            <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
-            <task name="myappBP1D/topHierarchicalBP1D"/>
-            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputeFiEnergy"/>
-            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputePhi_B"/>
-            <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core1"/>
             <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
             <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
             <task name="myappBP1D/topHierarchicalBP1D"/>
@@ -67,40 +52,16 @@
             <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core2"/>
-            <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
-            <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
-            <task name="myappBP1D/topHierarchicalBP1D"/>
-            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputeFiEnergy"/>
-            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputePhi_B"/>
-            <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core9"/>
-            <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
-            <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
-            <task name="myappBP1D/topHierarchicalBP1D"/>
-            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputeFiEnergy"/>
-            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputePhi_B"/>
-            <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
-        </constraintGroup>
-        <constraintGroup>
             <operator name="Core8"/>
-            <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
-            <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
-            <task name="myappBP1D/topHierarchicalBP1D"/>
-            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputeFiEnergy"/>
-            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputePhi_B"/>
-            <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core12"/>
-            <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
-            <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
-            <task name="myappBP1D/topHierarchicalBP1D"/>
-            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputeFiEnergy"/>
-            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputePhi_B"/>
-            <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
+            <operator name="Core13"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core10"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core14"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core7"/>
@@ -112,7 +73,7 @@
             <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core10"/>
+            <operator name="Core2"/>
             <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
             <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
             <task name="myappBP1D/topHierarchicalBP1D"/>
@@ -121,7 +82,13 @@
             <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
         </constraintGroup>
         <constraintGroup>
+            <operator name="Core12"/>
+        </constraintGroup>
+        <constraintGroup>
             <operator name="Core11"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core4"/>
             <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
             <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
             <task name="myappBP1D/topHierarchicalBP1D"/>
@@ -131,15 +98,6 @@
         </constraintGroup>
         <constraintGroup>
             <operator name="Core6"/>
-            <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
-            <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
-            <task name="myappBP1D/topHierarchicalBP1D"/>
-            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputeFiEnergy"/>
-            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputePhi_B"/>
-            <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core4"/>
             <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
             <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
             <task name="myappBP1D/topHierarchicalBP1D"/>

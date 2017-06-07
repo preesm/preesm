@@ -126,9 +126,17 @@ void readPPMInit(int id, int height, int width, char* paths[]) {
 	// Set initial clock
 }
 
+#ifdef __k1__
+#include <stdint.h>
+#include <mOS_vcore_u.h>
+#endif
+
 //void readPPM(int id,int height, int width, unsigned char *r, unsigned char *g, unsigned char *b){
 void readPPM(int height, int width, unsigned char *rgbLeft, unsigned char *rgbRight){
 
+	#ifdef __k1__
+	uint64_t s = __k1_read_dsu_timestamp();
+	#endif
 	char magicNumber[3];
 	int readWidth;
 	int readHeight;
@@ -200,5 +208,8 @@ void readPPM(int height, int width, unsigned char *rgbLeft, unsigned char *rgbRi
 	//    }
 	//    rgb_val = (rgb_val + 1)%3;
 	//}
+	#ifdef __k1__
+	printf("read ms %.2f\n", ((float)(__k1_read_dsu_timestamp()-s)) / ((float)__bsp_frequency/1000));
+	#endif
 }
 

@@ -9,7 +9,7 @@
         <data key="name">myappBP1D</data>
         <node expr="450" id="width" kind="param"/>
         <node expr="375" id="height" kind="param"/>
-        <node expr="25" id="topSlice" kind="param"/>
+        <node expr="15" id="topSlice" kind="param"/>
         <node expr="height/topSlice" id="topHeightSlice" kind="param"/>
         <node id="ReadPPM" kind="actor">
             <data key="graph_desc">Code/src/ppm.h</data>
