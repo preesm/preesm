@@ -101,7 +101,7 @@ public class MemExBroadcastMerger {
    */
   public MemExBroadcastMerger(final MemoryExclusionGraph memEx) {
     this.memEx = memEx;
-    this.dag = (DirectedAcyclicGraph) memEx.getPropertyBean().getValue(MemoryExclusionGraph.SOURCE_DAG, DirectedAcyclicGraph.class);
+    this.dag = memEx.getPropertyBean().getValue(MemoryExclusionGraph.SOURCE_DAG, DirectedAcyclicGraph.class);
     this.mergedObjects = new LinkedHashMap<>();
   }
 
@@ -266,7 +266,7 @@ public class MemExBroadcastMerger {
     final Set<DAGEdge> incomingEdges = vert.incomingEdges();
 
     // Retrieve the last memobject
-    final SDFAbstractVertex sdfVertex = (SDFAbstractVertex) vert.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex.class);
+    final SDFAbstractVertex sdfVertex = vert.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex.class);
     final Map<Integer, SDFEdge> orderedEdges = (Map<Integer, SDFEdge>) sdfVertex.getPropertyBean().getValue(DAGForkVertex.EDGES_ORDER);
     final SDFEdge lastEdge = orderedEdges.get(Collections.max(orderedEdges.keySet()));
     final DAGEdge lastDagEdge = this.dag.getEdge(this.dag.getVertex(lastEdge.getSource().getName()), this.dag.getVertex(lastEdge.getTarget().getName()));
@@ -414,7 +414,7 @@ public class MemExBroadcastMerger {
       // Get the unmerged object and it allocation.
       MemoryExclusionVertex unmergedObject = entry.getKey();
       unmergedObject = this.memEx.getVertex(unmergedObject);
-      final Integer offset = (Integer) unmergedObject.getPropertyBean().getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, Integer.class);
+      final Integer offset = unmergedObject.getPropertyBean().getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, Integer.class);
 
       // Scan the unmerged objects
       final Set<MemoryExclusionVertex> unmergedObjects = entry.getValue();

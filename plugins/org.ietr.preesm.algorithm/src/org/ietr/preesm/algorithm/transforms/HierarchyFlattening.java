@@ -132,15 +132,6 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
     return outputs;
   }
 
-  /**
-   *
-   */
-  @SuppressWarnings("unused")
-  private void p(final String s) {
-    final Logger logger = WorkflowLogger.getLogger();
-    logger.log(Level.INFO, s);
-  }
-
   /*
    * (non-Javadoc)
    *

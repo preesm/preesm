@@ -667,7 +667,7 @@ public class HSDFBuildLoops {
         e.printStackTrace();
       }
 
-      AbstractClust clust = generateClustering(resultGraph);
+      final AbstractClust clust = generateClustering(resultGraph);
       if (clust == null) {
         throw (new WorkflowException("HSDF Build Loops generate clustering: Failed to cluster the hierarchical actor " + resultGraph.getName()));
       }

@@ -130,7 +130,7 @@ public class CodegenHierarchicalModelGenerator {
    */
   public int execute(final CoreBlock operatorBlock, final DAGVertex dagVertex) throws SDF4JException, WorkflowException {
     // Check whether the ActorCall is a call to a hierarchical actor or not.
-    final SDFVertex sdfVertex = (SDFVertex) dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFVertex.class);
+    final SDFVertex sdfVertex = dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFVertex.class);
     final Object refinement = sdfVertex.getPropertyBean().getValue(AbstractVertex.REFINEMENT);
 
     // p("Generating code for hierarchical actor " + sdfVertex.getName());
@@ -790,28 +790,5 @@ public class CodegenHierarchicalModelGenerator {
   private void p(final String s) {
     final Logger logger = WorkflowLogger.getLogger();
     logger.log(Level.INFO, s);
-  }
-
-  @SuppressWarnings("unused")
-  private int getSDFVertexNbRepeated(final SDFAbstractVertex s) {
-    ActorPrototypes prototypes = null;
-    int vertexRep = 1;
-    final Object vertex_ref = s.getPropertyBean().getValue(AbstractVertex.REFINEMENT);
-    if (vertex_ref instanceof ActorPrototypes) {
-      prototypes = (ActorPrototypes) vertex_ref;
-    }
-    if (prototypes != null) {
-      /* get repetition vector */
-      try {
-        vertexRep = s.getNbRepeatAsInteger();
-      } catch (final InvalidExpressionException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-    } else {
-      // throw new CodegenException("getSDFVertexNbRepeated failed");
-      p("getSDFVertexNbRepeated failed");
-    }
-    return vertexRep;
   }
 }
