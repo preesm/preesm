@@ -1595,7 +1595,7 @@ class ScriptRunner {
 
 		// Create the vertex parameter list
 		val Map<String, Integer> parameters = newLinkedHashMap
-		val arguments = sdfVertex.propertyBean.getValue(SDFAbstractVertex.ARGUMENTS) as LinkedHashMap<String, Argument>
+		val arguments = sdfVertex.propertyBean.getValue(SDFAbstractVertex.ARGUMENTS) as Map<String, Argument>
 		if(arguments !== null) arguments.entrySet.forEach[parameters.put(it.key, it.value.intValue)]
 
 		parameters.put("alignment", alignment)
