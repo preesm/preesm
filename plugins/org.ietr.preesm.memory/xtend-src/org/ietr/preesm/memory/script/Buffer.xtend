@@ -55,9 +55,9 @@ class Buffer {
 	 * this ranges are stored in the {@link Buffer#getMatchTable() match table}
 	 * of the {@link Buffer}. For example, if these to calls are executed: </br>
 	 * <code>a.matchWith(0,b,0,3)</code> and <code>a.matchWith(0,b,3,3)</code>,
-	 * then a[0..3[ is matched multiple times.   
-	 * 
-	 * 
+	 * then a[0..3[ is matched multiple times.
+	 *
+	 *
 	 * @return a {@link Map} containing the start end end of ranges matched
 	 *         multiple times.
 	 */
@@ -67,14 +67,14 @@ class Buffer {
 	}
 
 	/**
-	 * Same as {@link #getMultipleMatchRange(Buffer)} but tests only the given 
+	 * Same as {@link #getMultipleMatchRange(Buffer)} but tests only the given
 	 * {@link List} of {@link Match matches}. This method does not check if all
-	 * {@link Match matches} in the {@link List} have the same {@link 
+	 * {@link Match matches} in the {@link List} have the same {@link
 	 * #getLocalBuffer() local buffer}.
-	 * 
-	 * @param matches 
+	 *
+	 * @param matches
 	 * 	the {@link List} of {@link Match matches}
-	 * @return a {@link List} of {@link Range} containing the overlapping 
+	 * @return a {@link List} of {@link Range} containing the overlapping
 	 * ranges of the matches.
 	 */
 	package static def getOverlappingRanges(Iterable<Match> matches) {
@@ -97,17 +97,17 @@ class Buffer {
 	/**
 	 * Test if the {@link Buffer} is partially matched.<br>
 	 * <br>
-	 * A {@link Buffer} is partially matched if only part of its token range 
-	 * (i.e. from 0 to {@link #getNbTokens() nbTokens}*{@link #getTokenSize() 
-	 * tokenSize}) are involved in a {@link Match} in the {@link Buffer} 
-	 * {@link Buffer#_matchTable match table}. This condition is sufficient 
-	 * since all "virtual" tokens of a {@link Buffer} will always have an 
-	 * overlapping indivisible range with real tokens. 
-	 * 
+	 * A {@link Buffer} is partially matched if only part of its token range
+	 * (i.e. from 0 to {@link #getNbTokens() nbTokens}*{@link #getTokenSize()
+	 * tokenSize}) are involved in a {@link Match} in the {@link Buffer}
+	 * {@link Buffer#_matchTable match table}. This condition is sufficient
+	 * since all "virtual" tokens of a {@link Buffer} will always have an
+	 * overlapping indivisible range with real tokens.
+	 *
 	 * @param buffer
 	 * 	The tested {@link Buffer}.
 	 * @return <code>true</code> if the {@link Buffer} is completely matched,
-	 * and <code>false</code> otherwise. 
+	 * and <code>false</code> otherwise.
 	 */
 	package def isCompletelyMatched() {
 		val coveredRange = new ArrayList<Range>
@@ -131,12 +131,12 @@ class Buffer {
 	}
 
 	/**
-	 * Test if all {@link Match matches} contained in the {@link 
+	 * Test if all {@link Match matches} contained in the {@link
 	 * Buffer#_machTable matchTable} are reciprocal.<br><br>
-	 * 
+	 *
 	 * A {@link Match} is reciprocal if the remote {@link Match#buffer}
      * contains an reciprocal {@link Match} in its {@link Buffer#_matchTable
-     * matchTable}.  
+     * matchTable}.
 	 */
 	package static def isReciprocal(Buffer localBuffer) {
 		return localBuffer.getMatchTable.entrySet.forall [
@@ -154,27 +154,27 @@ class Buffer {
 	/**
 	 * The objective of this method is to merge as many matches as possible
 	 * from the {@link Buffer} {@link Buffer#_matchTable match tables}.<br><br>
-	 * 
-	 * Two matches are mergeable if they are consecutive and if they match 
+	 *
+	 * Two matches are mergeable if they are consecutive and if they match
 	 * consecutive targets.<br>
 	 * Example 1: <code>a[0..3]<->b[1..4] and a[4..5]<->b[5..6]</code> are
 	 * valid candidates.<br>
 	 * Example 2: <code>a[0..3]<->b[1..4] and a[5..6]<->b[5..6]</code> are
 	 * not valid candidates. Merging buffers does not change the divisibility
-	 * of the buffer since if contiguous matches are applied, at least one 
-	 * of them will become indivisible (since subparts of a divided buffer 
+	 * of the buffer since if contiguous matches are applied, at least one
+	 * of them will become indivisible (since subparts of a divided buffer
 	 * cannot be match within divided buffers.)<br><b>
 	 * Before using this method, the {@link Buffer} must pass all checks
 	 * performed by the {@link ScriptRunner#check()} method.</b>
-	 * 
+	 *
 	 * @param buffer
 	 * 	The {@link Buffer} whose {@link Buffer#_matchTable matchTable} is
 	 *  simplified.
 	 * @param processedMatch
 	 * 	A {@link List} containing {@link Match matches} that will be ignored
 	 *  during simplification. This list will be updated during the method
-	 *  execution by adding to it the {@link Match#reciprocate} of the 
-	 *  processed {@link Match matches}. 
+	 *  execution by adding to it the {@link Match#reciprocate} of the
+	 *  processed {@link Match matches}.
 	 */
 	package static def simplifyMatches(Buffer buffer, List<Match> processedMatch) {
 		val removedEntry = newArrayList
@@ -236,7 +236,7 @@ class Buffer {
 	 * Minimum index for the buffer content.
 	 * Constructor initialize this value to 0 but it is possible to lower this
 	 * value by matching another buffer on the "edge" of this one.<br>
-	 * For example: <code>this.matchWith(-3, a, 0, 6)</code> results in 
+	 * For example: <code>this.matchWith(-3, a, 0, 6)</code> results in
 	 * matching this[-3..2] with a[0..5], thus lowering this.minIndex to -3.
 	 */
 	@Accessors
@@ -248,17 +248,17 @@ class Buffer {
 	 */
 	@Accessors
 	final package Map<Integer, List<Match>> matchTable
-	
+
 	/**
-	 * This property is used to mark the {@link Buffer buffers} that were 
+	 * This property is used to mark the {@link Buffer buffers} that were
 	 * {@link #applyMatches(List) matched}.
 	 * Originally set to <code>null</code>, it is replaced by a {@link List}
 	 * of applied {@link Match} in the {@link #applyMatches(List) applyMatches}
-	 * method. 
+	 * method.
 	 */
 	@Accessors
 	package var List<Match> matched = null
-	
+
 	/**
 	 * This property is set to <code>true</code> if a remote {@link Buffer} was merged
 	 * within the current {@link Buffer}
@@ -282,19 +282,19 @@ class Buffer {
 	package final SDFEdge sdfEdge
 
 	/**
-	 * This {@link List} of {@link Range} is used to store its indivisible 
-	 * sub-parts. A buffer can effectively be divided only if its is not 
+	 * This {@link List} of {@link Range} is used to store its indivisible
+	 * sub-parts. A buffer can effectively be divided only if its is not
 	 * indivisible and if the division imposed by the matches do not break
 	 * any indivisible range.
 	 */
 	@Accessors
 	package List<Range> indivisibleRanges
-	
+
 	/**
 	 * This {@link List} contains all {@link Match} that must be applied
-	 * to authorize the division of a {@link Buffer}. 
+	 * to authorize the division of a {@link Buffer}.
 	 * The {@link List} contains {@link List} of {@link Match}. To authorize
-	 * a division, each sublist must contain enough {@link Match#isApplied() 
+	 * a division, each sublist must contain enough {@link Match#isApplied()
 	 * applied} {@link Match} to cover all the tokens (real and virtual) of
 	 * the original {@link Match#getLocalBuffer() localBuffer} of the
 	 *  {@link Match matches}.
@@ -307,8 +307,8 @@ class Buffer {
 
 	/**
 	 * This flag is set at the {@link Buffer} instantiation to indicate whether
-	 * the buffer is mergeable or not. If the buffer is mergeable, all its 
-	 * virtual tokens will be associated to mergeable ranges. Otherwise they 
+	 * the buffer is mergeable or not. If the buffer is mergeable, all its
+	 * virtual tokens will be associated to mergeable ranges. Otherwise they
 	 * won't.
 	 */
 	@Accessors
@@ -320,7 +320,7 @@ class Buffer {
 	/**
     * Constructor for the {@link Buffer}.
     * @param name
-    * 	A {@link String} corresponding to the final name of the buffer. 
+    * 	A {@link String} corresponding to the final name of the buffer.
     * @param nbTokens
     * 	The number of tokens stored in this buffer.
     * @param tokenSize
@@ -346,7 +346,7 @@ class Buffer {
 	}
 
 	package def getSdfVertex() {
-		return getDagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex) as SDFAbstractVertex
+		return getDagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex)
 	}
 
 	package def void setMaxIndex(int newValue) {
@@ -386,13 +386,13 @@ class Buffer {
 	 * memory space.<br>
 	 * The localIdx, remoteIdx and size represent a number of token. (cf.
 	 * production and consumption rate from the SDF graph).
-	 * 
+	 *
 	 * @exception Exception
 	 *                may be thrown if the matched ranges both have elements
-	 * 				  outside of their {@link Buffer} indexes 
-	 * 				  ({@link #_maxIndex} and {@link #_minIndex}). 
-	 *                
-	 * 
+	 * 				  outside of their {@link Buffer} indexes
+	 * 				  ({@link #_maxIndex} and {@link #_minIndex}).
+	 *
+	 *
 	 * @param localIdx
 	 *            start index of the matched range for the local {@link Buffer}.
 	 * @param buffer
@@ -457,18 +457,18 @@ class Buffer {
 		// this match would not be forwarding when matching the "real" tokens
 		// since only matches overlapping the match.localIndivisibleRange are
 		// forwarded when this match is applied.
-		// eg. 
-		// 
+		// eg.
+		//
 		// Actor A with one input (2 tokens) and one output (4 tokens)
 		// A.in tokens {0, 1} and virtual tokens {-3, -2, -1}
-		// A.out tokens {0, 1, 2, 3} 
-		// 
+		// A.out tokens {0, 1, 2, 3}
+		//
 		// Match1 A.in[-3..-1[ with A.out[0..2[
 		// Match2 A.in[0..2[ with A.out[2..4[
 		//
-		// Because of a graph edge, A.in is matched into B.out(2 tokens),  
-		// Then, Match1 will not be forwarded to B.out because it has no overlap with the 
-		// real tokens.  
+		// Because of a graph edge, A.in is matched into B.out(2 tokens),
+		// Then, Match1 will not be forwarded to B.out because it has no overlap with the
+		// real tokens.
 		if (check) {
 			if ((localByteIdx >= this.getNbTokens * this.getTokenSize) || (localByteIdx + byteSize - 1 < 0)) {
 				throw new RuntimeException(
@@ -534,16 +534,16 @@ class Buffer {
 	}
 
 	/**
-	 * A {@link Buffer} is divisible if its {@link #getIndivisibleRanges() 
-	 * indivisible ranges} are not unique and completely cover the 0 to {@link 
-	 * #getNbTokens() nbTokens}*{@link #getTokenSize() tokenSize} {@link 
+	 * A {@link Buffer} is divisible if its {@link #getIndivisibleRanges()
+	 * indivisible ranges} are not unique and completely cover the 0 to {@link
+	 * #getNbTokens() nbTokens}*{@link #getTokenSize() tokenSize} {@link
 	 * Range}, if it is {@link #isCompletelyMatched() completelyMatched},
 	 * and if it is matched only in {@link #isIndivisible() indivisible} {@link
 	 * Buffer buffers}.<br>
-	 * <b> An {@link Buffer} that is not {@link #isIndivisible() indivisible} 
-	 * is not necessarily divisible. Indeed, it might fulfill parts of the 
+	 * <b> An {@link Buffer} that is not {@link #isIndivisible() indivisible}
+	 * is not necessarily divisible. Indeed, it might fulfill parts of the
 	 * conditions to be divisible.</b>
-	 * 
+	 *
 	 * @return <code>true</code> if the {@link Buffer} is divisible, <code>
 	 * false</code> otherwise.
 	 */
@@ -562,12 +562,12 @@ class Buffer {
 	}
 
 	/**
-	 *  A {@link Buffer} is indivisible if its {@link #getIndivisibleRanges() 
+	 *  A {@link Buffer} is indivisible if its {@link #getIndivisibleRanges()
 	 * indivisibleRanges} attribute contains a unique {@link Range} that covers
-	 * all the {@link #getMinIndex() minIndex} to {@link #getMaxIndex() 
+	 * all the {@link #getMinIndex() minIndex} to {@link #getMaxIndex()
 	 * maxIndex} {@link Range}. <br>
-	 * <b> An {@link Buffer} that is not {@link #isIndivisible() indivisible} 
-	 * is not necessarily {@link #isDivisible() divisible}. Indeed, it might 
+	 * <b> An {@link Buffer} that is not {@link #isIndivisible() indivisible}
+	 * is not necessarily {@link #isDivisible() divisible}. Indeed, it might
 	 * fulfill parts of the conditions to be divisible.</b>
 	 */
 	package def boolean isIndivisible() {
@@ -586,7 +586,7 @@ class Buffer {
 	package def void applyMatches(List<Match> matches) {
 
 		// copy the list to iterate on it
-		// Otherwise the list would be modified during the iteration since it 
+		// Otherwise the list would be modified during the iteration since it
 		// is the result of a flatten or a filter operation.
 		val matchesCopy = new ArrayList(matches)
 
@@ -629,11 +629,11 @@ class Buffer {
 			getAppliedMatches.put(match.getLocalIndivisibleRange, match.getRemoteBuffer -> match.getRemoteIndex)
 			match.getRemoteBuffer.host = true;
 
-			// Fill the forbiddenLocalRanges of conflictCandidates and conflictingMatches 
+			// Fill the forbiddenLocalRanges of conflictCandidates and conflictingMatches
 			// of the applied match
 			updateForbiddenAndMergeableLocalRanges(match)
 
-			// Transfer the forbiddenLocalRanges of the applied match to the 
+			// Transfer the forbiddenLocalRanges of the applied match to the
 			// matches of its local and remote buffers that have no conflicts
 			// with the appliedMatch or its reciprocate
 			val forwardMatch = if(match.getType == MatchType::FORWARD) match else match.getReciprocate
@@ -680,7 +680,7 @@ class Buffer {
 				if (localList.size == 0) {
 					match.getLocalBuffer.getMatchTable.remove(movedMatch.getLocalIndex)
 				}
-				// Change the match local buffer and index	
+				// Change the match local buffer and index
 				// Length and remoteBuffer are unchanged
 				movedMatch.localBuffer = match.getRemoteBuffer
 				movedMatch.localIndex = movedMatch.getLocalIndex - (match.getLocalIndex - match.getRemoteIndex)
@@ -700,10 +700,10 @@ class Buffer {
 			// Must be called before updateRemoteMergeableRange(match)
 			updateRemoteIndexes(match)
 
-			// Update divisability if remote buffer 
+			// Update divisability if remote buffer
 			// The divisability update must not be applied if the applied match involves
 			// the division of the local buffer, instead the remote buffer should become !
-			// non divisable ! <= Note Since buffer division is conditioned by the 
+			// non divisable ! <= Note Since buffer division is conditioned by the
 			// indivisibility of the remote buffer, this remark should probably be ignored
 			updateDivisibleRanges(match)
 
@@ -719,7 +719,7 @@ class Buffer {
 				matchToUpdate = updateConflictingMatches(matchToUpdate)
 			}
 
-			// Remove the applied match from the buffers match table 
+			// Remove the applied match from the buffers match table
 			// (local and reciprocate)
 			match.unmatch
 
@@ -727,7 +727,7 @@ class Buffer {
 			match.applied = true
 			match.getReciprocate.applied = true
 		}
-		
+
 		// Mark the buffer as Matched
 		this.matched = matchesCopy
 	}
@@ -777,7 +777,7 @@ class Buffer {
 	package static def updateMatches(Match match) {
 
 		// 1- For all matches of the remote buffer (old and newly added)
-		// 1.1- If the match (local and remote) ranges falls within 
+		// 1.1- If the match (local and remote) ranges falls within
 		// indivisible range(s) larger than the match length
 		//      Then:
 		// 1.1.1- the match must be enlarged to cover this range
@@ -826,7 +826,7 @@ class Buffer {
 					modifiedMatch.getLocalBuffer.getMatchTable.remove(originalIndex)
 				}
 
-				// Move the remote match  
+				// Move the remote match
 				modifiedMatch.getReciprocate.localIndex = modifiedMatch.getRemoteIndex
 				modifiedMatch.getReciprocate.remoteIndex = modifiedMatch.getLocalIndex
 				modifiedMatch.getRemoteBuffer.getMatchTable.get(originalRemoteIndex).remove(modifiedMatch.getReciprocate)
@@ -840,7 +840,7 @@ class Buffer {
 				if(modifiedMatch.getRemoteBuffer.getMatchTable.get(originalRemoteIndex).empty){
 					modifiedMatch.getRemoteBuffer.getMatchTable.remove(originalRemoteIndex)
 				}
-				
+
 			}
 		]
 
@@ -953,17 +953,17 @@ class Buffer {
 	}
 
 	/**
-	 * Must be called before {@link ScriptRunner#updateConflictingMatches() 
+	 * Must be called before {@link ScriptRunner#updateConflictingMatches()
 	 * updating conflicting matches}.
 	 */
 	package def updateConflictCandidates(Match match) {
 
-		// 1. Conflict candidates of the applied local->remote match are 
-		// added to all remote->other matches (except inter siblings and 
+		// 1. Conflict candidates of the applied local->remote match are
+		// added to all remote->other matches (except inter siblings and
 		// the already conflicting to remote->local (i.e. the backward if
 		// local->remote is forward or vice versa))
-		// 2. Conflict candidates of the applied remote->local match are 
-		// added to all local->other matches (except inter siblings and 
+		// 2. Conflict candidates of the applied remote->local match are
+		// added to all local->other matches (except inter siblings and
 		// the already conflicting to local->remote (i.e. the forward if
 		// remote->local is backward or vice versa))
 		// 1
@@ -997,22 +997,22 @@ class Buffer {
 	}
 
 	/**
-	 * This method update the {@link Match#getConflictingMatches() 
-	 * conflictingMatches} {@link List} of all the {@link Match} passed as a 
-	 * parameter. To do so, the method scan all the {@link 
-	 * Match#getConflictCandidates() conflictCandidates} of each {@link Match} 
-	 * and check if any candidate has an overlapping range. In such case, the 
-	 * candidate is moved to the {@link Match#getConflictingMatches() 
-	 * conflictingMatches} of the {@link Match} and its {@link 
-	 * Match#getReciprocate() reciprocate}. To ensure consistency, one should 
-	 * make sure that if a {@link Match} is updated with this method, then all 
-	 * the {@link Match matches} contained in its {@link 
-	 * Match#getConflictCandidates() conflictCandidates} {@link List} are 
-	 * updated too.   
-	 * 
+	 * This method update the {@link Match#getConflictingMatches()
+	 * conflictingMatches} {@link List} of all the {@link Match} passed as a
+	 * parameter. To do so, the method scan all the {@link
+	 * Match#getConflictCandidates() conflictCandidates} of each {@link Match}
+	 * and check if any candidate has an overlapping range. In such case, the
+	 * candidate is moved to the {@link Match#getConflictingMatches()
+	 * conflictingMatches} of the {@link Match} and its {@link
+	 * Match#getReciprocate() reciprocate}. To ensure consistency, one should
+	 * make sure that if a {@link Match} is updated with this method, then all
+	 * the {@link Match matches} contained in its {@link
+	 * Match#getConflictCandidates() conflictCandidates} {@link List} are
+	 * updated too.
+	 *
 	 * @param matchList
 	 * 		The {@link Iterable} of {@link Match} to update
-	 * 
+	 *
 	 * @return the {@link List} of {@link Match} updated by the method
 	 */
 	package static def List<Match> updateConflictingMatches(Iterable<Match> matchList) {
@@ -1082,10 +1082,10 @@ class Buffer {
 		return res
 	}
 
-	/** 
-	 * Also update the {@link #getDivisibilityRequiredMatches() 
+	/**
+	 * Also update the {@link #getDivisibilityRequiredMatches()
 	 * divisibilityRequiredMatches} {@link List} of the {@link Buffer}.
-	 * 
+	 *
 	 */
 	package def void updateDivisibleRanges(Match match) {
 		val localRange = match.getLocalRange
@@ -1106,11 +1106,11 @@ class Buffer {
 		// non divisable !
 		match.getRemoteBuffer.getIndivisibleRanges.lazyUnion(localIndivisibleRanges)
 
-		// If the destination range is still divisible,(i.e. if the remote 
+		// If the destination range is still divisible,(i.e. if the remote
 		// localRange overlaps more than a unique indivisible Range.)
 		// Then Forward all DivisibilityRequiredMatches from the local Buffer
 		// No risk if the match is applied as a result of a division since
-		// in such case, the destination is compulsorily indivisible			
+		// in such case, the destination is compulsorily indivisible
 		if (match.getRemoteBuffer.getIndivisibleRanges.filter [
 			it.hasOverlap(match.getReciprocate.getLocalRange)
 		].size > 1) {
@@ -1132,7 +1132,7 @@ class Buffer {
 		involvedRange.translate(match.getRemoteIndex - match.getLocalIndex)
 		val remoteMergeableRange = match.getRemoteBuffer.getMergeableRanges.intersection(involvedRange)
 
-		// 2 - Realign the two ranges 
+		// 2 - Realign the two ranges
 		localMergeableRange.translate(-match.getLocalIndex)
 		remoteMergeableRange.translate(-match.getRemoteIndex)
 
@@ -1140,7 +1140,7 @@ class Buffer {
 		val resultMergeableRange = localMergeableRange.intersection(remoteMergeableRange)
 
 		// 4 - Update the destination mergeable range
-		// no need to update the origin mergeable range since 
+		// no need to update the origin mergeable range since
 		// this buffer will no longer be used in the processing
 		// 4.1 - compute the Mergeable range that must be removed
 		// from the destination buffer
@@ -1154,12 +1154,12 @@ class Buffer {
 	}
 
 	/**
-	 * Remove the current {@link Match} from its {@link #getLocalBuffer() 
-	 * localBuffer} and {@link #getRemoteBuffer() remoteBuffer} {@link 
-	 * Buffer#getMatchTable() matchTable}. 
-	 * Each time the current match is retrieved in a List, the reference 
-	 * equality (===) from XTend is used. Indeed, several matches might be 
-	 * {@link Match#equals(Object) equals} which would result in removing the 
+	 * Remove the current {@link Match} from its {@link #getLocalBuffer()
+	 * localBuffer} and {@link #getRemoteBuffer() remoteBuffer} {@link
+	 * Buffer#getMatchTable() matchTable}.
+	 * Each time the current match is retrieved in a List, the reference
+	 * equality (===) from XTend is used. Indeed, several matches might be
+	 * {@link Match#equals(Object) equals} which would result in removing the
 	 * wrong match.
 	 */
 	package static def unmatch(Match match) {
@@ -1177,7 +1177,7 @@ class Buffer {
 			}
 		}
 
-		// Remove empty lists		
+		// Remove empty lists
 		if (localList.size == 0) {
 			getLocalBuffer.getMatchTable.remove(getLocalIndex)
 		}
@@ -1225,9 +1225,9 @@ class Buffer {
 	}
 
 	/**
-	 * This method checks if the given {@link Match Matches} are sufficient to 
+	 * This method checks if the given {@link Match Matches} are sufficient to
 	 * complete the {@link #getDivisibilityRequiredMatches()} condition.
-	 * 
+	 *
 	 */
 	package def boolean doesCompleteRequiredMatches(Iterable<Match> matches) {
 
