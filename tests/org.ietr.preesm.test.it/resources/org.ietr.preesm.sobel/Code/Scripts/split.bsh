@@ -1,0 +1,13 @@
+/**
+ * Split memory script
+ * Input buffer: i_input
+ * Output buffer: o_output
+ * Parameters: height, width, nbSlice
+ */
+int sliceSize = width*(height/nbSlice+2);
+for(int i=0; i<nbSlice ;i++){
+   o_output.matchWith( i*sliceSize,
+                      i_input,
+                      (i*height/nbSlice-1)*width,
+                      sliceSize);
+}

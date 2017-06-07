@@ -47,14 +47,30 @@ import org.junit.Test;
 public class TutorialsTest {
 
   @Test
-  public void testStereoFlow1() throws FileNotFoundException, InvalidModelException, CoreException {
+  public void testStereo() throws FileNotFoundException, InvalidModelException, CoreException {
+    final String projectName = "org.ietr.preesm.stereo";
     final String[] scenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario", "lowMaxDisparity.scenario", "YUV4core.scenario" };
     final String[] workflows = new String[] { "CodegenMemoryScriptsMixedMerged.workflow", "StaticPiMMCodegen.workflow",
         "StaticPiMMCodegenMemoryScripts.workflow" };
 
     for (final String workflow : workflows) {
       for (final String scenario : scenarios) {
-        final String projectName = "org.ietr.preesm.stereo";
+        final String workflowFilePathStr = "/Workflows/" + workflow;
+        final String scenarioFilePathStr = "/Scenarios/" + scenario;
+        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+      }
+    }
+  }
+
+  @Test
+  public void testSobel() throws FileNotFoundException, InvalidModelException, CoreException {
+    final String projectName = "org.ietr.preesm.sobel";
+    final String[] scenarios = new String[] { "1core.scenario", "4core.scenario", "8coreC6678.scenario" };
+    final String[] workflows = new String[] { "Codegen.workflow", "InstrumentedCodegen.workflow" };
+
+    for (final String workflow : workflows) {
+      for (final String scenario : scenarios) {
         final String workflowFilePathStr = "/Workflows/" + workflow;
         final String scenarioFilePathStr = "/Scenarios/" + scenario;
         final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/org.ietr.preesm.sobel/Algo/top_display.pi"/>
+        <architecture url="/org.ietr.preesm.sobel/Archi/8CoreC6678.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.sobel/CodeC6678/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="top_display/Read_YUV"/>
+            <task name="top_display/Merge"/>
+            <task name="top_display/display"/>
+            <task name="top_display"/>
+            <task name="top_display/Split"/>
+            <task name="top_display/Sobel"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="top_display/Read_YUV"/>
+            <task name="top_display/Merge"/>
+            <task name="top_display/display"/>
+            <task name="top_display"/>
+            <task name="top_display/Split"/>
+            <task name="top_display/Sobel"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core6"/>
+            <task name="top_display/Read_YUV"/>
+            <task name="top_display/Merge"/>
+            <task name="top_display/display"/>
+            <task name="top_display"/>
+            <task name="top_display/Split"/>
+            <task name="top_display/Sobel"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core5"/>
+            <task name="top_display/Read_YUV"/>
+            <task name="top_display/Merge"/>
+            <task name="top_display/display"/>
+            <task name="top_display"/>
+            <task name="top_display/Split"/>
+            <task name="top_display/Sobel"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="top_display/Read_YUV"/>
+            <task name="top_display/Merge"/>
+            <task name="top_display/display"/>
+            <task name="top_display"/>
+            <task name="top_display/Split"/>
+            <task name="top_display/Sobel"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core7"/>
+            <task name="top_display/Read_YUV"/>
+            <task name="top_display/Merge"/>
+            <task name="top_display/display"/>
+            <task name="top_display"/>
+            <task name="top_display/Split"/>
+            <task name="top_display/Sobel"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core2"/>
+            <task name="top_display/Read_YUV"/>
+            <task name="top_display/Merge"/>
+            <task name="top_display/display"/>
+            <task name="top_display"/>
+            <task name="top_display/Split"/>
+            <task name="top_display/Sobel"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core4"/>
+            <task name="top_display/Read_YUV"/>
+            <task name="top_display/Merge"/>
+            <task name="top_display/display"/>
+            <task name="top_display"/>
+            <task name="top_display/Split"/>
+            <task name="top_display/Sobel"/>
+        </constraintGroup>
+    </constraints>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl="">
+        <memcpyspeed opname="c6678" setuptime="1" timeperunit="5.0E-5"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="uchar" size="1"/>
+            <dataType name="char" size="1"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core3"/>
+            <specialVertexOperator path="Core4"/>
+            <specialVertexOperator path="Core5"/>
+            <specialVertexOperator path="Core6"/>
+            <specialVertexOperator path="Core0"/>
+            <specialVertexOperator path="Core1"/>
+            <specialVertexOperator path="Core2"/>
+            <specialVertexOperator path="Core7"/>
+        </specialVertexOperators>
+        <numberOfTopExecutions>1</numberOfTopExecutions>
+    </simuParams>
+    <variables excelUrl=""/>
+    <parameterValues/>
+</scenario>
