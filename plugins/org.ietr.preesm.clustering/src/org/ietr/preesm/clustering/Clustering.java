@@ -35,7 +35,7 @@
  */
 package org.ietr.preesm.clustering;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,7 +62,7 @@ public class Clustering extends AbstractTaskImplementation {
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
       final String nodeName, final Workflow workflow) throws WorkflowException {
-    final Map<String, Object> outputs = new HashMap<>();
+    final Map<String, Object> outputs = new LinkedHashMap<>();
     final SDFGraph inputSdf = (SDFGraph) inputs.get("SDF");
     final SDFGraph outputSdf = inputSdf.clone();
     computeHierarchizedGraph(outputSdf);
@@ -74,7 +74,7 @@ public class Clustering extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> defaultParams = new HashMap<>();
+    final Map<String, String> defaultParams = new LinkedHashMap<>();
     defaultParams.put("factor", "1");
     return defaultParams;
   }
