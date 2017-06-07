@@ -78,4 +78,20 @@ public class TutorialsTest {
       }
     }
   }
+
+  @Test
+  public void testTutorial1() throws FileNotFoundException, InvalidModelException, CoreException {
+    final String projectName = "org.ietr.preesm.tutorials.tutorial1";
+    final String[] scenarios = new String[] { "TestComPC.scenario" };
+    final String[] workflows = new String[] { "Codegen.workflow" };
+
+    for (final String workflow : workflows) {
+      for (final String scenario : scenarios) {
+        final String workflowFilePathStr = "/Workflows/" + workflow;
+        final String scenarioFilePathStr = "/Scenarios/" + scenario;
+        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+      }
+    }
+  }
 }
