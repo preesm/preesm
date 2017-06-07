@@ -36,8 +36,8 @@
 package org.ietr.preesm.evaluator;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -154,15 +154,15 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
    *          the sdf
    * @return null if the condition not respected
    */
-  private HashMap<String, HashMap<String, Double>> test_period(final double K, final SDFGraph sdf) {
+  private Map<String, Map<String, Double>> test_period(final double K, final SDFGraph sdf) {
     final SDFGraph g = sdf.clone();
 
     // The set of edges that will be used to compute shortest paths
-    final HashMap<SDFEdge, Double> e = new HashMap<>(g.edgeSet().size());
+    final Map<SDFEdge, Double> e = new LinkedHashMap<>(g.edgeSet().size());
     // The set of vertices used to compute shortest paths
-    final HashMap<String, Double> v = new HashMap<>();
+    final Map<String, Double> v = new LinkedHashMap<>();
     // Contains the results of the shortest paths
-    HashMap<String, HashMap<String, Double>> dist = new HashMap<>();
+    Map<String, Map<String, Double>> dist = new LinkedHashMap<>();
     double H;
     double L;
     AbstractEdgePropertyType<?> E_in;
@@ -209,7 +209,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
 
     // We need a copy of the set of vertices, since we will add vertices in the original set
     // while going through its elements
-    final Set<SDFAbstractVertex> vertexSetCopy = new HashSet<>(g.vertexSet());
+    final Set<SDFAbstractVertex> vertexSetCopy = new LinkedHashSet<>(g.vertexSet());
     for (final SDFAbstractVertex vertex : vertexSetCopy) {
       // For each hierarchical actor
       if ((vertex.getGraphDescription() != null) && (vertex.getGraphDescription() instanceof SDFGraph)) {
@@ -356,7 +356,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
       }
       // while we are not at level zero, fill the shortest paths table
       if (g.getParentVertex() != null) {
-        dist.put(input.getName(), new HashMap<String, Double>());
+        dist.put(input.getName(), new LinkedHashMap<String, Double>());
         // distance from the input to all the outputs
         for (final SDFAbstractVertex output : g.getParentVertex().getSinks()) {
           dist.get(input.getName()).put(output.getName(), v.get(output.getName()));
@@ -380,14 +380,14 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
    *          the g
    * @return null only if the graph does not respect the condition
    */
-  public HashMap<String, HashMap<String, Double>> is_alive(final SDFGraph g) {
+  public Map<String, Map<String, Double>> is_alive(final SDFGraph g) {
 
     // The set of edges that will be used to compute shortest paths
-    final HashMap<SDFEdge, Double> e = new HashMap<>(g.edgeSet().size());
+    final Map<SDFEdge, Double> e = new LinkedHashMap<>(g.edgeSet().size());
     // The set of vertices used to compute shortest paths
-    final HashMap<String, Double> v = new HashMap<>();
+    final Map<String, Double> v = new LinkedHashMap<>();
     // Contains the results of the shortest paths
-    HashMap<String, HashMap<String, Double>> dist = new HashMap<>();
+    Map<String, Map<String, Double>> dist = new LinkedHashMap<>();
 
     // Liveness
     // Value all arcs of this level with M0 + gcd - Zj
@@ -398,7 +398,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
 
     // We need a copy of the set of vertices, since we will add vertices in the original set
     // while going through its elements
-    final Set<SDFAbstractVertex> vertexSetCopy = new HashSet<>(g.vertexSet());
+    final Set<SDFAbstractVertex> vertexSetCopy = new LinkedHashSet<>(g.vertexSet());
     for (final SDFAbstractVertex vertex : vertexSetCopy) {
       // For each hierarchical actor
       if ((vertex.getGraphDescription() != null) && (vertex.getGraphDescription() instanceof SDFGraph)) {
@@ -525,7 +525,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
       }
       // while we are not at level zero, fill the shortest paths table
       if (g.getParentVertex() != null) {
-        dist.put(input.getName(), new HashMap<String, Double>());
+        dist.put(input.getName(), new LinkedHashMap<String, Double>());
         // distance from the input to all the outputs
         for (final SDFAbstractVertex output : g.getParentVertex().getSinks()) {
           dist.get(input.getName()).put(output.getName(), v.get(output.getName()));

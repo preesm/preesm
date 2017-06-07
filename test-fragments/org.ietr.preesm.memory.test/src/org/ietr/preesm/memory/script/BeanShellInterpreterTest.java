@@ -51,7 +51,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,13 +102,13 @@ public class BeanShellInterpreterTest {
   @Test
   public void testParameterSet() throws EvalError {
     final Interpreter interpreter = new Interpreter();
-    final HashMap<String, Double> hashMap = new HashMap<>();
+    final Map<String, Double> hashMap = new LinkedHashMap<>();
     hashMap.put("item1", new Double(5.125));
     interpreter.set("myParam", hashMap);
 
     final Object result = interpreter.eval("myParam");
     Assert.assertNotNull(result);
-    Assert.assertTrue(result instanceof HashMap);
+    Assert.assertTrue(result instanceof LinkedHashMap);
   }
 
   @Test

@@ -37,8 +37,8 @@
 package org.ietr.preesm.core.architecture.util;
 
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
@@ -88,7 +88,7 @@ public class DesignTools {
    * @return the operator instance ids
    */
   public static Set<String> getOperatorInstanceIds(final Design design) {
-    final Set<String> operatorInstanceIds = new HashSet<>();
+    final Set<String> operatorInstanceIds = new LinkedHashSet<>();
 
     for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
       if (cmpInstance.getComponent() instanceof Operator) {
@@ -107,7 +107,7 @@ public class DesignTools {
    * @return the com node instance ids
    */
   public static Set<String> getComNodeInstanceIds(final Design design) {
-    final Set<String> operatorInstanceIds = new HashSet<>();
+    final Set<String> operatorInstanceIds = new LinkedHashSet<>();
 
     for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
       if (cmpInstance.getComponent() instanceof ComNodeImpl) {
@@ -126,7 +126,7 @@ public class DesignTools {
    * @return the operator instances
    */
   public static Set<ComponentInstance> getOperatorInstances(final Design design) {
-    final Set<ComponentInstance> operatorInstances = new HashSet<>();
+    final Set<ComponentInstance> operatorInstances = new LinkedHashSet<>();
 
     for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
       if (cmpInstance.getComponent() instanceof Operator) {
@@ -145,7 +145,7 @@ public class DesignTools {
    * @return the operator component ids
    */
   public static Set<String> getOperatorComponentIds(final Design design) {
-    final Set<String> operatorIds = new HashSet<>();
+    final Set<String> operatorIds = new LinkedHashSet<>();
 
     for (final org.ietr.dftools.architecture.slam.component.Component component : design.getComponentHolder().getComponents()) {
       if (component instanceof Operator) {
@@ -164,7 +164,7 @@ public class DesignTools {
    * @return the operator components
    */
   public static Set<Component> getOperatorComponents(final Design design) {
-    final Set<Component> operators = new HashSet<>();
+    final Set<Component> operators = new LinkedHashSet<>();
 
     for (final org.ietr.dftools.architecture.slam.component.Component component : design.getComponentHolder().getComponents()) {
       if (component instanceof Operator) {
@@ -183,7 +183,7 @@ public class DesignTools {
    * @return the component instances
    */
   public static Set<ComponentInstance> getComponentInstances(final Design design) {
-    final Set<ComponentInstance> instances = new HashSet<>();
+    final Set<ComponentInstance> instances = new LinkedHashSet<>();
 
     for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
       instances.add(cmpInstance);
@@ -270,7 +270,7 @@ public class DesignTools {
    * @return the instances of component
    */
   public static Set<ComponentInstance> getInstancesOfComponent(final Design design, final Component component) {
-    final Set<ComponentInstance> instances = new HashSet<>();
+    final Set<ComponentInstance> instances = new LinkedHashSet<>();
 
     for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
       if (cmpInstance.getComponent().getVlnv().getName().equals(component.getVlnv().getName())) {
@@ -326,7 +326,7 @@ public class DesignTools {
    * @return the undirected links
    */
   public static Set<Link> getUndirectedLinks(final Design design, final ComponentInstance c) {
-    final Set<Link> undirectedLinks = new HashSet<>();
+    final Set<Link> undirectedLinks = new LinkedHashSet<>();
 
     for (final Link link : design.getLinks()) {
       if (!link.isDirected()) {
@@ -349,7 +349,7 @@ public class DesignTools {
    * @return the outgoing directed links
    */
   public static Set<Link> getOutgoingDirectedLinks(final Design design, final ComponentInstance c) {
-    final Set<Link> directedLinks = new HashSet<>();
+    final Set<Link> directedLinks = new LinkedHashSet<>();
 
     for (final Link link : design.getLinks()) {
       if (link.isDirected()) {
@@ -371,7 +371,7 @@ public class DesignTools {
    * @return the incoming directed links
    */
   public static Set<Link> getIncomingDirectedLinks(final Design design, final ComponentInstance c) {
-    final Set<Link> directedLinks = new HashSet<>();
+    final Set<Link> directedLinks = new LinkedHashSet<>();
 
     for (final Link link : design.getLinks()) {
       if (link.isDirected()) {

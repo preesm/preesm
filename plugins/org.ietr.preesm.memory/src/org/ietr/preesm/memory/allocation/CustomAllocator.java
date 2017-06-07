@@ -39,8 +39,9 @@ package org.ietr.preesm.memory.allocation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import org.ietr.preesm.memory.bounds.OstergardSolver;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
@@ -123,14 +124,14 @@ public class CustomAllocator extends MemoryAllocator {
       ostSolver = new OstergardSolver<>(inclusionGraph);
       // logger.log(Level.INFO, "3 - Stable Set");
       ostSolver.solve();
-      final HashSet<MemoryExclusionVertex> cliqueSet = ostSolver.getHeaviestClique();
+      final Set<MemoryExclusionVertex> cliqueSet = ostSolver.getHeaviestClique();
 
       // Convert cliqueSet to a list of elt (where elt is a set of
       // vertices)
       // logger.log(Level.INFO, "4 - Fill arrayList");
-      final ArrayList<HashSet<MemoryExclusionVertex>> clique = new ArrayList<>();
+      final ArrayList<Set<MemoryExclusionVertex>> clique = new ArrayList<>();
       for (final MemoryExclusionVertex node : cliqueSet) {
-        final HashSet<MemoryExclusionVertex> element = new HashSet<>();
+        final Set<MemoryExclusionVertex> element = new LinkedHashSet<>();
         element.add(node);
         clique.add(element);
         // (10) Allocate clique elements
@@ -153,7 +154,7 @@ public class CustomAllocator extends MemoryAllocator {
         orderElementList(clique);
         cliqueWeight = maxElementWeight(clique, true);
 
-        Iterator<HashSet<MemoryExclusionVertex>> iterElements;
+        Iterator<Set<MemoryExclusionVertex>> iterElements;
         iterElements = clique.iterator();
 
         // List the neighbors of elements that were already tested.
@@ -172,14 +173,14 @@ public class CustomAllocator extends MemoryAllocator {
           // treatedNeighbors List and thus make impossible the
           // allocation of first element neighbors in following
           // elements.
-          final HashSet<MemoryExclusionVertex> element = iterElements.next();
+          final Set<MemoryExclusionVertex> element = iterElements.next();
           final int elementWeight = weight(element);
           // logger.log(Level.INFO, "6 - Get neighbors");
           // get all the neighbors of elements vertices
           ArrayList<MemoryExclusionVertex> neighbors;
           // The vertex are added to a set to avoid duplicates.
           // Then they will be stored in ArrayList neighbors
-          final HashSet<MemoryExclusionVertex> temporary = new HashSet<>();
+          final Set<MemoryExclusionVertex> temporary = new LinkedHashSet<>();
           // TODO Move adjacentVertex from solver to graph
           // Use a Solver to retrieve adjacent Vertex
           OstergardSolver<MemoryExclusionVertex, DefaultEdge> toolSolver;
@@ -245,7 +246,7 @@ public class CustomAllocator extends MemoryAllocator {
    *          the set of vertices to treat
    * @return the sum of the vertices weight
    */
-  protected int weight(final HashSet<MemoryExclusionVertex> set) {
+  protected int weight(final Set<MemoryExclusionVertex> set) {
     int result = 0;
 
     for (final MemoryExclusionVertex vertex : set) {
@@ -260,10 +261,10 @@ public class CustomAllocator extends MemoryAllocator {
    * @param elementList
    *          the list to order.
    */
-  protected void orderElementList(final ArrayList<HashSet<MemoryExclusionVertex>> elementList) {
+  protected void orderElementList(final ArrayList<Set<MemoryExclusionVertex>> elementList) {
     // Define a comparator of list elements. The weight of an element is
     // used for comparison
-    final Comparator<HashSet<MemoryExclusionVertex>> comparator = (o1, o2) -> (weight(o2) - weight(o1));
+    final Comparator<Set<MemoryExclusionVertex>> comparator = (o1, o2) -> (weight(o2) - weight(o1));
     Collections.sort(elementList, comparator);
   }
 
@@ -276,7 +277,7 @@ public class CustomAllocator extends MemoryAllocator {
    *          true if the list has been ordered before
    * @return the largest weight of an element
    */
-  protected int maxElementWeight(final ArrayList<HashSet<MemoryExclusionVertex>> elementList, final boolean isOrdered) {
+  protected int maxElementWeight(final ArrayList<Set<MemoryExclusionVertex>> elementList, final boolean isOrdered) {
     int result = 0;
 
     // If the list has been ordered before, just return the weight of the
@@ -285,7 +286,7 @@ public class CustomAllocator extends MemoryAllocator {
       return weight(elementList.get(0));
     }
     // Else, search the list
-    for (final HashSet<MemoryExclusionVertex> element : elementList) {
+    for (final Set<MemoryExclusionVertex> element : elementList) {
       final int temp = weight(element);
       if (temp > result) {
         result = temp;

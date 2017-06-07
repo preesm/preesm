@@ -39,7 +39,7 @@
 package org.ietr.preesm.algorithm.optimization.clean.joinfork;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -105,7 +105,7 @@ public class JoinForkCleaner {
       // reset
       changeDone = false;
       edgeToRemove = null;
-      verticesToRemove = new HashSet<>();
+      verticesToRemove = new LinkedHashSet<>();
 
       // Scan every edge e of the graph
       // Stop as soon as there is an edge between a join and a fork

@@ -37,7 +37,7 @@
  */
 package org.ietr.preesm.ui.pimm.features;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -144,7 +144,7 @@ public class SetActorMemoryScriptFeature extends AbstractCustomFeature {
    */
   private void askMemoryScript(final Actor actor, final String question, final String dialogTitle) {
     // Ask user for memory script
-    final Set<String> fileExtensions = new HashSet<>();
+    final Set<String> fileExtensions = new LinkedHashSet<>();
     fileExtensions.add("bsh");
     final IPath newFilePath = PiMMUtil.askFile(dialogTitle, question, null, fileExtensions);
 

@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.memory.bounds;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -150,7 +150,7 @@ public class SerialMemoryBoundsEstimator extends AbstractTaskImplementation {
     }
 
     // Generate output
-    final Map<String, Object> output = new HashMap<>();
+    final Map<String, Object> output = new LinkedHashMap<>();
     return output;
   }
 
@@ -161,7 +161,7 @@ public class SerialMemoryBoundsEstimator extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(SerialMemoryBoundsEstimator.PARAM_SOLVER, SerialMemoryBoundsEstimator.VALUE_SOLVER_DEFAULT);
     parameters.put(SerialMemoryBoundsEstimator.PARAM_VERBOSE, SerialMemoryBoundsEstimator.VALUE_VERBOSE_DEFAULT);
     return parameters;

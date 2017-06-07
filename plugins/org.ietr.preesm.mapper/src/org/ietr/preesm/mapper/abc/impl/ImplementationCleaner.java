@@ -37,7 +37,7 @@
  */
 package org.ietr.preesm.mapper.abc.impl;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
@@ -188,7 +188,7 @@ public class ImplementationCleaner {
    */
   public static Set<DAGVertex> getAllTransfers(final MapperDAGVertex vertex) {
 
-    final Set<DAGVertex> transfers = new HashSet<>();
+    final Set<DAGVertex> transfers = new LinkedHashSet<>();
 
     transfers.addAll(ImplementationCleaner.getPrecedingTransfers(vertex));
     transfers.addAll(ImplementationCleaner.getFollowingTransfers(vertex));
@@ -205,7 +205,7 @@ public class ImplementationCleaner {
    */
   public static Set<DAGVertex> getPrecedingTransfers(final MapperDAGVertex vertex) {
 
-    final Set<DAGVertex> transfers = new HashSet<>();
+    final Set<DAGVertex> transfers = new LinkedHashSet<>();
 
     for (final MapperDAGVertex v : vertex.getPredecessors(true).keySet()) {
       if (v instanceof TransferVertex) {
@@ -226,7 +226,7 @@ public class ImplementationCleaner {
    */
   public static Set<DAGVertex> getFollowingTransfers(final MapperDAGVertex vertex) {
 
-    final Set<DAGVertex> transfers = new HashSet<>();
+    final Set<DAGVertex> transfers = new LinkedHashSet<>();
 
     for (final MapperDAGVertex v : vertex.getSuccessors(true).keySet()) {
       if (v instanceof TransferVertex) {

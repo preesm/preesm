@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.mapper.model.property;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
@@ -55,7 +55,7 @@ public class DAGTimings {
    * Instantiates a new DAG timings.
    */
   public DAGTimings() {
-    this.timings = new HashMap<>();
+    this.timings = new LinkedHashMap<>();
   }
 
   /**

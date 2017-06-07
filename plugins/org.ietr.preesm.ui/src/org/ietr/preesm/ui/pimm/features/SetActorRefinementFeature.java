@@ -37,7 +37,7 @@
  */
 package org.ietr.preesm.ui.pimm.features;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import org.eclipse.core.resources.IFile;
@@ -177,7 +177,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
     // Ask user for Actor name until a valid name is entered.
     // For now, authorized refinements are other PiGraphs (.pi files) and
     // .idl prototypes
-    final Set<String> fileExtensions = new HashSet<>();
+    final Set<String> fileExtensions = new LinkedHashSet<>();
     fileExtensions.add("pi");
     fileExtensions.add("idl");
     fileExtensions.add("h");

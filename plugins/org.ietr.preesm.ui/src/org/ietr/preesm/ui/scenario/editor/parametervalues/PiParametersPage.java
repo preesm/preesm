@@ -37,7 +37,7 @@
 package org.ietr.preesm.ui.scenario.editor.parametervalues;
 
 import java.io.FileNotFoundException;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.CellEditor;
@@ -207,7 +207,7 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
                   s = s.substring(1, s.length() - 1);
                   final String[] values = s.split(",");
 
-                  final Set<Integer> newValues = new HashSet<>();
+                  final Set<Integer> newValues = new LinkedHashSet<>();
                   boolean modified = true;
 
                   for (final String val : values) {

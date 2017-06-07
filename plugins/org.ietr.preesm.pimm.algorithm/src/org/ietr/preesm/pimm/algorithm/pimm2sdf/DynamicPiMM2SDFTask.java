@@ -36,7 +36,7 @@
 package org.ietr.preesm.pimm.algorithm.pimm2sdf;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -70,7 +70,7 @@ public class DynamicPiMM2SDFTask extends AbstractTaskImplementation {
     final DynamicPiMM2SDFLauncher launcher = new DynamicPiMM2SDFLauncher(scenario, graph);
     final Set<SDFGraph> result = launcher.launch();
 
-    final Map<String, Object> output = new HashMap<>();
+    final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPHS_SET, result);
     return output;
   }

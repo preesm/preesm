@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.memory.allocation;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
@@ -74,7 +74,7 @@ public class BasicAllocator extends MemoryAllocator {
     if (this.inputExclusionGraph != null) {
       // Iterate on a copy of the vertex set because the meg might be
       // modified during graph allocation.
-      final Set<MemoryExclusionVertex> vertexList = new HashSet<>(this.inputExclusionGraph.vertexSet());
+      final Set<MemoryExclusionVertex> vertexList = new LinkedHashSet<>(this.inputExclusionGraph.vertexSet());
       for (final MemoryExclusionVertex vertex : vertexList) {
         // If a data alignment is required
         final Integer typeSize = (Integer) vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE, Integer.class);

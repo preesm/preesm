@@ -56,7 +56,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
 import org.ietr.preesm.codegen.xtend.model.codegen.Call
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
-import java.util.HashSet
+import java.util.LinkedHashSet
 
 class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 		
@@ -64,7 +64,7 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 	 * Set of CharSequence used to avoid calling the same cache operation 
 	 * multiple times in a broadcast or roundbuffer call. 
 	 */
-	var currentOperationMemcpy = new HashSet<CharSequence>();
+	var currentOperationMemcpy = new LinkedHashSet<CharSequence>();
 	
 	/**
 	 * This methods prints a call to the cache invalidate method for each

@@ -37,7 +37,7 @@
 package org.ietr.preesm.mapper.abc.order;
 
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -260,7 +260,7 @@ public class Schedule {
    * @return the successors
    */
   public Set<MapperDAGVertex> getSuccessors(final MapperDAGVertex vertex) {
-    final Set<MapperDAGVertex> vSet = new HashSet<>();
+    final Set<MapperDAGVertex> vSet = new LinkedHashSet<>();
     final int currentIndex = indexOf(vertex);
     if ((currentIndex < 0) || (currentIndex >= this.elementList.size())) {
       return null;

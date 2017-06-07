@@ -38,7 +38,7 @@
  */
 package org.ietr.preesm.mapper.ui.stats;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
@@ -300,7 +300,7 @@ public class StatGenerator {
   public static void removeSendReceive(final MapperDAG localDag) {
 
     // Every send and receive vertices are removed
-    final Set<DAGVertex> vset = new HashSet<>(localDag.vertexSet());
+    final Set<DAGVertex> vset = new LinkedHashSet<>(localDag.vertexSet());
     for (final DAGVertex v : vset) {
       if ((v instanceof SendVertex) || (v instanceof ReceiveVertex)) {
         localDag.removeVertex(v);

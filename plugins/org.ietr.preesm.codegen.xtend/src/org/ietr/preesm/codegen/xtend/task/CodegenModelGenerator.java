@@ -42,8 +42,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -285,17 +285,17 @@ public class CodegenModelGenerator {
     this.workflow = workflow;
 
     checkInputs(this.archi, this.dag, this.megs);
-    this.bufferNames = new HashMap<>();
-    this.mainBuffers = new HashMap<>();
-    this.coreBlocks = new HashMap<>();
-    this.srSDFEdgeBuffers = new HashMap<>();
+    this.bufferNames = new LinkedHashMap<>();
+    this.mainBuffers = new LinkedHashMap<>();
+    this.coreBlocks = new LinkedHashMap<>();
+    this.srSDFEdgeBuffers = new LinkedHashMap<>();
     this.dagEdgeBuffers = HashBiMap.create(dag.edgeSet().size());
-    this.dagFifoBuffers = new HashMap<>();
+    this.dagFifoBuffers = new LinkedHashMap<>();
     this.dagVertexCalls = HashBiMap.create(dag.vertexSet().size());
-    this.communications = new HashMap<>();
-    this.popFifoCalls = new HashMap<>();
-    this.linkHSDFVertexBuffer = new HashMap<>();
-    this.linkHSDFEdgeBuffer = new HashMap<>();
+    this.communications = new LinkedHashMap<>();
+    this.popFifoCalls = new LinkedHashMap<>();
+    this.linkHSDFVertexBuffer = new LinkedHashMap<>();
+    this.linkHSDFEdgeBuffer = new LinkedHashMap<>();
   }
 
   /**
@@ -620,7 +620,7 @@ public class CodegenModelGenerator {
     // 2 - Put the buffer definition in their right place
     generateBufferDefinitions();
 
-    return new HashSet<>(this.coreBlocks.values());
+    return new LinkedHashSet<>(this.coreBlocks.values());
   }
 
   private void p(final String s) {
@@ -1457,7 +1457,7 @@ public class CodegenModelGenerator {
 
       @SuppressWarnings("unchecked")
       final Map<DAGEdge, Integer> allocation = (Map<DAGEdge, Integer>) meg.getPropertyBean().getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION,
-          (new HashMap<DAGEdge, Integer>()).getClass());
+          (new LinkedHashMap<DAGEdge, Integer>()).getClass());
 
       // generate the subbuffer for each dagedge
       for (final Entry<DAGEdge, Integer> dagAlloc : allocation.entrySet()) {
@@ -2020,7 +2020,7 @@ public class CodegenModelGenerator {
 
     // First check if a semaphore was already created for corresponding
     // calls.
-    final Set<Communication> correspondingComm = new HashSet<>();
+    final Set<Communication> correspondingComm = new LinkedHashSet<>();
     if (ss_re) {
       correspondingComm.add(newComm.getReceiveEnd());
       correspondingComm.add(newComm.getSendStart());
@@ -2485,7 +2485,7 @@ public class CodegenModelGenerator {
 
     // Find if an inputBuffer has an overlap with an outputRange
     // For each input find the allocated range
-    // Map<Buffer,Pair<Buffer,Range>> inputRanges = new HashMap<>();
+    // Map<Buffer,Pair<Buffer,Range>> inputRanges = new LinkedHashMap<>();
     for (final Buffer input : inputs) {
       // If the input is not a NullBufer
       if (!(input instanceof NullBuffer)) {

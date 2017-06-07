@@ -37,8 +37,8 @@
  */
 package org.ietr.preesm.memory.exclusiongraph;
 
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.xtext.util.Pair;
@@ -120,7 +120,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   public static final String DIVIDED_PARTS_HOSTS = "divided_parts_hosts";
 
   /** This Map is used as a reference of dataTypes size when creating an vertex from a DAGEdge. */
-  public static Map<String, DataType> _dataTypes = new HashMap<>();
+  public static Map<String, DataType> _dataTypes = new LinkedHashMap<>();
 
   /**
    * This method is used to associate a map of data types to the MemoryExclusionVertex class. This map will be used when creating a MemEx Vertex from a DAGEdge

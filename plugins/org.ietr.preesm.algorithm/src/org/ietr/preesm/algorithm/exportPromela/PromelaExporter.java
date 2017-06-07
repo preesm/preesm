@@ -37,7 +37,7 @@
  */
 package org.ietr.preesm.algorithm.exportPromela;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -120,7 +120,7 @@ public class PromelaExporter extends AbstractTaskImplementation {
     final PromelaExporterEngine engine = new PromelaExporterEngine();
     engine.printSDFGraphToPromelaFile(sdf, scenario, path, fifoShared, synchronousActor);
 
-    return new HashMap<>();
+    return new LinkedHashMap<>();
   }
 
   /*
@@ -130,7 +130,7 @@ public class PromelaExporter extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(PromelaExporter.PARAM_PATH, PromelaExporter.VALUE_PATH_DEFAULT);
     parameters.put(PromelaExporter.PARAM_FIFO_POLICY, PromelaExporter.VALUE_FIFO_DEFAULT);
     parameters.put(PromelaExporter.PARAM_ACTOR_POLICY, PromelaExporter.VALUE_ACTOR_DEFAULT);

@@ -37,7 +37,7 @@
  */
 package org.ietr.preesm.pimm.algorithm.stats.printer;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -74,7 +74,7 @@ public class PrintPISDFStats extends AbstractTaskImplementation {
     WorkflowLogger.getLogger().log(Level.INFO, "Nb Fifos     : " + piGraph.getFifos().size());
     WorkflowLogger.getLogger().log(Level.INFO, "Nb Parameters: " + piGraph.getParameters().size());
 
-    return new HashMap<>();
+    return new LinkedHashMap<>();
   }
 
   /*

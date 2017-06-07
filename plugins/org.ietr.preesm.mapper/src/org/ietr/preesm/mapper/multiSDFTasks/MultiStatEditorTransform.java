@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.mapper.multiSDFTasks;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -80,7 +80,7 @@ public class MultiStatEditorTransform extends AbstractTaskImplementation {
       PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
     }
 
-    return new HashMap<>();
+    return new LinkedHashMap<>();
   }
 
   /*

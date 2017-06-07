@@ -65,8 +65,8 @@ import org.ietr.preesm.core.types.ImplementationPropertyNames;
  * </ul>
  * </li>
  * </ul>
- * 
- * 
+ *
+ *
  * @author kdesnos
  *
  */
@@ -74,14 +74,14 @@ public class CommunicationOrderChecker {
 
   /**
    * Function responsible for checking the validity of the schedule as specified in {@link CommunicationOrderChecker}.
-   * 
+   *
    * @param dag
    *          The {@link DirectedAcyclicGraph} whose schedule is verified.
-   * 
+   *
    * @throws WorkflowException
    *           if the schedule is incorrect.
    */
-  public static void checkCommunicationOrder(DirectedAcyclicGraph dag) {
+  public static void checkCommunicationOrder(final DirectedAcyclicGraph dag) {
     // Check communication ordering
     final DAGIterator iterDAGVertices = new DAGIterator(dag); // Iterator on DAG vertices
 
@@ -90,13 +90,13 @@ public class CommunicationOrderChecker {
     final SortedMap<Integer, DAGVertex> recvVerticesMap = new TreeMap<>();
 
     // Store all used processing elements
-    final Set<ComponentInstance> sendComponents = new LinkedHashSet<ComponentInstance>();
-    final Set<ComponentInstance> recvComponents = new LinkedHashSet<ComponentInstance>();
+    final Set<ComponentInstance> sendComponents = new LinkedHashSet<>();
+    final Set<ComponentInstance> recvComponents = new LinkedHashSet<>();
 
     while (iterDAGVertices.hasNext()) {
       final DAGVertex currentVertex = iterDAGVertices.next();
 
-      String vertexType = currentVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).toString();
+      final String vertexType = currentVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).toString();
       final boolean isSend = vertexType.equals("send");
       final boolean isReceive = vertexType.equals("receive");
 
@@ -116,23 +116,23 @@ public class CommunicationOrderChecker {
     }
 
     // Check the order is identical on send and receive sides
-    for (ComponentInstance sendComponent : sendComponents) {
-      for (ComponentInstance recvComponent : recvComponents) {
+    for (final ComponentInstance sendComponent : sendComponents) {
+      for (final ComponentInstance recvComponent : recvComponents) {
         // For each pair of sender/receiver
 
         // Collect sender and receivers DAGVertices for this pair (in scheduling order)
-        List<DAGVertex> senders = new ArrayList<DAGVertex>(sendVerticesMap.values());
+        final List<DAGVertex> senders = new ArrayList<>(sendVerticesMap.values());
         senders.removeIf(vertex -> !((ComponentInstance) vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator)).equals(sendComponent));
 
-        List<DAGVertex> receivers = new ArrayList<DAGVertex>(recvVerticesMap.values());
+        final List<DAGVertex> receivers = new ArrayList<>(recvVerticesMap.values());
         receivers
             .removeIf(vertex -> !((ComponentInstance) vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator)).equals(recvComponent));
 
         // Get corresponding edges (in scheduling order)
-        List<DAGEdge> senderDagEdges = new ArrayList<DAGEdge>(senders.size());
+        final List<DAGEdge> senderDagEdges = new ArrayList<>(senders.size());
         senders
             .forEach(sender -> senderDagEdges.add((DAGEdge) sender.getPropertyBean().getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge)));
-        List<DAGEdge> receiverDagEdges = new ArrayList<DAGEdge>(receivers.size());
+        final List<DAGEdge> receiverDagEdges = new ArrayList<>(receivers.size());
         receivers.forEach(
             receiver -> receiverDagEdges.add((DAGEdge) receiver.getPropertyBean().getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge)));
 

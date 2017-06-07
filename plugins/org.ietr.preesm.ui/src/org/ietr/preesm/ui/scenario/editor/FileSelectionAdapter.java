@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.ui.scenario.editor;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -80,7 +80,7 @@ public class FileSelectionAdapter extends SelectionAdapter {
     this.filePath = filePath;
     this.shell = shell;
     this.title = title;
-    this.fileExtensions = new HashSet<>();
+    this.fileExtensions = new LinkedHashSet<>();
     this.fileExtensions.add(fileExtension);
   }
 

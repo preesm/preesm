@@ -36,8 +36,8 @@
 package org.ietr.preesm.pimm.algorithm.pimm2sdf;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -166,7 +166,7 @@ public class PiGraphExecution {
    * @return the pi graph execution
    */
   public PiGraphExecution extractInnerExecution(final PiGraph subgraph, final int selector) {
-    final Map<String, List<Integer>> innerParameterValues = new HashMap<>();
+    final Map<String, List<Integer>> innerParameterValues = new LinkedHashMap<>();
     for (final String s : this.parameterValues.keySet()) {
       if (getSubgraphParametersNames(subgraph).contains(s)) {
         final int size = this.parameterValues.get(s).size();
@@ -189,7 +189,7 @@ public class PiGraphExecution {
    * @return the subgraph parameters names
    */
   private Set<String> getSubgraphParametersNames(final PiGraph subgraph) {
-    final Set<String> parametersNames = new HashSet<>();
+    final Set<String> parametersNames = new LinkedHashSet<>();
     for (final Parameter p : subgraph.getParameters()) {
       parametersNames.add(p.getName());
     }

@@ -39,7 +39,8 @@
 package org.ietr.preesm.codegen.idl;
 
 import java.util.Enumeration;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
@@ -84,7 +85,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
   public static final IDLPrototypeFactory INSTANCE = new IDLPrototypeFactory();
 
   /** Keeping memory of all created IDL prototypes. */
-  private HashMap<String, ActorPrototypes> createdIdls;
+  private Map<String, ActorPrototypes> createdIdls;
 
   /**
    * Keeping memory of the highest index of init declared. Used to determine how many init phases must be generated
@@ -108,7 +109,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
    * Reset prototypes.
    */
   public void resetPrototypes() {
-    this.createdIdls = new HashMap<>();
+    this.createdIdls = new LinkedHashMap<>();
     this.maxInitIndex = -1;
   }
 

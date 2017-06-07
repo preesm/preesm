@@ -39,7 +39,7 @@ package org.ietr.preesm.memory.multiSDFTasks;
 import bsh.EvalError;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.CoreException;
@@ -114,7 +114,7 @@ public class MultiMemoryScriptTask extends AbstractMemoryScriptTask {
     }
 
     // Outputs
-    final Map<String, Object> output = new HashMap<>();
+    final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_DAG_AND_MEM_EX_MAP, dagsAndMemExs);
     return output;
   }
@@ -126,7 +126,7 @@ public class MultiMemoryScriptTask extends AbstractMemoryScriptTask {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> param = new HashMap<>();
+    final Map<String, String> param = new LinkedHashMap<>();
     param.put(AbstractMemoryScriptTask.PARAM_VERBOSE, "? C {" + AbstractMemoryScriptTask.VALUE_TRUE + ", " + AbstractMemoryScriptTask.VALUE_FALSE + "}");
     param.put(AbstractMemoryScriptTask.PARAM_CHECK, "? C {" + AbstractMemoryScriptTask.VALUE_CHECK_NONE + ", " + AbstractMemoryScriptTask.VALUE_CHECK_FAST
         + ", " + AbstractMemoryScriptTask.VALUE_CHECK_THOROUGH + "}");

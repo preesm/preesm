@@ -37,7 +37,7 @@
  */
 package org.ietr.preesm.ui.pimm.features;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.graphiti.features.IDeleteFeature;
@@ -81,7 +81,7 @@ public class DeleteParameterizableFeature extends DefaultDeleteFeature {
     // First, the list of connections is scanned in order to fill a map with
     // the deleteFeatures and their context.
     Map<IDeleteFeature, IDeleteContext> delFeatures;
-    delFeatures = new HashMap<>();
+    delFeatures = new LinkedHashMap<>();
     final EList<Connection> connections = cba.getIncomingConnections();
     connections.addAll(cba.getOutgoingConnections());
     for (final Connection connect : connections) {

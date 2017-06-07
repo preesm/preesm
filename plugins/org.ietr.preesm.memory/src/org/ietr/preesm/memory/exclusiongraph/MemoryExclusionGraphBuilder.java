@@ -38,7 +38,7 @@
  */
 package org.ietr.preesm.memory.exclusiongraph;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -135,7 +135,7 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
     }
 
     // Generate output
-    final Map<String, Object> output = new HashMap<>();
+    final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_MEM_EX, memEx);
     return output;
   }
@@ -147,7 +147,7 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(MemoryExclusionGraphBuilder.PARAM_VERBOSE, MemoryExclusionGraphBuilder.VALUE_TRUE_FALSE_DEFAULT);
     parameters.put(MemoryExclusionGraphBuilder.PARAM_SUPPR_FORK_JOIN, MemoryExclusionGraphBuilder.VALUE_TRUE_FALSE_DEFAULT);
     return parameters;

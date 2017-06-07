@@ -37,8 +37,8 @@
 package org.ietr.preesm.memory.distributed
 
 import java.util.ArrayList
-import java.util.HashMap
-import java.util.HashSet
+import java.util.LinkedHashMap
+import java.util.LinkedHashSet
 import java.util.List
 import java.util.Map
 import java.util.Map.Entry
@@ -113,7 +113,7 @@ class Distributor {
 	 */
 	static def Map<String, MemoryExclusionGraph> distributeMeg(String valuePolicy, MemoryExclusionGraph memEx, int alignment) throws RuntimeException {
 		var Map<String, MemoryExclusionGraph> memExes
-		memExes = new HashMap<String, MemoryExclusionGraph>
+		memExes = new LinkedHashMap<String, MemoryExclusionGraph>
 
 		// Generate output
 		// Each entry of this map associate a memory to the set
@@ -157,7 +157,7 @@ class Distributor {
 			// Clone the input exclusion graph
 			var copiedMemEx = memEx.deepClone
 			// Obtain the list of vertices to remove from it (including hosted vertices)
-			var verticesToRemove = new HashSet<MemoryExclusionVertex>(copiedMemEx.totalSetOfVertices)
+			var verticesToRemove = new LinkedHashSet<MemoryExclusionVertex>(copiedMemEx.totalSetOfVertices)
 			verticesToRemove.removeAll(memExesVerticesSet.get(memory))
 			// Remove them
 			copiedMemEx.deepRemoveAllVertices(verticesToRemove)
@@ -213,12 +213,12 @@ class Distributor {
 		// Iterate over the Host MObjects of the MEG 
 		// identify mObject to be removed because the belong to another
 		// memory.
-		val mObjectsToRemove = new HashSet<MemoryExclusionVertex>
+		val mObjectsToRemove = new LinkedHashSet<MemoryExclusionVertex>
 		for (entry : hostsCopy.entrySet) {
 			// Create a group of MObject for each memory similarly to what is done 
 			// in distributeMeg method.		
 			// Map storing the groups of Mobjs
-			val mobjByBank = new HashMap<String, Set<MemoryExclusionVertex>>
+			val mobjByBank = new LinkedHashMap<String, Set<MemoryExclusionVertex>>
 
 			// Iteration List including the host Mobj
 			for (mobj : #[entry.key] + entry.value) {
@@ -292,7 +292,7 @@ class Distributor {
 			// Create a group of MObject for each memory similarly to what is done 
 			// in distributeMeg method.		
 			// Map storing the groups of Mobjs
-			val mobjByBank = new HashMap<String, Set<MemoryExclusionVertex>>
+			val mobjByBank = new LinkedHashMap<String, Set<MemoryExclusionVertex>>
 
 			// Iteration List including the host Mobj
 			for (mobj : #[entry.key] + entry.value) {
@@ -349,12 +349,12 @@ class Distributor {
 	) {
 		val hosts = (meg.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>)
 
-		val bankByMobj = new HashMap<MemoryExclusionVertex, String>
+		val bankByMobj = new LinkedHashMap<MemoryExclusionVertex, String>
 		mobjByBank.forEach[bank, mobjs|mobjs.forEach[bankByMobj.put(it, bank)]]
 
 		// Set of all the divided memory objects that can not be divided
 		// because they are matched in several banks.
-		val mObjsToUndivide = newHashSet
+		val mObjsToUndivide = newLinkedHashSet
 
 		// Remove information of the current host from the MEG
 		// This is safe since a copy of the hosts is used for iteration
@@ -369,7 +369,7 @@ class Distributor {
 		// For each bank, create as many hosts as the number of
 		// non-contiguous ranges formed by the memory objects falling
 		// into this memory bank.
-		val newHostsMObjs = new HashSet<MemoryExclusionVertex>
+		val newHostsMObjs = new LinkedHashSet<MemoryExclusionVertex>
 		for (bankEntry : mobjByBank.filter[bank, mobjs|banks.contains(bank)].entrySet) {
 			// Iterate over Mobjects to build the range(s) of this memory 
 			// bank (all ranges are relative to the host mObj)
@@ -411,7 +411,7 @@ class Distributor {
 			// mObjsToUndivide are not part of these memory objects
 			val mObjInCurrentBank = mobjByBank.get(bankEntry.key)
 			mObjInCurrentBank.removeAll(mObjsToUndivide)
-			val Map<Range, List<MemoryExclusionVertex>> rangesInBankAndMObjs = newHashMap
+			val Map<Range, List<MemoryExclusionVertex>> rangesInBankAndMObjs = newLinkedHashMap
 			for (currentRange : rangesInBank) {
 				// 1. Get the list of mObjects falling in this range
 				val mObjInCurrentRange = new ArrayList<MemoryExclusionVertex>
@@ -500,7 +500,7 @@ class Distributor {
 					newHostMobj.setPropertyValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, ranges)
 
 					// Add the mobj to the meg hosts list
-					val hostMObjSet = newHashSet
+					val hostMObjSet = newLinkedHashSet
 					hosts.put(newHostMobj, hostMObjSet)
 
 					// 3. Add all hosted mObjects to the list
@@ -625,7 +625,7 @@ class Distributor {
 
 	/**
 	 * Method used to separate the {@link MemoryExclusionVertex} of a {@link 
-	 * MemoryExclusionGraph} into {@link HashSet subsets} according to the 
+	 * MemoryExclusionGraph} into {@link LinkedHashSet subsets} according to the 
 	 * SHARED_ONLY policy (see {@link AbstractMemoryAllocatorTask} parameters).
 	 * <br><br>
 	 * With this policy, all {@link MemoryExclusionVertex} are put in a single
@@ -634,17 +634,17 @@ class Distributor {
 	 * @param memEx
 	 * 			The processed {@link MemoryExclusionGraph}.
 	 * @return {@link Map} containing the name of the memory banks and the 
-	 * 		   associated {@link HashSet subsets} of {@link MemoryExclusionVertex}. 
+	 * 		   associated {@link LinkedHashSet subsets} of {@link MemoryExclusionVertex}. 
 	 */
-	protected def static Map<String, HashSet<MemoryExclusionVertex>> distributeMegSharedOnly(MemoryExclusionGraph memEx) {
-		val memExesVerticesSet = new HashMap<String, HashSet<MemoryExclusionVertex>>
-		memExesVerticesSet.put("Shared", new HashSet(memEx.vertexSet))
+	protected def static Map<String, Set<MemoryExclusionVertex>> distributeMegSharedOnly(MemoryExclusionGraph memEx) {
+		val memExesVerticesSet = new LinkedHashMap<String, Set<MemoryExclusionVertex>>
+		memExesVerticesSet.put("Shared", new LinkedHashSet(memEx.vertexSet))
 		return memExesVerticesSet
 	}
 
 	/**
 	 * Method used to separate the {@link MemoryExclusionVertex} of a {@link 
-	 * MemoryExclusionGraph} into {@link HashSet subsets} according to the 
+	 * MemoryExclusionGraph} into {@link LinkedHashSet subsets} according to the 
 	 * DISTRIBUTED_ONLY policy (see {@link AbstractMemoryAllocatorTask} 
 	 * parameters).
 	 * <br><br>
@@ -655,10 +655,10 @@ class Distributor {
 	 * @param memEx
 	 * 			The processed {@link MemoryExclusionGraph}.
 	 * @return {@link Map} containing the name of the memory banks and the 
-	 * 		   associated {@link HashSet subsets} of {@link MemoryExclusionVertex}. 
+	 * 		   associated {@link LinkedHashSet subsets} of {@link MemoryExclusionVertex}. 
 	 */
 	protected def static Map<String, Set<MemoryExclusionVertex>> distributeMegDistributedOnly(MemoryExclusionGraph memEx) {
-		val memExesVerticesSet = new HashMap<String, Set<MemoryExclusionVertex>>
+		val memExesVerticesSet = new LinkedHashMap<String, Set<MemoryExclusionVertex>>
 		val hosts = memEx.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>
 		for (MemoryExclusionVertex memExVertex : memEx.vertexSet) {
 			val hostedMObjs = if(hosts !== null) {
@@ -675,7 +675,7 @@ class Distributor {
 			if(hostedMObjs !== null) {
 				// Create a fake map that will store the theoretical banks of all
 				// hosted mObjects
-				val hostedMObjsBanks = new HashMap<String, Set<MemoryExclusionVertex>>
+				val hostedMObjsBanks = new LinkedHashMap<String, Set<MemoryExclusionVertex>>
 				for (hostedMobj : hostedMObjs) {
 					findMObjBankDistributedOnly(hostedMobj, hostedMObjsBanks, memEx)
 				}
@@ -687,7 +687,7 @@ class Distributor {
 					var verticesSet = memExesVerticesSet.get(bank)
 					if(verticesSet === null) {
 						// If the component is not yet in the map, add it
-						verticesSet = new HashSet<MemoryExclusionVertex>
+						verticesSet = new LinkedHashSet<MemoryExclusionVertex>
 						memExesVerticesSet.put(bank, verticesSet)
 					}
 					// Add the memEx Vertex to the set of vertex of the
@@ -743,7 +743,7 @@ class Distributor {
 			var verticesSet = mObjByBank.get(component.instanceName)
 			if(verticesSet === null) {
 				// If the component is not yet in the map, add it
-				verticesSet = new HashSet<MemoryExclusionVertex>
+				verticesSet = new LinkedHashSet<MemoryExclusionVertex>
 				mObjByBank.put(component.instanceName, verticesSet)
 			}
 
@@ -755,7 +755,7 @@ class Distributor {
 
 	/**
 	 * Method used to separate the {@link MemoryExclusionVertex} of a {@link 
-	 * MemoryExclusionGraph} into {@link HashSet subsets} according to the 
+	 * MemoryExclusionGraph} into {@link LinkedHashSet subsets} according to the 
 	 * MIXED policy (see {@link AbstractMemoryAllocatorTask} parameters).
 	 * <br><br>
 	 * With this policy, each {@link MemoryExclusionVertex} is put<ul><li>
@@ -767,10 +767,10 @@ class Distributor {
 	 * @param memEx
 	 * 			The processed {@link MemoryExclusionGraph}.
 	 * @return {@link Map} containing the name of the memory banks and the 
-	 * 		   associated {@link HashSet subsets} of {@link MemoryExclusionVertex}. 
+	 * 		   associated {@link LinkedHashSet subsets} of {@link MemoryExclusionVertex}. 
 	 */
 	protected def static Map<String, Set<MemoryExclusionVertex>> distributeMegMixed(MemoryExclusionGraph memEx) {
-		val memExesVerticesSet = new HashMap<String, Set<MemoryExclusionVertex>>
+		val memExesVerticesSet = new LinkedHashMap<String, Set<MemoryExclusionVertex>>
 		for (MemoryExclusionVertex memExVertex : memEx.vertexSet) {
 			Distributor.findMObjBankMixed(memExVertex, memExesVerticesSet)
 		}
@@ -779,7 +779,7 @@ class Distributor {
 
 	/**
 	 * Method used to separate the {@link MemoryExclusionVertex} of a {@link 
-	 * MemoryExclusionGraph} into {@link HashSet subsets} according to the 
+	 * MemoryExclusionGraph} into {@link LinkedHashSet subsets} according to the 
 	 * MIXED_MERGED policy (see {@link AbstractMemoryAllocatorTask} 
 	 * parameters).
 	 * <br><br>
@@ -794,17 +794,17 @@ class Distributor {
 	 * @param memEx
 	 * 			The processed {@link MemoryExclusionGraph}.
 	 * @return {@link Map} containing the name of the memory banks and the 
-	 * 		   associated {@link HashSet subsets} of {@link MemoryExclusionVertex}. 
+	 * 		   associated {@link LinkedHashSet subsets} of {@link MemoryExclusionVertex}. 
 	 */
 	protected def static Map<String, Set<MemoryExclusionVertex>> distributeMegMixedMerged(MemoryExclusionGraph memEx) {
-		val memExesVerticesSet = new HashMap<String, Set<MemoryExclusionVertex>>
+		val memExesVerticesSet = new LinkedHashMap<String, Set<MemoryExclusionVertex>>
 		val hosts = memEx.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>
 		for (MemoryExclusionVertex memExVertex : memEx.vertexSet) {
 			if(hosts !== null && !hosts.containsKey(memExVertex) || hosts===null) {
 				Distributor.findMObjBankMixed(memExVertex, memExesVerticesSet)
 			} else {
 				// Check if all hosted mObjects fall in the same bank
-				val mobjByBank = new HashMap<String, Set<MemoryExclusionVertex>>
+				val mobjByBank = new LinkedHashMap<String, Set<MemoryExclusionVertex>>
 
 				// Find the bank for each mObj of the group
 				for (mobj : #[memExVertex] + hosts.get(memExVertex)) {
@@ -823,7 +823,7 @@ class Distributor {
 				var verticesSet = memExesVerticesSet.get(bank)
 				if(verticesSet === null) {
 					// If the component is not yet in the map, add it
-					verticesSet = new HashSet<MemoryExclusionVertex>
+					verticesSet = new LinkedHashSet<MemoryExclusionVertex>
 					memExesVerticesSet.put(bank, verticesSet)
 				}
 				verticesSet.add(memExVertex)
@@ -867,7 +867,7 @@ class Distributor {
 		var verticesSet = mObjByBank.get(memory)
 		if(verticesSet === null) {
 			// If the component is not yet in the map, add it
-			verticesSet = new HashSet<MemoryExclusionVertex>
+			verticesSet = new LinkedHashSet<MemoryExclusionVertex>
 			mObjByBank.put(memory, verticesSet)
 		}
 

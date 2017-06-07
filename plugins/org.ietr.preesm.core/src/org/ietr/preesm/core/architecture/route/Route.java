@@ -38,7 +38,7 @@
 package org.ietr.preesm.core.architecture.route;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 
@@ -119,7 +119,7 @@ public class Route extends ArrayList<AbstractRouteStep> {
    */
   public boolean isSingleAppearance() {
     boolean isIt = true;
-    final Set<ComponentInstance> opSet = new HashSet<>();
+    final Set<ComponentInstance> opSet = new LinkedHashSet<>();
     // Iterating the route and testing number of occurences in sender
     for (final AbstractRouteStep step : this) {
       if (opSet.contains(step.getSender())) {

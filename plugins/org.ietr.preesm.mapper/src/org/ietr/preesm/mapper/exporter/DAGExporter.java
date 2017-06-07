@@ -39,7 +39,7 @@ package org.ietr.preesm.mapper.exporter;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
@@ -186,8 +186,8 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
   @Override
   public Element exportGraph(final AbstractGraph<DAGVertex, DAGEdge> graph) {
     // Instantiate maps
-    this.inPortNb = new HashMap<>();
-    this.outPortNb = new HashMap<>();
+    this.inPortNb = new LinkedHashMap<>();
+    this.outPortNb = new LinkedHashMap<>();
 
     addKeySet(this.rootElt);
     final MapperDAG myGraph = (MapperDAG) graph;

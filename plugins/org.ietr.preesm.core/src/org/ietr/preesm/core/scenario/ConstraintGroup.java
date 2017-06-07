@@ -38,8 +38,8 @@
  */
 package org.ietr.preesm.core.scenario;
 
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 // TODO: Auto-generated Javadoc
@@ -60,8 +60,8 @@ public class ConstraintGroup {
    * Instantiates a new constraint group.
    */
   public ConstraintGroup() {
-    this.operatorIds = new HashSet<>();
-    this.actorsPaths = new HashSet<>();
+    this.operatorIds = new LinkedHashSet<>();
+    this.actorsPaths = new LinkedHashSet<>();
 
   }
 
@@ -121,7 +121,7 @@ public class ConstraintGroup {
    * @return the operator ids
    */
   public Set<String> getOperatorIds() {
-    return new HashSet<>(this.operatorIds);
+    return new LinkedHashSet<>(this.operatorIds);
   }
 
   /**
@@ -130,7 +130,7 @@ public class ConstraintGroup {
    * @return the vertex paths
    */
   public Set<String> getVertexPaths() {
-    return new HashSet<>(this.actorsPaths);
+    return new LinkedHashSet<>(this.actorsPaths);
   }
 
   /**

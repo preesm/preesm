@@ -37,7 +37,7 @@
 package org.ietr.preesm.codegen.xtend.printer.c.instrumented
 
 import java.util.ArrayList
-import java.util.HashMap
+import java.util.LinkedHashMap
 import java.util.List
 import org.ietr.preesm.codegen.xtend.model.codegen.Block
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
@@ -75,12 +75,12 @@ class InstrumentedCPrinter extends CPrinter {
 	/**
 	 * This map associates each codeElt to its ID 
 	 */
-	protected var HashMap<CodeElt, Integer> codeEltID = new HashMap<CodeElt,Integer>()
+	protected var LinkedHashMap<CodeElt, Integer> codeEltID = new LinkedHashMap<CodeElt,Integer>()
 	
 	/**
 	 * Map associating actor names to their different IDs 
 	 */
-	var actorIDs = new HashMap<String, List<Integer>>()
+	var actorIDs = new LinkedHashMap<String, List<Integer>>()
 
 	/**
 	 * Add instrumentation code to the {@link Block blocks}.<br>
@@ -110,7 +110,7 @@ class InstrumentedCPrinter extends CPrinter {
 		var globalID = 0;
 
 		// Map associating each ID with the name of what is measures
-		var globalFunctionID = new HashMap<Integer, String>()
+		var globalFunctionID = new LinkedHashMap<Integer, String>()
 
 		for (Block block : printerBlocks) {
 			if (dumpTimedBuffer.creator === null) {
@@ -264,7 +264,7 @@ class InstrumentedCPrinter extends CPrinter {
 	'''
 	
 	override createSecondaryFiles(List<Block> printerBlocks, List<Block> allBlocks) {
-		var result = new HashMap<String,CharSequence>
+		var result = new LinkedHashMap<String,CharSequence>
 		result.put("analysis.csv", printAnalysisCsvFile)
 		return result
 	}

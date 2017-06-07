@@ -36,8 +36,8 @@
  */
 package org.ietr.preesm.algorithm.transforms;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -71,7 +71,7 @@ public class MultiHSDFTransformation extends AbstractTaskImplementation {
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
       final String nodeName, final Workflow workflow) throws WorkflowException {
 
-    final Set<SDFGraph> result = new HashSet<>();
+    final Set<SDFGraph> result = new LinkedHashSet<>();
     @SuppressWarnings("unchecked")
     final Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPHS_SET);
 
@@ -123,7 +123,7 @@ public class MultiHSDFTransformation extends AbstractTaskImplementation {
       }
     }
 
-    final Map<String, Object> outputs = new HashMap<>();
+    final Map<String, Object> outputs = new LinkedHashMap<>();
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPHS_SET, result);
     return outputs;
   }
@@ -135,7 +135,7 @@ public class MultiHSDFTransformation extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> param = new HashMap<>();
+    final Map<String, String> param = new LinkedHashMap<>();
     param.put("ExplodeImplodeSuppr", "false");
     return param;
   }

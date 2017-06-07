@@ -41,7 +41,8 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.CategoryItemEntity;
@@ -66,7 +67,7 @@ public class MyGanttRenderer extends GanttRenderer {
   private static final long serialVersionUID = 1L;
 
   /** Map of the task colors. */
-  HashMap<String, Color> colorMap = new HashMap<>();
+  Map<String, Color> colorMap = new LinkedHashMap<>();
 
   /**
    * Draws the tasks/subtasks for one item.

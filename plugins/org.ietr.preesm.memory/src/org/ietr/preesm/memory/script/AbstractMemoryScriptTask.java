@@ -35,7 +35,7 @@
  */
 package org.ietr.preesm.memory.script;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
@@ -80,7 +80,7 @@ public abstract class AbstractMemoryScriptTask extends AbstractTaskImplementatio
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> param = new HashMap<>();
+    final Map<String, String> param = new LinkedHashMap<>();
     param.put(AbstractMemoryScriptTask.PARAM_VERBOSE, "? C {" + AbstractMemoryScriptTask.VALUE_TRUE + ", " + AbstractMemoryScriptTask.VALUE_FALSE + "}");
     param.put(AbstractMemoryScriptTask.PARAM_CHECK, "? C {" + AbstractMemoryScriptTask.VALUE_CHECK_NONE + ", " + AbstractMemoryScriptTask.VALUE_CHECK_FAST
         + ", " + AbstractMemoryScriptTask.VALUE_CHECK_THOROUGH + "}");

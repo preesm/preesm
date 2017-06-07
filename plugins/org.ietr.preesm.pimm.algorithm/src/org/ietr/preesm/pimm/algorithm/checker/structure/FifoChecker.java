@@ -35,7 +35,7 @@
  */
 package org.ietr.preesm.pimm.algorithm.checker.structure;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -65,9 +65,9 @@ public class FifoChecker {
    * Instantiates a new fifo checker.
    */
   public FifoChecker() {
-    this.fifoWithVoidType = new HashSet<>();
-    this.fifoWithOneZeroRate = new HashSet<>();
-    this.fifoWithZeroRates = new HashSet<>();
+    this.fifoWithVoidType = new LinkedHashSet<>();
+    this.fifoWithOneZeroRate = new LinkedHashSet<>();
+    this.fifoWithZeroRates = new LinkedHashSet<>();
   }
 
   /**

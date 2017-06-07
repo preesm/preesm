@@ -38,8 +38,8 @@
 package org.ietr.preesm.mapper.abc.route.calcul;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,7 +67,7 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 public class RouteCalculator {
 
   /** The instances. */
-  private static Map<Design, RouteCalculator> instances = new HashMap<>();
+  private static Map<Design, RouteCalculator> instances = new LinkedHashMap<>();
 
   /** The archi. */
   private final Design archi;
@@ -165,7 +165,7 @@ public class RouteCalculator {
   private void createRouteSteps(final ComponentInstance source) {
 
     // Iterating on outgoing and undirected edges
-    final Set<Link> outgoingAndUndirected = new HashSet<>();
+    final Set<Link> outgoingAndUndirected = new LinkedHashSet<>();
     outgoingAndUndirected.addAll(DesignTools.getUndirectedLinks(this.archi, source));
     outgoingAndUndirected.addAll(DesignTools.getOutgoingDirectedLinks(this.archi, source));
 
@@ -193,7 +193,7 @@ public class RouteCalculator {
   private void exploreRoute(final ComponentInstance source, final ComponentInstance node, final List<ComponentInstance> alreadyVisitedNodes) {
 
     // Iterating on outgoing and undirected edges
-    final Set<Link> outgoingAndUndirected = new HashSet<>();
+    final Set<Link> outgoingAndUndirected = new LinkedHashSet<>();
     outgoingAndUndirected.addAll(DesignTools.getUndirectedLinks(this.archi, node));
     outgoingAndUndirected.addAll(DesignTools.getOutgoingDirectedLinks(this.archi, node));
 

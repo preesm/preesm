@@ -38,7 +38,7 @@
  */
 package org.ietr.preesm.ui.pimm.util;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -125,7 +125,7 @@ public class PiMMUtil {
 
     // For now, authorized refinements are other PiGraphs (.pi files) and
     // .idl prototypes
-    final Set<String> fileExtensions = new HashSet<>();
+    final Set<String> fileExtensions = new LinkedHashSet<>();
     fileExtensions.add("pi");
     fileExtensions.add("idl");
     fileExtensions.add("h");

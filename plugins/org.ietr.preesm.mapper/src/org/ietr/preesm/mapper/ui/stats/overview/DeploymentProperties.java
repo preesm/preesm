@@ -39,7 +39,7 @@ package org.ietr.preesm.mapper.ui.stats.overview;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -96,8 +96,8 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
     super();
     this.statGen = statGen;
 
-    this.loads = new HashMap<>();
-    this.memoryNeeds = new HashMap<>();
+    this.loads = new LinkedHashMap<>();
+    this.memoryNeeds = new LinkedHashMap<>();
 
     this.repetitionPeriod = statGen.getFinalTime();
     this.columnOrder = Messages.getString("Overview.properties.opColumn");

@@ -36,8 +36,8 @@
  */
 package org.ietr.preesm.mapper.tools;
 
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 // TODO: Auto-generated Javadoc
@@ -84,7 +84,7 @@ public abstract class SubsetFinder<T, U> {
    * @return the sets the
    */
   public Set<T> subset() {
-    final Set<T> subset = new HashSet<>();
+    final Set<T> subset = new LinkedHashSet<>();
 
     final Iterator<T> iterator = this.inputset.iterator();
 

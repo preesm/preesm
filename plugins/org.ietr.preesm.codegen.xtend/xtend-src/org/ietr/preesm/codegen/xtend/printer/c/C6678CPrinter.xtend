@@ -36,7 +36,7 @@
 package org.ietr.preesm.codegen.xtend.printer.c
 
 import java.util.Date
-import java.util.HashSet
+import java.util.LinkedHashSet
 import java.util.List
 import org.ietr.preesm.codegen.xtend.model.codegen.Block
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
@@ -62,7 +62,7 @@ class C6678CPrinter extends CPrinter {
 	 * Set of CharSequence used to avoid calling the same cache operation 
 	 * multiple times in a broadcast or roundbuffer call. 
 	 */
-	var currentOperationMemcpy = new HashSet<CharSequence>();
+	var currentOperationMemcpy = new LinkedHashSet<CharSequence>();
 	
 	override printCoreBlockHeader(CoreBlock block) '''
 		/** 

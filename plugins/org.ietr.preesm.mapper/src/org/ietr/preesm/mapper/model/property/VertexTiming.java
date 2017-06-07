@@ -37,7 +37,7 @@
  */
 package org.ietr.preesm.mapper.model.property;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
@@ -102,7 +102,7 @@ public class VertexTiming extends GroupProperty {
     this.cost = VertexTiming.UNAVAILABLE;
     this.tLevel = VertexTiming.UNAVAILABLE;
     this.bLevel = VertexTiming.UNAVAILABLE;
-    this.totalOrders = new HashMap<>();
+    this.totalOrders = new LinkedHashMap<>();
   }
 
   /*
