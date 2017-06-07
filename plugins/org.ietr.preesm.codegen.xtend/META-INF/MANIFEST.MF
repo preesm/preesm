@@ -24,4 +24,5 @@ Export-Package: org.ietr.preesm.codegen.xtend.model.codegen,
  org.ietr.preesm.codegen.xtend.model.codegen.util,
  org.ietr.preesm.codegen.xtend.task
 Bundle-Version: 2.2.10.qualifier
+Import-Package: org.ietr.preesm.mapper.model
 

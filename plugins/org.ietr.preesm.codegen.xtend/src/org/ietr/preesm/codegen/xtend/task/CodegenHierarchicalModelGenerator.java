@@ -58,6 +58,7 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
+import org.ietr.preesm.mapper.model.MapperDAG;
 
 /**
  *
@@ -170,7 +171,7 @@ public class CodegenHierarchicalModelGenerator {
       }
 
       final HSDFBuildLoops loopBuilder = new HSDFBuildLoops(this.scenario);
-      final AbstractClust clust = graph.getPropertyBean().getValue(AbstractGraph.CLUSTERED_VERTEX, AbstractClust.class);
+      final AbstractClust clust = graph.getPropertyBean().getValue(MapperDAG.CLUSTERED_VERTEX, AbstractClust.class);
       if (clust == null) {
         throw (new WorkflowException("Loop Codegen failed. Please make sure the clustering workflow is run."));
       }

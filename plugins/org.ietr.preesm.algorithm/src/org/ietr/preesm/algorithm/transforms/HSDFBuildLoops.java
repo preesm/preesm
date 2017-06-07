@@ -59,6 +59,7 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.DataType;
+import org.ietr.preesm.mapper.model.MapperDAG;
 
 /**
  * This class is used to perform the clusterization (loop IR builder and memory allocation). It is used to set the working memory of each non flattened
@@ -671,7 +672,7 @@ public class HSDFBuildLoops {
       if (clust == null) {
         throw (new WorkflowException("HSDF Build Loops generate clustering: Failed to cluster the hierarchical actor " + resultGraph.getName()));
       }
-      g.getGraphDescription().getPropertyBean().setValue(AbstractGraph.CLUSTERED_VERTEX, clust);
+      g.getGraphDescription().getPropertyBean().setValue(MapperDAG.CLUSTERED_VERTEX, clust);
 
       // getting edges that are allocated by Karol
       final List<SDFEdge> edgeUpperGraph = new ArrayList<>();
