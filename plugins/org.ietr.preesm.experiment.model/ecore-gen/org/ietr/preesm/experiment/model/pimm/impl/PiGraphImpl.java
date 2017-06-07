@@ -37,10 +37,10 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.stream.Collectors;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
@@ -309,6 +309,61 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
     return this.dependencies;
   }
 
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EList<String> getVerticesNames() {
+    return ECollections.newBasicEList(getVertices().stream().map(AbstractActor::getName).collect(Collectors.toList()));
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EList<String> getParametersNames() {
+    return ECollections.newBasicEList(getParameters().stream().map(Parameter::getName).collect(Collectors.toList()));
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EList<Actor> getActors() {
+    return ECollections.newBasicEList(getVertices().stream().filter(Actor.class::isInstance).map(Actor.class::cast).collect(Collectors.toList()));
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EList<Parameter> getAllParameters() {
+    final EList<Parameter> result = ECollections.newBasicEList();
+    for (final AbstractActor aa : getVertices()) {
+      if (aa instanceof PiGraph) {
+        result.addAll(((PiGraph) aa).getAllParameters());
+      } else if (aa instanceof Actor) {
+        final Refinement refinement = ((Actor) aa).getRefinement();
+        if (refinement != null) {
+          final AbstractActor subGraph = refinement.getAbstractActor();
+          if ((subGraph != null) && (subGraph instanceof PiGraph)) {
+            result.addAll(((PiGraph) subGraph).getAllParameters());
+          }
+        }
+      }
+    }
+    result.addAll(getParameters());
+    return result;
+  }
+
   /*
    * (non-Javadoc)
    *
@@ -348,34 +403,6 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getVerticesNames()
-   */
-  @Override
-  public Set<String> getVerticesNames() {
-    final Set<String> names = new HashSet<>(getVertices().size());
-    for (final AbstractActor vertex : getVertices()) {
-      names.add(vertex.getName());
-    }
-    return names;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getParametersNames()
-   */
-  @Override
-  public Set<String> getParametersNames() {
-    final Set<String> names = new HashSet<>(getVertices().size());
-    for (final Parameter param : getParameters()) {
-      names.add(param.getName());
-    }
-    return names;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
    * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getFifoIded(java.lang.String)
    */
   @Override
@@ -386,22 +413,6 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
       }
     }
     return null;
-  }
-
-  /**
-   * Get the set of {@link Actor} in the graph.
-   *
-   * @return the set of {@link Actor}
-   */
-  @Override
-  public Set<Actor> getActors() {
-    final HashSet<Actor> actors = new HashSet<>();
-    for (final AbstractActor abactor : getVertices()) {
-      if (abactor instanceof Actor) {
-        actors.add((Actor) abactor);
-      }
-    }
-    return actors;
   }
 
   /*
@@ -508,31 +519,6 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
       }
     }
     return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getAllParameters()
-   */
-  @Override
-  public Set<Parameter> getAllParameters() {
-    final Set<Parameter> result = new HashSet<>();
-    for (final AbstractActor aa : this.vertices) {
-      if (aa instanceof PiGraph) {
-        result.addAll(((PiGraph) aa).getAllParameters());
-      } else if (aa instanceof Actor) {
-        final Refinement refinement = ((Actor) aa).getRefinement();
-        if (refinement != null) {
-          final AbstractActor subGraph = refinement.getAbstractActor();
-          if ((subGraph != null) && (subGraph instanceof PiGraph)) {
-            result.addAll(((PiGraph) subGraph).getAllParameters());
-          }
-        }
-      }
-    }
-    result.addAll(this.parameters);
-    return result;
   }
 
   /*

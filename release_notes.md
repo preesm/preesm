@@ -8,6 +8,8 @@ PREESM Changelog
 * Add clustering
 * Add integration test API prototype
 * Add Scheduling checker
+* Add new entry in Preesm menu to run Workflows
+* Add menus entries in the editor context menu
 
 ### Changes
 * Update Spider codegen
@@ -27,6 +29,7 @@ PREESM Changelog
 * Major maintainer doc update
 * Change upload destination of products to Sourceforge File Release Service
 * Fix code coverage settings
+* Replace HashMap/Sets with LinkedHashMap/Sets
 
 ### Bug fix
 

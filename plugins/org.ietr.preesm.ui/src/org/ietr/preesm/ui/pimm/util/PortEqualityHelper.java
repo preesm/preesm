@@ -39,7 +39,7 @@ package org.ietr.preesm.ui.pimm.util;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.emf.common.util.EList;
@@ -109,7 +109,7 @@ public class PortEqualityHelper {
    * @return the {@link Map} of equivalent {@link Port}s
    */
   public static Map<SimpleEntry<Port, Port>, IReason> buildEquivalentPortsMap(final AbstractActor vertex1, final AbstractActor vertex2) {
-    final Map<SimpleEntry<Port, Port>, IReason> result = new HashMap<>();
+    final Map<SimpleEntry<Port, Port>, IReason> result = new LinkedHashMap<>();
 
     // Do it backward (vertex2 with vertex1) for ConfigInputPort
     // because ConfigInputPort of actor are not mandatorily in the

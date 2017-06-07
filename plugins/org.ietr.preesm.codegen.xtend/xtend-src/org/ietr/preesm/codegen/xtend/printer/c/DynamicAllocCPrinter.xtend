@@ -37,8 +37,8 @@
 package org.ietr.preesm.codegen.xtend.printer.c
 
 import java.util.ArrayList
-import java.util.HashMap
-import java.util.HashSet
+import java.util.LinkedHashMap
+import java.util.LinkedHashSet
 import java.util.List
 import java.util.Map.Entry
 import java.util.Set
@@ -85,7 +85,7 @@ class DynamicAllocCPrinter extends CPrinter {
 	/**
 	 * Associates a buffer to all its merged buffers.
 	 */
-	@Accessors Map<Buffer, List<Buffer>> mergedMalloc = new HashMap<Buffer, List<Buffer>>
+	@Accessors Map<Buffer, List<Buffer>> mergedMalloc = new LinkedHashMap<Buffer, List<Buffer>>
 
 	/**
 	 * Associates a {@link Buffer} to all its merged buffers. Each entry
@@ -94,23 +94,23 @@ class DynamicAllocCPrinter extends CPrinter {
 	 * effective for these buffers. Extra care must be taken to ensure that only
 	 * one malloc is executed.
 	 */
-	@Accessors Map<Buffer, List<Buffer>> mergedFree = new HashMap<Buffer, List<Buffer>>
+	@Accessors Map<Buffer, List<Buffer>> mergedFree = new LinkedHashMap<Buffer, List<Buffer>>
 
 	/**
 	 * Associates a key from the {@link #mergedFree} map to a {@link Semaphore}
 	 * used to ensure that the malloc for this {@link Buffer} is only called
 	 * once.
 	 */
-	@Accessors Map<Buffer, Semaphore> mergedFreeSemaphore = new HashMap<Buffer, Semaphore>
+	@Accessors Map<Buffer, Semaphore> mergedFreeSemaphore = new LinkedHashMap<Buffer, Semaphore>
 
 	/**
 	 * Associates merged buffers to their allocated buffer.
 	 */
-	@Accessors Map<Buffer, Buffer> mergedBuffers = new HashMap<Buffer, Buffer>
+	@Accessors Map<Buffer, Buffer> mergedBuffers = new LinkedHashMap<Buffer, Buffer>
 
 	override printCoreBlockHeader(CoreBlock block) '''
 		«{ // Empty the printedMerge
-			printedMerged = new HashSet<Buffer>
+			printedMerged = new LinkedHashSet<Buffer>
 			super.printCoreBlockHeader(block)
 		}»
 		#include <memory.h>
@@ -134,7 +134,7 @@ class DynamicAllocCPrinter extends CPrinter {
 			for (block : printerBlocks) {
 				for (codeElt : (block as CoreBlock).loopBlock.codeElts) {
 					if (codeElt instanceof SpecialCall && (codeElt as SpecialCall).broadcast) {
-						helper.mergeableBuffers = new HashMap
+						helper.mergeableBuffers = new LinkedHashMap
 						helper.doSwitch(codeElt)
 						if (helper.mergeableBuffers.size != 0) {
 							for (Entry<Buffer,List<Buffer>> malloc : helper.mergeableBuffers.entrySet) {
@@ -156,7 +156,7 @@ class DynamicAllocCPrinter extends CPrinter {
 					}
 
 					if (codeElt instanceof SpecialCall && (codeElt as SpecialCall).roundBuffer) {
-						helper.mergeableBuffers = new HashMap
+						helper.mergeableBuffers = new LinkedHashMap
 						helper.doSwitch(codeElt)
 						if (helper.mergeableBuffers.size != 0) {
 							for (Entry<Buffer,List<Buffer>> free : helper.mergeableBuffers.entrySet) {
@@ -400,7 +400,7 @@ class MergeableBroadcastRoundBufferHelper extends CPrinter {
 	 * is filled with lists of mergeable {@link Buffer buffers}.
 	 */
 	@Accessors
-	HashMap<Buffer, List<Buffer>> mergeableBuffers
+	  Map<Buffer, List<Buffer>> mergeableBuffers
 
 	override printMemcpy(Buffer output, int outOffset, Buffer input, int inOffset, int size, String type) {
 

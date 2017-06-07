@@ -37,7 +37,7 @@
  */
 package org.ietr.preesm.algorithm.transforms
 
-import java.util.HashMap
+import java.util.LinkedHashMap
 import java.util.Map
 import org.eclipse.core.runtime.IProgressMonitor
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
@@ -172,7 +172,7 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 	 */
 	override execute(Map<String, Object> inputs, Map<String, String> parameters, IProgressMonitor monitor,
 		String nodeName, Workflow workflow) throws WorkflowException {
-		val outMap = new HashMap<String, Object>
+		val outMap = new LinkedHashMap<String, Object>
 		val inputAlgorithm = inputs.get("SDF") as SDFGraph
 
 		// If we retrieve a scenario, relative constraints are added in the scenario
@@ -189,7 +189,7 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 	 * If no parameter is set, using default value
 	 */
 	override getDefaultParameters() {
-		var defaultParameters = new HashMap<String, String>
+		var defaultParameters = new LinkedHashMap<String, String>
 		defaultParameters.put(NB_IT, "1")
 		defaultParameters.put(SET_STATES, "true")
 		return defaultParameters

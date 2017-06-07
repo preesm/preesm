@@ -37,7 +37,7 @@
  */
 package org.ietr.preesm.ui.pimm.features;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -83,7 +83,7 @@ public class DeleteAbstractActorFeature extends DeleteParameterizableFeature {
     // in a Map. (this is because cs.getAnchor cannot be modified while
     // iterated on)
     Map<IDeleteFeature, IDeleteContext> delFeatures;
-    delFeatures = new HashMap<>();
+    delFeatures = new LinkedHashMap<>();
     for (final Anchor anchor : cs.getAnchors()) {
       // Skip the current iteration if the anchor is not a
       // BoxRelativeAnchor

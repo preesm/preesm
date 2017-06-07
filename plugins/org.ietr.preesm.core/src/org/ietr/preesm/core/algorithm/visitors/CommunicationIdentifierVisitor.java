@@ -36,8 +36,9 @@
  */
 package org.ietr.preesm.core.algorithm.visitors;
 
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
@@ -55,13 +56,13 @@ import org.ietr.dftools.architecture.slam.ComponentInstance;
 public class CommunicationIdentifierVisitor implements IGraphVisitor<DirectedAcyclicGraph, DAGVertex, DAGEdge> {
 
   /** The inter core comm. */
-  protected HashSet<DAGEdge> interCoreComm;
+  protected Set<DAGEdge> interCoreComm;
 
   /**
    * Constructor of the CommunicationIdentifier.
    */
   public CommunicationIdentifierVisitor() {
-    this.interCoreComm = new HashSet<>();
+    this.interCoreComm = new LinkedHashSet<>();
   }
 
   /**
@@ -69,7 +70,7 @@ public class CommunicationIdentifierVisitor implements IGraphVisitor<DirectedAcy
    *
    * @return list containing edges that are inter-core communications
    */
-  public HashSet<DAGEdge> getResult() {
+  public Set<DAGEdge> getResult() {
     return this.interCoreComm;
   }
 

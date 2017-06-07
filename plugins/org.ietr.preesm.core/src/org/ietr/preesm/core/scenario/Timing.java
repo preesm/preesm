@@ -39,8 +39,8 @@
  */
 package org.ietr.preesm.core.scenario;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -105,7 +105,7 @@ public class Timing {
   public Timing(final String operatorDefinitionId, final String vertexId) {
     this.time = Timing.DEFAULT_TASK_TIME;
     this.stringValue = Timing.DEFAULT_EXPRESSION_VALUE;
-    this.inputParameters = new HashSet<>();
+    this.inputParameters = new LinkedHashSet<>();
     this.operatorDefinitionId = operatorDefinitionId;
     this.vertexId = vertexId;
     this.isEvaluated = true;
@@ -142,7 +142,7 @@ public class Timing {
     this(operatorId, vertexId);
     this.stringValue = expression;
     this.isEvaluated = false;
-    tryToEvaluateWith(new HashMap<String, Integer>());
+    tryToEvaluateWith(new LinkedHashMap<String, Integer>());
   }
 
   /**
@@ -162,7 +162,7 @@ public class Timing {
     this.stringValue = expression;
     this.isEvaluated = false;
     this.inputParameters = inputParameters;
-    tryToEvaluateWith(new HashMap<String, Integer>());
+    tryToEvaluateWith(new LinkedHashMap<String, Integer>());
   }
 
   /**
@@ -251,7 +251,7 @@ public class Timing {
   public void setStringValue(final String stringValue) {
     this.stringValue = stringValue;
     this.isEvaluated = false;
-    tryToEvaluateWith(new HashMap<String, Integer>());
+    tryToEvaluateWith(new LinkedHashMap<String, Integer>());
   }
 
   /**

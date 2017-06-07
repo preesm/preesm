@@ -38,7 +38,7 @@
 package org.ietr.preesm.mapper.model.property;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -115,7 +115,7 @@ public class VertexMapping extends GroupProperty {
       for (final MapperDAGVertex locVertex : relatedVertices) {
         final ComponentInstance op = locVertex.getEffectiveComponent();
         if (op != null) {
-          final Set<ComponentInstance> effectiveOp = new HashSet<>();
+          final Set<ComponentInstance> effectiveOp = new LinkedHashSet<>();
           effectiveOp.add(op);
           operators.retainAll(effectiveOp);
         }

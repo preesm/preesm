@@ -35,7 +35,7 @@
  */
 package org.ietr.preesm.mapper.abc.route;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.ietr.preesm.core.architecture.route.Route;
@@ -79,7 +79,7 @@ public abstract class AbstractCommunicationRouter {
    */
   public AbstractCommunicationRouter(final MapperDAG implementation, final IEdgeSched edgeScheduler, final OrderManager orderManager) {
     super();
-    this.implementers = new HashMap<>();
+    this.implementers = new LinkedHashMap<>();
     setManagers(implementation, edgeScheduler, orderManager);
   }
 

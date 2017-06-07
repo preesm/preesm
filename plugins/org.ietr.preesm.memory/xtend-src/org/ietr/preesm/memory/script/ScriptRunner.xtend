@@ -43,7 +43,7 @@ import java.io.File
 import java.io.IOException
 import java.net.URISyntaxException
 import java.util.ArrayList
-import java.util.HashMap
+import java.util.LinkedHashMap
 import java.util.List
 import java.util.Map
 import java.util.Set
@@ -143,13 +143,13 @@ class ScriptRunner {
 	 * the input {@link Buffer buffers} and the second contains output
      * {@link Buffer buffers}.
 	 */
-	val scriptResults = new HashMap<DAGVertex, Pair<List<Buffer>, List<Buffer>>>
+	val scriptResults = new LinkedHashMap<DAGVertex, Pair<List<Buffer>, List<Buffer>>>
 
 	/**
 	 * A {@link Map} that associates each {@link DAGVertex} with a
 	 * memory script to this memory script {@link File}.
 	 */
-	val scriptedVertices = new HashMap<DAGVertex, File>();
+	val scriptedVertices = new LinkedHashMap<DAGVertex, File>();
 
 	/**
 	 * Each {@link List} of {@link Buffer} stored in this {@link List}
@@ -347,10 +347,10 @@ class ScriptRunner {
 		FilesManager.extract(tmpFolderPath, tmpProjectName, bundleId)
 
 		// Special scripts files
-		val specialScriptFiles = new HashMap<String, File>()
+		val specialScriptFiles = new LinkedHashMap<String, File>()
 
 		// Script files already found
-		val scriptFiles = new HashMap<String, File>();
+		val scriptFiles = new LinkedHashMap<String, File>();
 
 		putSpecialScriptFile(specialScriptFiles, JOIN, bundleId)
 		putSpecialScriptFile(specialScriptFiles, FORK, bundleId)
@@ -1594,8 +1594,8 @@ class ScriptRunner {
 		val sdfVertex = dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex)
 
 		// Create the vertex parameter list
-		val Map<String, Integer> parameters = newHashMap
-		val arguments = sdfVertex.propertyBean.getValue(SDFAbstractVertex.ARGUMENTS) as HashMap<String, Argument>
+		val Map<String, Integer> parameters = newLinkedHashMap
+		val arguments = sdfVertex.propertyBean.getValue(SDFAbstractVertex.ARGUMENTS) as Map<String, Argument>
 		if(arguments !== null) arguments.entrySet.forEach[parameters.put(it.key, it.value.intValue)]
 
 		parameters.put("alignment", alignment)
@@ -1677,11 +1677,11 @@ class ScriptRunner {
 	def void updateMEG(MemoryExclusionGraph meg) {
 
 		// Create a new property in the MEG to store the merged memory objects
-		val mergedMObjects = newHashMap
+		val mergedMObjects = newLinkedHashMap
 		meg.propertyBean.setValue(MemoryExclusionGraph::HOST_MEMORY_OBJECT_PROPERTY, mergedMObjects)
 
 		// For each buffer, get the corresponding MObject
-		val bufferAndMObjectMap = newHashMap
+		val bufferAndMObjectMap = newLinkedHashMap
 		for (buffers : bufferGroups) {
 			for (buffer : buffers) {
 
@@ -1748,7 +1748,7 @@ class ScriptRunner {
 				mObj.setWeight(buffer.maxIndex - minIndex)
 
 				// Add the mobj to the meg host list
-				mergedMObjects.put(mObj, newHashSet)
+				mergedMObjects.put(mObj, newLinkedHashSet)
 
 				// Save the real token range in the Mobj properties
 				val realTokenRange = new Range(0, buffer.tokenSize * buffer.nbTokens)
@@ -1766,7 +1766,7 @@ class ScriptRunner {
 				// the map associates:
 				// a localRange of the buffer to
 				// a pair of a root buffer and its range for the buffer
-				val Map<Range, Pair<Buffer, Range>> rootBuffers = newHashMap()
+				val Map<Range, Pair<Buffer, Range>> rootBuffers = newLinkedHashMap()
 				for (match : buffer.matched) {
 					rootBuffers.putAll(match.root)
 				}

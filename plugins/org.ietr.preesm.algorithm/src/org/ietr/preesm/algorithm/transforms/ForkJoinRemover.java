@@ -40,7 +40,7 @@
 package org.ietr.preesm.algorithm.transforms;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -109,7 +109,7 @@ public class ForkJoinRemover {
 
     // Remove dag vertex of type implode explode
     // And identify source vertices (vertices without predecessors)
-    final HashSet<SDFAbstractVertex> nonTaskVertices = new HashSet<>(); // Set
+    final Set<SDFAbstractVertex> nonTaskVertices = new LinkedHashSet<>(); // Set
     // of
     // non-task vertices
 
@@ -302,7 +302,7 @@ public class ForkJoinRemover {
       vertices.add(vert);
     }
 
-    final HashSet<DAGVertex> forkAndJoinVertices = new HashSet<>(); // Set
+    final Set<DAGVertex> forkAndJoinVertices = new LinkedHashSet<>(); // Set
     // of
     // non-task
     // vertices

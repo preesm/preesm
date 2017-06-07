@@ -35,7 +35,7 @@
  */
 package org.ietr.preesm.evaluator;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -109,7 +109,7 @@ public class PeriodicEvaluator extends AbstractTaskImplementation {
       e.printStackTrace();
     }
 
-    final Map<String, Object> outputs = new HashMap<>();
+    final Map<String, Object> outputs = new LinkedHashMap<>();
     // Normalized graph in the outputs
     outputs.put("SDF", NormSDF);
     // Throughput in the outputs
@@ -125,7 +125,7 @@ public class PeriodicEvaluator extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
     return parameters;
   }
 

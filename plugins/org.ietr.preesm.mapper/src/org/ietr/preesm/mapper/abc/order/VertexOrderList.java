@@ -38,7 +38,7 @@ package org.ietr.preesm.mapper.abc.order;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -133,7 +133,7 @@ public class VertexOrderList {
   public VertexOrderList() {
     super();
     this.orderedList = new ArrayList<>();
-    this.nameMap = new HashMap<>();
+    this.nameMap = new LinkedHashMap<>();
   }
 
   /**

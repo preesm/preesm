@@ -37,7 +37,7 @@
 package org.ietr.preesm.pimm.algorithm.pimm2sdf;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -102,7 +102,7 @@ public class StaticPiMM2SDFLauncher {
    *           the static pi MM 2 SDF exception
    */
   private Map<String, List<Integer>> getParametersValues() throws StaticPiMM2SDFException {
-    final Map<String, List<Integer>> result = new HashMap<>();
+    final Map<String, List<Integer>> result = new LinkedHashMap<>();
 
     for (final ParameterValue paramValue : this.scenario.getParameterValueManager().getParameterValues()) {
       switch (paramValue.getType()) {

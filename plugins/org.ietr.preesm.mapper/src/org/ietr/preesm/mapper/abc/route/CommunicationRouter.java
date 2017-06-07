@@ -39,9 +39,9 @@
 package org.ietr.preesm.mapper.abc.route;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -193,9 +193,9 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
    * @return the route map
    */
   public Map<MapperDAGEdge, Route> getRouteMap(final MapperDAGVertex newVertex) {
-    final Map<MapperDAGEdge, Route> transferEdges = new HashMap<>();
+    final Map<MapperDAGEdge, Route> transferEdges = new LinkedHashMap<>();
 
-    final Set<DAGEdge> edges = new HashSet<>();
+    final Set<DAGEdge> edges = new LinkedHashSet<>();
     if (newVertex.incomingEdges() != null) {
       edges.addAll(newVertex.incomingEdges());
     }

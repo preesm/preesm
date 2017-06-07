@@ -36,8 +36,8 @@
  */
 package org.ietr.preesm.ui.scenario.editor;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -86,7 +86,7 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
    */
   public PreesmAlgorithmTreeContentProvider(final CheckboxTreeViewer treeViewer) {
     super();
-    this.correspondingVertexWithMap = new HashMap<>();
+    this.correspondingVertexWithMap = new LinkedHashMap<>();
   }
 
   /*
@@ -258,7 +258,7 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
    * @return the sets the
    */
   public Set<AbstractActor> filterPISDFChildren(final EList<AbstractActor> vertices) {
-    final Set<AbstractActor> result = new HashSet<>();
+    final Set<AbstractActor> result = new LinkedHashSet<>();
     for (final AbstractActor actor : vertices) {
       // TODO: Filter if needed
       result.add(actor);

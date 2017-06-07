@@ -37,7 +37,7 @@ package org.ietr.preesm.core.scenarios.generator;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -139,8 +139,8 @@ public class ScenariosGenerator {
    */
   public Set<PreesmScenario> generateScenarios(final IFolder archiDir, final IFolder algoDir)
       throws InvalidModelException, CoreException, FileNotFoundException {
-    final Set<String> archis = new HashSet<>();
-    final Set<String> algos = new HashSet<>();
+    final Set<String> archis = new LinkedHashSet<>();
+    final Set<String> algos = new LinkedHashSet<>();
     for (final IResource resource : archiDir.members()) {
       if (resource instanceof IFile) {
         final IFile file = (IFile) resource;
@@ -178,7 +178,7 @@ public class ScenariosGenerator {
    */
   private Set<PreesmScenario> generateScenarios(final Set<String> archis, final Set<String> algos)
       throws InvalidModelException, CoreException, FileNotFoundException {
-    final Set<PreesmScenario> scenarios = new HashSet<>();
+    final Set<PreesmScenario> scenarios = new LinkedHashSet<>();
     for (final String archiURL : archis) {
       for (final String algoURL : algos) {
         scenarios.add(createScenario(archiURL, algoURL));

@@ -38,7 +38,7 @@
  */
 package org.ietr.preesm.mapper.exporter;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
@@ -85,7 +85,7 @@ public class ImplExportTransform extends AbstractTaskImplementation {
 
     Activator.updateWorkspace();
 
-    final HashMap<String, Object> outputs = new HashMap<>();
+    final Map<String, Object> outputs = new LinkedHashMap<>();
     outputs.put("xml", sGraphmlPath);
     return outputs;
   }
@@ -97,7 +97,7 @@ public class ImplExportTransform extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
 
     parameters.put("path", "");
     return parameters;

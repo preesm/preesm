@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.core.scenario;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,7 +61,7 @@ public class RelativeConstraintManager {
    * Instantiates a new relative constraint manager.
    */
   public RelativeConstraintManager() {
-    this.relativeConstraints = new HashMap<>();
+    this.relativeConstraints = new LinkedHashMap<>();
   }
 
   /**

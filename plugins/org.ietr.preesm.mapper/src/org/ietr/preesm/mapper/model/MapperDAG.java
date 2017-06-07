@@ -38,8 +38,8 @@
  */
 package org.ietr.preesm.mapper.model;
 
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
@@ -275,7 +275,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
    */
   public Set<MapperDAGVertex> getVertices(final SDFAbstractVertex sdfvertex) {
 
-    final Set<MapperDAGVertex> currentset = new HashSet<>();
+    final Set<MapperDAGVertex> currentset = new LinkedHashSet<>();
     MapperDAGVertex currentvertex = null;
     for (final DAGVertex currentv : vertexSet()) {
       currentvertex = (MapperDAGVertex) currentv;
@@ -296,7 +296,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
    * @return the vertex set
    */
   public Set<MapperDAGVertex> getVertexSet(final Set<String> nameSet) {
-    final Set<MapperDAGVertex> vSet = new HashSet<>();
+    final Set<MapperDAGVertex> vSet = new LinkedHashSet<>();
 
     final Iterator<String> iterator = nameSet.iterator();
 
@@ -316,7 +316,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
    * @return the sources
    */
   public Set<MapperDAGVertex> getSources() {
-    final Set<MapperDAGVertex> vSet = new HashSet<>();
+    final Set<MapperDAGVertex> vSet = new LinkedHashSet<>();
 
     for (final DAGVertex v : vertexSet()) {
       if (incomingEdgesOf(v).isEmpty()) {

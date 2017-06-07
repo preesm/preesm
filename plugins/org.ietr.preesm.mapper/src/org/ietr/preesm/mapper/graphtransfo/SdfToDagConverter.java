@@ -41,9 +41,9 @@
 package org.ietr.preesm.mapper.graphtransfo;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -190,7 +190,7 @@ public class SdfToDagConverter {
 
     // Initial relative constraints are stored in the scenario
     final RelativeConstraintManager manager = scenario.getRelativeconstraintManager();
-    final Map<Integer, Set<MapperDAGVertex>> relativeConstraints = new HashMap<>();
+    final Map<Integer, Set<MapperDAGVertex>> relativeConstraints = new LinkedHashMap<>();
 
     // We iterate the dag to add to each vertex its relative constraints (if any)
     for (final DAGVertex dv : dag.vertexSet()) {
@@ -203,7 +203,7 @@ public class SdfToDagConverter {
         final int group = manager.getConstraintOrDefault(sdfVId);
 
         if (!relativeConstraints.containsKey(group)) {
-          relativeConstraints.put(group, new HashSet<MapperDAGVertex>());
+          relativeConstraints.put(group, new LinkedHashSet<MapperDAGVertex>());
         }
         relativeConstraints.get(group).add((MapperDAGVertex) dv);
       } else {

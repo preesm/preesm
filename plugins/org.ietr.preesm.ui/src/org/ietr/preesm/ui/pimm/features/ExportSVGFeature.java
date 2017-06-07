@@ -41,7 +41,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -144,7 +144,7 @@ public class ExportSVGFeature extends AbstractCustomFeature {
    * @return the fifo FFC
    */
   Set<FreeFormConnection> getFifoFFC(final Fifo f) {
-    final Set<FreeFormConnection> result = new HashSet<>();
+    final Set<FreeFormConnection> result = new LinkedHashSet<>();
     final PictogramElement[] pes = this.fp.getAllPictogramElementsForBusinessObject(f);
     if (pes == null) {
       return null;
@@ -445,7 +445,7 @@ public class ExportSVGFeature extends AbstractCustomFeature {
     tf.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 
     /* Ask SVG File Location */
-    final Set<String> fileExtensions = new HashSet<>();
+    final Set<String> fileExtensions = new LinkedHashSet<>();
     fileExtensions.add("*.svg");
     final IPath path = PiMMUtil.askSaveFile("Choose the exported SVG file", fileExtensions);
 

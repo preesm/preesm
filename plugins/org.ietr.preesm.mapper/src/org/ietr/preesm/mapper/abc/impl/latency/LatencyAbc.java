@@ -39,8 +39,9 @@ package org.ietr.preesm.mapper.abc.impl.latency;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
@@ -135,7 +136,7 @@ public abstract class LatencyAbc extends AbstractAbc {
     this.nTimeKeeper.resetTimings();
 
     // Forces the unmapping process before the new mapping process
-    final HashMap<MapperDAGVertex, ComponentInstance> operators = new HashMap<>();
+    final Map<MapperDAGVertex, ComponentInstance> operators = new LinkedHashMap<>();
 
     for (final DAGVertex v : dag.vertexSet()) {
       final MapperDAGVertex mdv = (MapperDAGVertex) v;
@@ -565,7 +566,7 @@ public abstract class LatencyAbc extends AbstractAbc {
    *
    * Collections.sort(vList, new ISchedTLevelComp());
    *
-   * Map<IScheduleElement, IScheduleElement> refMap = new HashMap<IScheduleElement, IScheduleElement>(); List<IScheduleElement> eltList = new
+   * Map<IScheduleElement, IScheduleElement> refMap = new LinkedHashMap<IScheduleElement, IScheduleElement>(); List<IScheduleElement> eltList = new
    * ArrayList<IScheduleElement>();
    *
    * IntervalFinder finder = new IntervalFinder(orderManager); for (IScheduleElement elt : vList) { MapperDAGVertex v = null; if (elt instanceof

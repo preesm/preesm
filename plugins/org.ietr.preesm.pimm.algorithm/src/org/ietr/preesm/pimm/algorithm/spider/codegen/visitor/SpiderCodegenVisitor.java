@@ -42,7 +42,6 @@ package org.ietr.preesm.pimm.algorithm.spider.codegen.visitor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -109,7 +108,7 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
 
   // Maps to handle hierarchical graphs
   private final Map<PiGraph, StringBuilder> graph2method    = new LinkedHashMap<>();
-  private final Map<PiGraph, List<PiGraph>> graph2subgraphs = new HashMap<>();
+  private final Map<PiGraph, List<PiGraph>> graph2subgraphs = new LinkedHashMap<>();
 
   private final Map<String, DataType> dataTypes;
 
@@ -220,7 +219,7 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
    * Class that sort parameters with dependencies
    */
   private class ParameterSorting {
-    private final Map<Parameter, Integer> ParameterLevels = new HashMap<>();
+    private final Map<Parameter, Integer> ParameterLevels = new LinkedHashMap<>();
 
     private Integer getLevelParameter(final Parameter p) {
       if (this.ParameterLevels.containsKey(p)) {

@@ -37,8 +37,8 @@
  */
 package org.ietr.preesm.memory.multiSDFTasks;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -80,8 +80,8 @@ public class MultiMemoryBoundsEstimator extends AbstractMemoryBoundsEstimator {
     final Map<DirectedAcyclicGraph, MemoryExclusionGraph> dagsAndMemExs = (Map<DirectedAcyclicGraph, MemoryExclusionGraph>) inputs
         .get(AbstractWorkflowNodeImplementation.KEY_DAG_AND_MEM_EX_MAP);
 
-    final Set<Integer> minBounds = new HashSet<>();
-    final Set<Integer> maxBounds = new HashSet<>();
+    final Set<Integer> minBounds = new LinkedHashSet<>();
+    final Set<Integer> maxBounds = new LinkedHashSet<>();
 
     for (final MemoryExclusionGraph memEx : dagsAndMemExs.values()) {
       final MemoryBoundsEstimatorEngine engine = new MemoryBoundsEstimatorEngine(memEx, valueVerbose);
@@ -99,7 +99,7 @@ public class MultiMemoryBoundsEstimator extends AbstractMemoryBoundsEstimator {
       maxBounds.add(maxBound);
     }
     // Generate output
-    final Map<String, Object> output = new HashMap<>();
+    final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_BOUND_MAX_SET, maxBounds);
     output.put(AbstractWorkflowNodeImplementation.KEY_BOUND_MIN_SET, minBounds);
     output.put(AbstractWorkflowNodeImplementation.KEY_DAG_AND_MEM_EX_MAP, dagsAndMemExs);
@@ -113,7 +113,7 @@ public class MultiMemoryBoundsEstimator extends AbstractMemoryBoundsEstimator {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(AbstractMemoryBoundsEstimator.PARAM_SOLVER, AbstractMemoryBoundsEstimator.VALUE_SOLVER_DEFAULT);
     parameters.put(AbstractMemoryBoundsEstimator.PARAM_VERBOSE, AbstractMemoryBoundsEstimator.VALUE_VERBOSE_DEFAULT);
     return parameters;

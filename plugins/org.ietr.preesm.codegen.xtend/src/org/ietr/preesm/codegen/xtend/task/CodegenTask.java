@@ -39,8 +39,8 @@
 package org.ietr.preesm.codegen.xtend.task;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -118,7 +118,7 @@ public class CodegenTask extends AbstractTaskImplementation {
     engine.print();
 
     // Create empty output map
-    final Map<String, Object> output = new HashMap<>();
+    final Map<String, Object> output = new LinkedHashMap<>();
     return output;
   }
 
@@ -129,11 +129,11 @@ public class CodegenTask extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
     String avilableLanguages = "? C {";
 
     // Retrieve the languages registered with the printers
-    final Set<String> languages = new HashSet<>();
+    final Set<String> languages = new LinkedHashSet<>();
     final IExtensionRegistry registry = Platform.getExtensionRegistry();
 
     final IConfigurationElement[] elements = registry.getConfigurationElementsFor("org.ietr.preesm.codegen.xtend.printers");

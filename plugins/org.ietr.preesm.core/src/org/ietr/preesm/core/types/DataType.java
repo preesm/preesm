@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.core.types;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -56,7 +56,7 @@ public class DataType {
   public static final Integer defaultDataTypeSize = 1;
 
   /** The Constant nameToSize. */
-  public static final HashMap<String, Integer> nameToSize = new HashMap<>();
+  public static final LinkedHashMap<String, Integer> nameToSize = new LinkedHashMap<>();
 
   /**
    * Instantiates a new data type.

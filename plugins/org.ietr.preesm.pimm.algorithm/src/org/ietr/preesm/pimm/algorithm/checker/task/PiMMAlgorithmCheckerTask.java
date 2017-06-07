@@ -36,7 +36,7 @@
 package org.ietr.preesm.pimm.algorithm.checker.task;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -87,7 +87,7 @@ public class PiMMAlgorithmCheckerTask extends AbstractTaskImplementation {
     }
 
     // Return the checked graph
-    final Map<String, Object> outputs = new HashMap<>();
+    final Map<String, Object> outputs = new LinkedHashMap<>();
     outputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
     return outputs;
   }

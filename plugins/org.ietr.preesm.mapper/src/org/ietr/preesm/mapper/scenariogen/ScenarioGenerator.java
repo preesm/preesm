@@ -37,7 +37,7 @@
  */
 package org.ietr.preesm.mapper.scenariogen;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
@@ -74,7 +74,7 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
 
     parameters.put("scenarioFile", "");
     parameters.put("dagFile", "");
@@ -102,7 +102,7 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
       final String nodeName, final Workflow workflow) throws WorkflowException {
 
-    final Map<String, Object> outputs = new HashMap<>();
+    final Map<String, Object> outputs = new LinkedHashMap<>();
 
     WorkflowLogger.getLogger().log(Level.INFO, "Generating scenario");
 

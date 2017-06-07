@@ -39,7 +39,7 @@ package org.ietr.preesm.experiment.model.pimm.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
@@ -63,7 +63,7 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
   /**
    * List of the {@link AbstractActor}s that were already visited and are not involved in cycles.
    */
-  protected HashSet<AbstractActor> visited;
+  protected Set<AbstractActor> visited;
 
   /**
    * List the {@link AbstractActor} that are currently being visited. If one of them is met again, this means that there is a cycle.
@@ -100,10 +100,10 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
    */
   public FifoCycleDetector(final boolean fastDetection) {
     this.fastDetection = fastDetection;
-    this.visited = new HashSet<>();
+    this.visited = new LinkedHashSet<>();
     this.branch = new ArrayList<>();
     this.cycles = new ArrayList<>();
-    this.ignoredFifos = new HashSet<>();
+    this.ignoredFifos = new LinkedHashSet<>();
   }
 
   /**

@@ -37,7 +37,7 @@
  */
 package org.ietr.preesm.mapper.ui.stats;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -82,7 +82,7 @@ public class StatEditorTransform extends AbstractTaskImplementation {
           "Gantt display is impossible in this context." + " Ignore this warning if you are running the command line version of Preesm.");
     }
 
-    return new HashMap<>();
+    return new LinkedHashMap<>();
   }
 
   /*

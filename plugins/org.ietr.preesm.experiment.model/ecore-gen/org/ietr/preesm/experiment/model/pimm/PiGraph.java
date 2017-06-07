@@ -36,7 +36,6 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
-import java.util.Set;
 import org.eclipse.emf.common.util.EList;
 
 // TODO: Auto-generated Javadoc
@@ -123,18 +122,43 @@ public interface PiGraph extends AbstractActor {
   EList<Dependency> getDependencies();
 
   /**
-   * Return the list of the names of all {@link PiGraph#getVertices()} of the Graph.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the list of names
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return
+   *        ECollections.newBasicEList(getVertices().stream().map(AbstractActor::getName).collect(Collectors.toList()));'"
+   * @generated
    */
-  public Set<String> getVerticesNames();
+  EList<String> getVerticesNames();
 
   /**
-   * Return the list of the names of all {@link PiGraph#getParameters()} of the Graph.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the list of names
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return
+   *        ECollections.newBasicEList(getParameters().stream().map(Parameter::getName).collect(Collectors.toList()));'"
+   * @generated
    */
-  public Set<String> getParametersNames();
+  EList<String> getParametersNames();
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return ECollections.newBasicEList(getVertices().stream().filter(v -> v
+   *        instanceof Actor).map(v -> (Actor) v).collect(Collectors.toList()));'"
+   * @generated
+   */
+  EList<Actor> getActors();
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='final EList<Parameter> result = ECollections.newBasicEList();\nfor
+   *        (final AbstractActor aa : getVertices()) {\n if (aa instanceof PiGraph) {\n result.addAll(((PiGraph) aa).getAllParameters());\n } else if (aa
+   *        instanceof Actor) {\n final Refinement refinement = ((Actor) aa).getRefinement();\n if (refinement != null) {\n final AbstractActor subGraph =
+   *        refinement.getAbstractActor();\n if ((subGraph != null) && (subGraph instanceof PiGraph)) {\n result.addAll(((PiGraph)
+   *        subGraph).getAllParameters());\n }\n }\n }\n}\nresult.addAll(getParameters());\nreturn result;'"
+   * @generated
+   */
+  EList<Parameter> getAllParameters();
 
   /**
    * Return the {@link AbstractVertex} ( {@link AbstractActor} or {@link Parameter}) whose name is given as a parameter.
@@ -155,13 +179,6 @@ public interface PiGraph extends AbstractActor {
   public Fifo getFifoIded(String id);
 
   /**
-   * Get the set of {@link Actor} in the graph.
-   *
-   * @return the set of {@link Actor}
-   */
-  public Set<Actor> getActors();
-
-  /**
    * Gets the hierarchical actor from path.
    *
    * @param path
@@ -180,13 +197,6 @@ public interface PiGraph extends AbstractActor {
    * @return the first Parameter with the given name found in the graph hierarchy, null if none is found
    */
   public Parameter getParameterNamedWithParent(String name, String parent);
-
-  /**
-   * Gets the all parameters.
-   *
-   * @return the set of all the parameters contained by the graph and its subgraphs
-   */
-  public Set<Parameter> getAllParameters();
 
   /**
    * Gets the all vertices.

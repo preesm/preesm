@@ -37,7 +37,7 @@
  */
 package org.ietr.preesm.memory.multiSDFTasks;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -135,7 +135,7 @@ public class MultiMemoryAllocator extends AbstractMemoryAllocatorTask {
       }
     }
 
-    final Map<String, Object> output = new HashMap<>();
+    final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_DAG_AND_MEM_EX_MAP, dagsAndMemExs);
     return output;
   }

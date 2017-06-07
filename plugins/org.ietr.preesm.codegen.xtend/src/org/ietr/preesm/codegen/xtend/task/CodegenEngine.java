@@ -45,8 +45,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -162,10 +162,10 @@ public class CodegenEngine {
    *           the workflow exception
    */
   public void registerPrintersAndBlocks(final String selectedPrinter) throws WorkflowException {
-    this.registeredPrintersAndBlocks = new HashMap<>();
+    this.registeredPrintersAndBlocks = new LinkedHashMap<>();
 
     // 1. Get the printers of the desired "language"
-    final Set<IConfigurationElement> usablePrinters = new HashSet<>();
+    final Set<IConfigurationElement> usablePrinters = new LinkedHashSet<>();
     final IExtensionRegistry registry = Platform.getExtensionRegistry();
     final IConfigurationElement[] elements = registry.getConfigurationElementsFor("org.ietr.preesm.codegen.xtend.printers");
     for (final IConfigurationElement element : elements) {
@@ -222,7 +222,7 @@ public class CodegenEngine {
     // - Erase file with the same extension from the destination directory
     // - Do the pre-processing
     // - Save the printers in a map
-    this.realPrinters = new HashMap<>();
+    this.realPrinters = new LinkedHashMap<>();
     for (final Entry<IConfigurationElement, List<Block>> printerAndBlocks : this.registeredPrintersAndBlocks.entrySet()) {
       final String extension = printerAndBlocks.getKey().getAttribute("extension");
       CodegenAbstractPrinter printer = null;

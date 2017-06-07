@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.mapper.timekeeper;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
@@ -96,7 +96,7 @@ public class BLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
 
     // Synchronized vertices are taken into account to compute b-level
     final List<MapperDAGVertex> synchroVertices = timing.getVertices((MapperDAG) dagVertex.getBase());
-    final Map<MapperDAGVertex, MapperDAGEdge> successors = new HashMap<>();
+    final Map<MapperDAGVertex, MapperDAGEdge> successors = new LinkedHashMap<>();
 
     for (final MapperDAGVertex v : synchroVertices) {
       final Map<MapperDAGVertex, MapperDAGEdge> succs = v.getSuccessors(false);
