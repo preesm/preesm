@@ -75,10 +75,14 @@ public class SDF3ExporterEngine {
       }
       final IWorkspace workspace = ResourcesPlugin.getWorkspace();
       final IFile iFile = workspace.getRoot().getFile(path);
+      final File file = new File(iFile.getRawLocation().toOSString());
+      final File parentFile = file.getParentFile();
+      if (parentFile != null) {
+        parentFile.mkdirs();
+      }
       if (!iFile.exists()) {
         iFile.create(null, false, new NullProgressMonitor());
       }
-      final File file = new File(iFile.getRawLocation().toOSString());
 
       // Write the result into the text file
       exporter.write(file);

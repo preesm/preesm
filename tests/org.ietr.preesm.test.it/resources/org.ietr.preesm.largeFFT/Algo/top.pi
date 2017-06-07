@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">top</data>
+        <node expr="65536" id="FFTSize" kind="param"/>
+        <node id="src" kind="actor">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="output" name="out"/>
+        </node>
+        <node id="snk" kind="actor">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+        </node>
+        <node id="largeFFT" kind="actor">
+            <data key="graph_desc">Algo/largeFFT.pi</data>
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+            <port annotation="NONE" expr="size" kind="output" name="out"/>
+        </node>
+        <edge kind="fifo" source="src" sourceport="out"
+            target="largeFFT" targetport="in" type="char"/>
+        <edge kind="fifo" source="largeFFT" sourceport="out"
+            target="snk" targetport="in" type="char"/>
+        <edge kind="dependency" source="FFTSize" target="largeFFT" targetport="size"/>
+        <edge kind="dependency" source="FFTSize" target="src" targetport="size"/>
+        <edge kind="dependency" source="FFTSize" target="snk" targetport="size"/>
+    </graph>
+</graphml>
