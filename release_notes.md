@@ -29,6 +29,7 @@ PREESM Changelog
 * Major maintainer doc update
 * Change upload destination of products to Sourceforge File Release Service
 * Fix code coverage settings
+* Replace HashMap/Sets with LinkedHashMap/Sets
 
 ### Bug fix
 
