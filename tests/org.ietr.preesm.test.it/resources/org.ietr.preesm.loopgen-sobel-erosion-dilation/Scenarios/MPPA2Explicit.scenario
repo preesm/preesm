@@ -1,66 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenario>
     <files>
-        <algorithm url="/org.ietr.preesm.loopgen-sobel-erosion-dilation/Algo/myapp.pi"/>
+        <algorithm url="/org.ietr.preesm.loopgen-sobel-erosion-dilation/Algo/myapp2.pi"/>
         <architecture url="/org.ietr.preesm.loopgen-sobel-erosion-dilation/Archi/MPPA2Explicit.slam"/>
         <codegenDirectory url="/org.ietr.preesm.loopgen-sobel-erosion-dilation/CodeMPPA2/generated"/>
     </files>
     <constraints excelUrl="">
         <constraintGroup>
-            <operator name="Core6"/>
+            <operator name="Core1"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core5"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core3"/>
-            <task name="myapp/hierarchical_sobel_median/input"/>
-            <task name="myapp/hierarchical_sobel_median"/>
-            <task name="myapp/hierarchical_sobel_median/Dilation"/>
-            <task name="myapp/hierarchical_sobel_median/hierarchicalSplit"/>
-            <task name="myapp/hierarchical_sobel_median/Sobel"/>
-            <task name="myapp/hierarchical_sobel_median/output"/>
-            <task name="myapp/hierarchical_sobel_median/Erosion"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core4"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core7"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core0"/>
-            <task name="myapp/hierarchical_sobel_median/input"/>
-            <task name="myapp/hierarchical_sobel_median"/>
-            <task name="myapp/hierarchical_sobel_median/Dilation"/>
-            <task name="myapp/hierarchical_sobel_median/hierarchicalSplit"/>
-            <task name="myapp/hierarchical_sobel_median/Sobel"/>
-            <task name="myapp/hierarchical_sobel_median/output"/>
-            <task name="myapp/Split"/>
-            <task name="myapp/Read_YUV"/>
-            <task name="myapp/hierarchical_sobel_median/Erosion"/>
-            <task name="myapp"/>
-            <task name="myapp/display"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
+            <task name="myapp2/display"/>
+            <task name="myapp2/hierarchical_app/topOutputs"/>
+            <task name="myapp2"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
+            <task name="myapp2/hierarchical_app"/>
+            <task name="myapp2/hierarchical_app/Split"/>
+            <task name="myapp2/hierarchical_app/topInputs"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
+            <task name="myapp2/Read_YUV"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core2"/>
-            <task name="myapp/hierarchical_sobel_median/input"/>
-            <task name="myapp/hierarchical_sobel_median"/>
-            <task name="myapp/hierarchical_sobel_median/Dilation"/>
-            <task name="myapp/hierarchical_sobel_median/hierarchicalSplit"/>
-            <task name="myapp/hierarchical_sobel_median/Sobel"/>
-            <task name="myapp/hierarchical_sobel_median/output"/>
-            <task name="myapp/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core1"/>
-            <task name="myapp/hierarchical_sobel_median/input"/>
-            <task name="myapp/hierarchical_sobel_median"/>
-            <task name="myapp/hierarchical_sobel_median/Dilation"/>
-            <task name="myapp/hierarchical_sobel_median/hierarchicalSplit"/>
-            <task name="myapp/hierarchical_sobel_median/Sobel"/>
-            <task name="myapp/hierarchical_sobel_median/output"/>
-            <task name="myapp/hierarchical_sobel_median/Erosion"/>
+            <operator name="Core6"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core4"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
         </constraintGroup>
     </constraints>
     <relativeconstraints excelUrl=""/>

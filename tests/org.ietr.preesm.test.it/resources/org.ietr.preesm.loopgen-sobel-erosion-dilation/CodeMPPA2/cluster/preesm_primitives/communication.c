@@ -27,29 +27,14 @@ static mppa_async_event_t sync_evt[NB_CLUSTER];
 
 static uintptr_t sync_remote_ptr[NB_CLUSTER];
 
+extern int local_buffer_size __attribute__((weak));
+
 /* DDR Shared */ 
 #define SYNC_SHARED_ADDRESS (0x3000000ULL)
 
 extern char *local_buffer __attribute__((weak));
 extern long long total_get_cycles[];
 extern long long total_put_cycles[];
-
-extern int Core0_size __attribute__((weak));
-extern int Core1_size __attribute__((weak));
-extern int Core2_size __attribute__((weak));
-extern int Core3_size __attribute__((weak));
-extern int Core4_size __attribute__((weak));
-extern int Core5_size __attribute__((weak));
-extern int Core6_size __attribute__((weak));
-extern int Core7_size __attribute__((weak));
-extern int Core8_size __attribute__((weak));
-extern int Core9_size __attribute__((weak));
-extern int Core10_size __attribute__((weak));
-extern int Core11_size __attribute__((weak));
-extern int Core12_size __attribute__((weak));
-extern int Core13_size __attribute__((weak));
-extern int Core14_size __attribute__((weak));
-extern int Core15_size __attribute__((weak));
 
 void sendStart(int cluster)
 {
@@ -81,7 +66,7 @@ void communicationInit() {
 	#ifdef __nodeos__
 	omp_set_num_threads(NB_OMP_CORE);
 	#endif
-	int local_buffer_size = 0;
+	#if 0
 	switch (__k1_get_cluster_id()){
 		case 0:	local_buffer_size = Core0_size; break;
 		case 1:	local_buffer_size = Core1_size; break;
@@ -100,6 +85,11 @@ void communicationInit() {
 		case 14: local_buffer_size = Core14_size; break;
 		case 15: local_buffer_size = Core15_size; break;
 		default: break;
+	}
+	#endif
+	if(&local_buffer_size == 0)
+	{
+		printf("Cluster %d please set at codegen the local_buffer_size variable (scratchpad buffer)\n", __k1_get_cluster_id());
 	}
 
 	local_buffer = (char*)malloc(local_buffer_size);

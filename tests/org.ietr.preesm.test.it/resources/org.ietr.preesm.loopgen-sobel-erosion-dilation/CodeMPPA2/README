@@ -6,5 +6,5 @@ mkdir ~/some_path/project
 sshfs name@your_ip:/path/to/your/preesm/project ~/some_path/project
 cd some_path/project
 
-#run by jtag
-make run_pcie_hw -j8
+#run by pcie
+make run_pcie_hw -j8 nb_cluster={NB_CORE}
