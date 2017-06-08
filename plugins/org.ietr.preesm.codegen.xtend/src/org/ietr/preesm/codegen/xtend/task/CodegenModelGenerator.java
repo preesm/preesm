@@ -126,7 +126,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
-import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType;
@@ -1812,12 +1811,6 @@ public class CodegenModelGenerator {
     // Register the dag buffer to the core
     registerCallVariableToCoreBlock(operatorBlock, newComm);
 
-    // Set the semaphore for the new Comm. (this may be a share memory comm
-    // specific feature)
-    // probably some work to do here when trying to support new
-    // communication means.
-    generateSemaphore(operatorBlock, newComm);
-
     // Create the corresponding SE or RS
     final SharedMemoryCommunication newCommZoneComplement = CodegenFactory.eINSTANCE.createSharedMemoryCommunication();
     newCommZoneComplement.setDirection(dir);
@@ -2012,77 +2005,6 @@ public class CodegenModelGenerator {
     identifyMergedInputRange(callVars);
 
     return func;
-  }
-
-  /**
-   * Generate the semaphore associated to the given {@link SharedMemoryCommunication}.
-   *
-   * @param operatorBlock
-   *          the {@link CoreBlock} on which the {@link SharedMemoryCommunication} is executed
-   * @param newComm
-   *          the {@link SharedMemoryCommunication}
-   */
-  protected void generateSemaphore(final CoreBlock operatorBlock, final SharedMemoryCommunication newComm) {
-    final boolean ss_re = ((newComm.getDirection().equals(Direction.SEND) && newComm.getDelimiter().equals(Delimiter.START))
-        || (newComm.getDirection().equals(Direction.RECEIVE) && newComm.getDelimiter().equals(Delimiter.END)));
-
-    // For SS->RE
-
-    // First check if a semaphore was already created for corresponding
-    // calls.
-    final Set<Communication> correspondingComm = new LinkedHashSet<>();
-    if (ss_re) {
-      correspondingComm.add(newComm.getReceiveEnd());
-      correspondingComm.add(newComm.getSendStart());
-    }
-
-    Semaphore semaphore = null;
-
-    for (final Communication comm : correspondingComm) {
-      if (comm instanceof SharedMemoryCommunication) {
-        semaphore = ((SharedMemoryCommunication) comm).getSemaphore();
-      }
-      if (semaphore != null) {
-        break;
-      }
-    }
-
-    // If no semaphore was found, create one
-    if (semaphore == null) {
-      semaphore = CodegenFactory.eINSTANCE.createSemaphore();
-      semaphore.setCreator(operatorBlock);
-      semaphore.setName("sem_" + newComm.getId() + "_" + ((ss_re) ? "SSRE" : "RRSR"));
-      final FunctionCall initSem = CodegenFactory.eINSTANCE.createFunctionCall();
-      initSem.addParameter(semaphore, PortDirection.NONE);
-
-      final Constant cstShared = CodegenFactory.eINSTANCE.createConstant();
-      cstShared.setType("int");
-      cstShared.setValue(0);
-      initSem.addParameter(cstShared, PortDirection.NONE);
-      cstShared.setCreator(operatorBlock);
-
-      final Constant cstInitVal = CodegenFactory.eINSTANCE.createConstant();
-      cstInitVal.setType("int");
-      if (ss_re) {
-        cstInitVal.setValue(0);
-      }
-
-      cstInitVal.setName("init_val");
-      initSem.addParameter(cstInitVal, PortDirection.NONE);
-      cstInitVal.setCreator(operatorBlock);
-
-      initSem.setName("sem_init");
-      initSem.setActorName(newComm.getData().getComment());
-
-      operatorBlock.getInitBlock().getCodeElts().add(initSem);
-    }
-
-    // Put the semaphore in the com
-    newComm.setSemaphore(semaphore);
-
-    // Register the core of the current block as a semaphore user
-    semaphore.getUsers().add(operatorBlock);
-
   }
 
   /**

@@ -38,7 +38,6 @@ package org.ietr.preesm.codegen.xtend.printer.c
 import java.util.Date
 import java.util.LinkedHashSet
 import java.util.List
-import org.ietr.preesm.codegen.xtend.model.codegen.Block
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Call
 import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock
@@ -51,7 +50,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
-import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
@@ -239,26 +237,5 @@ class C6678CPrinter extends CPrinter {
 				cache_inv(«communication.data.doSwitch», «communication.data.size»*sizeof(«communication.data.type»));
 			«ENDIF»
 		«ENDIF»	
-	'''
-	
-	override printSemaphoreDeclaration(Semaphore semaphore) ''''''
-	
-	override printSemaphoreDefinition(Semaphore semaphore) ''''''
-	
-	override printSemaphore(Semaphore semaphore) ''''''
-	
-	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {
-		super.preProcessing(printerBlocks, allBlocks)
-
-		for (block : printerBlocks) {
-			/** Remove semaphore init */
-			(block as CoreBlock).initBlock.codeElts.removeAll(
-				((block as CoreBlock).initBlock.codeElts.filter[
-					(it instanceof FunctionCall && (it as FunctionCall).name.startsWith("sem_init"))]))
-			/** Remove semaphores */
-			(block as CoreBlock).definitions.removeAll((block as CoreBlock).definitions.filter[it instanceof Semaphore])
-			(block as CoreBlock).declarations.removeAll(
-				(block as CoreBlock).declarations.filter[it instanceof Semaphore])
-		}		
-	}	
+	'''	
 }

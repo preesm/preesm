@@ -52,7 +52,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
 import org.ietr.preesm.codegen.xtend.model.codegen.IntVar
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
-import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
@@ -161,12 +160,6 @@ class DefaultPrinter extends CodegenAbstractPrinter {
 	override printNullBufferDefinition(NullBuffer buffer) ''''''
 
 	override printRoundBuffer(SpecialCall call) ''''''
-
-	override printSemaphore(Semaphore semaphore) ''''''
-
-	override printSemaphoreDeclaration(Semaphore semaphore) ''''''
-
-	override printSemaphoreDefinition(Semaphore semaphore) ''''''
 
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) ''''''
 

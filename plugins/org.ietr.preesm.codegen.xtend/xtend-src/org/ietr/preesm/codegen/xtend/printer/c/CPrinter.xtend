@@ -49,7 +49,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
@@ -359,15 +358,6 @@ class CPrinter extends DefaultPrinter {
 
 	override printSubBuffer(SubBuffer buffer) {return printBuffer(buffer)}
 
-	override printSemaphore(Semaphore semaphore) '''&«semaphore.name»'''
-
-	override printSemaphoreDefinition(Semaphore semaphore) '''
-	sem_t «semaphore.name»;
-	'''
-
-	override printSemaphoreDeclaration(Semaphore semaphore) '''
-	extern sem_t «semaphore.name»;
-	'''
 	override printBufferIterator(BufferIterator bufferIterator) '''«bufferIterator.name» + «printIntVar(bufferIterator.iter)» * «bufferIterator.iterSize»'''
 
 	override printBufferIteratorDeclaration(BufferIterator bufferIterator) ''''''
