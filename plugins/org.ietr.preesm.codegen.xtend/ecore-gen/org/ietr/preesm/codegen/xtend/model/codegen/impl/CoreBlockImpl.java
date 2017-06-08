@@ -57,6 +57,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CoreBlockImpl#getLoopBlock <em>Loop Block</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CoreBlockImpl#getInitBlock <em>Init Block</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CoreBlockImpl#getCoreType <em>Core Type</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CoreBlockImpl#getCoreID <em>Core ID</em>}</li>
  * </ul>
  *
  * @generated
@@ -95,6 +96,23 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
    * @ordered
    */
   protected String              coreType           = CoreBlockImpl.CORE_TYPE_EDEFAULT;
+
+  /**
+   * The default value of the '{@link #getCoreID() <em>Core ID</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getCoreID()
+   * @generated
+   * @ordered
+   */
+  protected static final int CORE_ID_EDEFAULT = 0;
+  /**
+   * The cached value of the '{@link #getCoreID() <em>Core ID</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getCoreID()
+   * @generated
+   * @ordered
+   */
+  protected int              coreID           = CoreBlockImpl.CORE_ID_EDEFAULT;
 
   /**
    * <!-- begin-user-doc --> Default Constructor also create the init and loop blocks and add them to the {@link CodeElt} list.<!-- end-user-doc -->
@@ -239,6 +257,30 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
   }
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public int getCoreID() {
+    return this.coreID;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public void setCoreID(final int newCoreID) {
+    final int oldCoreID = this.coreID;
+    this.coreID = newCoreID;
+    if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.CORE_BLOCK__CORE_ID, oldCoreID, this.coreID));
+    }
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @param featureID
@@ -265,6 +307,8 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
         return basicGetInitBlock();
       case CodegenPackage.CORE_BLOCK__CORE_TYPE:
         return getCoreType();
+      case CodegenPackage.CORE_BLOCK__CORE_ID:
+        return getCoreID();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -290,6 +334,9 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
       case CodegenPackage.CORE_BLOCK__CORE_TYPE:
         setCoreType((String) newValue);
         return;
+      case CodegenPackage.CORE_BLOCK__CORE_ID:
+        setCoreID((Integer) newValue);
+        return;
     }
     super.eSet(featureID, newValue);
   }
@@ -313,6 +360,9 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
       case CodegenPackage.CORE_BLOCK__CORE_TYPE:
         setCoreType(CoreBlockImpl.CORE_TYPE_EDEFAULT);
         return;
+      case CodegenPackage.CORE_BLOCK__CORE_ID:
+        setCoreID(CoreBlockImpl.CORE_ID_EDEFAULT);
+        return;
     }
     super.eUnset(featureID);
   }
@@ -334,6 +384,8 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
         return this.initBlock != null;
       case CodegenPackage.CORE_BLOCK__CORE_TYPE:
         return CoreBlockImpl.CORE_TYPE_EDEFAULT == null ? this.coreType != null : !CoreBlockImpl.CORE_TYPE_EDEFAULT.equals(this.coreType);
+      case CodegenPackage.CORE_BLOCK__CORE_ID:
+        return this.coreID != CoreBlockImpl.CORE_ID_EDEFAULT;
     }
     return super.eIsSet(featureID);
   }
@@ -353,6 +405,8 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
     final StringBuffer result = new StringBuffer(super.toString());
     result.append(" (coreType: ");
     result.append(this.coreType);
+    result.append(", coreID: ");
+    result.append(this.coreID);
     result.append(')');
     return result.toString();
   }
