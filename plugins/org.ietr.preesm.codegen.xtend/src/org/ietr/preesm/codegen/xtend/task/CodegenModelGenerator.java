@@ -49,6 +49,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.resources.IFile;
@@ -527,7 +528,8 @@ public class CodegenModelGenerator {
     // 1 - Iterate on the actors of the DAG
     // 1.0 - Identify the core used.
     // 1.1 - Construct the "loop" & "init" of each core.
-    // 2 - Put the buffer declaration in their right place
+    // 2 - Set CoreBlock ID
+    // 3 - Put the buffer declaration in their right place
 
     // -1 - Add all hosted MemoryObject back in te MemEx
     restoreHostedVertices();
@@ -617,7 +619,15 @@ public class CodegenModelGenerator {
       }
     }
 
-    // 2 - Put the buffer definition in their right place
+    // 2 - Set codeBlockI ID
+    // This objective is to give a unique ID to each coreBlock.
+    // Alphabetical order of coreBlock name is used to determine the id (in an attempt to limit randomness)
+    {
+      final AtomicInteger id = new AtomicInteger(0); // Need this because non-final argument cannot be used within lambda expressions.
+      coreBlocks.values().stream().sorted((cb1, cb2) -> cb1.getName().compareTo(cb2.getName())).forEach(cb -> cb.setCoreID(id.getAndIncrement()));
+    }
+
+    // 3 - Put the buffer definition in their right place
     generateBufferDefinitions();
 
     return new LinkedHashSet<>(this.coreBlocks.values());
