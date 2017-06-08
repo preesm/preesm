@@ -39,13 +39,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  *
  */
-@Ignore
 public class LargeFFTTest {
 
   @Test
