@@ -67,7 +67,7 @@ public class LargeFFTTest {
   @Test
   public void testLargeFFT21() throws FileNotFoundException, InvalidModelException, CoreException {
     final String projectName = "org.ietr.preesm.largeFFT";
-    final String[] scenarios = new String[] { "largeFFT_hawking.scenario", "largeFFT_lamaar.scenario", "largeFFT_monox86.scenario" };
+    final String[] scenarios = new String[] { "largeFFT_lamaar.scenario" };
     final String[] workflows = new String[] { "CodegenWMemScripts.workflow" };
 
     for (final String workflow : workflows) {
@@ -83,7 +83,7 @@ public class LargeFFTTest {
   @Test
   public void testLargeFFT31() throws FileNotFoundException, InvalidModelException, CoreException {
     final String projectName = "org.ietr.preesm.largeFFT";
-    final String[] scenarios = new String[] { "largeFFT_hawking.scenario", "largeFFT_lamaar.scenario", "largeFFT_monox86.scenario" };
+    final String[] scenarios = new String[] { "largeFFT_monox86.scenario" };
     final String[] workflows = new String[] { "CodegenWMemScripts.workflow" };
 
     for (final String workflow : workflows) {
@@ -99,8 +99,8 @@ public class LargeFFTTest {
   @Test
   public void testLargeFFT12() throws FileNotFoundException, InvalidModelException, CoreException {
     final String projectName = "org.ietr.preesm.largeFFT";
-    final String[] scenarios = new String[] { "largeFFT_hawking.scenario", "largeFFT_lamaar.scenario", "largeFFT_monox86.scenario" };
-    final String[] workflows = new String[] { "CodegenWMemScripts.workflow", "SDF3Exporter.workflow", "Simulate.workflow", "XTendCodegen.workflow" };
+    final String[] scenarios = new String[] { "largeFFT_hawking.scenario" };
+    final String[] workflows = new String[] { "SDF3Exporter.workflow" };
 
     for (final String workflow : workflows) {
       for (final String scenario : scenarios) {
@@ -115,8 +115,8 @@ public class LargeFFTTest {
   @Test
   public void testLargeFFT22() throws FileNotFoundException, InvalidModelException, CoreException {
     final String projectName = "org.ietr.preesm.largeFFT";
-    final String[] scenarios = new String[] { "largeFFT_hawking.scenario", "largeFFT_lamaar.scenario", "largeFFT_monox86.scenario" };
-    final String[] workflows = new String[] { "CodegenWMemScripts.workflow", "SDF3Exporter.workflow", "Simulate.workflow", "XTendCodegen.workflow" };
+    final String[] scenarios = new String[] { "largeFFT_lamaar.scenario" };
+    final String[] workflows = new String[] { "SDF3Exporter.workflow" };
 
     for (final String workflow : workflows) {
       for (final String scenario : scenarios) {
@@ -131,8 +131,8 @@ public class LargeFFTTest {
   @Test
   public void testLargeFFT32() throws FileNotFoundException, InvalidModelException, CoreException {
     final String projectName = "org.ietr.preesm.largeFFT";
-    final String[] scenarios = new String[] { "largeFFT_hawking.scenario", "largeFFT_lamaar.scenario", "largeFFT_monox86.scenario" };
-    final String[] workflows = new String[] { "CodegenWMemScripts.workflow", "SDF3Exporter.workflow", "Simulate.workflow", "XTendCodegen.workflow" };
+    final String[] scenarios = new String[] { "largeFFT_monox86.scenario" };
+    final String[] workflows = new String[] { "SDF3Exporter.workflow" };
 
     for (final String workflow : workflows) {
       for (final String scenario : scenarios) {
@@ -147,8 +147,8 @@ public class LargeFFTTest {
   @Test
   public void testLargeFFT13() throws FileNotFoundException, InvalidModelException, CoreException {
     final String projectName = "org.ietr.preesm.largeFFT";
-    final String[] scenarios = new String[] { "largeFFT_hawking.scenario", "largeFFT_lamaar.scenario", "largeFFT_monox86.scenario" };
-    final String[] workflows = new String[] { "CodegenWMemScripts.workflow", "SDF3Exporter.workflow", "Simulate.workflow", "XTendCodegen.workflow" };
+    final String[] scenarios = new String[] { "largeFFT_hawking.scenario" };
+    final String[] workflows = new String[] { "Simulate.workflow" };
 
     for (final String workflow : workflows) {
       for (final String scenario : scenarios) {
@@ -163,8 +163,8 @@ public class LargeFFTTest {
   @Test
   public void testLargeFFT23() throws FileNotFoundException, InvalidModelException, CoreException {
     final String projectName = "org.ietr.preesm.largeFFT";
-    final String[] scenarios = new String[] { "largeFFT_hawking.scenario", "largeFFT_lamaar.scenario", "largeFFT_monox86.scenario" };
-    final String[] workflows = new String[] { "CodegenWMemScripts.workflow", "SDF3Exporter.workflow", "Simulate.workflow", "XTendCodegen.workflow" };
+    final String[] scenarios = new String[] { "largeFFT_lamaar.scenario" };
+    final String[] workflows = new String[] { "Simulate.workflow" };
 
     for (final String workflow : workflows) {
       for (final String scenario : scenarios) {
@@ -179,8 +179,56 @@ public class LargeFFTTest {
   @Test
   public void testLargeFFT33() throws FileNotFoundException, InvalidModelException, CoreException {
     final String projectName = "org.ietr.preesm.largeFFT";
-    final String[] scenarios = new String[] { "largeFFT_hawking.scenario", "largeFFT_lamaar.scenario", "largeFFT_monox86.scenario" };
-    final String[] workflows = new String[] { "CodegenWMemScripts.workflow", "SDF3Exporter.workflow", "Simulate.workflow", "XTendCodegen.workflow" };
+    final String[] scenarios = new String[] { "largeFFT_monox86.scenario" };
+    final String[] workflows = new String[] { "Simulate.workflow" };
+
+    for (final String workflow : workflows) {
+      for (final String scenario : scenarios) {
+        final String workflowFilePathStr = "/Workflows/" + workflow;
+        final String scenarioFilePathStr = "/Scenarios/" + scenario;
+        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+      }
+    }
+  }
+
+  @Test
+  public void testLargeFFT14() throws FileNotFoundException, InvalidModelException, CoreException {
+    final String projectName = "org.ietr.preesm.largeFFT";
+    final String[] scenarios = new String[] { "largeFFT_hawking.scenario" };
+    final String[] workflows = new String[] { "XTendCodegen.workflow" };
+
+    for (final String workflow : workflows) {
+      for (final String scenario : scenarios) {
+        final String workflowFilePathStr = "/Workflows/" + workflow;
+        final String scenarioFilePathStr = "/Scenarios/" + scenario;
+        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+      }
+    }
+  }
+
+  @Test
+  public void testLargeFFT24() throws FileNotFoundException, InvalidModelException, CoreException {
+    final String projectName = "org.ietr.preesm.largeFFT";
+    final String[] scenarios = new String[] { "largeFFT_lamaar.scenario" };
+    final String[] workflows = new String[] { "XTendCodegen.workflow" };
+
+    for (final String workflow : workflows) {
+      for (final String scenario : scenarios) {
+        final String workflowFilePathStr = "/Workflows/" + workflow;
+        final String scenarioFilePathStr = "/Scenarios/" + scenario;
+        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+      }
+    }
+  }
+
+  @Test
+  public void testLargeFFT34() throws FileNotFoundException, InvalidModelException, CoreException {
+    final String projectName = "org.ietr.preesm.largeFFT";
+    final String[] scenarios = new String[] { "largeFFT_monox86.scenario" };
+    final String[] workflows = new String[] { "XTendCodegen.workflow" };
 
     for (final String workflow : workflows) {
       for (final String scenario : scenarios) {
