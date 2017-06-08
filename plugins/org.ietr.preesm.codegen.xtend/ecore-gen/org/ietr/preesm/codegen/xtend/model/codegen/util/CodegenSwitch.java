@@ -59,7 +59,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
-import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
@@ -340,20 +339,6 @@ public class CodegenSwitch<T> extends Switch<T> {
       case CodegenPackage.COMMUNICATION_NODE: {
         final CommunicationNode communicationNode = (CommunicationNode) theEObject;
         T result = caseCommunicationNode(communicationNode);
-        if (result == null) {
-          result = defaultCase(theEObject);
-        }
-        return result;
-      }
-      case CodegenPackage.SEMAPHORE: {
-        final Semaphore semaphore = (Semaphore) theEObject;
-        T result = caseSemaphore(semaphore);
-        if (result == null) {
-          result = caseVariable(semaphore);
-        }
-        if (result == null) {
-          result = caseCommentable(semaphore);
-        }
         if (result == null) {
           result = defaultCase(theEObject);
         }
@@ -715,20 +700,6 @@ public class CodegenSwitch<T> extends Switch<T> {
    * @generated
    */
   public T caseCommunicationNode(final CommunicationNode object) {
-    return null;
-  }
-
-  /**
-   * Returns the result of interpreting the object as an instance of '<em>Semaphore</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
-   * non-null result will terminate the switch. <!-- end-user-doc -->
-   *
-   * @param object
-   *          the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Semaphore</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseSemaphore(final Semaphore object) {
     return null;
   }
 

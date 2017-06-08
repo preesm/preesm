@@ -71,7 +71,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
-import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType;
@@ -212,13 +211,6 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
    * @generated
    */
   private EClass communicationNodeEClass = null;
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @generated
-   */
-  private EClass semaphoreEClass = null;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
@@ -860,6 +852,16 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
   }
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EAttribute getCoreBlock_CoreID() {
+    return (EAttribute) this.coreBlockEClass.getEStructuralFeatures().get(3);
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @return the actor block
@@ -1093,34 +1095,12 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
-   * @return the semaphore
-   * @generated
-   */
-  @Override
-  public EClass getSemaphore() {
-    return this.semaphoreEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
    * @return the shared memory communication
    * @generated
    */
   @Override
   public EClass getSharedMemoryCommunication() {
     return this.sharedMemoryCommunicationEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the shared memory communication semaphore
-   * @generated
-   */
-  @Override
-  public EReference getSharedMemoryCommunication_Semaphore() {
-    return (EReference) this.sharedMemoryCommunicationEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -1397,6 +1377,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
     createEReference(this.coreBlockEClass, CodegenPackage.CORE_BLOCK__LOOP_BLOCK);
     createEReference(this.coreBlockEClass, CodegenPackage.CORE_BLOCK__INIT_BLOCK);
     createEAttribute(this.coreBlockEClass, CodegenPackage.CORE_BLOCK__CORE_TYPE);
+    createEAttribute(this.coreBlockEClass, CodegenPackage.CORE_BLOCK__CORE_ID);
 
     this.actorBlockEClass = createEClass(CodegenPackage.ACTOR_BLOCK);
     createEReference(this.actorBlockEClass, CodegenPackage.ACTOR_BLOCK__LOOP_BLOCK);
@@ -1427,10 +1408,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
     createEAttribute(this.communicationNodeEClass, CodegenPackage.COMMUNICATION_NODE__NAME);
     createEAttribute(this.communicationNodeEClass, CodegenPackage.COMMUNICATION_NODE__TYPE);
 
-    this.semaphoreEClass = createEClass(CodegenPackage.SEMAPHORE);
-
     this.sharedMemoryCommunicationEClass = createEClass(CodegenPackage.SHARED_MEMORY_COMMUNICATION);
-    createEReference(this.sharedMemoryCommunicationEClass, CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE);
 
     this.constantStringEClass = createEClass(CodegenPackage.CONSTANT_STRING);
     createEAttribute(this.constantStringEClass, CodegenPackage.CONSTANT_STRING__VALUE);
@@ -1504,7 +1482,6 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
     this.callBlockEClass.getESuperTypes().add(getBlock());
     this.specialCallEClass.getESuperTypes().add(getCall());
     this.fifoCallEClass.getESuperTypes().add(getCall());
-    this.semaphoreEClass.getESuperTypes().add(getVariable());
     this.sharedMemoryCommunicationEClass.getESuperTypes().add(getCommunication());
     this.constantStringEClass.getESuperTypes().add(getVariable());
     this.nullBufferEClass.getESuperTypes().add(getSubBuffer());
@@ -1654,6 +1631,9 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
     initEAttribute(getCoreBlock_CoreType(), this.ecorePackage.getEString(), "coreType", null, 1, 1, CoreBlock.class, !EPackageImpl.IS_TRANSIENT,
         !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
         !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEAttribute(getCoreBlock_CoreID(), this.ecorePackage.getEInt(), "coreID", null, 1, 1, CoreBlock.class, !EPackageImpl.IS_TRANSIENT,
+        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_ID, !EPackageImpl.IS_UNIQUE,
+        !EPackageImpl.IS_DERIVED, !EPackageImpl.IS_ORDERED);
 
     initEClass(this.actorBlockEClass, ActorBlock.class, "ActorBlock", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
@@ -1738,14 +1718,8 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
         !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
         !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
-    initEClass(this.semaphoreEClass, Semaphore.class, "Semaphore", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-
     initEClass(this.sharedMemoryCommunicationEClass, SharedMemoryCommunication.class, "SharedMemoryCommunication", !EPackageImpl.IS_ABSTRACT,
         !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getSharedMemoryCommunication_Semaphore(), getSemaphore(), null, "semaphore", null, 1, 1, SharedMemoryCommunication.class,
-        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES,
-        !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
     initEClass(this.constantStringEClass, ConstantString.class, "ConstantString", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);

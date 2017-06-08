@@ -101,7 +101,7 @@ public class FirstFitAllocator extends OrderedAllocator {
 
       // Alignment constraint
       int align = -1;
-      final Integer typeSize = (Integer) vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE, Integer.class);
+      final Integer typeSize = vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE, Integer.class);
       if (this.alignment == 0) {
         align = typeSize;
       } else if (this.alignment > 0) {

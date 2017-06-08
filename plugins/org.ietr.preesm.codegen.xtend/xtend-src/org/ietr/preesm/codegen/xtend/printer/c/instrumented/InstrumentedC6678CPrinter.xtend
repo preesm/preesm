@@ -2,7 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2014)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -47,7 +47,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter
 import org.ietr.preesm.codegen.xtend.model.codegen.Direction
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
@@ -196,29 +195,12 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 		cache_inv(«communication.data.doSwitch», «communication.data.size»*sizeof(«communication.data.type»));
 		«ENDIF»	
 	'''
-	
-	override printSemaphoreDeclaration(Semaphore semaphore) ''''''
-	
-	override printSemaphoreDefinition(Semaphore semaphore) ''''''
-	
-	override printSemaphore(Semaphore semaphore) ''''''
-	
+
 	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {
 		super.preProcessing(printerBlocks, allBlocks)
 		
 		// Change dumpTimedBuffer type to int
-		dumpTimedBuffer.type = "int"
-
-		for (block : printerBlocks) {
-			/** Remove semaphore init */
-			(block as CoreBlock).initBlock.codeElts.removeAll(
-				((block as CoreBlock).initBlock.codeElts.filter[
-					(it instanceof FunctionCall && (it as FunctionCall).name.startsWith("sem_init"))]))
-			/** Remove semaphores */
-			(block as CoreBlock).definitions.removeAll((block as CoreBlock).definitions.filter[it instanceof Semaphore])
-			(block as CoreBlock).declarations.removeAll(
-				(block as CoreBlock).declarations.filter[it instanceof Semaphore])
-		}		
+		dumpTimedBuffer.type = "int"	
 	}	
 	
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
