@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">TestCom</data>
+        <node expr="0" id="size" kind="param"/>
+        <node id="Sensor" kind="actor">
+            <data key="graph_desc">org.ietr.preesm.tutorials.tutorial1/Code/include/testcom.h</data>
+            <loop name="sensor">
+                <param direction="OUT" isConfig="false" name="o1" type="char* "/>
+                <param direction="OUT" isConfig="false" name="o2" type=" char* "/>
+                <param direction="OUT" isConfig="false" name="o3" type=" char* "/>
+                <param direction="IN" isConfig="true" name="size" type=" int "/>
+            </loop>
+            <init name="sensor_init">
+                <param direction="OUT" isConfig="false" name="o1" type="char* "/>
+                <param direction="OUT" isConfig="false" name="o2" type=" char* "/>
+                <param direction="OUT" isConfig="false" name="o3" type=" char* "/>
+                <param direction="IN" isConfig="true" name="size" type=" int "/>
+            </init>
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="output" name="o1"/>
+            <port annotation="NONE" expr="size" kind="output" name="o2"/>
+            <port annotation="NONE" expr="size" kind="output" name="o3"/>
+        </node>
+        <node id="Sensor2" kind="actor">
+            <data key="graph_desc">org.ietr.preesm.tutorials.tutorial1/Code/include/testcom.h</data>
+            <loop name="sensor2">
+                <param direction="OUT" isConfig="false" name="o1" type="char* "/>
+                <param direction="IN" isConfig="true" name="size" type=" int "/>
+            </loop>
+            <init name="sensor2_init">
+                <param direction="OUT" isConfig="false" name="o1" type="char* "/>
+                <param direction="IN" isConfig="true" name="size" type=" int "/>
+            </init>
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="output" name="o1"/>
+        </node>
+        <node id="Gen_int" kind="actor">
+            <data key="graph_desc">org.ietr.preesm.tutorials.tutorial1/Code/include/testcom.h</data>
+            <loop name="gen_int">
+                <param direction="IN" isConfig="false" name="i1" type="char* "/>
+                <param direction="IN" isConfig="false" name="i2" type="char* "/>
+                <param direction="OUT" isConfig="false" name="o1" type="char* "/>
+                <param direction="OUT" isConfig="false" name="o2" type="char* "/>
+                <param direction="IN" isConfig="true" name="size" type=" int "/>
+            </loop>
+            <init name="gen_int_init">
+                <param direction="IN" isConfig="false" name="i1" type="char* "/>
+                <param direction="OUT" isConfig="false" name="o1" type="char* "/>
+                <param direction="OUT" isConfig="false" name="o2" type="char* "/>
+                <param direction="IN" isConfig="true" name="size" type=" int "/>
+            </init>
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="i1"/>
+            <port annotation="NONE" expr="size" kind="input" name="i2"/>
+            <port annotation="NONE" expr="size" kind="output" name="o1"/>
+            <port annotation="NONE" expr="size" kind="output" name="o2"/>
+        </node>
+        <node id="X2InputParallelTest" kind="actor">
+            <data key="graph_desc">org.ietr.preesm.tutorials.tutorial1/Code/include/testcom.h</data>
+            <loop name="parallel2">
+                <param direction="IN" isConfig="false" name="i1" type="char* "/>
+                <param direction="IN" isConfig="false" name="i2" type=" char* "/>
+                <param direction="OUT" isConfig="false" name="o1" type=" char* "/>
+                <param direction="IN" isConfig="true" name="size" type=" int "/>
+            </loop>
+            <init name="circular6">
+                <param direction="IN" isConfig="false" name="i1" type="char* "/>
+                <param direction="OUT" isConfig="false" name="o1" type=" char* "/>
+                <param direction="IN" isConfig="true" name="size" type=" int "/>
+            </init>
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="i1"/>
+            <port annotation="NONE" expr="size" kind="input" name="i2"/>
+            <port annotation="NONE" expr="size" kind="output" name="o1"/>
+        </node>
+        <node id="Copy" kind="actor">
+            <data key="graph_desc">org.ietr.preesm.tutorials.tutorial1/Code/include/testcom.h</data>
+            <loop name="copy">
+                <param direction="IN" isConfig="false" name="i1" type="char* "/>
+                <param direction="OUT" isConfig="false" name="o1" type=" char* "/>
+                <param direction="IN" isConfig="true" name="size" type=" int "/>
+            </loop>
+            <init name="copy_init">
+                <param direction="IN" isConfig="false" name="i1" type="char* "/>
+                <param direction="OUT" isConfig="false" name="o1" type=" char* "/>
+                <param direction="IN" isConfig="true" name="size" type=" int "/>
+            </init>
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="i1"/>
+            <port annotation="NONE" expr="size" kind="output" name="o1"/>
+        </node>
+        <node id="ParallelTest1" kind="actor">
+            <data key="graph_desc">org.ietr.preesm.tutorials.tutorial1/Code/include/testcom.h</data>
+            <loop name="parallel">
+                <param direction="IN" isConfig="false" name="i1" type="char* "/>
+                <param direction="OUT" isConfig="false" name="o1" type=" char* "/>
+                <param direction="IN" isConfig="true" name="size" type=" int "/>
+            </loop>
+            <init name="parallel_init">
+                <param direction="IN" isConfig="false" name="i1" type="char* "/>
+                <param direction="OUT" isConfig="false" name="o1" type=" char* "/>
+                <param direction="IN" isConfig="true" name="size" type=" int "/>
+            </init>
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="i1"/>
+            <port annotation="NONE" expr="size" kind="output" name="o1"/>
+        </node>
+        <node id="ParallelTest2" kind="actor">
+            <data key="graph_desc">org.ietr.preesm.tutorials.tutorial1/Code/include/testcom.h</data>
+            <loop name="parallel">
+                <param direction="IN" isConfig="false" name="i1" type="char* "/>
+                <param direction="OUT" isConfig="false" name="o1" type=" char* "/>
+                <param direction="IN" isConfig="true" name="size" type=" int "/>
+            </loop>
+            <init name="parallel_init">
+                <param direction="IN" isConfig="false" name="i1" type="char* "/>
+                <param direction="OUT" isConfig="false" name="o1" type=" char* "/>
+                <param direction="IN" isConfig="true" name="size" type=" int "/>
+            </init>
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="i1"/>
+            <port annotation="NONE" expr="size" kind="output" name="o1"/>
+        </node>
+        <node id="Actuator" kind="actor">
+            <data key="graph_desc">org.ietr.preesm.tutorials.tutorial1/Code/include/testcom.h</data>
+            <loop name="actuator">
+                <param direction="IN" isConfig="false" name="i1" type="char* "/>
+                <param direction="IN" isConfig="false" name="i2" type="char* "/>
+                <param direction="IN" isConfig="false" name="i3" type="char* "/>
+                <param direction="IN" isConfig="true" name="size" type=" int "/>
+            </loop>
+            <init name="actuator_init">
+                <param direction="IN" isConfig="false" name="i1" type="char* "/>
+                <param direction="IN" isConfig="false" name="i2" type="char* "/>
+                <param direction="IN" isConfig="false" name="i3" type="char* "/>
+                <param direction="IN" isConfig="true" name="size" type=" int "/>
+            </init>
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="i1"/>
+            <port annotation="NONE" expr="size" kind="input" name="i2"/>
+            <port annotation="NONE" expr="size" kind="input" name="i3"/>
+        </node>
+        <edge kind="fifo" source="Sensor" sourceport="o1"
+            target="Gen_int" targetport="i1" type="char"/>
+        <edge kind="fifo" source="Sensor" sourceport="o2"
+            target="Gen_int" targetport="i2" type="char"/>
+        <edge kind="fifo" source="Sensor2" sourceport="o1"
+            target="X2InputParallelTest" targetport="i1" type="char"/>
+        <edge kind="fifo" source="Sensor" sourceport="o3"
+            target="X2InputParallelTest" targetport="i2" type="char"/>
+        <edge kind="fifo" source="Gen_int" sourceport="o1" target="Copy"
+            targetport="i1" type="char"/>
+        <edge kind="fifo" source="Copy" sourceport="o1"
+            target="Actuator" targetport="i1" type="char"/>
+        <edge kind="fifo" source="Gen_int" sourceport="o2"
+            target="Actuator" targetport="i2" type="char"/>
+        <edge kind="fifo" source="X2InputParallelTest" sourceport="o1"
+            target="ParallelTest1" targetport="i1" type="char"/>
+        <edge kind="fifo" source="ParallelTest1" sourceport="o1"
+            target="ParallelTest2" targetport="i1" type="char"/>
+        <edge kind="fifo" source="ParallelTest2" sourceport="o1"
+            target="Actuator" targetport="i3" type="char"/>
+        <edge kind="dependency" source="size" target="Sensor" targetport="size"/>
+        <edge kind="dependency" source="size" target="Gen_int" targetport="size"/>
+        <edge kind="dependency" source="size" target="Copy" targetport="size"/>
+        <edge kind="dependency" source="size" target="Actuator" targetport="size"/>
+        <edge kind="dependency" source="size" target="Sensor2" targetport="size"/>
+        <edge kind="dependency" source="size"
+            target="X2InputParallelTest" targetport="size"/>
+        <edge kind="dependency" source="size" target="ParallelTest1" targetport="size"/>
+        <edge kind="dependency" source="size" target="ParallelTest2" targetport="size"/>
+    </graph>
+</graphml>
