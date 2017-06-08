@@ -4,7 +4,7 @@
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Julien_Hascoet <jhascoet@kalray.eu> (2016)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2014)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2013 - 2016)
  *
  * This software is a computer program whose purpose is to help prototyping

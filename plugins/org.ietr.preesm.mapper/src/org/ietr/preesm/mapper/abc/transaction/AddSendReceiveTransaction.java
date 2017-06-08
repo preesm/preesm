@@ -3,7 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2016)
  *
