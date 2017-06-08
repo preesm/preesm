@@ -3,7 +3,7 @@ package org.ietr.preesm.codegen.xtend.task;
 import com.google.common.collect.BiMap;
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -120,7 +120,7 @@ public class CodegenHierarchicalModelGenerator {
     this.dagVertexCalls = dagVertexCalls;
     this.linkHSDFVertexBuffer = linkHSDFVertexBuffer;
     this.scenario = scenario;
-    this.linkHSDFEdgeBuffer = new HashMap<>();
+    this.linkHSDFEdgeBuffer = new LinkedHashMap<>();
     this.currentWorkingMemOffset = 0;
     this.dataTypes = scenario.getSimulationManager().getDataTypes();
   }
