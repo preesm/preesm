@@ -7,7 +7,7 @@
     <key attr.name="graph_desc" attr.type="string" for="node"/>
     <graph edgedefault="directed">
         <data key="name">top</data>
-        <node expr="65536" id="FFTSize" kind="param"/>
+        <node expr="1024" id="FFTSize" kind="param"/>
         <node id="src" kind="actor">
             <port kind="cfg_input" name="size"/>
             <port annotation="NONE" expr="size" kind="output" name="out"/>
