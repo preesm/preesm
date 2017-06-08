@@ -65,7 +65,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
-import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType;
@@ -145,8 +144,6 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
         return createFifoCall();
       case CodegenPackage.COMMUNICATION_NODE:
         return createCommunicationNode();
-      case CodegenPackage.SEMAPHORE:
-        return createSemaphore();
       case CodegenPackage.SHARED_MEMORY_COMMUNICATION:
         return createSharedMemoryCommunication();
       case CodegenPackage.CONSTANT_STRING:
@@ -390,18 +387,6 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
   public CommunicationNode createCommunicationNode() {
     final CommunicationNodeImpl communicationNode = new CommunicationNodeImpl();
     return communicationNode;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the semaphore
-   * @generated
-   */
-  @Override
-  public Semaphore createSemaphore() {
-    final SemaphoreImpl semaphore = new SemaphoreImpl();
-    return semaphore;
   }
 
   /**
