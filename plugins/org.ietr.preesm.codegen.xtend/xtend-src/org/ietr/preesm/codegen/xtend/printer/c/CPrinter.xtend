@@ -146,7 +146,7 @@ class CPrinter extends DefaultPrinter {
 	void *computationThread_«(callBlock.eContainer as CoreBlock).name»(void *arg){
 		«IF !callBlock.codeElts.empty»
 			// Initialisation(s)
-
+			
 		«ENDIF»
 	'''
 
@@ -163,7 +163,7 @@ class CPrinter extends DefaultPrinter {
 				if(stopThreads){
 					pthread_exit(NULL);
 				}
-
+				
 	'''
 
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
