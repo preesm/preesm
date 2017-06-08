@@ -42,9 +42,9 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.architecture.slam.Design;
+import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
 // TODO: Auto-generated Javadoc
@@ -80,15 +80,13 @@ public class SDF3ExporterEngine {
       if (parentFile != null) {
         parentFile.mkdirs();
       }
-      if (!iFile.exists()) {
-        iFile.create(null, false, new NullProgressMonitor());
-      }
 
       // Write the result into the text file
       exporter.write(file);
+      workspace.getRoot().touch(null);
 
     } catch (final CoreException e) {
-      e.printStackTrace();
+      throw new WorkflowException("Could not export SDF", e);
     }
   }
 }
