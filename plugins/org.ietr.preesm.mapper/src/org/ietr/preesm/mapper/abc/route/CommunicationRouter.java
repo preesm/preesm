@@ -134,11 +134,11 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
     final TransactionManager localTransactionManager = new TransactionManager();
 
     // Get edges in scheduling order of their producers
-    Iterator<MapperDAGVertex> dagIterator = this.orderManager.getTotalOrder().getList().iterator();
-    List<DAGEdge> edgesInPrecedenceOrder = new ArrayList<DAGEdge>(implementation.edgeSet().size());
+    final Iterator<MapperDAGVertex> dagIterator = this.orderManager.getTotalOrder().getList().iterator();
+    final List<DAGEdge> edgesInPrecedenceOrder = new ArrayList<>(implementation.edgeSet().size());
 
     while (dagIterator.hasNext()) {
-      DAGVertex vertex = dagIterator.next();
+      final DAGVertex vertex = dagIterator.next();
       edgesInPrecedenceOrder.addAll(vertex.outgoingEdges());
     }
 

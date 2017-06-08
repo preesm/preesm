@@ -381,7 +381,7 @@ public abstract class MemoryAllocator {
     }
 
     vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, offset);
-    final Integer size = (Integer) this.inputExclusionGraph.getPropertyBean().getValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE, Integer.class);
+    final Integer size = this.inputExclusionGraph.getPropertyBean().getValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE, Integer.class);
     if ((size == null) || (size < (offset + vertex.getWeight()))) {
       this.inputExclusionGraph.setPropertyValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE, offset + vertex.getWeight());
     }
@@ -668,7 +668,7 @@ public abstract class MemoryAllocator {
           final Iterator<BufferProperties> iter = buffers.iterator();
 
           @SuppressWarnings("unchecked")
-          final List<Integer> interBufferSpaces = (List<Integer>) memObj.getPropertyBean().getValue(MemoryExclusionVertex.INTER_BUFFER_SPACES, List.class);
+          final List<Integer> interBufferSpaces = memObj.getPropertyBean().getValue(MemoryExclusionVertex.INTER_BUFFER_SPACES, List.class);
 
           int internalOffset = 0;
           int i = 0;
@@ -707,7 +707,7 @@ public abstract class MemoryAllocator {
           // no declared type.
           // Process fifo memobjects here
           if (memObj.getSource().startsWith("FIFO_")) {
-            final Integer typeSize = (Integer) memObj.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE, Integer.class);
+            final Integer typeSize = memObj.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE, Integer.class);
             if ((this.alignment == 0) && ((offset % typeSize) != 0)) {
               unalignedObjects.put(memObj, offset);
             }

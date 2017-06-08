@@ -77,7 +77,7 @@ public class BasicAllocator extends MemoryAllocator {
       final Set<MemoryExclusionVertex> vertexList = new LinkedHashSet<>(this.inputExclusionGraph.vertexSet());
       for (final MemoryExclusionVertex vertex : vertexList) {
         // If a data alignment is required
-        final Integer typeSize = (Integer) vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE, Integer.class);
+        final Integer typeSize = vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE, Integer.class);
         if (this.alignment == 0) {
           offset += ((offset % typeSize) == 0) ? 0 : typeSize - (offset % typeSize);
         } else if (this.alignment > 0) {
