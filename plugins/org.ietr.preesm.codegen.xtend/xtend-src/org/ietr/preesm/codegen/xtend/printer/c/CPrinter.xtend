@@ -343,15 +343,7 @@ class CPrinter extends DefaultPrinter {
 	«/*Since everything is already in shared memory, communications are simple synchronizations here*/
 	»«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
 		direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
-		(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«
-			{
-				var coreName = communication.sendStart.coreContainer.name
-				coreName.charAt(coreName.length - 1) /** TODO: make it work for more than 9 cores, and for cores not numbered in their names*/				
-			}», «
-			{
-				var coreName = communication.receiveStart.coreContainer.name
-				coreName.charAt(coreName.length - 1) /** TODO: make it work for more than 9 cores, and for cores not numbered in their names*/				
-	}»«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.
+		(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«communication.sendStart.coreContainer.coreID», «communication.receiveStart.coreContainer.coreID»«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.
 		data.doSwitch»
 	'''
 
