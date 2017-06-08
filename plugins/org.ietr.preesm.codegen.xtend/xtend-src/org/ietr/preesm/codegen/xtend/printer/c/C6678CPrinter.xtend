@@ -222,7 +222,8 @@ class C6678CPrinter extends CPrinter {
 				cache_wbInv(«communication.data.doSwitch», «communication.data.size»*sizeof(«communication.data.type»));
 			«ENDIF»
 		«ENDIF»
-		«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
+		«/** TODO: replace with super.printSharedMemoryCommunication() */
+		communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
 			direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
 			(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«{
 			var coreName = if (communication.direction == Direction::SEND) {
