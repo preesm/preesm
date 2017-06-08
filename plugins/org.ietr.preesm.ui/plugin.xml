@@ -1285,7 +1285,7 @@
             locationURI="popup:org.eclipse.ui.popup.any?before=additions">
          <menu
                icon="icons/preesmProject.png"
-               id="org.ietr.preesm.pimm.checker.menu1"
+               id="org.ietr.preesm.ui.menu1"
                label="Preesm">
             <command
                   commandId="org.ietr.preesm.ui.command.PimmChecker"
