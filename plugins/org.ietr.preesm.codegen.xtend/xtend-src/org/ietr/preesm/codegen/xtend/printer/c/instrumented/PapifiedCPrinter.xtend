@@ -16,7 +16,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
  * @author dmadronal
  */
  
-class PapiCPrinter extends CPrinter {
+class PapifiedCPrinter extends CPrinter {
 	/**
 	 * Strings with the headers of the PAPI variables
 	 */
@@ -207,16 +207,20 @@ class PapiCPrinter extends CPrinter {
 	 */	
 	override printFunctionCall(FunctionCall functionCall) '''
 		«IF state == PrinterState::PRINTING_LOOP_BLOCK»
-			// Papi Start
+			 
+			// Papi Start for «functionCall.actorName»
 			PAPI_start_usec_«functionCall.actorName»[0] = PAPI_get_real_usec();
 			event_start(&(PAPI_eventSet_«functionCall.actorName»[0]), 0);
+						
 			«super.printFunctionCall(functionCall)»
+			
+			// Papi Stop for «functionCall.actorName»
 			event_stop(&(PAPI_eventSet_«functionCall.actorName»[0]), 2, PAPI_actions_«functionCall.actorName»[0].counterValues, 0);
 			PAPI_end_usec_«functionCall.actorName»[0] = PAPI_get_real_usec();
 			PAPI_output_«functionCall.actorName»[0] = fopen("papi-output/papi_output_«functionCall.actorName».csv","a+");	
 			fprintf(PAPI_output_«functionCall.actorName»[0], "%s,%s,%llu,%llu,%lu,%lu\n", "Sobel", PAPI_actions_«functionCall.actorName»[0].action_id, PAPI_start_usec_«functionCall.actorName»[0], PAPI_end_usec_«functionCall.actorName»[0], PAPI_actions_«functionCall.actorName»[0].counterValues[0], PAPI_actions_«functionCall.actorName»[0].counterValues[1]);
 			fclose(PAPI_output_«functionCall.actorName»[0]);
-			// Papi Stop
+			 
 		«ELSE»
 			«super.printFunctionCall(functionCall)»
 		«ENDIF»
