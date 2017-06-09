@@ -93,7 +93,9 @@ public class HSDFBuildLoops {
    * Build loops.
    *
    * @param scenario
+   *          the scenario to pass
    * @param architecture
+   *          the architecture to pass
    */
   public HSDFBuildLoops(final PreesmScenario scenario, final Design architecture) {
     this.dataTypes = scenario.getSimulationManager().getDataTypes();
@@ -798,7 +800,7 @@ public class HSDFBuildLoops {
       }
       g.getGraphDescription().getPropertyBean().setValue(MapperDAG.CLUSTERED_VERTEX, clust);
 
-      // clust.setMemEx(getMemEx(resultGraph.clone()));
+      clust.setMemEx(getMemEx(resultGraph.clone()));
       int bufSize = getNaiveWorkingMemAlloc(resultGraph);
 
       g.getPropertyBean().setValue("working_memory", new Integer(bufSize));
