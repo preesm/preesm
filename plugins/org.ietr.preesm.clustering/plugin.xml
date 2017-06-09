@@ -4,9 +4,9 @@
    <extension
          point="org.ietr.dftools.workflow.tasks">
       <task
-            id="org.ietr.preesm.clustering"
+            id="org.ietr.preesm.Clustering"
             name="Clustering"
-            type="org.ietr.preesm.clustering">
+            type="org.ietr.preesm.clustering.Clustering">
          <inputs>
             <input
                   id="SDF"
