@@ -35,7 +35,6 @@ package org.ietr.preesm.clustering;
  * knowledge of the CeCILL license and that you accept its terms.
  */
 
-
 /**
  * Abstract class used to represent the repetition vector of loops.
  *

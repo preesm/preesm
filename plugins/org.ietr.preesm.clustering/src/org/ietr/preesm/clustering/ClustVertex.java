@@ -35,7 +35,6 @@ package org.ietr.preesm.clustering;
  * knowledge of the CeCILL license and that you accept its terms.
  */
 
-
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 /**

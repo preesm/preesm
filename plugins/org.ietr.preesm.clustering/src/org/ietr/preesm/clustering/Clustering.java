@@ -1,6 +1,5 @@
 package org.ietr.preesm.clustering;
 
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;

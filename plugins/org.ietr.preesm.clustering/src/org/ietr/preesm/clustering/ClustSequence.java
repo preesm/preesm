@@ -35,7 +35,6 @@ package org.ietr.preesm.clustering;
  * knowledge of the CeCILL license and that you accept its terms.
  */
 
-
 import java.util.ArrayList;
 import java.util.List;
 
