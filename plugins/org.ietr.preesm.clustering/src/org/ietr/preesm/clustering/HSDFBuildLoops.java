@@ -89,17 +89,32 @@ public class HSDFBuildLoops {
 
   private Design architecture;
 
+  /**
+   *
+   * @param scenario
+   * @param architecture
+   */
   public HSDFBuildLoops(final PreesmScenario scenario, final Design architecture) {
     this.dataTypes = scenario.getSimulationManager().getDataTypes();
     this.architecture = architecture;
     this.scenario = scenario;
   }
 
+  /**
+   *
+   * @param s
+   */
   private void p(final String s) {
     final Logger logger = this.logger;
     logger.log(Level.INFO, "HSDFBuildLoops " + s);
   }
 
+  /**
+   *
+   * @param a
+   * @param b
+   * @return
+   */
   private int getPGCD(int a, int b) {
     int r;
     while (b != 0) {
@@ -110,6 +125,12 @@ public class HSDFBuildLoops {
     return a;
   }
 
+  /**
+   *
+   * @param v
+   * @return
+   * @throws WorkflowException
+   */
   private List<SDFAbstractVertex> getPredessecors(final SDFAbstractVertex v) throws WorkflowException {
     final List<SDFAbstractVertex> l = new ArrayList<>();
     final List<SDFAbstractVertex> tmp = getInVertexs(v);
@@ -133,6 +154,12 @@ public class HSDFBuildLoops {
     return l;
   }
 
+  /**
+   *
+   * @param v
+   * @return
+   * @throws WorkflowException
+   */
   private List<SDFAbstractVertex> getSuccessors(final SDFAbstractVertex v) throws WorkflowException {
     final List<SDFAbstractVertex> l = new ArrayList<>();
     final List<SDFAbstractVertex> tmp = getOutVertexs(v);
@@ -156,6 +183,12 @@ public class HSDFBuildLoops {
     return l;
   }
 
+  /**
+   *
+   * @param a
+   * @param b
+   * @return
+   */
   private boolean isMergeable(final SDFAbstractVertex a, final SDFAbstractVertex b) {
     final List<SDFAbstractVertex> predA = getPredessecors(a);
     final List<SDFAbstractVertex> predB = getPredessecors(b);
@@ -641,6 +674,12 @@ public class HSDFBuildLoops {
     return l;
   }
 
+  /**
+   *
+   * @param srGraph
+   * @return
+   */
+  @SuppressWarnings("unused")
   private MemoryExclusionGraph getMemEx(SDFGraph srGraph) {
     // Build DAG
     final MapperDAG dag = SdfToDagConverter.convert(srGraph, this.architecture, this.scenario, false);
@@ -677,6 +716,11 @@ public class HSDFBuildLoops {
     return memEx;
   }
 
+  /**
+   *
+   * @param resultGraph
+   * @return
+   */
   private int getNaiveWorkingMemAlloc(SDFGraph resultGraph) {
     final List<SDFEdge> allocEdge = new ArrayList<>();
     // getting edges that are allocated by Karol
