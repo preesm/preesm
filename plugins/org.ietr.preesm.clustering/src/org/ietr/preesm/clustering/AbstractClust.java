@@ -1,7 +1,5 @@
 package org.ietr.preesm.clustering;
 
-import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
-
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
  *
@@ -37,6 +35,8 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
+
+import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
 /**
  * Abstract class used to represent the repetition vector of loops.
