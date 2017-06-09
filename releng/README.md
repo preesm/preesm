@@ -755,6 +755,8 @@ This can be run from Eclipse (see previous Howto).
 *   create a new eclipse plugin in the **/plugins** folder;
     *   do not add .project, .settings, .classpath (everything should be configured in the Maven settings)
 *   copy POM file from another existing plugin, and update project name;
+*   make sure the version in the MANIFEST.MF matches the version in the parent pom
+    *   **-SNAPSHOT** in the POM file translates to **.qualifier** in the MANIFEST
 *   insert new module in parent pom `<modules>` section with the name of the folder under **/plugins**
 *   in the **releng/org.ietr.preesm.feature/feature.xml**, add the new plugin as 'included plugin'
 *   create test fragment
