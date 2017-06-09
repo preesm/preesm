@@ -32,7 +32,7 @@ node {
 			parallel (
 				'Checkstyle': {
 					stage ('Checkstyle') {
-						sh "java -jar releng/hooks/checkstyle-7.6.1-all.jar -c releng/VAADER_checkstyle.xml plugins/"
+						sh "releng/run_checkstyle.sh"
 					}
 				}
 			,
