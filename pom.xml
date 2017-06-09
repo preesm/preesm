@@ -373,6 +373,7 @@
     <module>plugins/org.ietr.preesm.core</module>
 
     <module>plugins/org.ietr.preesm.algorithm</module>
+    <module>plugins/org.ietr.preesm.clustering</module>
     <module>plugins/org.ietr.preesm.archi</module>
     <module>plugins/org.ietr.preesm.cli</module>
     <module>plugins/org.ietr.preesm.codegen</module>

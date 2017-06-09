@@ -1,3 +1,4 @@
+package org.ietr.preesm.clustering;
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
  *
@@ -33,22 +34,24 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.algorithm.transforms;
+
+
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 /**
- * Abstract class used to represent the repetition vector of loops.
+ * Class representing an actor with its factorized repetition vector.
  *
  * @author jhascoet
  */
-public abstract class AbstractClust {
+public class ClustVertex extends AbstractClust {
 
-  private int repeat;
+  private SDFAbstractVertex vertex;
 
-  public int getRepeat() {
-    return this.repeat;
+  public SDFAbstractVertex getVertex() {
+    return this.vertex;
   }
 
-  public void setRepeat(final int repeat) {
-    this.repeat = repeat;
+  public void setVertex(final SDFAbstractVertex vertex) {
+    this.vertex = vertex;
   }
 }

@@ -1,3 +1,4 @@
+package org.ietr.preesm.clustering;
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
  *
@@ -33,25 +34,22 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.algorithm.transforms;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Class representing a sequence of repeated clustered actors and sequences of actors.
+ * Abstract class used to represent the repetition vector of loops.
  *
  * @author jhascoet
  */
-public class ClustSequence extends AbstractClust {
+public abstract class AbstractClust {
 
-  private List<AbstractClust> seq = new ArrayList<>();
+  private int repeat;
 
-  public List<AbstractClust> getSeq() {
-    return this.seq;
+  public int getRepeat() {
+    return this.repeat;
   }
 
-  public void setSeq(final List<AbstractClust> seq) {
-    this.seq = seq;
+  public void setRepeat(final int repeat) {
+    this.repeat = repeat;
   }
 }

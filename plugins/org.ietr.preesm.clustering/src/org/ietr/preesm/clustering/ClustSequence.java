@@ -1,3 +1,4 @@
+package org.ietr.preesm.clustering;
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
  *
@@ -33,24 +34,25 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.algorithm.transforms;
 
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Class representing an actor with its factorized repetition vector.
+ * Class representing a sequence of repeated clustered actors and sequences of actors.
  *
  * @author jhascoet
  */
-public class ClustVertex extends AbstractClust {
+public class ClustSequence extends AbstractClust {
 
-  private SDFAbstractVertex vertex;
+  private List<AbstractClust> seq = new ArrayList<>();
 
-  public SDFAbstractVertex getVertex() {
-    return this.vertex;
+  public List<AbstractClust> getSeq() {
+    return this.seq;
   }
 
-  public void setVertex(final SDFAbstractVertex vertex) {
-    this.vertex = vertex;
+  public void setSeq(final List<AbstractClust> seq) {
+    this.seq = seq;
   }
 }

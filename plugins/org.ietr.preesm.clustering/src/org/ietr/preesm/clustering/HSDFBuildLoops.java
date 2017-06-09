@@ -1,3 +1,4 @@
+package org.ietr.preesm.clustering;
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
  *
@@ -33,7 +34,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.algorithm.transforms;
+
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
