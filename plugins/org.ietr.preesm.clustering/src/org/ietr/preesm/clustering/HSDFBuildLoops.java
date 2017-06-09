@@ -791,7 +791,7 @@ public class HSDFBuildLoops {
       }
       g.getGraphDescription().getPropertyBean().setValue(MapperDAG.CLUSTERED_VERTEX, clust);
 
-      clust.setMemEx(getMemEx(resultGraph.clone()));
+      // clust.setMemEx(getMemEx(resultGraph.clone()));
       int bufSize = getNaiveWorkingMemAlloc(resultGraph);
 
       g.getPropertyBean().setValue("working_memory", new Integer(bufSize));
