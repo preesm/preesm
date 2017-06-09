@@ -1,4 +1,7 @@
 package org.ietr.preesm.clustering;
+
+import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
+
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
  *
@@ -43,6 +46,16 @@ package org.ietr.preesm.clustering;
 public abstract class AbstractClust {
 
   private int repeat;
+
+  private MemoryExclusionGraph memEx;
+
+  public MemoryExclusionGraph getMemEx() {
+    return memEx;
+  }
+
+  public void setMemEx(MemoryExclusionGraph memEx) {
+    this.memEx = memEx;
+  }
 
   public int getRepeat() {
     return this.repeat;

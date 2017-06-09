@@ -170,7 +170,7 @@ public class CodegenHierarchicalModelGenerator {
         }
       }
 
-      final HSDFBuildLoops loopBuilder = new HSDFBuildLoops(this.scenario);
+      final HSDFBuildLoops loopBuilder = new HSDFBuildLoops(this.scenario, null);
       final AbstractClust clust = graph.getPropertyBean().getValue(MapperDAG.CLUSTERED_VERTEX, AbstractClust.class);
       if (clust == null) {
         throw (new WorkflowException("Loop Codegen failed. Please make sure the clustering workflow is run."));

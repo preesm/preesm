@@ -11,5 +11,8 @@ Require-Bundle: org.ietr.dftools.workflow,
  org.ietr.preesm.core,
  org.ietr.preesm.architecture,
  org.ietr.dftools.architecture,
- org.ietr.preesm.mapper
+ org.ietr.preesm.mapper,
+ org.ietr.preesm.memory
 Export-Package: org.ietr.preesm.clustering
+Import-Package: bsh,
+ org.ietr.preesm.memory.exclusiongraph

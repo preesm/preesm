@@ -35,12 +35,16 @@ package org.ietr.preesm.clustering;
  * knowledge of the CeCILL license and that you accept its terms.
  */
 
+import bsh.EvalError;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.eclipse.core.runtime.CoreException;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
@@ -54,11 +58,19 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.ietr.dftools.algorithm.model.sdf.transformations.IbsdfFlattener;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
+import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.DataType;
+import org.ietr.preesm.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.mapper.model.MapperDAG;
+import org.ietr.preesm.memory.allocation.BestFitAllocator;
+import org.ietr.preesm.memory.allocation.MemoryAllocator;
+import org.ietr.preesm.memory.allocation.OrderedAllocator;
+import org.ietr.preesm.memory.allocation.OrderedAllocator.Order;
+import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
+import org.ietr.preesm.memory.script.MemoryScriptEngine;
 
 /**
  * This class is used to perform the clusterization (loop IR builder and memory allocation). It is used to set the working memory of each non flattened
@@ -73,8 +85,14 @@ public class HSDFBuildLoops {
 
   private final Map<String, DataType> dataTypes;
 
-  public HSDFBuildLoops(final PreesmScenario scenario) {
+  private PreesmScenario scenario;
+
+  private Design architecture;
+
+  public HSDFBuildLoops(final PreesmScenario scenario, final Design architecture) {
     this.dataTypes = scenario.getSimulationManager().getDataTypes();
+    this.architecture = architecture;
+    this.scenario = scenario;
   }
 
   private void p(final String s) {
@@ -623,6 +641,107 @@ public class HSDFBuildLoops {
     return l;
   }
 
+  private MemoryExclusionGraph getMemEx(SDFGraph srGraph) {
+    // Build DAG
+    final MapperDAG dag = SdfToDagConverter.convert(srGraph, this.architecture, this.scenario, false);
+
+    // Build MEG
+    final MemoryExclusionGraph memEx = new MemoryExclusionGraph();
+    memEx.buildGraph(dag);
+
+    // BUffer Merging
+    String valueAlignment = new String("0");
+    String log = new String();
+    String checkString = new String();
+    final MemoryScriptEngine engine = new MemoryScriptEngine(valueAlignment, log, false, this.scenario);
+    try {
+      engine.runScripts(dag, dataTypes, checkString);
+    } catch (CoreException | IOException | URISyntaxException | EvalError e) {
+      final String message = "An error occurred during memory scripts execution";
+      WorkflowLogger.getLogger().log(Level.SEVERE, message, e);
+      throw new WorkflowException(message, e);
+    }
+    engine.updateMemEx(memEx);
+
+    if (!log.equals("")) {
+      // generate
+      engine.generateCode(this.scenario, log);
+    }
+
+    // Alloc
+    final OrderedAllocator alloc = new BestFitAllocator(memEx);
+    alloc.setOrder(Order.LARGEST_FIRST);
+
+    MemoryAllocator.alignSubBuffers(memEx, 64);
+    alloc.allocate();
+    return memEx;
+  }
+
+  private int getNaiveWorkingMemAlloc(SDFGraph resultGraph) {
+    final List<SDFEdge> allocEdge = new ArrayList<>();
+    // getting edges that are allocated by Karol
+    final List<SDFEdge> edgeUpperGraph = new ArrayList<>();
+    for (final SDFAbstractVertex v : resultGraph.vertexSet()) {
+      if (v instanceof SDFInterfaceVertex) {
+        // p("Current interface: " + v.getName());
+        edgeUpperGraph.addAll(resultGraph.incomingEdgesOf(v));
+        edgeUpperGraph.addAll(resultGraph.outgoingEdgesOf(v));
+      }
+    }
+
+    // for (final SDFEdge i : edgeUpperGraph) {
+    // p("upperEdge: " + i.getSourceLabel() + " " + i.getTargetLabel());
+    // }
+
+    int bufSize = 0;
+    // int nbWorkingBufferAllocated = 0;
+    for (final SDFAbstractVertex v : resultGraph.vertexSet()) {
+      // if (v instanceof SDFVertex) {
+      final List<SDFEdge> edge = new ArrayList<>();
+      edge.addAll(getInEdges(v));
+      edge.addAll(getOutEdges(v));
+      for (final SDFEdge e : edge) {
+        if ((allocEdge.contains(e)/* already visited */ == false) && (edgeUpperGraph.contains(e) /* allocation by Karol */ == false)) {
+          int mem = 0;
+          if (v instanceof SDFVertex) {
+            // p("Allocating Vertex" + v.getName());
+            int nbRep = 0;
+
+            try {
+              nbRep = Integer.parseInt(e.getTarget().getNbRepeat().toString());
+            } catch (final NumberFormatException | InvalidExpressionException ex) {
+              // TODO Auto-generated catch block
+              ex.printStackTrace();
+              throw new WorkflowException("Internal Memory allocation failed for actor " + v.getName());
+            }
+            try {
+              mem = nbRep * e.getCons().intValue();
+            } catch (final InvalidExpressionException ex) {
+              // TODO Auto-generated catch block
+              ex.printStackTrace();
+              throw new WorkflowException("Internal Memory allocation failed for actor " + v.getName());
+            }
+          } else if ((v instanceof SDFBroadcastVertex) || (v instanceof SDFRoundBufferVertex)) {
+            // p("Allocating Special Vertex: " + v.getName());
+            mem += e.getCons().intValue() * v.getNbRepeatAsInteger();
+          } else {
+            throw new WorkflowException("Internal Memory allocation failed for actor " + v.getName() + " unsupported special actor");
+          }
+
+          final DataType d = this.dataTypes.get(e.getDataType().toString());
+          final int sizeType = d.getSize();
+          // p("Buffer allocated edge " + e.getSourceLabel() + " to " + e.getTargetLabel() + " type " + e.getDataType() + " size " + sizeType);
+
+          bufSize += mem * sizeType;
+          // nbWorkingBufferAllocated++;
+          // p("Internal memory allocation for edge " + e.getSourceLabel() + " " + e.getTargetLabel());
+          allocEdge.add(e);
+        }
+      }
+    }
+    return bufSize;
+  }
+
   /**
    * This method is used in the hierarchical flattener workflow to set the internal_working memory of each actors inside the hierarchical actors (graphs) The
    * input memory and output memories of the hierarchical actor are set by the MEG. Only the internal memory is allocated here (see "working_memory" in the
@@ -645,7 +764,6 @@ public class HSDFBuildLoops {
       final SDFGraph graph = ((SDFGraph) g.getGraphDescription()).clone();
       final IbsdfFlattener flattener = new IbsdfFlattener(graph, 10);
       SDFGraph resultGraph = null;
-      final List<SDFEdge> allocEdge = new ArrayList<>();
       try {
         flattener.flattenGraph();
         resultGraph = flattener.getFlattenedGraph();
@@ -673,66 +791,9 @@ public class HSDFBuildLoops {
       }
       g.getGraphDescription().getPropertyBean().setValue(MapperDAG.CLUSTERED_VERTEX, clust);
 
-      // getting edges that are allocated by Karol
-      final List<SDFEdge> edgeUpperGraph = new ArrayList<>();
-      for (final SDFAbstractVertex v : resultGraph.vertexSet()) {
-        if (v instanceof SDFInterfaceVertex) {
-          // p("Current interface: " + v.getName());
-          edgeUpperGraph.addAll(resultGraph.incomingEdgesOf(v));
-          edgeUpperGraph.addAll(resultGraph.outgoingEdgesOf(v));
-        }
-      }
+      clust.setMemEx(getMemEx(resultGraph.clone()));
+      int bufSize = getNaiveWorkingMemAlloc(resultGraph);
 
-      // for (final SDFEdge i : edgeUpperGraph) {
-      // p("upperEdge: " + i.getSourceLabel() + " " + i.getTargetLabel());
-      // }
-
-      int bufSize = 0;
-      // int nbWorkingBufferAllocated = 0;
-      for (final SDFAbstractVertex v : resultGraph.vertexSet()) {
-        // if (v instanceof SDFVertex) {
-        final List<SDFEdge> edge = new ArrayList<>();
-        edge.addAll(getInEdges(v));
-        edge.addAll(getOutEdges(v));
-        for (final SDFEdge e : edge) {
-          if ((allocEdge.contains(e)/* already visited */ == false) && (edgeUpperGraph.contains(e) /* allocation by Karol */ == false)) {
-            int mem = 0;
-            if (v instanceof SDFVertex) {
-              // p("Allocating Vertex" + v.getName());
-              int nbRep = 0;
-
-              try {
-                nbRep = Integer.parseInt(e.getTarget().getNbRepeat().toString());
-              } catch (final NumberFormatException | InvalidExpressionException ex) {
-                // TODO Auto-generated catch block
-                ex.printStackTrace();
-                throw new WorkflowException("Internal Memory allocation failed for actor " + v.getName());
-              }
-              try {
-                mem = nbRep * e.getCons().intValue();
-              } catch (final InvalidExpressionException ex) {
-                // TODO Auto-generated catch block
-                ex.printStackTrace();
-                throw new WorkflowException("Internal Memory allocation failed for actor " + v.getName());
-              }
-            } else if ((v instanceof SDFBroadcastVertex) || (v instanceof SDFRoundBufferVertex)) {
-              // p("Allocating Special Vertex: " + v.getName());
-              mem += e.getCons().intValue() * v.getNbRepeatAsInteger();
-            } else {
-              throw new WorkflowException("Internal Memory allocation failed for actor " + v.getName() + " unsupported special actor");
-            }
-
-            final DataType d = this.dataTypes.get(e.getDataType().toString());
-            final int sizeType = d.getSize();
-            // p("Buffer allocated edge " + e.getSourceLabel() + " to " + e.getTargetLabel() + " type " + e.getDataType() + " size " + sizeType);
-
-            bufSize += mem * sizeType;
-            // nbWorkingBufferAllocated++;
-            // p("Internal memory allocation for edge " + e.getSourceLabel() + " " + e.getTargetLabel());
-            allocEdge.add(e);
-          }
-        }
-      }
       g.getPropertyBean().setValue("working_memory", new Integer(bufSize));
       // p("Internal working memory computation " + g.getName() + " number of allocation " + nbWorkingBufferAllocated + " byte allocated " + bufSize);
       p("Internal Working Memory Graph " + g.getName() + " has allocated " + bufSize + " bytes");

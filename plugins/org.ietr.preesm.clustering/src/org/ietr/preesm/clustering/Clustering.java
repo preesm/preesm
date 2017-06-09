@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
@@ -21,7 +22,8 @@ public class Clustering extends AbstractTaskImplementation {
     final Map<String, Object> outputs = new LinkedHashMap<>();
     final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
     final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
-    final HSDFBuildLoops loopBuilder = new HSDFBuildLoops(scenario);
+    final Design architecture = (Design) inputs.get("architecture");
+    final HSDFBuildLoops loopBuilder = new HSDFBuildLoops(scenario, architecture);
     outputs.put("SDF", loopBuilder.execute(algorithm));
     return outputs;
   }
