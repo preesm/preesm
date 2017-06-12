@@ -106,6 +106,7 @@
   </repositories>
 
   <build>
+    <sourceDirectory>src</sourceDirectory>
     <plugins>
       <!-- Directory plugin to find parent root directory absolute path -->
       <plugin>
