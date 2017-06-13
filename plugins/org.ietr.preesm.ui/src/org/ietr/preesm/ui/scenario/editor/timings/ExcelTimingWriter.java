@@ -39,7 +39,7 @@ package org.ietr.preesm.ui.scenario.editor.timings;
 
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 import jxl.Workbook;
@@ -157,7 +157,7 @@ public class ExcelTimingWriter extends ExcelWriter {
 
       final PreesmAlgorithmListContentProvider provider = new PreesmAlgorithmListContentProvider();
 
-      final Set<String> vertexNames = new HashSet<>();
+      final Set<String> vertexNames = new LinkedHashSet<>();
 
       if (this.scenario.isIBSDFScenario()) {
         final Set<SDFAbstractVertex> vSet = provider.getSortedIBSDFVertices(this.scenario);

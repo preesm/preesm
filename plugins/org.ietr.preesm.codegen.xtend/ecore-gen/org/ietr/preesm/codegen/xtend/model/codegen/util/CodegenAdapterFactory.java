@@ -60,7 +60,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
-import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
@@ -205,11 +204,6 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
     @Override
     public Adapter caseCommunicationNode(final CommunicationNode object) {
       return createCommunicationNodeAdapter();
-    }
-
-    @Override
-    public Adapter caseSemaphore(final Semaphore object) {
-      return createSemaphoreAdapter();
     }
 
     @Override
@@ -492,19 +486,6 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
    * @generated
    */
   public Adapter createCommunicationNodeAdapter() {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.Semaphore <em>Semaphore</em>}'. <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
-   *
-   * @return the new adapter.
-   * @see org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
-   * @generated
-   */
-  public Adapter createSemaphoreAdapter() {
     return null;
   }
 

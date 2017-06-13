@@ -38,9 +38,9 @@ package org.ietr.preesm.memory.allocation;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 
@@ -81,7 +81,7 @@ public class FirstFitAllocator extends OrderedAllocator {
     // Allocate vertices in the list order
     for (final MemoryExclusionVertex vertex : vertexList) {
       // Get vertex neighbors
-      final HashSet<MemoryExclusionVertex> neighbors = this.inputExclusionGraph.getAdjacentVertexOf(vertex);
+      final Set<MemoryExclusionVertex> neighbors = this.inputExclusionGraph.getAdjacentVertexOf(vertex);
 
       // Construct two lists that contains the exclusion ranges in memory
       final ArrayList<Integer> excludeFrom = new ArrayList<>();
@@ -101,7 +101,7 @@ public class FirstFitAllocator extends OrderedAllocator {
 
       // Alignment constraint
       int align = -1;
-      final Integer typeSize = (Integer) vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE, Integer.class);
+      final Integer typeSize = vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE, Integer.class);
       if (this.alignment == 0) {
         align = typeSize;
       } else if (this.alignment > 0) {

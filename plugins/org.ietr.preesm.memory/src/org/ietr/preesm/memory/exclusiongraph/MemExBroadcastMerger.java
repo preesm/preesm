@@ -38,9 +38,8 @@
 package org.ietr.preesm.memory.exclusiongraph;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -102,8 +101,8 @@ public class MemExBroadcastMerger {
    */
   public MemExBroadcastMerger(final MemoryExclusionGraph memEx) {
     this.memEx = memEx;
-    this.dag = (DirectedAcyclicGraph) memEx.getPropertyBean().getValue(MemoryExclusionGraph.SOURCE_DAG, DirectedAcyclicGraph.class);
-    this.mergedObjects = new HashMap<>();
+    this.dag = memEx.getPropertyBean().getValue(MemoryExclusionGraph.SOURCE_DAG, DirectedAcyclicGraph.class);
+    this.mergedObjects = new LinkedHashMap<>();
   }
 
   /**
@@ -115,7 +114,7 @@ public class MemExBroadcastMerger {
   public int merge() {
     // Create a property in the memex to store a list of merged vertices
     // This list is used by some allocator (eg. scheduling order alloc).
-    this.memEx.setPropertyValue(MemExBroadcastMerger.MERGED_OBJECT_PROPERTY, new HashSet<MemoryExclusionVertex>());
+    this.memEx.setPropertyValue(MemExBroadcastMerger.MERGED_OBJECT_PROPERTY, new LinkedHashSet<MemoryExclusionVertex>());
 
     // Retrieve the dag vertices in scheduling order.
     final LinkedHashSet<DAGVertex> dagVertices = new LinkedHashSet<>(this.dag.vertexSet().size());
@@ -183,7 +182,7 @@ public class MemExBroadcastMerger {
     // In the current version we ONLY check if ALL outgoing edges
     // have the same rate as the input edge, and merge those with a
     // "const" input
-    final Set<MemoryExclusionVertex> mergeableMemObjects = new HashSet<>();
+    final Set<MemoryExclusionVertex> mergeableMemObjects = new LinkedHashSet<>();
     for (final DAGEdge edge : outgoingEdges) {
       final MemoryExclusionVertex outMemObject = new MemoryExclusionVertex(edge);
       // Check the weight equality.
@@ -267,7 +266,7 @@ public class MemExBroadcastMerger {
     final Set<DAGEdge> incomingEdges = vert.incomingEdges();
 
     // Retrieve the last memobject
-    final SDFAbstractVertex sdfVertex = (SDFAbstractVertex) vert.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex.class);
+    final SDFAbstractVertex sdfVertex = vert.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex.class);
     final Map<Integer, SDFEdge> orderedEdges = (Map<Integer, SDFEdge>) sdfVertex.getPropertyBean().getValue(DAGForkVertex.EDGES_ORDER);
     final SDFEdge lastEdge = orderedEdges.get(Collections.max(orderedEdges.keySet()));
     final DAGEdge lastDagEdge = this.dag.getEdge(this.dag.getVertex(lastEdge.getSource().getName()), this.dag.getVertex(lastEdge.getTarget().getName()));
@@ -277,7 +276,7 @@ public class MemExBroadcastMerger {
     // have the same rate as the output edge, and merge those with a
     // write_only producer (except the last one which will be merged
     // with the input, regardless from its modifiers)
-    final Set<MemoryExclusionVertex> mergeableMemObjects = new HashSet<>();
+    final Set<MemoryExclusionVertex> mergeableMemObjects = new LinkedHashSet<>();
     final Set<MemoryExclusionVertex> allMergedObjects = (Set<MemoryExclusionVertex>) this.memEx.getPropertyBean()
         .getValue(MemExBroadcastMerger.MERGED_OBJECT_PROPERTY);
     for (final DAGEdge edge : incomingEdges) {
@@ -357,7 +356,7 @@ public class MemExBroadcastMerger {
 
       // Backup the list of merged vertices for unmerge
       if (!mergedLastMemObject) {
-        final Set<MemoryExclusionVertex> outSet = new HashSet<>();
+        final Set<MemoryExclusionVertex> outSet = new LinkedHashSet<>();
         outSet.add(outMemObject);
         this.mergedObjects.put(lastMemObject, outSet);
       } else {
@@ -415,7 +414,7 @@ public class MemExBroadcastMerger {
       // Get the unmerged object and it allocation.
       MemoryExclusionVertex unmergedObject = entry.getKey();
       unmergedObject = this.memEx.getVertex(unmergedObject);
-      final Integer offset = (Integer) unmergedObject.getPropertyBean().getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, Integer.class);
+      final Integer offset = unmergedObject.getPropertyBean().getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, Integer.class);
 
       // Scan the unmerged objects
       final Set<MemoryExclusionVertex> unmergedObjects = entry.getValue();

@@ -38,7 +38,7 @@
 package org.ietr.preesm.algorithm.importSdf3Xml;
 
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
@@ -66,17 +66,17 @@ public class Sdf3XmlParser {
   /**
    * This {@link Map} associates each data type of the graph {@link SDFEdge} to their size.
    */
-  protected Map<String, Integer> dataTypes = new HashMap<>();
+  protected Map<String, Integer> dataTypes = new LinkedHashMap<>();
 
   /**
    * This {@link Map} associates the name of an edge from the SDF3 file to its corresponding {@link SDFEdge}.
    */
-  protected Map<String, SDFEdge> edges = new HashMap<>();
+  protected Map<String, SDFEdge> edges = new LinkedHashMap<>();
 
   /**
    * This {@link Map} associates the actors of the parsed graph to their execution time.
    */
-  protected Map<SDFAbstractVertex, Integer> actorExecTimes = new HashMap<>();
+  protected Map<SDFAbstractVertex, Integer> actorExecTimes = new LinkedHashMap<>();
 
   /**
    * Find the unique {@link Element} with the specified name in the children of the given {@link Element}.

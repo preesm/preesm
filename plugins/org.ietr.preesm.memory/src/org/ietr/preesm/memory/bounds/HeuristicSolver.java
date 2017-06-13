@@ -38,9 +38,11 @@ package org.ietr.preesm.memory.bounds;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import org.ietr.preesm.memory.exclusiongraph.IWeightedVertex;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
@@ -255,7 +257,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
    * @see org.ietr.preesm.memory.bounds.AbstractMaximumWeightCliqueSolver#adjacentVerticesOf(org.ietr.preesm.memory.exclusiongraph.IWeightedVertex)
    */
   @Override
-  public HashSet<V> adjacentVerticesOf(final V vertex) {
+  public Set<V> adjacentVerticesOf(final V vertex) {
     // If this node was already treated
     if (this.adjacentVerticesBackup.containsKey(vertex)) {
       return this.adjacentVerticesBackup.get(vertex);
@@ -263,11 +265,11 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
 
     super.adjacentVerticesOf(vertex);
 
-    HashSet<V> result;
+    Set<V> result;
 
     // Correct the adjacent vertices list so that it contains only
     // references to vertices from graph.vertexSet()
-    final HashSet<V> toAdd = new HashSet<>();
+    final Set<V> toAdd = new LinkedHashSet<>();
     result = this.adjacentVerticesBackup.get(vertex);
 
     for (final V vert : result) {
@@ -298,10 +300,10 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
    * @deprecated Not used anymore in the HeuristicSolver algorithm
    */
   @Deprecated
-  public HashSet<VerticesPair> mergeSimilarVertices() {
+  public Set<VerticesPair> mergeSimilarVertices() {
     final ArrayList<V> vertices = new ArrayList<>(this.graph.vertexSet());
 
-    final HashSet<VerticesPair> result = mergeSimilarVertices(vertices);
+    final Set<VerticesPair> result = mergeSimilarVertices(vertices);
 
     // Clear all adjacent vertices backup list (as they may still contains
     // merged nodes)
@@ -325,9 +327,9 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
    * @deprecated Not used anymore in the HeuristicSolver algorithm
    */
   @Deprecated
-  public HashSet<VerticesPair> mergeSimilarVertices(final Collection<? extends V> vertices) {
-    final HashSet<V> mergedVertices = new HashSet<>();
-    final HashSet<VerticesPair> mergeList = new HashSet<>();
+  public Set<VerticesPair> mergeSimilarVertices(final Collection<? extends V> vertices) {
+    final Set<V> mergedVertices = new LinkedHashSet<>();
+    final Set<VerticesPair> mergeList = new LinkedHashSet<>();
     final ArrayList<V> list = new ArrayList<>(vertices);
 
     // For each vertex, check all its neighbors
@@ -335,7 +337,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
       // If the node was already merged, skip the node
       if (!mergedVertices.contains(vertex)) {
         // Retrieve the neighbors
-        final HashSet<V> neighbors = this.adjacentVerticesOf(vertex);
+        final Set<V> neighbors = this.adjacentVerticesOf(vertex);
         neighbors.add(vertex);
 
         // For each neighbor, check if all neighbors of the two nodes
@@ -344,7 +346,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
           // If the neighbor is the vertex itself.. skip it !
           if (!neighbor.equals(vertex)) {
             // Retrieves the neighbors of the neighbor
-            final HashSet<V> nextNeighbors = this.adjacentVerticesOf(neighbor);
+            final Set<V> nextNeighbors = this.adjacentVerticesOf(neighbor);
             nextNeighbors.add(neighbor);
 
             // Check the desired property (cf function comments)
@@ -392,14 +394,14 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
     double graphDensity = totalNbEdges / maxEdges;
 
     // 1 - Initialize the costs list
-    final HashMap<V, VertexCost> costsList = new HashMap<>();
+    final Map<V, VertexCost> costsList = new LinkedHashMap<>();
     for (final V vertex : this.graph.vertexSet()) {
       int weight;
       int nbEdges;
 
       nbEdges = this.graph.edgesOf(vertex).size();
 
-      final HashSet<V> adjacentVertices = adjacentVerticesOf(vertex);
+      final Set<V> adjacentVertices = adjacentVerticesOf(vertex);
       weight = sumWeight(adjacentVertices) + vertex.getWeight();
 
       costsList.put(vertex, new VertexCost(weight, nbEdges));
@@ -437,12 +439,12 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
       // density
 
       // Retrieve the neighbors whose costs will be impacted
-      final HashSet<V> updatedVertex = adjacentVerticesOf(selectedEntry.getKey());
+      final Set<V> updatedVertex = adjacentVerticesOf(selectedEntry.getKey());
       totalNbEdges -= updatedVertex.size();
 
       // We keep the adjacentVerticesBackup up to date
       final V removedVertex = selectedEntry.getKey();
-      for (final HashSet<V> backup : this.adjacentVerticesBackup.values()) {
+      for (final Set<V> backup : this.adjacentVerticesBackup.values()) {
         backup.remove(removedVertex);
       }
 
@@ -460,7 +462,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
     }
 
     // Retrieve the vertices of the found clique.
-    this.heaviestClique = new HashSet<>(costsList.keySet());
+    this.heaviestClique = new LinkedHashSet<>(costsList.keySet());
     clearAdjacentVerticesBackup();
 
     // // Check check if the found clique is maximal
@@ -471,7 +473,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
     // // and is not used.
     // // However, it is left here in case it could be used one day !
     // //
-    // HashSet<V> cliqueCandidates = new HashSet<V>(
+    // LinkedHashSet<V> cliqueCandidates = new LinkedHashSet<V>(
     // adjacentVerticesOf(heaviestClique.iterator().next()));
     // cliqueCandidates.removeAll(heaviestClique);
     // for (V vertex : cliqueCandidates) {

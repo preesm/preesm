@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.ui.scenario.editor.codegen;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -112,7 +112,7 @@ public class CodegenPage extends FormPage {
     layout.minNumColumns = 1;
     form.getBody().setLayout(layout);
 
-    final Set<String> algoExtensions = new HashSet<>();
+    final Set<String> algoExtensions = new LinkedHashSet<>();
     algoExtensions.add("graphml");
 
     // Algorithm file chooser section

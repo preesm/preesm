@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.experiment.model.pimm.util;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
@@ -73,7 +73,7 @@ public class PortNameValidator implements IInputValidator {
     this.renamedPort = renamedPort;
 
     // Create the list of already existing names
-    this.portsNames = new HashSet<>();
+    this.portsNames = new LinkedHashSet<>();
 
     for (final Port port : vertex.getConfigInputPorts()) {
       this.portsNames.add(port.getName());

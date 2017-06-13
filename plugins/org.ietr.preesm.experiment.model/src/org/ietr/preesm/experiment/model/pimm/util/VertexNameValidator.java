@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.experiment.model.pimm.util;
 
-import java.util.Set;
+import java.util.Collection;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -54,7 +54,7 @@ public class VertexNameValidator implements IInputValidator {
   protected PiGraph graph;
 
   /** The existing names. */
-  protected Set<String> existingNames;
+  protected Collection<String> existingNames;
 
   /**
    * Constructor of the {@link VertexNameValidator}.

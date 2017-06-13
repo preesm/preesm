@@ -34,7 +34,7 @@
  */
 package org.ietr.preesm.algorithm.randomsdf;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
@@ -63,7 +63,7 @@ public class RandomSDFTest {
     final RandomSDF task = new RandomSDF();
     final Map<String, String> params = task.getDefaultParameters();
 
-    final HashMap<String, Object> inputs = new HashMap<>();
+    final Map<String, Object> inputs = new LinkedHashMap<>();
 
     // create dummy inputs
     inputs.put("SDF", new SDFGraph());

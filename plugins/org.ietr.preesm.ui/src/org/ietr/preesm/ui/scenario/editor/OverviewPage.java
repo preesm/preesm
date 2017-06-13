@@ -38,7 +38,7 @@
 package org.ietr.preesm.ui.scenario.editor;
 
 import java.io.FileNotFoundException;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
@@ -114,7 +114,7 @@ public class OverviewPage extends FormPage {
     layout.minNumColumns = 1;
     form.getBody().setLayout(layout);
 
-    final Set<String> algoExtensions = new HashSet<>();
+    final Set<String> algoExtensions = new LinkedHashSet<>();
     algoExtensions.add("pi");
     algoExtensions.add("graphml");
 
@@ -122,7 +122,7 @@ public class OverviewPage extends FormPage {
     createFileSection(managedForm, Messages.getString("Overview.algorithmFile"), Messages.getString("Overview.algorithmDescription"),
         Messages.getString("Overview.algorithmFileEdit"), this.scenario.getAlgorithmURL(), Messages.getString("Overview.algorithmBrowseTitle"), algoExtensions);
 
-    final Set<String> archiExtensions = new HashSet<>();
+    final Set<String> archiExtensions = new LinkedHashSet<>();
     archiExtensions.add("slam");
     archiExtensions.add("design");
 

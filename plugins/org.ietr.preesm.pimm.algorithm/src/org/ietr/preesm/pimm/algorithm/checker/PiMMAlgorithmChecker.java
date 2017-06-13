@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.pimm.algorithm.checker;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.emf.ecore.EObject;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
@@ -80,8 +80,8 @@ public class PiMMAlgorithmChecker {
    */
   public boolean checkGraph(final PiGraph graph) {
     this.graph = graph;
-    this.errorMsgs = new HashMap<>();
-    this.warningMsgs = new HashMap<>();
+    this.errorMsgs = new LinkedHashMap<>();
+    this.warningMsgs = new LinkedHashMap<>();
 
     this.errors = false;
     this.warnings = false;

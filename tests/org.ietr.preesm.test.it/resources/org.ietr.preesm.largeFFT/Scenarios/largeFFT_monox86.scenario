@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/org.ietr.preesm.largeFFT/Algo/top.pi"/>
+        <architecture url="/org.ietr.preesm.largeFFT/Archi/1CoreX86.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.largeFFT/Code/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="top/largeFFT/out"/>
+            <task name="top/largeFFT/Transpose_6"/>
+            <task name="top/largeFFT/Transpose_3"/>
+            <task name="top/largeFFT/Twiddle_4"/>
+            <task name="top/largeFFT/in"/>
+            <task name="top/src"/>
+            <task name="top/snk"/>
+            <task name="top/largeFFT/FFT_2"/>
+            <task name="top/largeFFT/GenRowIds"/>
+            <task name="top/largeFFT/FFT_5"/>
+            <task name="top/largeFFT"/>
+            <task name="top/largeFFT/Transpose_1"/>
+            <task name="top"/>
+        </constraintGroup>
+    </constraints>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl="">
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="1.0E-5"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="char" size="4"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+        <numberOfTopExecutions>1</numberOfTopExecutions>
+    </simuParams>
+    <variables excelUrl=""/>
+    <parameterValues>
+        <parameter name="NR" parent="largeFFT"
+            type="PARAMETER_DEPENDENT" value="8"/>
+        <parameter name="NC" parent="largeFFT"
+            type="PARAMETER_DEPENDENT" value="8"/>
+    </parameterValues>
+</scenario>

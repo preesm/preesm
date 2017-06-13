@@ -37,8 +37,9 @@
 package org.ietr.preesm.core.algorithm.visitors;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
@@ -55,21 +56,21 @@ import org.ietr.dftools.architecture.slam.ComponentInstance;
 public class GetComponentsScheduleVisitor implements IGraphVisitor<DirectedAcyclicGraph, DAGVertex, DAGEdge> {
 
   /** The components schedule. */
-  protected HashMap<ComponentInstance, ArrayList<DAGVertex>> _componentsSchedule;
+  protected Map<ComponentInstance, ArrayList<DAGVertex>> _componentsSchedule;
 
   /**
    * Constructor of the GetComponentsScheduleVisitor.
    */
   public GetComponentsScheduleVisitor() {
-    this._componentsSchedule = new HashMap<>();
+    this._componentsSchedule = new LinkedHashMap<>();
   }
 
   /**
    * Return the result of the visitor algorithm.
    *
-   * @return An HashMap containing the schedule of each component of the DAG
+   * @return An LinkedHashMap containing the schedule of each component of the DAG
    */
-  public HashMap<ComponentInstance, ArrayList<DAGVertex>> getResult() {
+  public Map<ComponentInstance, ArrayList<DAGVertex>> getResult() {
     return this._componentsSchedule;
   }
 

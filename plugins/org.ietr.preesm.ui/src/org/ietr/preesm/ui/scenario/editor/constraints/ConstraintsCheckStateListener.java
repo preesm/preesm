@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.ui.scenario.editor.constraints;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -316,7 +316,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
   private void updateCheckPISDF() {
     final PiGraph currentGraph = this.contentProvider.getPISDFCurrentGraph();
     if ((this.currentOpId != null) && (currentGraph != null)) {
-      final Set<AbstractVertex> cgSet = new HashSet<>();
+      final Set<AbstractVertex> cgSet = new LinkedHashSet<>();
 
       for (final ConstraintGroup cg : this.scenario.getConstraintGroupManager().getOpConstraintGroups(this.currentOpId)) {
 
@@ -351,7 +351,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
   private void updateCheckIBSDF() {
     final SDFGraph currentGraph = this.contentProvider.getIBSDFCurrentGraph();
     if ((this.currentOpId != null) && (currentGraph != null)) {
-      final Set<HierarchicalSDFVertex> cgSet = new HashSet<>();
+      final Set<HierarchicalSDFVertex> cgSet = new LinkedHashSet<>();
 
       for (final ConstraintGroup cg : this.scenario.getConstraintGroupManager().getOpConstraintGroups(this.currentOpId)) {
 

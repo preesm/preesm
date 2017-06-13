@@ -2,7 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2015)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -36,9 +36,8 @@
 package org.ietr.preesm.codegen.xtend.printer.c
 
 import java.util.Date
-import java.util.HashSet
+import java.util.LinkedHashSet
 import java.util.List
-import org.ietr.preesm.codegen.xtend.model.codegen.Block
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Call
 import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock
@@ -51,7 +50,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
-import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
@@ -62,7 +60,7 @@ class C6678CPrinter extends CPrinter {
 	 * Set of CharSequence used to avoid calling the same cache operation 
 	 * multiple times in a broadcast or roundbuffer call. 
 	 */
-	var currentOperationMemcpy = new HashSet<CharSequence>();
+	var currentOperationMemcpy = new LinkedHashSet<CharSequence>();
 	
 	override printCoreBlockHeader(CoreBlock block) '''
 		/** 
@@ -222,7 +220,8 @@ class C6678CPrinter extends CPrinter {
 				cache_wbInv(«communication.data.doSwitch», «communication.data.size»*sizeof(«communication.data.type»));
 			«ENDIF»
 		«ENDIF»
-		«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
+		«/** TODO: replace with super.printSharedMemoryCommunication() */
+		communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
 			direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
 			(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«{
 			var coreName = if (communication.direction == Direction::SEND) {
@@ -238,26 +237,5 @@ class C6678CPrinter extends CPrinter {
 				cache_inv(«communication.data.doSwitch», «communication.data.size»*sizeof(«communication.data.type»));
 			«ENDIF»
 		«ENDIF»	
-	'''
-	
-	override printSemaphoreDeclaration(Semaphore semaphore) ''''''
-	
-	override printSemaphoreDefinition(Semaphore semaphore) ''''''
-	
-	override printSemaphore(Semaphore semaphore) ''''''
-	
-	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {
-		super.preProcessing(printerBlocks, allBlocks)
-
-		for (block : printerBlocks) {
-			/** Remove semaphore init */
-			(block as CoreBlock).initBlock.codeElts.removeAll(
-				((block as CoreBlock).initBlock.codeElts.filter[
-					(it instanceof FunctionCall && (it as FunctionCall).name.startsWith("sem_init"))]))
-			/** Remove semaphores */
-			(block as CoreBlock).definitions.removeAll((block as CoreBlock).definitions.filter[it instanceof Semaphore])
-			(block as CoreBlock).declarations.removeAll(
-				(block as CoreBlock).declarations.filter[it instanceof Semaphore])
-		}		
-	}	
+	'''	
 }

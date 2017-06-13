@@ -40,7 +40,7 @@
 package org.ietr.preesm.algorithm.exportDif;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
@@ -119,7 +119,7 @@ public class DIFExporter extends AbstractTaskImplementation {
     }
 
     // Output output
-    final Map<String, Object> output = new HashMap<>();
+    final Map<String, Object> output = new LinkedHashMap<>();
     return output;
   }
 
@@ -130,7 +130,7 @@ public class DIFExporter extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(DIFExporter.PARAM_PATH, DIFExporter.VALUE_PATH_DEFAULT);
     return parameters;
   }

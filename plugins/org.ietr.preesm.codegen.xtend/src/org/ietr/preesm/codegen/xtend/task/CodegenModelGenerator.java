@@ -42,13 +42,14 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.resources.IFile;
@@ -125,7 +126,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
-import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType;
@@ -285,17 +285,17 @@ public class CodegenModelGenerator {
     this.workflow = workflow;
 
     checkInputs(this.archi, this.dag, this.megs);
-    this.bufferNames = new HashMap<>();
-    this.mainBuffers = new HashMap<>();
-    this.coreBlocks = new HashMap<>();
-    this.srSDFEdgeBuffers = new HashMap<>();
+    this.bufferNames = new LinkedHashMap<>();
+    this.mainBuffers = new LinkedHashMap<>();
+    this.coreBlocks = new LinkedHashMap<>();
+    this.srSDFEdgeBuffers = new LinkedHashMap<>();
     this.dagEdgeBuffers = HashBiMap.create(dag.edgeSet().size());
-    this.dagFifoBuffers = new HashMap<>();
+    this.dagFifoBuffers = new LinkedHashMap<>();
     this.dagVertexCalls = HashBiMap.create(dag.vertexSet().size());
-    this.communications = new HashMap<>();
-    this.popFifoCalls = new HashMap<>();
-    this.linkHSDFVertexBuffer = new HashMap<>();
-    this.linkHSDFEdgeBuffer = new HashMap<>();
+    this.communications = new LinkedHashMap<>();
+    this.popFifoCalls = new LinkedHashMap<>();
+    this.linkHSDFVertexBuffer = new LinkedHashMap<>();
+    this.linkHSDFEdgeBuffer = new LinkedHashMap<>();
   }
 
   /**
@@ -321,7 +321,7 @@ public class CodegenModelGenerator {
     // Check that the input DAG is scheduled and Mapped on the targeted
     // architecture
     for (final DAGVertex vertex : dag.vertexSet()) {
-      final ComponentInstance operator = (ComponentInstance) vertex.getPropertyBean().getValue("Operator", ComponentInstance.class);
+      final ComponentInstance operator = vertex.getPropertyBean().getValue("Operator", ComponentInstance.class);
       if (operator == null) {
         throw new CodegenException(
             "The DAG Actor " + vertex + " is not mapped on any operator.\n" + " All actors must be mapped before using the code generation.");
@@ -366,7 +366,7 @@ public class CodegenModelGenerator {
         }
 
         // Check that the MemEx graph is allocated.
-        final Integer offset = (Integer) memObj.getPropertyBean().getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, Integer.class);
+        final Integer offset = memObj.getPropertyBean().getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, Integer.class);
         if (offset == null) {
           throw new CodegenException("MemEx graph memory object (" + memObj + ") was not allocated in memory. \n"
               + "Make sure that the MemEx is processed by an allocation task before entering the codegen.");
@@ -467,8 +467,7 @@ public class CodegenModelGenerator {
         // will be the first to be processed.
         if (newComm.getDelimiter().equals(Delimiter.END) && direction.equals(Direction.RECEIVE)) {
           // Insert it according to its scheduled place.
-          final int dagVertexSchedulingOrder = (Integer) dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder,
-              Integer.class);
+          final int dagVertexSchedulingOrder = dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder, Integer.class);
           int insertionIndex = 0;
           for (final CodeElt codeElt : operatorBlock.getLoopBlock().getCodeElts()) {
             // Iterate over the calls of the current operator
@@ -479,8 +478,7 @@ public class CodegenModelGenerator {
                 // this will happen when a ReceiveStart or a Receive
                 // End is encountered, since they have no
                 // corresponding vertices in the DAG
-              } else if ((Integer) vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder,
-                  Integer.class) > dagVertexSchedulingOrder) {
+              } else if (vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder, Integer.class) > dagVertexSchedulingOrder) {
                 break;
               }
             }
@@ -527,7 +525,8 @@ public class CodegenModelGenerator {
     // 1 - Iterate on the actors of the DAG
     // 1.0 - Identify the core used.
     // 1.1 - Construct the "loop" & "init" of each core.
-    // 2 - Put the buffer declaration in their right place
+    // 2 - Set CoreBlock ID
+    // 3 - Put the buffer declaration in their right place
 
     // -1 - Add all hosted MemoryObject back in te MemEx
     restoreHostedVertices();
@@ -544,7 +543,7 @@ public class CodegenModelGenerator {
 
       while (iter.hasNext()) {
         final DAGVertex vertex = iter.next();
-        final Integer order = (Integer) vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder, Integer.class);
+        final Integer order = vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder, Integer.class);
         orderedDAGVertexMap.put(order, vertex);
       }
       vertexInSchedulingOrder.addAll(orderedDAGVertexMap.values());
@@ -559,7 +558,7 @@ public class CodegenModelGenerator {
       {
         // This call can not fail as checks were already performed in
         // the constructor
-        operator = (ComponentInstance) vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator, ComponentInstance.class);
+        operator = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator, ComponentInstance.class);
         // If this is the first time this operator is encountered,
         // Create a Block and store it.
         operatorBlock = this.coreBlocks.get(operator);
@@ -573,7 +572,7 @@ public class CodegenModelGenerator {
 
       // 1.1 - Construct the "loop" of each core.
       {
-        final String vertexType = ((VertexType) vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.class)).toString();
+        final String vertexType = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.class).toString();
         switch (vertexType) {
 
           case VertexType.TYPE_TASK:
@@ -617,10 +616,18 @@ public class CodegenModelGenerator {
       }
     }
 
-    // 2 - Put the buffer definition in their right place
+    // 2 - Set codeBlockI ID
+    // This objective is to give a unique ID to each coreBlock.
+    // Alphabetical order of coreBlock name is used to determine the id (in an attempt to limit randomness)
+    {
+      final AtomicInteger id = new AtomicInteger(0); // Need this because non-final argument cannot be used within lambda expressions.
+      this.coreBlocks.values().stream().sorted((cb1, cb2) -> cb1.getName().compareTo(cb2.getName())).forEach(cb -> cb.setCoreID(id.getAndIncrement()));
+    }
+
+    // 3 - Put the buffer definition in their right place
     generateBufferDefinitions();
 
-    return new HashSet<>(this.coreBlocks.values());
+    return new LinkedHashSet<>(this.coreBlocks.values());
   }
 
   private void p(final String s) {
@@ -977,7 +984,7 @@ public class CodegenModelGenerator {
    */
   private int tryGenerateRepeatActorFiring(final CoreBlock operatorBlock, final DAGVertex dagVertex) throws SDF4JException, WorkflowException {
     // Check whether the ActorCall is a call to a hierarchical actor or not.
-    final SDFVertex sdfVertex = (SDFVertex) dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFVertex.class);
+    final SDFVertex sdfVertex = dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFVertex.class);
     final Object refinement = sdfVertex.getPropertyBean().getValue(AbstractVertex.REFINEMENT);
 
     // p("Generating code for hierarchical actor " + sdfVertex.getName());
@@ -1259,7 +1266,7 @@ public class CodegenModelGenerator {
    */
   protected void generateActorFiring(final CoreBlock operatorBlock, final DAGVertex dagVertex) throws CodegenException {
     // Check whether the ActorCall is a call to a hierarchical actor or not.
-    final SDFVertex sdfVertex = (SDFVertex) dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFVertex.class);
+    final SDFVertex sdfVertex = dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFVertex.class);
     final Object refinement = sdfVertex.getPropertyBean().getValue(AbstractVertex.REFINEMENT);
 
     // If the actor is hierarchical
@@ -1446,7 +1453,7 @@ public class CodegenModelGenerator {
       final MemoryExclusionGraph meg = entry.getValue();
 
       // Create the Main Shared buffer
-      final Integer size = (Integer) meg.getPropertyBean().getValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE, Integer.class);
+      final Integer size = meg.getPropertyBean().getValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE, Integer.class);
 
       final Buffer mainBuffer = CodegenFactory.eINSTANCE.createBuffer();
       mainBuffer.setSize(size);
@@ -1456,8 +1463,8 @@ public class CodegenModelGenerator {
       this.mainBuffers.put(memoryBank, mainBuffer);
 
       @SuppressWarnings("unchecked")
-      final Map<DAGEdge, Integer> allocation = (Map<DAGEdge, Integer>) meg.getPropertyBean().getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION,
-          (new HashMap<DAGEdge, Integer>()).getClass());
+      final Map<DAGEdge, Integer> allocation = meg.getPropertyBean().getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION,
+          (new LinkedHashMap<DAGEdge, Integer>()).getClass());
 
       // generate the subbuffer for each dagedge
       for (final Entry<DAGEdge, Integer> dagAlloc : allocation.entrySet()) {
@@ -1612,7 +1619,7 @@ public class CodegenModelGenerator {
   protected Entry<List<Variable>, List<PortDirection>> generateCallVariables(final DAGVertex dagVertex, final Prototype prototype, final boolean isInit)
       throws CodegenException {
     // Retrieve the sdf vertex and the refinement.
-    final SDFVertex sdfVertex = (SDFVertex) dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFVertex.class);
+    final SDFVertex sdfVertex = dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFVertex.class);
 
     // Sorted list of the variables used by the prototype.
     // The integer is only used to order the variable and is retrieved
@@ -1769,8 +1776,7 @@ public class CodegenModelGenerator {
     final Delimiter delimiter = (direction.equals(VertexType.TYPE_SEND)) ? Delimiter.START : Delimiter.END;
     newComm.setDirection(dir);
     newComm.setDelimiter(delimiter);
-    final MessageRouteStep routeStep = (MessageRouteStep) dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.SendReceive_routeStep,
-        MessageRouteStep.class);
+    final MessageRouteStep routeStep = dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.SendReceive_routeStep, MessageRouteStep.class);
     for (final ComponentInstance comp : routeStep.getNodes()) {
       final CommunicationNode comNode = CodegenFactory.eINSTANCE.createCommunicationNode();
       comNode.setName(comp.getInstanceName());
@@ -1779,7 +1785,7 @@ public class CodegenModelGenerator {
     }
 
     // Find the corresponding DAGEdge buffer(s)
-    final DAGEdge dagEdge = (DAGEdge) dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge, DAGEdge.class);
+    final DAGEdge dagEdge = dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge, DAGEdge.class);
     final Buffer buffer = this.dagEdgeBuffers.get(dagEdge);
     if (buffer == null) {
       throw new CodegenException("No buffer found for edge" + dagEdge);
@@ -1801,12 +1807,6 @@ public class CodegenModelGenerator {
 
     // Register the dag buffer to the core
     registerCallVariableToCoreBlock(operatorBlock, newComm);
-
-    // Set the semaphore for the new Comm. (this may be a share memory comm
-    // specific feature)
-    // probably some work to do here when trying to support new
-    // communication means.
-    generateSemaphore(operatorBlock, newComm);
 
     // Create the corresponding SE or RS
     final SharedMemoryCommunication newCommZoneComplement = CodegenFactory.eINSTANCE.createSharedMemoryCommunication();
@@ -1843,7 +1843,7 @@ public class CodegenModelGenerator {
    */
   protected void generateFifoCall(final CoreBlock operatorBlock, final DAGVertex dagVertex) throws CodegenException {
     // Retrieve the sdf vertex
-    final SDFAbstractVertex sdfVertex = (SDFAbstractVertex) dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex.class);
+    final SDFAbstractVertex sdfVertex = dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex.class);
 
     // Create the Fifo call and set basic property
     final FifoCall fifoCall = CodegenFactory.eINSTANCE.createFifoCall();
@@ -1887,7 +1887,7 @@ public class CodegenModelGenerator {
         throw new CodegenException("DAGVertex " + dagVertex + " is not connected to any " + VertexType.TYPE_TASK + " vertex.");
       }
 
-      final BufferAggregate aggregate = (BufferAggregate) edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName, BufferAggregate.class);
+      final BufferAggregate aggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName, BufferAggregate.class);
       final BufferProperties bufferProperty = aggregate.get(0);
       buffer = this.srSDFEdgeBuffers.get(bufferProperty);
       if (buffer == null) {
@@ -2005,77 +2005,6 @@ public class CodegenModelGenerator {
   }
 
   /**
-   * Generate the semaphore associated to the given {@link SharedMemoryCommunication}.
-   *
-   * @param operatorBlock
-   *          the {@link CoreBlock} on which the {@link SharedMemoryCommunication} is executed
-   * @param newComm
-   *          the {@link SharedMemoryCommunication}
-   */
-  protected void generateSemaphore(final CoreBlock operatorBlock, final SharedMemoryCommunication newComm) {
-    final boolean ss_re = ((newComm.getDirection().equals(Direction.SEND) && newComm.getDelimiter().equals(Delimiter.START))
-        || (newComm.getDirection().equals(Direction.RECEIVE) && newComm.getDelimiter().equals(Delimiter.END)));
-
-    // For SS->RE
-
-    // First check if a semaphore was already created for corresponding
-    // calls.
-    final Set<Communication> correspondingComm = new HashSet<>();
-    if (ss_re) {
-      correspondingComm.add(newComm.getReceiveEnd());
-      correspondingComm.add(newComm.getSendStart());
-    }
-
-    Semaphore semaphore = null;
-
-    for (final Communication comm : correspondingComm) {
-      if (comm instanceof SharedMemoryCommunication) {
-        semaphore = ((SharedMemoryCommunication) comm).getSemaphore();
-      }
-      if (semaphore != null) {
-        break;
-      }
-    }
-
-    // If no semaphore was found, create one
-    if (semaphore == null) {
-      semaphore = CodegenFactory.eINSTANCE.createSemaphore();
-      semaphore.setCreator(operatorBlock);
-      semaphore.setName("sem_" + newComm.getId() + "_" + ((ss_re) ? "SSRE" : "RRSR"));
-      final FunctionCall initSem = CodegenFactory.eINSTANCE.createFunctionCall();
-      initSem.addParameter(semaphore, PortDirection.NONE);
-
-      final Constant cstShared = CodegenFactory.eINSTANCE.createConstant();
-      cstShared.setType("int");
-      cstShared.setValue(0);
-      initSem.addParameter(cstShared, PortDirection.NONE);
-      cstShared.setCreator(operatorBlock);
-
-      final Constant cstInitVal = CodegenFactory.eINSTANCE.createConstant();
-      cstInitVal.setType("int");
-      if (ss_re) {
-        cstInitVal.setValue(0);
-      }
-
-      cstInitVal.setName("init_val");
-      initSem.addParameter(cstInitVal, PortDirection.NONE);
-      cstInitVal.setCreator(operatorBlock);
-
-      initSem.setName("sem_init");
-      initSem.setActorName(newComm.getData().getComment());
-
-      operatorBlock.getInitBlock().getCodeElts().add(initSem);
-    }
-
-    // Put the semaphore in the com
-    newComm.setSemaphore(semaphore);
-
-    // Register the core of the current block as a semaphore user
-    semaphore.getUsers().add(operatorBlock);
-
-  }
-
-  /**
    * Generate the {@link CodegenPackage Codegen Model} for a "special actor" (fork, join, broadcast or roundbuffer) firing. This method will create an
    * {@link SpecialCall} and place it in the {@link LoopBlock} of the {@link CoreBlock} passed as a parameter.
    *
@@ -2088,7 +2017,7 @@ public class CodegenModelGenerator {
    */
   protected void generateSpecialCall(final CoreBlock operatorBlock, final DAGVertex dagVertex) throws CodegenException {
     // get the corresponding SDFVertex
-    final SDFAbstractVertex sdfVertex = (SDFAbstractVertex) dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex.class);
+    final SDFAbstractVertex sdfVertex = dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex.class);
 
     final SpecialCall f = CodegenFactory.eINSTANCE.createSpecialCall();
     f.setName(dagVertex.getName());
@@ -2153,7 +2082,7 @@ public class CodegenModelGenerator {
 
       // Find the corresponding BufferProperty
       BufferProperties subBuffProperty = null;
-      final BufferAggregate buffers = (BufferAggregate) dagEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName, BufferAggregate.class);
+      final BufferAggregate buffers = dagEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName, BufferAggregate.class);
       for (final BufferProperties subBufferProperties : buffers) {
         // The source and target actor are the same, check that the
         // ports are corrects
@@ -2257,12 +2186,12 @@ public class CodegenModelGenerator {
 
     final Map<String, DataType> dataTypes = this.scenario.getSimulationManager().getDataTypes();
 
-    final BufferAggregate buffers = (BufferAggregate) dagEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName, BufferAggregate.class);
+    final BufferAggregate buffers = dagEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName, BufferAggregate.class);
 
     // Retrieve the corresponding memory object from the MEG
     final MemoryExclusionVertex memObject = findMObject(dagEdge);
     @SuppressWarnings("unchecked")
-    final List<Integer> interSubbufferSpace = (List<Integer>) memObject.getPropertyBean().getValue(MemoryExclusionVertex.INTER_BUFFER_SPACES, List.class);
+    final List<Integer> interSubbufferSpace = memObject.getPropertyBean().getValue(MemoryExclusionVertex.INTER_BUFFER_SPACES, List.class);
 
     Integer aggregateOffset = new Integer(0);
     int idx = 0;
@@ -2485,7 +2414,7 @@ public class CodegenModelGenerator {
 
     // Find if an inputBuffer has an overlap with an outputRange
     // For each input find the allocated range
-    // Map<Buffer,Pair<Buffer,Range>> inputRanges = new HashMap<>();
+    // Map<Buffer,Pair<Buffer,Range>> inputRanges = new LinkedHashMap<>();
     for (final Buffer input : inputs) {
       // If the input is not a NullBufer
       if (!(input instanceof NullBuffer)) {
@@ -2654,8 +2583,7 @@ public class CodegenModelGenerator {
         // will be the first to be processed.
         if (newComm.getDelimiter().equals(Delimiter.END) && newComm.getDirection().equals(Direction.RECEIVE)) {
           // Insert it according to its scheduled place.
-          final int dagVertexSchedulingOrder = (Integer) dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder,
-              Integer.class);
+          final int dagVertexSchedulingOrder = dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder, Integer.class);
           int insertionIndex = 0;
           for (final CodeElt codeElt : operatorBlock.getLoopBlock().getCodeElts()) {
             // Iterate over the calls of the current operator
@@ -2667,8 +2595,7 @@ public class CodegenModelGenerator {
                 // ReceiveRelease or a SendEnd, SendReserve is
                 // encountered, since they have no corresponding
                 // vertices in the DAG
-              } else if ((Integer) vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder,
-                  Integer.class) > dagVertexSchedulingOrder) {
+              } else if (vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder, Integer.class) > dagVertexSchedulingOrder) {
                 break;
               }
             }
@@ -2773,8 +2700,7 @@ public class CodegenModelGenerator {
     // In case of multi-step communication, this is the easiest
     // way to retrieve the target and source of the communication
     // corresponding to the current Send/ReceiveVertex
-    final MessageRouteStep routeStep = (MessageRouteStep) dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.SendReceive_routeStep,
-        MessageRouteStep.class);
+    final MessageRouteStep routeStep = dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.SendReceive_routeStep, MessageRouteStep.class);
 
     String commID = routeStep.getSender().getInstanceName();
     commID += "__" + dagEdge.getSource().getName();

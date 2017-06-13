@@ -42,7 +42,7 @@ package org.ietr.preesm.core.scenario.serialize;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -215,7 +215,7 @@ public class ScenarioParser {
       e.printStackTrace();
     }
     if (this.scenario.isPISDFScenario() && (graph != null)) {
-      final Set<Parameter> parameters = new HashSet<>();
+      final Set<Parameter> parameters = new LinkedHashSet<>();
       for (final Parameter p : graph.getAllParameters()) {
         if (!p.isConfigurationInterface()) {
           parameters.add(p);
@@ -277,7 +277,7 @@ public class ScenarioParser {
           stringValue = stringValue.substring(1, stringValue.length() - 1);
           final String[] values = stringValue.split(",");
 
-          final Set<Integer> newValues = new HashSet<>();
+          final Set<Integer> newValues = new LinkedHashSet<>();
 
           try {
             for (final String val : values) {
@@ -291,7 +291,7 @@ public class ScenarioParser {
         break;
       case "PARAMETER_DEPENDENT":
       case "DEPENDENT": // Retro-compatibility
-        final Set<String> inputParameters = new HashSet<>();
+        final Set<String> inputParameters = new LinkedHashSet<>();
         if (graph != null) {
 
           for (final Parameter input : currentParameter.getInputParameters()) {

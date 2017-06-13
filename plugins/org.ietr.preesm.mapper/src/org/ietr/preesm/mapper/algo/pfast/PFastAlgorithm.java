@@ -39,8 +39,8 @@ package org.ietr.preesm.mapper.algo.pfast;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Observable;
 import java.util.Set;
@@ -175,11 +175,11 @@ public class PFastAlgorithm extends Observable {
 
     // find number of nodes per thread
     nbnodes = nbnodes(blockingNodelist, nbsubsets, nodesmin);
-    subSet.add(new HashSet<String>());
+    subSet.add(new LinkedHashSet<String>());
 
     // Put the nodes of the BlockingNodes List in the Sublist
     for (int i = 0; i < nbsubsets; i++) {
-      subSet.add(new HashSet<String>());
+      subSet.add(new LinkedHashSet<String>());
       final Iterator<Set<String>> itera = subSet.iterator();
       final Set<String> tempSet = itera.next();
       for (int j = 0; j < nbnodes; j++) {
@@ -320,7 +320,7 @@ public class PFastAlgorithm extends Observable {
     MapperDAG dagfinal;
     final KwokListScheduler scheduler = new KwokListScheduler();
     final IAbc archisimu = AbstractAbc.getInstance(abcParams, dag, archi, scenario);
-    final Set<Set<String>> subSet = new HashSet<>();
+    final Set<Set<String>> subSet = new LinkedHashSet<>();
 
     final FastAlgoParameters fastParams = new FastAlgoParameters(pFastParams.getFastTime(), pFastParams.getFastLocalSearchTime(),
         pFastParams.isDisplaySolutions());
@@ -371,7 +371,7 @@ public class PFastAlgorithm extends Observable {
 
       // create ExecutorService to manage threads
       subiter = subSet.iterator();
-      final Set<FutureTask<MapperDAG>> futureTasks = new HashSet<>();
+      final Set<FutureTask<MapperDAG>> futureTasks = new LinkedHashSet<>();
       final ExecutorService es = Executors.newFixedThreadPool(nbCores);
 
       // step 6

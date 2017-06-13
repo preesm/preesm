@@ -39,7 +39,7 @@
  */
 package org.ietr.preesm.algorithm.exportXml;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -89,7 +89,7 @@ public class SDFExporter extends AbstractTaskImplementation {
 
     Activator.updateWorkspace();
 
-    return new HashMap<>();
+    return new LinkedHashMap<>();
   }
 
   /*
@@ -99,7 +99,7 @@ public class SDFExporter extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
 
     parameters.put("path", "");
     return parameters;

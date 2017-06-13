@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.architecture.transforms;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -68,7 +68,7 @@ public class ArchitectureExporter extends AbstractTaskImplementation {
      */
 
     WorkflowLogger.getLogger().log(Level.SEVERE, "ArchitectureExporter is no more supported");
-    return new HashMap<>();
+    return new LinkedHashMap<>();
   }
 
   /*
@@ -78,7 +78,7 @@ public class ArchitectureExporter extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
 
     parameters.put("path", "");
     return parameters;

@@ -40,7 +40,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -103,7 +103,7 @@ public class CsvTimingParser {
     final Path path = new Path(url);
     final IFile file = workspace.getRoot().getFile(path);
     try {
-      final Map<String, Map<String, String>> timings = new HashMap<>();
+      final Map<String, Map<String, String>> timings = new LinkedHashMap<>();
       final BufferedReader br = new BufferedReader(new InputStreamReader(file.getContents()));
 
       String line;
@@ -121,7 +121,7 @@ public class CsvTimingParser {
         while ((line = br.readLine()) != null) {
           final String[] cells = line.split(",");
           if (cells.length > 1) {
-            final Map<String, String> timing = new HashMap<>();
+            final Map<String, String> timing = new LinkedHashMap<>();
 
             for (int i = 1; i < cells.length; i++) {
               timing.put(opNames[i], cells[i]);

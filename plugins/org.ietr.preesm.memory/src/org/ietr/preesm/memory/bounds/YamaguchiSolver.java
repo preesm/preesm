@@ -36,8 +36,10 @@
 package org.ietr.preesm.memory.bounds;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 import org.ietr.preesm.memory.exclusiongraph.IWeightedVertex;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
@@ -62,7 +64,7 @@ import org.jgrapht.graph.SimpleGraph;
 public class YamaguchiSolver<V extends IWeightedVertex<Integer> & Comparable<V>, E extends DefaultEdge> extends AbstractMaximumWeightCliqueSolver<V, E> {
 
   /** The graph vertices. */
-  private HashMap<Integer, V> graphVertices;
+  private Map<Integer, V> graphVertices;
 
   /**
    * Solver constructor.
@@ -81,7 +83,7 @@ public class YamaguchiSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
    * @see org.ietr.preesm.memory.bounds.AbstractMaximumWeightCliqueSolver#adjacentVerticesOf(org.ietr.preesm.memory.exclusiongraph.IWeightedVertex)
    */
   @Override
-  public HashSet<V> adjacentVerticesOf(final V vertex) {
+  public Set<V> adjacentVerticesOf(final V vertex) {
     // If this node was already treated
     if (this.adjacentVerticesBackup.containsKey(vertex)) {
       return this.adjacentVerticesBackup.get(vertex);
@@ -114,9 +116,9 @@ public class YamaguchiSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
    *          The minimum weight of the clique to find
    * @return The Maximum-Weight Clique of the subgraph (if any)
    */
-  public HashSet<V> maxWeightClique(final HashMap<Integer, V> subgraphVertices, int thresold) {
+  public Set<V> maxWeightClique(final Map<Integer, V> subgraphVertices, int thresold) {
     // (1) let C <- 0
-    HashSet<V> clique = new HashSet<>();
+    Set<V> clique = new LinkedHashSet<>();
 
     // (2) get a sequence PI and a(.)
     final ArrayList<Integer> cost = new ArrayList<>();
@@ -136,12 +138,12 @@ public class YamaguchiSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
       subgraphVertices.remove(currentVertex.getIdentifier());
 
       // Si(v)
-      final HashMap<Integer, V> subGraph = new HashMap<>(subgraphVertices.size());
+      final Map<Integer, V> subGraph = new LinkedHashMap<>(subgraphVertices.size());
 
       // N(v) inter Si
       // subGraph.retainAll(this.adjacentVerticesOf(currentVertex));
-      // HashMap<Integer,V> tempGraph = new HashMap<Integer, V>(subGraph.size());
-      final HashSet<V> adjacentSet = this.adjacentVerticesOf(currentVertex);
+      // LinkedHashMap<Integer,V> tempGraph = new LinkedHashMap<Integer, V>(subGraph.size());
+      final Set<V> adjacentSet = this.adjacentVerticesOf(currentVertex);
       for (final V vertex : adjacentSet) {
         if (subgraphVertices.containsKey(vertex.getIdentifier())) {
           subGraph.put(vertex.getIdentifier(), vertex);
@@ -149,7 +151,7 @@ public class YamaguchiSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
       }
 
       // Recursive Call
-      final HashSet<V> subClique = maxWeightClique(subGraph, thresold - currentVertex.getWeight());
+      final Set<V> subClique = maxWeightClique(subGraph, thresold - currentVertex.getWeight());
       subClique.add(currentVertex);
       final int weightSubClique = sumWeight(subClique);
 
@@ -178,14 +180,14 @@ public class YamaguchiSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
    *          the list in which the resulting costs will be stored (in the order of the returned list)
    * @return the ordered list of vertices.
    */
-  public ArrayList<V> orderVertexSet(final HashMap<Integer, V> subgraphVertices, final ArrayList<Integer> cost) {
+  public ArrayList<V> orderVertexSet(final Map<Integer, V> subgraphVertices, final ArrayList<Integer> cost) {
     // (1) let PI be the empty sequence
     final ArrayList<V> orderedVertexSet = new ArrayList<>();
 
     // (2) For each v � V, les a(v) <- w(v)
     // (3) let S <- V
-    final HashMap<Integer, Integer> tempCost = new HashMap<>();
-    final HashMap<Integer, V> unorderedVertexSet = new HashMap<>();
+    final Map<Integer, Integer> tempCost = new LinkedHashMap<>();
+    final Map<Integer, V> unorderedVertexSet = new LinkedHashMap<>();
     for (final V vertex : subgraphVertices.values()) {
       tempCost.put(vertex.getIdentifier(), vertex.getWeight());
       unorderedVertexSet.put(vertex.getIdentifier(), vertex);
@@ -209,8 +211,8 @@ public class YamaguchiSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
       unorderedVertexSet.remove(selectedVertex.getIdentifier());
 
       // (6) for each u�N(v) inter S, let a(u) <- a(v') + w(u)
-      final HashSet<V> adjacentSet = adjacentVerticesOf(selectedVertex);
-      final HashSet<V> vertexSet = new HashSet<>(adjacentSet.size());
+      final Set<V> adjacentSet = adjacentVerticesOf(selectedVertex);
+      final Set<V> vertexSet = new LinkedHashSet<>(adjacentSet.size());
 
       for (final V vertex : adjacentSet) {
         if (unorderedVertexSet.containsKey(vertex.getIdentifier())) {
@@ -240,7 +242,7 @@ public class YamaguchiSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
    * @param graphVertices
    *          the graphVertices to set
    */
-  public void setGraphVertices(final HashMap<Integer, V> graphVertices) {
+  public void setGraphVertices(final Map<Integer, V> graphVertices) {
     this.graphVertices = graphVertices;
   }
 
@@ -251,7 +253,7 @@ public class YamaguchiSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
    */
   @Override
   public void solve() {
-    this.graphVertices = new HashMap<>();
+    this.graphVertices = new LinkedHashMap<>();
     int index = 0;
     for (final V vertex : this.graph.vertexSet()) {
       vertex.setIdentifier(index++);

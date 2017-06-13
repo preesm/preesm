@@ -38,7 +38,7 @@
 package org.ietr.preesm.memory.allocation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -380,7 +380,7 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(AbstractMemoryAllocatorTask.PARAM_VERBOSE, AbstractMemoryAllocatorTask.VALUE_TRUE_FALSE_DEFAULT);
     parameters.put(AbstractMemoryAllocatorTask.PARAM_ALLOCATORS, AbstractMemoryAllocatorTask.VALUE_ALLOCATORS_DEFAULT);
     parameters.put(AbstractMemoryAllocatorTask.PARAM_XFIT_ORDER, AbstractMemoryAllocatorTask.VALUE_XFIT_ORDER_DEFAULT);

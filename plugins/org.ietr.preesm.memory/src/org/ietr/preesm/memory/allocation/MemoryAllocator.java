@@ -38,9 +38,9 @@
 package org.ietr.preesm.memory.allocation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -97,7 +97,7 @@ public abstract class MemoryAllocator {
     if (alignment != -1) {
 
       // Build a list of all MObject of the graph, including merged ones
-      final Set<MemoryExclusionVertex> allMObjects = new HashSet<>();
+      final Set<MemoryExclusionVertex> allMObjects = new LinkedHashSet<>();
       allMObjects.addAll(meg.vertexSet());
       // Include merged Mobjects (if any)
       final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostMap = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) meg.getPropertyBean()
@@ -242,7 +242,7 @@ public abstract class MemoryAllocator {
    * </tr>
    * </table>
    */
-  protected HashMap<DAGEdge, Integer> edgeAllocation;
+  protected Map<DAGEdge, Integer> edgeAllocation;
 
   /**
    * An allocation is a map of fifo associated to an integer which represents their offset in a monolithic memory.<br>
@@ -262,7 +262,7 @@ public abstract class MemoryAllocator {
    * </tr>
    * </table>
    */
-  protected HashMap<MemoryExclusionVertex, Integer> fifoAllocation;
+  protected Map<MemoryExclusionVertex, Integer> fifoAllocation;
 
   /**
    * An allocation is a map of actor working memory associated to an integer which represents their offset in a monolithic memory.<br>
@@ -282,7 +282,7 @@ public abstract class MemoryAllocator {
    * </tr>
    * </table>
    */
-  protected HashMap<MemoryExclusionVertex, Integer> workingMemAllocation;
+  protected Map<MemoryExclusionVertex, Integer> workingMemAllocation;
 
   /**
    * An allocation is a map of {@link MemoryExclusionVertex memory objects} associated to an integer which represents their offset in a monolithic memory.<br>
@@ -310,7 +310,7 @@ public abstract class MemoryAllocator {
    * </tr>
    * </table>
    */
-  protected HashMap<MemoryExclusionVertex, Integer> memExNodeAllocation;
+  protected Map<MemoryExclusionVertex, Integer> memExNodeAllocation;
 
   /** The input exclusion graph. */
   protected MemoryExclusionGraph inputExclusionGraph;
@@ -326,11 +326,11 @@ public abstract class MemoryAllocator {
    *          The exclusion graph to analyze
    */
   protected MemoryAllocator(final MemoryExclusionGraph memEx) {
-    this.edgeAllocation = new HashMap<>();
-    this.fifoAllocation = new HashMap<>();
-    this.workingMemAllocation = new HashMap<>();
+    this.edgeAllocation = new LinkedHashMap<>();
+    this.fifoAllocation = new LinkedHashMap<>();
+    this.workingMemAllocation = new LinkedHashMap<>();
 
-    this.memExNodeAllocation = new HashMap<>();
+    this.memExNodeAllocation = new LinkedHashMap<>();
     this.inputExclusionGraph = memEx;
 
     this.inputExclusionGraph.setPropertyValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION, this.edgeAllocation);
@@ -340,7 +340,7 @@ public abstract class MemoryAllocator {
   }
 
   /**
-   * This method will perform the memory allocation of graph edges and store the result in the allocation HashMap.
+   * This method will perform the memory allocation of graph edges and store the result in the allocation LinkedHashMap.
    *
    * <p>
    * This method does not call {@link #alignSubBuffers(MemoryExclusionGraph)}. To ensure a correct alignment, the {@link #alignSubBuffers(MemoryExclusionGraph)}
@@ -381,7 +381,7 @@ public abstract class MemoryAllocator {
     }
 
     vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, offset);
-    final Integer size = (Integer) this.inputExclusionGraph.getPropertyBean().getValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE, Integer.class);
+    final Integer size = this.inputExclusionGraph.getPropertyBean().getValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE, Integer.class);
     if ((size == null) || (size < (offset + vertex.getWeight()))) {
       this.inputExclusionGraph.setPropertyValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE, offset + vertex.getWeight());
     }
@@ -648,7 +648,7 @@ public abstract class MemoryAllocator {
    * @return The list of {@link MemoryExclusionVertex memory objects} that is not aligned. Empty list if allocation follow the rules.
    */
   public Map<MemoryExclusionVertex, Integer> checkAlignment() {
-    final Map<MemoryExclusionVertex, Integer> unalignedObjects = new HashMap<>();
+    final Map<MemoryExclusionVertex, Integer> unalignedObjects = new LinkedHashMap<>();
 
     // Check the alignment constraint
     if (this.alignment != -1) {
@@ -668,7 +668,7 @@ public abstract class MemoryAllocator {
           final Iterator<BufferProperties> iter = buffers.iterator();
 
           @SuppressWarnings("unchecked")
-          final List<Integer> interBufferSpaces = (List<Integer>) memObj.getPropertyBean().getValue(MemoryExclusionVertex.INTER_BUFFER_SPACES, List.class);
+          final List<Integer> interBufferSpaces = memObj.getPropertyBean().getValue(MemoryExclusionVertex.INTER_BUFFER_SPACES, List.class);
 
           int internalOffset = 0;
           int i = 0;
@@ -707,7 +707,7 @@ public abstract class MemoryAllocator {
           // no declared type.
           // Process fifo memobjects here
           if (memObj.getSource().startsWith("FIFO_")) {
-            final Integer typeSize = (Integer) memObj.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE, Integer.class);
+            final Integer typeSize = memObj.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE, Integer.class);
             if ((this.alignment == 0) && ((offset % typeSize) != 0)) {
               unalignedObjects.put(memObj, offset);
             }
@@ -728,13 +728,13 @@ public abstract class MemoryAllocator {
    *
    * @return The list of conflicting memory elements. Empty list if allocation follow the rules.
    */
-  public HashMap<MemoryExclusionVertex, Integer> checkAllocation() {
+  public Map<MemoryExclusionVertex, Integer> checkAllocation() {
     if (this.memExNodeAllocation == null) {
       throw new RuntimeException("Cannot check memory allocation because no allocation was performed.");
     }
 
-    HashMap<MemoryExclusionVertex, Integer> conflictingElements;
-    conflictingElements = new HashMap<>();
+    Map<MemoryExclusionVertex, Integer> conflictingElements;
+    conflictingElements = new LinkedHashMap<>();
 
     // Check that no edge of the exclusion graph is violated
     for (final DefaultEdge edge : this.inputExclusionGraph.edgeSet()) {

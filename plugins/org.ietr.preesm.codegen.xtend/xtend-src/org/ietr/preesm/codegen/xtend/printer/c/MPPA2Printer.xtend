@@ -3,7 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Julien_Hascoet <jhascoet@kalray.eu> (2016)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2015)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -47,7 +47,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
@@ -349,12 +348,10 @@ class MPPA2Printer extends CPrinter {
 		}
 	}
 
-	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
-	«/*Since everything is already in shared memory, communications are simple synchronizations here*/
-	»«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«
-		IF communication.semaphore !== null»&«
-		communication.semaphore.name»/*ID*/«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.data.doSwitch»
-	'''
+	override printSharedMemoryCommunication(SharedMemoryCommunication communication) {
+	  /*Since everything is already in shared memory, communications are simple synchronizations here*/
+	  throw new CodegenException("This method should be updated to comply with updates of the Kalray platform and the removal of Semaphore from code generation model.")
+	}
 
 	override printFunctionCall(FunctionCall functionCall) '''
 	«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
@@ -372,15 +369,4 @@ class MPPA2Printer extends CPrinter {
 	override printSubBuffer(SubBuffer buffer) {
 		return printBuffer(buffer)
 	}
-
-	override printSemaphore(Semaphore semaphore) '''&«semaphore.name»'''
-
-	override printSemaphoreDefinition(Semaphore semaphore) '''
-	sem_t «semaphore.name» __attribute__((section(".locked_data")));
-	'''
-
-	override printSemaphoreDeclaration(Semaphore semaphore) '''
-	extern sem_t «semaphore.name»;
-	'''
-
 }

@@ -35,7 +35,7 @@
  */
 package org.ietr.preesm.memory.multiSDFTasks;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -113,7 +113,7 @@ public class MultiMemoryExclusionGraphBuilder extends AbstractTaskImplementation
     @SuppressWarnings("unchecked")
     final Set<DirectedAcyclicGraph> dags = (Set<DirectedAcyclicGraph>) inputs.get("DAGs");
 
-    final Map<DirectedAcyclicGraph, MemoryExclusionGraph> dagsAndMemExs = new HashMap<>();
+    final Map<DirectedAcyclicGraph, MemoryExclusionGraph> dagsAndMemExs = new LinkedHashMap<>();
 
     for (final DirectedAcyclicGraph dag : dags) {
       // Clone is deep copy i.e. vertices are thus copied too.
@@ -146,7 +146,7 @@ public class MultiMemoryExclusionGraphBuilder extends AbstractTaskImplementation
     }
 
     // Generate output
-    final Map<String, Object> output = new HashMap<>();
+    final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_DAG_AND_MEM_EX_MAP, dagsAndMemExs);
     return output;
   }
@@ -158,7 +158,7 @@ public class MultiMemoryExclusionGraphBuilder extends AbstractTaskImplementation
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(MultiMemoryExclusionGraphBuilder.PARAM_VERBOSE, MultiMemoryExclusionGraphBuilder.VALUE_TRUE_FALSE_DEFAULT);
     parameters.put(MultiMemoryExclusionGraphBuilder.PARAM_SUPPR_FORK_JOIN, MultiMemoryExclusionGraphBuilder.VALUE_TRUE_FALSE_DEFAULT);
     return parameters;

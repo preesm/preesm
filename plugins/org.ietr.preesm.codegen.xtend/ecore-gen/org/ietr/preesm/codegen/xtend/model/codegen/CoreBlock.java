@@ -47,6 +47,7 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getLoopBlock <em>Loop Block</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getInitBlock <em>Init Block</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getCoreType <em>Core Type</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getCoreID <em>Core ID</em>}</li>
  * </ul>
  *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCoreBlock()
@@ -132,4 +133,30 @@ public interface CoreBlock extends Block {
    * @generated
    */
   void setCoreType(String value);
+
+  /**
+   * Returns the value of the '<em><b>Core ID</b></em>' attribute. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Core ID</em>' attribute isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Core ID</em>' attribute.
+   * @see #setCoreID(int)
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCoreBlock_CoreID()
+   * @model unique="false" id="true" required="true" ordered="false"
+   * @generated
+   */
+  int getCoreID();
+
+  /**
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getCoreID <em>Core ID</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   *
+   * @param value
+   *          the new value of the '<em>Core ID</em>' attribute.
+   * @see #getCoreID()
+   * @generated
+   */
+  void setCoreID(int value);
 } // CoreBlock

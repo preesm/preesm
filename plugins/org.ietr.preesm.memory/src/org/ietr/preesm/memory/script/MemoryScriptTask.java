@@ -39,7 +39,7 @@ package org.ietr.preesm.memory.script;
 import bsh.EvalError;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.CoreException;
@@ -107,7 +107,7 @@ public class MemoryScriptTask extends AbstractMemoryScriptTask {
     }
 
     // Outputs
-    final Map<String, Object> outputs = new HashMap<>();
+    final Map<String, Object> outputs = new LinkedHashMap<>();
     outputs.put("MemEx", meg);
     return outputs;
   }

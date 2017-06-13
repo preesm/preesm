@@ -37,7 +37,6 @@
  */
 package org.ietr.preesm.pimm.algorithm.spider.codegen.visitor;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
@@ -87,29 +86,29 @@ public class SpiderPreProcessVisitor extends PiMMDefaultVisitor {
   private String currentAbstractVertexName = "";
 
   /** The port map. */
-  private final Map<Port, Integer> portMap = new HashMap<>();
+  private final Map<Port, Integer> portMap = new LinkedHashMap<>();
 
   /** The setter map. */
-  private final Map<ISetter, String> setterMap = new HashMap<>();
+  private final Map<ISetter, String> setterMap = new LinkedHashMap<>();
 
   /** The actor names. */
   // Map from Actor names to pairs of CoreType numbers and Timing expressions
-  private final Map<String, AbstractActor> actorNames = new HashMap<>();
+  private final Map<String, AbstractActor> actorNames = new LinkedHashMap<>();
 
   /** The function map. */
   private final Map<AbstractActor, Integer> functionMap = new LinkedHashMap<>();
 
   /** The data in port indices. */
-  private final Map<AbstractActor, Integer> dataInPortIndices = new HashMap<>();
+  private final Map<AbstractActor, Integer> dataInPortIndices = new LinkedHashMap<>();
 
   /** The data out port indices. */
-  private final Map<AbstractActor, Integer> dataOutPortIndices = new HashMap<>();
+  private final Map<AbstractActor, Integer> dataOutPortIndices = new LinkedHashMap<>();
 
   /** The cfg in port indices. */
-  private final Map<AbstractActor, Integer> cfgInPortIndices = new HashMap<>();
+  private final Map<AbstractActor, Integer> cfgInPortIndices = new LinkedHashMap<>();
 
   /** The cfg out port indices. */
-  private final Map<AbstractActor, Integer> cfgOutPortIndices = new HashMap<>();
+  private final Map<AbstractActor, Integer> cfgOutPortIndices = new LinkedHashMap<>();
 
   // Variables containing the name of the currently visited AbstractActor for
   // PortDescriptions

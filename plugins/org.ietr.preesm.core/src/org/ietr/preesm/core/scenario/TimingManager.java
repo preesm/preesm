@@ -41,7 +41,7 @@
 package org.ietr.preesm.core.scenario;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -83,7 +83,7 @@ public class TimingManager {
    */
   public TimingManager() {
     this.timings = new ArrayList<>();
-    this.memcpySpeeds = new HashMap<>();
+    this.memcpySpeeds = new LinkedHashMap<>();
     this.defaultTiming = new Timing("default", "default", Timing.DEFAULT_TASK_TIME);
   }
 

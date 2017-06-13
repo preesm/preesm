@@ -36,9 +36,9 @@
  */
 package org.ietr.preesm.core.scenario;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import org.ietr.preesm.core.architecture.route.Route;
@@ -79,8 +79,8 @@ public class SimulationManager {
   public SimulationManager() {
     super();
 
-    this.dataTypes = new HashMap<>();
-    this.specialVertexOperatorIds = new HashSet<>();
+    this.dataTypes = new LinkedHashMap<>();
+    this.specialVertexOperatorIds = new LinkedHashSet<>();
   }
 
   /**

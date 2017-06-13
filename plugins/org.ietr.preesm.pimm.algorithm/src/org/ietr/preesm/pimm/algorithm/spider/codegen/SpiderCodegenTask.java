@@ -41,7 +41,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IFolder;
@@ -140,7 +140,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
   @Override
   public Map<String, String> getDefaultParameters() {
     // Create an empty parameters map
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
     return parameters;
   }
 

@@ -40,8 +40,8 @@
 package org.ietr.preesm.mapper.abc;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -205,7 +205,7 @@ public abstract class AbstractAbc implements IAbc {
    */
   private void populateRelativeConstraint(final MapperDAGVertex vertex) {
 
-    final Set<MapperDAGVertex> verticesToAssociate = new HashSet<>();
+    final Set<MapperDAGVertex> verticesToAssociate = new LinkedHashSet<>();
     verticesToAssociate.add(vertex);
 
     if (SpecialVertexManager.isInit(vertex)) {

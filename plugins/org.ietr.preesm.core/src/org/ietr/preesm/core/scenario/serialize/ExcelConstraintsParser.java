@@ -39,7 +39,7 @@ package org.ietr.preesm.core.scenario.serialize;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import jxl.Cell;
@@ -124,8 +124,8 @@ public class ExcelConstraintsParser {
 
       // Warnings are displayed once for each missing operator or vertex
       // in the excel sheet
-      final Set<String> missingVertices = new HashSet<>();
-      final Set<String> missingOperators = new HashSet<>();
+      final Set<String> missingVertices = new LinkedHashSet<>();
+      final Set<String> missingOperators = new LinkedHashSet<>();
 
       if (this.scenario.isIBSDFScenario()) {
         for (final SDFAbstractVertex vertex : currentIBSDFGraph.getHierarchicalVertexSet()) {

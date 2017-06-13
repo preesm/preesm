@@ -40,7 +40,7 @@
 package org.ietr.preesm.core.scenario;
 
 import java.io.FileNotFoundException;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
@@ -66,7 +66,7 @@ public class ConstraintGroupManager {
    * Instantiates a new constraint group manager.
    */
   public ConstraintGroupManager() {
-    this.constraintgroups = new HashSet<>();
+    this.constraintgroups = new LinkedHashSet<>();
   }
 
   /**
@@ -190,7 +190,7 @@ public class ConstraintGroupManager {
    */
   public Set<ConstraintGroup> getConstraintGroups() {
 
-    return new HashSet<>(this.constraintgroups);
+    return new LinkedHashSet<>(this.constraintgroups);
   }
 
   /**
@@ -201,7 +201,7 @@ public class ConstraintGroupManager {
    * @return the graph constraint groups
    */
   public Set<ConstraintGroup> getGraphConstraintGroups(final SDFAbstractVertex vertex) {
-    final Set<ConstraintGroup> graphConstraintGroups = new HashSet<>();
+    final Set<ConstraintGroup> graphConstraintGroups = new LinkedHashSet<>();
 
     for (final ConstraintGroup cg : this.constraintgroups) {
       if (cg.hasVertexPath(vertex.getInfo())) {
@@ -220,7 +220,7 @@ public class ConstraintGroupManager {
    * @return the op constraint groups
    */
   public Set<ConstraintGroup> getOpConstraintGroups(final String opId) {
-    final Set<ConstraintGroup> graphConstraintGroups = new HashSet<>();
+    final Set<ConstraintGroup> graphConstraintGroups = new LinkedHashSet<>();
 
     for (final ConstraintGroup cg : this.constraintgroups) {
       if (cg.hasOperatorId(opId)) {

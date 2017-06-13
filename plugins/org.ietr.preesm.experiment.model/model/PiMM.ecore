@@ -43,6 +43,11 @@
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="pimm" nsURI="http://org.ietr.preesm/experiment/model/pimm" nsPrefix="org.ietr.preesm.experiment.pimm">
   <eClassifiers xsi:type="ecore:EClass" name="Parameterizable" abstract="true" eSuperTypes="#//visitor/PiMMVisitable">
+    <eOperations name="getInputParameters" upperBound="-1" eType="#//Parameter">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="final EList&lt;Parameter> result = ECollections.newBasicEList();&#xA;for (final ConfigInputPort in : getConfigInputPorts()) {&#xA;  final ISetter setter = in.getIncomingDependency().getSetter();&#xA;  if (setter instanceof Parameter) {&#xA;&#x9;result.add((Parameter) setter);&#xA;  }&#xA;}&#xA;return result;"/>
+      </eAnnotations>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="configInputPorts" upperBound="-1"
         eType="#//ConfigInputPort" containment="true"/>
   </eClassifiers>
@@ -58,6 +63,26 @@
         eType="#//ConfigOutputPort" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="PiGraph" eSuperTypes="#//AbstractActor">
+    <eOperations name="getVerticesNames" upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return ECollections.newBasicEList(getVertices().stream().map(AbstractActor::getName).collect(Collectors.toList()));"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="getParametersNames" upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return ECollections.newBasicEList(getParameters().stream().map(Parameter::getName).collect(Collectors.toList()));"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="getActors" upperBound="-1" eType="#//Actor">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return ECollections.newBasicEList(getVertices().stream().filter(Actor.class::isInstance).map(Actor.class::cast).collect(Collectors.toList()));"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="getAllParameters" upperBound="-1" eType="#//Parameter">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="final EList&lt;Parameter> result = ECollections.newBasicEList();&#xA;for (final AbstractActor aa : getVertices()) {&#xA;  if (aa instanceof PiGraph) {&#xA;    result.addAll(((PiGraph) aa).getAllParameters());&#xA;  } else if (aa instanceof Actor) {&#xA;    final Refinement refinement = ((Actor) aa).getRefinement();&#xA;    if (refinement != null) {&#xA;      final AbstractActor subGraph = refinement.getAbstractActor();&#xA;      if ((subGraph != null) &amp;&amp; (subGraph instanceof PiGraph)) {&#xA;        result.addAll(((PiGraph) subGraph).getAllParameters());&#xA;      }&#xA;    }&#xA;  }&#xA;}&#xA;result.addAll(getParameters());&#xA;return result;"/>
+      </eAnnotations>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="vertices" upperBound="-1"
         eType="#//AbstractActor" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="fifos" upperBound="-1"

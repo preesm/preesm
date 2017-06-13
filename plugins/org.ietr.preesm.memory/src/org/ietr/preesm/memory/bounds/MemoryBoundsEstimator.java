@@ -37,7 +37,7 @@
  */
 package org.ietr.preesm.memory.bounds;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -88,7 +88,7 @@ public class MemoryBoundsEstimator extends AbstractMemoryBoundsEstimator {
     logger.log(Level.INFO, "Bound_Max = " + maxBound + " Bound_Min = " + minBound);
 
     // Generate output
-    final Map<String, Object> output = new HashMap<>();
+    final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_BOUND_MAX, maxBound);
     output.put(AbstractWorkflowNodeImplementation.KEY_BOUND_MIN, minBound);
     output.put(AbstractWorkflowNodeImplementation.KEY_MEM_EX, memEx);
@@ -102,7 +102,7 @@ public class MemoryBoundsEstimator extends AbstractMemoryBoundsEstimator {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(AbstractMemoryBoundsEstimator.PARAM_SOLVER, AbstractMemoryBoundsEstimator.VALUE_SOLVER_DEFAULT);
     parameters.put(AbstractMemoryBoundsEstimator.PARAM_VERBOSE, AbstractMemoryBoundsEstimator.VALUE_VERBOSE_DEFAULT);
     return parameters;

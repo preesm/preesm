@@ -42,7 +42,6 @@ package org.ietr.preesm.pimm.algorithm.spider.codegen.visitor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -109,7 +108,7 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
 
   // Maps to handle hierarchical graphs
   private final Map<PiGraph, StringBuilder> graph2method    = new LinkedHashMap<>();
-  private final Map<PiGraph, List<PiGraph>> graph2subgraphs = new HashMap<>();
+  private final Map<PiGraph, List<PiGraph>> graph2subgraphs = new LinkedHashMap<>();
 
   private final Map<String, DataType> dataTypes;
 
@@ -220,32 +219,32 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
    * Class that sort parameters with dependencies
    */
   private class ParameterSorting {
-    private Map<Parameter, Integer> ParameterLevels = new HashMap<Parameter, Integer>();
+    private final Map<Parameter, Integer> ParameterLevels = new LinkedHashMap<>();
 
-    private Integer getLevelParameter(Parameter p) {
-      if (ParameterLevels.containsKey(p)) {
-        return ParameterLevels.get(p);
+    private Integer getLevelParameter(final Parameter p) {
+      if (this.ParameterLevels.containsKey(p)) {
+        return this.ParameterLevels.get(p);
       }
 
       int level = 0;
       for (final ConfigInputPort port : p.getConfigInputPorts()) {
         if (port.getIncomingDependency().getSetter() instanceof Parameter) {
-          Parameter incomingParameter = (Parameter) port.getIncomingDependency().getSetter();
-          if (!ParameterLevels.containsKey(incomingParameter)) {
+          final Parameter incomingParameter = (Parameter) port.getIncomingDependency().getSetter();
+          if (!this.ParameterLevels.containsKey(incomingParameter)) {
             getLevelParameter(incomingParameter);
           }
-          level = Math.max(level, ParameterLevels.get(incomingParameter) + 1);
+          level = Math.max(level, this.ParameterLevels.get(incomingParameter) + 1);
         }
       }
-      ParameterLevels.put(p, level);
+      this.ParameterLevels.put(p, level);
       return level;
     }
 
-    public List<Parameter> sortParameters(List<Parameter> params) {
-      for (Parameter p : params) {
+    public List<Parameter> sortParameters(final List<Parameter> params) {
+      for (final Parameter p : params) {
         getLevelParameter(p);
       }
-      params.sort((p1, p2) -> ParameterLevels.get(p1) - ParameterLevels.get(p2));
+      params.sort((p1, p2) -> this.ParameterLevels.get(p1) - this.ParameterLevels.get(p2));
       return params;
     }
 
@@ -330,7 +329,7 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
     append("\n\t/* Parameters */\n");
 
     final List<Parameter> params = new ArrayList<>(pg.getParameters());
-    ParameterSorting ps = new ParameterSorting();
+    final ParameterSorting ps = new ParameterSorting();
     final List<Parameter> sortedParams = ps.sortParameters(params);
 
     for (final Parameter p : sortedParams) {

@@ -39,7 +39,7 @@
  */
 package org.ietr.preesm.mapper;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
@@ -108,12 +108,12 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
 
     parameters.put("simulatorType", "LooselyTimed");
     parameters.put("edgeSchedType", "Simple");
     parameters.put("balanceLoads", "false");
-    parameters.put(PARAM_CHECK, VALUE_CHECK_TRUE);
+    parameters.put(AbstractMapping.PARAM_CHECK, AbstractMapping.VALUE_CHECK_TRUE);
     return parameters;
   }
 
@@ -132,14 +132,14 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
 
   /**
    * This method performs optional checks to verify the integrity of a schedule. It should be call at the end of all scheduler implementations.
-   * 
+   *
    * @param parameters
    *          {@link Map} of parameters values that were given to the mapper workflow task.
    * @param dag
    *          Scheduled {@link DirectedAcyclicGraph}.
    */
-  protected void checkSchedulingResult(final Map<String, String> parameters, DirectedAcyclicGraph dag) {
-    if (parameters.get(PARAM_CHECK).equals(VALUE_CHECK_TRUE)) {
+  protected void checkSchedulingResult(final Map<String, String> parameters, final DirectedAcyclicGraph dag) {
+    if (parameters.get(AbstractMapping.PARAM_CHECK).equals(AbstractMapping.VALUE_CHECK_TRUE)) {
       CommunicationOrderChecker.checkCommunicationOrder(dag);
     }
   }

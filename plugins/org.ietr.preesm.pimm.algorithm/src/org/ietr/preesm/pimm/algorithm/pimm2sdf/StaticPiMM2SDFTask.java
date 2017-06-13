@@ -36,7 +36,7 @@
 package org.ietr.preesm.pimm.algorithm.pimm2sdf;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -78,7 +78,7 @@ public class StaticPiMM2SDFTask extends AbstractTaskImplementation {
       logger.log(Level.WARNING, e.getMessage());
     }
 
-    final Map<String, Object> output = new HashMap<>();
+    final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH, result);
     return output;
   }

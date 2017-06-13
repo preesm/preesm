@@ -39,7 +39,7 @@
  */
 package org.ietr.preesm.mapper;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -103,7 +103,7 @@ public class FASTMapping extends AbstractMapping {
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
       final String nodeName, final Workflow workflow) throws WorkflowException {
 
-    final Map<String, Object> outputs = new HashMap<>();
+    final Map<String, Object> outputs = new LinkedHashMap<>();
     final Design architecture = (Design) inputs.get("architecture");
     final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
     final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");

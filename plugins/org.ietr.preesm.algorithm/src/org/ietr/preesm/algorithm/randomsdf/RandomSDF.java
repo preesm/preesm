@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.algorithm.randomsdf;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -116,7 +116,7 @@ public class RandomSDF extends AbstractTaskImplementation {
     retrieveParameters(parameters);
 
     // Retrieve inputs
-    final Map<String, Object> outputs = new HashMap<>();
+    final Map<String, Object> outputs = new LinkedHashMap<>();
     SDFGraph sdf = (SDFGraph) inputs.get("SDF");
 
     final Design architecture = (Design) inputs.get("architecture");
@@ -140,7 +140,7 @@ public class RandomSDF extends AbstractTaskImplementation {
       // If the generated graph is not null, update
       // the scenario so that all task can be scheduled
       // on all operators, and all have the same runtime.
-      final HashMap<String, Integer> verticesNames = new HashMap<>();
+      final Map<String, Integer> verticesNames = new LinkedHashMap<>();
       for (final SDFAbstractVertex vertex : sdf.vertexSet()) {
         final int time = generator.nextInt((this.maxTime - this.minTime) + 1) + this.minTime;
         verticesNames.put(vertex.getName(), time);
@@ -210,7 +210,7 @@ public class RandomSDF extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
 
     parameters.put("nbVertex", "10");
     parameters.put("minInDegree", "1");

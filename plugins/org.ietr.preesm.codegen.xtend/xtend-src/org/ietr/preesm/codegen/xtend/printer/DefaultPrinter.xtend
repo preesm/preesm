@@ -3,7 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Julien_Hascoet <jhascoet@kalray.eu> (2016 - 2017)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2014)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.codegen.xtend.printer
 
-import java.util.HashMap
+import java.util.LinkedHashMap
 import java.util.List
 import org.ietr.preesm.codegen.xtend.model.codegen.Block
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
@@ -52,7 +52,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
 import org.ietr.preesm.codegen.xtend.model.codegen.IntVar
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
-import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
@@ -73,7 +72,7 @@ class DefaultPrinter extends CodegenAbstractPrinter {
 	 * @see CodegenAbstractPrinter#createSecondaryFiles(List,List)
 	 */
 	override createSecondaryFiles(List<Block> printerBlocks, List<Block> allBlocks) {
-		return new HashMap<String,CharSequence>
+		return new LinkedHashMap<String,CharSequence>
 	}
 
 	/**
@@ -161,12 +160,6 @@ class DefaultPrinter extends CodegenAbstractPrinter {
 	override printNullBufferDefinition(NullBuffer buffer) ''''''
 
 	override printRoundBuffer(SpecialCall call) ''''''
-
-	override printSemaphore(Semaphore semaphore) ''''''
-
-	override printSemaphoreDeclaration(Semaphore semaphore) ''''''
-
-	override printSemaphoreDefinition(Semaphore semaphore) ''''''
 
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) ''''''
 

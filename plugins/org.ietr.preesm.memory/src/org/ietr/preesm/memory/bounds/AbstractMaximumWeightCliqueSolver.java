@@ -37,8 +37,9 @@ package org.ietr.preesm.memory.bounds;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 import org.ietr.preesm.memory.exclusiongraph.IWeightedVertex;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
@@ -60,13 +61,13 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
   /**
    * This attribute is used by the getN function to store its results. No other method should neither access nor modify it.
    */
-  protected HashMap<V, HashSet<V>> adjacentVerticesBackup;
+  protected Map<V, Set<V>> adjacentVerticesBackup;
 
   /** The Graph to analyze. */
   protected SimpleGraph<V, E> graph;
 
   /** The heaviest clique encountered running the algorithm. */
-  protected HashSet<V> heaviestClique;
+  protected Set<V> heaviestClique;
 
   /** Store the weight of the heaviestClique. */
   protected int max;
@@ -89,8 +90,8 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
     // Keep a reference to the graph
     this.graph = graph;
     this.numberVertices = graph.vertexSet().size();
-    this.heaviestClique = new HashSet<>();
-    this.adjacentVerticesBackup = new HashMap<>();
+    this.heaviestClique = new LinkedHashSet<>();
+    this.adjacentVerticesBackup = new LinkedHashMap<>();
     this.min = 0;
   }
 
@@ -116,14 +117,14 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
    *
    * @warning <b>The returned subset must not be modified. Make a copy for local use.</b>
    */
-  public HashSet<V> adjacentVerticesOf(final V vertex) {
+  public Set<V> adjacentVerticesOf(final V vertex) {
     // If this node was already treated
     if (this.adjacentVerticesBackup.containsKey(vertex)) {
       return this.adjacentVerticesBackup.get(vertex);
     }
 
     // Else, treat the node
-    final HashSet<V> result = new HashSet<>();
+    final Set<V> result = new LinkedHashSet<>();
 
     // Add to result all vertices that have an edge with vertex
     final Set<E> edges = this.graph.edgesOf(vertex);
@@ -145,9 +146,8 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
    *
    * @return the heaviest clique found.
    */
-  @SuppressWarnings("unchecked")
-  public HashSet<V> getHeaviestClique() {
-    return (HashSet<V>) this.heaviestClique.clone();
+  public Set<V> getHeaviestClique() {
+    return new LinkedHashSet<>(this.heaviestClique);
   }
 
   /**
@@ -184,7 +184,7 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
    * Method to clear the adjacent vertices lists. (cf. MemoryExclusionGraph.clearAdjacentVerticesBackup comments for more info.)
    */
   public void clearAdjacentVerticesBackup() {
-    this.adjacentVerticesBackup = new HashMap<>();
+    this.adjacentVerticesBackup = new LinkedHashMap<>();
 
     if (this.graph instanceof MemoryExclusionGraph) {
       ((MemoryExclusionGraph) this.graph).clearAdjacentVerticesBackup();

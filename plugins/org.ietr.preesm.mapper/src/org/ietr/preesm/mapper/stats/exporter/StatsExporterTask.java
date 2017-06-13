@@ -36,7 +36,7 @@
 package org.ietr.preesm.mapper.stats.exporter;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
@@ -91,7 +91,7 @@ public class StatsExporterTask extends AbstractTaskImplementation {
     final XMLStatsExporter exporter = new XMLStatsExporter();
     exporter.exportXMLStats(abc, file);
 
-    return new HashMap<>();
+    return new LinkedHashMap<>();
   }
 
   /*
@@ -101,7 +101,7 @@ public class StatsExporterTask extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put("path", "/stats/xml/");
     return parameters;
   }

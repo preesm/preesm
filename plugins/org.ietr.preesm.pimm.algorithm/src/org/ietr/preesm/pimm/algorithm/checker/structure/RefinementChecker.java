@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.pimm.algorithm.checker.structure;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -72,9 +72,9 @@ public class RefinementChecker {
    * Instantiates a new refinement checker.
    */
   public RefinementChecker() {
-    this.actorsWithoutRefinement = new HashSet<>();
-    this.actorsWithNonExistingRefinement = new HashSet<>();
-    this.actorsWithInvalidExtensionRefinement = new HashSet<>();
+    this.actorsWithoutRefinement = new LinkedHashSet<>();
+    this.actorsWithNonExistingRefinement = new LinkedHashSet<>();
+    this.actorsWithInvalidExtensionRefinement = new LinkedHashSet<>();
   }
 
   /**

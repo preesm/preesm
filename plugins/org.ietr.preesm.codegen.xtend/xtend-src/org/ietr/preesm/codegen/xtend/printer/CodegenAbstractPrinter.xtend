@@ -3,7 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Julien_Hascoet <jhascoet@kalray.eu> (2016)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2016)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -54,7 +54,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
-import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType
@@ -506,16 +505,6 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 			return printNullBufferDeclaration(nullBuffer)
 
 		return printNullBuffer(nullBuffer)
-	}
-
-	override caseSemaphore(Semaphore semaphore) {
-		if (state.equals(PrinterState::PRINTING_DEFINITIONS))
-			return printSemaphoreDefinition(semaphore)
-
-		if (state.equals(PrinterState::PRINTING_DECLARATIONS))
-			return printSemaphoreDeclaration(semaphore)
-
-		return printSemaphore(semaphore)
 	}
 
 	override caseSpecialCall(SpecialCall specialCall) {
@@ -1055,40 +1044,6 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printRoundBuffer(SpecialCall call)
-
-	/**
-	 * Method called to print a {@link Semaphore} outside the
-	 * {@link CoreBlock#getDefinitions() definition} or the
-	 * {@link CoreBlock#getDeclarations() declaration} of a
-	 * {@link CoreBlock}
-	 *
-	 * @param semaphore
-	 *            the {@link Semaphore} to print.
-	 * @return the printed {@link CharSequence}
-	 */
-	def CharSequence printSemaphore(Semaphore semaphore)
-
-	/**
-	 * Method called to print a {@link Semaphore} within the
-	 * {@link CoreBlock#getDeclarations() declaration} {@link CallBlock} of a
-	 * {@link CoreBlock}
-	 *
-	 * @param semaphore
-	 *            the {@link Semaphore} to print.
-	 * @return the printed {@link CharSequence}
-	 */
-	def CharSequence printSemaphoreDeclaration(Semaphore semaphore)
-
-	/**
-	 * Method called to print a {@link Semaphore} within the
-	 * {@link CoreBlock#getDefinitions() definition} {@link CallBlock} of a
-	 * {@link CoreBlock}
-	 *
-	 * @param semaphore
-	 *            the {@link Semaphore} to print.
-	 * @return the printed {@link CharSequence}
-	 */
-	def CharSequence printSemaphoreDefinition(Semaphore semaphore)
 
 	/**
 	 * ethod called to print a {@link SharedMemoryCommunication}.

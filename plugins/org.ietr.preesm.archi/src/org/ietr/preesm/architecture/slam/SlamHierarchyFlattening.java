@@ -36,7 +36,7 @@
  */
 package org.ietr.preesm.architecture.slam;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -65,7 +65,7 @@ public class SlamHierarchyFlattening extends AbstractTaskImplementation {
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
       final String nodeName, final Workflow workflow) throws WorkflowException {
-    final Map<String, Object> outputs = new HashMap<>();
+    final Map<String, Object> outputs = new LinkedHashMap<>();
     final Design design = (Design) inputs.get("architecture");
     final String depthS = parameters.get("depth");
 
@@ -101,7 +101,7 @@ public class SlamHierarchyFlattening extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
 
     parameters.put("depth", "1");
     return parameters;
