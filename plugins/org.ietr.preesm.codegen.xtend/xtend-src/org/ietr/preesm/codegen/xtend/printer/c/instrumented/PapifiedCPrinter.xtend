@@ -121,7 +121,7 @@ class PapifiedCPrinter extends CPrinter {
 						var const = CodegenFactory.eINSTANCE.createBuffer
 						const.name = PAPI_start_usec.concat((elts as FunctionCall).actorName)
 						const.size = 1
-						const.type = "long long"
+						const.type = "unsigned long long"
 						const.comment = const.name.concat("_start_time_measure")
 						const
 					})	
@@ -130,7 +130,7 @@ class PapifiedCPrinter extends CPrinter {
 						var const = CodegenFactory.eINSTANCE.createBuffer
 						const.name = PAPI_end_usec.concat((elts as FunctionCall).actorName)
 						const.size = 1
-						const.type = "long long"
+						const.type = "unsigned long long"
 						const.comment = const.name.concat("_end_time_measure")
 						const
 					})	
