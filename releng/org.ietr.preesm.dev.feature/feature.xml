@@ -59,29 +59,47 @@ and experienced professionals having in-depth computer knowledge.
 Users are therefore encouraged to load and test the software&apos;s suitability as regards their requirements in conditions enabling the security of their systems and/or data to be ensured and, more generally, to use and operate it in the  same conditions as regards security.
 The fact that you are presently reading this means that you have had knowledge of the CeCILL-C license and that you accept its terms.
    </license>
-
+   <!-- The following section tells where to lookup missing imported features -->
    <url>
+      <!-- Eclipse main repos -->
       <discovery label="Neon" url="http://mirror.ibcp.fr/pub/eclipse/releases/neon/"/>
       <discovery label="Neon Updates" url="http://mirror.ibcp.fr/pub/eclipse/eclipse/updates/4.6"/>
+
+      <!-- TMF Repo for latest xtend -->
       <discovery label="TMF Releases" url="http://mirror.ibcp.fr/pub/eclipse/modeling/tmf/xtext/updates/releases/"/>
+
+      <!-- M2E extension -->
       <discovery label="M2E Tycho" url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST/"/>
+      <discovery label="M2E Code Quality Connectors" url="http://m2e-code-quality.github.io/m2e-code-quality/site/latest/"/>
+      <!-- Eclipse main repos -->
       <discovery label="Checkstyle" url="http://eclipse-cs.sf.net/update/"/>
+
+      <!-- Preesm Repo -->
       <discovery label="Preesm" url="http://preesm.sourceforge.net/gensite/update-site/complete/"/>
    </url>
 
+   <!-- This section defines what features are required -->
    <requires>
-	  <!-- Eclipse sdk -->
-	  <import feature="org.eclipse.platform.source"/>
-	  <import feature="org.eclipse.sdk"/>
+      <!-- Eclipse sdk -->
+      <import feature="org.eclipse.platform.source"/>
+      <import feature="org.eclipse.sdk"/>
 
+      <!-- Modeling capabilities -->
       <import feature="org.eclipse.xtend.sdk" version="2.11.0" match="greaterOrEqual"/>
       <import feature="org.eclipse.gef.sdk"/>
       <import feature="org.eclipse.emf.sdk"/>
       <import feature="org.eclipse.graphiti.sdk.plus.feature"/>
+
+      <!-- Git & Checkstyle -->
       <import feature="org.eclipse.egit"/>
       <import feature="net.sf.eclipsecs"/>
+
+      <!-- m2e (Maven for Eclipse) -->
       <import feature="org.eclipse.m2e.feature"/>
+      <import feature="com.basistech.m2e.code.quality.checkstyle.feature"/>
       <import feature="org.sonatype.tycho.m2e.feature"/>
+
+      <!-- IETR dependencies -->
       <import feature="org.ietr.externaldeps.aio.deps"/>
       <import feature="org.ietr.graphiti.feature"/>
       <import feature="org.ietr.dftools.feature"/>
