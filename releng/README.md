@@ -350,7 +350,7 @@ This section details what plugins are bound to which phases (including clean lif
 
 #### initialize
 
-*   [directory-maven-plugin](https://github.com/jdcasey/directory-maven-plugin): initialize the property **main.basedir** with the path to the parent project directory. This property is used in the Checkstyle configuration for having a consistent path to its configuration file from any submodule.
+*   [directory-maven-plugin](https://github.com/jdcasey/directory-maven-plugin): initialize the property **main.basedir** with the path to the parent project directory. This property is used in the JaCoCo configuration for having a consistent path to its report file from any submodule.
 *   [jacoco-maven-plugin](http://www.eclemma.org/jacoco/trunk/doc/prepare-agent-mojo.html): Used for [code coverage](https://en.wikipedia.org/wiki/Code_coverage) computation. See plugin documentation. The configuration outputs the report in the target folder of the parent project. All the submodules append their report in that file. It is later used by [Sonar](#sonarqube). Test and releng modules are ignored during when computing code coverage.
 ```XML
 <destFile>${main.basedir}/target/jacoco.exec</destFile>
@@ -408,9 +408,13 @@ Eclipse is the preferred IDE for developing Preesm. The developer setup is detai
 
 Most of the job is done by the [M2Eclipse Eclipse plugin](http://www.eclipse.org/m2e/). This plugin allows to import Maven projects in the Eclipse workspace. It also reads the POM files and configure Eclipse projects accordingly.
 
-Some Maven plugins are however not handled by the M2E plugin. This is the case for the **directory-maven-plugin**. This plugin should not affect the Eclipse build process, and is therefore add to the ignore list in M2E (see [initialize phase](#initialize)). Indeed the Checkstyle configuration for Eclipse is detailed [here](http://preesm.sourceforge.net/website/index.php?id=building-preesm) and does not need the **main.basedir** property.
+Some Maven plugins are however not handled by the M2E plugin. This is the case for the **directory-maven-plugin**. This plugin should not affect the Eclipse build process, and is therefore add to the ignore list in M2E (see [initialize phase](#initialize)).
 
-Some other Maven plugins need to be supported by Eclipse, as the Tycho plugin that sets some Eclipse plugin configuration up. Therefore we need to install some M2E extensions (called connector) to support them, using the [M2E Tycho connector](https://github.com/tesla/m2eclipse-tycho) (installed from this [update site](http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST/)).
+Some other Maven plugins need to be supported by Eclipse, as the Tycho plugin that sets some Eclipse plugin configuration up. Therefore we need to install some M2E extensions (called connector) to support them:
+
+*   [M2E Tycho connector](https://github.com/tesla/m2eclipse-tycho) (installed from this [update site](http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST/)).
+*   [M2E Checkstyle Connector](https://github.com/m2e-code-quality/m2e-code-quality) (installed from [this update site](http://m2e-code-quality.github.io/m2e-code-quality/site/latest/))
+*   TODO: formatter/settings
 
 ### Installing Dependencies
 
