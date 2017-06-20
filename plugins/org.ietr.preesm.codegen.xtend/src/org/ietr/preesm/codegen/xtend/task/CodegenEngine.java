@@ -67,6 +67,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.ietr.dftools.workflow.WorkflowException;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
 import org.ietr.preesm.codegen.xtend.printer.CodegenAbstractPrinter;
@@ -237,10 +238,15 @@ public class CodegenEngine {
       try {
         this.workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
         final IFolder f = this.workspace.getRoot().getFolder(new Path(this.codegenPath));
+        final File folder = new File(f.getRawLocation().toOSString());
+        if (!folder.exists()) {
+          folder.mkdirs();
+          WorkflowLogger.getLogger().info("Created missing target dir [" + folder.getAbsolutePath() + "] during codegen");
+        }
+        this.workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
         if (!f.exists()) {
           f.create(true, true, null);
         }
-        final File folder = new File(f.getRawLocation().toOSString());
         if (!folder.exists()) {
           throw new FileNotFoundException("Target generation folder [" + folder.getAbsolutePath() + "] does not exist");
         }

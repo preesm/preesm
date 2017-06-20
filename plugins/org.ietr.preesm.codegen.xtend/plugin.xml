@@ -151,6 +151,16 @@
             </core_type>
          </printer>
       </printers>
+   <printers
+         language="PapifiedC">
+      <printer
+            class="org.ietr.preesm.codegen.xtend.printer.c.instrumented.PapifiedCPrinter"
+            extension=".c">
+         <core_type
+               type="x86">
+         </core_type>
+      </printer>
+   </printers>
    </extension>
    <extension
          point="org.ietr.dftools.workflow.tasks">
