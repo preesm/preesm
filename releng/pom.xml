@@ -52,23 +52,27 @@
   <!-- Extra repositories for building the all-in-one dev feature -->
   <repositories>
     <repository>
+      <id>Checkstyle</id>
+      <layout>p2</layout>
+      <url>http://eclipse-cs.sf.net/update/</url>
+    </repository>
+
+    <repository>
       <id>Tycho M2E extension</id>
       <layout>p2</layout>
       <url>http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST/</url>
     </repository>
     <repository>
-      <id>Checkstyle</id>
+      <id>Checkstyle M2E extension</id>
       <layout>p2</layout>
-      <url>http://eclipse-cs.sf.net/update/</url>
+      <url>http://m2e-code-quality.github.io/m2e-code-quality/site/latest/</url>
+    </repository>
+    <repository>
+      <id>Settings M2E extension</id>
+      <layout>p2</layout>
+      <url>https://antoine-morvan.github.io/m2e-settings/site/</url>
     </repository>
   </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>preesm</id>
-      <url>http://preesm.sourceforge.net/maven/</url>
-    </pluginRepository>
-  </pluginRepositories>
 
   <modules>
     <module>org.ietr.preesm.complete.site</module>
