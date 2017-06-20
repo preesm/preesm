@@ -50,9 +50,11 @@
     <findbugs-version>3.0.4</findbugs-version>
     <sonar-version>3.3.0.603</sonar-version>
     <checkstyle-version>7.6.1</checkstyle-version>
+    <preesm.coding.policy.version>1.0.2</preesm.coding.policy.version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <complete.p2.repo>http://preesm.sourceforge.net/gensite/update-site/complete/</complete.p2.repo>
+    <preesm.maven.repo>https://preesm.github.io/preesm-maven/mavenrepo/</preesm.maven.repo>
+    <preesm.p2.repo>http://preesm.sourceforge.net/gensite/update-site/complete/</preesm.p2.repo>
 
     <!-- ############### -->
     <!-- ECLIPSE MIRRORS -->
@@ -95,15 +97,25 @@
     </repository>
     <!-- add Preesm repository to resolve dependencies -->
     <repository>
-      <id>Complete Repo</id>
+      <id>Preesm Complete Repo</id>
       <layout>p2</layout>
-      <url>${complete.p2.repo}</url>
+      <url>${preesm.p2.repo}</url>
     </repository>
     <repository>
-      <id>preesm</id>
-      <url>http://preesm.sourceforge.net/maven/</url>
+      <id>Preesm Maven Repo</id>
+      <url>${preesm.maven.repo}</url>
     </repository>
   </repositories>
+
+  <!-- Preesm Repo hosts both Maven dependencies and Maven plugins -->
+  <pluginRepositories>
+    <pluginRepository>
+      <!-- Give same ID for safe offline mode -->
+      <id>Preesm Maven Repo</id>
+      <name>Preesm Maven Plugin Repo</name>
+      <url>${preesm.maven.repo}</url>
+    </pluginRepository>
+  </pluginRepositories>
 
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -253,13 +265,19 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>2.17</version>
         <configuration>
-          <configLocation>./releng/VAADER_checkstyle.xml</configLocation>
+          <configLocation>/VAADER_checkstyle.xml</configLocation>
           <failsOnError>true</failsOnError>
           <includes>**/*.java</includes>
         </configuration>
         <dependencies>
+          <!-- get settings -->
           <dependency>
-            <!-- Override checkstyle version -->
+            <groupId>org.ietr.preesm</groupId>
+            <artifactId>coding-policy</artifactId>
+            <version>${preesm.coding.policy.version}</version>
+          </dependency>
+          <!-- Override checkstyle version -->
+          <dependency>
             <groupId>com.puppycrawl.tools</groupId>
             <artifactId>checkstyle</artifactId>
             <version>${checkstyle-version}</version>
@@ -347,6 +365,7 @@
     </plugins>
   </build>
 
+  <!-- following dependencies are declared here for safe offline mode -->
   <dependencies>
     <dependency>
       <!-- Override checkstyle version -->
@@ -366,7 +385,12 @@
       <artifactId>sonar-maven-plugin</artifactId>
       <version>${sonar-version}</version>
     </dependency>
-
+    <!-- get settings -->
+    <dependency>
+      <groupId>org.ietr.preesm</groupId>
+      <artifactId>coding-policy</artifactId>
+      <version>${preesm.coding.policy.version}</version>
+    </dependency>
   </dependencies>
 
   <modules>
@@ -493,14 +517,50 @@
       </activation>
       <build>
         <plugins>
-          <!-- Within M2E, load checkstyle in <plugin> or configuration wont get load in the IDE -->
-          <!-- This section reuses the configuration from above -->
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-checkstyle-plugin</artifactId>
+            <groupId>org.ietr.maven</groupId>
+            <artifactId>m2e-settings-maven-plugin</artifactId>
+            <version>1.0.1</version>
+            <dependencies>
+              <dependency>
+                <groupId>org.ietr.preesm</groupId>
+                <artifactId>coding-policy</artifactId>
+                <version>${preesm.coding.policy.version}</version>
+              </dependency>
+            </dependencies>
+            <executions>
+              <execution>
+                <id>load-eclipse-settings</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>m2e-settings</goal>
+                </goals>
+              </execution>
+            </executions>
             <configuration>
-              <configLocation>../../releng/VAADER_checkstyle.xml</configLocation>
-            </configuration>
+              <additionalConfig>
+                <file>
+                  <name>.settings/org.eclipse.core.resources.prefs</name>
+                  <location>/org.eclipse.core.resources.prefs</location>
+                </file>
+                <file>
+                  <name>.settings/org.eclipse.core.runtime.prefs</name>
+                  <location>/org.eclipse.core.runtime.prefs</location>
+                </file>
+                <file>
+                  <name>.settings/org.eclipse.jdt.core.prefs</name>
+                  <location>/org.eclipse.jdt.core.prefs</location>
+                </file>
+                <file>
+                  <name>.settings/org.eclipse.jdt.ui.prefs</name>
+                  <location>/org.eclipse.jdt.ui.prefs</location>
+                </file>
+                <file>
+                  <name>.settings/org.eclipse.xtend.core.Xtend.prefs</name>
+                  <location>/org.eclipse.xtend.core.Xtend.prefs</location>
+                </file>
+              </additionalConfig>
+ 	           </configuration>
           </plugin>
         </plugins>
         <!-- Disable m2e lifecycle mapping to avoid errors showing in Eclipse -->

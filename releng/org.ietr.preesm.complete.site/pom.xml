@@ -154,7 +154,7 @@
             </goals>
             <configuration>
               <skipCache>true</skipCache>
-              <url>${complete.p2.repo}/artifacts.xml</url>
+              <url>${preesm.p2.repo}/artifacts.xml</url>
               <outputFileName>artifacts.xml</outputFileName>
               <outputDirectory>${project.build.directory}/gensite/update-site/complete/</outputDirectory>
             </configuration>
@@ -167,7 +167,7 @@
             </goals>
             <configuration>
               <skipCache>true</skipCache>
-              <url>${complete.p2.repo}/content.xml</url>
+              <url>${preesm.p2.repo}/content.xml</url>
               <outputFileName>content.xml</outputFileName>
               <outputDirectory>${project.build.directory}/gensite/update-site/complete/</outputDirectory>
             </configuration>
