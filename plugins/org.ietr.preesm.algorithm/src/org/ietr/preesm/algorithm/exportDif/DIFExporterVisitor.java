@@ -245,8 +245,7 @@ public class DIFExporterVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVe
    *          the file where to write the DIF graph
    */
   public void write(final File file) {
-    try {
-      final FileWriter writer = new FileWriter(file);
+    try (FileWriter writer = new FileWriter(file)) {
 
       // Main block
       writer.write(this.moc + ' ');

@@ -476,14 +476,15 @@ public class BeanShellInterpreterTest {
 
     final StringBuffer content = new StringBuffer();
     final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
-    final BufferedReader in;
+    final InputStreamReader streamReader;
     if (scriptFile.exists()) {
-      in = new BufferedReader(new FileReader(scriptFile));
+      streamReader = new FileReader(scriptFile);
     } else {
       final URL url = new URL("platform:/plugin/" + plugin_name + "/" + script_path);
       final InputStream inputStream = url.openConnection().getInputStream();
-      in = new BufferedReader(new InputStreamReader(inputStream));
+      streamReader = new InputStreamReader(inputStream);
     }
+    final BufferedReader in = new BufferedReader(streamReader);
     String inputLine;
 
     // instrument code to return the list of matches
@@ -497,6 +498,10 @@ public class BeanShellInterpreterTest {
         content.append("resList.add(match);\n");
       }
     }
+
+    streamReader.close();
+    in.close();
+
     content.append("resList;");
     Assert.assertTrue(content.toString().contains("inputs.get(0).matchWith(inIdx,output,outIdx,matchSize);"));
 

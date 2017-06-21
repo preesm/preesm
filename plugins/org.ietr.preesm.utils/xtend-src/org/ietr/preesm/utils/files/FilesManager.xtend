@@ -43,9 +43,13 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
+import java.io.IOException
 import java.io.InputStream
 import java.io.PrintStream
+import java.net.MalformedURLException
 import java.net.URI
+import java.net.URISyntaxException
+import java.net.URL
 import java.util.Collections
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
@@ -54,10 +58,6 @@ import org.eclipse.core.runtime.FileLocator
 import org.osgi.framework.FrameworkUtil
 
 import static org.ietr.preesm.utils.files.Result.*
-import java.io.IOException
-import java.net.URL
-import java.net.URISyntaxException
-import java.net.MalformedURLException
 
 /**
  * Utility class to manipulate files. It brings everything needed to extract files
@@ -68,7 +68,6 @@ import java.net.MalformedURLException
  * @author Antoine Lorence
  *
  */
-@SuppressWarnings("unchecked")
 class FilesManager {
 
 	private static val BUFFER_SIZE = 1024
@@ -252,9 +251,9 @@ class FilesManager {
 			targetFile.parentFile.mkdirs
 		}
 		val bufferedInput = new BufferedInputStream(inputStream)
-		val outputStream = new BufferedOutputStream(
-			new FileOutputStream(targetFile)
-		)
+
+		val fileOutputStream = new FileOutputStream(targetFile)
+		val outputStream = new BufferedOutputStream(fileOutputStream)
 
 		val byte[] buffer = newByteArrayOfSize(BUFFER_SIZE)
 		var readLength = 0
@@ -263,6 +262,8 @@ class FilesManager {
 		}
 		bufferedInput.close
 		outputStream.close
+		fileOutputStream.close
+
 
 		return newOkInstance
 	}
@@ -320,7 +321,10 @@ class FilesManager {
 	 * than File b.
 	 */
 	static def boolean isContentEqual(File a, File b) throws IOException {
-		return new FileInputStream(a).isContentEqual(b)
+		val fileInputStream = new FileInputStream(a)
+		val contentEqual = fileInputStream.isContentEqual(b)
+		fileInputStream.close
+		return contentEqual
 	}
 
 	/**

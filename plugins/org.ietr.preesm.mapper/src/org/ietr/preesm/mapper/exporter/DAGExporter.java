@@ -37,8 +37,8 @@
  */
 package org.ietr.preesm.mapper.exporter;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -218,10 +218,10 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
   @Override
   public void export(final AbstractGraph<DAGVertex, DAGEdge> graph, final String path) {
     this.path = path;
-    try {
+    try (FileOutputStream out = new FileOutputStream(path)) {
       exportGraph(graph);
-      transform(new FileOutputStream(path));
-    } catch (final FileNotFoundException e) {
+      transform(out);
+    } catch (final IOException e) {
       e.printStackTrace();
     }
   }
