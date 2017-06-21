@@ -111,19 +111,20 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     final File piFctFile = new File(folder, piFctfilePath);
 
     // Write the files
-    FileWriter piGraphWriter;
-    FileWriter piFctWriter;
-    FileWriter hWriter;
-    try {
-      hWriter = new FileWriter(hFile);
-      hWriter.write(hCode);
-      hWriter.close();
-      piGraphWriter = new FileWriter(piGraphFile);
+    try (FileWriter piGraphWriter = new FileWriter(piGraphFile)) {
       piGraphWriter.write(graphCode);
-      piGraphWriter.close();
-      piFctWriter = new FileWriter(piFctFile);
+    } catch (final IOException e) {
+      e.printStackTrace();
+    }
+
+    try (FileWriter piFctWriter = new FileWriter(piFctFile)) {
       piFctWriter.write(fctCode);
-      piFctWriter.close();
+    } catch (final IOException e) {
+      e.printStackTrace();
+    }
+
+    try (FileWriter hWriter = new FileWriter(hFile)) {
+      hWriter.write(hCode);
     } catch (final IOException e) {
       e.printStackTrace();
     }

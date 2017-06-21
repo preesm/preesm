@@ -829,12 +829,20 @@ public interface CodegenPackage extends EPackage {
   int CORE_BLOCK__CORE_TYPE = CodegenPackage.BLOCK_FEATURE_COUNT + 2;
 
   /**
+   * The feature id for the '<em><b>Core ID</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int CORE_BLOCK__CORE_ID = CodegenPackage.BLOCK_FEATURE_COUNT + 3;
+
+  /**
    * The number of structural features of the '<em>Core Block</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int CORE_BLOCK_FEATURE_COUNT = CodegenPackage.BLOCK_FEATURE_COUNT + 3;
+  int CORE_BLOCK_FEATURE_COUNT = CodegenPackage.BLOCK_FEATURE_COUNT + 4;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.ActorBlockImpl <em>Actor Block</em>}' class. <!-- begin-user-doc -->
@@ -1251,64 +1259,6 @@ public interface CodegenPackage extends EPackage {
   int COMMUNICATION_NODE_FEATURE_COUNT = 2;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SemaphoreImpl <em>Semaphore</em>}' class. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
-   *
-   * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.SemaphoreImpl
-   * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getSemaphore()
-   * @generated
-   */
-  int SEMAPHORE = 18;
-
-  /**
-   * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int SEMAPHORE__COMMENT = CodegenPackage.VARIABLE__COMMENT;
-
-  /**
-   * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int SEMAPHORE__NAME = CodegenPackage.VARIABLE__NAME;
-
-  /**
-   * The feature id for the '<em><b>Type</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int SEMAPHORE__TYPE = CodegenPackage.VARIABLE__TYPE;
-
-  /**
-   * The feature id for the '<em><b>Creator</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int SEMAPHORE__CREATOR = CodegenPackage.VARIABLE__CREATOR;
-
-  /**
-   * The feature id for the '<em><b>Users</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int SEMAPHORE__USERS = CodegenPackage.VARIABLE__USERS;
-
-  /**
-   * The number of structural features of the '<em>Semaphore</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int SEMAPHORE_FEATURE_COUNT = CodegenPackage.VARIABLE_FEATURE_COUNT + 0;
-
-  /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SharedMemoryCommunicationImpl <em>Shared Memory Communication</em>}'
    * class. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -1316,7 +1266,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getSharedMemoryCommunication()
    * @generated
    */
-  int SHARED_MEMORY_COMMUNICATION = 19;
+  int SHARED_MEMORY_COMMUNICATION = 18;
 
   /**
    * The feature id for the '<em><b>Parameters</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1439,20 +1389,12 @@ public interface CodegenPackage extends EPackage {
   int SHARED_MEMORY_COMMUNICATION__SEND_RESERVE = CodegenPackage.COMMUNICATION__SEND_RESERVE;
 
   /**
-   * The feature id for the '<em><b>Semaphore</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int SHARED_MEMORY_COMMUNICATION__SEMAPHORE = CodegenPackage.COMMUNICATION_FEATURE_COUNT + 0;
-
-  /**
    * The number of structural features of the '<em>Shared Memory Communication</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int SHARED_MEMORY_COMMUNICATION_FEATURE_COUNT = CodegenPackage.COMMUNICATION_FEATURE_COUNT + 1;
+  int SHARED_MEMORY_COMMUNICATION_FEATURE_COUNT = CodegenPackage.COMMUNICATION_FEATURE_COUNT + 0;
 
   /**
    * The meta object id for the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.ConstantStringImpl <em>Constant String</em>}' class. <!--
@@ -1462,7 +1404,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getConstantString()
    * @generated
    */
-  int CONSTANT_STRING = 20;
+  int CONSTANT_STRING = 19;
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1528,7 +1470,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getNullBuffer()
    * @generated
    */
-  int NULL_BUFFER = 21;
+  int NULL_BUFFER = 20;
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1642,7 +1584,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getFiniteLoopBlock()
    * @generated
    */
-  int FINITE_LOOP_BLOCK = 22;
+  int FINITE_LOOP_BLOCK = 21;
 
   /**
    * The feature id for the '<em><b>Code Elts</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1724,7 +1666,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getIntVar()
    * @generated
    */
-  int INT_VAR = 23;
+  int INT_VAR = 22;
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1782,7 +1724,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getBufferIterator()
    * @generated
    */
-  int BUFFER_ITERATOR = 24;
+  int BUFFER_ITERATOR = 23;
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1912,7 +1854,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDirection()
    * @generated
    */
-  int DIRECTION = 25;
+  int DIRECTION = 24;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Delimiter <em>Delimiter</em>}' enum. <!-- begin-user-doc --> <!--
@@ -1922,7 +1864,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDelimiter()
    * @generated
    */
-  int DELIMITER = 26;
+  int DELIMITER = 25;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialType <em>Special Type</em>}' enum. <!-- begin-user-doc --> <!--
@@ -1932,7 +1874,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getSpecialType()
    * @generated
    */
-  int SPECIAL_TYPE = 27;
+  int SPECIAL_TYPE = 26;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation <em>Fifo Operation</em>}' enum. <!-- begin-user-doc --> <!--
@@ -1942,7 +1884,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getFifoOperation()
    * @generated
    */
-  int FIFO_OPERATION = 28;
+  int FIFO_OPERATION = 27;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.PortDirection <em>Port Direction</em>}' enum. <!-- begin-user-doc --> <!--
@@ -1952,7 +1894,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getPortDirection()
    * @generated
    */
-  int PORT_DIRECTION = 29;
+  int PORT_DIRECTION = 28;
 
   /**
    * The meta object id for the '<em>range</em>' data type. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1961,7 +1903,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getrange()
    * @generated
    */
-  int RANGE = 30;
+  int RANGE = 29;
 
   /**
    * Returns the meta object for class ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Block <em>Block</em>} '. <!-- begin-user-doc --> <!-- end-user-doc
@@ -2448,6 +2390,17 @@ public interface CodegenPackage extends EPackage {
   EAttribute getCoreBlock_CoreType();
 
   /**
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getCoreID <em>Core ID</em>}'. <!-- begin-user-doc
+   * --> <!-- end-user-doc -->
+   *
+   * @return the meta object for the attribute '<em>Core ID</em>'.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getCoreID()
+   * @see #getCoreBlock()
+   * @generated
+   */
+  EAttribute getCoreBlock_CoreID();
+
+  /**
    * Returns the meta object for class '{@link org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock <em>Actor Block</em>}'. <!-- begin-user-doc --> <!--
    * end-user-doc -->
    *
@@ -2671,16 +2624,6 @@ public interface CodegenPackage extends EPackage {
   EAttribute getCommunicationNode_Type();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.codegen.xtend.model.codegen.Semaphore <em>Semaphore</em>}'. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
-   *
-   * @return the meta object for class '<em>Semaphore</em>'.
-   * @see org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
-   * @generated
-   */
-  EClass getSemaphore();
-
-  /**
    * Returns the meta object for class '{@link org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication <em>Shared Memory Communication</em>}'.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -2689,17 +2632,6 @@ public interface CodegenPackage extends EPackage {
    * @generated
    */
   EClass getSharedMemoryCommunication();
-
-  /**
-   * Returns the meta object for the reference '{@link org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication#getSemaphore <em>Semaphore</em>}'.
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @return the meta object for the reference '<em>Semaphore</em>'.
-   * @see org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication#getSemaphore()
-   * @see #getSharedMemoryCommunication()
-   * @generated
-   */
-  EReference getSharedMemoryCommunication_Semaphore();
 
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.codegen.xtend.model.codegen.ConstantString <em>Constant String</em>}'. <!-- begin-user-doc -->
@@ -3255,6 +3187,13 @@ public interface CodegenPackage extends EPackage {
     EAttribute CORE_BLOCK__CORE_TYPE = CodegenPackage.eINSTANCE.getCoreBlock_CoreType();
 
     /**
+     * The meta object literal for the '<em><b>Core ID</b></em>' attribute feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
+     * @generated
+     */
+    EAttribute CORE_BLOCK__CORE_ID = CodegenPackage.eINSTANCE.getCoreBlock_CoreID();
+
+    /**
      * The meta object literal for the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.ActorBlockImpl <em>Actor Block</em>}' class. <!--
      * begin-user-doc --> <!-- end-user-doc -->
      *
@@ -3426,16 +3365,6 @@ public interface CodegenPackage extends EPackage {
     EAttribute COMMUNICATION_NODE__TYPE = CodegenPackage.eINSTANCE.getCommunicationNode_Type();
 
     /**
-     * The meta object literal for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SemaphoreImpl <em>Semaphore</em>}' class. <!-- begin-user-doc
-     * --> <!-- end-user-doc -->
-     *
-     * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.SemaphoreImpl
-     * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getSemaphore()
-     * @generated
-     */
-    EClass SEMAPHORE = CodegenPackage.eINSTANCE.getSemaphore();
-
-    /**
      * The meta object literal for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SharedMemoryCommunicationImpl <em>Shared Memory
      * Communication</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
@@ -3444,13 +3373,6 @@ public interface CodegenPackage extends EPackage {
      * @generated
      */
     EClass SHARED_MEMORY_COMMUNICATION = CodegenPackage.eINSTANCE.getSharedMemoryCommunication();
-
-    /**
-     * The meta object literal for the '<em><b>Semaphore</b></em>' reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    EReference SHARED_MEMORY_COMMUNICATION__SEMAPHORE = CodegenPackage.eINSTANCE.getSharedMemoryCommunication_Semaphore();
 
     /**
      * The meta object literal for the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.ConstantStringImpl <em>Constant String</em>}' class. <!--

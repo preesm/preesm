@@ -93,11 +93,9 @@ public class XMLStatsExporter {
     // Generate the stats to write in an xml file
     final String content = generateXMLStats(abc);
     // Write the file
-    FileWriter out;
-    try {
-      out = new FileWriter(file);
+    ;
+    try (FileWriter out = new FileWriter(file)) {
       out.write(content);
-      out.close();
     } catch (final IOException e) {
       e.printStackTrace();
     }

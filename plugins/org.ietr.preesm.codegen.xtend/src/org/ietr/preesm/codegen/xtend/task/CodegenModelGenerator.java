@@ -49,6 +49,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.resources.IFile;
@@ -116,7 +117,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
-import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType;
@@ -503,7 +503,8 @@ public class CodegenModelGenerator {
     // 1 - Iterate on the actors of the DAG
     // 1.0 - Identify the core used.
     // 1.1 - Construct the "loop" & "init" of each core.
-    // 2 - Put the buffer declaration in their right place
+    // 2 - Set CoreBlock ID
+    // 3 - Put the buffer declaration in their right place
 
     // -1 - Add all hosted MemoryObject back in te MemEx
     restoreHostedVertices();
@@ -587,7 +588,15 @@ public class CodegenModelGenerator {
       }
     }
 
-    // 2 - Put the buffer definition in their right place
+    // 2 - Set codeBlockI ID
+    // This objective is to give a unique ID to each coreBlock.
+    // Alphabetical order of coreBlock name is used to determine the id (in an attempt to limit randomness)
+    {
+      final AtomicInteger id = new AtomicInteger(0); // Need this because non-final argument cannot be used within lambda expressions.
+      this.coreBlocks.values().stream().sorted((cb1, cb2) -> cb1.getName().compareTo(cb2.getName())).forEach(cb -> cb.setCoreID(id.getAndIncrement()));
+    }
+
+    // 3 - Put the buffer definition in their right place
     generateBufferDefinitions();
 
     return new LinkedHashSet<>(this.coreBlocks.values());
@@ -1156,12 +1165,6 @@ public class CodegenModelGenerator {
     // Register the dag buffer to the core
     registerCallVariableToCoreBlock(operatorBlock, newComm);
 
-    // Set the semaphore for the new Comm. (this may be a share memory comm
-    // specific feature)
-    // probably some work to do here when trying to support new
-    // communication means.
-    generateSemaphore(operatorBlock, newComm);
-
     // Create the corresponding SE or RS
     final SharedMemoryCommunication newCommZoneComplement = CodegenFactory.eINSTANCE.createSharedMemoryCommunication();
     newCommZoneComplement.setDirection(dir);
@@ -1356,77 +1359,6 @@ public class CodegenModelGenerator {
     identifyMergedInputRange(callVars);
 
     return func;
-  }
-
-  /**
-   * Generate the semaphore associated to the given {@link SharedMemoryCommunication}.
-   *
-   * @param operatorBlock
-   *          the {@link CoreBlock} on which the {@link SharedMemoryCommunication} is executed
-   * @param newComm
-   *          the {@link SharedMemoryCommunication}
-   */
-  protected void generateSemaphore(final CoreBlock operatorBlock, final SharedMemoryCommunication newComm) {
-    final boolean ss_re = ((newComm.getDirection().equals(Direction.SEND) && newComm.getDelimiter().equals(Delimiter.START))
-        || (newComm.getDirection().equals(Direction.RECEIVE) && newComm.getDelimiter().equals(Delimiter.END)));
-
-    // For SS->RE
-
-    // First check if a semaphore was already created for corresponding
-    // calls.
-    final Set<Communication> correspondingComm = new LinkedHashSet<>();
-    if (ss_re) {
-      correspondingComm.add(newComm.getReceiveEnd());
-      correspondingComm.add(newComm.getSendStart());
-    }
-
-    Semaphore semaphore = null;
-
-    for (final Communication comm : correspondingComm) {
-      if (comm instanceof SharedMemoryCommunication) {
-        semaphore = ((SharedMemoryCommunication) comm).getSemaphore();
-      }
-      if (semaphore != null) {
-        break;
-      }
-    }
-
-    // If no semaphore was found, create one
-    if (semaphore == null) {
-      semaphore = CodegenFactory.eINSTANCE.createSemaphore();
-      semaphore.setCreator(operatorBlock);
-      semaphore.setName("sem_" + newComm.getId() + "_" + ((ss_re) ? "SSRE" : "RRSR"));
-      final FunctionCall initSem = CodegenFactory.eINSTANCE.createFunctionCall();
-      initSem.addParameter(semaphore, PortDirection.NONE);
-
-      final Constant cstShared = CodegenFactory.eINSTANCE.createConstant();
-      cstShared.setType("int");
-      cstShared.setValue(0);
-      initSem.addParameter(cstShared, PortDirection.NONE);
-      cstShared.setCreator(operatorBlock);
-
-      final Constant cstInitVal = CodegenFactory.eINSTANCE.createConstant();
-      cstInitVal.setType("int");
-      if (ss_re) {
-        cstInitVal.setValue(0);
-      }
-
-      cstInitVal.setName("init_val");
-      initSem.addParameter(cstInitVal, PortDirection.NONE);
-      cstInitVal.setCreator(operatorBlock);
-
-      initSem.setName("sem_init");
-      initSem.setActorName(newComm.getData().getComment());
-
-      operatorBlock.getInitBlock().getCodeElts().add(initSem);
-    }
-
-    // Put the semaphore in the com
-    newComm.setSemaphore(semaphore);
-
-    // Register the core of the current block as a semaphore user
-    semaphore.getUsers().add(operatorBlock);
-
   }
 
   /**

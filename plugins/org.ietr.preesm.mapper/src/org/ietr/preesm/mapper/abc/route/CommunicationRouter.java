@@ -4,6 +4,7 @@
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2017)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2016)
  *
@@ -47,6 +48,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
+import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
@@ -132,9 +134,22 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
   public void routeAll(final MapperDAG implementation, final Integer type) {
     final TransactionManager localTransactionManager = new TransactionManager();
 
-    // We iterate the edges and process the ones with different allocations
-    final Iterator<DAGEdge> iterator = implementation.edgeSet().iterator();
+    // Get edges in scheduling order of their producers
+    final Iterator<MapperDAGVertex> dagIterator = this.orderManager.getTotalOrder().getList().iterator();
+    final List<DAGEdge> edgesInPrecedenceOrder = new ArrayList<>(implementation.edgeSet().size());
 
+    while (dagIterator.hasNext()) {
+      final DAGVertex vertex = dagIterator.next();
+      edgesInPrecedenceOrder.addAll(vertex.outgoingEdges());
+    }
+
+    if (edgesInPrecedenceOrder.size() != this.implementation.edgeSet().size()) {
+      // If this happens, this means that not all edges are covered by the previous while loop.
+      throw new RuntimeException("Some DAG edges are not covered");
+    }
+
+    // We iterate the edges and process the ones with different allocations
+    final Iterator<DAGEdge> iterator = edgesInPrecedenceOrder.iterator();
     while (iterator.hasNext()) {
       final MapperDAGEdge currentEdge = (MapperDAGEdge) iterator.next();
 

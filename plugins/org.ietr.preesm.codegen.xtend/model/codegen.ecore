@@ -5,7 +5,7 @@
 
     Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
     Julien_Hascoet <jhascoet@kalray.eu> (2016)
-    Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2015)
+    Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
 
     This software is a computer program whose purpose is to help prototyping
     parallel applications using dataflow formalism.
@@ -138,6 +138,9 @@
         eType="#//CallBlock"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="coreType" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="coreID" ordered="false"
+        unique="false" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
+        iD="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ActorBlock" eSuperTypes="#//Block">
     <eStructuralFeatures xsi:type="ecore:EReference" name="loopBlock" lowerBound="1"
@@ -199,11 +202,7 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Semaphore" eSuperTypes="#//Variable"/>
-  <eClassifiers xsi:type="ecore:EClass" name="SharedMemoryCommunication" eSuperTypes="#//Communication">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="semaphore" lowerBound="1"
-        eType="#//Semaphore"/>
-  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SharedMemoryCommunication" eSuperTypes="#//Communication"/>
   <eClassifiers xsi:type="ecore:EEnum" name="PortDirection">
     <eLiterals name="INPUT"/>
     <eLiterals name="OUTPUT" value="1"/>

@@ -3,7 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Julien_Hascoet <jhascoet@kalray.eu> (2016 - 2017)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2015)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -38,7 +38,6 @@ package org.ietr.preesm.codegen.xtend.printer.c
 
 import java.util.Date
 import java.util.List
-import org.ietr.preesm.codegen.xtend.model.codegen.Block
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
 import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.Communication
@@ -53,7 +52,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
-import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
@@ -549,27 +547,6 @@ class MPPA2ExplicitPrinter extends CPrinter {
 
 	override printSubBuffer(SubBuffer buffer) {
 		return printBuffer(buffer)
-	}
-
-	override printSemaphore(Semaphore semaphore) ''''''
-
-	override printSemaphoreDefinition(Semaphore semaphore) ''''''
-
-	override printSemaphoreDeclaration(Semaphore semaphore) ''''''
-
-	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {
-		super.preProcessing(printerBlocks, allBlocks)
-
-		for (block : printerBlocks) {
-			/** Remove semaphore init */
-			(block as CoreBlock).initBlock.codeElts.removeAll(
-				((block as CoreBlock).initBlock.codeElts.filter[
-					(it instanceof FunctionCall && (it as FunctionCall).name.startsWith("sem_init"))]))
-			/** Remove semaphores */
-			(block as CoreBlock).definitions.removeAll((block as CoreBlock).definitions.filter[it instanceof Semaphore])
-			(block as CoreBlock).declarations.removeAll(
-				(block as CoreBlock).declarations.filter[it instanceof Semaphore])
-		}
 	}
 
 	override postProcessing(CharSequence charSequence){

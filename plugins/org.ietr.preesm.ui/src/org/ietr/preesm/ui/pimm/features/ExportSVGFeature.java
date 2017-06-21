@@ -454,16 +454,14 @@ public class ExportSVGFeature extends AbstractCustomFeature {
     }
 
     final File svgFile = new File(path.toOSString());
-    Writer out;
-    try {
-      out = new FileWriter(svgFile);
+    try (Writer out = new FileWriter(svgFile)) {
+      try {
+        tf.transform(new DOMSource(doc), new StreamResult(out));
+      } catch (final TransformerException e) {
+        e.printStackTrace();
+        return;
+      }
     } catch (final IOException e) {
-      e.printStackTrace();
-      return;
-    }
-    try {
-      tf.transform(new DOMSource(doc), new StreamResult(out));
-    } catch (final TransformerException e) {
       e.printStackTrace();
       return;
     }

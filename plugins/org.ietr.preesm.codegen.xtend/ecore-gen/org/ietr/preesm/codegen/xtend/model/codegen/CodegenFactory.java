@@ -165,14 +165,6 @@ public interface CodegenFactory extends EFactory {
   CommunicationNode createCommunicationNode();
 
   /**
-   * Returns a new object of class '<em>Semaphore</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @return a new object of class '<em>Semaphore</em>'.
-   * @generated
-   */
-  Semaphore createSemaphore();
-
-  /**
    * Returns a new object of class '<em>Shared Memory Communication</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return a new object of class '<em>Shared Memory Communication</em>'.

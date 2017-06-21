@@ -58,6 +58,7 @@ Table of Content
 	- [Check Coding Policy](#check-coding-policy)
 	- [Update Project Version](#update-project-version)
 	- [Deploy](#deploy-1)
+	- [Add a New Plugin](#add-a-new-plugin)
 	- [Add New Dependency](#add-new-dependency)
 	- [Add New Repository](#add-new-repository)
 	- [Change Checkstyle Coding Style](#change-checkstyle-coding-style)
@@ -349,7 +350,7 @@ This section details what plugins are bound to which phases (including clean lif
 
 #### initialize
 
-*   [directory-maven-plugin](https://github.com/jdcasey/directory-maven-plugin): initialize the property **main.basedir** with the path to the parent project directory. This property is used in the Checkstyle configuration for having a consistent path to its configuration file from any submodule.
+*   [directory-maven-plugin](https://github.com/jdcasey/directory-maven-plugin): initialize the property **main.basedir** with the path to the parent project directory. This property is used in the JaCoCo configuration for having a consistent path to its report file from any submodule.
 *   [jacoco-maven-plugin](http://www.eclemma.org/jacoco/trunk/doc/prepare-agent-mojo.html): Used for [code coverage](https://en.wikipedia.org/wiki/Code_coverage) computation. See plugin documentation. The configuration outputs the report in the target folder of the parent project. All the submodules append their report in that file. It is later used by [Sonar](#sonarqube). Test and releng modules are ignored during when computing code coverage.
 ```XML
 <destFile>${main.basedir}/target/jacoco.exec</destFile>
@@ -407,9 +408,13 @@ Eclipse is the preferred IDE for developing Preesm. The developer setup is detai
 
 Most of the job is done by the [M2Eclipse Eclipse plugin](http://www.eclipse.org/m2e/). This plugin allows to import Maven projects in the Eclipse workspace. It also reads the POM files and configure Eclipse projects accordingly.
 
-Some Maven plugins are however not handled by the M2E plugin. This is the case for the **directory-maven-plugin**. This plugin should not affect the Eclipse build process, and is therefore add to the ignore list in M2E (see [initialize phase](#initialize)). Indeed the Checkstyle configuration for Eclipse is detailed [here](http://preesm.sourceforge.net/website/index.php?id=building-preesm) and does not need the **main.basedir** property.
+Some Maven plugins are however not handled by the M2E plugin. This is the case for the **directory-maven-plugin**. This plugin should not affect the Eclipse build process, and is therefore add to the ignore list in M2E (see [initialize phase](#initialize)).
 
-Some other Maven plugins need to be supported by Eclipse, as the Tycho plugin that sets some Eclipse plugin configuration up. Therefore we need to install some M2E extensions (called connector) to support them, using the [M2E Tycho connector](https://github.com/tesla/m2eclipse-tycho) (installed from this [update site](http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST/)).
+Some other Maven plugins need to be supported by Eclipse, as the Tycho plugin that sets some Eclipse plugin configuration up. Therefore we need to install some M2E extensions (called connector) to support them:
+
+*   [M2E Tycho connector](https://github.com/tesla/m2eclipse-tycho) (installed from this [update site](http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST/)).
+*   [M2E Checkstyle Connector](https://github.com/m2e-code-quality/m2e-code-quality) (installed from [this update site](http://m2e-code-quality.github.io/m2e-code-quality/site/latest/))
+*   TODO: formatter/settings
 
 ### Installing Dependencies
 
@@ -466,7 +471,7 @@ This profile adds:
 
 The projects license is [CeCILL-C V1](http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html). The [../LICENSE](../LICENSE) file recall its articles. Also, as [recommended](http://www.cecill.info/placer.en.html), all source files must have a header that indicates that they are covered by the selected license.
 
-Making sure all the files in the repository have such a header is tedious. Fortunately, some tools exist to help having the job done. Especially, the [License Maven Plugin](http://code.mycila.com/license-maven-plugin/) is designed to insert/replace headers of all the source files it encouters. 
+Making sure all the files in the repository have such a header is tedious. Fortunately, some tools exist to help having the job done. Especially, the [License Maven Plugin](http://code.mycila.com/license-maven-plugin/) is designed to insert/replace headers of all the source files it encouters.
 
 The configuration is as follows (for the list of default excludes, see [this blob](https://github.com/mycila/license-maven-plugin/blob/master/license-maven-plugin/src/main/java/com/mycila/maven/plugin/license/Default.java)) :
 
@@ -504,7 +509,7 @@ The current header file has two tokens that should be replaced :
 *   **%%DATE%%**: the year interval from file creation to last edit
 *   **%%AUTHORS%%**: the list of authors who contributed to this file
 
-This tokens can be automatically filled from git logs. 
+This tokens can be automatically filled from git logs.
 
 The script **releng/fix_header_copyright_and_authors.sh** is in charge of calling the Maven plugin with proper arguments and to replace the tokens automatically.
 
@@ -751,11 +756,13 @@ This can be run from Eclipse (see previous Howto).
 
 ### Add a New Plugin
 
-*   create a new eclipse plugin in the plugin folder
-    *   do not add .project, .settings (everything should be configured in the Maven settings)
-*   copy POM template, tune it if necessary
-*   insert new module in parent pom
-*   add the plugin in the feature (the normal one)
+*   create a new eclipse plugin in the **/plugins** folder;
+    *   do not add .project, .settings, .classpath (everything should be configured in the Maven settings)
+*   copy POM file from another existing plugin, and update project name;
+*   make sure the version in the MANIFEST.MF matches the version in the parent pom
+    *   **-SNAPSHOT** in the POM file translates to **.qualifier** in the MANIFEST
+*   insert new module in parent pom `<modules>` section with the name of the folder under **/plugins**
+*   in the **releng/org.ietr.preesm.feature/feature.xml**, add the new plugin as 'included plugin'
 *   create test fragment
     *   add module in test-fragment intermediate pom
 
