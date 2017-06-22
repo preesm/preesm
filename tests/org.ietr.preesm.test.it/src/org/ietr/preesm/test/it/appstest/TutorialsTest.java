@@ -34,9 +34,8 @@
  */
 package org.ietr.preesm.test.it.appstest;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import org.eclipse.core.runtime.CoreException;
-import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
 import org.junit.Assert;
 import org.junit.Test;
@@ -47,7 +46,7 @@ import org.junit.Test;
 public class TutorialsTest {
 
   @Test
-  public void testStereo() throws FileNotFoundException, InvalidModelException, CoreException {
+  public void testStereo() throws IOException, CoreException {
     final String projectName = "org.ietr.preesm.stereo";
     final String[] scenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario", "lowMaxDisparity.scenario", "YUV4core.scenario" };
     final String[] workflows = new String[] { "CodegenMemoryScriptsMixedMerged.workflow", "StaticPiMMCodegen.workflow",
@@ -64,7 +63,7 @@ public class TutorialsTest {
   }
 
   @Test
-  public void testSobel() throws FileNotFoundException, InvalidModelException, CoreException {
+  public void testSobel() throws IOException, CoreException {
     final String projectName = "org.ietr.preesm.sobel";
     final String[] scenarios = new String[] { "1core.scenario", "4core.scenario", "8coreC6678.scenario" };
     final String[] workflows = new String[] { "Codegen.workflow", "InstrumentedCodegen.workflow" };
@@ -80,7 +79,7 @@ public class TutorialsTest {
   }
 
   @Test
-  public void testTutorial1() throws FileNotFoundException, InvalidModelException, CoreException {
+  public void testTutorial1() throws IOException, CoreException {
     final String projectName = "org.ietr.preesm.tutorials.tutorial1";
     final String[] scenarios = new String[] { "TestComPC.scenario" };
     final String[] workflows = new String[] { "Codegen.workflow" };

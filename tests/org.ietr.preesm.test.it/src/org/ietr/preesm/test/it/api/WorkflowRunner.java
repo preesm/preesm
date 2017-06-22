@@ -37,11 +37,17 @@ package org.ietr.preesm.test.it.api;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
+import java.util.Comparator;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -62,11 +68,16 @@ public class WorkflowRunner {
   /**
    */
   public static final boolean runWorkFlow(final String projectName, final String workflowFilePathStr, final String scenarioFilePathStr)
-      throws CoreException, FileNotFoundException {
+      throws CoreException, IOException {
     // init
-    final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+    // init
+    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    final IWorkspaceRoot root = workspace.getRoot();
+    final IProjectDescription newProjectDescription = workspace.newProjectDescription(projectName);
+    final java.nio.file.Path createTempDirectory = Files.createTempDirectory("PREESM_TESTS_");
+    newProjectDescription.setLocationURI(createTempDirectory.toUri());
     final IProject project = root.getProject(projectName);
-    project.create(null);
+    project.create(newProjectDescription, null);
     project.open(null);
 
     DFToolsWorkflowLogger.runFromCLI();
@@ -83,7 +94,9 @@ public class WorkflowRunner {
     final boolean success = workflowManager.execute(workflowPath, scenarioPath, null);
 
     // clean
-    project.delete(true, true, null);
+    project.close(null);
+    Files.walk(createTempDirectory, FileVisitOption.FOLLOW_LINKS).sorted(Comparator.reverseOrder()).map(java.nio.file.Path::toFile).forEach(File::delete);
+    project.delete(true, null);
     return success;
   }
 

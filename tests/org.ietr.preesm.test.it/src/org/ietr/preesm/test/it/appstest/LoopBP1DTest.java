@@ -1,10 +1,9 @@
 package org.ietr.preesm.test.it.appstest;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.core.runtime.CoreException;
-import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,7 +13,7 @@ import org.junit.Test;
  */
 public class LoopBP1DTest {
   @Test
-  public void testLoopBP1DFlow() throws FileNotFoundException, InvalidModelException, CoreException {
+  public void testLoopBP1DFlow() throws IOException, CoreException {
     final String projectName = "org.ietr.preesm.bp1d";
 
     // fill workflows to set
