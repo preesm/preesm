@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/org.ietr.preesm.bp1d/Algo/myappBP1D.pi"/>
+        <architecture url="/org.ietr.preesm.bp1d/Archi/MPPA2Explicit.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.bp1d/CodeMPPA2/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core9"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
+            <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
+            <task name="myappBP1D/topHierarchicalBP1D"/>
+            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputeFiEnergy"/>
+            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputePhi_B"/>
+            <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="myappBP1D/writePPM"/>
+            <task name="myappBP1D"/>
+            <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
+            <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
+            <task name="myappBP1D/topHierarchicalBP1D"/>
+            <task name="myappBP1D/ReadPPM"/>
+            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputeFiEnergy"/>
+            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputePhi_B"/>
+            <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core15"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
+            <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
+            <task name="myappBP1D/topHierarchicalBP1D"/>
+            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputeFiEnergy"/>
+            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputePhi_B"/>
+            <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core5"/>
+            <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
+            <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
+            <task name="myappBP1D/topHierarchicalBP1D"/>
+            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputeFiEnergy"/>
+            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputePhi_B"/>
+            <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core8"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core13"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core10"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core14"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core7"/>
+            <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
+            <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
+            <task name="myappBP1D/topHierarchicalBP1D"/>
+            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputeFiEnergy"/>
+            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputePhi_B"/>
+            <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core2"/>
+            <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
+            <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
+            <task name="myappBP1D/topHierarchicalBP1D"/>
+            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputeFiEnergy"/>
+            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputePhi_B"/>
+            <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core12"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core11"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core4"/>
+            <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
+            <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
+            <task name="myappBP1D/topHierarchicalBP1D"/>
+            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputeFiEnergy"/>
+            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputePhi_B"/>
+            <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core6"/>
+            <task name="myappBP1D/topHierarchicalBP1D/rgbLeft"/>
+            <task name="myappBP1D/topHierarchicalBP1D/disparity"/>
+            <task name="myappBP1D/topHierarchicalBP1D"/>
+            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputeFiEnergy"/>
+            <task name="myappBP1D/topHierarchicalBP1D/BP_ComputePhi_B"/>
+            <task name="myappBP1D/topHierarchicalBP1D/rgbRight"/>
+        </constraintGroup>
+    </constraints>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl="">
+        <memcpyspeed opname="MPPA2Explicit" setuptime="1" timeperunit="1.0E-6"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="uchar" size="1"/>
+            <dataType name="short" size="2"/>
+            <dataType name="PHI_B_TYPE" size="2"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+        <numberOfTopExecutions>1</numberOfTopExecutions>
+    </simuParams>
+    <variables excelUrl=""/>
+    <parameterValues/>
+</scenario>

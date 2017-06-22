@@ -16,11 +16,11 @@
             id="heightSlice" kind="param"/>
         <node expr="640" id="pwidth" kind="param"/>
         <node expr="480" id="pheight" kind="param"/>
-        <node id="input" kind="src">
-            <port annotation="NONE" expr="pwidth*pheight" kind="output" name="input"/>
+        <node id="topInputs" kind="src">
+            <port annotation="NONE" expr="pwidth*pheight" kind="output" name="topInputs"/>
         </node>
-        <node id="output" kind="snk">
-            <port annotation="NONE" expr="pwidth*pheight" kind="input" name="output"/>
+        <node id="topOutputs" kind="snk">
+            <port annotation="NONE" expr="pwidth*pheight" kind="input" name="topOutputs"/>
         </node>
         <node id="Split" kind="actor">
             <data key="graph_desc">Code/include/splitMerge.h</data>
@@ -51,12 +51,13 @@
             <port annotation="NONE" expr="(height-2*overlap)*width"
                 kind="output" name="output"/>
         </node>
-        <edge kind="fifo" source="input" sourceport="input"
+        <edge kind="fifo" source="topInputs" sourceport="topInputs"
             target="Split" targetport="input" type="uchar"/>
         <edge kind="fifo" source="Split" sourceport="output"
             target="hierarchical_sobel_median" targetport="input" type="uchar"/>
         <edge kind="fifo" source="hierarchical_sobel_median"
-            sourceport="output" target="output" targetport="output" type="uchar"/>
+            sourceport="output" target="topOutputs"
+            targetport="topOutputs" type="uchar"/>
         <edge kind="dependency" source="window" target="overlap"/>
         <edge kind="dependency" source="nbSliceHierarchical" target="heightSlice"/>
         <edge kind="dependency" source="overlap" target="heightSlice"/>
@@ -71,14 +72,14 @@
             target="hierarchical_sobel_median" targetport="overlap"/>
         <edge kind="dependency" source="width" target="pwidth"/>
         <edge kind="dependency" source="height" target="pheight"/>
-        <edge kind="dependency" source="pwidth" target="input"/>
+        <edge kind="dependency" source="pwidth" target="topInputs"/>
         <edge kind="dependency" source="pwidth" target="Split" targetport="width"/>
         <edge kind="dependency" source="pwidth"
             target="hierarchical_sobel_median" targetport="width"/>
-        <edge kind="dependency" source="pwidth" target="output"/>
-        <edge kind="dependency" source="pheight" target="output"/>
+        <edge kind="dependency" source="pwidth" target="topOutputs"/>
+        <edge kind="dependency" source="pheight" target="topOutputs"/>
         <edge kind="dependency" source="pheight" target="Split" targetport="height"/>
-        <edge kind="dependency" source="pheight" target="input"/>
+        <edge kind="dependency" source="pheight" target="topInputs"/>
         <edge kind="dependency" source="pheight" target="heightSlice"/>
     </graph>
 </graphml>

@@ -6,7 +6,7 @@
     <businessObjects href="hierarchical_myapp.pi#/"/>
   </link>
   <children xsi:type="pi:ContainerShape" visible="true" active="true">
-    <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="47" height="20" x="50" y="250"/>
+    <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="71" height="20" x="50" y="250"/>
     <link>
       <businessObjects href="hierarchical_myapp.pi#//@vertices.0"/>
     </link>
@@ -22,14 +22,14 @@
       </link>
     </anchors>
     <children visible="true">
-      <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="28" height="20" font="//@fonts.0" horizontalAlignment="ALIGNMENT_RIGHT" value="input"/>
+      <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="52" height="20" font="//@fonts.0" horizontalAlignment="ALIGNMENT_RIGHT" value="topInputs"/>
       <link>
         <businessObjects href="hierarchical_myapp.pi#//@vertices.0"/>
       </link>
     </children>
   </children>
   <children xsi:type="pi:ContainerShape" visible="true" active="true">
-    <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="55" height="20" x="662" y="250"/>
+    <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="81" height="20" x="662" y="250"/>
     <link>
       <businessObjects href="hierarchical_myapp.pi#//@vertices.1"/>
     </link>
@@ -45,7 +45,7 @@
       </link>
     </anchors>
     <children visible="true">
-      <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="36" height="20" x="19" font="//@fonts.0" horizontalAlignment="ALIGNMENT_RIGHT" value="output"/>
+      <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="62" height="20" x="19" font="//@fonts.0" horizontalAlignment="ALIGNMENT_RIGHT" value="topOutputs"/>
       <link>
         <businessObjects href="hierarchical_myapp.pi#//@vertices.1"/>
       </link>

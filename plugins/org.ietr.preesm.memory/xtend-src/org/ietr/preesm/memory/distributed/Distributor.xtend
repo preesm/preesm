@@ -58,55 +58,55 @@ import static extension org.ietr.preesm.memory.script.Range.*
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph
 
 /**
- * This class contains all the code responsible for splitting a {@link 
- * MemoryExclusionGraph} into several graphs, each corresponding to a specific 
+ * This class contains all the code responsible for splitting a {@link
+ * MemoryExclusionGraph} into several graphs, each corresponding to a specific
  * memory bank.
  */
 @SuppressWarnings("unchecked")
 class Distributor {
 
 	/**
-	 * {@link Logger} used to provide feedback on the distribution to the 
+	 * {@link Logger} used to provide feedback on the distribution to the
 	 * developer.
 	 */
 	@Accessors
 	static protected Logger logger;
 
 	/**
-	 * This method analyzes a {@link MemoryExclusionGraph} and divides it into 
-	 * several {@link MemoryExclusionGraph}, each corresponding to a memory 
+	 * This method analyzes a {@link MemoryExclusionGraph} and divides it into
+	 * several {@link MemoryExclusionGraph}, each corresponding to a memory
 	 * bank.<br>
 	 * <br>
-	 * Decisions of this methods are based on the {@link DAGEdge} associated 
-	 * to each {@link MemoryExclusionVertex} of the processed {@link 
-	 * MemoryExclusionGraph}. Number of created {@link MemoryExclusionGraph} 
-	 * also depends on the selected distribution policy (see {@link 
+	 * Decisions of this methods are based on the {@link DAGEdge} associated
+	 * to each {@link MemoryExclusionVertex} of the processed {@link
+	 * MemoryExclusionGraph}. Number of created {@link MemoryExclusionGraph}
+	 * also depends on the selected distribution policy (see {@link
 	 * AbstractMemoryAllocatorTask} parameters.).
-	 * It should be noted that each {@link MemoryExclusionVertex} of the 
+	 * It should be noted that each {@link MemoryExclusionVertex} of the
 	 * processed {@link MemoryExclusionGraph} will be put in one or more
 	 * output {@link MemoryExclusionGraph}.
-	 * 
-	 * @param valuePolicy 
-	 * 			 {@link String} containing the selected policy for the 
-	 * 			 distribution of {@link MemoryExclusionVertex} in separate 
-	 * 			 memory banks. (see {@link 
+	 *
+	 * @param valuePolicy
+	 * 			 {@link String} containing the selected policy for the
+	 * 			 distribution of {@link MemoryExclusionVertex} in separate
+	 * 			 memory banks. (see {@link
 	 * 			 AbstractMemoryAllocatorTask} parameters.)
 	 * @param memEx
 	 * 			 The processed {@link MemoryExclusionGraph}
-	 * 
+	 *
 	 * @param alignment
-	 * 			 This property is used to represent the alignment of buffers 
-	 * 			 in memory. The same value, or a multiple should always be 
+	 * 			 This property is used to represent the alignment of buffers
+	 * 			 in memory. The same value, or a multiple should always be
 	 * 			 used in the memory allocation.
 	 * @return
-	 * 	A {@link Map} of {@link String} and {@link 
-	 * 		MemoryExclusionGraph}. Each {@link String} identifies a memory 
+	 * 	A {@link Map} of {@link String} and {@link
+	 * 		MemoryExclusionGraph}. Each {@link String} identifies a memory
 	 * 		banks in which the associated {@link MemoryExclusionGraph} should
 	 * 		be allocated.
-	 * 
+	 *
 	 * @throws RuntimeException
 	 * 		Currently thrown <ul>
-	 * 		<li>if the distributed_only policy is applied to a 
+	 * 		<li>if the distributed_only policy is applied to a
 	 * 		graph containing feedback FIFOs.</li>
 	 * 		<li>if an unknown distribution policy is selected.</li>
 	 * 		</ul>
@@ -139,7 +139,7 @@ class Distributor {
 		}
 
 		// Update the memExexVerticesSet to include hosted mObjects
-		// (splitMergedBuffers ensured that all mObjects hosted by another do 
+		// (splitMergedBuffers ensured that all mObjects hosted by another do
 		// fall in the same memory bank)
 		val hosts = memEx.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>
 		if(hosts !== null) {
@@ -147,7 +147,7 @@ class Distributor {
 				// Filter: Get hosts falling in this bank
 				// Values: Get the hosted sets of these hosts
 				// Flatten: create an iterable of these hosted sets
-				// addAll: Add these memory objects to the entry sets of mObject 
+				// addAll: Add these memory objects to the entry sets of mObject
 				entry.value.addAll(hosts.filter[host, hosted|entry.value.contains(host)].values.flatten)
 			}
 		}
@@ -161,7 +161,7 @@ class Distributor {
 			verticesToRemove.removeAll(memExesVerticesSet.get(memory))
 			// Remove them
 			copiedMemEx.deepRemoveAllVertices(verticesToRemove)
-			// If the DistributedOnl policy is used, split the merge memory 
+			// If the DistributedOnl policy is used, split the merge memory
 			// objects.
 			if(valuePolicy == VALUE_DISTRIBUTION_DISTRIBUTED_ONLY) {
 				splitMergedBuffersDistributedOnly(copiedMemEx, alignment, memory)
@@ -173,31 +173,31 @@ class Distributor {
 	}
 
 	/**
-	 * Finds the {@link MemoryExclusionVertex} in the given {@link 
-	 * MemoryExclusionGraph} that result from a merge operation of the memory 
-	 * scripts, and split them into several memory objects according to the 
-	 * DistributedOnly distribution policy (see {@link 
+	 * Finds the {@link MemoryExclusionVertex} in the given {@link
+	 * MemoryExclusionGraph} that result from a merge operation of the memory
+	 * scripts, and split them into several memory objects according to the
+	 * DistributedOnly distribution policy (see {@link
 	 * AbstractMemoryAllocatorTask} parameters).<br>
-	 * <b>This method modifies the {@link MemoryExclusionGraph} passed as a 
+	 * <b>This method modifies the {@link MemoryExclusionGraph} passed as a
 	 * parameter.</b>
-	 * 
+	 *
 	 * @param meg
-	 * 			{@link MemoryExclusionGraph} whose {@link 
-	 * 			MemoryExclusionVertex} are processed. This graph will be 
+	 * 			{@link MemoryExclusionGraph} whose {@link
+	 * 			MemoryExclusionVertex} are processed. This graph will be
 	 * 			modified by the method.
-	 * 
+	 *
 	 * @param alignment
-	 * 			 This property is used to represent the alignment of buffers 
-	 * 			 in memory. The same value, or a multiple should always be 
+	 * 			 This property is used to represent the alignment of buffers
+	 * 			 in memory. The same value, or a multiple should always be
 	 * 			 used in the memory allocation.
-	 * 
+	 *
 	 * @param memory
-	 * 			Contains the name of the component to which the given {@link 
-	 * 			MemoryExclusionGraph} is associated. Only merged {@link 
-	 * 			MemoryExclusionVertex} accessed by this core will be kept in 
-	 * 			the {@link MemoryExclusionGraph} when the split is applied. 
+	 * 			Contains the name of the component to which the given {@link
+	 * 			MemoryExclusionGraph} is associated. Only merged {@link
+	 * 			MemoryExclusionVertex} accessed by this core will be kept in
+	 * 			the {@link MemoryExclusionGraph} when the split is applied.
 	 * 			(others will be removed).
-	 * 			
+	 *
 	 */
 	protected def static void splitMergedBuffersDistributedOnly(MemoryExclusionGraph meg, int alignment, String memory) {
 		// Get the map of host Mobjects
@@ -210,13 +210,13 @@ class Distributor {
 		}
 
 		var hostsCopy = hosts.immutableCopy // Immutable copy for iteration purposes
-		// Iterate over the Host MObjects of the MEG 
+		// Iterate over the Host MObjects of the MEG
 		// identify mObject to be removed because the belong to another
 		// memory.
 		val mObjectsToRemove = new LinkedHashSet<MemoryExclusionVertex>
 		for (entry : hostsCopy.entrySet) {
-			// Create a group of MObject for each memory similarly to what is done 
-			// in distributeMeg method.		
+			// Create a group of MObject for each memory similarly to what is done
+			// in distributeMeg method.
 			// Map storing the groups of Mobjs
 			val mobjByBank = new LinkedHashMap<String, Set<MemoryExclusionVertex>>
 
@@ -226,7 +226,7 @@ class Distributor {
 			}
 
 			// If only one bank is used for all MObjs of this host,
-			// skip the split operation as it is useless (and may induce extra 
+			// skip the split operation as it is useless (and may induce extra
 			// bytes for alignment reasons)
 			if(mobjByBank.size != 1) {
 				// Apply only for mObj falling in the current bank
@@ -241,8 +241,8 @@ class Distributor {
 				mObjectsToRemove.addAll(mObjInOtherMem)
 
 			} else {
-				// Check that this unique bank is the current one, otherwise, 
-				// something went wrong or this and/or this meg is not the 
+				// Check that this unique bank is the current one, otherwise,
+				// something went wrong or this and/or this meg is not the
 				// result of a call to distributeMegDistributedOnly method
 				if(mobjByBank.keySet.get(0) != memory) {
 					throw new RuntimeException(
@@ -257,24 +257,24 @@ class Distributor {
 	}
 
 	/**
-	 * Finds the {@link MemoryExclusionVertex} in the given {@link 
-	 * MemoryExclusionGraph} that result from a merge operation of the memory 
-	 * scripts, and split them into several memory objects according to the 
-	 * Mixed distribution policy (see {@link AbstractMemoryAllocatorTask} 
+	 * Finds the {@link MemoryExclusionVertex} in the given {@link
+	 * MemoryExclusionGraph} that result from a merge operation of the memory
+	 * scripts, and split them into several memory objects according to the
+	 * Mixed distribution policy (see {@link AbstractMemoryAllocatorTask}
 	 * parameters).<br>
-	 * <b>This method modifies the {@link MemoryExclusionGraph} passed as a 
+	 * <b>This method modifies the {@link MemoryExclusionGraph} passed as a
 	 * parameter.</b>
-	 * 
+	 *
 	 * @param meg
-	 * 			{@link MemoryExclusionGraph} whose {@link 
-	 * 			MemoryExclusionVertex} are processed. This graph will be 
+	 * 			{@link MemoryExclusionGraph} whose {@link
+	 * 			MemoryExclusionVertex} are processed. This graph will be
 	 * 			modified by the method.
-	 * 
+	 *
 	 * @param alignment
-	 * 			 This property is used to represent the alignment of buffers 
-	 * 			 in memory. The same value, or a multiple should always be 
+	 * 			 This property is used to represent the alignment of buffers
+	 * 			 in memory. The same value, or a multiple should always be
 	 * 			 used in the memory allocation.
-	 * 			
+	 *
 	 */
 	protected def static void splitMergedBuffersMixed(MemoryExclusionGraph meg, int alignment) {
 		// Get the map of host Mobjects
@@ -287,10 +287,10 @@ class Distributor {
 		}
 
 		var hostsCopy = hosts.immutableCopy // Immutable copy for iteration purposes
-		// Iterate over the Host MObjects of the MEG 
+		// Iterate over the Host MObjects of the MEG
 		for (entry : hostsCopy.entrySet) {
-			// Create a group of MObject for each memory similarly to what is done 
-			// in distributeMeg method.		
+			// Create a group of MObject for each memory similarly to what is done
+			// in distributeMeg method.
 			// Map storing the groups of Mobjs
 			val mobjByBank = new LinkedHashMap<String, Set<MemoryExclusionVertex>>
 
@@ -300,7 +300,7 @@ class Distributor {
 			}
 
 			// If only one bank is used for all MObjs of this host,
-			// skip the split operation as it is useless (and may induce extra 
+			// skip the split operation as it is useless (and may induce extra
 			// bytes for alignment reasons)
 			if(mobjByBank.size != 1) {
 
@@ -311,33 +311,33 @@ class Distributor {
 	}
 
 	/**
-	 * Split the host {@link MemoryExclusionVertex} from the {@link 
+	 * Split the host {@link MemoryExclusionVertex} from the {@link
 	 * MemoryExclusionGraph}.
-	 * 
+	 *
 	 * @param mobjByBank
-	 * 		{@link Map} of {@link String} and {@link Set} of {@link 
+	 * 		{@link Map} of {@link String} and {@link Set} of {@link
 	 * 		MemoryExclusionVertex}. Each memory bank (the {@link String}) is
-	 * 		associated to the {@link Set} of {@link MemoryExclusionVertex} 
+	 * 		associated to the {@link Set} of {@link MemoryExclusionVertex}
 	 * 		that is to be allocated in this bank.
 	 * @param banks
 	 * 		{@link Set} of {@link String} representing the bank to process.
 	 * 		This must be a sub-set of the keys of the mobjByBank param.
 	 * @param hosts
-	 * 		{@link MemoryExclusionVertex#HOST_MEMORY_OBJECT_PROPERTY} from the 
+	 * 		{@link MemoryExclusionVertex#HOST_MEMORY_OBJECT_PROPERTY} from the
 	 * 		given {@link MemoryExclusionGraph}.
 	 * @param entry
-	 * 		{@link Entry} copied from an immutable copy of the {@link 
-	 * 		MemoryExclusionVertex#HOST_MEMORY_OBJECT_PROPERTY} of the given {@link 
+	 * 		{@link Entry} copied from an immutable copy of the {@link
+	 * 		MemoryExclusionVertex#HOST_MEMORY_OBJECT_PROPERTY} of the given {@link
 	 *  	MemoryExclusionGraph}.
-	 * 		This {@link Entry} is the only one to be processed when calling this 
+	 * 		This {@link Entry} is the only one to be processed when calling this
 	 * 		method. (i.e. the only one that is split.)
 	 * @param meg
-	 * 		{@link MemoryExclusionGraph} whose {@link 
-	 * 		MemoryExclusionVertex} are processed. This graph will be 
+	 * 		{@link MemoryExclusionGraph} whose {@link
+	 * 		MemoryExclusionVertex} are processed. This graph will be
 	 * 		modified by the method.
 	 * @param alignment
-	 *  	This property is used to represent the alignment of buffers 
-	 * 		in memory. The same value, or a multiple should always be 
+	 *  	This property is used to represent the alignment of buffers
+	 * 		in memory. The same value, or a multiple should always be
 	 * 		used in the memory allocation.
 	 */
 	protected def static void splitMergedBuffers(
@@ -371,21 +371,21 @@ class Distributor {
 		// into this memory bank.
 		val newHostsMObjs = new LinkedHashSet<MemoryExclusionVertex>
 		for (bankEntry : mobjByBank.filter[bank, mobjs|banks.contains(bank)].entrySet) {
-			// Iterate over Mobjects to build the range(s) of this memory 
+			// Iterate over Mobjects to build the range(s) of this memory
 			// bank (all ranges are relative to the host mObj)
 			val List<Range> rangesInBank = new ArrayList
 			for (mobj : bankEntry.value) {
 				val rangesInHost = mobj.getPropertyBean.getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
-				// Process non-divided buffers 
+				// Process non-divided buffers
 				if(rangesInHost.size == 1) {
 					// add the range covered by this buffer to the
-					// rangesInBank (use a clone because the range will be 
+					// rangesInBank (use a clone because the range will be
 					// modified during call to the union method
 					rangesInBank.union(rangesInHost.get(0).value.value.clone as Range);
 				} else {
-					// Divided buffers: 
+					// Divided buffers:
 					// Check if all parts of the MObj were allocated in the same memory bank
-					// i.e. check if source and dest memory objects are 
+					// i.e. check if source and dest memory objects are
 					// all stored in the same memory bank
 					val dividedPartsHosts = mobj.propertyBean.getValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS) as List<MemoryExclusionVertex>
 					val partsHostsSet = dividedPartsHosts.map[bankByMobj.get(it)].toSet
@@ -393,13 +393,13 @@ class Distributor {
 						// All hosts were allocated in the same bank
 						// And this bank is the current bankEntry
 						// The split is maintained, and rangesInHost must be updated
-						// (use a clone because the range will be 
+						// (use a clone because the range will be
 						// modified during call to the union method)
 						rangesInHost.forEach[range|rangesInBank.union(range.value.value.clone as Range)]
 					} else {
 						// Not all hosts were allocated in the same bank
 						// The mObj cannot be splitted
-						// => It must be restored to its original size in 
+						// => It must be restored to its original size in
 						// the graph
 						mObjsToUndivide.add(mobj)
 					}
@@ -418,8 +418,8 @@ class Distributor {
 				for (mObj : mObjInCurrentBank) {
 					val ranges = mObj.getPropertyBean.getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
 					if(ranges.size == 1) {
-						// Buffer is undivided, check if it intersect with 
-						// the current range in bank 
+						// Buffer is undivided, check if it intersect with
+						// the current range in bank
 						if(ranges.get(0).value.value.intersection(currentRange) !== null) {
 							// Add undivided object at the beginning of the list
 							// to make sure that no divided object will ever be selected
@@ -446,8 +446,8 @@ class Distributor {
 				val currentRange = currentRangeAndMobjs.key
 				val mObjInCurrentRange = currentRangeAndMobjs.value
 
-				// 1. Select the first object as the new host 
-				// (cannot be a divided mObject as divided mObjects were 
+				// 1. Select the first object as the new host
+				// (cannot be a divided mObject as divided mObjects were
 				// always added at the end of the list)
 				val newHostMobj = mObjInCurrentRange.get(0)
 				newHostsMObjs.add(newHostMobj)
@@ -459,14 +459,14 @@ class Distributor {
 				val minIndex = if(alignment <= 0) {
 						currentRange.start
 					} else {
-						// Make sure that index aligned in the buffer are in 
+						// Make sure that index aligned in the buffer are in
 						// fact aligned.
 						// This goal is here to make sure that
 						// index 0 of the new host buffer is aligned !
 						val newHostOldStart = newHostOldRange.get(0).value.value.start; // .value.value
-						// If the result of te modulo is not null, unaligned 
+						// If the result of te modulo is not null, unaligned
 						// corresponds to the number of "extra" bytes making
-						// index 0 of newHost not aligned with respect to 
+						// index 0 of newHost not aligned with respect to
 						// currentRangeStart
 						val unaligned = (newHostOldStart - currentRange.start) % alignment
 						if(unaligned == 0)
@@ -482,15 +482,15 @@ class Distributor {
 
 				if(mObjInCurrentRange.size <= 1) {
 					// The new host Mobj does not host any other MObj
-					// last code was still applied to make sure that 
-					// the mObject has the right size (although it 
+					// last code was still applied to make sure that
+					// the mObject has the right size (although it
 					// will never be larger than its original weight
-					// and never by misaligned as it does not not 
-					// host anything) 
+					// and never by misaligned as it does not not
+					// host anything)
 					newHostMobj.propertyBean.removeProperty(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY)
 				} else {
-					// The remaining processing should only be applied if 
-					// the mObject is not alone in its range and does 
+					// The remaining processing should only be applied if
+					// the mObject is not alone in its range and does
 					// actually host other mObjects
 					// Update newHostMobj realTokenRange property
 					val newHostRealTokenRange = newHostOldRange.get(0).value.key
@@ -505,7 +505,7 @@ class Distributor {
 
 					// 3. Add all hosted mObjects to the list
 					// and set their properties
-					// (exclude first mObj from iteration, as it is the 
+					// (exclude first mObj from iteration, as it is the
 					// new host)
 					for (mObj : mObjInCurrentRange.tail) {
 						// update the real token range property by translating
@@ -514,18 +514,18 @@ class Distributor {
 						val mObjNewRanges = newArrayList
 						for (mObjRangePair : mObjRanges) {
 							// Check if the current mObjRangePair overlaps with
-							// the current range. 
+							// the current range.
 							// Always OK for undivided buffers
-							// If a divided buffer is mapped into several 
-							// hosts, this code makes sure that each mapped 
-							// ranged is updated only when the corresponding 
+							// If a divided buffer is mapped into several
+							// hosts, this code makes sure that each mapped
+							// ranged is updated only when the corresponding
 							// range is processed.
 							if(mObjRangePair.value.value.hasOverlap(currentRange)) {
-								// case for Undivided buffer and divided 
+								// case for Undivided buffer and divided
 								// range falling into the current range
 								mObjNewRanges.add(newHostMobj -> (mObjRangePair.value.key -> mObjRangePair.value.value.translate(-minIndex - newHostActualRealTokenRange.start) ))
 							} else {
-								// Case for divided range not falling into 
+								// Case for divided range not falling into
 								// the current range
 								mObjNewRanges.add(mObjRangePair)
 							}
@@ -574,7 +574,7 @@ class Distributor {
 	 * {@link MemoryExclusionVertex}, if any).
 	 * </br></br>
 	 * <b>Method called by {@link #splitMergedBuffers(String, MemoryExclusionGraph, int)} only.</b>
-	 * 
+	 *
 	 * @param meg
 	 *            the {@link MemoryExclusionGraph} to which the exclusion are to
 	 *            be added.
@@ -593,7 +593,7 @@ class Distributor {
 			val adjacentMObjs = curentMObj.propertyBean.getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP) as List<MemoryExclusionVertex>
 			for (adjacentMObj : adjacentMObjs) {
 				// Check if the adjacent mObj is already in the graph
-				if(adjacentMObj != mObj // No self-exclusion 
+				if(adjacentMObj != mObj // No self-exclusion
 				&& meg.vertexSet.contains(adjacentMObj)) {
 					// the adjacent mObj is already in the graph
 					// Add the exclusion back
@@ -603,10 +603,10 @@ class Distributor {
 					// - a hosted MObj
 					// - a mobjToUndivide (not yet added back to the graph)
 					// The adjacent mObj is not in the graph
-					// It must be merged within a host 
+					// It must be merged within a host
 					// (or several host in case of a division)
 					hosts.forEach [ hostMObj, hostedMObjs |
-						if(hostMObj != mObj // No self-exclusion 
+						if(hostMObj != mObj // No self-exclusion
 						&& hostedMObjs.contains(adjacentMObj) // Does the tested host contain the adjacentMObj
 						&& meg.containsVertex(hostMObj) // If hostMobj was already added to the MEG
 						// && !meg.containsEdge(mObj,hostMObj) // Exclusion does not already exists
@@ -614,9 +614,9 @@ class Distributor {
 							meg.addEdge(mObj, hostMObj)
 						}
 					]
-				// If the adjacent mObj was not yet added back to the MEG, 
+				// If the adjacent mObj was not yet added back to the MEG,
 				// this forEach will have no impact, but edges will be
-				// created on processing of this adjacent mObjs in  
+				// created on processing of this adjacent mObjs in
 				// a following iteration of the current for loop.
 				}
 			}
@@ -630,7 +630,7 @@ class Distributor {
 	 * <br><br>
 	 * With this policy, all {@link MemoryExclusionVertex} are put in a single
 	 * Shared memory.
-	 * 
+	 *
 	 * @param memEx
 	 * 			The processed {@link MemoryExclusionGraph}.
 	 * @return {@link Map} containing the name of the memory banks and the 
@@ -648,10 +648,10 @@ class Distributor {
 	 * DISTRIBUTED_ONLY policy (see {@link AbstractMemoryAllocatorTask} 
 	 * parameters).
 	 * <br><br>
-	 * With this policy, each {@link MemoryExclusionVertex} is put in as many 
+	 * With this policy, each {@link MemoryExclusionVertex} is put in as many
 	 * memory banks as the number of processing elements accessing it during an
 	 * iteration of the original dataflow graph.
-	 * 
+	 *
 	 * @param memEx
 	 * 			The processed {@link MemoryExclusionGraph}.
 	 * @return {@link Map} containing the name of the memory banks and the 
@@ -680,8 +680,8 @@ class Distributor {
 					findMObjBankDistributedOnly(hostedMobj, hostedMObjsBanks, memEx)
 				}
 
-				// Add the banks for the hosted MObjs (the split of hosted mObj will 
-				// be done later, after duplication of the MEG to avoid having the 
+				// Add the banks for the hosted MObjs (the split of hosted mObj will
+				// be done later, after duplication of the MEG to avoid having the
 				// same MObj several time in a pre-duplication MEG)
 				for (bank : hostedMObjsBanks.keySet) {
 					var verticesSet = memExesVerticesSet.get(bank)
@@ -700,20 +700,20 @@ class Distributor {
 	}
 
 	/**
-	 * The purpose of this method is to find the bank associated to a given 
-	 * {@link MemoryExclusionVertex} according to the DISTRIBUTED_ONLY 
-	 * distribution policy. The mObj is put in the {@link Map} passed as a 
-	 * parameter where keys are the names of the memory banks and values are 
+	 * The purpose of this method is to find the bank associated to a given
+	 * {@link MemoryExclusionVertex} according to the DISTRIBUTED_ONLY
+	 * distribution policy. The mObj is put in the {@link Map} passed as a
+	 * parameter where keys are the names of the memory banks and values are
 	 * the {@link Set} of associated {@link MemoryExclusionVertex}.
-	 * 
+	 *
 	 * @param mObj
-	 * 			The {@link MemoryExclusionVertex} whose memory banks are 
+	 * 			The {@link MemoryExclusionVertex} whose memory banks are
 	 * 			identified.
 	 * @param mObjByBank
 	 * 			The {@link Map} in which results of this method are put.
 	 * @param memEx
 	 * 			The {@link MemoryExclusionGraph} whose vertices are allocated.
-	 * 			(only used to retrieved the corresponding {@link 
+	 * 			(only used to retrieved the corresponding {@link
 	 * 			DirectedAcyclicGraph}).
 	 */
 	protected def static void findMObjBankDistributedOnly(MemoryExclusionVertex mObj, Map<String, Set<MemoryExclusionVertex>> mObjByBank, MemoryExclusionGraph memEx) {
@@ -763,7 +763,7 @@ class Distributor {
 	 * accessing it during an iteration of the original dataflow graph.</li>
 	 * <li> in shared memory otherwise (i.e. if multiple PE access this memory
 	 * object during a graph iteration).</li></ul>
-	 * 
+	 *
 	 * @param memEx
 	 * 			The processed {@link MemoryExclusionGraph}.
 	 * @return {@link Map} containing the name of the memory banks and the 
@@ -786,11 +786,11 @@ class Distributor {
 	 * With this policy, each {@link MemoryExclusionVertex} is put<ul><li>
 	 * in the memory banks of a processing elements if it is the only PE
 	 * accessing it during an iteration of the original dataflow graph.</li>
-	 * <li> in shared memory if it is a merged buffer, unless all mObjects of 
+	 * <li> in shared memory if it is a merged buffer, unless all mObjects of
 	 * the merged buffer fall in the same memory bank.</li>
 	 * <li> in shared memory otherwise (i.e. if multiple PE access this memory
 	 * object during a graph iteration).</li></ul>
-	 * 
+	 *
 	 * @param memEx
 	 * 			The processed {@link MemoryExclusionGraph}.
 	 * @return {@link Map} containing the name of the memory banks and the 
@@ -833,14 +833,14 @@ class Distributor {
 	}
 
 	/**
-	 * The purpose of this method is to find the bank associated to a given 
-	 * {@link MemoryExclusionVertex} according to the MIXED distribution 
+	 * The purpose of this method is to find the bank associated to a given
+	 * {@link MemoryExclusionVertex} according to the MIXED distribution
 	 * policy. The mObj is put in the {@link Map} passed as a parameter where
-	 * keys are the names of the memory banks and values are the {@link Set} 
+	 * keys are the names of the memory banks and values are the {@link Set}
 	 * of associated {@link MemoryExclusionVertex}.
-	 * 
+	 *
 	 * @param mObj
-	 * 			The {@link MemoryExclusionVertex} whose memory banks are 
+	 * 			The {@link MemoryExclusionVertex} whose memory banks are
 	 * 			identified.
 	 * @param mObjByBank
 	 * 			The {@link Map} in which results of this method are put.
@@ -862,6 +862,18 @@ class Distributor {
 			// The MObject is not associated to a DAGEdge
 			// It is either a FIFO_head/body or working memory
 			// For now these mobjects are put in shared memory
+			// The MObject is not associated to a DAGEdge
+			// It is either a FIFO_head/body or working memory
+			// If this is a working memory object
+			//logger.log(Level.INFO, "findMObjBankMixed sink " + mObj.sink + " source " + mObj.source)
+			if(mObj.source == mObj.sink){
+				// This is a wMem mObj
+				// The mObj is allocated in the MEG of the core executing the corresponding actor.
+				var ComponentInstance component component = mObj.vertex.propertyBean.getValue("Operator") as ComponentInstance
+				memory = component.instanceName
+			} else {
+				// For now fifos are allocated in shared memory
+			}
 		}
 
 		var verticesSet = mObjByBank.get(memory)

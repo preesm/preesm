@@ -75,9 +75,13 @@ public class MapperDAG extends DirectedAcyclicGraph {
   /** The cost of the implementation. */
   private static final String SCHEDULE_COST = "SCHEDULE_COST";
 
+  /** Property clustered hierarchical vertex. */
+  public static final String CLUSTERED_VERTEX = "clustered_vertex";
+
   static {
     {
       AbstractGraph.public_properties.add(MapperDAG.SCHEDULE_COST);
+      AbstractGraph.public_properties.add(MapperDAG.CLUSTERED_VERTEX);
     }
   }
 
