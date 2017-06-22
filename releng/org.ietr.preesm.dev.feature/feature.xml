@@ -105,6 +105,12 @@ The fact that you are presently reading this means that you have had knowledge o
       <import feature="org.ietr.externaldeps.aio.deps"/>
       <import feature="org.ietr.graphiti.feature"/>
       <import feature="org.ietr.dftools.feature"/>
+      <!--
+		If building along with Graphiti and/or DFTools source (without Preesm Meta
+		Dev Feature), the following features are not available. That is because the
+		source features are generated automatically by the Tycho Maven plug-in.
+		Please do not discard them.
+		-->
       <import feature="org.ietr.graphiti.feature.source"/>
       <import feature="org.ietr.dftools.feature.source"/>
    </requires>
