@@ -59,7 +59,7 @@ class PapifiedCPrinter extends CPrinter {
 				//For all the FunctionCalls within the main code loop
 				if(elts.eClass.name.equals("FunctionCall")){	
 					//Add PAPI action variable 
-					(block as Block).definitions.add({
+					block.definitions.add({
 						var const = CodegenFactory.eINSTANCE.createBuffer
 						const.name = PAPI_actions.concat((elts as FunctionCall).actorName)
 						const.size = 1
@@ -68,7 +68,7 @@ class PapifiedCPrinter extends CPrinter {
 						const
 					})
 					//Add FILE variable to store PAPI data 
-					(block as Block).definitions.add({
+					block.definitions.add({
 						var const = CodegenFactory.eINSTANCE.createBuffer
 						const.name = PAPI_output.concat((elts as FunctionCall).actorName)
 						const.size = 1
@@ -77,21 +77,21 @@ class PapifiedCPrinter extends CPrinter {
 						const
 					})	
 					//Create a constant string with the actor name
-					(block as Block).definitions.add({
+					block.definitions.add({
 						var const = CodegenFactory.eINSTANCE.createConstantString
 						const.name = actor_name.concat((elts as FunctionCall).actorName)
 						const.value = (elts as FunctionCall).actorName
 						const
 					})	
 					//Create a constant for the Code_set_size
-					(block as Block).definitions.add({
+					block.definitions.add({
 						var const = CodegenFactory.eINSTANCE.createConstant
 						const.name = "Code_set_size"
 						const.value = 2
 						const
 					})
 					//Create a constant for use 0 as a funtion parameter
-					(block as Block).definitions.add({
+					block.definitions.add({
 						var const = CodegenFactory.eINSTANCE.createConstant
 						const.name = "Zero"
 						const.value = 0
@@ -101,9 +101,9 @@ class PapifiedCPrinter extends CPrinter {
 					(block as CoreBlock).initBlock.codeElts.add({
 						var func = CodegenFactory.eINSTANCE.createFunctionCall()
 						func.name = "event_init_papi_actions"
-						func.addParameter((block as Block).definitions.get((block as Block).definitions.length-5), PortDirection.OUTPUT)
-						func.addParameter((block as Block).definitions.get((block as Block).definitions.length-3), PortDirection.INPUT)
-						func.addParameter((block as Block).definitions.get((block as Block).definitions.length-2), PortDirection.INPUT)
+						func.addParameter(block.definitions.get(block.definitions.length-5), PortDirection.OUTPUT)
+						func.addParameter(block.definitions.get(block.definitions.length-3), PortDirection.INPUT)
+						func.addParameter(block.definitions.get(block.definitions.length-2), PortDirection.INPUT)
 						func.actorName = "PAPI Init_papi_actions_".concat((elts as FunctionCall).actorName)
 						func
 					})	
@@ -111,13 +111,13 @@ class PapifiedCPrinter extends CPrinter {
 					(block as CoreBlock).initBlock.codeElts.add({
 						var func = CodegenFactory.eINSTANCE.createFunctionCall()
 						func.name = "event_init_output_file"
-						func.addParameter((block as Block).definitions.get((block as Block).definitions.length-4), PortDirection.INPUT)
-						func.addParameter((block as Block).definitions.get((block as Block).definitions.length-3), PortDirection.INPUT)
+						func.addParameter(block.definitions.get(block.definitions.length-4), PortDirection.INPUT)
+						func.addParameter(block.definitions.get(block.definitions.length-3), PortDirection.INPUT)
 						func.actorName = "PAPI Init_output_file_".concat((elts as FunctionCall).actorName)
 						func
 					})	
 					//Create a variable to store the start of the actor execution
-					(block as Block).definitions.add({
+					block.definitions.add({
 						var const = CodegenFactory.eINSTANCE.createBuffer
 						const.name = PAPI_start_usec.concat((elts as FunctionCall).actorName)
 						const.size = 1
@@ -126,7 +126,7 @@ class PapifiedCPrinter extends CPrinter {
 						const
 					})	
 					//Create a variable to store the end of the actor execution
-					(block as Block).definitions.add({
+					block.definitions.add({
 						var const = CodegenFactory.eINSTANCE.createBuffer
 						const.name = PAPI_end_usec.concat((elts as FunctionCall).actorName)
 						const.size = 1
@@ -135,7 +135,7 @@ class PapifiedCPrinter extends CPrinter {
 						const
 					})	
 					//Create a variable to store the event code set
-					(block as Block).definitions.add({
+					block.definitions.add({
 						var const = CodegenFactory.eINSTANCE.createBuffer
 						const.name = PAPI_eventCodeSet.concat((elts as FunctionCall).actorName)
 						const.size = 2
@@ -147,12 +147,12 @@ class PapifiedCPrinter extends CPrinter {
 					(block as CoreBlock).initBlock.codeElts.add({
 						var func = CodegenFactory.eINSTANCE.createFunctionCall()
 						func.name = "event_init_event_code_set"
-						func.addParameter((block as Block).definitions.get((block as Block).definitions.length-1), PortDirection.OUTPUT)
+						func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
 						func.actorName = "PAPI Init_code_set_".concat((elts as FunctionCall).actorName)
 						func
 					})		
 					//Create a variable to store the event set					
-					(block as Block).definitions.add({
+					block.definitions.add({
 						var const = CodegenFactory.eINSTANCE.createBuffer
 						const.name = PAPI_eventSet.concat((elts as FunctionCall).actorName)
 						const.size = 1
@@ -164,7 +164,7 @@ class PapifiedCPrinter extends CPrinter {
 					(block as CoreBlock).initBlock.codeElts.add({
 						var func = CodegenFactory.eINSTANCE.createFunctionCall()
 						func.name = "event_init_event_set"
-						func.addParameter((block as Block).definitions.get((block as Block).definitions.length-1), PortDirection.OUTPUT)
+						func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
 						func.actorName = "PAPI Init_event_set_".concat((elts as FunctionCall).actorName)
 						func
 					})
@@ -172,10 +172,10 @@ class PapifiedCPrinter extends CPrinter {
 					(block as CoreBlock).initBlock.codeElts.add({
 						var func = CodegenFactory.eINSTANCE.createFunctionCall()
 						func.name = "event_create_eventList"
-						func.addParameter((block as Block).definitions.get((block as Block).definitions.length-1), PortDirection.OUTPUT)
-						func.addParameter((block as Block).definitions.get((block as Block).definitions.length-6), PortDirection.INPUT)
-						func.addParameter((block as Block).definitions.get((block as Block).definitions.length-2), PortDirection.INPUT)
-						func.addParameter((block as Block).definitions.get((block as Block).definitions.length-5), PortDirection.INPUT)
+						func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
+						func.addParameter(block.definitions.get(block.definitions.length-6), PortDirection.INPUT)
+						func.addParameter(block.definitions.get(block.definitions.length-2), PortDirection.INPUT)
+						func.addParameter(block.definitions.get(block.definitions.length-5), PortDirection.INPUT)
 						func.actorName = "PAPI create_eventlist_".concat((elts as FunctionCall).actorName)
 						func
 					})	
@@ -183,7 +183,7 @@ class PapifiedCPrinter extends CPrinter {
 					(block as CoreBlock).initBlock.codeElts.add({
 						var func = CodegenFactory.eINSTANCE.createFunctionCall()
 						func.name = "eventList_set_multiplex"
-						func.addParameter((block as Block).definitions.get((block as Block).definitions.length-1), PortDirection.OUTPUT)
+						func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
 						func.actorName = "PAPI eventList_set_multiplex_".concat((elts as FunctionCall).actorName)
 						func
 					})	
