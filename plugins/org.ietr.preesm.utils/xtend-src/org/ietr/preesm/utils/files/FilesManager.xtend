@@ -58,6 +58,7 @@ import org.eclipse.core.runtime.FileLocator
 import org.osgi.framework.FrameworkUtil
 
 import static org.ietr.preesm.utils.files.Result.*
+import java.util.Arrays
 
 /**
  * Utility class to manipulate files. It brings everything needed to extract files
@@ -114,7 +115,7 @@ class FilesManager {
 			throw new FileNotFoundException(path)
 		}
 		if (url.protocol.equals("jar")) {
-			val splittedURL = url.file.split("!")
+			val splittedURL = Arrays.asList(url.file.split("!"))
 			val fileUri = new URI(splittedURL.head)
 			val jar = new JarFile(new File(fileUri))
 			return jarExtract(jar, splittedURL.last, targetF)
@@ -285,7 +286,7 @@ class FilesManager {
 		// Search in all reachable bundles for the given path resource
 		val bundle = FrameworkUtil::getBundle(FilesManager)
 		val url = if (bundle !== null) {
-				val bundles = bundle.bundleContext.bundles
+				val bundles = Arrays.asList(bundle.bundleContext.bundles)
 				bundles
 					// Search only in plugins containing the bundleFilter String
 				.filter[symbolicName.contains(bundleFilter)]
@@ -417,7 +418,7 @@ class FilesManager {
 		}
 
 		val inputStream = if (url.protocol.equals("jar")) {
-				val splittedURL = url.file.split("!")
+				val splittedURL = Arrays.asList(url.file.split("!"))
 				val jar = new JarFile(splittedURL.head.substring(5))
 				val entryPath = splittedURL.last
 				val updatedPath = if (entryPath.startsWith("/")) {
