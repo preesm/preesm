@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/issue33/Algo/top.pi"/>
+        <architecture url="/issue33/Archi/sample.slam"/>
+        <codegenDirectory url=""/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core"/>
+            <task name="top/Read"/>
+            <task name="top/Write"/>
+            <task name="top/HierarchicalComputeActor/in"/>
+            <task name="top/HierarchicalComputeActor/out"/>
+            <task name="top/HierarchicalComputeActor/compute"/>
+            <task name="top/HierarchicalComputeActor"/>
+            <task name="top"/>
+        </constraintGroup>
+    </constraints>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl="">
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="1.0"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes/>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core"/>
+        </specialVertexOperators>
+        <numberOfTopExecutions>1</numberOfTopExecutions>
+    </simuParams>
+    <variables excelUrl=""/>
+    <parameterValues/>
+</scenario>
