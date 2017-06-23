@@ -121,7 +121,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
           throw (new WorkflowException("Graph not valid, not schedulable"));
         }
       } catch (final SDF4JException e) {
-        throw (new WorkflowException(e.getMessage()));
+        throw (new WorkflowException(e.getMessage(), e));
       }
     } else {
       logger.log(Level.SEVERE, "Inconsistent Hierarchy, graph can't be flattened");
