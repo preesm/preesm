@@ -412,9 +412,9 @@ Some Maven plugins are however not handled by the M2E plugin. This is the case f
 
 Some other Maven plugins need to be supported by Eclipse, as the Tycho plugin that sets some Eclipse plugin configuration up. Therefore we need to install some M2E extensions (called connector) to support them:
 
-*   [M2E Tycho connector](https://github.com/tesla/m2eclipse-tycho) (installed from this [update site](http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST/)).
-*   [M2E Checkstyle Connector](https://github.com/m2e-code-quality/m2e-code-quality) (installed from [this update site](http://m2e-code-quality.github.io/m2e-code-quality/site/latest/))
-*   TODO: formatter/settings
+*   [M2E Tycho connector](https://github.com/tesla/m2eclipse-tycho) (installed from this [update site](http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST/)): Create **.project** files with Eclipse plugin nature from the POM description;
+*   [M2E Checkstyle Connector](https://github.com/m2e-code-quality/m2e-code-quality) (installed from [this update site](http://m2e-code-quality.github.io/m2e-code-quality/site/latest/)): Apply the checkstyle configuration to the Eclipse Checkstyle Plugin from the Maven Checkstyle Plugin configuration;
+*   [M2E Settings Connector](https://github.com/antoine-morvan/m2e-settings) (isntalled from [this update site](https://antoine-morvan.github.io/m2e-settings/site/)): Automatically sets project specific settings (formatter on save action, cleanup, encoding, ...) from the POM file.
 
 ### Installing Dependencies
 
