@@ -67,5 +67,37 @@
          </outputs>
       </task>
    </extension>
+   <extension
+         point="org.ietr.dftools.workflow.tasks">
+      <task
+            id="org.ietr.preesm.throughput.ThroughputPlugin"
+            name="Throughput Evaluation"
+            type="org.ietr.preesm.throughput.ThroughputPlugin">
+         <inputs>
+            <input
+                  id="SDF"
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="SDF"
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+            </output>
+            <output
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </output>
+            <output
+                  id="throughput"
+                  object="java.lang.Double">
+            </output>
+         </outputs>
+      </task>
+   </extension>
 
 </plugin>

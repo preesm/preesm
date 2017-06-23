@@ -52,7 +52,7 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
  *
  *         Throughput plug-in for the evaluation of IBSDF and SDF graphs throughput
  */
-public class TroughputPlugin extends AbstractTaskImplementation {
+public class ThroughputPlugin extends AbstractTaskImplementation {
 
   /**
    * @author hderoui
@@ -122,7 +122,8 @@ public class TroughputPlugin extends AbstractTaskImplementation {
     // set the outputs
     Map<String, Object> outputs = new HashMap<String, Object>();
     outputs.put("SDF", inputGraph);
-    outputs.put("Throughput", throughput);
+    outputs.put("scenario", scenario);
+    outputs.put("throughput", throughput);
 
     return outputs;
   }

@@ -11,7 +11,7 @@ public class PeriodicSchedule {
 
   public double evaluate(SDFGraph inputGraph, PreesmScenario scenario) {
     // TODO Auto-generated method stub
-    return 0;
+    return 44.4;
   }
 
 }
