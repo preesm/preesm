@@ -106,18 +106,18 @@ public class PiMMAlgorithmChecker {
       for (final Fifo f : fifoChecker.getFifoWithOneZeroRate()) {
         final String srcActorPath = ((AbstractActor) f.getSourcePort().eContainer()).getName() + "." + f.getSourcePort().getName();
         final String tgtActorPath = ((AbstractActor) f.getTargetPort().eContainer()).getName() + "." + f.getTargetPort().getName();
-        this.errorMsgs.put("Fifo between actors " + srcActorPath + " and " + tgtActorPath + " has invalid rates (one equals 0 but not the other).\n", f);
+        this.errorMsgs.put("Fifo between actors " + srcActorPath + " and " + tgtActorPath + " has invalid rates (one equals 0 but not the other)", f);
       }
       for (final Fifo f : fifoChecker.getFifoWithVoidType()) {
         final String srcActorPath = ((AbstractActor) f.getSourcePort().eContainer()).getName() + "." + f.getSourcePort().getName();
         final String tgtActorPath = ((AbstractActor) f.getTargetPort().eContainer()).getName() + "." + f.getTargetPort().getName();
         this.warningMsgs
-            .put("Fifo between actors " + srcActorPath + " and " + tgtActorPath + " has type \"void\" (this is not supported by code generation).\n", f);
+            .put("Fifo between actors " + srcActorPath + " and " + tgtActorPath + " has type \"void\" (this is not supported by code generation)", f);
       }
       for (final Fifo f : fifoChecker.getFifoWithZeroRates()) {
         final String srcActorPath = ((AbstractActor) f.getSourcePort().eContainer()).getName() + "." + f.getSourcePort().getName();
         final String tgtActorPath = ((AbstractActor) f.getTargetPort().eContainer()).getName() + "." + f.getTargetPort().getName();
-        this.warningMsgs.put("Fifo between actors " + srcActorPath + " and " + tgtActorPath + " has rates equal to 0 (you may have forgotten to set them).\n",
+        this.warningMsgs.put("Fifo between actors " + srcActorPath + " and " + tgtActorPath + " has rates equal to 0 (you may have forgotten to set them)",
             f);
       }
     }
@@ -134,14 +134,14 @@ public class PiMMAlgorithmChecker {
     if (!refinementChecker.checkRefinements(graph)) {
       this.errors = true;
       for (final Actor a : refinementChecker.getActorsWithoutRefinement()) {
-        this.errorMsgs.put("Actor " + a.getPath() + " does not have a refinement.\n", a);
+        this.errorMsgs.put("Actor " + a.getPath() + " does not have a refinement", a);
       }
       for (final Actor a : refinementChecker.getActorsWithInvalidExtensionRefinement()) {
         this.errorMsgs
-            .put("Refinement " + a.getRefinement().getFilePath() + " of Actor " + a.getPath() + " does not have a valid extension (.h, .idl, or .pi).\n", a);
+            .put("Refinement " + a.getRefinement().getFilePath() + " of Actor " + a.getPath() + " does not have a valid extension (.h, .idl, or .pi)", a);
       }
       for (final Actor a : refinementChecker.getActorsWithNonExistingRefinement()) {
-        this.errorMsgs.put("Refinement  " + a.getRefinement().getFilePath() + " of Actor " + a.getPath() + " does not reference an existing file.\n", a);
+        this.errorMsgs.put("Refinement  " + a.getRefinement().getFilePath() + " of Actor " + a.getPath() + " does not reference an existing file", a);
       }
     }
   }
@@ -154,7 +154,7 @@ public class PiMMAlgorithmChecker {
   public String getErrorMsg() {
     String result = "Validation of graph " + this.graph.getName() + " raised the following errors:\n";
     for (final String msg : this.errorMsgs.keySet()) {
-      result += "- " + msg;
+      result += "- " + msg + "\n";
     }
     return result;
   }
@@ -174,7 +174,7 @@ public class PiMMAlgorithmChecker {
    * @return the ok msg
    */
   public String getOkMsg() {
-    final String result = "Validation of graph " + this.graph.getName() + " raised no error or warning:\n";
+    final String result = "Validation of graph " + this.graph.getName() + " raised no error or warning:";
 
     return result;
   }
@@ -187,7 +187,7 @@ public class PiMMAlgorithmChecker {
   public String getWarningMsg() {
     String result = "Validation of graph " + this.graph.getName() + " raised the following warnings:\n";
     for (final String msg : this.warningMsgs.keySet()) {
-      result += "- " + msg;
+      result += "- " + msg + "\n";
     }
     return result;
   }

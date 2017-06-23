@@ -112,7 +112,8 @@ public class ListSchedulingMapping extends AbstractMapping {
 
     final InitialLists initial = new InitialLists();
 
-    if (!initial.constructInitialLists(dag, simu)) {
+    final boolean couldConstructInitialLists = initial.constructInitialLists(dag, simu);
+    if (!couldConstructInitialLists) {
       WorkflowLogger.getLogger().log(Level.SEVERE, "Error in scheduling");
       return null;
     }
