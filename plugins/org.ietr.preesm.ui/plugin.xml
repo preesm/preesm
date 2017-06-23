@@ -43,6 +43,16 @@
 
 <plugin>
    <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.ietr.preesm.ui.perspective.PreesmPerspective"
+            fixed="false"
+            icon="icons/preesmProject.png"
+            id="org.ietr.preesm.ui.perspective"
+            name="Preesm">
+      </perspective>
+   </extension>
+   <extension
          point="org.eclipse.ui.editors">
       <editor
             class="org.ietr.dftools.graphiti.ui.editors.GraphEditor"
@@ -251,6 +261,59 @@
             name="LayoutFileFilter"
             visibleInUI="true">
       </commonFilter>
+	 <commonWizard type="new"
+	   wizardId="org.ietr.preesm.experiment.ui.pimm.wizards.NewPiMMWizard">
+	     <enablement>
+		   <or>
+		    <adapt type="org.eclipse.core.resources.IFolder" />
+		    <adapt type="org.eclipse.core.resources.IProject" />
+		   </or>
+	     </enablement>
+	 </commonWizard>
+
+	 <commonWizard type="new"
+	   wizardId="org.ietr.preesm.ui.wizards.workflow">
+	     <enablement>
+		   <or>
+		    <adapt type="org.eclipse.core.resources.IFolder" />
+		    <adapt type="org.eclipse.core.resources.IProject" />
+		   </or>
+	     </enablement>
+	 </commonWizard>
+
+	 <commonWizard type="new"
+	   wizardId="net.sf.dftools.ui.slam.NewSlamFileWizard">
+	     <enablement>
+		   <or>
+		    <adapt type="org.eclipse.core.resources.IFolder" />
+		    <adapt type="org.eclipse.core.resources.IProject" />
+		   </or>
+	     </enablement>
+	 </commonWizard>
+
+	 <commonWizard type="new"
+	   wizardId="org.ietr.preesm.core.ui.wizards.NewScenarioFileWizard">
+	     <enablement>
+		   <or>
+		    <adapt type="org.eclipse.core.resources.IFolder" />
+		    <adapt type="org.eclipse.core.resources.IProject" />
+		   </or>
+	     </enablement>
+	 </commonWizard>
+
+	 <commonWizard type="new"
+	   wizardId="org.ietr.preesm.core.wizards.NewPreesmProjectWizard">
+	     <enablement>
+			<or>
+				<with variable="selection">
+					<count value="0"/>
+				</with>
+				<adapt type="org.eclipse.core.resources.IProject" />
+			</or>
+	     </enablement>
+	 </commonWizard>
+
+
    </extension>
    <extension
          id="org.ietr.preesm.ui.projectexplorerviewer"
@@ -1265,16 +1328,6 @@
             name="PiMM editor context"
             parentId="org.eclipse.graphiti.ui.diagramEditor">
       </context>
-   </extension>
-   <extension
-         point="org.eclipse.ui.perspectives">
-      <perspective
-            class="org.ietr.preesm.ui.perspective.PreesmPerspective"
-            fixed="false"
-            icon="icons/preesmProject.png"
-            id="org.ietr.preesm.ui.perspective"
-            name="Preesm">
-      </perspective>
    </extension>
 
 
