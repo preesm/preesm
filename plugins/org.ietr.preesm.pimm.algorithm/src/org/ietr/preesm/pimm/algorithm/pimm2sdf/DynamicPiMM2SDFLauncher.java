@@ -40,6 +40,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.ParameterValue;
@@ -48,7 +49,6 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.pimm.algorithm.pimm2sdf.visitor.DynamicPiMM2SDFVisitor;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class DynamicPiMM2SDFLauncher.
  */
@@ -82,17 +82,17 @@ public class DynamicPiMM2SDFLauncher {
     final Set<SDFGraph> result = new LinkedHashSet<>();
 
     // Get all the available values for all the parameters
-    final Map<String, List<Integer>> parametersValues = getParametersValues();
+    final Map<Parameter, List<Integer>> parametersValues = getParametersValues();
     // Get the values for Parameters directly contained by graph (top-level
     // parameters), if any
-    final Map<String, List<Integer>> outerParametersValues = new LinkedHashMap<>();
+    final Map<Parameter, List<Integer>> outerParametersValues = new LinkedHashMap<>();
     // The number of time we need to execute, and thus visit graph
     final int nbExecutions = this.scenario.getSimulationManager().getNumberOfTopExecutions();
 
     for (final Parameter param : this.graph.getParameters()) {
       final List<Integer> pValues = parametersValues.get(param.getName());
       if (pValues != null) {
-        outerParametersValues.put(param.getName(), pValues);
+        outerParametersValues.put(param, pValues);
       }
     }
 
@@ -100,20 +100,20 @@ public class DynamicPiMM2SDFLauncher {
     DynamicPiMM2SDFVisitor visitor;
     PiGraphExecution execution;
     // Values for the parameters for one execution
-    Map<String, List<Integer>> currentValues;
+    Map<Parameter, List<Integer>> currentValues;
     for (int i = 0; i < nbExecutions; i++) {
       // Values for one execution are parametersValues except for
       // top-level Parameters, for which we select only one value for a
       // given execution
       currentValues = parametersValues;
-      for (final String s : outerParametersValues.keySet()) {
+      for (final Entry<Parameter, List<Integer>> param : outerParametersValues.entrySet()) {
         // Value selection
-        final List<Integer> availableValues = outerParametersValues.get(s);
+        final List<Integer> availableValues = param.getValue();
         final int nbValues = availableValues.size();
         if (nbValues > 0) {
           final ArrayList<Integer> value = new ArrayList<>();
           value.add(availableValues.get(i % nbValues));
-          currentValues.put(s, new ArrayList<>(value));
+          currentValues.put(param.getKey(), new ArrayList<>(value));
         }
       }
 
@@ -134,19 +134,19 @@ public class DynamicPiMM2SDFLauncher {
    *
    * @return the parameters values
    */
-  private Map<String, List<Integer>> getParametersValues() {
-    final Map<String, List<Integer>> result = new LinkedHashMap<>();
+  private Map<Parameter, List<Integer>> getParametersValues() {
+    final Map<Parameter, List<Integer>> result = new LinkedHashMap<>();
 
     for (final ParameterValue paramValue : this.scenario.getParameterValueManager().getParameterValues()) {
       switch (paramValue.getType()) {
         case ACTOR_DEPENDENT:
-          result.put(paramValue.getName(), new ArrayList<>(paramValue.getValues()));
+          result.put(paramValue.getParameter(), new ArrayList<>(paramValue.getValues()));
           break;
         case INDEPENDENT:
           final List<Integer> values = new ArrayList<>();
           final int value = Integer.parseInt(paramValue.getValue());
           values.add(value);
-          result.put(paramValue.getName(), values);
+          result.put(paramValue.getParameter(), values);
           break;
         default:
           break;

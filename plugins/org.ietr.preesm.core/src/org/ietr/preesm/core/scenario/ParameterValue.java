@@ -43,7 +43,6 @@ import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
 
-// TODO: Auto-generated Javadoc
 /**
  * Value(s) of a parameter in a graph. It can be: Static, Dependent or Dynamic.
  *

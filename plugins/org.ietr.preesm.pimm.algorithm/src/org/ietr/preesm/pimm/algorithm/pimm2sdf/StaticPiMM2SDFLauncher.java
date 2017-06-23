@@ -40,13 +40,15 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.ParameterValue;
+import org.ietr.preesm.core.scenario.ParameterValueManager;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.pimm.algorithm.pimm2sdf.visitor.StaticPiMM2SDFVisitor;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class StaticPiMM2SDFLauncher.
  */
@@ -82,7 +84,7 @@ public class StaticPiMM2SDFLauncher {
     SDFGraph result;
 
     // Get all the available values for all the parameters
-    final Map<String, List<Integer>> parametersValues = getParametersValues();
+    final Map<Parameter, List<Integer>> parametersValues = getParametersValues();
 
     // Visitor creating the SDFGraph
     StaticPiMM2SDFVisitor visitor;
@@ -101,10 +103,12 @@ public class StaticPiMM2SDFLauncher {
    * @throws StaticPiMM2SDFException
    *           the static pi MM 2 SDF exception
    */
-  private Map<String, List<Integer>> getParametersValues() throws StaticPiMM2SDFException {
-    final Map<String, List<Integer>> result = new LinkedHashMap<>();
+  private Map<Parameter, List<Integer>> getParametersValues() throws StaticPiMM2SDFException {
+    final Map<Parameter, List<Integer>> result = new LinkedHashMap<>();
 
-    for (final ParameterValue paramValue : this.scenario.getParameterValueManager().getParameterValues()) {
+    final ParameterValueManager parameterValueManager = this.scenario.getParameterValueManager();
+    final Set<ParameterValue> parameterValues = parameterValueManager.getParameterValues();
+    for (final ParameterValue paramValue : parameterValues) {
       switch (paramValue.getType()) {
         case ACTOR_DEPENDENT:
           throw new StaticPiMM2SDFException("Parameter " + paramValue.getName() + " is depends on a configuration actor. It is thus impossible to use the"
@@ -115,7 +119,7 @@ public class StaticPiMM2SDFLauncher {
             final int value = Integer.parseInt(paramValue.getValue());
             final List<Integer> values = new ArrayList<>();
             values.add(value);
-            result.put(paramValue.getName(), values);
+            result.put(paramValue.getParameter(), values);
             break;
           } catch (final NumberFormatException e) {
             // The expression associated to the parameter is an
