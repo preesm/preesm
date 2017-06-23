@@ -214,7 +214,7 @@ public class SpiderCodegen {
     append("#define " + pg.getName().toUpperCase() + "_H\n\n");
 
     /* Declare Include Files */
-    append("#include <spider/spider.h>\n\n");
+    append("#include <spider.h>\n\n");
 
     /* Declare the addGraph method */
     append("#define N_FCT_" + pg.getName().toUpperCase() + " " + this.functionMap.size() + "\n");
@@ -333,7 +333,7 @@ public class SpiderCodegen {
     // /Generate the header (license, includes and constants)
     append(getLicense());
 
-    append("#include <spider/spider.h>\n");
+    append("#include <spider.h>\n");
     append("#include \"" + pg.getName() + ".h\"\n\n");
 
     final Set<String> includeList = new LinkedHashSet<>();
