@@ -7,7 +7,7 @@
     <key attr.name="graph_desc" attr.type="string" for="node"/>
     <graph edgedefault="directed">
         <data key="name">TestCom</data>
-        <node expr="0" id="size" kind="param"/>
+        <node expr="1024" id="size" kind="param"/>
         <node id="Sensor" kind="actor">
             <data key="graph_desc">org.ietr.preesm.tutorials.tutorial1/Code/include/testcom.h</data>
             <loop name="sensor">
