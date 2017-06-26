@@ -50,7 +50,7 @@ public class test {
             + scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86"));
 
         if (actor.getGraphDescription() != null) {
-          System.out.println("Hierarchical duration = " + scenario.getTimingManager().generateVertexTimingFromHierarchy(actor, "x86"));
+          // System.out.println("Hierarchical duration = " + scenario.getTimingManager().generateVertexTimingFromHierarchy(actor, "x86"));
         }
 
       } catch (InvalidExpressionException e) {
@@ -105,14 +105,20 @@ public class test {
           // case the actor is a regular one
           if (vertex.getGraphDescription() == null) {
             scenario.getTimingManager().setTiming(vertex.getId(), "x86", 1);
+            System.out
+                .println("new vertex timing : " + vertex.getName() + "=" + scenario.getTimingManager().getTimingOrDefault(vertex.getId(), "x86").getTime());
           } else {
             // case the actor is a hierarchical one, compute its duration from the hierarchy
             scenario.getTimingManager().setTiming(vertex.getId(), "x86",
                 scenario.getTimingManager().generateVertexTimingFromHierarchy(vertex, "x86").getTime());
+            System.out
+                .println("new h-vertex timing : " + vertex.getName() + "=" + scenario.getTimingManager().getTimingOrDefault(vertex.getId(), "x86").getTime());
           }
         } else {
           // case vertex is a port (input or output interface)
           scenario.getTimingManager().setTiming(vertex.getId(), "x86", 0);
+          System.out
+              .println("new interface timing : " + vertex.getName() + "=" + scenario.getTimingManager().getTimingOrDefault(vertex.getId(), "x86").getTime());
         }
       }
     }
@@ -167,11 +173,14 @@ public class test {
       SDFGraph subGraph = (SDFGraph) h.getGraphDescription();
       for (SDFAbstractVertex subActor : subGraph.vertexSet()) {
         if (subActor.getKind() == "vertex") {
-          System.out.println("vertex " + subActor.getName());
+          System.out.println("vertex " + subActor.getName() + ", rv=" + subActor.getNbRepeat() + ", dur="
+              + scenario.getTimingManager().getTimingOrDefault(subActor.getId(), "x86").getTime());
         } else if (subActor instanceof SDFSinkInterfaceVertex) {
-          System.out.println("Output interface " + subActor.getName());
+          System.out.println("Output interface " + subActor.getName() + ", rv=" + subActor.getNbRepeat() + ", dur="
+              + scenario.getTimingManager().getTimingOrDefault(subActor.getId(), "x86").getTime());
         } else if (subActor instanceof SDFSourceInterfaceVertex) {
-          System.out.println("Input interface " + subActor.getName());
+          System.out.println("Input interface " + subActor.getName() + ", rv=" + subActor.getNbRepeat() + ", dur="
+              + scenario.getTimingManager().getTimingOrDefault(subActor.getId(), "x86").getTime());
         } else {
           System.out.println("???? " + subActor.getName());
         }
@@ -248,6 +257,7 @@ public class test {
    * 
    * Timing.DEFAULT_SPECIAL_VERTEX_TIME : default duration of Special vertices = 10
    * 
+   * scenario.getTimingManager().setTiming(vertex.getId(), "x86", 0): set a duration for an actor. time need o be a strict positive number otherwise 1 is set
    * 
    * 
    * => Hierarchical actor:
@@ -257,10 +267,23 @@ public class test {
    * actor.getGraphDescription() : returns the subgraph of the hierarchical actor
    * 
    * 
+   * => Interfaces:
+   * 
+   * subActor instanceof SDFSourceInterfaceVertex : to test if a vertex is an input interface
+   * 
+   * subActor instanceof SDFSinkInterfaceVertex : to test if a vertex is an output interface
+   * 
+   * 
    * 
    * TODO:
    * 
    * add a task to define actors parameters like timing collected from an input scenario
+   * 
+   * change time > 0 to >= : time can equal to 0 for interfaces
+   * 
+   * RV of interfaces is not computed, it is always equal to 1. => the consumption/production rate of the input/output edges of interfaces need to be multiplied
+   * by the real local RV of the interfaces
+   * 
    * 
    */
 }
