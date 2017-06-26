@@ -1,6 +1,0 @@
-module init_phase {
-	typedef long parameter ;
-	interface loop {
-		 void initPhase(in char inP, out parameter setPhase);
-	};
-};

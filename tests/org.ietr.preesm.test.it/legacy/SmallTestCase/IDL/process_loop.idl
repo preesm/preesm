@@ -1,5 +1,0 @@
-module process {
-	interface loop{
-		 void mux(in char dataIn, in char loopIn, out char dataOut);
-	};
-};

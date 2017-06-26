@@ -1,5 +1,0 @@
-module copyData {
-	interface loop{
-		 void copyData(in long inData, out long outData1, out long outData2);
-	};
-};

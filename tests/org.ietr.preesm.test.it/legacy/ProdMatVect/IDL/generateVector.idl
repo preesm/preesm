@@ -1,6 +1,0 @@
-module generateVector {
-	typedef long parameter ;
-	interface loop {
-		 void generateVect(out long outVect, in parameter size);
-	};
-};

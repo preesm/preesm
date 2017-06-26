@@ -1,8 +1,0 @@
-module Circular6 {
-	interface init {
-		 void circular6_init(out char o1);
-	};
-    interface loop{
-         void circular6(in char i1,out char o1);
-    };
-}; 

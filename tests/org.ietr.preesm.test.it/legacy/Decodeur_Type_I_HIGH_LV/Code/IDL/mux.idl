@@ -1,7 +1,0 @@
-module mux {
-	typedef short int;
-    interface loop{
-		void mux ( in char cond, in char in_1, in char in_2, out char o );
-    };
-}; 
-

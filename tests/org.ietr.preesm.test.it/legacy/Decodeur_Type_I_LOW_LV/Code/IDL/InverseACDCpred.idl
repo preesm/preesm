@@ -1,8 +1,0 @@
-module InverseACDCpred {
-	typedef short int;
-    interface loop{
-		void InverseACDCpred ( in char type, in char PQF, in char QFpred, in char F00pred
-    , in char QPpred, in char VOP, in char prediction_direction, out char Cb_QF, out char Cb_dc_scaler );
-    };
-}; 
-

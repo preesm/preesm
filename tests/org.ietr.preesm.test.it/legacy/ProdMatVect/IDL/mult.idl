@@ -1,5 +1,0 @@
-module mult {
-	interface loop {
-		 void mult(in long op1, in long op2, out long res);
-	};
-};

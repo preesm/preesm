@@ -1,6 +1,0 @@
-module displayResult {
-	typedef long parameter ;
-	interface loop {
-		 void display(in long inResult, in parameter size);
-	};
-};

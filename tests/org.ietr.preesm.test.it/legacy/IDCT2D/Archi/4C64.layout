@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<layout>
-   <vertices>
-      <vertex id="C64_1" x="189" y="70"/>
-      <vertex id="C64_2" x="189" y="181"/>
-      <vertex id="EDMA3_1" x="57" y="210"/>
-   </vertices>
-</layout>

@@ -1,7 +1,0 @@
-module SDX_Stock_block_in_pict {
-	typedef short int;
-    interface loop{
-		void SDX_Stock_block_in_pict(in int NB_MB,in short xpic,in int pos_X,in char src,out char dst);
-    };
-}; 
-
