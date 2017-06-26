@@ -1,24 +1,27 @@
-/*******************************************************************************
- * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
- * Karol Desnos, Julien Heulot
- * 
- * [mpelcat,jnezan,kdesnos,jheulot]@insa-rennes.fr
- * 
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
- * 
- * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use, 
- * modify and/ or redistribute the software under the terms of the CeCILL-C
+/**
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ *
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2015)
+ * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2015)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2015)
+ *
+ * This software is a computer program whose purpose is to help prototyping
+ * parallel applications using dataflow formalism.
+ *
+ * This software is governed by the CeCILL  license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/ or redistribute the software under the terms of the CeCILL
  * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info". 
- * 
+ * "http://www.cecill.info".
+ *
  * As a counterpart to the access to the source code and  rights to copy,
  * modify and redistribute granted by the license, users are provided only
  * with a limited warranty  and the software's author,  the holder of the
  * economic rights,  and the successive licensors  have only  limited
- * liability. 
- * 
+ * liability.
+ *
  * In this respect, the user's attention is drawn to the risks associated
  * with loading,  using,  modifying and/or developing or reproducing the
  * software by the user in light of its specific status of free software,
@@ -26,22 +29,21 @@
  * therefore means  that it is reserved for developers  and  experienced
  * professionals having in-depth computer knowledge. Users are therefore
  * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or 
- * data to be ensured and,  more generally, to use and operate it in the 
- * same conditions as regards security. 
- * 
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
  * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- ******************************************************************************/
+ * knowledge of the CeCILL license and that you accept its terms.
+ */
 package org.ietr.preesm.ui.pimm.features;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -64,547 +66,506 @@ import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
+// TODO: Auto-generated Javadoc
 /**
- * The Move Feature for {@link AbstractActor}
- * 
+ * The Move Feature for {@link AbstractActor}.
+ *
  * @author kdesnos
- * 
  */
 public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 
-	public static final int BENDPOINT_SPACE = 20;
-	// List of the connections whose source and target are both moved by the
-	// current MoveAbstractActorFeature (if any).
-	List<FreeFormConnection> outDoubleConnections = new ArrayList<>();
-	List<FreeFormConnection> inDoubleConnections = new ArrayList<>();
+  /** The Constant BENDPOINT_SPACE. */
+  public static final int BENDPOINT_SPACE = 20;
+  // List of the connections whose source and target are both moved by the
+  /** The out double connections. */
+  // current MoveAbstractActorFeature (if any).
+  List<FreeFormConnection> outDoubleConnections = new ArrayList<>();
 
-	// List the delays that should be moved because both their fifo producer and
-	// consumers are selected to be moved.
-	Set<Delay> implicitlyMovedDelay = new HashSet<Delay>();
+  /** The in double connections. */
+  List<FreeFormConnection> inDoubleConnections = new ArrayList<>();
 
-	/**
-	 * Default constructor for {@link MoveAbstractActorFeature}
-	 * 
-	 * @param fp
-	 *            the feature provider
-	 */
-	public MoveAbstractActorFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  // List the delays that should be moved because both their fifo producer and
+  /** The implicitly moved delay. */
+  // consumers are selected to be moved.
+  Set<Delay> implicitlyMovedDelay = new LinkedHashSet<>();
 
-	/**
-	 * Move all bendpoints. Move bendpoints within a container shape. This code
-	 * is a copy from the protected function calling private methods in
-	 * {@link DefaultMoveShapeFeature}.
-	 * 
-	 * @param context
-	 *            the context
-	 */
-	protected void moveAllBendpoints(IMoveShapeContext context) {
-		Shape shapeToMove = context.getShape();
+  /**
+   * Default constructor for {@link MoveAbstractActorFeature}.
+   *
+   * @param fp
+   *          the feature provider
+   */
+  public MoveAbstractActorFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-		int x = context.getX();
-		int y = context.getY();
+  /**
+   * Move all bendpoints. Move bendpoints within a container shape. This code is a copy from the protected function calling private methods in
+   * {@link DefaultMoveShapeFeature}.
+   *
+   * @param context
+   *          the context
+   */
+  @Override
+  protected void moveAllBendpoints(final IMoveShapeContext context) {
+    final Shape shapeToMove = context.getShape();
 
-		int deltaX = x - shapeToMove.getGraphicsAlgorithm().getX();
-		int deltaY = y - shapeToMove.getGraphicsAlgorithm().getY();
+    final int x = context.getX();
+    final int y = context.getY();
 
-		if (deltaX != 0 || deltaY != 0) {
-			List<FreeFormConnection> connectionList = new ArrayList<FreeFormConnection>();
+    final int deltaX = x - shapeToMove.getGraphicsAlgorithm().getX();
+    final int deltaY = y - shapeToMove.getGraphicsAlgorithm().getY();
 
-			FreeFormConnection[] containerConnections = calculateContainerConnections(context);
-			for (int i = 0; i < containerConnections.length; i++) {
-				FreeFormConnection cc = containerConnections[i];
-				if (!connectionList.contains(cc)) {
-					connectionList.add(cc);
-				}
-			}
+    if ((deltaX != 0) || (deltaY != 0)) {
+      final List<FreeFormConnection> connectionList = new ArrayList<>();
 
-			FreeFormConnection[] connectedConnections = calculateConnectedConnections(context);
-			for (int i = 0; i < connectedConnections.length; i++) {
-				FreeFormConnection cc = connectedConnections[i];
-				if (!connectionList.contains(cc)) {
-					connectionList.add(cc);
-				}
-			}
+      final FreeFormConnection[] containerConnections = calculateContainerConnections(context);
+      for (final FreeFormConnection containerConnection : containerConnections) {
+        final FreeFormConnection cc = containerConnection;
+        if (!connectionList.contains(cc)) {
+          connectionList.add(cc);
+        }
+      }
 
-			// kdesnos addition
-			FreeFormConnection[] connectedDelayedFifos = calculateConnectedDelayedFifos(context);
-			for (int i = 0; i < connectedDelayedFifos.length; i++) {
-				FreeFormConnection cc = connectedDelayedFifos[i];
-				if (connectionList.contains(cc)) {
-					connectionList.remove(cc);
-				}
-			}
+      final FreeFormConnection[] connectedConnections = calculateConnectedConnections(context);
+      for (final FreeFormConnection connectedConnection : connectedConnections) {
+        final FreeFormConnection cc = connectedConnection;
+        if (!connectionList.contains(cc)) {
+          connectionList.add(cc);
+        }
+      }
 
-			for (FreeFormConnection conn : connectionList) {
-				moveAllBendpointsOnFFConnection((FreeFormConnection) conn,
-						deltaX, deltaY);
-			}
+      // kdesnos addition
+      final FreeFormConnection[] connectedDelayedFifos = calculateConnectedDelayedFifos(context);
+      for (final FreeFormConnection cc : connectedDelayedFifos) {
+        if (connectionList.contains(cc)) {
+          connectionList.remove(cc);
+        }
+      }
 
-			// Move implicitlyMovedDelays
-			for (Delay del : implicitlyMovedDelay) {
-				moveDelay(context, del);
-			}
+      for (final FreeFormConnection conn : connectionList) {
+        moveAllBendpointsOnFFConnection(conn, deltaX, deltaY);
+      }
 
-			// Kdesnos addition: Store the connectionList to avoid moving them a
-			// second time in postMoveShape.
-			this.outDoubleConnections.addAll(connectionList);
-		}
-	}
+      // Move implicitlyMovedDelays
+      for (final Delay del : this.implicitlyMovedDelay) {
+        moveDelay(context, del);
+      }
 
-	/**
-	 * Move a {@link Delay} and all the bendpoints of the associated
-	 * {@link Fifo FIFOs} accorting to the given {@link IMoveShapeContext}.
-	 * 
-	 * @param context
-	 *            the {@link IMoveShapeContext} containing the deltaX and deltaY
-	 *            of the displacement
-	 * @param del
-	 *            the {@link Delay} whose associated graphical elements are to
-	 *            be moved.
-	 */
-	protected void moveDelay(IMoveShapeContext context, Delay del) {
-		// Get all delays with identical attributes (may not be the
-		// right delay is several delays have the same properties.)
-		List<PictogramElement> pes = Graphiti.getLinkService()
-				.getPictogramElements(getDiagram(), del);
+      // Kdesnos addition: Store the connectionList to avoid moving them a
+      // second time in postMoveShape.
+      this.outDoubleConnections.addAll(connectionList);
+    }
+  }
 
-		// Check if the delay is selected in the graphical interface
-		PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer()
-				.getSelectedPictogramElements();
-		List<PictogramElement> selectedPEs = new ArrayList<>(
-				Arrays.asList(selectedPictogramElements));
+  /**
+   * Move a {@link Delay} and all the bendpoints of the associated {@link Fifo FIFOs} accorting to the given {@link IMoveShapeContext}.
+   *
+   * @param context
+   *          the {@link IMoveShapeContext} containing the deltaX and deltaY of the displacement
+   * @param del
+   *          the {@link Delay} whose associated graphical elements are to be moved.
+   */
+  protected void moveDelay(final IMoveShapeContext context, final Delay del) {
+    // Get all delays with identical attributes (may not be the
+    // right delay is several delays have the same properties.)
+    final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(getDiagram(), del);
 
-		for (PictogramElement pe : pes) {
-			// Check that the pe is associated to the right delay (in
-			// the java Object sense, not equals() one)
-			Object delay = getBusinessObjectForPictogramElement(pe);
-			if (delay == del) {
+    // Check if the delay is selected in the graphical interface
+    final PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer().getSelectedPictogramElements();
+    final List<PictogramElement> selectedPEs = new ArrayList<>(Arrays.asList(selectedPictogramElements));
 
-				if (pe.getGraphicsAlgorithm() != null) {
-					int oldX = pe.getGraphicsAlgorithm().getX();
-					int oldY = pe.getGraphicsAlgorithm().getY();
-					// Unless the delay is selected, move it
-					if (!selectedPEs.contains(pe)) {
-						pe.getGraphicsAlgorithm().setX(
-								oldX + context.getDeltaX());
-						pe.getGraphicsAlgorithm().setY(
-								oldY + context.getDeltaY());
-					}
+    for (final PictogramElement pe : pes) {
+      // Check that the pe is associated to the right delay (in
+      // the java Object sense, not equals() one)
+      final Object delay = getBusinessObjectForPictogramElement(pe);
+      if (delay == del) {
 
-					// Move all bendpoints of the FIFO as well
-					List<PictogramElement> fifoPEs = new ArrayList<PictogramElement>();
-					List<Anchor> anchors = getAnchors((Shape) pe);
-					for (Anchor anchor : anchors) {
-						// Always move the incoming connection of the delay
-						// (even if the delay is selected.
-						fifoPEs.addAll(anchor.getIncomingConnections());
-						// Move the outgoing connection of the delay only if the
-						// delay itself is not selected
-						if (!selectedPEs.contains(pe))
-							fifoPEs.addAll(anchor.getOutgoingConnections());
-					}
+        if (pe.getGraphicsAlgorithm() != null) {
+          final int oldX = pe.getGraphicsAlgorithm().getX();
+          final int oldY = pe.getGraphicsAlgorithm().getY();
+          // Unless the delay is selected, move it
+          if (!selectedPEs.contains(pe)) {
+            pe.getGraphicsAlgorithm().setX(oldX + context.getDeltaX());
+            pe.getGraphicsAlgorithm().setY(oldY + context.getDeltaY());
+          }
 
-					for (PictogramElement fifoPE : fifoPEs) {
-						if (fifoPE instanceof FreeFormConnection) {
-							moveAllBendpointsOnFFConnection(
-									(FreeFormConnection) fifoPE,
-									context.getDeltaX(), context.getDeltaY());
-						}
-					}
-				}
-			}
-		}
-	}
+          // Move all bendpoints of the FIFO as well
+          final List<PictogramElement> fifoPEs = new ArrayList<>();
+          final List<Anchor> anchors = getAnchors((Shape) pe);
+          for (final Anchor anchor : anchors) {
+            // Always move the incoming connection of the delay
+            // (even if the delay is selected.
+            fifoPEs.addAll(anchor.getIncomingConnections());
+            // Move the outgoing connection of the delay only if the
+            // delay itself is not selected
+            if (!selectedPEs.contains(pe)) {
+              fifoPEs.addAll(anchor.getOutgoingConnections());
+            }
+          }
 
-	/**
-	 * Find FIFOs with a delay and both sides connected to selected actors. Put
-	 * the {@link Delay} in {@link #implicitlyMovedDelay}.
-	 * 
-	 * @param context
-	 * @return
-	 */
-	private FreeFormConnection[] calculateConnectedDelayedFifos(
-			IMoveShapeContext context) {
-		List<FreeFormConnection> retList = new ArrayList<FreeFormConnection>();
-		Shape shapeToMove = context.getShape();
+          for (final PictogramElement fifoPE : fifoPEs) {
+            if (fifoPE instanceof FreeFormConnection) {
+              moveAllBendpointsOnFFConnection((FreeFormConnection) fifoPE, context.getDeltaX(), context.getDeltaY());
+            }
+          }
+        }
+      }
+    }
+  }
 
-		int x = context.getX();
-		int y = context.getY();
+  /**
+   * Find FIFOs with a delay and both sides connected to selected actors. Put the {@link Delay} in {@link #implicitlyMovedDelay}.
+   *
+   * @param context
+   *          the context
+   * @return the free form connection[]
+   */
+  private FreeFormConnection[] calculateConnectedDelayedFifos(final IMoveShapeContext context) {
+    final List<FreeFormConnection> retList = new ArrayList<>();
+    final Shape shapeToMove = context.getShape();
 
-		int deltaX = x - shapeToMove.getGraphicsAlgorithm().getX();
-		int deltaY = y - shapeToMove.getGraphicsAlgorithm().getY();
+    final int x = context.getX();
+    final int y = context.getY();
 
-		if (deltaX != 0 || deltaY != 0) {
-			List<Anchor> anchors = getAnchors(shapeToMove);
+    final int deltaX = x - shapeToMove.getGraphicsAlgorithm().getX();
+    final int deltaY = y - shapeToMove.getGraphicsAlgorithm().getY();
 
-			// Create a list of the corresponding Ports
-			List<Port> ports = new ArrayList<Port>();
-			for (Anchor anchor : anchors) {
-				Object bo = getBusinessObjectForPictogramElement(anchor);
-				if (bo instanceof Port) {
-					ports.add((Port) bo);
-				}
-			}
+    if ((deltaX != 0) || (deltaY != 0)) {
+      final List<Anchor> anchors = getAnchors(shapeToMove);
 
-			PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer()
-					.getSelectedPictogramElements();
-			if (selectedPictogramElements != null) {
-				for (int i = 0; i < selectedPictogramElements.length; i++) {
-					PictogramElement selPe = selectedPictogramElements[i];
-					if (selPe instanceof Shape && !(selPe instanceof Diagram)) {
-						Shape selShape = (Shape) selPe;
-						for (Anchor toAnchor : getAnchors(selShape)) {
-							EList<Connection> incomingConnections = toAnchor
-									.getIncomingConnections();
-							for (Connection inConn : incomingConnections) {
-								if (inConn instanceof FreeFormConnection) {
-									Object bo = getBusinessObjectForPictogramElement(inConn);
-									if (bo instanceof Fifo
-											&& ((Fifo) bo).getDelay() != null) {
-										Port srcPort = ((Fifo) bo)
-												.getSourcePort();
-										if (ports.contains(srcPort)) {
-											retList.add((FreeFormConnection) inConn);
-											Delay del = ((Fifo) bo).getDelay();
-											implicitlyMovedDelay.add(del);
-											// Add all the connection to the
-											// double connections lists
-											Fifo fifo = (Fifo) del.eContainer();
-											List<PictogramElement> fifoPEs = Graphiti
-													.getLinkService()
-													.getPictogramElements(
-															getDiagram(), fifo);
-											for (PictogramElement fifoPE : fifoPEs) {
-												if (fifoPE instanceof FreeFormConnection) {
-													outDoubleConnections
-															.add((FreeFormConnection) fifoPE);
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-						for (Anchor fromAnchor : getAnchors(selShape)) {
-							EList<Connection> outgoingConnections = fromAnchor
-									.getOutgoingConnections();
-							for (Connection outConn : outgoingConnections) {
-								if (outConn instanceof FreeFormConnection) {
-									Object bo = getBusinessObjectForPictogramElement(outConn);
-									if (bo instanceof Fifo
-											&& ((Fifo) bo).getDelay() != null) {
-										Port tgtPort = ((Fifo) bo)
-												.getTargetPort();
-										if (ports.contains(tgtPort)) {
-											retList.add((FreeFormConnection) outConn);
-											inDoubleConnections
-													.add((FreeFormConnection) outConn);
-											// Not adding delays to
-											// ImplicitlyMovedDelay is voluntary
-											// here. (Doing so would move them
-											// twice)
-											// Add all the connection to the
-											// double connections lists
-											Delay del = ((Fifo) bo).getDelay();
-											Fifo fifo = (Fifo) del.eContainer();
-											List<PictogramElement> fifoPEs = Graphiti
-													.getLinkService()
-													.getPictogramElements(
-															getDiagram(), fifo);
-											for (PictogramElement fifoPE : fifoPEs) {
-												if (fifoPE instanceof FreeFormConnection) {
-													outDoubleConnections
-															.add((FreeFormConnection) fifoPE);
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		return retList.toArray(new FreeFormConnection[retList.size()]);
-	}
+      // Create a list of the corresponding Ports
+      final List<Port> ports = new ArrayList<>();
+      for (final Anchor anchor : anchors) {
+        final Object bo = getBusinessObjectForPictogramElement(anchor);
+        if (bo instanceof Port) {
+          ports.add((Port) bo);
+        }
+      }
 
-	/**
-	 * This code is a copy from the private method in
-	 * {@link DefaultMoveShapeFeature}.
-	 * 
-	 * @param connection
-	 * @param deltaX
-	 * @param deltaY
-	 */
-	private void moveAllBendpointsOnFFConnection(FreeFormConnection connection,
-			int deltaX, int deltaY) {
-		List<Point> points = connection.getBendpoints();
-		for (int i = 0; i < points.size(); i++) {
-			Point point = points.get(i);
-			int oldX = point.getX();
-			int oldY = point.getY();
-			points.set(
-					i,
-					Graphiti.getGaCreateService().createPoint(oldX + deltaX,
-							oldY + deltaY));
-		}
-	}
+      final PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer().getSelectedPictogramElements();
+      if (selectedPictogramElements != null) {
+        for (final PictogramElement selectedPictogramElement : selectedPictogramElements) {
+          final PictogramElement selPe = selectedPictogramElement;
+          if ((selPe instanceof Shape) && !(selPe instanceof Diagram)) {
+            final Shape selShape = (Shape) selPe;
+            for (final Anchor toAnchor : getAnchors(selShape)) {
+              final EList<Connection> incomingConnections = toAnchor.getIncomingConnections();
+              for (final Connection inConn : incomingConnections) {
+                if (inConn instanceof FreeFormConnection) {
+                  final Object bo = getBusinessObjectForPictogramElement(inConn);
+                  if ((bo instanceof Fifo) && (((Fifo) bo).getDelay() != null)) {
+                    final Port srcPort = ((Fifo) bo).getSourcePort();
+                    if (ports.contains(srcPort)) {
+                      retList.add((FreeFormConnection) inConn);
+                      final Delay del = ((Fifo) bo).getDelay();
+                      this.implicitlyMovedDelay.add(del);
+                      // Add all the connection to the
+                      // double connections lists
+                      final Fifo fifo = (Fifo) del.eContainer();
+                      final List<PictogramElement> fifoPEs = Graphiti.getLinkService().getPictogramElements(getDiagram(), fifo);
+                      for (final PictogramElement fifoPE : fifoPEs) {
+                        if (fifoPE instanceof FreeFormConnection) {
+                          this.outDoubleConnections.add((FreeFormConnection) fifoPE);
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            for (final Anchor fromAnchor : getAnchors(selShape)) {
+              final EList<Connection> outgoingConnections = fromAnchor.getOutgoingConnections();
+              for (final Connection outConn : outgoingConnections) {
+                if (outConn instanceof FreeFormConnection) {
+                  final Object bo = getBusinessObjectForPictogramElement(outConn);
+                  if ((bo instanceof Fifo) && (((Fifo) bo).getDelay() != null)) {
+                    final Port tgtPort = ((Fifo) bo).getTargetPort();
+                    if (ports.contains(tgtPort)) {
+                      retList.add((FreeFormConnection) outConn);
+                      this.inDoubleConnections.add((FreeFormConnection) outConn);
+                      // Not adding delays to
+                      // ImplicitlyMovedDelay is voluntary
+                      // here. (Doing so would move them
+                      // twice)
+                      // Add all the connection to the
+                      // double connections lists
+                      final Delay del = ((Fifo) bo).getDelay();
+                      final Fifo fifo = (Fifo) del.eContainer();
+                      final List<PictogramElement> fifoPEs = Graphiti.getLinkService().getPictogramElements(getDiagram(), fifo);
+                      for (final PictogramElement fifoPE : fifoPEs) {
+                        if (fifoPE instanceof FreeFormConnection) {
+                          this.outDoubleConnections.add((FreeFormConnection) fifoPE);
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return retList.toArray(new FreeFormConnection[retList.size()]);
+  }
 
-	/**
-	 * This code is a copy from the private method in
-	 * {@link DefaultMoveShapeFeature}.
-	 * 
-	 * @param context
-	 * @return
-	 */
-	private FreeFormConnection[] calculateContainerConnections(
-			IMoveShapeContext context) {
-		FreeFormConnection[] ret = new FreeFormConnection[0];
+  /**
+   * This code is a copy from the private method in {@link DefaultMoveShapeFeature}.
+   *
+   * @param connection
+   *          the connection
+   * @param deltaX
+   *          the delta X
+   * @param deltaY
+   *          the delta Y
+   */
+  private void moveAllBendpointsOnFFConnection(final FreeFormConnection connection, final int deltaX, final int deltaY) {
+    final List<Point> points = connection.getBendpoints();
+    for (int i = 0; i < points.size(); i++) {
+      final Point point = points.get(i);
+      final int oldX = point.getX();
+      final int oldY = point.getY();
+      points.set(i, Graphiti.getGaCreateService().createPoint(oldX + deltaX, oldY + deltaY));
+    }
+  }
 
-		if (!(context.getShape() instanceof ContainerShape)) {
-			return ret;
-		}
+  /**
+   * This code is a copy from the private method in {@link DefaultMoveShapeFeature}.
+   *
+   * @param context
+   *          the context
+   * @return the free form connection[]
+   */
+  private FreeFormConnection[] calculateContainerConnections(final IMoveShapeContext context) {
+    final FreeFormConnection[] ret = new FreeFormConnection[0];
 
-		List<FreeFormConnection> retList = new ArrayList<FreeFormConnection>();
+    if (!(context.getShape() instanceof ContainerShape)) {
+      return ret;
+    }
 
-		Shape shapeToMove = context.getShape();
+    final List<FreeFormConnection> retList = new ArrayList<>();
 
-		int x = context.getX();
-		int y = context.getY();
+    final Shape shapeToMove = context.getShape();
 
-		int deltaX = x - shapeToMove.getGraphicsAlgorithm().getX();
-		int deltaY = y - shapeToMove.getGraphicsAlgorithm().getY();
+    final int x = context.getX();
+    final int y = context.getY();
 
-		if (deltaX != 0 || deltaY != 0) {
+    final int deltaX = x - shapeToMove.getGraphicsAlgorithm().getX();
+    final int deltaY = y - shapeToMove.getGraphicsAlgorithm().getY();
 
-			List<Anchor> anchorsFrom = getAnchors(shapeToMove);
-			List<Anchor> anchorsTo = new ArrayList<Anchor>(anchorsFrom);
+    if ((deltaX != 0) || (deltaY != 0)) {
 
-			for (Anchor anchorFrom : anchorsFrom) {
+      final List<Anchor> anchorsFrom = getAnchors(shapeToMove);
+      final List<Anchor> anchorsTo = new ArrayList<>(anchorsFrom);
 
-				Collection<Connection> outgoingConnections = anchorFrom
-						.getOutgoingConnections();
+      for (final Anchor anchorFrom : anchorsFrom) {
 
-				for (Connection connection : outgoingConnections) {
-					for (Anchor anchorTo : anchorsTo) {
+        final Collection<Connection> outgoingConnections = anchorFrom.getOutgoingConnections();
 
-						Collection<Connection> incomingConnections = anchorTo
-								.getIncomingConnections();
-						if (incomingConnections.contains(connection)) {
-							if (connection instanceof FreeFormConnection) {
-								retList.add((FreeFormConnection) connection);
-							}
-						}
-					}
-				}
-			}
-		}
-		return retList.toArray(ret);
-	}
+        for (final Connection connection : outgoingConnections) {
+          for (final Anchor anchorTo : anchorsTo) {
 
-	/**
-	 * 
-	 * This code is a copy from the private method in
-	 * {@link DefaultMoveShapeFeature}.
-	 * 
-	 * @param context
-	 * @return
-	 */
-	private FreeFormConnection[] calculateConnectedConnections(
-			IMoveShapeContext context) {
-		List<FreeFormConnection> retList = new ArrayList<FreeFormConnection>();
-		Shape shapeToMove = context.getShape();
+            final Collection<Connection> incomingConnections = anchorTo.getIncomingConnections();
+            if (incomingConnections.contains(connection)) {
+              if (connection instanceof FreeFormConnection) {
+                retList.add((FreeFormConnection) connection);
+              }
+            }
+          }
+        }
+      }
+    }
+    return retList.toArray(ret);
+  }
 
-		int x = context.getX();
-		int y = context.getY();
+  /**
+   * This code is a copy from the private method in {@link DefaultMoveShapeFeature}.
+   *
+   * @param context
+   *          the context
+   * @return the free form connection[]
+   */
+  private FreeFormConnection[] calculateConnectedConnections(final IMoveShapeContext context) {
+    final List<FreeFormConnection> retList = new ArrayList<>();
+    final Shape shapeToMove = context.getShape();
 
-		int deltaX = x - shapeToMove.getGraphicsAlgorithm().getX();
-		int deltaY = y - shapeToMove.getGraphicsAlgorithm().getY();
+    final int x = context.getX();
+    final int y = context.getY();
 
-		if (deltaX != 0 || deltaY != 0) {
-			List<Anchor> anchors = getAnchors(shapeToMove);
+    final int deltaX = x - shapeToMove.getGraphicsAlgorithm().getX();
+    final int deltaY = y - shapeToMove.getGraphicsAlgorithm().getY();
 
-			PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer()
-					.getSelectedPictogramElements();
-			if (selectedPictogramElements != null) {
-				for (int i = 0; i < selectedPictogramElements.length; i++) {
-					PictogramElement selPe = selectedPictogramElements[i];
-					if (selPe instanceof Shape && !(selPe instanceof Diagram)) {
-						Shape selShape = (Shape) selPe;
-						for (Anchor toAnchor : getAnchors(selShape)) {
-							EList<Connection> incomingConnections = toAnchor
-									.getIncomingConnections();
-							for (Connection inConn : incomingConnections) {
-								if (inConn instanceof FreeFormConnection) {
-									Anchor startAnchor = inConn.getStart();
-									if (anchors.contains(startAnchor)) {
-										retList.add((FreeFormConnection) inConn);
-									}
-								}
-							}
-						}
-						// Kdesnos addition : detect also connectedConnections
-						// ending at the current shape to avoid moving them
-						// twice in postMoveShape
-						for (Anchor toAnchor : getAnchors(selShape)) {
-							EList<Connection> outgoingConnections = toAnchor
-									.getOutgoingConnections();
-							for (Connection outConn : outgoingConnections) {
-								if (outConn instanceof FreeFormConnection) {
-									Anchor endAnchor = outConn.getEnd();
-									if (anchors.contains(endAnchor)) {
-										inDoubleConnections
-												.add((FreeFormConnection) outConn);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		return retList.toArray(new FreeFormConnection[0]);
-	}
+    if ((deltaX != 0) || (deltaY != 0)) {
+      final List<Anchor> anchors = getAnchors(shapeToMove);
 
-	/**
-	 * This code is a copy from the private method in
-	 * {@link DefaultMoveShapeFeature}.
-	 * 
-	 * @param theShape
-	 * @return
-	 */
-	private List<Anchor> getAnchors(Shape theShape) {
-		List<Anchor> ret = new ArrayList<Anchor>();
-		ret.addAll(theShape.getAnchors());
+      final PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer().getSelectedPictogramElements();
+      if (selectedPictogramElements != null) {
+        for (final PictogramElement selectedPictogramElement : selectedPictogramElements) {
+          final PictogramElement selPe = selectedPictogramElement;
+          if ((selPe instanceof Shape) && !(selPe instanceof Diagram)) {
+            final Shape selShape = (Shape) selPe;
+            for (final Anchor toAnchor : getAnchors(selShape)) {
+              final EList<Connection> incomingConnections = toAnchor.getIncomingConnections();
+              for (final Connection inConn : incomingConnections) {
+                if (inConn instanceof FreeFormConnection) {
+                  final Anchor startAnchor = inConn.getStart();
+                  if (anchors.contains(startAnchor)) {
+                    retList.add((FreeFormConnection) inConn);
+                  }
+                }
+              }
+            }
+            // Kdesnos addition : detect also connectedConnections
+            // ending at the current shape to avoid moving them
+            // twice in postMoveShape
+            for (final Anchor toAnchor : getAnchors(selShape)) {
+              final EList<Connection> outgoingConnections = toAnchor.getOutgoingConnections();
+              for (final Connection outConn : outgoingConnections) {
+                if (outConn instanceof FreeFormConnection) {
+                  final Anchor endAnchor = outConn.getEnd();
+                  if (anchors.contains(endAnchor)) {
+                    this.inDoubleConnections.add((FreeFormConnection) outConn);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return retList.toArray(new FreeFormConnection[0]);
+  }
 
-		if (theShape instanceof ContainerShape) {
-			ContainerShape containerShape = (ContainerShape) theShape;
-			List<Shape> children = containerShape.getChildren();
-			for (Shape shape : children) {
-				if (shape instanceof ContainerShape) {
-					ret.addAll(getAnchors((ContainerShape) shape));
-				} else {
-					ret.addAll(shape.getAnchors());
-				}
-			}
-		}
-		return ret;
-	}
+  /**
+   * This code is a copy from the private method in {@link DefaultMoveShapeFeature}.
+   *
+   * @param theShape
+   *          the the shape
+   * @return the anchors
+   */
+  private List<Anchor> getAnchors(final Shape theShape) {
+    final List<Anchor> ret = new ArrayList<>();
+    ret.addAll(theShape.getAnchors());
 
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void postMoveShape(IMoveShapeContext context) {
-		// Here, we layout bendpoint of connections incoming/outgoing to this
-		// AbstractVertex Ports
-		ContainerShape cs = (ContainerShape) context.getPictogramElement();
-		EList<Anchor> anchors = cs.getAnchors();
+    if (theShape instanceof ContainerShape) {
+      final ContainerShape containerShape = (ContainerShape) theShape;
+      final List<Shape> children = containerShape.getChildren();
+      for (final Shape shape : children) {
+        if (shape instanceof ContainerShape) {
+          ret.addAll(getAnchors(shape));
+        } else {
+          ret.addAll(shape.getAnchors());
+        }
+      }
+    }
+    return ret;
+  }
 
-		for (Anchor anchor : anchors) {
-			// If the anchor does not correspond to a port, skip the loop
-			// (e.g. ChopBoxAnchors are used as connection points for
-			// dependencies)
-			if (!(getBusinessObjectForPictogramElement(anchor) instanceof Port)) {
-				continue;
-			}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature#postMoveShape(org.eclipse.graphiti.features.context.IMoveShapeContext)
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  protected void postMoveShape(final IMoveShapeContext context) {
+    // Here, we layout bendpoint of connections incoming/outgoing to this
+    // AbstractVertex Ports
+    final ContainerShape cs = (ContainerShape) context.getPictogramElement();
+    final EList<Anchor> anchors = cs.getAnchors();
 
-			// Retrieve the connections of the anchor.
-			List<FreeFormConnection> connections = new ArrayList<>();
+    for (final Anchor anchor : anchors) {
+      // If the anchor does not correspond to a port, skip the loop
+      // (e.g. ChopBoxAnchors are used as connection points for
+      // dependencies)
+      if (!(getBusinessObjectForPictogramElement(anchor) instanceof Port)) {
+        continue;
+      }
 
-			EList<Connection> iConnections = anchor.getIncomingConnections();
+      // Retrieve the connections of the anchor.
+      final List<FreeFormConnection> connections = new ArrayList<>();
 
-			boolean isSrcMove = false;
-			if (!iConnections.isEmpty()) {
+      final EList<Connection> iConnections = anchor.getIncomingConnections();
 
-				connections
-						.addAll((Collection<? extends FreeFormConnection>) iConnections);
-				isSrcMove = false;
-			}
-			EList<Connection> oConnections = anchor.getOutgoingConnections();
-			if (!oConnections.isEmpty()) {
-				connections
-						.addAll((Collection<? extends FreeFormConnection>) oConnections);
-				isSrcMove = true;
-			}
+      boolean isSrcMove = false;
+      if (!iConnections.isEmpty()) {
 
-			// Remove connections whose bendpoints were already moved by
-			// moveAllBendpoints call
+        connections.addAll((Collection<? extends FreeFormConnection>) iConnections);
+        isSrcMove = false;
+      }
+      final EList<Connection> oConnections = anchor.getOutgoingConnections();
+      if (!oConnections.isEmpty()) {
+        connections.addAll((Collection<? extends FreeFormConnection>) oConnections);
+        isSrcMove = true;
+      }
 
-			connections.removeAll(outDoubleConnections);
-			connections.removeAll(inDoubleConnections);
+      // Remove connections whose bendpoints were already moved by
+      // moveAllBendpoints call
 
-			for (FreeFormConnection connection : connections) {
-				// Check wether the FIFO corresponding to the connection has a
-				// delay
-				Object fifoOrDependency = getBusinessObjectForPictogramElement(connection);
+      connections.removeAll(this.outDoubleConnections);
+      connections.removeAll(this.inDoubleConnections);
 
-				// If the fifo has no delay, it remove a bendpoint if there are
-				// at least two
-				// if the fifo has a delay, remove a bendpoint (if any).
-				int nbBendpoints = (fifoOrDependency != null
-						&& (fifoOrDependency instanceof Fifo && ((Fifo) fifoOrDependency)
-								.getDelay() != null) || fifoOrDependency instanceof Dependency) ? -1
-						: 0;
+      for (final FreeFormConnection connection : connections) {
+        // Check wether the FIFO corresponding to the connection has a
+        // delay
+        final Object fifoOrDependency = getBusinessObjectForPictogramElement(connection);
 
-				// Check if the last or first Bendpoint exists.
-				// If so, move it with the same delta as the associated port.
-				// (but it will still be removed and recreated.)
-				boolean bendpointExists = false;
-				int bendpointX = -1, bendpointY = -1;
-				int index = connection.getBendpoints().size() - 1;
-				if (index > nbBendpoints && !isSrcMove) {
-					bendpointExists = true;
-					bendpointX = connection.getBendpoints().get(index).getX();
-					bendpointY = connection.getBendpoints().get(index).getY();
-					connection.getBendpoints().remove(index);
-				}
-				if (index > nbBendpoints && isSrcMove) {
-					bendpointExists = true;
-					bendpointX = connection.getBendpoints().get(0).getX();
-					bendpointY = connection.getBendpoints().get(0).getY();
-					connection.getBendpoints().remove(0);
-				}
+        // If the fifo has no delay, it remove a bendpoint if there are
+        // at least two
+        // if the fifo has a delay, remove a bendpoint (if any).
+        final int nbBendpoints = (((fifoOrDependency != null) && ((fifoOrDependency instanceof Fifo) && (((Fifo) fifoOrDependency).getDelay() != null)))
+            || (fifoOrDependency instanceof Dependency)) ? -1 : 0;
 
-				// Add one bendpoints it didn't exist, move it otherwise
-				IPeLayoutService peLayoutService = Graphiti
-						.getPeLayoutService();
-				IGaCreateService createService = Graphiti.getGaCreateService();
-				int midHeight = anchor.getGraphicsAlgorithm().getHeight() / 2 - 1;
+        // Check if the last or first Bendpoint exists.
+        // If so, move it with the same delta as the associated port.
+        // (but it will still be removed and recreated.)
+        boolean bendpointExists = false;
+        int bendpointX = -1;
+        int bendpointY = -1;
+        final int index = connection.getBendpoints().size() - 1;
+        if ((index > nbBendpoints) && !isSrcMove) {
+          bendpointExists = true;
+          bendpointX = connection.getBendpoints().get(index).getX();
+          bendpointY = connection.getBendpoints().get(index).getY();
+          connection.getBendpoints().remove(index);
+        }
+        if ((index > nbBendpoints) && isSrcMove) {
+          bendpointExists = true;
+          bendpointX = connection.getBendpoints().get(0).getX();
+          bendpointY = connection.getBendpoints().get(0).getY();
+          connection.getBendpoints().remove(0);
+        }
 
-				// Creation cases
-				if (isSrcMove) {
-					ILocation srcLoc = peLayoutService
-							.getLocationRelativeToDiagram(connection.getStart());
-					Point pSrc = null;
-					if (!bendpointExists) {
-						pSrc = createService.createPoint(srcLoc.getX() + BENDPOINT_SPACE,
-								srcLoc.getY() + midHeight);
-					} else {
-						pSrc = createService.createPoint(
-								bendpointX + context.getDeltaX(), bendpointY
-										+ context.getDeltaY());
-					}
-					connection.getBendpoints().add(0, pSrc);
-				}
-				if (!isSrcMove) {
-					ILocation trgtLoc = peLayoutService
-							.getLocationRelativeToDiagram(connection.getEnd());
-					Point pTrgt = null;
-					if (!bendpointExists) {
-						pTrgt = createService.createPoint(trgtLoc.getX() - BENDPOINT_SPACE,
-								trgtLoc.getY() + midHeight);
-					} else {
-						pTrgt = createService.createPoint(
-								bendpointX + context.getDeltaX(), bendpointY
-										+ context.getDeltaY());
-					}
-					connection.getBendpoints().add(pTrgt);
-				}
-			}
-		}
+        // Add one bendpoints it didn't exist, move it otherwise
+        final IPeLayoutService peLayoutService = Graphiti.getPeLayoutService();
+        final IGaCreateService createService = Graphiti.getGaCreateService();
+        final int midHeight = (anchor.getGraphicsAlgorithm().getHeight() / 2) - 1;
 
-		return;
-	}
+        // Creation cases
+        if (isSrcMove) {
+          final ILocation srcLoc = peLayoutService.getLocationRelativeToDiagram(connection.getStart());
+          Point pSrc = null;
+          if (!bendpointExists) {
+            pSrc = createService.createPoint(srcLoc.getX() + MoveAbstractActorFeature.BENDPOINT_SPACE, srcLoc.getY() + midHeight);
+          } else {
+            pSrc = createService.createPoint(bendpointX + context.getDeltaX(), bendpointY + context.getDeltaY());
+          }
+          connection.getBendpoints().add(0, pSrc);
+        }
+        if (!isSrcMove) {
+          final ILocation trgtLoc = peLayoutService.getLocationRelativeToDiagram(connection.getEnd());
+          Point pTrgt = null;
+          if (!bendpointExists) {
+            pTrgt = createService.createPoint(trgtLoc.getX() - MoveAbstractActorFeature.BENDPOINT_SPACE, trgtLoc.getY() + midHeight);
+          } else {
+            pTrgt = createService.createPoint(bendpointX + context.getDeltaX(), bendpointY + context.getDeltaY());
+          }
+          connection.getBendpoints().add(pTrgt);
+        }
+      }
+    }
+
+    return;
+  }
 }

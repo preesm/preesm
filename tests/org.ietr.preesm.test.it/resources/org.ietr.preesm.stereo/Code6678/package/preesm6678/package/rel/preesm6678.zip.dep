@@ -1,0 +1,38 @@
+preesm6678.zip: Platform.xdc
+Platform.xdc:
+preesm6678.zip: Platform.xs
+Platform.xs:
+preesm6678.zip: config.bld
+config.bld:
+preesm6678.zip: package/.vers_b150
+package/.vers_b150:
+preesm6678.zip: package/.vers_g180
+package/.vers_g180:
+preesm6678.zip: package/.vers_r170
+package/.vers_r170:
+preesm6678.zip: package/.xdc-y30
+package/.xdc-y30:
+preesm6678.zip: package/build.cfg
+package/build.cfg:
+preesm6678.zip: package/package.bld.xml
+package/package.bld.xml:
+preesm6678.zip: package/package.defs.h
+package/package.defs.h:
+preesm6678.zip: package/package.ext.xml
+package/package.ext.xml:
+preesm6678.zip: package/package.rel.dot
+package/package.rel.dot:
+preesm6678.zip: package/package_preesm6678.c
+package/package_preesm6678.c:
+preesm6678.zip: package/preesm6678.ccs
+package/preesm6678.ccs:
+preesm6678.zip: package/preesm6678.class
+package/preesm6678.class:
+preesm6678.zip: package/preesm6678.java
+package/preesm6678.java:
+preesm6678.zip: package/preesm6678.sch
+package/preesm6678.sch:
+preesm6678.zip: package.bld
+package.bld:
+preesm6678.zip: package.xdc
+package.xdc:

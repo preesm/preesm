@@ -1,9 +1,0 @@
-module StockBlocksCb {
-	typedef short int;
-    interface loop{
-         void StockBlocksCb(in int MB_courant,in short InverseQuant_BlkXn_4,in char VOLsimple,in int resync_marker
-         						,out short Cb_BuffA,out short Cb_BuffB,out short Cb_BuffC);
-
-    };
-}; 
-

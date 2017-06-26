@@ -1,7 +1,0 @@
-module InverseQuantI {
-	typedef short int;
-    interface loop{
-		void InverseQuantI ( in char QF, in char VOP, in char dc_scaler, in char VOLsimple, out char Cb_F, out char Cb_BlkXn );
-    };
-}; 
-

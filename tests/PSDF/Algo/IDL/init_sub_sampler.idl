@@ -1,6 +1,0 @@
-module init_sub_sampler {
-	typedef long parameter ;
-	interface loop {
-		 void initNb(out parameter setRate);
-	};
-};

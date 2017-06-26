@@ -1,6 +1,0 @@
-module generateMatrix {
-	typedef long parameter ;
-	interface loop {
-		 void generateMatrix(out long outMat, in parameter size);
-	};
-};

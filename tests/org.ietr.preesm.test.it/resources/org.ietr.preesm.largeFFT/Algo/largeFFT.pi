@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="memoryScript" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">largeFFT</data>
+        <node id="size" kind="cfg_in_iface"/>
+        <node expr="sqrt(size)" id="NR" kind="param"/>
+        <node expr="sqrt(size)" id="NC" kind="param"/>
+        <node id="in" kind="src">
+            <port annotation="NONE" expr="size" kind="output" name="in"/>
+        </node>
+        <node id="out" kind="snk">
+            <port annotation="NONE" expr="size" kind="input" name="out"/>
+        </node>
+        <node id="Transpose_1" kind="actor">
+            <data key="memoryScript">Code/Scripts/transpose.bsh</data>
+            <port kind="cfg_input" name="nbRows"/>
+            <port kind="cfg_input" name="nbCols"/>
+            <port annotation="NONE" expr="nbRows*nbCols" kind="input" name="in"/>
+            <port annotation="NONE" expr="nbRows*nbCols" kind="output" name="out"/>
+        </node>
+        <node id="FFT_2" kind="actor">
+            <data key="memoryScript">Code/Scripts/fft.bsh</data>
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+            <port annotation="NONE" expr="size" kind="output" name="out"/>
+        </node>
+        <node id="Transpose_3" kind="actor">
+            <data key="memoryScript">Code/Scripts/transpose.bsh</data>
+            <port kind="cfg_input" name="nbRows"/>
+            <port kind="cfg_input" name="nbCols"/>
+            <port annotation="NONE" expr="nbRows*nbCols" kind="input" name="in"/>
+            <port annotation="NONE" expr="nbRows*nbCols" kind="output" name="out"/>
+        </node>
+        <node id="Twiddle_4" kind="actor">
+            <data key="memoryScript">Code/Scripts/twiddle.bsh</data>
+            <port kind="cfg_input" name="nbCols"/>
+            <port annotation="NONE" expr="1" kind="input" name="rowId"/>
+            <port annotation="NONE" expr="nbCols" kind="input" name="in"/>
+            <port annotation="NONE" expr="nbCols" kind="output" name="out"/>
+        </node>
+        <node id="FFT_5" kind="actor">
+            <data key="memoryScript">Code/Scripts/fft.bsh</data>
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+            <port annotation="NONE" expr="size" kind="output" name="out"/>
+        </node>
+        <node id="Transpose_6" kind="actor">
+            <data key="memoryScript">Code/Scripts/transpose.bsh</data>
+            <port kind="cfg_input" name="nbCols"/>
+            <port kind="cfg_input" name="nbRows"/>
+            <port annotation="NONE" expr="nbRows*nbCols" kind="input" name="in"/>
+            <port annotation="NONE" expr="nbRows*nbCols" kind="output" name="out"/>
+        </node>
+        <node id="GenRowIds" kind="actor">
+            <port kind="cfg_input" name="nbRows"/>
+            <port annotation="NONE" expr="nbRows" kind="output" name="ids"/>
+        </node>
+        <edge kind="fifo" source="in" sourceport="in"
+            target="Transpose_1" targetport="in" type="char"/>
+        <edge kind="fifo" source="Transpose_1" sourceport="out"
+            target="FFT_2" targetport="in" type="char"/>
+        <edge kind="fifo" source="FFT_2" sourceport="out"
+            target="Transpose_3" targetport="in" type="char"/>
+        <edge kind="fifo" source="Transpose_3" sourceport="out"
+            target="Twiddle_4" targetport="in" type="char"/>
+        <edge kind="fifo" source="Twiddle_4" sourceport="out"
+            target="FFT_5" targetport="in" type="char"/>
+        <edge kind="fifo" source="FFT_5" sourceport="out"
+            target="Transpose_6" targetport="in" type="char"/>
+        <edge kind="fifo" source="Transpose_6" sourceport="out"
+            target="out" targetport="out" type="char"/>
+        <edge kind="fifo" source="GenRowIds" sourceport="ids"
+            target="Twiddle_4" targetport="rowId" type="char"/>
+        <edge kind="dependency" source="size" target="NC"/>
+        <edge kind="dependency" source="size" target="NR"/>
+        <edge kind="dependency" source="NR" target="Transpose_1" targetport="nbRows"/>
+        <edge kind="dependency" source="NC" target="Transpose_1" targetport="nbCols"/>
+        <edge kind="dependency" source="NR" target="FFT_2" targetport="size"/>
+        <edge kind="dependency" source="NC" target="Transpose_3" targetport="nbRows"/>
+        <edge kind="dependency" source="NR" target="Transpose_3" targetport="nbCols"/>
+        <edge kind="dependency" source="NC" target="Twiddle_4" targetport="nbCols"/>
+        <edge kind="dependency" source="NR" target="Transpose_6" targetport="nbRows"/>
+        <edge kind="dependency" source="NC" target="FFT_5" targetport="size"/>
+        <edge kind="dependency" source="NC" target="Transpose_6" targetport="nbCols"/>
+        <edge kind="dependency" source="NR" target="GenRowIds" targetport="nbRows"/>
+        <edge kind="dependency" source="size" target="out"/>
+        <edge kind="dependency" source="size" target="in"/>
+    </graph>
+</graphml>

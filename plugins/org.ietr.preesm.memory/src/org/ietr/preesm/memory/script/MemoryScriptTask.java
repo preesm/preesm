@@ -1,24 +1,25 @@
-/*******************************************************************************
- * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
- * Karol Desnos, Julien Heulot, Clément Guy
- * 
- * [mpelcat,jnezan,kdesnos,jheulot,cguy]@insa-rennes.fr
- * 
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
- * 
- * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use, 
- * modify and/ or redistribute the software under the terms of the CeCILL-C
+/**
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ *
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2014 - 2015)
+ *
+ * This software is a computer program whose purpose is to help prototyping
+ * parallel applications using dataflow formalism.
+ *
+ * This software is governed by the CeCILL  license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/ or redistribute the software under the terms of the CeCILL
  * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info". 
- * 
+ * "http://www.cecill.info".
+ *
  * As a counterpart to the access to the source code and  rights to copy,
  * modify and redistribute granted by the license, users are provided only
  * with a limited warranty  and the software's author,  the holder of the
  * economic rights,  and the successive licensors  have only  limited
- * liability. 
- * 
+ * liability.
+ *
  * In this respect, the user's attention is drawn to the risks associated
  * with loading,  using,  modifying and/or developing or reproducing the
  * software by the user in light of its specific status of free software,
@@ -26,80 +27,98 @@
  * therefore means  that it is reserved for developers  and  experienced
  * professionals having in-depth computer knowledge. Users are therefore
  * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or 
- * data to be ensured and,  more generally, to use and operate it in the 
- * same conditions as regards security. 
- * 
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
  * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- ******************************************************************************/
-
+ * knowledge of the CeCILL license and that you accept its terms.
+ */
 package org.ietr.preesm.memory.script;
 
-import java.util.HashMap;
+import bsh.EvalError;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.LinkedHashMap;
 import java.util.Map;
-
+import java.util.logging.Level;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MemoryScriptTask.
+ */
 public class MemoryScriptTask extends AbstractMemoryScriptTask {
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
-		// Get verbose parameter
-		boolean verbose = false;
-		verbose = parameters.get(PARAM_VERBOSE).equals(VALUE_TRUE);
 
-		// Get the log parameter
-		String log = parameters.get(PARAM_LOG);
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
+    // Get verbose parameter
+    boolean verbose = false;
+    verbose = parameters.get(AbstractMemoryScriptTask.PARAM_VERBOSE).equals(AbstractMemoryScriptTask.VALUE_TRUE);
 
-		// Retrieve the alignment param
-		String valueAlignment = parameters
-				.get(AbstractMemoryAllocatorTask.PARAM_ALIGNMENT);
+    // Get the log parameter
+    final String log = parameters.get(AbstractMemoryScriptTask.PARAM_LOG);
 
-		// Retrieve the input graph
-		DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
+    // Retrieve the alignment param
+    final String valueAlignment = parameters.get(AbstractMemoryAllocatorTask.PARAM_ALIGNMENT);
 
-		// Get the data types from the scenario
-		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
-		Map<String, DataType> dataTypes = scenario.getSimulationManager()
-				.getDataTypes();
+    // Retrieve the input graph
+    final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 
-		// Get check policy
-		String checkString = parameters.get(PARAM_CHECK);
+    // Get the data types from the scenario
+    final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+    final Map<String, DataType> dataTypes = scenario.getSimulationManager().getDataTypes();
 
-		MemoryExclusionGraph meg = (MemoryExclusionGraph) inputs.get("MemEx");
+    // Get check policy
+    final String checkString = parameters.get(AbstractMemoryScriptTask.PARAM_CHECK);
 
-		// execute
-		MemoryScriptEngine engine = new MemoryScriptEngine(valueAlignment, log,
-				verbose, scenario);
-		engine.runScripts(dag, dataTypes, checkString);
-		engine.updateMemEx(meg);
+    final MemoryExclusionGraph meg = (MemoryExclusionGraph) inputs.get("MemEx");
 
-		if (!log.equals("")) {
-			// generate
-			engine.generateCode(scenario, log);
-		}
+    // execute
+    final MemoryScriptEngine engine = new MemoryScriptEngine(valueAlignment, log, verbose, scenario);
+    try {
+      engine.runScripts(dag, dataTypes, checkString);
+    } catch (CoreException | IOException | URISyntaxException | EvalError e) {
+      final String message = "An error occurred during memory scripts execution";
+      WorkflowLogger.getLogger().log(Level.SEVERE, message, e);
+      throw new WorkflowException(message, e);
+    }
+    engine.updateMemEx(meg);
 
-		// Outputs
-		Map<String, Object> outputs = new HashMap<String, Object>();
-		outputs.put("MemEx", meg);
-		return outputs;
-	}
+    if (!log.equals("")) {
+      // generate
+      engine.generateCode(scenario, log);
+    }
 
-	/**
-	 * This method must be overridden, otherwise, the workflow validator does
-	 * not find it.
-	 */
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		return super.getDefaultParameters();
-	}
+    // Outputs
+    final Map<String, Object> outputs = new LinkedHashMap<>();
+    outputs.put("MemEx", meg);
+    return outputs;
+  }
+
+  /**
+   * This method must be overridden, otherwise, the workflow validator does not find it.
+   *
+   * @return the default parameters
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    return super.getDefaultParameters();
+  }
 }

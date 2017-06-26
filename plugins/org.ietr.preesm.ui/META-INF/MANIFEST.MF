@@ -2,38 +2,27 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm UI
 Bundle-SymbolicName: org.ietr.preesm.ui;singleton:=true
-Bundle-Version: 2.2.5
+Bundle-Version: 2.3.0
 Bundle-Activator: org.ietr.preesm.ui.Activator
 Bundle-Vendor: IETR/INSA Rennes
-Require-Bundle: org.ietr.dftools.graphiti.ui,
- org.ietr.dftools.graphiti.model,
- org.eclipse.ui.views.properties.tabbed,
- org.jgrapht,
- org.eclipse.gef,
- org.eclipse.ui.ide;bundle-version="3.7.0",
+Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
  org.eclipse.ui.editors,
- org.ietr.dftools.workflow;bundle-version="0.0.1",
- org.eclipse.ui.console;bundle-version="3.5.100",
- org.ietr.preesm.core;bundle-version="0.6.1",
- org.ietr.dftools.algorithm;bundle-version="0.0.1",
- org.ietr.dftools.ui,
- org.ietr.preesm.experiment.model;bundle-version="2.0.1",
  org.eclipse.graphiti.ui,
  org.eclipse.graphiti,
  org.eclipse.emf.transaction,
  org.eclipse.ltk.core.refactoring,
  org.eclipse.text,
- org.ietr.preesm.utils,
- org.ietr.preesm.pimm.algorithm,
  org.eclipse.emf.edit.ui,
- com.google.guava,
- org.eclipse.xtext.xbase.lib,
  org.eclipse.xtend.lib,
- org.eclipse.xtend.lib.macro
+ net.sourceforge.jexcelapi.jxl;bundle-version="2.6.10",
+ org.ietr.dftools.ui;visibility:=reexport,
+ org.ietr.preesm.core,
+ org.ietr.preesm.pimm.algorithm
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
 Export-Package: org.ietr.preesm.ui.console,
+ org.ietr.preesm.ui.perspective,
  org.ietr.preesm.ui.pimm.features,
  org.ietr.preesm.ui.scenario.editor,
  org.ietr.preesm.ui.scenario.editor.codegen,

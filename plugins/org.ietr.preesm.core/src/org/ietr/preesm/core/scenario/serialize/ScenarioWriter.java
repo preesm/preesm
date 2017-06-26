@@ -1,45 +1,46 @@
-/*********************************************************
-Copyright or � or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-Fran�ois Nezan, Micka�l Raulet
-
-[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
-
-This software is a computer program whose purpose is to prototype
-parallel applications.
-
-This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use, 
-modify and/ or redistribute the software under the terms of the CeCILL-C
-license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info". 
-
-As a counterpart to the access to the source code and  rights to copy,
-modify and redistribute granted by the license, users are provided only
-with a limited warranty  and the software's author,  the holder of the
-economic rights,  and the successive licensors  have only  limited
-liability. 
-
-In this respect, the user's attention is drawn to the risks associated
-with loading,  using,  modifying and/or developing or reproducing the
-software by the user in light of its specific status of free software,
-that may mean  that it is complicated to manipulate,  and  that  also
-therefore means  that it is reserved for developers  and  experienced
-professionals having in-depth computer knowledge. Users are therefore
-encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or 
-data to be ensured and,  more generally, to use and operate it in the 
-same conditions as regards security. 
-
-The fact that you are presently reading this means that you have had
-knowledge of the CeCILL-C license and that you accept its terms.
- *********************************************************/
-
+/**
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ *
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014)
+ * Jonathan Piat <jpiat@laas.fr> (2011)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2013)
+ * Pengcheng Mu <pengcheng.mu@insa-rennes.fr> (2008)
+ *
+ * This software is a computer program whose purpose is to help prototyping
+ * parallel applications using dataflow formalism.
+ *
+ * This software is governed by the CeCILL  license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/ or redistribute the software under the terms of the CeCILL
+ * license as circulated by CEA, CNRS and INRIA at the following URL
+ * "http://www.cecill.info".
+ *
+ * As a counterpart to the access to the source code and  rights to copy,
+ * modify and redistribute granted by the license, users are provided only
+ * with a limited warranty  and the software's author,  the holder of the
+ * economic rights,  and the successive licensors  have only  limited
+ * liability.
+ *
+ * In this respect, the user's attention is drawn to the risks associated
+ * with loading,  using,  modifying and/or developing or reproducing the
+ * software by the user in light of its specific status of free software,
+ * that may mean  that it is complicated to manipulate,  and  that  also
+ * therefore means  that it is reserved for developers  and  experienced
+ * professionals having in-depth computer knowledge. Users are therefore
+ * encouraged to load and test the software's suitability as regards their
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL license and that you accept its terms.
+ */
 package org.ietr.preesm.core.scenario.serialize;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Collection;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.ietr.dftools.algorithm.model.parameters.Variable;
@@ -58,325 +59,431 @@ import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 
+// TODO: Auto-generated Javadoc
 /**
- * Writes a scenario as an XML
- * 
+ * Writes a scenario as an XML.
+ *
  * @author mpelcat
  */
 public class ScenarioWriter {
 
-	/**
-	 * Current document
-	 */
-	private Document dom;
-
-	/**
-	 * Current scenario
-	 */
-	private PreesmScenario scenario;
-
-	public ScenarioWriter(PreesmScenario scenario) {
-		super();
-
-		this.scenario = scenario;
-
-		try {
-			DOMImplementation impl;
-			impl = DOMImplementationRegistry.newInstance()
-					.getDOMImplementation("Core 3.0 XML 3.0 LS");
-			dom = impl.createDocument("", "scenario", null);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	public Document generateScenarioDOM() {
-
-		Element root = dom.getDocumentElement();
-
-		addFiles(root);
-		addConstraints(root);
-		addRelativeConstraints(root);
-		addTimings(root);
-		addSimuParams(root);
-		addVariables(root);
-		addParameterValues(root);
-
-		return dom;
-	}
-
-	private void addParameterValues(Element parent) {
-		Element valuesElt = dom.createElement("parameterValues");
-		parent.appendChild(valuesElt);
-
-		ParameterValueManager manager = scenario.getParameterValueManager();
-
-		for (ParameterValue value : manager.getParameterValues()) {
-			addParameterValue(valuesElt, value);
-		}
-	}
-
-	private void addParameterValue(Element parent, ParameterValue value) {
-		// Serialize only if the kept value(s) is different from the "default value" found in the PiGraph:
-		// - if the parameter is actor dependent, there is no default value
-		// - otherwise, compare the kept value to the parameter expression
-		boolean needToBeSerialized = false;
-		String valueToPrint = "";
-		switch (value.getType()) {
-		case INDEPENDENT:
-			valueToPrint = "" + value.getValue();
-			if (!value.getParameter().getExpression().getString()
-					.equals(valueToPrint)) {
-				needToBeSerialized = true;
-			}
-			break;
-		case ACTOR_DEPENDENT:
-			valueToPrint = value.getValues().toString();
-			needToBeSerialized = true;
-			break;
-		case PARAMETER_DEPENDENT:
-			valueToPrint = value.getExpression();
-			if (!value.getParameter().getExpression().getString()
-					.equals(valueToPrint)) {
-				needToBeSerialized = true;
-			}
-			break;
-		}
-		if (needToBeSerialized) {
-			Element valueElt = dom.createElement("parameter");
-			parent.appendChild(valueElt);
-
-			valueElt.setAttribute("name", value.getName());
-			valueElt.setAttribute("parent", value.getParentVertex());
-			valueElt.setAttribute("type", value.getType().toString());
-
-			valueElt.setAttribute("value", valueToPrint);
-		}
-	}
-
-	private void addVariables(Element parent) {
-
-		Element variables = dom.createElement("variables");
-		parent.appendChild(variables);
-
-		variables.setAttribute("excelUrl", scenario.getVariablesManager()
-				.getExcelFileURL());
-
-		Collection<Variable> variablesSet = scenario.getVariablesManager()
-				.getVariables().values();
-		for (Variable variable : variablesSet) {
-			addVariable(variables, variable.getName(), variable.getValue());
-		}
-	}
-
-	private void addVariable(Element parent, String variableName,
-			String variableValue) {
-
-		Element variableelt = dom.createElement("variable");
-		parent.appendChild(variableelt);
-		variableelt.setAttribute("name", variableName);
-		variableelt.setAttribute("value", variableValue);
-	}
-
-	private void addSimuParams(Element parent) {
-
-		Element params = dom.createElement("simuParams");
-		parent.appendChild(params);
-
-		Element core = dom.createElement("mainCore");
-		params.appendChild(core);
-		core.setTextContent(scenario.getSimulationManager()
-				.getMainOperatorName());
-
-		Element medium = dom.createElement("mainComNode");
-		params.appendChild(medium);
-		medium.setTextContent(scenario.getSimulationManager()
-				.getMainComNodeName());
-
-		Element dataSize = dom.createElement("averageDataSize");
-		params.appendChild(dataSize);
-		dataSize.setTextContent(String.valueOf(scenario.getSimulationManager()
-				.getAverageDataSize()));
-
-		Element dataTypes = dom.createElement("dataTypes");
-		params.appendChild(dataTypes);
-
-		for (DataType dataType : scenario.getSimulationManager().getDataTypes()
-				.values()) {
-			addDataType(dataTypes, dataType);
-		}
-
-		Element sVOperators = dom.createElement("specialVertexOperators");
-		params.appendChild(sVOperators);
-
-		for (String opId : scenario.getSimulationManager()
-				.getSpecialVertexOperatorIds()) {
-			addSpecialVertexOperator(sVOperators, opId);
-		}
-
-		Element nbExec = dom.createElement("numberOfTopExecutions");
-		params.appendChild(nbExec);
-		nbExec.setTextContent(String.valueOf(scenario.getSimulationManager()
-				.getNumberOfTopExecutions()));
-	}
-
-	private void addDataType(Element parent, DataType dataType) {
-
-		Element dataTypeElt = dom.createElement("dataType");
-		parent.appendChild(dataTypeElt);
-		dataTypeElt.setAttribute("name", dataType.getTypeName());
-		dataTypeElt.setAttribute("size", Integer.toString(dataType.getSize()));
-	}
-
-	private void addSpecialVertexOperator(Element parent, String opId) {
-
-		Element dataTypeElt = dom.createElement("specialVertexOperator");
-		parent.appendChild(dataTypeElt);
-		dataTypeElt.setAttribute("path", opId);
-	}
-
-	public void writeDom(IFile file) {
-
-		try {
-			// Gets the DOM implementation of document
-			DOMImplementation impl = dom.getImplementation();
-			DOMImplementationLS implLS = (DOMImplementationLS) impl;
-
-			LSOutput output = implLS.createLSOutput();
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			output.setByteStream(out);
-
-			LSSerializer serializer = implLS.createLSSerializer();
-			serializer.getDomConfig().setParameter("format-pretty-print", true);
-			serializer.write(dom, output);
-
-			file.setContents(new ByteArrayInputStream(out.toByteArray()), true,
-					false, new NullProgressMonitor());
-			out.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void addFiles(Element parent) {
-
-		Element files = dom.createElement("files");
-		parent.appendChild(files);
-
-		Element algo = dom.createElement("algorithm");
-		files.appendChild(algo);
-		algo.setAttribute("url", scenario.getAlgorithmURL());
-
-		Element archi = dom.createElement("architecture");
-		files.appendChild(archi);
-		archi.setAttribute("url", scenario.getArchitectureURL());
-
-		Element codeGenDir = dom.createElement("codegenDirectory");
-		files.appendChild(codeGenDir);
-		codeGenDir.setAttribute("url", scenario.getCodegenManager()
-				.getCodegenDirectory());
-
-	}
-
-	private void addConstraints(Element parent) {
-
-		Element constraints = dom.createElement("constraints");
-		parent.appendChild(constraints);
-
-		constraints.setAttribute("excelUrl", scenario
-				.getConstraintGroupManager().getExcelFileURL());
-
-		for (ConstraintGroup cst : scenario.getConstraintGroupManager()
-				.getConstraintGroups()) {
-			addConstraint(constraints, cst);
-		}
-	}
-
-	private void addConstraint(Element parent, ConstraintGroup cst) {
-
-		Element constraintGroupElt = dom.createElement("constraintGroup");
-		parent.appendChild(constraintGroupElt);
-
-		for (String opId : cst.getOperatorIds()) {
-			Element opdefelt = dom.createElement("operator");
-			constraintGroupElt.appendChild(opdefelt);
-			opdefelt.setAttribute("name", opId);
-		}
-
-		for (String vtxId : cst.getVertexPaths()) {
-			Element vtxelt = dom.createElement("task");
-			constraintGroupElt.appendChild(vtxelt);
-			vtxelt.setAttribute("name", vtxId);
-		}
-	}
-
-	private void addRelativeConstraints(Element parent) {
-
-		RelativeConstraintManager manager = scenario
-				.getRelativeconstraintManager();
-		Element timings = dom.createElement("relativeconstraints");
-		parent.appendChild(timings);
-
-		timings.setAttribute("excelUrl", manager.getExcelFileURL());
-
-		for (String id : manager.getExplicitConstraintIds()) {
-			addRelativeConstraint(timings, id,
-					manager.getConstraintOrDefault(id));
-		}
-	}
-
-	private void addRelativeConstraint(Element parent, String id, int group) {
-
-		Element timingelt = dom.createElement("relativeconstraint");
-		parent.appendChild(timingelt);
-		timingelt.setAttribute("vertexname", id);
-		timingelt.setAttribute("group", Integer.toString(group));
-	}
-
-	private void addTimings(Element parent) {
-
-		Element timings = dom.createElement("timings");
-		parent.appendChild(timings);
-
-		timings.setAttribute("excelUrl", scenario.getTimingManager()
-				.getExcelFileURL());
-
-		for (Timing timing : scenario.getTimingManager().getTimings()) {
-			addTiming(timings, timing);
-		}
-
-		for (String opDef : scenario.getTimingManager().getMemcpySpeeds()
-				.keySet()) {
-			addMemcpySpeed(timings, opDef, scenario.getTimingManager()
-					.getMemcpySetupTime(opDef), scenario.getTimingManager()
-					.getMemcpyTimePerUnit(opDef));
-		}
-	}
-
-	private void addTiming(Element parent, Timing timing) {
-
-		Element timingelt = dom.createElement("timing");
-		parent.appendChild(timingelt);
-		timingelt.setAttribute("vertexname", timing.getVertexId());
-		timingelt.setAttribute("opname", timing.getOperatorDefinitionId());
-		String timeString;
-		if (timing.isEvaluated())
-			timeString = Long.toString(timing.getTime());
-		else
-			timeString = timing.getStringValue();
-		timingelt.setAttribute("time", timeString);
-	}
-
-	private void addMemcpySpeed(Element parent, String opDef,
-			long memcpySetupTime, float memcpyTimePerUnit) {
-
-		Element timingelt = dom.createElement("memcpyspeed");
-		parent.appendChild(timingelt);
-		timingelt.setAttribute("opname", opDef);
-		timingelt.setAttribute("setuptime", Long.toString(memcpySetupTime));
-		timingelt
-				.setAttribute("timeperunit", Float.toString(memcpyTimePerUnit));
-	}
+  /** Current document. */
+  private Document dom;
+
+  /** Current scenario. */
+  private final PreesmScenario scenario;
+
+  /**
+   * Instantiates a new scenario writer.
+   *
+   * @param scenario
+   *          the scenario
+   */
+  public ScenarioWriter(final PreesmScenario scenario) {
+    super();
+
+    this.scenario = scenario;
+
+    try {
+      DOMImplementation impl;
+      impl = DOMImplementationRegistry.newInstance().getDOMImplementation("Core 3.0 XML 3.0 LS");
+      this.dom = impl.createDocument("", "scenario", null);
+    } catch (final Exception e) {
+      e.printStackTrace();
+    }
+
+  }
+
+  /**
+   * Generate scenario DOM.
+   *
+   * @return the document
+   */
+  public Document generateScenarioDOM() {
+
+    final Element root = this.dom.getDocumentElement();
+
+    addFiles(root);
+    addConstraints(root);
+    addRelativeConstraints(root);
+    addTimings(root);
+    addSimuParams(root);
+    addVariables(root);
+    addParameterValues(root);
+
+    return this.dom;
+  }
+
+  /**
+   * Adds the parameter values.
+   *
+   * @param parent
+   *          the parent
+   */
+  private void addParameterValues(final Element parent) {
+    final Element valuesElt = this.dom.createElement("parameterValues");
+    parent.appendChild(valuesElt);
+
+    final ParameterValueManager manager = this.scenario.getParameterValueManager();
+
+    for (final ParameterValue value : manager.getParameterValues()) {
+      addParameterValue(valuesElt, value);
+    }
+  }
+
+  /**
+   * Adds the parameter value.
+   *
+   * @param parent
+   *          the parent
+   * @param value
+   *          the value
+   */
+  private void addParameterValue(final Element parent, final ParameterValue value) {
+    // Serialize only if the kept value(s) is different from the "default value" found in the PiGraph:
+    // - if the parameter is actor dependent, there is no default value
+    // - otherwise, compare the kept value to the parameter expression
+    boolean needToBeSerialized = false;
+    String valueToPrint = "";
+    switch (value.getType()) {
+      case INDEPENDENT:
+        valueToPrint = "" + value.getValue();
+        if (!value.getParameter().getExpression().getString().equals(valueToPrint)) {
+          needToBeSerialized = true;
+        }
+        break;
+      case ACTOR_DEPENDENT:
+        valueToPrint = value.getValues().toString();
+        needToBeSerialized = true;
+        break;
+      case PARAMETER_DEPENDENT:
+        valueToPrint = value.getExpression();
+        if (!value.getParameter().getExpression().getString().equals(valueToPrint)) {
+          needToBeSerialized = true;
+        }
+        break;
+      default:
+    }
+    if (needToBeSerialized) {
+      final Element valueElt = this.dom.createElement("parameter");
+      parent.appendChild(valueElt);
+
+      valueElt.setAttribute("name", value.getName());
+      valueElt.setAttribute("parent", value.getParentVertex());
+      valueElt.setAttribute("type", value.getType().toString());
+
+      valueElt.setAttribute("value", valueToPrint);
+    }
+  }
+
+  /**
+   * Adds the variables.
+   *
+   * @param parent
+   *          the parent
+   */
+  private void addVariables(final Element parent) {
+
+    final Element variables = this.dom.createElement("variables");
+    parent.appendChild(variables);
+
+    variables.setAttribute("excelUrl", this.scenario.getVariablesManager().getExcelFileURL());
+
+    final Collection<Variable> variablesSet = this.scenario.getVariablesManager().getVariables().values();
+    for (final Variable variable : variablesSet) {
+      addVariable(variables, variable.getName(), variable.getValue());
+    }
+  }
+
+  /**
+   * Adds the variable.
+   *
+   * @param parent
+   *          the parent
+   * @param variableName
+   *          the variable name
+   * @param variableValue
+   *          the variable value
+   */
+  private void addVariable(final Element parent, final String variableName, final String variableValue) {
+
+    final Element variableelt = this.dom.createElement("variable");
+    parent.appendChild(variableelt);
+    variableelt.setAttribute("name", variableName);
+    variableelt.setAttribute("value", variableValue);
+  }
+
+  /**
+   * Adds the simu params.
+   *
+   * @param parent
+   *          the parent
+   */
+  private void addSimuParams(final Element parent) {
+
+    final Element params = this.dom.createElement("simuParams");
+    parent.appendChild(params);
+
+    final Element core = this.dom.createElement("mainCore");
+    params.appendChild(core);
+    core.setTextContent(this.scenario.getSimulationManager().getMainOperatorName());
+
+    final Element medium = this.dom.createElement("mainComNode");
+    params.appendChild(medium);
+    medium.setTextContent(this.scenario.getSimulationManager().getMainComNodeName());
+
+    final Element dataSize = this.dom.createElement("averageDataSize");
+    params.appendChild(dataSize);
+    dataSize.setTextContent(String.valueOf(this.scenario.getSimulationManager().getAverageDataSize()));
+
+    final Element dataTypes = this.dom.createElement("dataTypes");
+    params.appendChild(dataTypes);
+
+    for (final DataType dataType : this.scenario.getSimulationManager().getDataTypes().values()) {
+      addDataType(dataTypes, dataType);
+    }
+
+    final Element sVOperators = this.dom.createElement("specialVertexOperators");
+    params.appendChild(sVOperators);
+
+    for (final String opId : this.scenario.getSimulationManager().getSpecialVertexOperatorIds()) {
+      addSpecialVertexOperator(sVOperators, opId);
+    }
+
+    final Element nbExec = this.dom.createElement("numberOfTopExecutions");
+    params.appendChild(nbExec);
+    nbExec.setTextContent(String.valueOf(this.scenario.getSimulationManager().getNumberOfTopExecutions()));
+  }
+
+  /**
+   * Adds the data type.
+   *
+   * @param parent
+   *          the parent
+   * @param dataType
+   *          the data type
+   */
+  private void addDataType(final Element parent, final DataType dataType) {
+
+    final Element dataTypeElt = this.dom.createElement("dataType");
+    parent.appendChild(dataTypeElt);
+    dataTypeElt.setAttribute("name", dataType.getTypeName());
+    dataTypeElt.setAttribute("size", Integer.toString(dataType.getSize()));
+  }
+
+  /**
+   * Adds the special vertex operator.
+   *
+   * @param parent
+   *          the parent
+   * @param opId
+   *          the op id
+   */
+  private void addSpecialVertexOperator(final Element parent, final String opId) {
+
+    final Element dataTypeElt = this.dom.createElement("specialVertexOperator");
+    parent.appendChild(dataTypeElt);
+    dataTypeElt.setAttribute("path", opId);
+  }
+
+  /**
+   * Write dom.
+   *
+   * @param file
+   *          the file
+   */
+  public void writeDom(final IFile file) {
+
+    try {
+      // Gets the DOM implementation of document
+      final DOMImplementation impl = this.dom.getImplementation();
+      final DOMImplementationLS implLS = (DOMImplementationLS) impl;
+
+      final LSOutput output = implLS.createLSOutput();
+      final ByteArrayOutputStream out = new ByteArrayOutputStream();
+      output.setByteStream(out);
+
+      final LSSerializer serializer = implLS.createLSSerializer();
+      serializer.getDomConfig().setParameter("format-pretty-print", true);
+      serializer.write(this.dom, output);
+
+      file.setContents(new ByteArrayInputStream(out.toByteArray()), true, false, new NullProgressMonitor());
+      out.close();
+
+    } catch (final Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * Adds the files.
+   *
+   * @param parent
+   *          the parent
+   */
+  private void addFiles(final Element parent) {
+
+    final Element files = this.dom.createElement("files");
+    parent.appendChild(files);
+
+    final Element algo = this.dom.createElement("algorithm");
+    files.appendChild(algo);
+    algo.setAttribute("url", this.scenario.getAlgorithmURL());
+
+    final Element archi = this.dom.createElement("architecture");
+    files.appendChild(archi);
+    archi.setAttribute("url", this.scenario.getArchitectureURL());
+
+    final Element codeGenDir = this.dom.createElement("codegenDirectory");
+    files.appendChild(codeGenDir);
+    codeGenDir.setAttribute("url", this.scenario.getCodegenManager().getCodegenDirectory());
+
+  }
+
+  /**
+   * Adds the constraints.
+   *
+   * @param parent
+   *          the parent
+   */
+  private void addConstraints(final Element parent) {
+
+    final Element constraints = this.dom.createElement("constraints");
+    parent.appendChild(constraints);
+
+    constraints.setAttribute("excelUrl", this.scenario.getConstraintGroupManager().getExcelFileURL());
+
+    for (final ConstraintGroup cst : this.scenario.getConstraintGroupManager().getConstraintGroups()) {
+      addConstraint(constraints, cst);
+    }
+  }
+
+  /**
+   * Adds the constraint.
+   *
+   * @param parent
+   *          the parent
+   * @param cst
+   *          the cst
+   */
+  private void addConstraint(final Element parent, final ConstraintGroup cst) {
+
+    final Element constraintGroupElt = this.dom.createElement("constraintGroup");
+    parent.appendChild(constraintGroupElt);
+
+    for (final String opId : cst.getOperatorIds()) {
+      final Element opdefelt = this.dom.createElement("operator");
+      constraintGroupElt.appendChild(opdefelt);
+      opdefelt.setAttribute("name", opId);
+    }
+
+    for (final String vtxId : cst.getVertexPaths()) {
+      final Element vtxelt = this.dom.createElement("task");
+      constraintGroupElt.appendChild(vtxelt);
+      vtxelt.setAttribute("name", vtxId);
+    }
+  }
+
+  /**
+   * Adds the relative constraints.
+   *
+   * @param parent
+   *          the parent
+   */
+  private void addRelativeConstraints(final Element parent) {
+
+    final RelativeConstraintManager manager = this.scenario.getRelativeconstraintManager();
+    final Element timings = this.dom.createElement("relativeconstraints");
+    parent.appendChild(timings);
+
+    timings.setAttribute("excelUrl", manager.getExcelFileURL());
+
+    for (final String id : manager.getExplicitConstraintIds()) {
+      addRelativeConstraint(timings, id, manager.getConstraintOrDefault(id));
+    }
+  }
+
+  /**
+   * Adds the relative constraint.
+   *
+   * @param parent
+   *          the parent
+   * @param id
+   *          the id
+   * @param group
+   *          the group
+   */
+  private void addRelativeConstraint(final Element parent, final String id, final int group) {
+
+    final Element timingelt = this.dom.createElement("relativeconstraint");
+    parent.appendChild(timingelt);
+    timingelt.setAttribute("vertexname", id);
+    timingelt.setAttribute("group", Integer.toString(group));
+  }
+
+  /**
+   * Adds the timings.
+   *
+   * @param parent
+   *          the parent
+   */
+  private void addTimings(final Element parent) {
+
+    final Element timings = this.dom.createElement("timings");
+    parent.appendChild(timings);
+
+    timings.setAttribute("excelUrl", this.scenario.getTimingManager().getExcelFileURL());
+
+    for (final Timing timing : this.scenario.getTimingManager().getTimings()) {
+      addTiming(timings, timing);
+    }
+
+    for (final String opDef : this.scenario.getTimingManager().getMemcpySpeeds().keySet()) {
+      addMemcpySpeed(timings, opDef, this.scenario.getTimingManager().getMemcpySetupTime(opDef), this.scenario.getTimingManager().getMemcpyTimePerUnit(opDef));
+    }
+  }
+
+  /**
+   * Adds the timing.
+   *
+   * @param parent
+   *          the parent
+   * @param timing
+   *          the timing
+   */
+  private void addTiming(final Element parent, final Timing timing) {
+
+    final Element timingelt = this.dom.createElement("timing");
+    parent.appendChild(timingelt);
+    timingelt.setAttribute("vertexname", timing.getVertexId());
+    timingelt.setAttribute("opname", timing.getOperatorDefinitionId());
+    String timeString;
+    if (timing.isEvaluated()) {
+      timeString = Long.toString(timing.getTime());
+    } else {
+      timeString = timing.getStringValue();
+    }
+    timingelt.setAttribute("time", timeString);
+  }
+
+  /**
+   * Adds the memcpy speed.
+   *
+   * @param parent
+   *          the parent
+   * @param opDef
+   *          the op def
+   * @param memcpySetupTime
+   *          the memcpy setup time
+   * @param memcpyTimePerUnit
+   *          the memcpy time per unit
+   */
+  private void addMemcpySpeed(final Element parent, final String opDef, final long memcpySetupTime, final float memcpyTimePerUnit) {
+
+    final Element timingelt = this.dom.createElement("memcpyspeed");
+    parent.appendChild(timingelt);
+    timingelt.setAttribute("opname", opDef);
+    timingelt.setAttribute("setuptime", Long.toString(memcpySetupTime));
+    timingelt.setAttribute("timeperunit", Float.toString(memcpyTimePerUnit));
+  }
 }

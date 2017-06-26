@@ -2,24 +2,19 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm memory Plug-in
 Bundle-SymbolicName: org.ietr.preesm.memory;singleton:=true
-Bundle-Version: 2.2.5
+Bundle-Version: 2.3.0
 Bundle-Activator: org.ietr.preesm.memory.Activator
 Require-Bundle: org.eclipse.core.runtime,
- org.ietr.dftools.workflow;bundle-version="0.0.1",
- org.jgrapht,
- org.ietr.dftools.architecture;bundle-version="0.0.1",
- org.ietr.dftools.algorithm;bundle-version="0.0.1",
- org.ietr.preesm.algorithm;bundle-version="0.6.3",
- org.eclipse.xtext.util,
- org.eclipse.xtend.lib;bundle-version="2.5.2",
- org.junit;bundle-version="4.5.0",
- org.ietr.preesm.core,
  org.eclipse.core.resources,
- org.ietr.preesm.utils
+ org.eclipse.xtext.util;bundle-version="2.11.0",
+ org.eclipse.xtend.lib;bundle-version="2.11.0",
+ org.beanshell.bsh;bundle-version="2.1.8",
+ org.ietr.preesm.algorithm,
+ org.ietr.preesm.core
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: IETR/INSA Rennes
-Bundle-ClassPath: lib/bsh-2.1.7.jar,.
+Bundle-ClassPath: .
 Export-Package: org.ietr.preesm.memory.allocation,
  org.ietr.preesm.memory.bounds,
  org.ietr.preesm.memory.distributed,

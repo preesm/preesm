@@ -2,12 +2,12 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm S-LAM Tools
 Bundle-SymbolicName: org.ietr.preesm.architecture;singleton:=true
-Bundle-Version: 2.2.5
+Bundle-Version: 2.3.0
 Bundle-Activator: org.ietr.preesm.architecture.Activator
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.core.runtime,
  org.ietr.dftools.workflow,
- org.ietr.dftools.architecture;bundle-version="0.0.1"
+ org.ietr.dftools.architecture
 Bundle-ActivationPolicy: lazy
 Export-Package: org.ietr.preesm.architecture.slam,
  org.ietr.preesm.architecture.transforms

@@ -1,6 +1,0 @@
-module sub_sampler {
-	typedef long parameter ;
-	interface loop {
-		 void subSample(in char inS, out char outS, in parameter nb, in parameter ph);
-	};
-};

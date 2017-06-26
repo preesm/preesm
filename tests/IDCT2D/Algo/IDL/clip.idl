@@ -1,5 +1,0 @@
-module clip {
-	interface loop {
-		 void clip(in char blockIn, in boolean signed, out char clip_out);
-	};
-};

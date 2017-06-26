@@ -1,44 +1,43 @@
-/*********************************************************
-Copyright or � or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-Fran�ois Nezan, Micka�l Raulet
-
-[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
-
-This software is a computer program whose purpose is to prototype
-parallel applications.
-
-This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use, 
-modify and/ or redistribute the software under the terms of the CeCILL-C
-license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info". 
-
-As a counterpart to the access to the source code and  rights to copy,
-modify and redistribute granted by the license, users are provided only
-with a limited warranty  and the software's author,  the holder of the
-economic rights,  and the successive licensors  have only  limited
-liability. 
-
-In this respect, the user's attention is drawn to the risks associated
-with loading,  using,  modifying and/or developing or reproducing the
-software by the user in light of its specific status of free software,
-that may mean  that it is complicated to manipulate,  and  that  also
-therefore means  that it is reserved for developers  and  experienced
-professionals having in-depth computer knowledge. Users are therefore
-encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or 
-data to be ensured and,  more generally, to use and operate it in the 
-same conditions as regards security. 
-
-The fact that you are presently reading this means that you have had
-knowledge of the CeCILL-C license and that you accept its terms.
- *********************************************************/
-
+/**
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2017) :
+ *
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2012)
+ *
+ * This software is a computer program whose purpose is to help prototyping
+ * parallel applications using dataflow formalism.
+ *
+ * This software is governed by the CeCILL  license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/ or redistribute the software under the terms of the CeCILL
+ * license as circulated by CEA, CNRS and INRIA at the following URL
+ * "http://www.cecill.info".
+ *
+ * As a counterpart to the access to the source code and  rights to copy,
+ * modify and redistribute granted by the license, users are provided only
+ * with a limited warranty  and the software's author,  the holder of the
+ * economic rights,  and the successive licensors  have only  limited
+ * liability.
+ *
+ * In this respect, the user's attention is drawn to the risks associated
+ * with loading,  using,  modifying and/or developing or reproducing the
+ * software by the user in light of its specific status of free software,
+ * that may mean  that it is complicated to manipulate,  and  that  also
+ * therefore means  that it is reserved for developers  and  experienced
+ * professionals having in-depth computer knowledge. Users are therefore
+ * encouraged to load and test the software's suitability as regards their
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL license and that you accept its terms.
+ */
 package org.ietr.preesm.ui.scenario.editor.constraints;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
-
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.swt.SWT;
@@ -69,328 +68,375 @@ import org.ietr.preesm.ui.scenario.editor.ISDFCheckStateListener;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 import org.ietr.preesm.ui.scenario.editor.PreesmAlgorithmTreeContentProvider;
 
+// TODO: Auto-generated Javadoc
 /**
- * Listener of the check state of the SDF tree but also of the selection
- * modification of the current core definition. It updates the check state of
- * the vertices depending on the constraint groups in the scenario
- * 
+ * Listener of the check state of the SDF tree but also of the selection modification of the current core definition. It updates the check state of the vertices
+ * depending on the constraint groups in the scenario
+ *
  * @author mpelcat
  */
 public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 
-	/**
-	 * Currently edited scenario
-	 */
-	private PreesmScenario scenario = null;
+  /** Currently edited scenario. */
+  private PreesmScenario scenario = null;
 
-	/**
-	 * Current operator
-	 */
-	private String currentOpId = null;
+  /** Current operator. */
+  private String currentOpId = null;
 
-	/**
-	 * Current section (necessary to diplay busy status)
-	 */
-	private Section section = null;
+  /** Current section (necessary to diplay busy status). */
+  private Section section = null;
 
-	/**
-	 * Tree viewer used to set the checked status
-	 */
-	private CheckboxTreeViewer treeViewer = null;
+  /** Tree viewer used to set the checked status. */
+  private CheckboxTreeViewer treeViewer = null;
 
-	/**
-	 * Content provider used to get the elements currently displayed
-	 */
-	private PreesmAlgorithmTreeContentProvider contentProvider = null;
+  /** Content provider used to get the elements currently displayed. */
+  private PreesmAlgorithmTreeContentProvider contentProvider = null;
 
-	/**
-	 * Constraints page used as a property listener to change the dirty state
-	 */
-	private IPropertyListener propertyListener = null;
+  /** Constraints page used as a property listener to change the dirty state. */
+  private IPropertyListener propertyListener = null;
 
-	public ConstraintsCheckStateListener(Section section,
-			PreesmScenario scenario) {
-		super();
-		this.scenario = scenario;
-		this.section = section;
-	}
+  /**
+   * Instantiates a new constraints check state listener.
+   *
+   * @param section
+   *          the section
+   * @param scenario
+   *          the scenario
+   */
+  public ConstraintsCheckStateListener(final Section section, final PreesmScenario scenario) {
+    super();
+    this.scenario = scenario;
+    this.section = section;
+  }
 
-	/**
-	 * Sets the different necessary attributes
-	 */
-	@Override
-	public void setTreeViewer(CheckboxTreeViewer treeViewer,
-			PreesmAlgorithmTreeContentProvider contentProvider,
-			IPropertyListener propertyListener) {
-		this.treeViewer = treeViewer;
-		this.contentProvider = contentProvider;
-		this.propertyListener = propertyListener;
-	}
+  /**
+   * Sets the different necessary attributes.
+   *
+   * @param treeViewer
+   *          the tree viewer
+   * @param contentProvider
+   *          the content provider
+   * @param propertyListener
+   *          the property listener
+   */
+  @Override
+  public void setTreeViewer(final CheckboxTreeViewer treeViewer, final PreesmAlgorithmTreeContentProvider contentProvider,
+      final IPropertyListener propertyListener) {
+    this.treeViewer = treeViewer;
+    this.contentProvider = contentProvider;
+    this.propertyListener = propertyListener;
+  }
 
-	/**
-	 * Fired when an element has been checked or unchecked
-	 */
-	@Override
-	public void checkStateChanged(CheckStateChangedEvent event) {
-		final Object element = event.getElement();
-		final boolean isChecked = event.getChecked();
-				
-		BusyIndicator.showWhile(section.getDisplay(), new Runnable() {
+  /**
+   * Fired when an element has been checked or unchecked.
+   *
+   * @param event
+   *          the event
+   */
+  @Override
+  public void checkStateChanged(final CheckStateChangedEvent event) {
+    final Object element = event.getElement();
+    final boolean isChecked = event.getChecked();
 
-			@Override
-			public void run() {
-				if (scenario.isIBSDFScenario()) {
-					if (element instanceof SDFGraph) {
-						SDFGraph graph = (SDFGraph) element;
-						fireOnCheck(graph, isChecked);
-						// updateConstraints(null,
-						// contentProvider.getCurrentGraph());
-						updateCheck();
-					} else if (element instanceof HierarchicalSDFVertex) {
-						HierarchicalSDFVertex vertex = (HierarchicalSDFVertex) element;
-						fireOnCheck(vertex, isChecked);
-						// updateConstraints(null,
-						// contentProvider.getCurrentGraph());
-						updateCheck();
+    BusyIndicator.showWhile(this.section.getDisplay(), () -> {
+      if (ConstraintsCheckStateListener.this.scenario.isIBSDFScenario()) {
+        if (element instanceof SDFGraph) {
+          final SDFGraph graph1 = (SDFGraph) element;
+          fireOnCheck(graph1, isChecked);
+          // updateConstraints(null,
+          // contentProvider.getCurrentGraph());
+          updateCheck();
+        } else if (element instanceof HierarchicalSDFVertex) {
+          final HierarchicalSDFVertex vertex = (HierarchicalSDFVertex) element;
+          fireOnCheck(vertex, isChecked);
+          // updateConstraints(null,
+          // contentProvider.getCurrentGraph());
+          updateCheck();
 
-					}
-				} else if (scenario.isPISDFScenario()) {
-					if (element instanceof PiGraph) {
-						PiGraph graph = (PiGraph) element;
-						fireOnCheck(graph, isChecked);
-						updateCheck();
-					} else if (element instanceof AbstractActor) {
-						AbstractActor actor = (AbstractActor) element;
-						fireOnCheck(actor, isChecked);
-						updateCheck();
-					}
-				}
-			}
-		});
-		propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
-	}
+        }
+      } else if (ConstraintsCheckStateListener.this.scenario.isPISDFScenario()) {
+        if (element instanceof PiGraph) {
+          final PiGraph graph2 = (PiGraph) element;
+          fireOnCheck(graph2, isChecked);
+          updateCheck();
+        } else if (element instanceof AbstractActor) {
+          final AbstractActor actor = (AbstractActor) element;
+          fireOnCheck(actor, isChecked);
+          updateCheck();
+        }
+      }
+    });
+    this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
+  }
 
-	/**
-	 * Adds or remove constraints for all vertices in the graph depending on the
-	 * isChecked status
-	 */
-	private void fireOnCheck(SDFGraph graph, boolean isChecked) {
-		if (currentOpId != null) {
-			// Checks the children of the current graph
-			for (HierarchicalSDFVertex v : contentProvider
-					.filterIBSDFChildren(graph.vertexSet())) {
-				fireOnCheck(v, isChecked);
-			}
-		}
-	}
+  /**
+   * Adds or remove constraints for all vertices in the graph depending on the isChecked status.
+   *
+   * @param graph
+   *          the graph
+   * @param isChecked
+   *          the is checked
+   */
+  private void fireOnCheck(final SDFGraph graph, final boolean isChecked) {
+    if (this.currentOpId != null) {
+      // Checks the children of the current graph
+      for (final HierarchicalSDFVertex v : this.contentProvider.filterIBSDFChildren(graph.vertexSet())) {
+        fireOnCheck(v, isChecked);
+      }
+    }
+  }
 
-	private void fireOnCheck(PiGraph graph, boolean isChecked) {
-		if (currentOpId != null) {
-			// Checks the children of the current graph
-			for (AbstractActor v : contentProvider.filterPISDFChildren(graph
-					.getVertices())) {
-				if (v instanceof PiGraph) fireOnCheck(((PiGraph) v), isChecked);
-				fireOnCheck(v, isChecked);
-			}
-			fireOnCheck((AbstractActor) graph, isChecked);
-		}
-	}
+  /**
+   * Fire on check.
+   *
+   * @param graph
+   *          the graph
+   * @param isChecked
+   *          the is checked
+   */
+  private void fireOnCheck(final PiGraph graph, final boolean isChecked) {
+    if (this.currentOpId != null) {
+      // Checks the children of the current graph
+      for (final AbstractActor v : this.contentProvider.filterPISDFChildren(graph.getVertices())) {
+        if (v instanceof PiGraph) {
+          fireOnCheck(((PiGraph) v), isChecked);
+        }
+        fireOnCheck(v, isChecked);
+      }
+      fireOnCheck((AbstractActor) graph, isChecked);
+    }
+  }
 
-	/**
-	 * Adds or remove a constraint depending on the isChecked status
-	 */
-	private void fireOnCheck(HierarchicalSDFVertex vertex, boolean isChecked) {
-		if (currentOpId != null) {
-			if (isChecked) {
-				scenario.getConstraintGroupManager().addConstraint(currentOpId,
-						vertex.getStoredVertex());
-			} else {
-				scenario.getConstraintGroupManager().removeConstraint(
-						currentOpId, vertex.getStoredVertex());
-			}
-		}
+  /**
+   * Adds or remove a constraint depending on the isChecked status.
+   *
+   * @param vertex
+   *          the vertex
+   * @param isChecked
+   *          the is checked
+   */
+  private void fireOnCheck(final HierarchicalSDFVertex vertex, final boolean isChecked) {
+    if (this.currentOpId != null) {
+      if (isChecked) {
+        this.scenario.getConstraintGroupManager().addConstraint(this.currentOpId, vertex.getStoredVertex());
+      } else {
+        this.scenario.getConstraintGroupManager().removeConstraint(this.currentOpId, vertex.getStoredVertex());
+      }
+    }
 
-		// Checks the children of the current vertex
-		IRefinement refinement = vertex.getStoredVertex().getRefinement();
-		if (refinement != null && refinement instanceof SDFGraph) {
-			SDFGraph graph = (SDFGraph) refinement;
+    // Checks the children of the current vertex
+    final IRefinement refinement = vertex.getStoredVertex().getRefinement();
+    if ((refinement != null) && (refinement instanceof SDFGraph)) {
+      final SDFGraph graph = (SDFGraph) refinement;
 
-			for (HierarchicalSDFVertex v : contentProvider
-					.filterIBSDFChildren(graph.vertexSet())) {
-				fireOnCheck(v, isChecked);
-			}
-		}
-	}
+      for (final HierarchicalSDFVertex v : this.contentProvider.filterIBSDFChildren(graph.vertexSet())) {
+        fireOnCheck(v, isChecked);
+      }
+    }
+  }
 
-	private void fireOnCheck(AbstractActor actor, boolean isChecked) {
-		if (currentOpId != null) {
-			if (isChecked) {
-				scenario.getConstraintGroupManager().addConstraint(currentOpId,
-						actor);
-			} else {
-				scenario.getConstraintGroupManager().removeConstraint(
-						currentOpId, actor);
-			}
-		}
+  /**
+   * Fire on check.
+   *
+   * @param actor
+   *          the actor
+   * @param isChecked
+   *          the is checked
+   */
+  private void fireOnCheck(final AbstractActor actor, final boolean isChecked) {
+    if (this.currentOpId != null) {
+      if (isChecked) {
+        this.scenario.getConstraintGroupManager().addConstraint(this.currentOpId, actor);
+      } else {
+        this.scenario.getConstraintGroupManager().removeConstraint(this.currentOpId, actor);
+      }
+    }
 
-		// Checks the children of the current vertex
-		if (actor instanceof Actor) {
-			Refinement refinement = ((Actor) actor).getRefinement();
-			if (refinement != null) {
-				AbstractActor subGraph = refinement.getAbstractActor();
-				if (subGraph instanceof PiGraph) {
-					PiGraph graph = (PiGraph) subGraph;
+    // Checks the children of the current vertex
+    if (actor instanceof Actor) {
+      final Refinement refinement = ((Actor) actor).getRefinement();
+      if (refinement != null) {
+        final AbstractActor subGraph = refinement.getAbstractActor();
+        if (subGraph instanceof PiGraph) {
+          final PiGraph graph = (PiGraph) subGraph;
 
-					for (AbstractActor v : contentProvider
-							.filterPISDFChildren(graph.getVertices())) {
-						fireOnCheck(v, isChecked);
-					}
-				}
-			}
-		}
-	}
+          for (final AbstractActor v : this.contentProvider.filterPISDFChildren(graph.getVertices())) {
+            fireOnCheck(v, isChecked);
+          }
+        }
+      }
+    }
+  }
 
-	@Override
-	public void widgetDefaultSelected(SelectionEvent e) {
-		// TODO Auto-generated method stub
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
+   */
+  @Override
+  public void widgetDefaultSelected(final SelectionEvent e) {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	/**
-	 * Core combo box listener that selects the current core
-	 */
-	@Override
-	public void widgetSelected(SelectionEvent e) {
-		if (e.getSource() instanceof Combo) {
-			Combo combo = ((Combo) e.getSource());
-			String item = combo.getItem(combo.getSelectionIndex());
+  /**
+   * Core combo box listener that selects the current core.
+   *
+   * @param e
+   *          the e
+   */
+  @Override
+  public void widgetSelected(final SelectionEvent e) {
+    if (e.getSource() instanceof Combo) {
+      final Combo combo = ((Combo) e.getSource());
+      final String item = combo.getItem(combo.getSelectionIndex());
 
-			currentOpId = item;
-			updateCheck();
-		}
+      this.currentOpId = item;
+      updateCheck();
+    }
 
-	}
+  }
 
-	/**
-	 * Update the check status of the whole tree
-	 */
-	public void updateCheck() {
-		if (scenario != null) {
-			if (scenario.isIBSDFScenario()) {
-				updateCheckIBSDF();
-			} else if (scenario.isPISDFScenario()) {
-				updateCheckPISDF();
-			}
-		}
-	}
+  /**
+   * Update the check status of the whole tree.
+   */
+  public void updateCheck() {
+    if (this.scenario != null) {
+      if (this.scenario.isIBSDFScenario()) {
+        updateCheckIBSDF();
+      } else if (this.scenario.isPISDFScenario()) {
+        updateCheckPISDF();
+      }
+    }
+  }
 
-	private void updateCheckPISDF() {
-		PiGraph currentGraph = contentProvider.getPISDFCurrentGraph();
-		if (currentOpId != null && currentGraph != null) {
-			Set<AbstractVertex> cgSet = new HashSet<AbstractVertex>();
+  /**
+   * Update check PISDF.
+   */
+  private void updateCheckPISDF() {
+    final PiGraph currentGraph = this.contentProvider.getPISDFCurrentGraph();
+    if ((this.currentOpId != null) && (currentGraph != null)) {
+      final Set<AbstractVertex> cgSet = new LinkedHashSet<>();
 
-			for (ConstraintGroup cg : scenario.getConstraintGroupManager()
-					.getOpConstraintGroups(currentOpId)) {
-				
-				// Retrieves the elements in the tree that have the same name as
-				// the ones to select in the constraint group
-				for (String vertexId : cg.getVertexPaths()) {
-					AbstractVertex v = currentGraph.getHierarchicalActorFromPath(vertexId);					
-					if (v != null) cgSet.add(v);
-				}
-			}			
-			
-			treeViewer.setCheckedElements(cgSet.toArray());
+      for (final ConstraintGroup cg : this.scenario.getConstraintGroupManager().getOpConstraintGroups(this.currentOpId)) {
 
-			// If all the children of a graph are checked, it is checked itself
-			boolean allChildrenChecked = true;
-			for (AbstractActor v : contentProvider
-					.filterPISDFChildren(currentGraph.getVertices())) {
-				allChildrenChecked &= treeViewer.getChecked(v);
-			}
+        // Retrieves the elements in the tree that have the same name as
+        // the ones to select in the constraint group
+        for (final String vertexId : cg.getVertexPaths()) {
+          final AbstractVertex v = currentGraph.getHierarchicalActorFromPath(vertexId);
+          if (v != null) {
+            cgSet.add(v);
+          }
+        }
+      }
 
-			if (allChildrenChecked)
-				treeViewer.setChecked(currentGraph, true);
+      this.treeViewer.setCheckedElements(cgSet.toArray());
 
-		}
-	}
+      // If all the children of a graph are checked, it is checked itself
+      boolean allChildrenChecked = true;
+      for (final AbstractActor v : this.contentProvider.filterPISDFChildren(currentGraph.getVertices())) {
+        allChildrenChecked &= this.treeViewer.getChecked(v);
+      }
 
-	private void updateCheckIBSDF() {
-		SDFGraph currentGraph = contentProvider.getIBSDFCurrentGraph();
-		if (currentOpId != null && currentGraph != null) {
-			Set<HierarchicalSDFVertex> cgSet = new HashSet<HierarchicalSDFVertex>();
+      if (allChildrenChecked) {
+        this.treeViewer.setChecked(currentGraph, true);
+      }
 
-			for (ConstraintGroup cg : scenario.getConstraintGroupManager()
-					.getOpConstraintGroups(currentOpId)) {
+    }
+  }
 
-				// Retrieves the elements in the tree that have the same name as
-				// the ones to select in the constraint group
-				for (String vertexId : cg.getVertexPaths()) {
-					SDFAbstractVertex v = currentGraph
-							.getHierarchicalVertexFromPath(vertexId);
+  /**
+   * Update check IBSDF.
+   */
+  private void updateCheckIBSDF() {
+    final SDFGraph currentGraph = this.contentProvider.getIBSDFCurrentGraph();
+    if ((this.currentOpId != null) && (currentGraph != null)) {
+      final Set<HierarchicalSDFVertex> cgSet = new LinkedHashSet<>();
 
-					if (v != null) {
-						cgSet.add(contentProvider.convertSDFChild(v));
-					}
-				}
-			}
+      for (final ConstraintGroup cg : this.scenario.getConstraintGroupManager().getOpConstraintGroups(this.currentOpId)) {
 
-			treeViewer.setCheckedElements(cgSet.toArray());
-			
-			// If all the children of a graph are checked, it is checked itself
-			boolean allChildrenChecked = true;
-			for (HierarchicalSDFVertex v : contentProvider
-					.filterIBSDFChildren(currentGraph.vertexSet())) {
-				allChildrenChecked &= treeViewer.getChecked(v);
-			}
+        // Retrieves the elements in the tree that have the same name as
+        // the ones to select in the constraint group
+        for (final String vertexId : cg.getVertexPaths()) {
+          final SDFAbstractVertex v = currentGraph.getHierarchicalVertexFromPath(vertexId);
 
-			if (allChildrenChecked)
-				treeViewer.setChecked(currentGraph, true);
+          if (v != null) {
+            cgSet.add(this.contentProvider.convertSDFChild(v));
+          }
+        }
+      }
 
-		}
-	}
+      this.treeViewer.setCheckedElements(cgSet.toArray());
 
-	/**
-	 * Adds a combo box for the core selection
-	 */
-	@Override
-	public void addComboBoxSelector(Composite parent, FormToolkit toolkit) {
-		Composite combocps = toolkit.createComposite(parent);
-		combocps.setLayout(new FillLayout());
-		combocps.setVisible(true);
-		Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
-		combo.setVisibleItemCount(20);
-		combo.setToolTipText(Messages
-				.getString("Constraints.coreSelectionTooltip"));
-		comboDataInit(combo);
-		combo.addFocusListener(new FocusListener() {
+      // If all the children of a graph are checked, it is checked itself
+      boolean allChildrenChecked = true;
+      for (final HierarchicalSDFVertex v : this.contentProvider.filterIBSDFChildren(currentGraph.vertexSet())) {
+        allChildrenChecked &= this.treeViewer.getChecked(v);
+      }
 
-			@Override
-			public void focusGained(FocusEvent e) {
-				comboDataInit((Combo) e.getSource());
+      if (allChildrenChecked) {
+        this.treeViewer.setChecked(currentGraph, true);
+      }
 
-			}
+    }
+  }
 
-			@Override
-			public void focusLost(FocusEvent e) {
-			}
+  /**
+   * Adds a combo box for the core selection.
+   *
+   * @param parent
+   *          the parent
+   * @param toolkit
+   *          the toolkit
+   */
+  @Override
+  public void addComboBoxSelector(final Composite parent, final FormToolkit toolkit) {
+    final Composite combocps = toolkit.createComposite(parent);
+    combocps.setLayout(new FillLayout());
+    combocps.setVisible(true);
+    final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
+    combo.setVisibleItemCount(20);
+    combo.setToolTipText(Messages.getString("Constraints.coreSelectionTooltip"));
+    comboDataInit(combo);
+    combo.addFocusListener(new FocusListener() {
 
-		});
+      @Override
+      public void focusGained(final FocusEvent e) {
+        comboDataInit((Combo) e.getSource());
 
-		combo.addSelectionListener(this);
-	}
+      }
 
-	private void comboDataInit(Combo combo) {
+      @Override
+      public void focusLost(final FocusEvent e) {
+      }
 
-		combo.removeAll();
-		for (String id : scenario.getOrderedOperatorIds()) {
-			combo.add(id);
-		}
-	}
+    });
 
-	@Override
-	public void paintControl(PaintEvent e) {
-		updateCheck();
+    combo.addSelectionListener(this);
+  }
 
-	}
+  /**
+   * Combo data init.
+   *
+   * @param combo
+   *          the combo
+   */
+  private void comboDataInit(final Combo combo) {
+
+    combo.removeAll();
+    for (final String id : this.scenario.getOrderedOperatorIds()) {
+      combo.add(id);
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events.PaintEvent)
+   */
+  @Override
+  public void paintControl(final PaintEvent e) {
+    updateCheck();
+
+  }
 }

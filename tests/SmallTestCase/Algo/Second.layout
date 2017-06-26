@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<layout>
-   <vertices>
-      <vertex id="input" x="104" y="144"/>
-      <vertex id="output" x="468" y="145"/>
-      <vertex id="process1" x="212" y="89"/>
-      <vertex id="process2" x="371" y="84"/>
-   </vertices>
-</layout>

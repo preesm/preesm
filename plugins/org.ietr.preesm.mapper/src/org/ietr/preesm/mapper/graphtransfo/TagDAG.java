@@ -1,43 +1,45 @@
-/*********************************************************
-Copyright or � or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-Fran�ois Nezan, Micka�l Raulet
-
-[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
-
-This software is a computer program whose purpose is to prototype
-parallel applications.
-
-This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use, 
-modify and/ or redistribute the software under the terms of the CeCILL-C
-license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info". 
-
-As a counterpart to the access to the source code and  rights to copy,
-modify and redistribute granted by the license, users are provided only
-with a limited warranty  and the software's author,  the holder of the
-economic rights,  and the successive licensors  have only  limited
-liability. 
-
-In this respect, the user's attention is drawn to the risks associated
-with loading,  using,  modifying and/or developing or reproducing the
-software by the user in light of its specific status of free software,
-that may mean  that it is complicated to manipulate,  and  that  also
-therefore means  that it is reserved for developers  and  experienced
-professionals having in-depth computer knowledge. Users are therefore
-encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or 
-data to be ensured and,  more generally, to use and operate it in the 
-same conditions as regards security. 
-
-The fact that you are presently reading this means that you have had
-knowledge of the CeCILL-C license and that you accept its terms.
- *********************************************************/
-
+/**
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ *
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014)
+ * Jonathan Piat <jpiat@laas.fr> (2008 - 2011)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
+ * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
+ *
+ * This software is a computer program whose purpose is to help prototyping
+ * parallel applications using dataflow formalism.
+ *
+ * This software is governed by the CeCILL  license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/ or redistribute the software under the terms of the CeCILL
+ * license as circulated by CEA, CNRS and INRIA at the following URL
+ * "http://www.cecill.info".
+ *
+ * As a counterpart to the access to the source code and  rights to copy,
+ * modify and redistribute granted by the license, users are provided only
+ * with a limited warranty  and the software's author,  the holder of the
+ * economic rights,  and the successive licensors  have only  limited
+ * liability.
+ *
+ * In this respect, the user's attention is drawn to the risks associated
+ * with loading,  using,  modifying and/or developing or reproducing the
+ * software by the user in light of its specific status of free software,
+ * that may mean  that it is complicated to manipulate,  and  that  also
+ * therefore means  that it is reserved for developers  and  experienced
+ * professionals having in-depth computer knowledge. Users are therefore
+ * encouraged to load and test the software's suitability as regards their
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL license and that you accept its terms.
+ */
 package org.ietr.preesm.mapper.graphtransfo;
 
 import java.util.Iterator;
-
 import org.ietr.dftools.algorithm.model.AbstractEdge;
 import org.ietr.dftools.algorithm.model.PropertyBean;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
@@ -69,261 +71,236 @@ import org.ietr.preesm.mapper.model.special.ReceiveVertex;
 import org.ietr.preesm.mapper.model.special.SendVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * Tags an SDF with the implementation information necessary for code
- * generation, and DAG exporting
- * 
+ * Tags an SDF with the implementation information necessary for code generation, and DAG exporting.
+ *
  * @author pmenuet
  * @author mpelcat
  */
 public class TagDAG {
 
-	/**
-	 * Main for test
-	 */
-	public static void main(String[] args) {
+  /**
+   * Constructor.
+   */
+  public TagDAG() {
+    super();
+  }
 
-	}
+  /**
+   * tag adds the send and receive operations necessary to the code generation. It also adds the necessary properies.
+   *
+   * @param dag
+   *          the dag
+   * @param architecture
+   *          the architecture
+   * @param scenario
+   *          the scenario
+   * @param simu
+   *          the simu
+   * @param edgeSchedType
+   *          the edge sched type
+   * @throws InvalidExpressionException
+   *           the invalid expression exception
+   */
+  public void tag(final MapperDAG dag, final Design architecture, final PreesmScenario scenario, final IAbc simu, final EdgeSchedType edgeSchedType)
+      throws InvalidExpressionException {
 
-	/**
-	 * Constructor
-	 */
-	public TagDAG() {
-		super();
-	}
+    final PropertyBean bean = dag.getPropertyBean();
+    bean.setValue(ImplementationPropertyNames.Graph_AbcReferenceType, simu.getType());
+    bean.setValue(ImplementationPropertyNames.Graph_EdgeSchedReferenceType, edgeSchedType);
+    bean.setValue(ImplementationPropertyNames.Graph_SdfReferenceGraph, dag.getReferenceSdfGraph());
 
-	/**
-	 * tag adds the send and receive operations necessary to the code
-	 * generation. It also adds the necessary properies.
-	 * 
-	 * @throws InvalidExpressionException
-	 */
-	public void tag(MapperDAG dag, Design architecture,
-			PreesmScenario scenario, IAbc simu, EdgeSchedType edgeSchedType)
-			throws InvalidExpressionException {
+    addSendReceive(dag, architecture, scenario);
+    addProperties(dag, simu);
+    addAllAggregates(dag, scenario);
+  }
 
-		PropertyBean bean = dag.getPropertyBean();
-		bean.setValue(ImplementationPropertyNames.Graph_AbcReferenceType,
-				simu.getType());
-		bean.setValue(ImplementationPropertyNames.Graph_EdgeSchedReferenceType,
-				edgeSchedType);
-		bean.setValue(ImplementationPropertyNames.Graph_SdfReferenceGraph,
-				dag.getReferenceSdfGraph());
+  /**
+   * Adds send and receive without scheduling them.
+   *
+   * @param dag
+   *          the dag
+   * @param architecture
+   *          the architecture
+   * @param scenario
+   *          the scenario
+   */
+  public void addSendReceive(final MapperDAG dag, final Design architecture, final PreesmScenario scenario) {
 
-		addSendReceive(dag, architecture, scenario);
-		addProperties(dag, simu);
-		addAllAggregates(dag, scenario);
-	}
+    final OrderManager orderMgr = new OrderManager(architecture);
+    orderMgr.reconstructTotalOrderFromDAG(dag);
 
-	/**
-	 * Adds send and receive without scheduling them
-	 */
-	public void addSendReceive(MapperDAG dag, Design architecture,
-			PreesmScenario scenario) {
+    final CommunicationRouter comRouter = new CommunicationRouter(architecture, scenario, dag, AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr),
+        orderMgr);
+    comRouter.routeAll(dag, CommunicationRouter.sendReceiveType);
+    orderMgr.tagDAG(dag);
+  }
 
-		OrderManager orderMgr = new OrderManager(architecture);
-		orderMgr.reconstructTotalOrderFromDAG(dag);
+  /**
+   * Adds the properties.
+   *
+   * @param dag
+   *          the dag
+   * @param simu
+   *          the simu
+   */
+  public void addProperties(final MapperDAG dag, final IAbc simu) {
 
-		CommunicationRouter comRouter = new CommunicationRouter(architecture,
-				scenario, dag, AbstractEdgeSched.getInstance(
-						EdgeSchedType.Simple, orderMgr), orderMgr);
-		comRouter.routeAll(dag, CommunicationRouter.sendReceiveType);
-		orderMgr.tagDAG(dag);
-	}
+    MapperDAGVertex currentVertex;
 
-	public void addProperties(MapperDAG dag, IAbc simu) {
+    final Iterator<DAGVertex> iter = dag.vertexSet().iterator();
 
-		MapperDAGVertex currentVertex;
+    // Updates graph time
+    if (simu instanceof LatencyAbc) {
+      ((LatencyAbc) simu).updateTimings();
+    }
 
-		Iterator<DAGVertex> iter = dag.vertexSet().iterator();
+    // Tagging the vertices with informations for code generation
+    while (iter.hasNext()) {
+      currentVertex = (MapperDAGVertex) iter.next();
+      final PropertyBean bean = currentVertex.getPropertyBean();
 
-		// Updates graph time
-		if (simu instanceof LatencyAbc) {
-			((LatencyAbc) simu).updateTimings();
-		}
+      if (currentVertex instanceof SendVertex) {
 
-		// Tagging the vertices with informations for code generation
-		while (iter.hasNext()) {
-			currentVertex = (MapperDAGVertex) iter.next();
-			PropertyBean bean = currentVertex.getPropertyBean();
+        final MapperDAGEdge incomingEdge = (MapperDAGEdge) ((SendVertex) currentVertex).incomingEdges().toArray()[0];
 
-			if (currentVertex instanceof SendVertex) {
+        // Setting the vertex type
+        bean.setValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.SEND);
 
-				MapperDAGEdge incomingEdge = (MapperDAGEdge) ((SendVertex) currentVertex)
-						.incomingEdges().toArray()[0];
+        // Setting the operator on which vertex is executed
+        bean.setValue(ImplementationPropertyNames.Vertex_Operator, ((SendVertex) currentVertex).getRouteStep().getSender());
 
-				// Setting the vertex type
-				bean.setValue(ImplementationPropertyNames.Vertex_vertexType,
-						VertexType.SEND);
+        // Setting the medium transmitting the current data
+        final AbstractRouteStep sendRs = ((SendVertex) currentVertex).getRouteStep();
+        bean.setValue(ImplementationPropertyNames.SendReceive_routeStep, sendRs);
 
-				// Setting the operator on which vertex is executed
-				bean.setValue(ImplementationPropertyNames.Vertex_Operator,
-						((SendVertex) currentVertex).getRouteStep().getSender());
+        // Setting the size of the transmitted data
+        bean.setValue(ImplementationPropertyNames.SendReceive_dataSize, incomingEdge.getInit().getDataSize());
 
-				// Setting the medium transmitting the current data
-				AbstractRouteStep sendRs = ((SendVertex) currentVertex)
-						.getRouteStep();
-				bean.setValue(
-						ImplementationPropertyNames.SendReceive_routeStep,
-						sendRs);
+        // Setting the name of the data sending vertex
+        bean.setValue(ImplementationPropertyNames.Send_senderGraphName, incomingEdge.getSource().getName());
 
-				// Setting the size of the transmitted data
-				bean.setValue(ImplementationPropertyNames.SendReceive_dataSize,
-						incomingEdge.getInit().getDataSize());
+        // Setting the address of the operator on which vertex is
+        // executed
+        final String baseAddress = DesignTools.getParameter(((SendVertex) currentVertex).getRouteStep().getSender(), DesignTools.OPERATOR_BASE_ADDRESS);
 
-				// Setting the name of the data sending vertex
-				bean.setValue(ImplementationPropertyNames.Send_senderGraphName,
-						incomingEdge.getSource().getName());
+        if (baseAddress != null) {
+          bean.setValue(ImplementationPropertyNames.SendReceive_Operator_address, baseAddress);
+        }
 
-				// Setting the address of the operator on which vertex is
-				// executed
-				String baseAddress = DesignTools
-						.getParameter(((SendVertex) currentVertex)
-								.getRouteStep().getSender(),
-								DesignTools.OPERATOR_BASE_ADDRESS);
+      } else if (currentVertex instanceof ReceiveVertex) {
 
-				if (baseAddress != null) {
-					bean.setValue(
-							ImplementationPropertyNames.SendReceive_Operator_address,
-							baseAddress);
-				}
+        final MapperDAGEdge outgoingEdge = (MapperDAGEdge) ((ReceiveVertex) currentVertex).outgoingEdges().toArray()[0];
 
-			} else if (currentVertex instanceof ReceiveVertex) {
+        // Setting the vertex type
+        bean.setValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.RECEIVE);
 
-				MapperDAGEdge outgoingEdge = (MapperDAGEdge) ((ReceiveVertex) currentVertex)
-						.outgoingEdges().toArray()[0];
+        // Setting the operator on which vertex is executed
+        bean.setValue(ImplementationPropertyNames.Vertex_Operator, ((ReceiveVertex) currentVertex).getRouteStep().getReceiver());
 
-				// Setting the vertex type
-				bean.setValue(ImplementationPropertyNames.Vertex_vertexType,
-						VertexType.RECEIVE);
+        // Setting the medium transmitting the current data
+        final AbstractRouteStep rcvRs = ((ReceiveVertex) currentVertex).getRouteStep();
+        bean.setValue(ImplementationPropertyNames.SendReceive_routeStep, rcvRs);
 
-				// Setting the operator on which vertex is executed
-				bean.setValue(ImplementationPropertyNames.Vertex_Operator,
-						((ReceiveVertex) currentVertex).getRouteStep()
-								.getReceiver());
+        // Setting the size of the transmitted data
+        bean.setValue(ImplementationPropertyNames.SendReceive_dataSize, outgoingEdge.getInit().getDataSize());
 
-				// Setting the medium transmitting the current data
-				AbstractRouteStep rcvRs = ((ReceiveVertex) currentVertex)
-						.getRouteStep();
-				bean.setValue(
-						ImplementationPropertyNames.SendReceive_routeStep,
-						rcvRs);
+        // Setting the name of the data receiving vertex
+        bean.setValue(ImplementationPropertyNames.Receive_receiverGraphName, outgoingEdge.getTarget().getName());
 
-				// Setting the size of the transmitted data
-				bean.setValue(ImplementationPropertyNames.SendReceive_dataSize,
-						outgoingEdge.getInit().getDataSize());
+        // Setting the address of the operator on which vertex is
+        // executed
+        final String baseAddress = DesignTools.getParameter(((ReceiveVertex) currentVertex).getRouteStep().getReceiver(), "BaseAddress");
 
-				// Setting the name of the data receiving vertex
-				bean.setValue(
-						ImplementationPropertyNames.Receive_receiverGraphName,
-						outgoingEdge.getTarget().getName());
+        if (baseAddress != null) {
+          bean.setValue(ImplementationPropertyNames.SendReceive_Operator_address, baseAddress);
+        }
+      } else {
 
-				// Setting the address of the operator on which vertex is
-				// executed
-				String baseAddress = DesignTools.getParameter(
-						((ReceiveVertex) currentVertex).getRouteStep()
-								.getReceiver(), "BaseAddress");
+        // Setting the operator on which vertex is executed
+        bean.setValue(ImplementationPropertyNames.Vertex_Operator, currentVertex.getEffectiveOperator());
 
-				if (baseAddress != null) {
-					bean.setValue(
-							ImplementationPropertyNames.SendReceive_Operator_address,
-							baseAddress);
-				}
-			} else {
+        // Setting the vertex type
+        bean.setValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.TASK);
 
-				// Setting the operator on which vertex is executed
-				bean.setValue(ImplementationPropertyNames.Vertex_Operator,
-						currentVertex
-								.getEffectiveOperator());
+        bean.setValue(ImplementationPropertyNames.Vertex_originalVertexId, currentVertex.getCorrespondingSDFVertex().getId());
 
-				// Setting the vertex type
-				bean.setValue(ImplementationPropertyNames.Vertex_vertexType,
-						VertexType.TASK);
+        // Setting the task duration
+        final ComponentInstance effectiveOperator = currentVertex
 
-				bean.setValue(
-						ImplementationPropertyNames.Vertex_originalVertexId,
-						currentVertex.getCorrespondingSDFVertex().getId());
+            .getEffectiveOperator();
+        final long singleRepeatTime = currentVertex.getInit().getTime(effectiveOperator);
+        final int nbRepeat = currentVertex.getInit().getNbRepeat();
+        final long totalTime = nbRepeat * singleRepeatTime;
+        bean.setValue(ImplementationPropertyNames.Task_duration, totalTime);
 
-				// Setting the task duration
-				ComponentInstance effectiveOperator = currentVertex
-						
-						.getEffectiveOperator();
-				long singleRepeatTime = currentVertex.getInit()
-						.getTime(effectiveOperator);
-				int nbRepeat = currentVertex.getInit()
-						.getNbRepeat();
-				long totalTime = nbRepeat * singleRepeatTime;
-				bean.setValue(ImplementationPropertyNames.Task_duration,
-						totalTime);
+        // Tags the DAG with vertex starttime when possible
+        if (simu instanceof LatencyAbc) {
+          final long startTime = ((LatencyAbc) simu).getTLevel(currentVertex, false);
+          bean.setValue(ImplementationPropertyNames.Start_time, startTime);
+        }
+      }
 
-				// Tags the DAG with vertex starttime when possible
-				if (simu instanceof LatencyAbc) {
-					long startTime = ((LatencyAbc) simu).getTLevel(
-							currentVertex, false);
-					bean.setValue(ImplementationPropertyNames.Start_time,
-							startTime);
-				}
-			}
+      // Setting the scheduling total order
+      bean.setValue(ImplementationPropertyNames.Vertex_schedulingOrder, currentVertex.getTotalOrder());
+    }
+  }
 
-			// Setting the scheduling total order
-			bean.setValue(ImplementationPropertyNames.Vertex_schedulingOrder,
-					currentVertex.getTotalOrder());
-		}
-	}
+  /**
+   * Loop on the edges to add aggregates.
+   *
+   * @param dag
+   *          the dag
+   * @param scenario
+   *          the scenario
+   * @throws InvalidExpressionException
+   *           the invalid expression exception
+   */
+  public void addAllAggregates(final MapperDAG dag, final PreesmScenario scenario) throws InvalidExpressionException {
 
-	/**
-	 * Loop on the edges to add aggregates.
-	 * 
-	 * @throws InvalidExpressionException
-	 * @throws InvalidExpressionException
-	 */
-	public void addAllAggregates(MapperDAG dag, PreesmScenario scenario)
-			throws InvalidExpressionException {
+    MapperDAGEdge edge;
 
-		MapperDAGEdge edge;
+    final Iterator<DAGEdge> iter = dag.edgeSet().iterator();
 
-		Iterator<DAGEdge> iter = dag.edgeSet().iterator();
+    // Tagging the vertices with informations for code generation
+    while (iter.hasNext()) {
+      edge = (MapperDAGEdge) iter.next();
 
-		// Tagging the vertices with informations for code generation
-		while (iter.hasNext()) {
-			edge = (MapperDAGEdge) iter.next();
+      if ((edge.getSource() instanceof TransferVertex) || (edge.getTarget() instanceof TransferVertex)) {
+        addAggregateFromSDF(edge, scenario);
+      } else {
+        addAggregateFromSDF(edge, scenario);
+      }
+    }
+  }
 
-			if (edge.getSource() instanceof TransferVertex
-					|| edge.getTarget() instanceof TransferVertex) {
-				addAggregateFromSDF(edge, scenario);
-			} else {
-				addAggregateFromSDF(edge, scenario);
-			}
-		}
-	}
+  /**
+   * Aggregate is imported from the SDF edge. An aggregate in SDF is a set of sdf edges that were merged into one DAG edge.
+   *
+   * @param edge
+   *          the edge
+   * @param scenario
+   *          the scenario
+   * @throws InvalidExpressionException
+   *           the invalid expression exception
+   */
+  @SuppressWarnings("unchecked")
+  public void addAggregateFromSDF(final MapperDAGEdge edge, final PreesmScenario scenario) throws InvalidExpressionException {
 
-	/**
-	 * Aggregate is imported from the SDF edge. An aggregate in SDF is a set of
-	 * sdf edges that were merged into one DAG edge.
-	 * 
-	 * @throws InvalidExpressionException
-	 */
-	@SuppressWarnings("unchecked")
-	public void addAggregateFromSDF(MapperDAGEdge edge, PreesmScenario scenario)
-			throws InvalidExpressionException {
+    final BufferAggregate agg = new BufferAggregate();
 
-		BufferAggregate agg = new BufferAggregate();
+    // Iterating the SDF aggregates
+    for (final AbstractEdge<SDFGraph, SDFAbstractVertex> aggMember : edge.getAggregate()) {
+      final SDFEdge sdfAggMember = (SDFEdge) aggMember;
 
-		// Iterating the SDF aggregates
-		for (AbstractEdge<SDFGraph, SDFAbstractVertex> aggMember : edge
-				.getAggregate()) {
-			SDFEdge sdfAggMember = (SDFEdge) aggMember;
+      final DataType dataType = scenario.getSimulationManager().getDataType(sdfAggMember.getDataType().toString());
+      final BufferProperties props = new BufferProperties(dataType, sdfAggMember.getSourceInterface().getName(), sdfAggMember.getTargetInterface().getName(),
+          sdfAggMember.getProd().intValue());
 
-			DataType dataType = scenario.getSimulationManager().getDataType(
-					sdfAggMember.getDataType().toString());
-			BufferProperties props = new BufferProperties(dataType,
-					sdfAggMember.getSourceInterface().getName(), sdfAggMember
-							.getTargetInterface().getName(), sdfAggMember
-							.getProd().intValue());
-
-			agg.add(props);
-		}
-		edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);
-	}
+      agg.add(props);
+    }
+    edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);
+  }
 
 }

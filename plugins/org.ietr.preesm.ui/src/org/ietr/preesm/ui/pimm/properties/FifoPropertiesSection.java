@@ -1,24 +1,25 @@
-/*******************************************************************************
- * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
- * Karol Desnos, Julien Heulot, Clément Guy
- * 
- * [mpelcat,jnezan,kdesnos,jheulot,cguy]@insa-rennes.fr
- * 
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
- * 
- * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use, 
- * modify and/ or redistribute the software under the terms of the CeCILL-C
+/**
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ *
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2014)
+ *
+ * This software is a computer program whose purpose is to help prototyping
+ * parallel applications using dataflow formalism.
+ *
+ * This software is governed by the CeCILL  license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/ or redistribute the software under the terms of the CeCILL
  * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info". 
- * 
+ * "http://www.cecill.info".
+ *
  * As a counterpart to the access to the source code and  rights to copy,
  * modify and redistribute granted by the license, users are provided only
  * with a limited warranty  and the software's author,  the holder of the
  * economic rights,  and the successive licensors  have only  limited
- * liability. 
- * 
+ * liability.
+ *
  * In this respect, the user's attention is drawn to the risks associated
  * with loading,  using,  modifying and/or developing or reproducing the
  * software by the user in light of its specific status of free software,
@@ -26,13 +27,13 @@
  * therefore means  that it is reserved for developers  and  experienced
  * professionals having in-depth computer knowledge. Users are therefore
  * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or 
- * data to be ensured and,  more generally, to use and operate it in the 
- * same conditions as regards security. 
- * 
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
  * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- ******************************************************************************/
+ * knowledge of the CeCILL license and that you accept its terms.
+ */
 package org.ietr.preesm.ui.pimm.properties;
 
 import org.eclipse.emf.ecore.EObject;
@@ -41,8 +42,6 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
@@ -54,279 +53,288 @@ import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 
-public class FifoPropertiesSection extends DataPortPropertiesUpdater implements
-		ITabbedPropertyConstants {
+// TODO: Auto-generated Javadoc
+/**
+ * The Class FifoPropertiesSection.
+ */
+public class FifoPropertiesSection extends DataPortPropertiesUpdater implements ITabbedPropertyConstants {
 
-	/**
-	 * Items of the {@link ActorPropertiesSection}
-	 */
-	private CLabel lblType;
-	private Text txtTypeObj;
+  /** Items of the {@link ActorPropertiesSection}. */
+  private CLabel lblType;
 
-	private Text txtSourcePortExpression;
-	private CLabel lblSourcePortExpression;
-	private CLabel lblSourcePortValueObj;
-	private CLabel lblSourcePortValue;
+  /** The txt type obj. */
+  private Text txtTypeObj;
 
-	private Text txtTargetPortExpression;
-	private CLabel lblTargetPortExpression;
-	private CLabel lblTargetPortValueObj;
-	private CLabel lblTargetPortValue;
+  /** The txt source port expression. */
+  private Text txtSourcePortExpression;
 
-	private final int FIRST_COLUMN_WIDTH = 150;
+  /** The lbl source port expression. */
+  private CLabel lblSourcePortExpression;
 
-	@Override
-	public void createControls(Composite parent,
-			TabbedPropertySheetPage tabbedPropertySheetPage) {
-		super.createControls(parent, tabbedPropertySheetPage);
+  /** The lbl source port value obj. */
+  private CLabel lblSourcePortValueObj;
 
-		TabbedPropertySheetWidgetFactory factory = getWidgetFactory();
-		Composite composite = factory.createFlatFormComposite(parent);
-		FormData data;
+  /** The lbl source port value. */
+  private CLabel lblSourcePortValue;
 
-		/**** TYPE ****/
-		txtTypeObj = factory.createText(composite, "");
-		data = new FormData();
-		data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
-		data.right = new FormAttachment(25, 0);
-		txtTypeObj.setLayoutData(data);
-		txtTypeObj.setEnabled(true);
+  /** The txt target port expression. */
+  private Text txtTargetPortExpression;
 
-		lblType = factory.createCLabel(composite, "Data type:");
-		data = new FormData();
-		data.left = new FormAttachment(0, 0);
-		data.right = new FormAttachment(txtTypeObj, -HSPACE);
-		lblType.setLayoutData(data);
+  /** The lbl target port expression. */
+  private CLabel lblTargetPortExpression;
 
-		/**** SOURCE PORT ****/
-		/**** EXPRESSION ****/
-		txtSourcePortExpression = factory.createText(composite, "");
-		data = new FormData();
-		data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
-		data.right = new FormAttachment(100, 0);
-		data.top = new FormAttachment(txtTypeObj);
-		txtSourcePortExpression.setLayoutData(data);
-		txtSourcePortExpression.setEnabled(true);
+  /** The lbl target port value obj. */
+  private CLabel lblTargetPortValueObj;
 
-		lblSourcePortExpression = factory.createCLabel(composite,
-				"Source port rate:");
-		data = new FormData();
-		data.left = new FormAttachment(0, 0);
-		data.right = new FormAttachment(txtSourcePortExpression, -HSPACE);
-		data.top = new FormAttachment(lblType);
-		lblSourcePortExpression.setLayoutData(data);
+  /** The lbl target port value. */
+  private CLabel lblTargetPortValue;
 
-		/**** VALUE ****/
-		lblSourcePortValueObj = factory.createCLabel(composite, "");
-		data = new FormData();
-		data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
-		data.right = new FormAttachment(100, 0);
-		data.top = new FormAttachment(txtSourcePortExpression);
-		lblSourcePortValueObj.setLayoutData(data);
+  /** The first column width. */
+  private final int FIRST_COLUMN_WIDTH = 150;
 
-		lblSourcePortValue = factory.createCLabel(composite, "Default Value:");
-		data = new FormData();
-		data.left = new FormAttachment(0, 0);
-		data.right = new FormAttachment(lblSourcePortValueObj, -HSPACE);
-		data.top = new FormAttachment(lblSourcePortExpression);
-		lblSourcePortValue.setLayoutData(data);
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.views.properties.tabbed.AbstractPropertySection#createControls(org.eclipse.swt.widgets.Composite,
+   * org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
+   */
+  @Override
+  public void createControls(final Composite parent, final TabbedPropertySheetPage tabbedPropertySheetPage) {
+    super.createControls(parent, tabbedPropertySheetPage);
 
-		/**** TARGET PORT ****/
-		/**** EXPRESION ****/
-		txtTargetPortExpression = factory.createText(composite, "");
-		data = new FormData();
-		data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
-		data.right = new FormAttachment(100, 0);
-		data.top = new FormAttachment(lblSourcePortValueObj);
-		txtTargetPortExpression.setLayoutData(data);
-		txtTargetPortExpression.setEnabled(true);
+    final TabbedPropertySheetWidgetFactory factory = getWidgetFactory();
+    final Composite composite = factory.createFlatFormComposite(parent);
+    FormData data;
 
-		lblTargetPortExpression = factory.createCLabel(composite,
-				"Target port rate:");
-		data = new FormData();
-		data.left = new FormAttachment(0, 0);
-		data.right = new FormAttachment(txtTargetPortExpression, -HSPACE);
-		data.top = new FormAttachment(lblSourcePortValue);
-		lblTargetPortExpression.setLayoutData(data);
+    /**** TYPE ****/
+    this.txtTypeObj = factory.createText(composite, "");
+    data = new FormData();
+    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.right = new FormAttachment(25, 0);
+    this.txtTypeObj.setLayoutData(data);
+    this.txtTypeObj.setEnabled(true);
 
-		/**** VALUE ****/
-		lblTargetPortValueObj = factory.createCLabel(composite, "");
-		data = new FormData();
-		data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
-		data.right = new FormAttachment(100, 0);
-		data.top = new FormAttachment(txtTargetPortExpression);
-		lblTargetPortValueObj.setLayoutData(data);
+    this.lblType = factory.createCLabel(composite, "Data type:");
+    data = new FormData();
+    data.left = new FormAttachment(0, 0);
+    data.right = new FormAttachment(this.txtTypeObj, -ITabbedPropertyConstants.HSPACE);
+    this.lblType.setLayoutData(data);
 
-		lblTargetPortValue = factory.createCLabel(composite, "Default Value:");
-		data = new FormData();
-		data.left = new FormAttachment(0, 0);
-		data.right = new FormAttachment(lblTargetPortValueObj, -HSPACE);
-		data.top = new FormAttachment(lblTargetPortExpression);
-		lblTargetPortValue.setLayoutData(data);
+    /**** SOURCE PORT ****/
+    /**** EXPRESSION ****/
+    this.txtSourcePortExpression = factory.createText(composite, "");
+    data = new FormData();
+    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.right = new FormAttachment(100, 0);
+    data.top = new FormAttachment(this.txtTypeObj);
+    this.txtSourcePortExpression.setLayoutData(data);
+    this.txtSourcePortExpression.setEnabled(true);
 
-		/*** Type box listener ***/
-		txtTypeObj.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				PictogramElement pe = getSelectedPictogramElement();
-				if (pe != null) {
-					EObject bo = Graphiti.getLinkService()
-							.getBusinessObjectForLinkedPictogramElement(pe);
-					if (bo == null)
-						return;
+    this.lblSourcePortExpression = factory.createCLabel(composite, "Source port rate:");
+    data = new FormData();
+    data.left = new FormAttachment(0, 0);
+    data.right = new FormAttachment(this.txtSourcePortExpression, -ITabbedPropertyConstants.HSPACE);
+    data.top = new FormAttachment(this.lblType);
+    this.lblSourcePortExpression.setLayoutData(data);
 
-					if (bo instanceof Fifo) {
-						Fifo fifo = (Fifo) bo;
-						if (!txtTypeObj.getText().equals(fifo.getType())) {
-							setNewType(fifo, txtTypeObj.getText());
-							getDiagramTypeProvider().getDiagramBehavior()
-									.refreshContent();
-						}
-					}
-				}
-			}
-		});
+    /**** VALUE ****/
+    this.lblSourcePortValueObj = factory.createCLabel(composite, "");
+    data = new FormData();
+    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.right = new FormAttachment(100, 0);
+    data.top = new FormAttachment(this.txtSourcePortExpression);
+    this.lblSourcePortValueObj.setLayoutData(data);
 
-		/** SourcePort expression listener */
-		txtSourcePortExpression.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				PictogramElement pe = getSelectedPictogramElement();
-				if (pe != null) {
-					EObject bo = Graphiti.getLinkService()
-							.getBusinessObjectForLinkedPictogramElement(pe);
-					if (bo == null)
-						return;
-					if (bo instanceof Fifo) {
-						DataPort port = ((Fifo) bo).getSourcePort();
-						updateDataPortProperties(port, txtSourcePortExpression);
-						PictogramElement pict = Graphiti.getLinkService().getPictogramElements(getDiagram(), port).get(0);
-						getDiagramTypeProvider().getDiagramBehavior()
-						.refreshRenderingDecorators((PictogramElement) pict.eContainer());
-					}					
-				}
-				refresh();
-			}
-		});
-		
-		/** TargetPort expression listener */
-		txtTargetPortExpression.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				PictogramElement pe = getSelectedPictogramElement();
-				if (pe != null) {
-					EObject bo = Graphiti.getLinkService()
-							.getBusinessObjectForLinkedPictogramElement(pe);
-					if (bo == null)
-						return;
-					if (bo instanceof Fifo) {
-						DataPort port = ((Fifo) bo).getTargetPort();
-						updateDataPortProperties(port, txtTargetPortExpression);
-						PictogramElement pict = Graphiti.getLinkService().getPictogramElements(getDiagram(), port).get(0);
-						getDiagramTypeProvider().getDiagramBehavior()
-						.refreshRenderingDecorators((PictogramElement) pict.eContainer());
-					}					
-				}
-				
-				refresh();
-			}
+    this.lblSourcePortValue = factory.createCLabel(composite, "Default Value:");
+    data = new FormData();
+    data.left = new FormAttachment(0, 0);
+    data.right = new FormAttachment(this.lblSourcePortValueObj, -ITabbedPropertyConstants.HSPACE);
+    data.top = new FormAttachment(this.lblSourcePortExpression);
+    this.lblSourcePortValue.setLayoutData(data);
 
-		});
+    /**** TARGET PORT ****/
+    /**** EXPRESION ****/
+    this.txtTargetPortExpression = factory.createText(composite, "");
+    data = new FormData();
+    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.right = new FormAttachment(100, 0);
+    data.top = new FormAttachment(this.lblSourcePortValueObj);
+    this.txtTargetPortExpression.setLayoutData(data);
+    this.txtTargetPortExpression.setEnabled(true);
 
-		// txtSourcePortExpression.addModifyListener(new ModifyListener() {
-		// @Override
-		// public void modifyText(ModifyEvent e) {
-		// updateProperties();
-		// }
-		// });
-		//
-		// txtTargetPortExpression.addModifyListener(new ModifyListener() {
-		// @Override
-		// public void modifyText(ModifyEvent e) {
-		// updateProperties();
-		// }
-		// });
+    this.lblTargetPortExpression = factory.createCLabel(composite, "Target port rate:");
+    data = new FormData();
+    data.left = new FormAttachment(0, 0);
+    data.right = new FormAttachment(this.txtTargetPortExpression, -ITabbedPropertyConstants.HSPACE);
+    data.top = new FormAttachment(this.lblSourcePortValue);
+    this.lblTargetPortExpression.setLayoutData(data);
 
-	}
+    /**** VALUE ****/
+    this.lblTargetPortValueObj = factory.createCLabel(composite, "");
+    data = new FormData();
+    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.right = new FormAttachment(100, 0);
+    data.top = new FormAttachment(this.txtTargetPortExpression);
+    this.lblTargetPortValueObj.setLayoutData(data);
 
-	// private void updateProperties() {
-	// PictogramElement pe = getSelectedPictogramElement();
-	// if (pe != null) {
-	// EObject bo = Graphiti.getLinkService()
-	// .getBusinessObjectForLinkedPictogramElement(pe);
-	// if (bo == null)
-	// return;
-	//
-	// if (bo instanceof Fifo) {
-	// Fifo fifo = (Fifo) bo;
-	// updateDataPortProperties(fifo.getSourcePort(),
-	// txtSourcePortExpression);
-	// updateDataPortProperties(fifo.getTargetPort(),
-	// txtTargetPortExpression);
-	//
-	// getDiagramTypeProvider().getDiagramBehavior()
-	// .refreshRenderingDecorators(
-	// (PictogramElement) (pe.eContainer()));
-	// }
-	// }
-	// refresh();
-	// }
+    this.lblTargetPortValue = factory.createCLabel(composite, "Default Value:");
+    data = new FormData();
+    data.left = new FormAttachment(0, 0);
+    data.right = new FormAttachment(this.lblTargetPortValueObj, -ITabbedPropertyConstants.HSPACE);
+    data.top = new FormAttachment(this.lblTargetPortExpression);
+    this.lblTargetPortValue.setLayoutData(data);
 
-	/**
-	 * Safely set a new type to the {@link Fifo}.
-	 * 
-	 * @param fifo
-	 *            {@link Fifo} to set
-	 * @param value
-	 *            String value
-	 */
-	private void setNewType(final Fifo fifo, final String value) {
-		TransactionalEditingDomain editingDomain = getDiagramTypeProvider()
-				.getDiagramBehavior().getEditingDomain();
-		editingDomain.getCommandStack().execute(
-				new RecordingCommand(editingDomain) {
-					@Override
-					protected void doExecute() {
-						fifo.setType(value);
-					}
-				});
-	}
+    /*** Type box listener ***/
+    this.txtTypeObj.addModifyListener(e -> {
+      final PictogramElement pe = getSelectedPictogramElement();
+      if (pe != null) {
+        final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+        if (bo == null) {
+          return;
+        }
 
-	@Override
-	public void refresh() {
-		PictogramElement pe = getSelectedPictogramElement();
+        if (bo instanceof Fifo) {
+          final Fifo fifo = (Fifo) bo;
+          if (!FifoPropertiesSection.this.txtTypeObj.getText().equals(fifo.getType())) {
+            setNewType(fifo, FifoPropertiesSection.this.txtTypeObj.getText());
+            getDiagramTypeProvider().getDiagramBehavior().refreshContent();
+          }
+        }
+      }
+    });
 
-		if (pe != null) {
-			Object bo = Graphiti.getLinkService()
-					.getBusinessObjectForLinkedPictogramElement(pe);
-			if (bo == null)
-				return;
+    /** SourcePort expression listener */
+    this.txtSourcePortExpression.addModifyListener(e -> {
+      final PictogramElement pe = getSelectedPictogramElement();
+      if (pe != null) {
+        final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+        if (bo == null) {
+          return;
+        }
+        if (bo instanceof Fifo) {
+          final DataPort port = ((Fifo) bo).getSourcePort();
+          updateDataPortProperties(port, FifoPropertiesSection.this.txtSourcePortExpression);
+          final PictogramElement pict = Graphiti.getLinkService().getPictogramElements(getDiagram(), port).get(0);
+          getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators((PictogramElement) pict.eContainer());
+        }
+      }
+      refresh();
+    });
 
-			if (bo instanceof Fifo) {
-				Fifo fifo = (Fifo) bo;
-				txtTypeObj.setText(fifo.getType());
+    /** TargetPort expression listener */
+    this.txtTargetPortExpression.addModifyListener(e -> {
+      final PictogramElement pe = getSelectedPictogramElement();
+      if (pe != null) {
+        final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+        if (bo == null) {
+          return;
+        }
+        if (bo instanceof Fifo) {
+          final DataPort port = ((Fifo) bo).getTargetPort();
+          updateDataPortProperties(port, FifoPropertiesSection.this.txtTargetPortExpression);
+          final PictogramElement pict = Graphiti.getLinkService().getPictogramElements(getDiagram(), port).get(0);
+          getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators((PictogramElement) pict.eContainer());
+        }
+      }
 
-				txtSourcePortExpression.setEnabled(true);
+      refresh();
+    });
 
-				Expression srcRate = fifo.getSourcePort().getExpression();
-				if (!txtSourcePortExpression.getText().equals(
-						srcRate.getString())) {
-					txtSourcePortExpression.setText(srcRate.getString());
-				}
+    // txtSourcePortExpression.addModifyListener(new ModifyListener() {
+    // @Override
+    // public void modifyText(ModifyEvent e) {
+    // updateProperties();
+    // }
+    // });
+    //
+    // txtTargetPortExpression.addModifyListener(new ModifyListener() {
+    // @Override
+    // public void modifyText(ModifyEvent e) {
+    // updateProperties();
+    // }
+    // });
 
-				lblSourcePortValueObj.setText(srcRate.evaluate());
+  }
 
-				txtTargetPortExpression.setEnabled(true);
+  // private void updateProperties() {
+  // PictogramElement pe = getSelectedPictogramElement();
+  // if (pe != null) {
+  // EObject bo = Graphiti.getLinkService()
+  // .getBusinessObjectForLinkedPictogramElement(pe);
+  // if (bo == null)
+  // return;
+  //
+  // if (bo instanceof Fifo) {
+  // Fifo fifo = (Fifo) bo;
+  // updateDataPortProperties(fifo.getSourcePort(),
+  // txtSourcePortExpression);
+  // updateDataPortProperties(fifo.getTargetPort(),
+  // txtTargetPortExpression);
+  //
+  // getDiagramTypeProvider().getDiagramBehavior()
+  // .refreshRenderingDecorators(
+  // (PictogramElement) (pe.eContainer()));
+  // }
+  // }
+  // refresh();
+  // }
 
-				Expression tgtRate = fifo.getTargetPort().getExpression();
-				if (!txtTargetPortExpression.getText().equals(
-						tgtRate.getString())) {
-					txtTargetPortExpression.setText(tgtRate.getString());
-				}
+  /**
+   * Safely set a new type to the {@link Fifo}.
+   *
+   * @param fifo
+   *          {@link Fifo} to set
+   * @param value
+   *          String value
+   */
+  private void setNewType(final Fifo fifo, final String value) {
+    final TransactionalEditingDomain editingDomain = getDiagramTypeProvider().getDiagramBehavior().getEditingDomain();
+    editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
+      @Override
+      protected void doExecute() {
+        fifo.setType(value);
+      }
+    });
+  }
 
-				lblTargetPortValueObj.setText(tgtRate.evaluate());
-			}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.views.properties.tabbed.AbstractPropertySection#refresh()
+   */
+  @Override
+  public void refresh() {
+    final PictogramElement pe = getSelectedPictogramElement();
 
-		}
-	}
+    if (pe != null) {
+      final Object bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+      if (bo == null) {
+        return;
+      }
+
+      if (bo instanceof Fifo) {
+        final Fifo fifo = (Fifo) bo;
+        this.txtTypeObj.setText(fifo.getType());
+
+        this.txtSourcePortExpression.setEnabled(true);
+
+        final Expression srcRate = fifo.getSourcePort().getExpression();
+        if (!this.txtSourcePortExpression.getText().equals(srcRate.getString())) {
+          this.txtSourcePortExpression.setText(srcRate.getString());
+        }
+
+        this.lblSourcePortValueObj.setText(srcRate.evaluate());
+
+        this.txtTargetPortExpression.setEnabled(true);
+
+        final Expression tgtRate = fifo.getTargetPort().getExpression();
+        if (!this.txtTargetPortExpression.getText().equals(tgtRate.getString())) {
+          this.txtTargetPortExpression.setText(tgtRate.getString());
+        }
+
+        this.lblTargetPortValueObj.setText(tgtRate.evaluate());
+      }
+
+    }
+  }
 }

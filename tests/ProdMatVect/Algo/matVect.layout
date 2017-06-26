@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<layout>
-   <vertices>
-      <vertex id="matrixIn" x="93" y="256"/>
-      <vertex id="vectorIn" x="92" y="94"/>
-      <vertex id="vectorOut" x="549" y="143"/>
-      <vertex id="prodScalVect" x="308" y="176"/>
-   </vertices>
-</layout>

@@ -1,9 +1,0 @@
-module readm4v {
-	typedef short int;
-	interface init{
-		void readm4v_init (in int argc,in char argv);
-	};
-    interface loop{
-         void readm4v_preesm(in int nb_octet_to_read,in int new_buff_i,out char new_buffer);
-    };
-}; 

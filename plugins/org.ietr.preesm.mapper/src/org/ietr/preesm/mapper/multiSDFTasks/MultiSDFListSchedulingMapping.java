@@ -1,24 +1,26 @@
-/*******************************************************************************
- * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
- * Karol Desnos, Julien Heulot, Clément Guy
- * 
- * [mpelcat,jnezan,kdesnos,jheulot,cguy]@insa-rennes.fr
- * 
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
- * 
- * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use, 
- * modify and/ or redistribute the software under the terms of the CeCILL-C
+/**
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ *
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Julien Hascoet <jhascoet@kalray.eu> (2017)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2017)
+ *
+ * This software is a computer program whose purpose is to help prototyping
+ * parallel applications using dataflow formalism.
+ *
+ * This software is governed by the CeCILL  license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/ or redistribute the software under the terms of the CeCILL
  * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info". 
- * 
+ * "http://www.cecill.info".
+ *
  * As a counterpart to the access to the source code and  rights to copy,
  * modify and redistribute granted by the license, users are provided only
  * with a limited warranty  and the software's author,  the holder of the
  * economic rights,  and the successive licensors  have only  limited
- * liability. 
- * 
+ * liability.
+ *
  * In this respect, the user's attention is drawn to the risks associated
  * with loading,  using,  modifying and/or developing or reproducing the
  * software by the user in light of its specific status of free software,
@@ -26,27 +28,28 @@
  * therefore means  that it is reserved for developers  and  experienced
  * professionals having in-depth computer knowledge. Users are therefore
  * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or 
- * data to be ensured and,  more generally, to use and operate it in the 
- * same conditions as regards security. 
- * 
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
  * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- ******************************************************************************/
+ * knowledge of the CeCILL license and that you accept its terms.
+ */
 package org.ietr.preesm.mapper.multiSDFTasks;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
+import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.AbstractMapping;
@@ -62,90 +65,100 @@ import org.ietr.preesm.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.params.AbcParameters;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MultiSDFListSchedulingMapping.
+ */
 public class MultiSDFListSchedulingMapping extends AbstractMapping {
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = super.getDefaultParameters();
-		return parameters;
-	}
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.AbstractMapping#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = super.getDefaultParameters();
+    return parameters;
+  }
 
-		Design architecture = (Design) inputs.get(KEY_ARCHITECTURE);
-		@SuppressWarnings("unchecked")
-		Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs
-				.get(KEY_SDF_GRAPHS_SET);
-		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.AbstractMapping#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
-		super.execute(inputs, parameters, monitor, nodeName, workflow);
+    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
+    @SuppressWarnings("unchecked")
+    final Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPHS_SET);
+    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
-		Set<MapperDAG> dags = new HashSet<MapperDAG>();
-		Set<IAbc> abcs = new HashSet<IAbc>();
+    super.execute(inputs, parameters, monitor, nodeName, workflow);
 
-		for (SDFGraph algorithm : algorithms) {
+    final Set<MapperDAG> dags = new LinkedHashSet<>();
+    final Set<IAbc> abcs = new LinkedHashSet<>();
 
-			AbcParameters abcParameters = new AbcParameters(parameters);
+    for (final SDFGraph algorithm : algorithms) {
 
-			MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
-					scenario, false);
+      final AbcParameters abcParameters = new AbcParameters(parameters);
 
-			// calculates the DAG span length on the architecture main operator
-			// (the tasks that can not be executed by the main operator are
-			// deported without transfer time to other operator)
-			calculateSpan(dag, architecture, scenario, abcParameters);
+      final MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario, false);
 
-			IAbc simu = new InfiniteHomogeneousAbc(abcParameters, dag,
-					architecture, abcParameters.getSimulatorType()
-							.getTaskSchedType(), scenario);
+      // calculates the DAG span length on the architecture main operator
+      // (the tasks that can not be executed by the main operator are
+      // deported without transfer time to other operator)
+      calculateSpan(dag, architecture, scenario, abcParameters);
 
-			InitialLists initial = new InitialLists();
+      final IAbc simu = new InfiniteHomogeneousAbc(abcParameters, dag, architecture, abcParameters.getSimulatorType().getTaskSchedType(), scenario);
 
-			if (!initial.constructInitialLists(dag, simu)) {
-				WorkflowLogger.getLogger().log(Level.SEVERE,
-						"Error in scheduling");
-				return null;
-			}
+      final InitialLists initial = new InitialLists();
 
-			WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
+      if (!initial.constructInitialLists(dag, simu)) {
+        WorkflowLogger.getLogger().log(Level.SEVERE, "Error in scheduling");
+        return null;
+      }
 
-			// Using topological task scheduling in list scheduling: the t-level
-			// order of the infinite homogeneous simulation
-			AbstractTaskSched taskSched = new TopologicalTaskSched(
-					simu.getTotalOrder());
+      WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
 
-			simu.resetDAG();
-			IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag,
-					architecture, scenario);
-			simu2.setTaskScheduler(taskSched);
+      // Using topological task scheduling in list scheduling: the t-level
+      // order of the infinite homogeneous simulation
+      final AbstractTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
 
-			KwokListScheduler scheduler = new KwokListScheduler();
-			scheduler
-					.schedule(dag, initial.getCpnDominant(), simu2, null, null);
+      simu.resetDAG();
+      final IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture, scenario);
+      simu2.setTaskScheduler(taskSched);
 
-			WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
+      final KwokListScheduler scheduler = new KwokListScheduler();
+      scheduler.schedule(dag, initial.getCpnDominant(), simu2, null, null);
 
-			TagDAG tagSDF = new TagDAG();
+      WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
 
-			try {
-				tagSDF.tag(dag, architecture, scenario, simu2,
-						abcParameters.getEdgeSchedType());
-			} catch (InvalidExpressionException e) {
-				e.printStackTrace();
-				throw (new WorkflowException(e.getMessage()));
-			}
+      final TagDAG tagSDF = new TagDAG();
 
-			dags.add(dag);
-			abcs.add(simu2);
-		}
+      try {
+        tagSDF.tag(dag, architecture, scenario, simu2, abcParameters.getEdgeSchedType());
+      } catch (final InvalidExpressionException e) {
+        e.printStackTrace();
+        throw (new WorkflowException(e.getMessage()));
+      }
 
-		Map<String, Object> outputs = new HashMap<String, Object>();
-		outputs.put(KEY_SDF_DAG_SET, dags);
-		outputs.put(KEY_SDF_ABC_SET, abcs);
+      dags.add(dag);
+      abcs.add(simu2);
+    }
 
-		super.clean(architecture, scenario);
-		return outputs;
-	}
+    final Map<String, Object> outputs = new LinkedHashMap<>();
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG_SET, dags);
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC_SET, abcs);
+
+    super.clean(architecture, scenario);
+    for (final DirectedAcyclicGraph dag : dags) {
+      super.checkSchedulingResult(parameters, dag);
+    }
+
+    return outputs;
+  }
 }

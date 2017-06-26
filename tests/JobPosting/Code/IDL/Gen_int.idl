@@ -1,5 +1,0 @@
-module Gen_int {
-	interface loop {
-		 void gen_int( in char i1,  in char i2, out char o1, out char o2);
-	};
-};

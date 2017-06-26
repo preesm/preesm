@@ -1,6 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2017) :
+
+    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+    Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+    Jonathan Piat <jpiat@laas.fr> (2011 - 2012)
+    Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2015)
+    Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
+
+    This software is a computer program whose purpose is to help prototyping
+    parallel applications using dataflow formalism.
+
+    This software is governed by the CeCILL  license under French law and
+    abiding by the rules of distribution of free software.  You can  use,
+    modify and/ or redistribute the software under the terms of the CeCILL
+    license as circulated by CEA, CNRS and INRIA at the following URL
+    "http://www.cecill.info".
+
+    As a counterpart to the access to the source code and  rights to copy,
+    modify and redistribute granted by the license, users are provided only
+    with a limited warranty  and the software's author,  the holder of the
+    economic rights,  and the successive licensors  have only  limited
+    liability.
+
+    In this respect, the user's attention is drawn to the risks associated
+    with loading,  using,  modifying and/or developing or reproducing the
+    software by the user in light of its specific status of free software,
+    that may mean  that it is complicated to manipulate,  and  that  also
+    therefore means  that it is reserved for developers  and  experienced
+    professionals having in-depth computer knowledge. Users are therefore
+    encouraged to load and test the software's suitability as regards their
+    requirements in conditions enabling the security of their systems and/or
+    data to be ensured and,  more generally, to use and operate it in the
+    same conditions as regards security.
+
+    The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL license and that you accept its terms.
+
+-->
 <?eclipse version="3.4"?>
+
 <plugin>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.ietr.preesm.ui.perspective.PreesmPerspective"
+            fixed="false"
+            icon="icons/preesmProject.png"
+            id="org.ietr.preesm.ui.perspective"
+            name="Preesm">
+      </perspective>
+   </extension>
    <extension
          point="org.eclipse.ui.editors">
       <editor
@@ -91,25 +142,21 @@
             icon="icons/workflow.png"
             id="org.ietr.dftools.ui.workflow.workflowLaunchShortcut"
             label="Preesm Workflow"
-            modes="run,debug">
+            modes="run">
          <description
                description="Launch a Preesm workflow"
                mode="run">
          </description>
          <contextualLaunch>
             <enablement>
-               <with
-                     variable="selection">
-                  <count
-                        value="1">
-                  </count>
+              <with variable="selection">
+                <count value="1"/>
                   <iterate>
-                     <and>
-                        <test
-                              forcePluginActivation="true"
-                              property="net.sf.dftools.isWorkflow">
-                        </test>
-                     </and>
+                    <adapt type="org.eclipse.core.resources.IResource">
+                      <and>
+                        <test property="org.eclipse.core.resources.name" value="*.workflow"/>
+                      </and>
+                    </adapt>
                   </iterate>
                </with>
             </enablement>
@@ -214,6 +261,59 @@
             name="LayoutFileFilter"
             visibleInUI="true">
       </commonFilter>
+	 <commonWizard type="new"
+	   wizardId="org.ietr.preesm.experiment.ui.pimm.wizards.NewPiMMWizard">
+	     <enablement>
+		   <or>
+		    <adapt type="org.eclipse.core.resources.IFolder" />
+		    <adapt type="org.eclipse.core.resources.IProject" />
+		   </or>
+	     </enablement>
+	 </commonWizard>
+
+	 <commonWizard type="new"
+	   wizardId="org.ietr.preesm.ui.wizards.workflow">
+	     <enablement>
+		   <or>
+		    <adapt type="org.eclipse.core.resources.IFolder" />
+		    <adapt type="org.eclipse.core.resources.IProject" />
+		   </or>
+	     </enablement>
+	 </commonWizard>
+
+	 <commonWizard type="new"
+	   wizardId="net.sf.dftools.ui.slam.NewSlamFileWizard">
+	     <enablement>
+		   <or>
+		    <adapt type="org.eclipse.core.resources.IFolder" />
+		    <adapt type="org.eclipse.core.resources.IProject" />
+		   </or>
+	     </enablement>
+	 </commonWizard>
+
+	 <commonWizard type="new"
+	   wizardId="org.ietr.preesm.core.ui.wizards.NewScenarioFileWizard">
+	     <enablement>
+		   <or>
+		    <adapt type="org.eclipse.core.resources.IFolder" />
+		    <adapt type="org.eclipse.core.resources.IProject" />
+		   </or>
+	     </enablement>
+	 </commonWizard>
+
+	 <commonWizard type="new"
+	   wizardId="org.ietr.preesm.core.wizards.NewPreesmProjectWizard">
+	     <enablement>
+			<or>
+				<with variable="selection">
+					<count value="0"/>
+				</with>
+				<adapt type="org.eclipse.core.resources.IProject" />
+			</or>
+	     </enablement>
+	 </commonWizard>
+
+
    </extension>
    <extension
          id="org.ietr.preesm.ui.projectexplorerviewer"
@@ -257,7 +357,7 @@
       </runtime>
    </extension>
    <extension
-         point="org.ietr.dftools.graphiti.model.definition">
+         point="org.ietr.graphiti.model.definition">
       <configuration
             extension="graphml"
             name="GraphML"
@@ -1229,16 +1329,21 @@
             parentId="org.eclipse.graphiti.ui.diagramEditor">
       </context>
    </extension>
+
+
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
             allPopups="false"
             locationURI="popup:org.eclipse.ui.popup.any?before=additions">
          <menu
-               id="org.ietr.preesm.pimm.checker.menu1"
-               label="PREESM">
+               icon="icons/preesmProject.png"
+               id="org.ietr.preesm.ui.menu1"
+               label="Preesm">
             <command
                   commandId="org.ietr.preesm.ui.command.PimmChecker"
+                  icon="icons/pi.gif"
+                  label="Check PiMM Model"
                   style="push">
                <visibleWhen
                      checkEnabled="true">
@@ -1264,6 +1369,8 @@
             </command>
             <command
                   commandId="org.ietr.preesm.ui.command.ScenarioGenerator"
+                  icon="icons/preesm4mini.PNG"
+                  label="Generate Scenario"
                   style="push">
                <visibleWhen
                      checkEnabled="true">
@@ -1283,9 +1390,55 @@
                   </with>
                </visibleWhen>
             </command>
+            <command
+                  commandId="org.ietr.preesm.ui.command.RunWorkflow"
+                  icon="icons/workflow.png"
+                  label="Run Workflow"
+                  style="push"
+                  tooltip="Launch a Preesm Workflow">
+               <visibleWhen
+                     checkEnabled="true">
+                  <with
+                        variable="selection">
+                     <and>
+                        <iterate
+                              ifEmpty="false"
+                              operator="and">
+                           <adapt
+                                 type="org.eclipse.core.resources.IResource">
+                              <test
+                                    property="org.eclipse.core.resources.extension"
+                                    value="workflow">
+                              </test>
+                           </adapt>
+                        </iterate>
+                        <count
+                              value="1">
+                        </count>
+                     </and>
+                  </with>
+               </visibleWhen>
+            </command>
          </menu>
       </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:net.sf.graphiti.GraphitiContextMenu?before=additions">
+         <command
+               commandId="org.ietr.preesm.ui.command.RunWorkflow"
+               icon="icons/workflow.png"
+               label="Run Workflow"
+               style="push"
+               tooltip="Launch a Preesm Workflow">
+				<visibleWhen checkEnabled="true">
+					<with variable="activeEditorId">
+						<equals value="net.sf.dftools.ui.WorkflowEditor"/>
+					</with>
+				</visibleWhen>
+         </command>
+      </menuContribution>
    </extension>
+
    <extension
          point="org.eclipse.ui.commands">
       <command
@@ -1296,7 +1449,12 @@
             id="org.ietr.preesm.ui.command.ScenarioGenerator"
             name="Scenario Generator">
       </command>
+      <command
+            id="org.ietr.preesm.ui.command.RunWorkflow"
+            name="Run Workflow">
+      </command>
    </extension>
+
    <extension
          point="org.eclipse.ui.handlers">
       <handler
@@ -1307,6 +1465,9 @@
             class="org.ietr.preesm.ui.pimm.checker.popup.actions.ScenariosGeneratorPopup"
             commandId="org.ietr.preesm.ui.command.ScenarioGenerator">
       </handler>
+      <handler
+            class="org.ietr.preesm.ui.pimm.checker.popup.actions.WorkflowRunnerPopup"
+            commandId="org.ietr.preesm.ui.command.RunWorkflow">
+      </handler>
    </extension>
-
 </plugin>

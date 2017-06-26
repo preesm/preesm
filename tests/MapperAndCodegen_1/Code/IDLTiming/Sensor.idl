@@ -1,8 +1,0 @@
-module Sensor {
-	interface init {
-		 void sensor_init(out char o1);
-	};
-    interface loop{
-         void sensor(out char o1);
-    };
-}; 

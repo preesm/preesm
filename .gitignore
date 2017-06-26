@@ -40,11 +40,11 @@ Thumbs.db
 #######################################
 bin/
 target/
-xtend-gen/
+**/xtend-gen/
 lib/
-/plugins/org.ietr.preesm.codegen.xtend/xtend-gen/
 *~
 *._trace
+*.orig
 
 # PREESM generated files #
 ##########################
@@ -54,3 +54,11 @@ DAG/*.graphml
 stats/xml/
 stats/mat/algo/
 stats/mat/archi/
+**/org.ietr.preesm.memory.temporary/**
+
+# Eclipse files #
+#################
+**/.settings
+**/.project
+**/.classpath
+**/.checkstyle

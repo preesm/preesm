@@ -1,24 +1,26 @@
-/*******************************************************************************
- * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
- * Karol Desnos, Julien Heulot
- * 
- * [mpelcat,jnezan,kdesnos,jheulot]@insa-rennes.fr
- * 
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
- * 
- * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use, 
- * modify and/ or redistribute the software under the terms of the CeCILL-C
+/**
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ *
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
+ *
+ * This software is a computer program whose purpose is to help prototyping
+ * parallel applications using dataflow formalism.
+ *
+ * This software is governed by the CeCILL  license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/ or redistribute the software under the terms of the CeCILL
  * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info". 
- * 
+ * "http://www.cecill.info".
+ *
  * As a counterpart to the access to the source code and  rights to copy,
  * modify and redistribute granted by the license, users are provided only
  * with a limited warranty  and the software's author,  the holder of the
  * economic rights,  and the successive licensors  have only  limited
- * liability. 
- * 
+ * liability.
+ *
  * In this respect, the user's attention is drawn to the risks associated
  * with loading,  using,  modifying and/or developing or reproducing the
  * software by the user in light of its specific status of free software,
@@ -26,13 +28,13 @@
  * therefore means  that it is reserved for developers  and  experienced
  * professionals having in-depth computer knowledge. Users are therefore
  * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or 
- * data to be ensured and,  more generally, to use and operate it in the 
- * same conditions as regards security. 
- * 
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
  * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- ******************************************************************************/
+ * knowledge of the CeCILL license and that you accept its terms.
+ */
 package org.ietr.preesm.ui.pimm.features;
 
 import org.eclipse.emf.common.util.EList;
@@ -55,98 +57,105 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 
+// TODO: Auto-generated Javadoc
 /**
- * Layout Feature for {@link InterfaceActor} and Config Input Interface (i.e.
- * {@link Parameter}).
- * 
+ * Layout Feature for {@link InterfaceActor} and Config Input Interface (i.e. {@link Parameter}).
+ *
  * @author kdesnos
- * 
+ *
  */
 public class LayoutInterfaceFeature extends AbstractLayoutFeature {
 
-	/**
-	 * Default constructor of the {@link LayoutInterfaceFeature}
-	 * 
-	 * @param fp
-	 *            the feature provider
-	 */
-	public LayoutInterfaceFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /**
+   * Default constructor of the {@link LayoutInterfaceFeature}.
+   *
+   * @param fp
+   *          the feature provider
+   */
+  public LayoutInterfaceFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	@Override
-	public boolean canLayout(ILayoutContext context) {
-		// return true, if pictogram element is linked to an InterfaceVertex or
-		// a Parameter used as a configuration input interface
-		PictogramElement pe = context.getPictogramElement();
-		if (!(pe instanceof ContainerShape)) {
-			return false;
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.func.ILayout#canLayout(org.eclipse.graphiti.features.context.ILayoutContext)
+   */
+  @Override
+  public boolean canLayout(final ILayoutContext context) {
+    // return true, if pictogram element is linked to an InterfaceVertex or
+    // a Parameter used as a configuration input interface
+    final PictogramElement pe = context.getPictogramElement();
+    if (!(pe instanceof ContainerShape)) {
+      return false;
+    }
 
-		EList<EObject> businessObjects = pe.getLink().getBusinessObjects();
-		return businessObjects.size() == 1
-				&& (businessObjects.get(0) instanceof InterfaceActor || (businessObjects
-						.get(0) instanceof Parameter && ((Parameter) businessObjects
-						.get(0)).isConfigurationInterface()));
-	}
+    final EList<EObject> businessObjects = pe.getLink().getBusinessObjects();
+    return (businessObjects.size() == 1) && ((businessObjects.get(0) instanceof InterfaceActor)
+        || ((businessObjects.get(0) instanceof Parameter) && ((Parameter) businessObjects.get(0)).isConfigurationInterface()));
+  }
 
-	@Override
-	public boolean layout(ILayoutContext context) {
-		// Retrieve the shape and the graphic algorithm
-		ContainerShape containerShape = (ContainerShape) context
-				.getPictogramElement();
-		GraphicsAlgorithm containerGa = containerShape.getGraphicsAlgorithm();
-		AbstractVertex vertex = (AbstractVertex) getBusinessObjectForPictogramElement(containerShape);
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.func.ILayout#layout(org.eclipse.graphiti.features.context.ILayoutContext)
+   */
+  @Override
+  public boolean layout(final ILayoutContext context) {
+    // Retrieve the shape and the graphic algorithm
+    final ContainerShape containerShape = (ContainerShape) context.getPictogramElement();
+    final GraphicsAlgorithm containerGa = containerShape.getGraphicsAlgorithm();
+    final AbstractVertex vertex = (AbstractVertex) getBusinessObjectForPictogramElement(containerShape);
 
-		// Retrieve the size of the text
-		IDimension size = null;
-		for (Shape shape : containerShape.getChildren()) {
-			GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
-			if (ga instanceof Text) {
-				size = GraphitiUi.getUiLayoutService().calculateTextSize(
-						vertex.getName(), ((Text) ga).getFont());
-			}
-		}
+    // Retrieve the size of the text
+    IDimension size = null;
+    for (final Shape shape : containerShape.getChildren()) {
+      final GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
+      if (ga instanceof Text) {
+        size = GraphitiUi.getUiLayoutService().calculateTextSize(vertex.getName(), ((Text) ga).getFont());
+      }
+    }
 
-		if (vertex instanceof InterfaceActor) {
-			// Layout the invisible rectangle
-			containerGa.setWidth(size.getWidth() + 16 + 3);
-			// Layout the label
-			for (Shape shape : containerShape.getChildren()) {
-				GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
-				if (ga instanceof Text) {
-					switch (((InterfaceActor) vertex).getKind()) {
-					case DataInputInterface.KIND:
-						ga.setWidth(size.getWidth());
-						Graphiti.getGaService().setLocation(ga, 0, 0);
-						break;
-					case DataOutputInterface.KIND:
-						ga.setWidth(size.getWidth());
-						Graphiti.getGaService().setLocation(ga, 16 + 3, 0);
-						break;
-					case ConfigOutputInterface.KIND:
-						ga.setWidth(size.getWidth());
-						Graphiti.getGaService().setLocation(ga, 16 + 3, 0);
-						break;
-					}
+    if (vertex instanceof InterfaceActor) {
+      // Layout the invisible rectangle
+      containerGa.setWidth(size.getWidth() + 16 + 3);
+      // Layout the label
+      for (final Shape shape : containerShape.getChildren()) {
+        final GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
+        if (ga instanceof Text) {
+          switch (((InterfaceActor) vertex).getKind()) {
+            case DataInputInterface.KIND:
+              ga.setWidth(size.getWidth());
+              Graphiti.getGaService().setLocation(ga, 0, 0);
+              break;
+            case DataOutputInterface.KIND:
+              ga.setWidth(size.getWidth());
+              Graphiti.getGaService().setLocation(ga, 16 + 3, 0);
+              break;
+            case ConfigOutputInterface.KIND:
+              ga.setWidth(size.getWidth());
+              Graphiti.getGaService().setLocation(ga, 16 + 3, 0);
+              break;
+            default:
+          }
 
-				}
-			}
-		}
+        }
+      }
+    }
 
-		if (vertex instanceof Parameter) {
-			int width = (size.getWidth() < 18) ? 18 : size.getWidth();
-			// Layout the invisible rectangle
-			containerGa.setWidth(width);
-			// Layout the label
-			for (Shape shape : containerShape.getChildren()) {
-				GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
-				if (ga instanceof Text) {
-					ga.setWidth(width);
-				}
-			}
-		}
-		return true;
-	}
+    if (vertex instanceof Parameter) {
+      final int width = (size.getWidth() < 18) ? 18 : size.getWidth();
+      // Layout the invisible rectangle
+      containerGa.setWidth(width);
+      // Layout the label
+      for (final Shape shape : containerShape.getChildren()) {
+        final GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
+        if (ga instanceof Text) {
+          ga.setWidth(width);
+        }
+      }
+    }
+    return true;
+  }
 
 }

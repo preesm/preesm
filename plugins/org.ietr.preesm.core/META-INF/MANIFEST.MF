@@ -2,34 +2,26 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm core plug-in
 Bundle-SymbolicName: org.ietr.preesm.core;singleton:=true
-Bundle-Version: 2.2.5
+Bundle-Version: 2.3.0
 Bundle-Activator: org.ietr.preesm.core.Activator
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.core.resources,
  org.eclipse.core.runtime,
- org.jgrapht;bundle-version="0.8.2",
- org.ietr.dftools.architecture;bundle-version="0.0.1",
- org.ietr.dftools.algorithm;bundle-version="0.0.1",
- org.ietr.preesm.experiment.model;bundle-version="1.0.0",
- org.ietr.dftools.workflow,
- org.eclipse.jface,
  org.eclipse.ui.workbench,
- org.ietr.preesm.utils
-Bundle-ClassPath: .,
- lib/djep-full-latest.jar,
- lib/jmatharray.jar,
- lib/jxl.jar,
- lib/jscl.jar,
- lib/saxon-B-9_1_0/saxon9.jar
-Export-Package: jscl.math,
- jxl,
- jxl.write,
- jxl.write.biff,
- org.ietr.preesm.core,
+ org.eclipse.jface,
+ org.clojars.gilesc.jgrapht;bundle-version="0.8.2";visibility:=reexport,
+ net.sourceforge.jexcelapi.jxl;bundle-version="2.6.10",
+ jep;bundle-version="2.40.0",
+ org.ietr.dftools.architecture;visibility:=reexport,
+ org.ietr.dftools.algorithm;visibility:=reexport,
+ org.ietr.dftools.workflow;visibility:=reexport,
+ org.ietr.preesm.experiment.model;visibility:=reexport,
+ org.ietr.preesm.utils;visibility:=reexport
+Bundle-ClassPath: .
+Export-Package: org.ietr.preesm.core,
  org.ietr.preesm.core.algorithm.visitors,
  org.ietr.preesm.core.architecture.route,
  org.ietr.preesm.core.architecture.util,
- org.ietr.preesm.core.expression,
  org.ietr.preesm.core.scenario,
  org.ietr.preesm.core.scenario.serialize,
  org.ietr.preesm.core.scenarios.generator,

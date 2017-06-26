@@ -1,24 +1,27 @@
-/*******************************************************************************
- * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
- * Karol Desnos, Julien Heulot
- * 
- * [mpelcat,jnezan,kdesnos,jheulot]@insa-rennes.fr
- * 
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
- * 
- * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use, 
- * modify and/ or redistribute the software under the terms of the CeCILL-C
+/**
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
+ *
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2013)
+ * Romina Racca <romina.racca@gmail.com> (2013)
+ *
+ * This software is a computer program whose purpose is to help prototyping
+ * parallel applications using dataflow formalism.
+ *
+ * This software is governed by the CeCILL  license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/ or redistribute the software under the terms of the CeCILL
  * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info". 
- * 
+ * "http://www.cecill.info".
+ *
  * As a counterpart to the access to the source code and  rights to copy,
  * modify and redistribute granted by the license, users are provided only
  * with a limited warranty  and the software's author,  the holder of the
  * economic rights,  and the successive licensors  have only  limited
- * liability. 
- * 
+ * liability.
+ *
  * In this respect, the user's attention is drawn to the risks associated
  * with loading,  using,  modifying and/or developing or reproducing the
  * software by the user in light of its specific status of free software,
@@ -26,13 +29,13 @@
  * therefore means  that it is reserved for developers  and  experienced
  * professionals having in-depth computer knowledge. Users are therefore
  * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or 
- * data to be ensured and,  more generally, to use and operate it in the 
- * same conditions as regards security. 
- * 
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
  * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- ******************************************************************************/
+ * knowledge of the CeCILL license and that you accept its terms.
+ */
 package org.ietr.preesm.ui.pimm.properties;
 
 import org.eclipse.emf.ecore.EObject;
@@ -44,8 +47,6 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
@@ -67,313 +68,313 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.ietr.preesm.ui.pimm.features.SetPortMemoryAnnotationFeature;
 
+// TODO: Auto-generated Javadoc
 /**
+ * The Class PortParameterAndDelayPropertiesSection.
+ *
  * @author Romina Racca
  * @author jheulot
- * 
  */
-public class PortParameterAndDelayPropertiesSection extends
-		DataPortPropertiesUpdater implements ITabbedPropertyConstants {
+public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUpdater implements ITabbedPropertyConstants {
 
-	private CLabel lblName;
-	private CLabel lblNameObj;
-	private CLabel lblExpression;
-	private CLabel lblValue;
-	private CLabel lblValueObj;
-	private CLabel lblAnnotation;
-	private CCombo comboAnnotation;
+  /** The lbl name. */
+  private CLabel lblName;
 
-	private final int FIRST_COLUMN_WIDTH = 200;
+  /** The lbl name obj. */
+  private CLabel lblNameObj;
 
-	/**
-	 * A text expression can be as an expression: value numbers, trigonometric
-	 * functions, expression of condition "if (cond, true value, false value)"
-	 */
-	private Text txtExpression;
+  /** The lbl expression. */
+  private CLabel lblExpression;
 
-	@Override
-	public void createControls(Composite parent,
-			TabbedPropertySheetPage tabbedPropertySheetPage) {
+  /** The lbl value. */
+  private CLabel lblValue;
 
-		super.createControls(parent, tabbedPropertySheetPage);
+  /** The lbl value obj. */
+  private CLabel lblValueObj;
 
-		TabbedPropertySheetWidgetFactory factory = getWidgetFactory();
-		Composite composite = factory.createFlatFormComposite(parent);
-		FormData data;
+  /** The lbl annotation. */
+  private CLabel lblAnnotation;
 
-		/**** NAME ****/
-		lblNameObj = factory.createCLabel(composite, " ");
-		data = new FormData();
-		data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
-		data.right = new FormAttachment(100, 0);
-		lblNameObj.setLayoutData(data);
+  /** The combo annotation. */
+  private CCombo comboAnnotation;
 
-		lblName = factory.createCLabel(composite, "Name:");
-		data = new FormData();
-		data.left = new FormAttachment(0, 0);
-		data.right = new FormAttachment(lblNameObj, -HSPACE);
-		lblName.setLayoutData(data);
+  /** The first column width. */
+  private final int FIRST_COLUMN_WIDTH = 200;
 
-		/**** EXPRESION ****/
-		txtExpression = factory.createText(composite, "");
-		data = new FormData();
-		data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
-		data.right = new FormAttachment(100, 0);
-		data.top = new FormAttachment(lblNameObj);
-		txtExpression.setLayoutData(data);
-		txtExpression.setEnabled(true);
+  /** A text expression can be as an expression: value numbers, trigonometric functions, expression of condition "if (cond, true value, false value)". */
+  private Text txtExpression;
 
-		lblExpression = factory.createCLabel(composite, "Expression:");
-		data = new FormData();
-		data.left = new FormAttachment(0, 0);
-		data.right = new FormAttachment(txtExpression, -HSPACE);
-		data.top = new FormAttachment(lblName);
-		lblExpression.setLayoutData(data);
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.views.properties.tabbed.AbstractPropertySection#createControls(org.eclipse.swt.widgets.Composite,
+   * org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
+   */
+  @Override
+  public void createControls(final Composite parent, final TabbedPropertySheetPage tabbedPropertySheetPage) {
 
-		/**** VALUE ****/
-		lblValueObj = factory.createCLabel(composite, "");
-		data = new FormData();
-		data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
-		data.right = new FormAttachment(100, 0);
-		data.top = new FormAttachment(txtExpression);
-		lblValueObj.setLayoutData(data);
+    super.createControls(parent, tabbedPropertySheetPage);
 
-		lblValue = factory.createCLabel(composite, "Default Value:");
-		data = new FormData();
-		data.left = new FormAttachment(0, 0);
-		data.right = new FormAttachment(lblValueObj, -HSPACE);
-		data.top = new FormAttachment(lblExpression);
-		lblValue.setLayoutData(data);
+    final TabbedPropertySheetWidgetFactory factory = getWidgetFactory();
+    final Composite composite = factory.createFlatFormComposite(parent);
+    FormData data;
 
-		/**** MEMORY ANNOTATION ****/
-		comboAnnotation = factory.createCCombo(composite);
-		for (PortMemoryAnnotation pma : PortMemoryAnnotation.values()) {
-			comboAnnotation.add(pma.toString(), pma.getValue());
-		}
+    /**** NAME ****/
+    this.lblNameObj = factory.createCLabel(composite, " ");
+    data = new FormData();
+    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.right = new FormAttachment(100, 0);
+    this.lblNameObj.setLayoutData(data);
 
-		data = new FormData();
-		data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
-		data.right = new FormAttachment(25, 0);
-		data.top = new FormAttachment(lblValueObj);
-		comboAnnotation.setLayoutData(data);
+    this.lblName = factory.createCLabel(composite, "Name:");
+    data = new FormData();
+    data.left = new FormAttachment(0, 0);
+    data.right = new FormAttachment(this.lblNameObj, -ITabbedPropertyConstants.HSPACE);
+    this.lblName.setLayoutData(data);
 
-		lblAnnotation = factory.createCLabel(composite, "Memory Annotation:");
-		data = new FormData();
-		data.left = new FormAttachment(0, 0);
-		data.right = new FormAttachment(comboAnnotation, -HSPACE);
-		data.top = new FormAttachment(lblValue);
-		lblAnnotation.setLayoutData(data);
+    /**** EXPRESION ****/
+    this.txtExpression = factory.createText(composite, "");
+    data = new FormData();
+    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.right = new FormAttachment(100, 0);
+    data.top = new FormAttachment(this.lblNameObj);
+    this.txtExpression.setLayoutData(data);
+    this.txtExpression.setEnabled(true);
 
-		txtExpression.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				updateProperties();
-			}
-		});
+    this.lblExpression = factory.createCLabel(composite, "Expression:");
+    data = new FormData();
+    data.left = new FormAttachment(0, 0);
+    data.right = new FormAttachment(this.txtExpression, -ITabbedPropertyConstants.HSPACE);
+    data.top = new FormAttachment(this.lblName);
+    this.lblExpression.setLayoutData(data);
 
-		comboAnnotation.addSelectionListener(new SelectionListener() {
+    /**** VALUE ****/
+    this.lblValueObj = factory.createCLabel(composite, "");
+    data = new FormData();
+    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.right = new FormAttachment(100, 0);
+    data.top = new FormAttachment(this.txtExpression);
+    this.lblValueObj.setLayoutData(data);
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				PictogramElement pes[] = new PictogramElement[1];
-				pes[0] = getSelectedPictogramElement();
+    this.lblValue = factory.createCLabel(composite, "Default Value:");
+    data = new FormData();
+    data.left = new FormAttachment(0, 0);
+    data.right = new FormAttachment(this.lblValueObj, -ITabbedPropertyConstants.HSPACE);
+    data.top = new FormAttachment(this.lblExpression);
+    this.lblValue.setLayoutData(data);
 
-				CustomContext context = new CustomContext(pes);
-				ICustomFeature[] setPotMemoryAnnotationFeature = getDiagramTypeProvider()
-						.getFeatureProvider().getCustomFeatures(context);
+    /**** MEMORY ANNOTATION ****/
+    this.comboAnnotation = factory.createCCombo(composite);
+    for (final PortMemoryAnnotation pma : PortMemoryAnnotation.values()) {
+      this.comboAnnotation.add(pma.toString(), pma.getValue());
+    }
 
-				for (ICustomFeature feature : setPotMemoryAnnotationFeature) {
-					if (feature instanceof SetPortMemoryAnnotationFeature) {
-						PortMemoryAnnotation pma = null;
-						switch (((CCombo) e.getSource()).getSelectionIndex()) {
-						case PortMemoryAnnotation.READ_ONLY_VALUE:
-							pma = PortMemoryAnnotation.READ_ONLY;
-							break;
-						case PortMemoryAnnotation.WRITE_ONLY_VALUE:
-							pma = PortMemoryAnnotation.WRITE_ONLY;
-							break;
-						case PortMemoryAnnotation.UNUSED_VALUE:
-							pma = PortMemoryAnnotation.UNUSED;
-							break;
-						default:
-							break;
+    data = new FormData();
+    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.right = new FormAttachment(25, 0);
+    data.top = new FormAttachment(this.lblValueObj);
+    this.comboAnnotation.setLayoutData(data);
 
-						}
-						((SetPortMemoryAnnotationFeature) feature)
-								.setCurrentPMA(pma);
+    this.lblAnnotation = factory.createCLabel(composite, "Memory Annotation:");
+    data = new FormData();
+    data.left = new FormAttachment(0, 0);
+    data.right = new FormAttachment(this.comboAnnotation, -ITabbedPropertyConstants.HSPACE);
+    data.top = new FormAttachment(this.lblValue);
+    this.lblAnnotation.setLayoutData(data);
 
-						getDiagramTypeProvider().getDiagramBehavior()
-								.executeFeature(feature, context);
-						LayoutContext contextLayout = new LayoutContext(
-								getSelectedPictogramElement());
-						ILayoutFeature layoutFeature = getDiagramTypeProvider()
-								.getFeatureProvider().getLayoutFeature(
-										contextLayout);
-						getDiagramTypeProvider().getDiagramBehavior()
-								.executeFeature(layoutFeature, contextLayout);
-					}
-				}
+    this.txtExpression.addModifyListener(e -> updateProperties());
 
-				refresh();
-			}
+    this.comboAnnotation.addSelectionListener(new SelectionListener() {
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
+      @Override
+      public void widgetSelected(final SelectionEvent e) {
+        final PictogramElement[] pes = new PictogramElement[1];
+        pes[0] = getSelectedPictogramElement();
 
-	}
+        final CustomContext context = new CustomContext(pes);
+        final ICustomFeature[] setPotMemoryAnnotationFeature = getDiagramTypeProvider().getFeatureProvider().getCustomFeatures(context);
 
-	/**
-	 * Update the {@link Port}/{@link Delay}/{@link Parameter}
-	 * {@link Expression} with the value stored in the txtEpression
-	 */
-	private void updateProperties() {
-		PictogramElement pe = getSelectedPictogramElement();
-		if (pe != null) {
-			EObject bo = Graphiti.getLinkService()
-					.getBusinessObjectForLinkedPictogramElement(pe);
-			if (bo == null)
-				return;
+        for (final ICustomFeature feature : setPotMemoryAnnotationFeature) {
+          if (feature instanceof SetPortMemoryAnnotationFeature) {
+            PortMemoryAnnotation pma = null;
+            switch (((CCombo) e.getSource()).getSelectionIndex()) {
+              case PortMemoryAnnotation.READ_ONLY_VALUE:
+                pma = PortMemoryAnnotation.READ_ONLY;
+                break;
+              case PortMemoryAnnotation.WRITE_ONLY_VALUE:
+                pma = PortMemoryAnnotation.WRITE_ONLY;
+                break;
+              case PortMemoryAnnotation.UNUSED_VALUE:
+                pma = PortMemoryAnnotation.UNUSED;
+                break;
+              default:
+                break;
 
-			if (bo instanceof Parameter) {
-				Parameter param = (Parameter) bo;
-				if (param.getExpression().getString()
-						.compareTo(txtExpression.getText()) != 0) {
-					setNewExpression(param.getExpression(),
-							txtExpression.getText());
-					getDiagramTypeProvider().getDiagramBehavior()
-							.refreshRenderingDecorators(pe);
-				}
-			}// end Parameter
+            }
+            ((SetPortMemoryAnnotationFeature) feature).setCurrentPMA(pma);
 
-			if (bo instanceof DataPort) {
-				DataPort port = (DataPort) bo;
-				updateDataPortProperties(port, txtExpression);
+            getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
+            final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
+            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout);
+            getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+          }
+        }
 
-				getDiagramTypeProvider().getDiagramBehavior()
-						.refreshRenderingDecorators(
-								(PictogramElement) (pe.eContainer()));
-			}// end DataPort
+        refresh();
+      }
 
-			if (bo instanceof DataPort) {
-				comboAnnotation.setEnabled(false);
-				comboAnnotation.select(((DataPort) bo).getAnnotation()
-						.getValue());
-				comboAnnotation.setVisible(true);
-				comboAnnotation.setEnabled(true);
-				lblAnnotation.setEnabled(false);
-				lblAnnotation.setVisible(true);
-				lblAnnotation.setEnabled(true);
-			} else {
-				comboAnnotation.setEnabled(false);
-				comboAnnotation.setVisible(false);
-				comboAnnotation.setEnabled(true);
-				lblAnnotation.setEnabled(false);
-				lblAnnotation.setVisible(false);
-				lblAnnotation.setEnabled(true);
-			}
+      @Override
+      public void widgetDefaultSelected(final SelectionEvent e) {
+      }
+    });
 
-			if (bo instanceof Delay) {
-				Delay delay = (Delay) bo;
-				if (delay.getExpression().getString()
-						.compareTo(txtExpression.getText()) != 0) {
-					setNewExpression(delay.getExpression(),
-							txtExpression.getText());
-					getDiagramTypeProvider().getDiagramBehavior()
-							.refreshRenderingDecorators(pe);
-				}
-			}// end Delay
-		}
-		refresh();
-	}
+  }
 
-	@Override
-	public void refresh() {
-		PictogramElement pe = getSelectedPictogramElement();
-		String name = null;
-		Expression e = null;
-		boolean expressionFocus = txtExpression.isFocusControl();
-		Point sel = txtExpression.getSelection();
-		txtExpression.setEnabled(false);
+  /**
+   * Update the {@link Port}/{@link Delay}/{@link Parameter} {@link Expression} with the value stored in the txtEpression.
+   */
+  private void updateProperties() {
+    final PictogramElement pe = getSelectedPictogramElement();
+    if (pe != null) {
+      final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+      if (bo == null) {
+        return;
+      }
 
-		if (pe != null) {
-			Object bo = Graphiti.getLinkService()
-					.getBusinessObjectForLinkedPictogramElement(pe);
-			if (bo == null)
-				return;
+      if (bo instanceof Parameter) {
+        final Parameter param = (Parameter) bo;
+        if (param.getExpression().getString().compareTo(this.txtExpression.getText()) != 0) {
+          setNewExpression(param.getExpression(), this.txtExpression.getText());
+          getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
+        }
+      } // end Parameter
 
-			if (bo instanceof Parameter) {
-				name = ((Parameter) bo).getName();
-				e = ((Parameter) bo).getExpression();
-			}// end Parameter
+      if (bo instanceof DataPort) {
+        final DataPort port = (DataPort) bo;
+        updateDataPortProperties(port, this.txtExpression);
 
-			// if (bo instanceof DataOutputPort) {
-			// DataOutputPort oPort = ((DataOutputPort) bo);
-			//
-			// if (oPort.eContainer() instanceof DataInputInterface) {
-			// name = ((DataInputInterface) oPort.eContainer()).getName();
-			// } else {
-			// name = oPort.getName();
-			// }
-			//
-			// e = oPort.getExpression();
-			// }// end OutputPort
+        getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators((PictogramElement) (pe.eContainer()));
+      } // end DataPort
 
-			if (bo instanceof DataPort) {
-				DataPort iPort = ((DataPort) bo);
+      if (bo instanceof DataPort) {
+        this.comboAnnotation.setEnabled(false);
+        this.comboAnnotation.select(((DataPort) bo).getAnnotation().getValue());
+        this.comboAnnotation.setVisible(true);
+        this.comboAnnotation.setEnabled(true);
+        this.lblAnnotation.setEnabled(false);
+        this.lblAnnotation.setVisible(true);
+        this.lblAnnotation.setEnabled(true);
+      } else {
+        this.comboAnnotation.setEnabled(false);
+        this.comboAnnotation.setVisible(false);
+        this.comboAnnotation.setEnabled(true);
+        this.lblAnnotation.setEnabled(false);
+        this.lblAnnotation.setVisible(false);
+        this.lblAnnotation.setEnabled(true);
+      }
 
-				comboAnnotation.select(((DataPort) bo).getAnnotation()
-						.getValue());
+      if (bo instanceof Delay) {
+        final Delay delay = (Delay) bo;
+        if (delay.getExpression().getString().compareTo(this.txtExpression.getText()) != 0) {
+          setNewExpression(delay.getExpression(), this.txtExpression.getText());
+          getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
+        }
+      } // end Delay
+    }
+    refresh();
+  }
 
-				if (iPort.eContainer() instanceof DataOutputInterface) {
-					name = ((DataOutputInterface) iPort.eContainer()).getName();
-				} else {
-					name = iPort.getName();
-				}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.views.properties.tabbed.AbstractPropertySection#refresh()
+   */
+  @Override
+  public void refresh() {
+    final PictogramElement pe = getSelectedPictogramElement();
+    String name = null;
+    Expression e = null;
+    final boolean expressionFocus = this.txtExpression.isFocusControl();
+    final Point sel = this.txtExpression.getSelection();
+    this.txtExpression.setEnabled(false);
 
-				e = iPort.getExpression();
+    if (pe != null) {
+      final Object bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+      if (bo == null) {
+        return;
+      }
 
-			}// end InputPort
+      if (bo instanceof Parameter) {
+        name = ((Parameter) bo).getName();
+        e = ((Parameter) bo).getExpression();
+      } // end Parameter
 
-			if (bo instanceof InterfaceActor) {
-				InterfaceActor iface = ((InterfaceActor) bo);
-				name = iface.getName();
+      // if (bo instanceof DataOutputPort) {
+      // DataOutputPort oPort = ((DataOutputPort) bo);
+      //
+      // if (oPort.eContainer() instanceof DataInputInterface) {
+      // name = ((DataInputInterface) oPort.eContainer()).getName();
+      // } else {
+      // name = oPort.getName();
+      // }
+      //
+      // e = oPort.getExpression();
+      // }// end OutputPort
 
-				if (iface instanceof DataInputInterface) {
-					e = iface.getDataOutputPorts().get(0).getExpression();
-				} else if (iface instanceof DataOutputInterface) {
-					e = iface.getDataInputPorts().get(0).getExpression();
-				} else {
-					e = null;
-				}
+      if (bo instanceof DataPort) {
+        final DataPort iPort = ((DataPort) bo);
 
-			}// end InterfaceActor
+        this.comboAnnotation.select(((DataPort) bo).getAnnotation().getValue());
 
-			if (bo instanceof Delay) {
-				if (((Delay) bo).eContainer() instanceof Fifo) {
-					Fifo fifo = (Fifo) ((Delay) bo).eContainer();
-					name = fifo.getId();
-					e = fifo.getDelay().getExpression();
-				}
-			}// end Delay
+        if (iPort.eContainer() instanceof DataOutputInterface) {
+          name = ((DataOutputInterface) iPort.eContainer()).getName();
+        } else {
+          name = iPort.getName();
+        }
 
-			lblNameObj.setText(name == null ? " " : name);
-			if (e != null) {
-				if (!(bo instanceof InterfaceActor))
-					txtExpression.setEnabled(true);
+        e = iPort.getExpression();
 
-				if (txtExpression.getText().compareTo(e.getString()) != 0) {
-					txtExpression.setText(e.getString());
-				}
+      } // end InputPort
 
-				lblValueObj.setText(e.evaluate());
+      if (bo instanceof InterfaceActor) {
+        final InterfaceActor iface = ((InterfaceActor) bo);
+        name = iface.getName();
 
-				if (expressionFocus) {
-					txtExpression.setFocus();
-					txtExpression.setSelection(sel);
-				}
-			}
-		}
-	}
+        if (iface instanceof DataInputInterface) {
+          e = iface.getDataOutputPorts().get(0).getExpression();
+        } else if (iface instanceof DataOutputInterface) {
+          e = iface.getDataInputPorts().get(0).getExpression();
+        } else {
+          e = null;
+        }
+
+      } // end InterfaceActor
+
+      if (bo instanceof Delay) {
+        if (((Delay) bo).eContainer() instanceof Fifo) {
+          final Fifo fifo = (Fifo) ((Delay) bo).eContainer();
+          name = fifo.getId();
+          e = fifo.getDelay().getExpression();
+        }
+      } // end Delay
+
+      this.lblNameObj.setText(name == null ? " " : name);
+      if (e != null) {
+        if (!(bo instanceof InterfaceActor)) {
+          this.txtExpression.setEnabled(true);
+        }
+
+        if (this.txtExpression.getText().compareTo(e.getString()) != 0) {
+          this.txtExpression.setText(e.getString());
+        }
+
+        this.lblValueObj.setText(e.evaluate());
+
+        if (expressionFocus) {
+          this.txtExpression.setFocus();
+          this.txtExpression.setSelection(sel);
+        }
+      }
+    }
+  }
 }

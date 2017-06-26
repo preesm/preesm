@@ -1,24 +1,26 @@
-/*******************************************************************************
- * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
- * Karol Desnos, Julien Heulot
- * 
- * [mpelcat,jnezan,kdesnos,jheulot]@insa-rennes.fr
- * 
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
- * 
- * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use, 
- * modify and/ or redistribute the software under the terms of the CeCILL-C
+/**
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ *
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2015)
+ *
+ * This software is a computer program whose purpose is to help prototyping
+ * parallel applications using dataflow formalism.
+ *
+ * This software is governed by the CeCILL  license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/ or redistribute the software under the terms of the CeCILL
  * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info". 
- * 
+ * "http://www.cecill.info".
+ *
  * As a counterpart to the access to the source code and  rights to copy,
  * modify and redistribute granted by the license, users are provided only
  * with a limited warranty  and the software's author,  the holder of the
  * economic rights,  and the successive licensors  have only  limited
- * liability. 
- * 
+ * liability.
+ *
  * In this respect, the user's attention is drawn to the risks associated
  * with loading,  using,  modifying and/or developing or reproducing the
  * software by the user in light of its specific status of free software,
@@ -26,20 +28,19 @@
  * therefore means  that it is reserved for developers  and  experienced
  * professionals having in-depth computer knowledge. Users are therefore
  * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or 
- * data to be ensured and,  more generally, to use and operate it in the 
- * same conditions as regards security. 
- * 
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
  * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- ******************************************************************************/
+ * knowledge of the CeCILL license and that you accept its terms.
+ */
 package org.ietr.preesm.ui.pimm.diagram;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IDoubleClickContext;
@@ -53,6 +54,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.tb.DefaultToolBehaviorProvider;
 import org.eclipse.graphiti.tb.IDecorator;
+import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Delay;
@@ -72,149 +74,172 @@ import org.ietr.preesm.ui.pimm.features.RenameAbstractVertexFeature;
 import org.ietr.preesm.ui.pimm.features.RenameActorPortFeature;
 import org.ietr.preesm.ui.pimm.layout.AutoLayoutFeature;
 
+// TODO: Auto-generated Javadoc
 /**
- * {@link IToolBehaviorProvider} for the {@link Diagram} with type
- * {@link PiMMDiagramTypeProvider}.
- * 
+ * {@link IToolBehaviorProvider} for the {@link Diagram} with type {@link PiMMDiagramTypeProvider}.
+ *
  * @author kdesnos
  * @author jheulot
- * 
+ *
  */
 public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
 
-	/**
-	 * Store the message to display when a ga is under the mouse.
-	 */
-	protected Map<GraphicsAlgorithm, String> toolTips;
+  /**
+   * Store the message to display when a ga is under the mouse.
+   */
+  protected Map<GraphicsAlgorithm, String> toolTips;
 
-	protected PiMMDecoratorAdapter decoratorAdapter;
+  /** The decorator adapter. */
+  protected PiMMDecoratorAdapter decoratorAdapter;
 
-	/**
-	 * The default constructor of {@link PiMMToolBehaviorProvider}.
-	 * 
-	 * @param diagramTypeProvider
-	 *            the {@link DiagramTypeWizardPage}
-	 */
-	public PiMMToolBehaviorProvider(IDiagramTypeProvider diagramTypeProvider) {
-		super(diagramTypeProvider);
-		toolTips = new HashMap<GraphicsAlgorithm, String>();
-		decoratorAdapter = new PiMMDecoratorAdapter(diagramTypeProvider);
-		
-		IFeatureProvider featureProvider = getFeatureProvider();
-		Diagram diagram = featureProvider.getDiagramTypeProvider().getDiagram();
-		PiGraph piGraph = (PiGraph) featureProvider.getBusinessObjectForPictogramElement(diagram);
-		if (!piGraph.eAdapters().contains(decoratorAdapter)) {
-			piGraph.eAdapters().add(decoratorAdapter);
-		}
-	}
+  /**
+   * The default constructor of {@link PiMMToolBehaviorProvider}.
+   *
+   * @param diagramTypeProvider
+   *          the {@link DiagramTypeWizardPage}
+   */
+  public PiMMToolBehaviorProvider(final IDiagramTypeProvider diagramTypeProvider) {
+    super(diagramTypeProvider);
+    this.toolTips = new LinkedHashMap<>();
+    this.decoratorAdapter = new PiMMDecoratorAdapter(diagramTypeProvider);
 
-	@Override
-	public IDecorator[] getDecorators(PictogramElement pe) {
+    final IFeatureProvider featureProvider = getFeatureProvider();
+    final Diagram diagram = featureProvider.getDiagramTypeProvider().getDiagram();
+    final PiGraph piGraph = (PiGraph) featureProvider.getBusinessObjectForPictogramElement(diagram);
+    if (!piGraph.eAdapters().contains(this.decoratorAdapter)) {
+      piGraph.eAdapters().add(this.decoratorAdapter);
+    }
+  }
 
-		IFeatureProvider featureProvider = getFeatureProvider();
-		IDecorator[] existingDecorators = decoratorAdapter.getPesAndDecorators().get(pe);
-		if (existingDecorators != null) {
-			return existingDecorators;
-		} else {			
-			Object bo = featureProvider.getBusinessObjectForPictogramElement(pe);
-			IDecorator[] result = null;
-			if (bo instanceof ExecutableActor) {
-				// Add decorators for each ports of the actor
-				List<IDecorator> decorators = new ArrayList<IDecorator>();
-				for (Anchor a : ((ContainerShape) pe).getAnchors()) {
-					for (Object pbo : a.getLink().getBusinessObjects()) {
-						if (pbo instanceof Port) {
-							for (IDecorator d : PortDecorators.getDecorators((Port) pbo, a)) {
-								decorators.add(d);
-							}
-						}
-					}
-				}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.tb.DefaultToolBehaviorProvider#getDecorators(org.eclipse.graphiti.mm.pictograms.PictogramElement)
+   */
+  @Override
+  public IDecorator[] getDecorators(final PictogramElement pe) {
 
-				if (bo instanceof Actor) {
-					// Add decorators to the actor itself
-					for (IDecorator d : ActorDecorators.getDecorators((Actor) bo, pe)) {
-						decorators.add(d);
-					}
-				}
+    final IFeatureProvider featureProvider = getFeatureProvider();
+    final IDecorator[] existingDecorators = this.decoratorAdapter.getPesAndDecorators().get(pe);
+    if (existingDecorators != null) {
+      return existingDecorators;
+    } else {
+      final Object bo = featureProvider.getBusinessObjectForPictogramElement(pe);
+      IDecorator[] result = null;
+      if (bo instanceof ExecutableActor) {
+        // Add decorators for each ports of the actor
+        final List<IDecorator> decorators = new ArrayList<>();
+        for (final Anchor a : ((ContainerShape) pe).getAnchors()) {
+          for (final Object pbo : a.getLink().getBusinessObjects()) {
+            if (pbo instanceof Port) {
+              for (final IDecorator d : PortDecorators.getDecorators((Port) pbo, a)) {
+                decorators.add(d);
+              }
+            }
+          }
+        }
 
-				result = new IDecorator[decorators.size()];
-				decorators.toArray(result);
-				decoratorAdapter.getPesAndDecorators().put(pe, result);
-			}
+        if (bo instanceof Actor) {
+          // Add decorators to the actor itself
+          for (final IDecorator d : ActorDecorators.getDecorators((Actor) bo, pe)) {
+            decorators.add(d);
+          }
+        }
 
-			if (bo instanceof Parameter && !((Parameter) bo).isConfigurationInterface()) {
+        result = new IDecorator[decorators.size()];
+        decorators.toArray(result);
+        this.decoratorAdapter.getPesAndDecorators().put(pe, result);
+      }
 
-				result = ParameterDecorators.getDecorators((Parameter) bo, pe);
-				decoratorAdapter.getPesAndDecorators().put(pe, result);
-			}
+      if ((bo instanceof Parameter) && !((Parameter) bo).isConfigurationInterface()) {
 
-			if (bo instanceof Delay) {
-				result = DelayDecorators.getDecorators((Delay) bo, pe);
-				decoratorAdapter.getPesAndDecorators().put(pe, result);
-			}
+        result = ParameterDecorators.getDecorators((Parameter) bo, pe);
+        this.decoratorAdapter.getPesAndDecorators().put(pe, result);
+      }
 
-			if (result == null) {
-				result = super.getDecorators(pe);
-			}
+      if (bo instanceof Delay) {
+        result = DelayDecorators.getDecorators((Delay) bo, pe);
+        this.decoratorAdapter.getPesAndDecorators().put(pe, result);
+      }
 
-			decoratorAdapter.getPesAndDecorators().put(pe, result);
-			return result;
-		}
-	}
+      if (result == null) {
+        result = super.getDecorators(pe);
+      }
 
-	@Override
-	public ICustomFeature getDoubleClickFeature(IDoubleClickContext context) {
-		ICustomFeature customFeature = new OpenRefinementFeature(getFeatureProvider());
+      this.decoratorAdapter.getPesAndDecorators().put(pe, result);
+      return result;
+    }
+  }
 
-		// canExecute() tests especially if the context contains a Actor with a
-		// valid refinement
-		if (customFeature.canExecute(context)) {
-			return customFeature;
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.tb.DefaultToolBehaviorProvider#getDoubleClickFeature(org.eclipse.graphiti.features.context.IDoubleClickContext)
+   */
+  @Override
+  public ICustomFeature getDoubleClickFeature(final IDoubleClickContext context) {
+    final ICustomFeature customFeature = new OpenRefinementFeature(getFeatureProvider());
 
-		return super.getDoubleClickFeature(context);
-	}
+    // canExecute() tests especially if the context contains a Actor with a
+    // valid refinement
+    if (customFeature.canExecute(context)) {
+      return customFeature;
+    }
 
-	@Override
-	public String getToolTip(GraphicsAlgorithm ga) {
-		return toolTips.get(ga);
-	}
+    return super.getDoubleClickFeature(context);
+  }
 
-	/**
-	 * Set the tooltip message for a given {@link GraphicsAlgorithm}
-	 * 
-	 * @param ga
-	 *            the {@link GraphicsAlgorithm}
-	 * @param toolTip
-	 *            the tooltip message to display
-	 */
-	public void setToolTip(GraphicsAlgorithm ga, String toolTip) {
-		toolTips.put(ga, toolTip);
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.tb.DefaultToolBehaviorProvider#getToolTip(org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm)
+   */
+  @Override
+  public String getToolTip(final GraphicsAlgorithm ga) {
+    return this.toolTips.get(ga);
+  }
 
-	@Override
-	public ICustomFeature getCommandFeature(CustomContext context, String hint) {
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes.length > 0) {
-			switch (hint) {
-			case MoveUpActorPortFeature.HINT:
-				return new MoveUpActorPortFeature(getFeatureProvider());
-			case MoveDownActorPortFeature.HINT:
-				return new MoveDownActorPortFeature(getFeatureProvider());
-			case AutoLayoutFeature.HINT:
-				return new AutoLayoutFeature(getFeatureProvider());
-			case RenameActorPortFeature.HINT:
-				Object obj = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pes[0]);
-				if (obj instanceof Port) {
-					return new RenameActorPortFeature(getFeatureProvider());
-				}
-				if (obj instanceof AbstractVertex) {
-					return new RenameAbstractVertexFeature(getFeatureProvider());
-				}
-			}
-		}
-		return super.getCommandFeature(context, hint);
-	}
+  /**
+   * Set the tooltip message for a given {@link GraphicsAlgorithm}.
+   *
+   * @param ga
+   *          the {@link GraphicsAlgorithm}
+   * @param toolTip
+   *          the tooltip message to display
+   */
+  public void setToolTip(final GraphicsAlgorithm ga, final String toolTip) {
+    this.toolTips.put(ga, toolTip);
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.tb.DefaultToolBehaviorProvider#getCommandFeature(org.eclipse.graphiti.features.context.impl.CustomContext, java.lang.String)
+   */
+  @Override
+  public ICustomFeature getCommandFeature(final CustomContext context, final String hint) {
+    final PictogramElement[] pes = context.getPictogramElements();
+    if (pes.length > 0) {
+      switch (hint) {
+        case MoveUpActorPortFeature.HINT:
+          return new MoveUpActorPortFeature(getFeatureProvider());
+        case MoveDownActorPortFeature.HINT:
+          return new MoveDownActorPortFeature(getFeatureProvider());
+        case AutoLayoutFeature.HINT:
+          return new AutoLayoutFeature(getFeatureProvider());
+        case RenameActorPortFeature.HINT:
+          final Object obj = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pes[0]);
+          if (obj instanceof Port) {
+            return new RenameActorPortFeature(getFeatureProvider());
+          }
+          if (obj instanceof AbstractVertex) {
+            return new RenameAbstractVertexFeature(getFeatureProvider());
+          }
+          break;
+        default:
+      }
+    }
+    return super.getCommandFeature(context, hint);
+  }
 
 }

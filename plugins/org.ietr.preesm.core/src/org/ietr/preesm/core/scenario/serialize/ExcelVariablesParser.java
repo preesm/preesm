@@ -1,50 +1,49 @@
-/*********************************************************
-Copyright or � or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-Fran�ois Nezan, Micka�l Raulet
-
-[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
-
-This software is a computer program whose purpose is to prototype
-parallel applications.
-
-This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use, 
-modify and/ or redistribute the software under the terms of the CeCILL-C
-license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info". 
-
-As a counterpart to the access to the source code and  rights to copy,
-modify and redistribute granted by the license, users are provided only
-with a limited warranty  and the software's author,  the holder of the
-economic rights,  and the successive licensors  have only  limited
-liability. 
-
-In this respect, the user's attention is drawn to the risks associated
-with loading,  using,  modifying and/or developing or reproducing the
-software by the user in light of its specific status of free software,
-that may mean  that it is complicated to manipulate,  and  that  also
-therefore means  that it is reserved for developers  and  experienced
-professionals having in-depth computer knowledge. Users are therefore
-encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or 
-data to be ensured and,  more generally, to use and operate it in the 
-same conditions as regards security. 
-
-The fact that you are presently reading this means that you have had
-knowledge of the CeCILL-C license and that you accept its terms.
- *********************************************************/
-
+/**
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ *
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Jonathan Piat <jpiat@laas.fr> (2011)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
+ *
+ * This software is a computer program whose purpose is to help prototyping
+ * parallel applications using dataflow formalism.
+ *
+ * This software is governed by the CeCILL  license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/ or redistribute the software under the terms of the CeCILL
+ * license as circulated by CEA, CNRS and INRIA at the following URL
+ * "http://www.cecill.info".
+ *
+ * As a counterpart to the access to the source code and  rights to copy,
+ * modify and redistribute granted by the license, users are provided only
+ * with a limited warranty  and the software's author,  the holder of the
+ * economic rights,  and the successive licensors  have only  limited
+ * liability.
+ *
+ * In this respect, the user's attention is drawn to the risks associated
+ * with loading,  using,  modifying and/or developing or reproducing the
+ * software by the user in light of its specific status of free software,
+ * that may mean  that it is complicated to manipulate,  and  that  also
+ * therefore means  that it is reserved for developers  and  experienced
+ * professionals having in-depth computer knowledge. Users are therefore
+ * encouraged to load and test the software's suitability as regards their
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL license and that you accept its terms.
+ */
 package org.ietr.preesm.core.scenario.serialize;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
-
 import jxl.Cell;
 import jxl.CellType;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -56,72 +55,89 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
+// TODO: Auto-generated Javadoc
 /**
  * Importing variables in a scenario from an excel file.
- * 
+ *
  * @author mpelcat
  */
 public class ExcelVariablesParser {
 
-	private PreesmScenario scenario = null;
+  /** The scenario. */
+  private PreesmScenario scenario = null;
 
-	public ExcelVariablesParser(PreesmScenario scenario) {
-		super();
-		this.scenario = scenario;
-	}
+  /**
+   * Instantiates a new excel variables parser.
+   *
+   * @param scenario
+   *          the scenario
+   */
+  public ExcelVariablesParser(final PreesmScenario scenario) {
+    super();
+    this.scenario = scenario;
+  }
 
-	public void parse(String url) throws InvalidModelException,
-			FileNotFoundException {
-		WorkflowLogger.getLogger().log(Level.INFO,
-				"Importing variables from an excel sheet.");
+  /**
+   * Parses the.
+   *
+   * @param url
+   *          the url
+   * @throws InvalidModelException
+   *           the invalid model exception
+   * @throws FileNotFoundException
+   *           the file not found exception
+   */
+  public void parse(final String url) throws InvalidModelException, FileNotFoundException {
+    WorkflowLogger.getLogger().log(Level.INFO, "Importing variables from an excel sheet.");
 
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-		Activator.updateWorkspace();
+    Activator.updateWorkspace();
 
-		SDFGraph currentGraph = ScenarioParser.getSDFGraph(scenario
-				.getAlgorithmURL());
+    final SDFGraph currentGraph = ScenarioParser.getSDFGraph(this.scenario.getAlgorithmURL());
 
-		Path path = new Path(url);
-		IFile file = workspace.getRoot().getFile(path);
-		try {
-			Workbook w = Workbook.getWorkbook(file.getContents());
+    final Path path = new Path(url);
+    final IFile file = workspace.getRoot().getFile(path);
+    try {
+      final Workbook w = Workbook.getWorkbook(file.getContents());
 
-			parseVariables(w, currentGraph);
+      parseVariables(w, currentGraph);
 
-		} catch (BiffException | IOException | CoreException e) {
-			e.printStackTrace();
-		}
-	}
+    } catch (BiffException | IOException | CoreException e) {
+      e.printStackTrace();
+    }
+  }
 
-	private void parseVariables(Workbook w, SDFGraph currentGraph) {
+  /**
+   * Parses the variables.
+   *
+   * @param w
+   *          the w
+   * @param currentGraph
+   *          the current graph
+   */
+  private void parseVariables(final Workbook w, final SDFGraph currentGraph) {
 
-		for (String varName : currentGraph.getVariables().keySet()) {
+    for (final String varName : currentGraph.getVariables().keySet()) {
 
-			Cell varCell = w.getSheet(0).findCell(varName);
+      final Cell varCell = w.getSheet(0).findCell(varName);
 
-			if (varCell != null) {
-				Cell valueCell = w.getSheet(0).getCell(varCell.getColumn() + 1,
-						varCell.getRow());
+      if (varCell != null) {
+        final Cell valueCell = w.getSheet(0).getCell(varCell.getColumn() + 1, varCell.getRow());
 
-				if (valueCell.getType().equals(CellType.NUMBER)
-						|| valueCell.getType().equals(CellType.NUMBER_FORMULA)) {
+        if (valueCell.getType().equals(CellType.NUMBER) || valueCell.getType().equals(CellType.NUMBER_FORMULA)) {
 
-					String value = valueCell.getContents();
-					value = value.replaceAll(" ", "");
+          String value = valueCell.getContents();
+          value = value.replaceAll(" ", "");
 
-					scenario.getVariablesManager().setVariable(varName, value);
+          this.scenario.getVariablesManager().setVariable(varName, value);
 
-					WorkflowLogger.getLogger().log(Level.INFO,
-							"Importing variable: " + varName);
-				}
-			} else {
-				WorkflowLogger.getLogger()
-						.log(Level.WARNING,
-								"No cell found in excel sheet for variable: "
-										+ varName);
-			}
+          WorkflowLogger.getLogger().log(Level.INFO, "Importing variable: " + varName);
+        }
+      } else {
+        WorkflowLogger.getLogger().log(Level.WARNING, "No cell found in excel sheet for variable: " + varName);
+      }
 
-		}
-	}
+    }
+  }
 }

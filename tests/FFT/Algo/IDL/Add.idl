@@ -1,5 +1,0 @@
-module Add {
-	interface loop{
-		void add(in char op1, in char op2, out char res);
-	};
-};

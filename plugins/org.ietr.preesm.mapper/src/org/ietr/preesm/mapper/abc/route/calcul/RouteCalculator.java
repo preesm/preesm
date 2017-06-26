@@ -1,49 +1,49 @@
-/*********************************************************
-Copyright or � or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-Fran�ois Nezan, Micka�l Raulet
-
-[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
-
-This software is a computer program whose purpose is to prototype
-parallel applications.
-
-This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use, 
-modify and/ or redistribute the software under the terms of the CeCILL-C
-license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info". 
-
-As a counterpart to the access to the source code and  rights to copy,
-modify and redistribute granted by the license, users are provided only
-with a limited warranty  and the software's author,  the holder of the
-economic rights,  and the successive licensors  have only  limited
-liability. 
-
-In this respect, the user's attention is drawn to the risks associated
-with loading,  using,  modifying and/or developing or reproducing the
-software by the user in light of its specific status of free software,
-that may mean  that it is complicated to manipulate,  and  that  also
-therefore means  that it is reserved for developers  and  experienced
-professionals having in-depth computer knowledge. Users are therefore
-encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or 
-data to be ensured and,  more generally, to use and operate it in the 
-same conditions as regards security. 
-
-The fact that you are presently reading this means that you have had
-knowledge of the CeCILL-C license and that you accept its terms.
- *********************************************************/
-
+/**
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ *
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
+ *
+ * This software is a computer program whose purpose is to help prototyping
+ * parallel applications using dataflow formalism.
+ *
+ * This software is governed by the CeCILL  license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/ or redistribute the software under the terms of the CeCILL
+ * license as circulated by CEA, CNRS and INRIA at the following URL
+ * "http://www.cecill.info".
+ *
+ * As a counterpart to the access to the source code and  rights to copy,
+ * modify and redistribute granted by the license, users are provided only
+ * with a limited warranty  and the software's author,  the holder of the
+ * economic rights,  and the successive licensors  have only  limited
+ * liability.
+ *
+ * In this respect, the user's attention is drawn to the risks associated
+ * with loading,  using,  modifying and/or developing or reproducing the
+ * software by the user in light of its specific status of free software,
+ * that may mean  that it is complicated to manipulate,  and  that  also
+ * therefore means  that it is reserved for developers  and  experienced
+ * professionals having in-depth computer knowledge. Users are therefore
+ * encouraged to load and test the software's suitability as regards their
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL license and that you accept its terms.
+ */
 package org.ietr.preesm.mapper.abc.route.calcul;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.architecture.slam.component.Operator;
@@ -58,207 +58,257 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * This class can evaluate a given transfer and choose the best route between
- * two operators
- * 
+ * This class can evaluate a given transfer and choose the best route between two operators.
+ *
  * @author mpelcat
  */
 public class RouteCalculator {
 
-	private static Map<Design, RouteCalculator> instances = new HashMap<Design, RouteCalculator>();
+  /** The instances. */
+  private static Map<Design, RouteCalculator> instances = new LinkedHashMap<>();
 
-	private Design archi;
+  /** The archi. */
+  private final Design archi;
 
-	private RoutingTable table = null;
+  /** The table. */
+  private RoutingTable table = null;
 
-	private RouteStepFactory stepFactory = null;
+  /** The step factory. */
+  private RouteStepFactory stepFactory = null;
 
-	private PreesmScenario scenario = null;
+  /** The scenario. */
+  private PreesmScenario scenario = null;
 
-	public static RouteCalculator getInstance(Design archi,
-			PreesmScenario scenario) {
-		if (instances.get(archi) == null) {
-			instances.put(archi, new RouteCalculator(archi, scenario));
-		}
-		return instances.get(archi);
-	}
+  /**
+   * Gets the single instance of RouteCalculator.
+   *
+   * @param archi
+   *          the archi
+   * @param scenario
+   *          the scenario
+   * @return single instance of RouteCalculator
+   */
+  public static RouteCalculator getInstance(final Design archi, final PreesmScenario scenario) {
+    if (RouteCalculator.instances.get(archi) == null) {
+      RouteCalculator.instances.put(archi, new RouteCalculator(archi, scenario));
+    }
+    return RouteCalculator.instances.get(archi);
+  }
 
-	public static void recalculate(Design archi, PreesmScenario scenario) {
-		instances.put(archi, new RouteCalculator(archi, scenario));
-	}
+  /**
+   * Recalculate.
+   *
+   * @param archi
+   *          the archi
+   * @param scenario
+   *          the scenario
+   */
+  public static void recalculate(final Design archi, final PreesmScenario scenario) {
+    RouteCalculator.instances.put(archi, new RouteCalculator(archi, scenario));
+  }
 
-	public static void deleteRoutes(Design archi, PreesmScenario scenario) {
-		instances.remove(archi);
-	}
+  /**
+   * Delete routes.
+   *
+   * @param archi
+   *          the archi
+   * @param scenario
+   *          the scenario
+   */
+  public static void deleteRoutes(final Design archi, final PreesmScenario scenario) {
+    RouteCalculator.instances.remove(archi);
+  }
 
-	/**
-	 * Constructor from a given architecture
-	 */
-	private RouteCalculator(Design archi, PreesmScenario scenario) {
+  /**
+   * Constructor from a given architecture.
+   *
+   * @param archi
+   *          the archi
+   * @param scenario
+   *          the scenario
+   */
+  private RouteCalculator(final Design archi, final PreesmScenario scenario) {
 
-		this.archi = archi;
-		this.table = new RoutingTable(scenario);
-		this.stepFactory = new RouteStepFactory(archi);
-		this.scenario = scenario;
+    this.archi = archi;
+    this.table = new RoutingTable(scenario);
+    this.stepFactory = new RouteStepFactory(archi);
+    this.scenario = scenario;
 
-		// Creating the route steps between directly connected operators
-		createRouteSteps();
-		// Concatenation of route steps to generate optimal routes using
-		// the Floyd Warshall algorithm
-		createRoutes();
-	}
+    // Creating the route steps between directly connected operators
+    createRouteSteps();
+    // Concatenation of route steps to generate optimal routes using
+    // the Floyd Warshall algorithm
+    createRoutes();
+  }
 
-	/**
-	 * Creating recursively the route steps from the architecture.
-	 */
-	private void createRouteSteps() {
-		WorkflowLogger.getLogger().log(Level.INFO, "creating route steps.");
+  /**
+   * Creating recursively the route steps from the architecture.
+   */
+  private void createRouteSteps() {
+    WorkflowLogger.getLogger().log(Level.INFO, "creating route steps.");
 
-		for (ComponentInstance c : DesignTools.getOperatorInstances(archi)) {
-			ComponentInstance o = c;
+    for (final ComponentInstance c : DesignTools.getOperatorInstances(this.archi)) {
+      final ComponentInstance o = c;
 
-			createRouteSteps(o);
-		}
-	}
+      createRouteSteps(o);
+    }
+  }
 
-	private void createRouteSteps(ComponentInstance source) {
+  /**
+   * Creates the route steps.
+   *
+   * @param source
+   *          the source
+   */
+  private void createRouteSteps(final ComponentInstance source) {
 
-		// Iterating on outgoing and undirected edges
-		Set<Link> outgoingAndUndirected = new HashSet<Link>();
-		outgoingAndUndirected.addAll(DesignTools.getUndirectedLinks(archi,
-				source));
-		outgoingAndUndirected.addAll(DesignTools.getOutgoingDirectedLinks(
-				archi, source));
+    // Iterating on outgoing and undirected edges
+    final Set<Link> outgoingAndUndirected = new LinkedHashSet<>();
+    outgoingAndUndirected.addAll(DesignTools.getUndirectedLinks(this.archi, source));
+    outgoingAndUndirected.addAll(DesignTools.getOutgoingDirectedLinks(this.archi, source));
 
-		for (Link i : outgoingAndUndirected) {
-			if (DesignTools.getOtherEnd(i, source).getComponent() instanceof ComNodeImpl) {
-				ComponentInstance node = DesignTools.getOtherEnd(i, source);
+    for (final Link i : outgoingAndUndirected) {
+      if (DesignTools.getOtherEnd(i, source).getComponent() instanceof ComNodeImpl) {
+        final ComponentInstance node = DesignTools.getOtherEnd(i, source);
 
-				List<ComponentInstance> alreadyVisitedNodes = new ArrayList<ComponentInstance>();
-				alreadyVisitedNodes.add(node);
-				exploreRoute(source, node, alreadyVisitedNodes);
-			}
-		}
-	}
+        final List<ComponentInstance> alreadyVisitedNodes = new ArrayList<>();
+        alreadyVisitedNodes.add(node);
+        exploreRoute(source, node, alreadyVisitedNodes);
+      }
+    }
+  }
 
-	private void exploreRoute(ComponentInstance source, ComponentInstance node,
-			List<ComponentInstance> alreadyVisitedNodes) {
+  /**
+   * Explore route.
+   *
+   * @param source
+   *          the source
+   * @param node
+   *          the node
+   * @param alreadyVisitedNodes
+   *          the already visited nodes
+   */
+  private void exploreRoute(final ComponentInstance source, final ComponentInstance node, final List<ComponentInstance> alreadyVisitedNodes) {
 
-		// Iterating on outgoing and undirected edges
-		Set<Link> outgoingAndUndirected = new HashSet<Link>();
-		outgoingAndUndirected.addAll(DesignTools
-				.getUndirectedLinks(archi, node));
-		outgoingAndUndirected.addAll(DesignTools.getOutgoingDirectedLinks(
-				archi, node));
+    // Iterating on outgoing and undirected edges
+    final Set<Link> outgoingAndUndirected = new LinkedHashSet<>();
+    outgoingAndUndirected.addAll(DesignTools.getUndirectedLinks(this.archi, node));
+    outgoingAndUndirected.addAll(DesignTools.getOutgoingDirectedLinks(this.archi, node));
 
-		for (Link i : outgoingAndUndirected) {
-			if (DesignTools.getOtherEnd(i, node).getComponent() instanceof ComNodeImpl) {
-				ComponentInstance newNode = DesignTools.getOtherEnd(i, node);
-				if (!alreadyVisitedNodes.contains(newNode)) {
-					List<ComponentInstance> newAlreadyVisitedNodes = new ArrayList<ComponentInstance>(
-							alreadyVisitedNodes);
-					newAlreadyVisitedNodes.add(newNode);
-					exploreRoute(source, newNode, newAlreadyVisitedNodes);
-				}
-			} else if (DesignTools.getOtherEnd(i, node).getComponent() instanceof Operator
-					&& !DesignTools.getOtherEnd(i, node).getInstanceName()
-							.equals(source.getInstanceName())) {
-				ComponentInstance target = DesignTools.getOtherEnd(i, node);
-				AbstractRouteStep step = stepFactory.getRouteStep(source,
-						alreadyVisitedNodes, target);
-				table.addRoute(source, target, new Route(step));
-			}
-		}
-	}
+    for (final Link i : outgoingAndUndirected) {
+      if (DesignTools.getOtherEnd(i, node).getComponent() instanceof ComNodeImpl) {
+        final ComponentInstance newNode = DesignTools.getOtherEnd(i, node);
+        if (!alreadyVisitedNodes.contains(newNode)) {
+          final List<ComponentInstance> newAlreadyVisitedNodes = new ArrayList<>(alreadyVisitedNodes);
+          newAlreadyVisitedNodes.add(newNode);
+          exploreRoute(source, newNode, newAlreadyVisitedNodes);
+        }
+      } else if ((DesignTools.getOtherEnd(i, node).getComponent() instanceof Operator)
+          && !DesignTools.getOtherEnd(i, node).getInstanceName().equals(source.getInstanceName())) {
+        final ComponentInstance target = DesignTools.getOtherEnd(i, node);
+        final AbstractRouteStep step = this.stepFactory.getRouteStep(source, alreadyVisitedNodes, target);
+        this.table.addRoute(source, target, new Route(step));
+      }
+    }
+  }
 
-	/**
-	 * Building recursively the routes between the cores.
-	 */
-	private void createRoutes() {
-		WorkflowLogger.getLogger().log(Level.INFO,
-				"Initializing routing table.");
+  /**
+   * Building recursively the routes between the cores.
+   */
+  private void createRoutes() {
+    WorkflowLogger.getLogger().log(Level.INFO, "Initializing routing table.");
 
-		floydWarshall(table, DesignTools.getOperatorInstances(archi));
-	}
+    floydWarshall(this.table, DesignTools.getOperatorInstances(this.archi));
+  }
 
-	/**
-	 * The floydWarshall algorithm is used to add routes in the table in
-	 * increasing order of cost.
-	 */
-	private void floydWarshall(RoutingTable table,
-			Set<ComponentInstance> operators) {
+  /**
+   * The floydWarshall algorithm is used to add routes in the table in increasing order of cost.
+   *
+   * @param table
+   *          the table
+   * @param operators
+   *          the operators
+   */
+  private void floydWarshall(final RoutingTable table, final Set<ComponentInstance> operators) {
 
-		for (ComponentInstance k : operators) {
+    for (final ComponentInstance k : operators) {
 
-			for (ComponentInstance src : operators) {
+      for (final ComponentInstance src : operators) {
 
-				for (ComponentInstance tgt : operators) {
+        for (final ComponentInstance tgt : operators) {
 
-					if (!k.equals(src) && !k.equals(tgt) && !src.equals(tgt)) {
-						Route routeSrcK = table.getBestRoute(src, k);
-						Route routeKTgt = table.getBestRoute(k, tgt);
+          if (!k.equals(src) && !k.equals(tgt) && !src.equals(tgt)) {
+            final Route routeSrcK = table.getBestRoute(src, k);
+            final Route routeKTgt = table.getBestRoute(k, tgt);
 
-						if (routeSrcK != null && routeKTgt != null) {
-							Route compoundRoute = new Route(routeSrcK,
-									routeKTgt);
-							if (compoundRoute.isSingleAppearance()) {
-								long averageDataSize = scenario
-										.getSimulationManager()
-										.getAverageDataSize();
-								// If this if statement is removed, several
-								// routes become available
-								if (table.getBestRoute(src, tgt) == null) {
-									table.addRoute(src, tgt, compoundRoute);
-								} else if (table.getBestRoute(src, tgt)
-										.evaluateTransferCost(averageDataSize) > compoundRoute
-										.evaluateTransferCost(averageDataSize)) {
-									table.removeRoutes(src, tgt);
-									table.addRoute(src, tgt, compoundRoute);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+            if ((routeSrcK != null) && (routeKTgt != null)) {
+              final Route compoundRoute = new Route(routeSrcK, routeKTgt);
+              if (compoundRoute.isSingleAppearance()) {
+                final long averageDataSize = this.scenario.getSimulationManager().getAverageDataSize();
+                // If this if statement is removed, several
+                // routes become available
+                if (table.getBestRoute(src, tgt) == null) {
+                  table.addRoute(src, tgt, compoundRoute);
+                } else if (table.getBestRoute(src, tgt).evaluateTransferCost(averageDataSize) > compoundRoute.evaluateTransferCost(averageDataSize)) {
+                  table.removeRoutes(src, tgt);
+                  table.addRoute(src, tgt, compoundRoute);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 
-	/**
-	 * Returns true if route1 better than route2
-	 */
-	public boolean compareRoutes(Route route1, Route route2) {
+  /**
+   * Returns true if route1 better than route2.
+   *
+   * @param route1
+   *          the route 1
+   * @param route2
+   *          the route 2
+   * @return true, if successful
+   */
+  public boolean compareRoutes(final Route route1, final Route route2) {
 
-		return route1.size() < route2.size();
-	}
+    return route1.size() < route2.size();
+  }
 
-	/**
-	 * Choosing a route between 2 operators
-	 */
-	public Route getRoute(ComponentInstance op1, ComponentInstance op2) {
-		Route r = table.getBestRoute(op1, op2);
+  /**
+   * Choosing a route between 2 operators.
+   *
+   * @param op1
+   *          the op 1
+   * @param op2
+   *          the op 2
+   * @return the route
+   */
+  public Route getRoute(final ComponentInstance op1, final ComponentInstance op2) {
+    final Route r = this.table.getBestRoute(op1, op2);
 
-		if (r == null) {
-			WorkflowLogger.getLogger()
-					.log(Level.SEVERE,
-							"Did not find a route between " + op1 + " and "
-									+ op2 + ".");
-		}
+    if (r == null) {
+      WorkflowLogger.getLogger().log(Level.SEVERE, "Did not find a route between " + op1 + " and " + op2 + ".");
+    }
 
-		return r;
-	}
+    return r;
+  }
 
-	/**
-	 * Choosing a route between 2 operators
-	 */
-	public Route getRoute(MapperDAGEdge edge) {
-		MapperDAGVertex source = (MapperDAGVertex) edge.getSource();
-		MapperDAGVertex target = (MapperDAGVertex) edge.getTarget();
-		ComponentInstance sourceOp = source
-				.getEffectiveOperator();
-		ComponentInstance targetOp = target
-				.getEffectiveOperator();
-		return getRoute(sourceOp, targetOp);
-	}
+  /**
+   * Choosing a route between 2 operators.
+   *
+   * @param edge
+   *          the edge
+   * @return the route
+   */
+  public Route getRoute(final MapperDAGEdge edge) {
+    final MapperDAGVertex source = (MapperDAGVertex) edge.getSource();
+    final MapperDAGVertex target = (MapperDAGVertex) edge.getTarget();
+    final ComponentInstance sourceOp = source.getEffectiveOperator();
+    final ComponentInstance targetOp = target.getEffectiveOperator();
+    return getRoute(sourceOp, targetOp);
+  }
 
 }

@@ -2,24 +2,16 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm mapper Plug-in
 Bundle-SymbolicName: org.ietr.preesm.mapper;singleton:=true
-Bundle-Version: 2.2.5
+Bundle-Version: 2.3.0
 Bundle-Activator: org.ietr.preesm.mapper.activator.Activator
 Require-Bundle: org.eclipse.core.runtime,
- org.ietr.preesm.core,
  org.eclipse.ui,
  org.eclipse.core.resources,
  org.eclipse.ui.forms,
- org.ietr.dftools.workflow,
- org.jgrapht,
- org.ietr.dftools.architecture;bundle-version="0.0.1",
- org.ietr.dftools.algorithm;bundle-version="0.0.1",
- org.ietr.preesm.utils,
- org.ietr.preesm.experiment.model;bundle-version="2.1.2"
-Bundle-ClassPath: lib/jcommon-1.0.13.jar,
- lib/jfreechart.jar,
- lib/jetm.jar,
- lib/jetm-optional.jar,
- .
+ jfree.jcommon;bundle-version="1.0.16",
+ jfree.chart;bundle-version="1.0.13",
+ org.ietr.preesm.core
+Bundle-ClassPath: .
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: IETR/INSA Rennes

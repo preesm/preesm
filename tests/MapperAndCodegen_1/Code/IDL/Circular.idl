@@ -1,5 +1,0 @@
-module Circular {
-    interface loop{
-         void circular(in char i1,in char i2, out char o1, out char o2);
-    };
-}; 

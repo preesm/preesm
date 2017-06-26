@@ -1,0 +1,28 @@
+#
+# Mailmap for IETR/INSA Rennes Preesm application
+#
+# Format is :
+#   "printed Name" "<printed mail>" "logged Name" "<logged mail>"
+#
+
+Karol Desnos <karol.desnos@insa-rennes.fr> kdesnos <kdesnos@insa-rennes.fr>
+Karol Desnos <karol.desnos@insa-rennes.fr> unknown <kdesnos@pc-eii-pr09.educ.insa>
+
+# expect small case in mail addresses
+Maxime Pelcat <maxime.pelcat@insa-rennes.fr> Maxime Pelcat <Maxime.Pelcat@insa-rennes.fr>
+Maxime Pelcat <maxime.pelcat@insa-rennes.fr> mpelcat <mpelcat@insa-rennes.fr> 
+Maxime Pelcat <maxime.pelcat@insa-rennes.fr> Pelcat Maxime <mpelcat@insa-rennes.fr>
+Maxime Pelcat <maxime.pelcat@insa-rennes.fr> Maxime <mpelcat@insa-rennes.fr>
+
+Julien Heulot <julien.heulot@insa-rennes.fr> Julien Heulot <jheulot@insa-rennes.fr>
+Julien Heulot <julien.heulot@insa-rennes.fr> Julien <jheulot@insa-rennes.fr>
+
+Clément Guy <clement.guy@insa-rennes.fr> Clément Guy <clement.g.guy@gmail.com>
+
+Hamza Deroui <hamza.deroui@insa-rennes.fr> HDeroui <HDeroui@insa-rennes.fr>
+Hamza Deroui <hamza.deroui@insa-rennes.fr> Deroui Hamza <hamza.deroui@insa-rennes.fr>
+
+Julien Hascoet <jhascoet@kalray.eu> jhascoet <jhascoet@kalray.eu>
+Julien Hascoet <jhascoet@kalray.eu> Julien_Hascoet <jhascoet@kalray.eu>
+
+Daniel Madroñal <daniel.madronal@upm.es> dmadronal <daniel.madronal@upm.es>

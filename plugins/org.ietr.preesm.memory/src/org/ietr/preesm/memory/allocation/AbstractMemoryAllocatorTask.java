@@ -1,24 +1,26 @@
-/*******************************************************************************
- * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
- * Karol Desnos, Julien Heulot, Clément Guy
- * 
- * [mpelcat,jnezan,kdesnos,jheulot,cguy]@insa-rennes.fr
- * 
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
- * 
- * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use, 
- * modify and/ or redistribute the software under the terms of the CeCILL-C
+/**
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ *
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2015)
+ *
+ * This software is a computer program whose purpose is to help prototyping
+ * parallel applications using dataflow formalism.
+ *
+ * This software is governed by the CeCILL  license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/ or redistribute the software under the terms of the CeCILL
  * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info". 
- * 
+ * "http://www.cecill.info".
+ *
  * As a counterpart to the access to the source code and  rights to copy,
  * modify and redistribute granted by the license, users are provided only
  * with a limited warranty  and the software's author,  the holder of the
  * economic rights,  and the successive licensors  have only  limited
- * liability. 
- * 
+ * liability.
+ *
  * In this respect, the user's attention is drawn to the risks associated
  * with loading,  using,  modifying and/or developing or reproducing the
  * software by the user in light of its specific status of free software,
@@ -26,22 +28,21 @@
  * therefore means  that it is reserved for developers  and  experienced
  * professionals having in-depth computer knowledge. Users are therefore
  * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or 
- * data to be ensured and,  more generally, to use and operate it in the 
- * same conditions as regards security. 
- * 
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
  * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- ******************************************************************************/
+ * knowledge of the CeCILL license and that you accept its terms.
+ */
 package org.ietr.preesm.memory.allocation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
@@ -49,253 +50,343 @@ import org.ietr.preesm.memory.allocation.OrderedAllocator.Order;
 import org.ietr.preesm.memory.allocation.OrderedAllocator.Policy;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class AbstractMemoryAllocatorTask.
+ */
 public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementation {
 
-	static final public String PARAM_VERBOSE = "Verbose";
-	static final public String VALUE_TRUE_FALSE_DEFAULT = "? C {True, False}";
-	static final public String VALUE_TRUE = "True";
-	static final public String VALUE_FALSE = "False";
+  /** The Constant PARAM_VERBOSE. */
+  public static final String PARAM_VERBOSE = "Verbose";
 
-	static final public String PARAM_ALLOCATORS = "Allocator(s)";
-	static final public String VALUE_ALLOCATORS_DEFAULT = "{?,?,...} C {Basic, BestFit, FirstFit, DeGreef}";
-	static final public String VALUE_ALLOCATORS_BASIC = "Basic";
-	static final public String VALUE_ALLOCATORS_BEST_FIT = "BestFit";
-	static final public String VALUE_ALLOCATORS_FIRST_FIT = "FirstFit";
-	static final public String VALUE_ALLOCATORS_DE_GREEF = "DeGreef";
+  /** The Constant VALUE_TRUE_FALSE_DEFAULT. */
+  public static final String VALUE_TRUE_FALSE_DEFAULT = "? C {True, False}";
 
-	static final public String PARAM_XFIT_ORDER = "Best/First Fit order";
-	static final public String VALUE_XFIT_ORDER_DEFAULT = "{?,?,...} C {ApproxStableSet, ExactStableSet, LargestFirst, Shuffle, Scheduling}";
-	static final public String VALUE_XFIT_ORDER_APPROX_STABLE_SET = "ApproxStableSet";
-	static final public String VALUE_XFIT_ORDER_LARGEST_FIRST = "LargestFirst";
-	static final public String VALUE_XFIT_ORDER_SHUFFLE = "Shuffle";
-	static final public String VALUE_XFIT_ORDER_EXACT_STABLE_SET = "ExactStableSet";
-	static final public String VALUE_XFIT_ORDER_SCHEDULING = "Scheduling";
+  /** The Constant VALUE_TRUE. */
+  public static final String VALUE_TRUE = "True";
 
-	static final public String PARAM_NB_SHUFFLE = "Nb of Shuffling Tested";
-	static final public String VALUE_NB_SHUFFLE_DEFAULT = "10";
+  /** The Constant VALUE_FALSE. */
+  public static final String VALUE_FALSE = "False";
 
-	static final public String PARAM_ALIGNMENT = "Data alignment";
-	static final public String VALUE_ALIGNEMENT_NONE = "None";
-	static final public String VALUE_ALIGNEMENT_DATA = "Data";
-	static final public String VALUE_ALIGNEMENT_FIXED = "Fixed:=";
-	static final public String VALUE_ALIGNEMENT_DEFAULT = "? C {None, Data, Fixed:=<nbBytes>}";
+  /** The Constant PARAM_ALLOCATORS. */
+  public static final String PARAM_ALLOCATORS = "Allocator(s)";
 
-	static final public String PARAM_DISTRIBUTION_POLICY = "Distribution";
-	static final public String VALUE_DISTRIBUTION_SHARED_ONLY = "SharedOnly";
-	static final public String VALUE_DISTRIBUTION_DISTRIBUTED_ONLY = "DistributedOnly";
-	static final public String VALUE_DISTRIBUTION_MIXED = "Mixed";
-	/**
-	 * Mixed Policy, but preserving all merged operations.
-	 */
-	static final public String VALUE_DISTRIBUTION_MIXED_MERGED = "MixedMerged";
-	static final public String VALUE_DISTRIBUTION_DEFAULT = "? C {" + VALUE_DISTRIBUTION_SHARED_ONLY + ", "
-			+ VALUE_DISTRIBUTION_MIXED + ", " + VALUE_DISTRIBUTION_DISTRIBUTED_ONLY + ", "
-			+ VALUE_DISTRIBUTION_MIXED_MERGED + "}";
+  /** The Constant VALUE_ALLOCATORS_DEFAULT. */
+  public static final String VALUE_ALLOCATORS_DEFAULT = "{?,?,...} C {Basic, BestFit, FirstFit, DeGreef}";
 
-	// Rem: Logger is used to display messages in the console
-	protected Logger logger = WorkflowLogger.getLogger();
+  /** The Constant VALUE_ALLOCATORS_BASIC. */
+  public static final String VALUE_ALLOCATORS_BASIC = "Basic";
 
-	// Shared attributes
-	protected String valueVerbose;
-	protected String valueAllocators;
-	protected String valueXFitOrder;
-	protected String valueNbShuffle;
-	protected String valueDistribution;
-	protected boolean verbose;
-	protected String valueAlignment;
-	protected int alignment;
-	protected int nbShuffle;
-	protected List<Order> ordering;
-	protected List<MemoryAllocator> allocators;
+  /** The Constant VALUE_ALLOCATORS_BEST_FIT. */
+  public static final String VALUE_ALLOCATORS_BEST_FIT = "BestFit";
 
-	/**
-	 * This method retrieves the value of task parameters from the workflow and
-	 * stores them in local protected attributes. Some parameter {@link String}
-	 * are also interpreted by this method (eg. {@link #verbose},
-	 * {@link #allocators}).
-	 * 
-	 * @param parameters
-	 *            the parameter {@link Map} given to the
-	 *            {@link #execute(Map, Map, org.eclipse.core.runtime.IProgressMonitor, String, org.ietr.dftools.workflow.elements.Workflow)
-	 *            execute()} method.
-	 */
-	protected void init(Map<String, String> parameters) {
-		// Retrieve parameters from workflow
-		valueVerbose = parameters.get(PARAM_VERBOSE);
-		valueAllocators = parameters.get(PARAM_ALLOCATORS);
-		valueXFitOrder = parameters.get(PARAM_XFIT_ORDER);
-		valueNbShuffle = parameters.get(PARAM_NB_SHUFFLE);
-		valueDistribution = parameters.get(PARAM_DISTRIBUTION_POLICY);
+  /** The Constant VALUE_ALLOCATORS_FIRST_FIT. */
+  public static final String VALUE_ALLOCATORS_FIRST_FIT = "FirstFit";
 
-		verbose = valueVerbose.equals(VALUE_TRUE);
+  /** The Constant VALUE_ALLOCATORS_DE_GREEF. */
+  public static final String VALUE_ALLOCATORS_DE_GREEF = "DeGreef";
 
-		// Correct default distribution policy
-		if (valueDistribution.equals(VALUE_DISTRIBUTION_DEFAULT)) {
-			valueDistribution = VALUE_DISTRIBUTION_SHARED_ONLY;
-		}
+  /** The Constant PARAM_XFIT_ORDER. */
+  public static final String PARAM_XFIT_ORDER = "Best/First Fit order";
 
-		// Retrieve the alignment param
-		valueAlignment = parameters.get(PARAM_ALIGNMENT);
+  /** The Constant VALUE_XFIT_ORDER_DEFAULT. */
+  public static final String VALUE_XFIT_ORDER_DEFAULT = "{?,?,...} C {ApproxStableSet, ExactStableSet, LargestFirst, Shuffle, Scheduling}";
 
-		switch (valueAlignment.substring(0, Math.min(valueAlignment.length(), 7))) {
-		case VALUE_ALIGNEMENT_NONE:
-			alignment = -1;
-			break;
-		case VALUE_ALIGNEMENT_DATA:
-			alignment = 0;
-			break;
-		case VALUE_ALIGNEMENT_FIXED:
-			String fixedValue = valueAlignment.substring(7);
-			alignment = Integer.parseInt(fixedValue);
-			break;
-		default:
-			alignment = -1;
-		}
-		if (verbose) {
-			logger.log(Level.INFO, "Allocation with alignment:=" + alignment + ".");
-		}
+  /** The Constant VALUE_XFIT_ORDER_APPROX_STABLE_SET. */
+  public static final String VALUE_XFIT_ORDER_APPROX_STABLE_SET = "ApproxStableSet";
 
-		// Retrieve the ordering policies to test
-		nbShuffle = 0;
-		ordering = new ArrayList<Order>();
-		if (valueXFitOrder.contains(VALUE_XFIT_ORDER_SHUFFLE)) {
-			nbShuffle = Integer.decode(valueNbShuffle);
-			ordering.add(Order.SHUFFLE);
-		}
-		if (valueXFitOrder.contains(VALUE_XFIT_ORDER_LARGEST_FIRST)) {
-			ordering.add(Order.LARGEST_FIRST);
-		}
-		if (valueXFitOrder.contains(VALUE_XFIT_ORDER_APPROX_STABLE_SET)) {
-			ordering.add(Order.STABLE_SET);
-		}
-		if (valueXFitOrder.contains(VALUE_XFIT_ORDER_EXACT_STABLE_SET)) {
-			ordering.add(Order.EXACT_STABLE_SET);
-		}
-		if (valueXFitOrder.contains(VALUE_XFIT_ORDER_SCHEDULING)) {
-			ordering.add(Order.SCHEDULING);
-		}
+  /** The Constant VALUE_XFIT_ORDER_LARGEST_FIRST. */
+  public static final String VALUE_XFIT_ORDER_LARGEST_FIRST = "LargestFirst";
 
-	}
+  /** The Constant VALUE_XFIT_ORDER_SHUFFLE. */
+  public static final String VALUE_XFIT_ORDER_SHUFFLE = "Shuffle";
 
-	/**
-	 * Based on allocators specified in the task parameters, and stored in the
-	 * {@link #allocators} attribute, this method instantiate the
-	 * {@link MemoryAllocator} that are to be executed on the given
-	 * {@link MemoryExclusionGraph MEG}.
-	 * 
-	 * @param memEx
-	 *            the {@link MemoryExclusionGraph MEG} to allocate.
-	 */
-	protected void createAllocators(MemoryExclusionGraph memEx) {
-		// Create all allocators
-		allocators = new ArrayList<MemoryAllocator>();
-		if (valueAllocators.contains(VALUE_ALLOCATORS_BASIC)) {
-			MemoryAllocator alloc = new BasicAllocator(memEx);
-			alloc.setAlignment(alignment);
-			allocators.add(alloc);
-		}
-		if (valueAllocators.contains(VALUE_ALLOCATORS_FIRST_FIT)) {
-			for (Order o : ordering) {
-				OrderedAllocator alloc = new FirstFitAllocator(memEx);
-				alloc.setNbShuffle(nbShuffle);
-				alloc.setOrder(o);
-				alloc.setAlignment(alignment);
-				allocators.add(alloc);
-			}
-		}
-		if (valueAllocators.contains(VALUE_ALLOCATORS_BEST_FIT)) {
-			for (Order o : ordering) {
-				OrderedAllocator alloc = new BestFitAllocator(memEx);
-				alloc.setNbShuffle(nbShuffle);
-				alloc.setOrder(o);
-				alloc.setAlignment(alignment);
-				allocators.add(alloc);
-			}
-		}
-		if (valueAllocators.contains(VALUE_ALLOCATORS_DE_GREEF)) {
-			MemoryAllocator alloc = new DeGreefAllocator(memEx);
-			alloc.setAlignment(alignment);
-			allocators.add(alloc);
-		}
-	}
+  /** The Constant VALUE_XFIT_ORDER_EXACT_STABLE_SET. */
+  public static final String VALUE_XFIT_ORDER_EXACT_STABLE_SET = "ExactStableSet";
 
-	protected void allocateWith(MemoryAllocator allocator) throws WorkflowException {
-		long tStart, tFinish;
-		String sAllocator = allocator.getClass().getSimpleName();
-		if (allocator instanceof OrderedAllocator) {
-			sAllocator += "(" + ((OrderedAllocator) allocator).getOrder();
-			if (((OrderedAllocator) allocator).getOrder() == Order.SHUFFLE) {
-				sAllocator += ":" + ((OrderedAllocator) allocator).getNbShuffle();
-			}
-			sAllocator += ")";
-		}
+  /** The Constant VALUE_XFIT_ORDER_SCHEDULING. */
+  public static final String VALUE_XFIT_ORDER_SCHEDULING = "Scheduling";
 
-		if (verbose) {
-			logger.log(Level.INFO, "Starting allocation with " + sAllocator);
-		}
+  /** The Constant PARAM_NB_SHUFFLE. */
+  public static final String PARAM_NB_SHUFFLE = "Nb of Shuffling Tested";
 
-		tStart = System.currentTimeMillis();
-		allocator.allocate();
-		tFinish = System.currentTimeMillis();
+  /** The Constant VALUE_NB_SHUFFLE_DEFAULT. */
+  public static final String VALUE_NB_SHUFFLE_DEFAULT = "10";
 
-		// Check the correct allocation
-		try {
-			if (!allocator.checkAllocation().isEmpty()) {
-				throw new WorkflowException("The obtained allocation was not valid because mutually"
-						+ " exclusive memory objects have overlapping address ranges."
-						+ " The allocator is not working.\n" + allocator.checkAllocation());
-			}
-		} catch (RuntimeException e) {
-			throw new WorkflowException(e.getMessage());
-		}
+  /** The Constant PARAM_ALIGNMENT. */
+  public static final String PARAM_ALIGNMENT = "Data alignment";
 
-		if (!allocator.checkAlignment().isEmpty()) {
-			throw new WorkflowException("The obtained allocation was not valid because there were"
-					+ " unaligned memory objects. The allocator is not working.\n" + allocator.checkAlignment());
-		}
+  /** The Constant VALUE_ALIGNEMENT_NONE. */
+  public static final String VALUE_ALIGNEMENT_NONE = "None";
 
-		String unit = "bytes";
-		float size = allocator.getMemorySize();
-		if (size > 1024) {
-			size /= 1024.0;
-			unit = "kBytes";
-			if (size > 1024) {
-				size /= 1024.0;
-				unit = "MBytes";
-				if (size > 1024) {
-					size /= 1024.0;
-					unit = "GBytes";
-				}
-			}
-		}
+  /** The Constant VALUE_ALIGNEMENT_DATA. */
+  public static final String VALUE_ALIGNEMENT_DATA = "Data";
 
-		String log = sAllocator + " allocates " + size + " " + unit + " in " + (tFinish - tStart) + " ms.";
+  /** The Constant VALUE_ALIGNEMENT_FIXED. */
+  public static final String VALUE_ALIGNEMENT_FIXED = "Fixed:=";
 
-		if (allocator instanceof OrderedAllocator && ((OrderedAllocator) allocator).getOrder() == Order.SHUFFLE) {
-			((OrderedAllocator) allocator).setPolicy(Policy.worst);
-			log += " worst: " + allocator.getMemorySize();
+  /** The Constant VALUE_ALIGNEMENT_DEFAULT. */
+  public static final String VALUE_ALIGNEMENT_DEFAULT = "? C {None, Data, Fixed:=<nbBytes>}";
 
-			((OrderedAllocator) allocator).setPolicy(Policy.mediane);
-			log += "(med: " + allocator.getMemorySize();
+  /** The Constant PARAM_DISTRIBUTION_POLICY. */
+  public static final String PARAM_DISTRIBUTION_POLICY = "Distribution";
 
-			((OrderedAllocator) allocator).setPolicy(Policy.average);
-			log += " avg: " + allocator.getMemorySize() + ")";
+  /** The Constant VALUE_DISTRIBUTION_SHARED_ONLY. */
+  public static final String VALUE_DISTRIBUTION_SHARED_ONLY = "SharedOnly";
 
-			((OrderedAllocator) allocator).setPolicy(Policy.best);
-		}
+  /** The Constant VALUE_DISTRIBUTION_DISTRIBUTED_ONLY. */
+  public static final String VALUE_DISTRIBUTION_DISTRIBUTED_ONLY = "DistributedOnly";
 
-		logger.log(Level.INFO, log);
-	}
+  /** The Constant VALUE_DISTRIBUTION_MIXED. */
+  public static final String VALUE_DISTRIBUTION_MIXED        = "Mixed";
+  /**
+   * Mixed Policy, but preserving all merged operations.
+   */
+  public static final String VALUE_DISTRIBUTION_MIXED_MERGED = "MixedMerged";
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put(PARAM_VERBOSE, VALUE_TRUE_FALSE_DEFAULT);
-		parameters.put(PARAM_ALLOCATORS, VALUE_ALLOCATORS_DEFAULT);
-		parameters.put(PARAM_XFIT_ORDER, VALUE_XFIT_ORDER_DEFAULT);
-		parameters.put(PARAM_NB_SHUFFLE, VALUE_NB_SHUFFLE_DEFAULT);
-		parameters.put(PARAM_ALIGNMENT, VALUE_ALIGNEMENT_DEFAULT);
-		parameters.put(PARAM_DISTRIBUTION_POLICY, VALUE_DISTRIBUTION_DEFAULT);
-		return parameters;
-	}
+  /** The Constant VALUE_DISTRIBUTION_DEFAULT. */
+  public static final String VALUE_DISTRIBUTION_DEFAULT = "? C {" + AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY + ", "
+      + AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED + ", " + AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY + ", "
+      + AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED + "}";
+
+  /** The logger. */
+  // Rem: Logger is used to display messages in the console
+  protected Logger logger = WorkflowLogger.getLogger();
+
+  /** The value verbose. */
+  // Shared attributes
+  protected String valueVerbose;
+
+  /** The value allocators. */
+  protected String valueAllocators;
+
+  /** The value X fit order. */
+  protected String valueXFitOrder;
+
+  /** The value nb shuffle. */
+  protected String valueNbShuffle;
+
+  /** The value distribution. */
+  protected String valueDistribution;
+
+  /** The verbose. */
+  protected boolean verbose;
+
+  /** The value alignment. */
+  protected String valueAlignment;
+
+  /** The alignment. */
+  protected int alignment;
+
+  /** The nb shuffle. */
+  protected int nbShuffle;
+
+  /** The ordering. */
+  protected List<Order> ordering;
+
+  /** The allocators. */
+  protected List<MemoryAllocator> allocators;
+
+  /**
+   * This method retrieves the value of task parameters from the workflow and stores them in local protected attributes. Some parameter {@link String} are also
+   * interpreted by this method (eg. {@link #verbose}, {@link #allocators}).
+   *
+   * @param parameters
+   *          the parameter {@link Map} given to the
+   *          {@link #execute(Map, Map, org.eclipse.core.runtime.IProgressMonitor, String, org.ietr.dftools.workflow.elements.Workflow) execute()} method.
+   */
+  protected void init(final Map<String, String> parameters) {
+    // Retrieve parameters from workflow
+    this.valueVerbose = parameters.get(AbstractMemoryAllocatorTask.PARAM_VERBOSE);
+    this.valueAllocators = parameters.get(AbstractMemoryAllocatorTask.PARAM_ALLOCATORS);
+    this.valueXFitOrder = parameters.get(AbstractMemoryAllocatorTask.PARAM_XFIT_ORDER);
+    this.valueNbShuffle = parameters.get(AbstractMemoryAllocatorTask.PARAM_NB_SHUFFLE);
+    this.valueDistribution = parameters.get(AbstractMemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY);
+
+    this.verbose = this.valueVerbose.equals(AbstractMemoryAllocatorTask.VALUE_TRUE);
+
+    // Correct default distribution policy
+    if (this.valueDistribution.equals(AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT)) {
+      this.valueDistribution = AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY;
+    }
+
+    // Retrieve the alignment param
+    this.valueAlignment = parameters.get(AbstractMemoryAllocatorTask.PARAM_ALIGNMENT);
+
+    switch (this.valueAlignment.substring(0, Math.min(this.valueAlignment.length(), 7))) {
+      case VALUE_ALIGNEMENT_NONE:
+        this.alignment = -1;
+        break;
+      case VALUE_ALIGNEMENT_DATA:
+        this.alignment = 0;
+        break;
+      case VALUE_ALIGNEMENT_FIXED:
+        final String fixedValue = this.valueAlignment.substring(7);
+        this.alignment = Integer.parseInt(fixedValue);
+        break;
+      default:
+        this.alignment = -1;
+    }
+    if (this.verbose) {
+      this.logger.log(Level.INFO, "Allocation with alignment:=" + this.alignment + ".");
+    }
+
+    // Retrieve the ordering policies to test
+    this.nbShuffle = 0;
+    this.ordering = new ArrayList<>();
+    if (this.valueXFitOrder.contains(AbstractMemoryAllocatorTask.VALUE_XFIT_ORDER_SHUFFLE)) {
+      this.nbShuffle = Integer.decode(this.valueNbShuffle);
+      this.ordering.add(Order.SHUFFLE);
+    }
+    if (this.valueXFitOrder.contains(AbstractMemoryAllocatorTask.VALUE_XFIT_ORDER_LARGEST_FIRST)) {
+      this.ordering.add(Order.LARGEST_FIRST);
+    }
+    if (this.valueXFitOrder.contains(AbstractMemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET)) {
+      this.ordering.add(Order.STABLE_SET);
+    }
+    if (this.valueXFitOrder.contains(AbstractMemoryAllocatorTask.VALUE_XFIT_ORDER_EXACT_STABLE_SET)) {
+      this.ordering.add(Order.EXACT_STABLE_SET);
+    }
+    if (this.valueXFitOrder.contains(AbstractMemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING)) {
+      this.ordering.add(Order.SCHEDULING);
+    }
+
+  }
+
+  /**
+   * Based on allocators specified in the task parameters, and stored in the {@link #allocators} attribute, this method instantiate the {@link MemoryAllocator}
+   * that are to be executed on the given {@link MemoryExclusionGraph MEG}.
+   *
+   * @param memEx
+   *          the {@link MemoryExclusionGraph MEG} to allocate.
+   */
+  protected void createAllocators(final MemoryExclusionGraph memEx) {
+    // Create all allocators
+    this.allocators = new ArrayList<>();
+    if (this.valueAllocators.contains(AbstractMemoryAllocatorTask.VALUE_ALLOCATORS_BASIC)) {
+      final MemoryAllocator alloc = new BasicAllocator(memEx);
+      alloc.setAlignment(this.alignment);
+      this.allocators.add(alloc);
+    }
+    if (this.valueAllocators.contains(AbstractMemoryAllocatorTask.VALUE_ALLOCATORS_FIRST_FIT)) {
+      for (final Order o : this.ordering) {
+        final OrderedAllocator alloc = new FirstFitAllocator(memEx);
+        alloc.setNbShuffle(this.nbShuffle);
+        alloc.setOrder(o);
+        alloc.setAlignment(this.alignment);
+        this.allocators.add(alloc);
+      }
+    }
+    if (this.valueAllocators.contains(AbstractMemoryAllocatorTask.VALUE_ALLOCATORS_BEST_FIT)) {
+      for (final Order o : this.ordering) {
+        final OrderedAllocator alloc = new BestFitAllocator(memEx);
+        alloc.setNbShuffle(this.nbShuffle);
+        alloc.setOrder(o);
+        alloc.setAlignment(this.alignment);
+        this.allocators.add(alloc);
+      }
+    }
+    if (this.valueAllocators.contains(AbstractMemoryAllocatorTask.VALUE_ALLOCATORS_DE_GREEF)) {
+      final MemoryAllocator alloc = new DeGreefAllocator(memEx);
+      alloc.setAlignment(this.alignment);
+      this.allocators.add(alloc);
+    }
+  }
+
+  /**
+   * Allocate with.
+   *
+   * @param allocator
+   *          the allocator
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+  protected void allocateWith(final MemoryAllocator allocator) throws WorkflowException {
+    long tStart;
+    String sAllocator = allocator.getClass().getSimpleName();
+    if (allocator instanceof OrderedAllocator) {
+      sAllocator += "(" + ((OrderedAllocator) allocator).getOrder();
+      if (((OrderedAllocator) allocator).getOrder() == Order.SHUFFLE) {
+        sAllocator += ":" + ((OrderedAllocator) allocator).getNbShuffle();
+      }
+      sAllocator += ")";
+    }
+
+    if (this.verbose) {
+      this.logger.log(Level.INFO, "Starting allocation with " + sAllocator);
+    }
+
+    tStart = System.currentTimeMillis();
+    allocator.allocate();
+    final long tFinish = System.currentTimeMillis();
+
+    // Check the correct allocation
+    try {
+      if (!allocator.checkAllocation().isEmpty()) {
+        throw new WorkflowException("The obtained allocation was not valid because mutually" + " exclusive memory objects have overlapping address ranges."
+            + " The allocator is not working.\n" + allocator.checkAllocation());
+      }
+    } catch (final RuntimeException e) {
+      throw new WorkflowException(e.getMessage());
+    }
+
+    if (!allocator.checkAlignment().isEmpty()) {
+      throw new WorkflowException("The obtained allocation was not valid because there were" + " unaligned memory objects. The allocator is not working.\n"
+          + allocator.checkAlignment());
+    }
+
+    String log = computeLog(allocator, tStart, sAllocator, tFinish);
+
+    if ((allocator instanceof OrderedAllocator) && (((OrderedAllocator) allocator).getOrder() == Order.SHUFFLE)) {
+      ((OrderedAllocator) allocator).setPolicy(Policy.worst);
+      log += " worst: " + allocator.getMemorySize();
+
+      ((OrderedAllocator) allocator).setPolicy(Policy.mediane);
+      log += "(med: " + allocator.getMemorySize();
+
+      ((OrderedAllocator) allocator).setPolicy(Policy.average);
+      log += " avg: " + allocator.getMemorySize() + ")";
+
+      ((OrderedAllocator) allocator).setPolicy(Policy.best);
+    }
+
+    this.logger.log(Level.INFO, log);
+  }
+
+  private String computeLog(final MemoryAllocator allocator, final long tStart, final String sAllocator, final long tFinish) {
+    String unit = "bytes";
+    float size = allocator.getMemorySize();
+    if (size > 1024) {
+      size /= 1024.0;
+      unit = "kBytes";
+      if (size > 1024) {
+        size /= 1024.0;
+        unit = "MBytes";
+        if (size > 1024) {
+          size /= 1024.0;
+          unit = "GBytes";
+        }
+      }
+    }
+
+    final String log = sAllocator + " allocates " + size + " " + unit + " in " + (tFinish - tStart) + " ms.";
+    return log;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new LinkedHashMap<>();
+    parameters.put(AbstractMemoryAllocatorTask.PARAM_VERBOSE, AbstractMemoryAllocatorTask.VALUE_TRUE_FALSE_DEFAULT);
+    parameters.put(AbstractMemoryAllocatorTask.PARAM_ALLOCATORS, AbstractMemoryAllocatorTask.VALUE_ALLOCATORS_DEFAULT);
+    parameters.put(AbstractMemoryAllocatorTask.PARAM_XFIT_ORDER, AbstractMemoryAllocatorTask.VALUE_XFIT_ORDER_DEFAULT);
+    parameters.put(AbstractMemoryAllocatorTask.PARAM_NB_SHUFFLE, AbstractMemoryAllocatorTask.VALUE_NB_SHUFFLE_DEFAULT);
+    parameters.put(AbstractMemoryAllocatorTask.PARAM_ALIGNMENT, AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
+    parameters.put(AbstractMemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY, AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
+    return parameters;
+  }
 }
