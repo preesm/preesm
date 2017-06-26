@@ -4,14 +4,9 @@ Bundle-Name: Clustering
 Bundle-SymbolicName: org.ietr.preesm.clustering;singleton:=true
 Bundle-Version: 2.2.10.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: org.ietr.dftools.workflow,
- org.ietr.dftools.algorithm,
- org.clojars.gilesc.jgrapht,
- org.eclipse.core.runtime,
+Require-Bundle: org.eclipse.core.runtime,
+ org.beanshell.bsh;bundle-version="2.1.8",
  org.ietr.preesm.core,
- org.ietr.preesm.architecture,
- org.ietr.dftools.architecture,
  org.ietr.preesm.mapper,
- org.ietr.preesm.memory,
- org.beanshell.bsh;bundle-version="2.1.8"
+ org.ietr.preesm.memory
 Export-Package: org.ietr.preesm.clustering

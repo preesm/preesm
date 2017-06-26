@@ -6,24 +6,18 @@ Bundle-ClassPath: .
 Bundle-Vendor: IETR/INSA Rennes
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.core.resources,
  org.eclipse.emf.ecore.xmi,
  org.eclipse.xtend.lib;bundle-version="2.11.0",
- org.ietr.dftools.algorithm,
- org.ietr.dftools.workflow,
- org.ietr.dftools.architecture,
  org.ietr.preesm.memory,
  org.ietr.preesm.core,
- org.ietr.preesm.codegen;bundle-version="1.0.0",
- org.clojars.gilesc.jgrapht;bundle-version="0.8.2",
- org.ietr.preesm.algorithm;bundle-version="2.2.9",
- org.ietr.preesm.clustering
+ org.ietr.preesm.codegen,
+ org.ietr.preesm.clustering,
+ org.ietr.preesm.mapper
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.ietr.preesm.codegen.xtend.model.codegen,
  org.ietr.preesm.codegen.xtend.model.codegen.impl,
  org.ietr.preesm.codegen.xtend.model.codegen.util,
  org.ietr.preesm.codegen.xtend.task
 Bundle-Version: 2.2.10.qualifier
-Import-Package: org.ietr.preesm.mapper.model
 

@@ -5,15 +5,11 @@ Bundle-SymbolicName: org.ietr.preesm.evaluator;singleton:=true
 Bundle-Version: 2.2.10.qualifier
 Bundle-Activator: org.ietr.preesm.evaluator.Activator
 Require-Bundle: org.eclipse.core.runtime,
- org.ietr.dftools.workflow,
- org.ietr.dftools.algorithm,
+ org.gnu.glpk.java;bundle-version="1.0.32",
  org.ietr.preesm.core,
- org.clojars.gilesc.jgrapht;bundle-version="0.8.2",
- org.gnu.glpk.java;bundle-version="1.0.32"
+ org.ietr.preesm.algorithm
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Export-Package: org.ietr.preesm.evaluator
-Import-Package: org.ietr.preesm.algorithm.exportXml,
- org.ietr.preesm.algorithm.importSdf3Xml
 Bundle-Vendor: IETR/INSA Rennes

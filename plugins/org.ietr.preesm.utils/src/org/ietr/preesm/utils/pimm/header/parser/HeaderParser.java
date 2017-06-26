@@ -48,6 +48,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.emf.common.util.EList;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Direction;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
@@ -176,7 +177,8 @@ public class HeaderParser {
           if ((matcher.group(3) == null) && (matcher.group(5) == null)) {
             fp.setIsConfigurationParameter(true);
           }
-          funcProto.getParameters().add(fp);
+          final EList<FunctionParameter> protoParameters = funcProto.getParameters();
+          protoParameters.add(fp);
         }
       }
       result.add(funcProto);

@@ -4,9 +4,6 @@ Bundle-Name: RCP Utils
 Bundle-SymbolicName: org.ietr.preesm.rcp.utils;singleton:=true
 Bundle-Version: 2.2.10.qualifier
 Bundle-Vendor: IETR/INSA Rennes
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.ui,
- org.eclipse.ui.workbench,
- org.ietr.preesm.ui;bundle-version="2.2.6"
+Require-Bundle: org.ietr.preesm.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.eclipse.ui.internal.ide

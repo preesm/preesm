@@ -6,13 +6,9 @@ Bundle-Version: 2.2.10.qualifier
 Bundle-Activator: org.ietr.preesm.pimm.algorithm.Activator
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.core.runtime,
- org.ietr.dftools.workflow;bundle-version="1.1.4",
- org.ietr.preesm.core,
- org.ietr.preesm.experiment.model,
  org.eclipse.core.resources,
- org.ietr.dftools.algorithm,
- org.ietr.preesm.codegen,
- org.eclipse.emf.ecore
+ org.ietr.preesm.core,
+ org.ietr.preesm.codegen
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.ietr.preesm.pimm.algorithm.checker,

@@ -7,16 +7,16 @@ Bundle-Activator: org.ietr.preesm.core.Activator
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.core.resources,
  org.eclipse.core.runtime,
- org.ietr.dftools.architecture;bundle-version="0.0.1",
- org.ietr.dftools.algorithm;bundle-version="0.0.1",
- org.ietr.preesm.experiment.model;bundle-version="1.0.0",
- org.ietr.dftools.workflow,
- org.eclipse.jface,
  org.eclipse.ui.workbench,
- org.ietr.preesm.utils,
- org.clojars.gilesc.jgrapht;bundle-version="0.8.2",
+ org.eclipse.jface,
+ org.clojars.gilesc.jgrapht;bundle-version="0.8.2";visibility:=reexport,
  net.sourceforge.jexcelapi.jxl;bundle-version="2.6.10",
- jep;bundle-version="2.40.0"
+ jep;bundle-version="2.40.0",
+ org.ietr.dftools.architecture;visibility:=reexport,
+ org.ietr.dftools.algorithm;visibility:=reexport,
+ org.ietr.dftools.workflow;visibility:=reexport,
+ org.ietr.preesm.experiment.model;visibility:=reexport,
+ org.ietr.preesm.utils;visibility:=reexport
 Bundle-ClassPath: .
 Export-Package: org.ietr.preesm.core,
  org.ietr.preesm.core.algorithm.visitors,
