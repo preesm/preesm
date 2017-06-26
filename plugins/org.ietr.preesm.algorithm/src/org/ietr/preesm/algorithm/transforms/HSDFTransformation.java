@@ -3,7 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Julien_Hascoet <jhascoet@kalray.eu> (2016)
+ * Julien Hascoet <jhascoet@kalray.eu> (2016)
  * Jonathan Piat <jpiat@laas.fr> (2009 - 2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2016)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)

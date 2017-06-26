@@ -1,9 +1,8 @@
-package org.ietr.preesm.clustering;
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Julien_Hascoet <jhascoet@kalray.eu> (2017)
+ * Julien Hascoet <jhascoet@kalray.eu> (2017)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,6 +33,7 @@ package org.ietr.preesm.clustering;
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
+package org.ietr.preesm.clustering;
 
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 

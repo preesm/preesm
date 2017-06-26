@@ -3,7 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * blaunay <bapt.launay@gmail.com> (2015)
- * Julien_Hascoet <jhascoet@kalray.eu> (2016)
+ * Julien Hascoet <jhascoet@kalray.eu> (2016)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
  * Yaset Oliva <yaset.oliva@insa-rennes.fr> (2013)
  *
