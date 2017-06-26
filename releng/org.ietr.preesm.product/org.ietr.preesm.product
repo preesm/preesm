@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Preesm" uid="org.ietr.preesm.product" id="org.ietr.preesm.rcp.utils.product" application="org.eclipse.ui.ide.workbench" version="2.3.0" useFeatures="true" includeLaunchers="true">
+<product name="Preesm" uid="org.ietr.preesm.product" id="org.ietr.preesm.rcp.utils.product" application="org.eclipse.ui.ide.workbench" version="2.3.0.qualifier" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
