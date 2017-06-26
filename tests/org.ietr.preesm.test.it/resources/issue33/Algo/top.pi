@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">top</data>
+        <node expr="4" id="size" kind="param"/>
+        <node id="HierarchicalComputeActor" kind="actor">
+            <data key="graph_desc">Algo/compute_hierarchical.pi</data>
+            <port kind="cfg_input" name="sizeFromTop"/>
+            <port annotation="NONE" expr="sizeFromTop" kind="input" name="in"/>
+            <port annotation="NONE" expr="sizeFromTop" kind="output" name="out"/>
+        </node>
+        <node id="Read" kind="actor">
+            <data key="graph_desc">Code/include/read.h</data>
+            <loop name="read">
+                <param direction="OUT" isConfig="false" name="out" type="char "/>
+            </loop>
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="output" name="out"/>
+        </node>
+        <node id="Write" kind="actor">
+            <data key="graph_desc">Code/include/write.h</data>
+            <loop name="write">
+                <param direction="IN" isConfig="false" name="in" type="char "/>
+            </loop>
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+        </node>
+        <edge kind="fifo" source="Read" sourceport="out"
+            target="HierarchicalComputeActor" targetport="in" type="char"/>
+        <edge kind="fifo" source="HierarchicalComputeActor"
+            sourceport="out" target="Write" targetport="in" type="char"/>
+        <edge kind="dependency" source="size" target="Read" targetport="size"/>
+        <edge kind="dependency" source="size" target="Write" targetport="size"/>
+        <edge kind="dependency" source="size"
+            target="HierarchicalComputeActor" targetport="sizeFromTop"/>
+    </graph>
+</graphml>

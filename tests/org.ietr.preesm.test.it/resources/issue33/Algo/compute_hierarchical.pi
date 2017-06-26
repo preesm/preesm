@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">compute_hierarchical</data>
+        <node id="sizeFromTop" kind="cfg_in_iface"/>
+        <node expr="2" id="size" kind="param"/>
+        <node id="in" kind="src">
+            <port annotation="NONE" expr="sizeFromTop" kind="output" name="in"/>
+        </node>
+        <node id="out" kind="snk">
+            <port annotation="NONE" expr="size*2" kind="input" name="out"/>
+        </node>
+        <node id="compute" kind="actor">
+            <data key="graph_desc">Code/include/compute_nohierarchy.h</data>
+            <loop name="compute">
+                <param direction="IN" isConfig="false" name="in" type="char "/>
+                <param direction="OUT" isConfig="false" name="out" type="char "/>
+            </loop>
+            <port kind="cfg_input" name="dataSize"/>
+            <port annotation="NONE" expr="dataSize" kind="input" name="in"/>
+            <port annotation="NONE" expr="dataSize" kind="output" name="out"/>
+        </node>
+        <edge kind="fifo" source="in" sourceport="in" target="compute"
+            targetport="in" type="char"/>
+        <edge kind="fifo" source="compute" sourceport="out" target="out"
+            targetport="out" type="char"/>
+        <edge kind="dependency" source="sizeFromTop" target="in"/>
+        <edge kind="dependency" source="sizeFromTop" target="compute" targetport="dataSize"/>
+        <edge kind="dependency" source="size" target="out"/>
+    </graph>
+</graphml>

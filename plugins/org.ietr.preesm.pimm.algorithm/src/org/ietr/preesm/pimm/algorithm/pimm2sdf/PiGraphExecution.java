@@ -40,11 +40,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class corresponds to one execution of a PiGraph with given values for each parameters.
  *
@@ -62,7 +62,7 @@ public class PiGraphExecution {
   private final int executionNumber;
 
   /** The parameter values. */
-  private final Map<String, List<Integer>> parameterValues;
+  private final Map<Parameter, List<Integer>> parameterValues;
 
   /**
    * Instantiates a new pi graph execution.
@@ -72,7 +72,7 @@ public class PiGraphExecution {
    * @param values
    *          the values
    */
-  public PiGraphExecution(final PiGraph graph, final Map<String, List<Integer>> values) {
+  public PiGraphExecution(final PiGraph graph, final Map<Parameter, List<Integer>> values) {
     this.executedPiGraph = graph;
     this.parameterValues = values;
     this.executionLabel = "";
@@ -91,7 +91,7 @@ public class PiGraphExecution {
    * @param number
    *          the number
    */
-  public PiGraphExecution(final PiGraph graph, final Map<String, List<Integer>> values, final String label, final int number) {
+  public PiGraphExecution(final PiGraph graph, final Map<Parameter, List<Integer>> values, final String label, final int number) {
     this.executedPiGraph = graph;
     this.parameterValues = values;
     this.executionLabel = label;
@@ -106,7 +106,7 @@ public class PiGraphExecution {
    * @return the values
    */
   public List<Integer> getValues(final Parameter p) {
-    return this.parameterValues.get(p.getName());
+    return this.parameterValues.get(p);
   }
 
   /**
@@ -145,9 +145,11 @@ public class PiGraphExecution {
    */
   public int getNumberOfInnerExecutions(final PiGraph subgraph) {
     int maxNumberOfValues = 0;
-    for (final String s : this.parameterValues.keySet()) {
-      if (getSubgraphParametersNames(subgraph).contains(s)) {
-        final int size = this.parameterValues.get(s).size();
+
+    for (final Entry<Parameter, List<Integer>> param : this.parameterValues.entrySet()) {
+      final Parameter s = param.getKey();
+      if (getSubgraphParametersNames(subgraph).contains(s.getName())) {
+        final int size = param.getValue().size();
         if (size > maxNumberOfValues) {
           maxNumberOfValues = size;
         }
@@ -166,12 +168,13 @@ public class PiGraphExecution {
    * @return the pi graph execution
    */
   public PiGraphExecution extractInnerExecution(final PiGraph subgraph, final int selector) {
-    final Map<String, List<Integer>> innerParameterValues = new LinkedHashMap<>();
-    for (final String s : this.parameterValues.keySet()) {
-      if (getSubgraphParametersNames(subgraph).contains(s)) {
-        final int size = this.parameterValues.get(s).size();
+    final Map<Parameter, List<Integer>> innerParameterValues = new LinkedHashMap<>();
+    for (final Entry<Parameter, List<Integer>> param : this.parameterValues.entrySet()) {
+      final Parameter s = param.getKey();
+      if (getSubgraphParametersNames(subgraph).contains(s.getName())) {
+        final int size = param.getValue().size();
         final List<Integer> value = new ArrayList<>();
-        value.add(this.parameterValues.get(s).get(selector % size));
+        value.add(param.getValue().get(selector % size));
         innerParameterValues.put(s, value);
 
       } else {

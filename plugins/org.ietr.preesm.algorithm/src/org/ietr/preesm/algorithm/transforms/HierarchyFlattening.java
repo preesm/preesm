@@ -43,7 +43,6 @@ package org.ietr.preesm.algorithm.transforms;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.transformations.IbsdfFlattener;
@@ -55,7 +54,6 @@ import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class used to flatten the hierarchy of a given graph.
  *
@@ -63,6 +61,8 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
  * @author mpelcat
  */
 public class HierarchyFlattening extends AbstractTaskImplementation {
+
+  private static final WorkflowLogger LOGGER = WorkflowLogger.getLogger();
 
   /*
    * (non-Javadoc)
@@ -85,31 +85,29 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
       depth = 1;
     }
 
-    final Logger logger = WorkflowLogger.getLogger();
-
     if (depth == 0) {
       outputs.put("SDF", algorithm.clone()); /* we now extract repetition vector into non-flattened hierarchical actors. */
-      logger.log(Level.INFO, "flattening depth = 0: no flattening");
+      LOGGER.log(Level.INFO, "flattening depth = 0: no flattening");
       return outputs;
     }
 
-    logger.setLevel(Level.FINEST);
-    VisitorOutput.setLogger(logger);
+    LOGGER.setLevel(Level.FINEST);
+    VisitorOutput.setLogger(LOGGER);
     final ConsistencyChecker checkConsistent = new ConsistencyChecker();
     if (checkConsistent.verifyGraph(algorithm)) {
-      logger.log(Level.FINER, "flattening application " + algorithm.getName() + " at level " + depth);
+      LOGGER.log(Level.FINER, "flattening application " + algorithm.getName() + " at level " + depth);
 
       final IbsdfFlattener flattener = new IbsdfFlattener(algorithm, depth);
-      VisitorOutput.setLogger(logger);
+      VisitorOutput.setLogger(LOGGER);
       try {
-        if (algorithm.validateModel(WorkflowLogger.getLogger())) {
+        final boolean validateModel = algorithm.validateModel(LOGGER);
+        if (validateModel) {
           try {
             flattener.flattenGraph();
-
           } catch (final SDF4JException e) {
-            throw (new WorkflowException(e.getMessage()));
+            throw (new WorkflowException(e.getMessage(), e));
           }
-          logger.log(Level.INFO, "Flattening complete with depth " + depth);
+          LOGGER.log(Level.INFO, "Flattening complete with depth " + depth);
           final SDFGraph resultGraph = flattener.getFlattenedGraph();// flatHier.getOutput();
 
           // for (final SDFEdge e : resultGraph.edgeSet()) {
@@ -118,13 +116,14 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
 
           outputs.put("SDF", resultGraph);
         } else {
-          throw (new WorkflowException("Graph not valid, not schedulable"));
+          final String message = "Could not schedule the Graph because its model is not valid.";
+          throw (new WorkflowException(message));
         }
       } catch (final SDF4JException e) {
-        throw (new WorkflowException(e.getMessage()));
+        throw (new WorkflowException(e.getMessage(), e));
       }
     } else {
-      logger.log(Level.SEVERE, "Inconsistent Hierarchy, graph can't be flattened");
+      LOGGER.log(Level.SEVERE, "Inconsistent Hierarchy, graph can't be flattened");
       outputs.put("SDF", algorithm.clone());
       throw (new WorkflowException("Inconsistent Hierarchy, graph can't be flattened"));
     }
