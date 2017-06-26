@@ -1,74 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version 2.2.10
-*XXXX.XX.XX*
-
-### New Feature
-* Add clustering
-* Add integration test API prototype
-* Add Scheduling checker
-* Add new entry in Preesm menu to run Workflows
-* Add menus entries in the editor context menu
-
-### Changes
-* Update Spider codegen
-* Update MPPA codegen
-* For XTend version to 2.11+
-* Use feature import instead of inclusion
-* Add discovery sites in dev feature
-* Remove unsupported target environments
-* Update Checkstyle config file path in parent POM
-* Add Eclipse profile in parent POM to disable m2e configuration outside Eclipse
-* Update wrapper scripts
-* Cleanup releng files
-* Update licensing
-* Update headers
-* Remove use of composite P2 repositories
-* Add Jenkinsfile for Multibranch Pipeline projects
-* Major maintainer doc update
-* Change upload destination of products to Sourceforge File Release Service
-* Fix code coverage settings
-* Replace HashMap/Sets with LinkedHashMap/Sets
-
-### Bug fix
-
-## Release version 2.2.9
-*2017.05.10*
-
-### New Feature
-
-### Changes
-
-### Bug fix
-* Include .exsd schemas in the binaries (https://github.com/preesm/preesm/issues/32)
-
-## Release version 2.2.8
-*2017.05.09*
-
-### New Feature
-
-### Changes
-* Add TMF updates repo for latest XTend lib
-* Update Graphiti to 1.3.18
-* Update DFTools to 1.1.11
-
-### Bug fix
-
-## Release version 2.2.7
-*2017.05.09*
-
-### New Feature
-
-### Changes
-* Update Graphiti to 1.3.17
-* Update DFTools to 1.1.10
-
-### Bug fix
-* Fix a bug in the Workflow due to Graphiti issue (https://github.com/preesm/preesm/issues/31)
-
-## Release version 2.2.6
-*2017.04.19*
+## Release version 2.3.0
+*2017.06.26*
 
 ### New Feature
 * Add test plug-in fragments for future test campaigns
@@ -77,8 +11,16 @@ PREESM Changelog
   * a 'meta' feature including all development requirements for PREESM
   * The aggregated Javadoc
 * Maven build process allows to automatically deploy on SourceForge server
+* Add clustering
+* Add integration test API prototype
+* Add Scheduling checker
+* Add new entry in Preesm menu to run Workflows
+* Add menus entries in the editor context menu
 
 ### Changes
+* Add TMF updates repo for latest XTend lib
+* Update Graphiti to 1.4.0
+* Update DFTools to 1.2.0
 * The build process does not require Graphiti and DFTools source code anymore
   * It uses the Preesm complete repo to lookup missing OSGi dependencies (see URL in pom.xml)
 * Disable product and rcp.util build
@@ -102,10 +44,33 @@ PREESM Changelog
 * Spider CodeGen update
 * C Parser update: now accepts trailing spaces after arguments
 * Modifications in the API of some exceptions
+* Update Spider codegen
+* Update MPPA codegen
+* For XTend version to 2.11+
+* Use feature import instead of inclusion
+* Add discovery sites in dev feature
+* Remove unsupported target environments
+* Update Checkstyle config file path in parent POM
+* Add Eclipse profile in parent POM to disable m2e configuration outside Eclipse
+* Update wrapper scripts
+* Cleanup releng files
+* Update licensing
+* Update headers
+* Remove use of composite P2 repositories
+* Add Jenkinsfile for Multibranch Pipeline projects
+* Major maintainer doc update
+* Change upload destination of products to Sourceforge File Release Service
+* Fix code coverage settings
+* Replace HashMap/Sets with LinkedHashMap/Sets
 
 ### Bug fix
+* Add new menus for running workflows (https://github.com/preesm/preesm/issues/28)
+* Fix a bug in the Workflow due to Graphiti issue (https://github.com/preesm/preesm/issues/31)
+* Include .exsd schemas in the binaries (https://github.com/preesm/preesm/issues/32)
 * Fix Checkstyle and Findbugs issues
 * Fix few warnings that raised after Eclipse cleanup
+* fix bug#33: https://github.com/preesm/preesm/issues/33
+* Fix bug#34: https://github.com/preesm/preesm/issues/34
 
 ## Release version 2.2.5
 *2016.12.21 - Preesm: 2.2.5*
