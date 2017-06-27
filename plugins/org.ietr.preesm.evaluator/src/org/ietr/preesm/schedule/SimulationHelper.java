@@ -6,13 +6,14 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
+import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 
 /**
  * @author hderoui
  * 
- * 
+ *         A simulation helper.
  */
 public class SimulationHelper {
   // SDF graph and scenario
@@ -81,22 +82,26 @@ public class SimulationHelper {
       // consume n data tokens on each input edge
       for (SDFInterfaceVertex input : actor.getSources()) {
         SDFEdge edge = actor.getAssociatedEdge(input);
-        // edge.setDelay( new AbstractEdgePropertyType<edge.getDelay().intValue() - n * edge.getCons().intValue()>);
+        // e.delay -= n * e.cons
+        int newDelay = edge.getDelay().intValue() - n * edge.getCons().intValue();
+        edge.setDelay(new SDFIntEdgePropertyType(newDelay));
       }
 
       // increment the counter by n
-      actorInfo.get(actor).totalExecutions += n;
+      actorInfo.get(actor).executionsCounter += n;
 
     } else {
       // restore n data tokens on each input edge
       for (SDFInterfaceVertex input : actor.getSources()) {
         SDFEdge edge = actor.getAssociatedEdge(input);
-        // e.delay += n * e.prod;
+        // e.delay += n * e.cons;
+        int newDelay = edge.getDelay().intValue() + n * edge.getCons().intValue();
+        edge.setDelay(new SDFIntEdgePropertyType(newDelay));
       }
 
       // TODO : add this line to produce() function
       // decrement the counter by n
-      actorInfo.get(actor).totalExecutions -= n;
+      actorInfo.get(actor).executionsCounter -= n;
     }
   }
 
@@ -111,13 +116,17 @@ public class SimulationHelper {
       // produce n data tokens on each output edge
       for (SDFInterfaceVertex output : actor.getSinks()) {
         SDFEdge edge = actor.getAssociatedEdge(output);
-        // e.delay += n * e.cons;
+        // e.delay += n * e.prod;
+        int newDelay = edge.getDelay().intValue() + n * edge.getProd().intValue();
+        edge.setDelay(new SDFIntEdgePropertyType(newDelay));
       }
     } else {
       // remove n data tokens on each output edge
       for (SDFInterfaceVertex output : actor.getSinks()) {
         SDFEdge edge = actor.getAssociatedEdge(output);
-        // e.delay -= n * e.cons;
+        // e.delay -= n * e.prod;
+        int newDelay = edge.getDelay().intValue() - n * edge.getProd().intValue();
+        edge.setDelay(new SDFIntEdgePropertyType(newDelay));
       }
     }
   }
@@ -192,7 +201,7 @@ public class SimulationHelper {
   public boolean isIterationCompleted() {
     // test if each actor was executed RV times
     for (SDFAbstractVertex actor : this.graph.vertexSet()) {
-      if (actorInfo.get(actor).totalExecutions < actor.getNbRepeatAsInteger()) {
+      if (actorInfo.get(actor).executionsCounter < actor.getNbRepeatAsInteger()) {
         return false;
       }
     }

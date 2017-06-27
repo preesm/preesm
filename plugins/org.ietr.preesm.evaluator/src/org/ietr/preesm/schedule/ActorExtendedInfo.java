@@ -14,7 +14,7 @@ public class ActorExtendedInfo {
   public double            startDate;
   public double            finishDate;
   public double            nbExeution;
-  public double            totalExecutions;
+  public double            executionsCounter;
 
   /**
    * @param actor
@@ -36,7 +36,7 @@ public class ActorExtendedInfo {
     this.startDate = startDate;
     this.finishDate = finishDate;
     this.nbExeution = nbExeution;
-    this.totalExecutions = totalExecutions;
+    this.executionsCounter = totalExecutions;
   }
 
 }
