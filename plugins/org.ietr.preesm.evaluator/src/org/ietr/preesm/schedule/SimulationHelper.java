@@ -129,7 +129,6 @@ public class SimulationHelper {
    *          SDF actor
    * @param n
    *          number of executions
-   * 
    */
   public void execute(SDFAbstractVertex actor, int n) {
     if (n != 0) {
@@ -138,6 +137,21 @@ public class SimulationHelper {
       // produce n times data tokens on the output edges of the actor
       this.produce(actor, n);
     }
+  }
+
+  /**
+   * Executes an actor as much as the data tokens in its input edges allow.
+   * 
+   * @param actor
+   *          SDF actor
+   * @return the number of executions
+   */
+  public int executeMax(SDFAbstractVertex actor) {
+    // determine the max executions number
+    int n = this.maxNbOfExecutions(actor);
+    // execute the actor n times
+    this.execute(actor, n);
+    return n;
   }
 
   /**
