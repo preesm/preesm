@@ -60,7 +60,7 @@ public class SimulationHelper {
   }
 
   /**
-   * return the maximum number of allowed executions of an actor to complete the iteration of the graph
+   * returns the maximum number of allowed executions of an actor to complete its iteration
    * 
    * @param actor
    *          SDF actor
@@ -79,20 +79,43 @@ public class SimulationHelper {
         int n = (int) Math.floor(edge.getDelay().intValue() / edge.getCons().intValue());
         double newStartDate = actorInfo.get(edge.getSource()).finishDate;
         // if n = 0, it means that the actor is not ready to be fired
-        if (n != 0) {
-          if (n < maxExecutions) {
-            maxExecutions = n;
+        if (n < maxExecutions) {
+          maxExecutions = n;
+          if (maxExecutions == 0) {
+            return 0;
           }
-          if (newStartDate > maxStartDate) {
-            maxStartDate = newStartDate;
-          }
-        } else {
-          return 0;
+        }
+        if (newStartDate > maxStartDate) {
+          maxStartDate = newStartDate;
         }
       }
       actorInfo.get(actor).startDate = maxStartDate;
       return maxExecutions;
     }
+  }
+
+  /**
+   * Returns the maximum possible number of executions.
+   * 
+   * @param actor
+   *          SDF Actor
+   * @return executions number
+   */
+
+  public int maxNbOfExecutions(SDFAbstractVertex actor) {
+    int maxExecutions = Integer.MAX_VALUE; // initialize the counter with a max value
+    for (SDFInterfaceVertex input : actor.getSources()) {
+      SDFEdge edge = actor.getAssociatedEdge(input);
+      int n = (int) Math.floor(edge.getDelay().intValue() / edge.getCons().intValue());
+      // if n = 0, it means that the actor is not ready to be fired
+      if (n < maxExecutions) {
+        maxExecutions = n;
+        if (maxExecutions == 0) {
+          return 0;
+        }
+      }
+    }
+    return maxExecutions;
   }
 
   /**
