@@ -260,7 +260,7 @@ public class test {
     tgtPort = new SDFSourceInterfaceVertex();
     tgtPort.setId("a");
     tgtPort.setName("a");
-    actor.addInterface(tgtPort);
+    tgtActor.addInterface(tgtPort);
 
     SDFEdge edge;
 
@@ -294,11 +294,12 @@ public class test {
     tgtPort = new SDFSourceInterfaceVertex();
     tgtPort.setId("c");
     tgtPort.setName("c");
-    actor.addInterface(tgtPort);
+    tgtActor.addInterface(tgtPort);
 
     edge = graph.addEdge(srcActor, srcPort, tgtActor, tgtPort);
     edge.setPropertyValue("edgeName", "CA");
     edge.setProd(new SDFIntEdgePropertyType((Integer) srcPort.getPropertyBean().getValue("port_rate")));
+
     edge.setCons(new SDFIntEdgePropertyType(2));
     edge.setDelay(new SDFIntEdgePropertyType(0));
 
