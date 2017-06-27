@@ -39,4 +39,15 @@ public class ActorExtendedInfo {
     this.executionsCounter = totalExecutions;
   }
 
+  /**
+   * reset actor info
+   */
+  public void resetInfo() {
+    this.startDate = 0;
+    this.finishDate = 0;
+    this.nbExeution = 0;
+    this.executionsCounter = 0;
+
+  }
+
 }

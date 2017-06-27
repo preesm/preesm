@@ -24,7 +24,7 @@ public class SimulationHelper {
   public Hashtable<SDFEdge, AbstractEdgePropertyType<?>> initialMarking;
 
   // additional information for actors
-  public Hashtable<SDFAbstractVertex, ActorExtendedInfo> actorInfo;
+  public Hashtable<SDFAbstractVertex, ActorExtendedInfo> actorsInfo;
 
   /**
    * @param graph
@@ -43,7 +43,7 @@ public class SimulationHelper {
     }
 
     // prepare the list of actors info
-    actorInfo = new Hashtable<SDFAbstractVertex, ActorExtendedInfo>(graph.vertexSet().size());
+    actorsInfo = new Hashtable<SDFAbstractVertex, ActorExtendedInfo>(graph.vertexSet().size());
     for (SDFAbstractVertex actor : graph.vertexSet()) {
 
       // get the actor duration from the scenario. If default set to 0;
@@ -54,7 +54,7 @@ public class SimulationHelper {
       }
 
       ActorExtendedInfo info = new ActorExtendedInfo(actor, dur, 0, 0, 0, 0);
-      actorInfo.put(actor, info);
+      actorsInfo.put(actor, info);
     }
 
   }
@@ -69,7 +69,7 @@ public class SimulationHelper {
   public int maxExecToCompleteAnIteration(SDFAbstractVertex actor) {
     // initialize the counter with a max value = RV - counter
     double maxStartDate = 0;
-    int maxExecutions = actor.getNbRepeatAsInteger() - actorInfo.get(actor).executionsCounter;
+    int maxExecutions = actor.getNbRepeatAsInteger() - actorsInfo.get(actor).executionsCounter;
     if (maxExecutions <= 0) {
       return 0;
     } else {
@@ -77,7 +77,7 @@ public class SimulationHelper {
         SDFEdge edge = actor.getAssociatedEdge(input);
         // compute the max number of executions that edge delays allow
         int n = (int) Math.floor(edge.getDelay().intValue() / edge.getCons().intValue());
-        double newStartDate = actorInfo.get(edge.getSource()).finishDate;
+        double newStartDate = actorsInfo.get(edge.getSource()).finishDate;
         // if n = 0, it means that the actor is not ready to be fired
         if (n < maxExecutions) {
           maxExecutions = n;
@@ -89,7 +89,7 @@ public class SimulationHelper {
           maxStartDate = newStartDate;
         }
       }
-      actorInfo.get(actor).startDate = maxStartDate;
+      actorsInfo.get(actor).startDate = maxStartDate;
       return maxExecutions;
     }
   }
@@ -172,7 +172,7 @@ public class SimulationHelper {
       }
 
       // increment the counter by n
-      actorInfo.get(actor).executionsCounter += n;
+      actorsInfo.get(actor).executionsCounter += n;
 
     } else {
       // restore n data tokens on each input edge
@@ -210,7 +210,7 @@ public class SimulationHelper {
       }
 
       // decrement the counter by n
-      actorInfo.get(actor).executionsCounter -= n;
+      actorsInfo.get(actor).executionsCounter -= n;
     }
   }
 
@@ -229,7 +229,7 @@ public class SimulationHelper {
    * @return start Date
    */
   public double getStartDate(SDFAbstractVertex actor) {
-    return actorInfo.get(actor).startDate;
+    return actorsInfo.get(actor).startDate;
   }
 
   /**
@@ -241,7 +241,7 @@ public class SimulationHelper {
    *          start date
    */
   public void setStartDate(SDFAbstractVertex actor, double date) {
-    actorInfo.get(actor).startDate = date;
+    actorsInfo.get(actor).startDate = date;
   }
 
   /**
@@ -252,7 +252,7 @@ public class SimulationHelper {
    * @return finish date
    */
   public double getFinishDate(SDFAbstractVertex actor) {
-    return actorInfo.get(actor).finishDate;
+    return actorsInfo.get(actor).finishDate;
   }
 
   /**
@@ -262,7 +262,7 @@ public class SimulationHelper {
    *          finish date
    */
   public void setfinishDate(SDFAbstractVertex actor, double date) {
-    actorInfo.get(actor).finishDate = date;
+    actorsInfo.get(actor).finishDate = date;
   }
 
   /**
@@ -273,7 +273,7 @@ public class SimulationHelper {
    * @return duration
    */
   public double getActorDuration(SDFAbstractVertex actor) {
-    return actorInfo.get(actor).duration;
+    return actorsInfo.get(actor).duration;
   }
 
   /**
@@ -284,7 +284,7 @@ public class SimulationHelper {
   public boolean isIterationCompleted() {
     // test if each actor was executed RV times
     for (SDFAbstractVertex actor : this.graph.vertexSet()) {
-      if (actorInfo.get(actor).executionsCounter < actor.getNbRepeatAsInteger()) {
+      if (actorsInfo.get(actor).executionsCounter < actor.getNbRepeatAsInteger()) {
         return false;
       }
     }
@@ -297,6 +297,17 @@ public class SimulationHelper {
   public void restoreInitialMarking() {
     for (SDFEdge edge : graph.edgeSet()) {
       edge.setDelay(initialMarking.get(edge));
+    }
+  }
+
+  /**
+   * Resets the simulation by restoring the initial marking and reseting the actors execution counter.
+   * 
+   */
+  public void resetSimulation() {
+    this.restoreInitialMarking();
+    for (ActorExtendedInfo a : this.actorsInfo.values()) {
+      a.resetInfo();
     }
   }
 
