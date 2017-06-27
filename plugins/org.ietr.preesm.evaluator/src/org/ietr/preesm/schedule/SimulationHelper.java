@@ -119,6 +119,28 @@ public class SimulationHelper {
   }
 
   /**
+   * Executes an actor n times.</br>
+   * Before calling this method, you should verify if the actor is ready to be fired n times. In case of insufficient data tokens on its input edges, it will
+   * results to a negative delays on the edges.</br>
+   * 
+   * if n < 0 it will cancel n executions == remove data tokens from the output edges and restore them in the input edges.
+   * 
+   * @param actor
+   *          SDF actor
+   * @param n
+   *          number of executions
+   * 
+   */
+  public void execute(SDFAbstractVertex actor, int n) {
+    if (n != 0) {
+      // consume n times data tokens from the input edges of the actor
+      this.consume(actor, n);
+      // produce n times data tokens on the output edges of the actor
+      this.produce(actor, n);
+    }
+  }
+
+  /**
    * 
    * @param actor
    *          SDF actor
@@ -146,10 +168,6 @@ public class SimulationHelper {
         int newDelay = edge.getDelay().intValue() + n * edge.getCons().intValue();
         edge.setDelay(new SDFIntEdgePropertyType(newDelay));
       }
-
-      // TODO : add this line to produce() function
-      // decrement the counter by n
-      actorInfo.get(actor).executionsCounter -= n;
     }
   }
 
@@ -176,6 +194,9 @@ public class SimulationHelper {
         int newDelay = edge.getDelay().intValue() - n * edge.getProd().intValue();
         edge.setDelay(new SDFIntEdgePropertyType(newDelay));
       }
+
+      // decrement the counter by n
+      actorInfo.get(actor).executionsCounter -= n;
     }
   }
 
@@ -257,9 +278,9 @@ public class SimulationHelper {
   }
 
   /**
-   * reset the edges delay to the initial marking
+   * restore the edges delay to the initial marking
    */
-  public void resetInitialMarking() {
+  public void restoreInitialMarking() {
     for (SDFEdge edge : graph.edgeSet()) {
       edge.setDelay(initialMarking.get(edge));
     }
