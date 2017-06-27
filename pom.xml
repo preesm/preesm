@@ -418,6 +418,15 @@
   </modules>
 
   <profiles>
+    <profile>
+      <id>java8-doclint-disabled</id>
+      <activation>
+        <jdk>[1.8,)</jdk>
+      </activation>
+      <properties>
+        <javadoc.opts>-Xdoclint:none</javadoc.opts>
+      </properties>
+    </profile>
     <!-- Specific arguments for tests on MacOSX platform -->
     <profile>
       <id>os-macosx</id>
@@ -447,7 +456,7 @@
             <artifactId>maven-javadoc-plugin</artifactId>
             <version>2.10.4</version>
             <configuration>
-              <failOnError>false</failOnError>
+              <additionalparam>${javadoc.opts}</additionalparam>
             </configuration>
             <executions>
               <execution>
