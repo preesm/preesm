@@ -25,7 +25,7 @@ public class ASAPSchedule_SDF {
    *          SDF graph
    * @param scenario
    *          contains actors duration
-   * @return
+   * @return the duration of a graph iteration
    */
   public double schedule(SDFGraph graph, PreesmScenario scenario) {
 
@@ -40,13 +40,16 @@ public class ASAPSchedule_SDF {
     while (!executions.isEmpty()) {
       // pick the execution list with the earliest finish date
       double t = Double.MAX_VALUE;
-      for (double keyT : executions.keySet())
-        if (t >= keyT)
+      for (double keyT : executions.keySet()) {
+        if (t >= keyT) {
           t = keyT;
+        }
+      }
 
       // update the duration of the iteration
-      if (dur1Iter < t)
+      if (dur1Iter < t) {
         dur1Iter = t;
+      }
 
       // execute the list of executions
       Hashtable<SDFAbstractVertex, Integer> listTExec = executions.get(t);

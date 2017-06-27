@@ -25,6 +25,12 @@ public class SimulationHelper {
   // additional information for actors
   public Hashtable<SDFAbstractVertex, ActorExtendedInfo> actorInfo;
 
+  /**
+   * @param graph
+   *          SDF graph
+   * @param scenario
+   *          contains actors duration
+   */
   public SimulationHelper(SDFGraph graph, PreesmScenario scenario) {
     this.graph = graph;
     this.scenario = scenario;
@@ -42,8 +48,9 @@ public class SimulationHelper {
       // get the actor duration from the scenario. If default set to 0;
       double dur = 0;
       Timing timing = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86");
-      if (timing.getVertexId() != "default")
+      if (timing.getVertexId() != "default") {
         dur = timing.getTime();
+      }
 
       ActorExtendedInfo info = new ActorExtendedInfo(actor, dur, 0, 0, 0, 0);
       actorInfo.put(actor, info);
@@ -180,13 +187,15 @@ public class SimulationHelper {
   /**
    * check if the graph has completed an iteration
    * 
-   * @return
+   * @return true if the graph iteration is complete
    */
   public boolean isIterationCompleted() {
     // test if each actor was executed RV times
-    for (SDFAbstractVertex actor : this.graph.vertexSet())
-      if (actorInfo.get(actor).totalExecutions < actor.getNbRepeatAsInteger())
+    for (SDFAbstractVertex actor : this.graph.vertexSet()) {
+      if (actorInfo.get(actor).totalExecutions < actor.getNbRepeatAsInteger()) {
         return false;
+      }
+    }
     return true;
   }
 
