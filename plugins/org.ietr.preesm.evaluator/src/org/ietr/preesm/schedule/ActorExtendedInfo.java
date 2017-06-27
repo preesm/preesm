@@ -13,8 +13,8 @@ public class ActorExtendedInfo {
   public double            duration;
   public double            startDate;
   public double            finishDate;
-  public double            nbExeution;
-  public double            executionsCounter;
+  public int               nbExeution;
+  public int               executionsCounter;
 
   /**
    * @param actor
@@ -30,7 +30,7 @@ public class ActorExtendedInfo {
    * @param totalExecutions
    *          the number of executions done during the simulation
    */
-  public ActorExtendedInfo(SDFAbstractVertex actor, double duration, double startDate, double finishDate, double nbExeution, double totalExecutions) {
+  public ActorExtendedInfo(SDFAbstractVertex actor, double duration, double startDate, double finishDate, int nbExeution, int totalExecutions) {
     this.actor = actor;
     this.duration = duration;
     this.startDate = startDate;

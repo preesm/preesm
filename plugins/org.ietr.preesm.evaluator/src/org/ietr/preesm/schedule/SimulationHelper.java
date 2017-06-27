@@ -67,7 +67,32 @@ public class SimulationHelper {
    * @return number of allowed executions
    */
   public int maxExecToCompleteAnIteration(SDFAbstractVertex actor) {
-    return 0;
+    // initialize the counter with a max value = RV - counter
+    double maxStartDate = 0;
+    int maxExecutions = actor.getNbRepeatAsInteger() - actorInfo.get(actor).executionsCounter;
+    if (maxExecutions <= 0) {
+      return 0;
+    } else {
+      for (SDFInterfaceVertex input : actor.getSources()) {
+        SDFEdge edge = actor.getAssociatedEdge(input);
+        // compute the max number of executions that edge delays allow
+        int n = (int) Math.floor(edge.getDelay().intValue() / edge.getCons().intValue());
+        double newStartDate = actorInfo.get(edge.getSource()).finishDate;
+        // if n = 0, it means that the actor is not ready to be fired
+        if (n != 0) {
+          if (n < maxExecutions) {
+            maxExecutions = n;
+          }
+          if (newStartDate > maxStartDate) {
+            maxStartDate = newStartDate;
+          }
+        } else {
+          return 0;
+        }
+      }
+      actorInfo.get(actor).startDate = maxStartDate;
+      return maxExecutions;
+    }
   }
 
   /**
