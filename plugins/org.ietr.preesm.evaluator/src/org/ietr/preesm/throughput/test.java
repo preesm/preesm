@@ -6,8 +6,11 @@ import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
+import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
+import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 
@@ -32,6 +35,9 @@ public class test {
     // test hierarchy
     testHierarchy(graph, scenario);
 
+    // test the creation of an SDF graph
+    testSDFGraphCreation(scenario);
+
   }
 
   /**
@@ -40,7 +46,7 @@ public class test {
    * @param graph
    *          SDF input graph
    */
-  public static void testSDFGraph(SDFGraph graph, PreesmScenario scenario) {
+  private static void testSDFGraph(SDFGraph graph, PreesmScenario scenario) {
     System.out.println("------ Test SDFGraph ------");
 
     System.out.println("=> Liste des vertex :");
@@ -57,15 +63,15 @@ public class test {
         e.printStackTrace();
       }
 
-      // System.out.println("==> inputs : ");
-      // for (SDFInterfaceVertex input : actor.getSources()) {
-      // System.out.println("\t input port name " + input.getName() + " : " + actor.getAssociatedEdge(input).toString());
-      // }
+      System.out.println("==> inputs : ");
+      for (SDFInterfaceVertex input : actor.getSources()) {
+        System.out.println("\t input port name " + input.getName() + " : " + actor.getAssociatedEdge(input).toString());
+      }
 
-      // System.out.println("==> outputs : ");
-      // for (SDFInterfaceVertex output : actor.getSinks()) {
-      // System.out.println("\t output port name " + output.getName() + " : " + actor.getAssociatedEdge(output).toString());
-      // }
+      System.out.println("==> outputs : ");
+      for (SDFInterfaceVertex output : actor.getSinks()) {
+        System.out.println("\t output port name " + output.getName() + " : " + actor.getAssociatedEdge(output).toString());
+      }
     }
 
     System.out.println("\n=> Liste des edges :");
@@ -139,7 +145,7 @@ public class test {
    * @param scenario
    *          scenario that contains the time manager
    */
-  public static void testHierarchy(SDFGraph graph, PreesmScenario scenario) {
+  private static void testHierarchy(SDFGraph graph, PreesmScenario scenario) {
     System.out.println("------ Test Hierarchy ------");
     // list of hierarchical actors
     Hashtable<String, SDFAbstractVertex> HActorList = new Hashtable<String, SDFAbstractVertex>();
@@ -186,6 +192,120 @@ public class test {
         }
       }
     }
+
+    System.out.println("----------------------------");
+  }
+
+  /**
+   * test the manipulation of an SDF graph.
+   * 
+   * create an SDF graph ABC
+   * 
+   */
+  private static void testSDFGraphCreation(PreesmScenario scenario) {
+    System.out.println("------ Test Hierarchy ------");
+
+    System.out.println("create an SDF graph ...");
+    // create a graph
+    SDFGraph graph = new SDFGraph();
+    graph.setName("test");
+
+    // Add some actors
+    SDFVertex actor;
+    // actor A
+    actor = new SDFVertex(graph);
+    actor.setId("A");
+    actor.setName("A");
+    graph.addVertex(actor);
+
+    // actor B
+    actor = new SDFVertex(graph);
+    actor.setId("B");
+    actor.setName("B");
+    graph.addVertex(actor);
+
+    // actor C
+    actor = new SDFVertex(graph);
+    actor.setId("C");
+    actor.setName("C");
+    // => add an source port
+    SDFInterfaceVertex portIn = new SDFSourceInterfaceVertex();
+    portIn.setId("b");
+    portIn.setName("b");
+    portIn.setPropertyValue("port_rate", 3);
+    actor.addInterface(portIn);
+    // => add a sink port
+    SDFInterfaceVertex portOut = new SDFSinkInterfaceVertex();
+    portOut.setId("a");
+    portOut.setName("a");
+    portOut.setPropertyValue("port_rate", 7);
+    actor.addInterface(portOut);
+    graph.addVertex(actor);
+
+    // Add some edges
+    SDFAbstractVertex srcActor;
+    SDFInterfaceVertex srcPort;
+
+    // edge AB
+    srcActor = graph.getVertex("A");
+    srcPort = new SDFSinkInterfaceVertex();
+    srcPort.setId("b");
+    srcPort.setName("b");
+    srcActor.addInterface(srcPort);
+
+    SDFAbstractVertex tgtActor;
+    SDFInterfaceVertex tgtPort;
+
+    tgtActor = graph.getVertex("B");
+    tgtPort = new SDFSourceInterfaceVertex();
+    tgtPort.setId("a");
+    tgtPort.setName("a");
+    actor.addInterface(tgtPort);
+
+    SDFEdge edge;
+
+    edge = graph.addEdge(srcActor, srcPort, tgtActor, tgtPort);
+    edge.setPropertyValue("edgeName", "AB");
+    edge.setProd(new SDFIntEdgePropertyType(3));
+    edge.setCons(new SDFIntEdgePropertyType(7));
+    edge.setDelay(new SDFIntEdgePropertyType(0));
+
+    // edge BC
+    srcActor = graph.getVertex("B");
+    srcPort = new SDFSinkInterfaceVertex();
+    srcPort.setId("c");
+    srcPort.setName("c");
+    srcActor.addInterface(srcPort);
+
+    tgtActor = graph.getVertex("C");
+    tgtPort = tgtActor.getInterface("b");
+
+    edge = graph.addEdge(srcActor, srcPort, tgtActor, tgtPort);
+    edge.setPropertyValue("edgeName", "BC");
+    edge.setProd(new SDFIntEdgePropertyType(2));
+    edge.setCons(new SDFIntEdgePropertyType((Integer) tgtPort.getPropertyBean().getValue("port_rate")));
+    edge.setDelay(new SDFIntEdgePropertyType(4));
+
+    // edge CA
+    srcActor = graph.getVertex("C");
+    srcPort = srcActor.getInterface("a");
+
+    tgtActor = graph.getVertex("A");
+    tgtPort = new SDFSourceInterfaceVertex();
+    tgtPort.setId("c");
+    tgtPort.setName("c");
+    actor.addInterface(tgtPort);
+
+    edge = graph.addEdge(srcActor, srcPort, tgtActor, tgtPort);
+    edge.setPropertyValue("edgeName", "CA");
+    edge.setProd(new SDFIntEdgePropertyType((Integer) srcPort.getPropertyBean().getValue("port_rate")));
+    edge.setCons(new SDFIntEdgePropertyType(2));
+    edge.setDelay(new SDFIntEdgePropertyType(0));
+
+    System.out.println("SDF graph created !!");
+    System.out.println("Print the graph ...");
+
+    testSDFGraph(graph, scenario);
 
     System.out.println("----------------------------");
   }
