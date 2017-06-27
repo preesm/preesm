@@ -87,6 +87,10 @@
               <dependencySourceIncludes>
                 <dependencySourceInclude>${project.groupId}:*</dependencySourceInclude>
               </dependencySourceIncludes>
+              <!-- But exclude the coding policy jar, that has no source attached -->
+              <dependencySourceExcludes>
+                <dependencySourceExclude>org.ietr.preesm:coding-policy</dependencySourceExclude>
+              </dependencySourceExcludes>
               <!-- make sure aggregated javadoc is put in the complete site -->
               <reportOutputDirectory>${project.build.directory}/gensite/API/</reportOutputDirectory>
               <destDir>${project.groupId}-${project.version}</destDir>
