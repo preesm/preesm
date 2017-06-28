@@ -13,6 +13,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.throughput.transformers.SDFTransformer;
 
 /**
  * @author hderoui
@@ -36,7 +37,10 @@ public class test {
     testHierarchy(graph, scenario);
 
     // test the creation of an SDF graph
-    testSDFGraphCreation(scenario);
+    SDFGraph g = testSDFGraphCreation(scenario);
+
+    // test the srSDF conversion
+    testSrSDFConversion(g, scenario);
 
   }
 
@@ -202,8 +206,8 @@ public class test {
    * create an SDF graph ABC
    * 
    */
-  private static void testSDFGraphCreation(PreesmScenario scenario) {
-    System.out.println("------ Test Hierarchy ------");
+  private static SDFGraph testSDFGraphCreation(PreesmScenario scenario) {
+    System.out.println("------ Test SDF graph generation ------");
 
     System.out.println("create an SDF graph ...");
     // create a graph
@@ -308,6 +312,24 @@ public class test {
 
     testSDFGraph(graph, scenario);
 
+    System.out.println("----------------------------");
+    return graph;
+  }
+
+  /**
+   * test the conversion of SDF graph to srSDF graph
+   * 
+   * @param graph
+   *          SDF graph
+   * @param scenario
+   *          contains actors duration
+   */
+  private static void testSrSDFConversion(SDFGraph graph, PreesmScenario scenario) {
+    System.out.println("------ Test srSDF convertion ------");
+    // convert the SDF graph to a srSDF graph
+    SDFGraph srSDF = SDFTransformer.convertToSrSDF(graph);
+    // print the srSDF graph
+    testSDFGraph(srSDF, scenario);
     System.out.println("----------------------------");
   }
 
