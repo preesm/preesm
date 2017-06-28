@@ -330,6 +330,12 @@ public class test {
     SDFGraph srSDF = SDFTransformer.convertToSrSDF(graph);
     // print the srSDF graph
     testSDFGraph(srSDF, scenario);
+
+    // convert the SDF graph to a reduced HSDF graph
+    SDFGraph reducedHSDF = SDFTransformer.convertToReducedHSDF(graph);
+    // print the reduced HSDF graph
+    testSDFGraph(reducedHSDF, scenario);
+
     System.out.println("----------------------------");
   }
 
