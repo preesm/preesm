@@ -12,12 +12,12 @@ import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 /**
  * @author hderoui
  *
- *         This class implements SDF conversions algorithms : SDF to srSDF and HSDF.
+ *         This class implements SDF conversions algorithms : SDF to srSDF, HSDF and DAG.
  */
 public abstract class SDFTransformer {
 
   /**
-   * Converts an SDF graph to an HSDF graph
+   * Converts an SDF graph to an HSDF graph : SDF => HSDF
    * 
    * @param SDF
    *          graph
@@ -87,7 +87,7 @@ public abstract class SDFTransformer {
   }
 
   /**
-   * Converts an SDF graph to a srSDF graph
+   * Converts an SDF graph to a srSDF graph : SDF => srSDF
    * 
    * @param SDF
    *          graph
@@ -162,4 +162,35 @@ public abstract class SDFTransformer {
 
     return singleRate;
   }
+
+  /**
+   * Converts an SDF graph to a reduced HSDF graph : SDF => srSDF => HSDF
+   * 
+   * @param SDF
+   *          graph
+   * @return HSDF graph with less number of edges
+   */
+  public static SDFGraph convertToReducedHSDF(SDFGraph SDF) {
+    // convert the SDF graph to a srSDF graph first then convert the srSDF graph to an HSDF graph
+    SDFGraph hsdf_graph = convertToSrSDF(SDF);
+    hsdf_graph = SrSDFTransformer.convertToHSDF(hsdf_graph);
+
+    return hsdf_graph;
+  }
+
+  /**
+   * Converts an SDF graph to a DAG : SDF => srSDF => DAG
+   * 
+   * @param SDF
+   *          graph
+   * @return DAG
+   */
+  public static SDFGraph convertToDAG(SDFGraph SDF) {
+    // convert the SDF graph to a srSDF graph first then convert the srSDF graph to a DAG
+    SDFGraph dag = convertToSrSDF(SDF);
+    dag = SrSDFTransformer.convertToDAG(dag);
+
+    return dag;
+  }
+
 }
