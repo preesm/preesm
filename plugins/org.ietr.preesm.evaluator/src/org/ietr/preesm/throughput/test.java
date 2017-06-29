@@ -7,12 +7,11 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.throughput.parsers.GraphStructureHelper;
 import org.ietr.preesm.throughput.transformers.SDFTransformer;
 
 /**
@@ -214,98 +213,107 @@ public class test {
     SDFGraph graph = new SDFGraph();
     graph.setName("test");
 
-    // Add some actors
-    SDFVertex actor;
-    // actor A
-    actor = new SDFVertex(graph);
-    actor.setId("A");
-    actor.setName("A");
-    graph.addVertex(actor);
+    // // Add some actors
+    // SDFVertex actor;
+    // // actor A
+    // actor = new SDFVertex(graph);
+    // actor.setId("A");
+    // actor.setName("A");
+    // graph.addVertex(actor);
+    //
+    // // actor B
+    // actor = new SDFVertex(graph);
+    // actor.setId("B");
+    // actor.setName("B");
+    // graph.addVertex(actor);
+    //
+    // // actor C
+    // actor = new SDFVertex(graph);
+    // actor.setId("C");
+    // actor.setName("C");
+    // // => add an source port
+    // SDFInterfaceVertex portIn = new SDFSourceInterfaceVertex();
+    // portIn.setId("b");
+    // portIn.setName("b");
+    // portIn.setPropertyValue("port_rate", 3);
+    // actor.addInterface(portIn);
+    // // => add a sink port
+    // SDFInterfaceVertex portOut = new SDFSinkInterfaceVertex();
+    // portOut.setId("a");
+    // portOut.setName("a");
+    // portOut.setPropertyValue("port_rate", 7);
+    // actor.addInterface(portOut);
+    // graph.addVertex(actor);
 
-    // actor B
-    actor = new SDFVertex(graph);
-    actor.setId("B");
-    actor.setName("B");
-    graph.addVertex(actor);
+    // // Add some edges
+    // SDFAbstractVertex srcActor;
+    // SDFInterfaceVertex srcPort;
+    //
+    // // edge AB
+    // srcActor = graph.getVertex("A");
+    // srcPort = new SDFSinkInterfaceVertex();
+    // srcPort.setId("b");
+    // srcPort.setName("b");
+    // srcActor.addInterface(srcPort);
+    //
+    // SDFAbstractVertex tgtActor;
+    // SDFInterfaceVertex tgtPort;
+    //
+    // tgtActor = graph.getVertex("B");
+    // tgtPort = new SDFSourceInterfaceVertex();
+    // tgtPort.setId("a");
+    // tgtPort.setName("a");
+    // tgtActor.addInterface(tgtPort);
+    //
+    // SDFEdge edge;
+    //
+    // edge = graph.addEdge(srcActor, srcPort, tgtActor, tgtPort);
+    // edge.setPropertyValue("edgeName", "AB");
+    // edge.setProd(new SDFIntEdgePropertyType(3));
+    // edge.setCons(new SDFIntEdgePropertyType(7));
+    // edge.setDelay(new SDFIntEdgePropertyType(0));
+    //
+    // // edge BC
+    // srcActor = graph.getVertex("B");
+    // srcPort = new SDFSinkInterfaceVertex();
+    // srcPort.setId("c");
+    // srcPort.setName("c");
+    // srcActor.addInterface(srcPort);
+    //
+    // tgtActor = graph.getVertex("C");
+    // tgtPort = tgtActor.getInterface("b");
+    //
+    // edge = graph.addEdge(srcActor, srcPort, tgtActor, tgtPort);
+    // edge.setPropertyValue("edgeName", "BC");
+    // edge.setProd(new SDFIntEdgePropertyType(2));
+    // edge.setCons(new SDFIntEdgePropertyType((Integer) tgtPort.getPropertyBean().getValue("port_rate")));
+    // edge.setDelay(new SDFIntEdgePropertyType(4));
+    //
+    // // edge CA
+    // srcActor = graph.getVertex("C");
+    // srcPort = srcActor.getInterface("a");
+    //
+    // tgtActor = graph.getVertex("A");
+    // tgtPort = new SDFSourceInterfaceVertex();
+    // tgtPort.setId("c");
+    // tgtPort.setName("c");
+    // tgtActor.addInterface(tgtPort);
+    //
+    // edge = graph.addEdge(srcActor, srcPort, tgtActor, tgtPort);
+    // edge.setPropertyValue("edgeName", "CA");
+    // edge.setProd(new SDFIntEdgePropertyType((Integer) srcPort.getPropertyBean().getValue("port_rate")));
+    // edge.setCons(new SDFIntEdgePropertyType(2));
+    // edge.setDelay(new SDFIntEdgePropertyType(0));
 
-    // actor C
-    actor = new SDFVertex(graph);
-    actor.setId("C");
-    actor.setName("C");
-    // => add an source port
-    SDFInterfaceVertex portIn = new SDFSourceInterfaceVertex();
-    portIn.setId("b");
-    portIn.setName("b");
-    portIn.setPropertyValue("port_rate", 3);
-    actor.addInterface(portIn);
-    // => add a sink port
-    SDFInterfaceVertex portOut = new SDFSinkInterfaceVertex();
-    portOut.setId("a");
-    portOut.setName("a");
-    portOut.setPropertyValue("port_rate", 7);
-    actor.addInterface(portOut);
-    graph.addVertex(actor);
+    GraphStructureHelper.addActor(graph, "A", null, null, null, null, null);
+    GraphStructureHelper.addActor(graph, "B", null, null, null, null, null);
+    GraphStructureHelper.addActor(graph, "C", null, null, null, null, null);
+    GraphStructureHelper.addSrcPort(graph.getVertex("C"), "b", 3);
+    GraphStructureHelper.addSinkPort(graph.getVertex("C"), "a", 7);
 
-    // Add some edges
-    SDFAbstractVertex srcActor;
-    SDFInterfaceVertex srcPort;
-
-    // edge AB
-    srcActor = graph.getVertex("A");
-    srcPort = new SDFSinkInterfaceVertex();
-    srcPort.setId("b");
-    srcPort.setName("b");
-    srcActor.addInterface(srcPort);
-
-    SDFAbstractVertex tgtActor;
-    SDFInterfaceVertex tgtPort;
-
-    tgtActor = graph.getVertex("B");
-    tgtPort = new SDFSourceInterfaceVertex();
-    tgtPort.setId("a");
-    tgtPort.setName("a");
-    tgtActor.addInterface(tgtPort);
-
-    SDFEdge edge;
-
-    edge = graph.addEdge(srcActor, srcPort, tgtActor, tgtPort);
-    edge.setPropertyValue("edgeName", "AB");
-    edge.setProd(new SDFIntEdgePropertyType(3));
-    edge.setCons(new SDFIntEdgePropertyType(7));
-    edge.setDelay(new SDFIntEdgePropertyType(0));
-
-    // edge BC
-    srcActor = graph.getVertex("B");
-    srcPort = new SDFSinkInterfaceVertex();
-    srcPort.setId("c");
-    srcPort.setName("c");
-    srcActor.addInterface(srcPort);
-
-    tgtActor = graph.getVertex("C");
-    tgtPort = tgtActor.getInterface("b");
-
-    edge = graph.addEdge(srcActor, srcPort, tgtActor, tgtPort);
-    edge.setPropertyValue("edgeName", "BC");
-    edge.setProd(new SDFIntEdgePropertyType(2));
-    edge.setCons(new SDFIntEdgePropertyType((Integer) tgtPort.getPropertyBean().getValue("port_rate")));
-    edge.setDelay(new SDFIntEdgePropertyType(4));
-
-    // edge CA
-    srcActor = graph.getVertex("C");
-    srcPort = srcActor.getInterface("a");
-
-    tgtActor = graph.getVertex("A");
-    tgtPort = new SDFSourceInterfaceVertex();
-    tgtPort.setId("c");
-    tgtPort.setName("c");
-    tgtActor.addInterface(tgtPort);
-
-    edge = graph.addEdge(srcActor, srcPort, tgtActor, tgtPort);
-    edge.setPropertyValue("edgeName", "CA");
-    edge.setProd(new SDFIntEdgePropertyType((Integer) srcPort.getPropertyBean().getValue("port_rate")));
-
-    edge.setCons(new SDFIntEdgePropertyType(2));
-    edge.setDelay(new SDFIntEdgePropertyType(0));
+    GraphStructureHelper.addEdge(graph, "A", "b", "B", "a", 3, 7, 0, null);
+    GraphStructureHelper.addEdge(graph, "B", "c", "C", "b", 2, 3, 4, null);
+    GraphStructureHelper.addEdge(graph, "C", "a", "A", "c", 7, 2, 0, null);
 
     System.out.println("SDF graph created !!");
     System.out.println("Print the graph ...");
