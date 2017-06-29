@@ -1,5 +1,7 @@
 package org.ietr.preesm.throughput.parsers;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -179,5 +181,136 @@ public abstract class GraphStructureHelper {
     port.setPropertyValue("port_rate", portRate);
     actor.addInterface(port);
     return port;
+  }
+
+  /**
+   * returns a list of all the hierarchical actors in the hierarchy
+   * 
+   * @param graph
+   *          IBSDF graph
+   * @return the list of hierarchical actors
+   */
+  public static Hashtable<String, SDFAbstractVertex> getAllHierarchicalActors(SDFGraph graph) {
+    // list of hierarchical actors
+    Hashtable<String, SDFAbstractVertex> hierarchicalActorsList = new Hashtable<String, SDFAbstractVertex>();
+    ArrayList<SDFGraph> subgraphsToCheck = new ArrayList<SDFGraph>();
+
+    // add the hierarchical actors of the top graph
+    for (SDFAbstractVertex a : graph.vertexSet()) {
+      if (a.getGraphDescription() != null) {
+        hierarchicalActorsList.put(a.getName(), a);
+        subgraphsToCheck.add((SDFGraph) a.getGraphDescription());
+      }
+    }
+
+    // process all subgraphs in the hierarchy
+    while (!subgraphsToCheck.isEmpty()) {
+      for (SDFAbstractVertex a : subgraphsToCheck.get(0).vertexSet()) {
+        if (a.getGraphDescription() != null) {
+          hierarchicalActorsList.put(a.getName(), a);
+          subgraphsToCheck.add((SDFGraph) a.getGraphDescription());
+        }
+      }
+      subgraphsToCheck.remove(0);
+    }
+
+    return hierarchicalActorsList;
+  }
+
+  /**
+   * returns the hierarchical actors of an SDF graph
+   * 
+   * @param graph
+   *          SDF graph
+   * @return list of hierarchical actors
+   */
+  public static Hashtable<String, SDFAbstractVertex> getHierarchicalActors(SDFGraph graph) {
+    // list of hierarchical actors
+    Hashtable<String, SDFAbstractVertex> hierarchicalActorsList = new Hashtable<String, SDFAbstractVertex>();
+    for (SDFAbstractVertex a : graph.vertexSet()) {
+      if (a.getGraphDescription() != null) {
+        hierarchicalActorsList.put(a.getName(), a);
+      }
+    }
+    return hierarchicalActorsList;
+  }
+
+  public static void replaceHierarchicalActor(SDFGraph parentGraph, SDFAbstractVertex h, SDFGraph replacementGraph) {
+
+    // Step 1: add the replacement subgraph into the parent graph
+    for (SDFAbstractVertex a : replacementGraph.vertexSet()) {
+      GraphStructureHelper.addActor(parentGraph, h.getName() + "_" + a.getName(), (SDFGraph) a.getGraphDescription(), 1,
+          (double) a.getPropertyBean().getValue("duration"), null, (SDFAbstractVertex) a.getPropertyBean().getValue("baseActor"));
+    }
+    for (SDFEdge e : replacementGraph.edgeSet()) {
+      GraphStructureHelper.addEdge(parentGraph, h.getName() + "_" + e.getSource().getName(), null, h.getName() + "_" + e.getTarget().getName(), null,
+          e.getProd().intValue(), e.getCons().intValue(), e.getDelay().intValue(), (SDFEdge) e.getPropertyBean().getValue("baseedge"));
+    }
+
+    // Step 2: connect the interfaces of the added graph with actors of the parent graph
+    // disconnect the edges from the hierarchical actor and connect them to their associated interface in the subgraph
+    ArrayList<SDFEdge> edges = new ArrayList<SDFEdge>();
+    for (SDFInterfaceVertex input : h.getSources()) {
+      edges.add(h.getAssociatedEdge(input));
+    }
+    for (SDFEdge edge : edges) {
+      String hierarchicalPortName = ((SDFEdge) edge.getPropertyBean().getValue("baseEdge")).getTargetInterface().getName();
+      String subgraphInterfaceName = h.getName() + "_" + hierarchicalPortName + "_1";
+      replaceEdgeTargetActor(parentGraph, edge, subgraphInterfaceName, null);
+    }
+
+    // disconnect the edges from the hierarchical actor and connect them to their associated interface in the subgraph
+    edges = new ArrayList<SDFEdge>();
+    for (SDFInterfaceVertex output : h.getSinks()) {
+      edges.add(h.getAssociatedEdge(output));
+    }
+    for (SDFEdge edge : edges) {
+      String hierarchicalPortName = ((SDFEdge) edge.getPropertyBean().getValue("baseEdge")).getSourceInterface().getName();
+      String subgraphInterfaceName = h.getName() + "_" + hierarchicalPortName + "_1";
+      replaceEdgeSourceActor(parentGraph, edge, subgraphInterfaceName, null);
+    }
+
+    // remove the hierarchical actor from the parent graph
+    parentGraph.removeVertex(h);
+  }
+
+  /**
+   * replaces the source actor of an edge by a new actor and a new source port
+   * 
+   * @param graph
+   *          SDF graph
+   * @param edge
+   *          SDF Edge
+   * @param newSourceActor
+   *          new source actor
+   * @param newSourcePort
+   *          new source port
+   */
+  public static void replaceEdgeSourceActor(SDFGraph graph, SDFEdge edge, String newSourceActor, String newSourcePort) {
+    // create the new edge
+    GraphStructureHelper.addEdge(graph, newSourceActor, newSourcePort, edge.getTarget().getName(), edge.getTargetInterface().getName(),
+        edge.getProd().intValue(), edge.getCons().intValue(), edge.getDelay().intValue(), (SDFEdge) edge.getPropertyBean().getValue("baseEdge"));
+    // remove the old edge
+    graph.removeEdge(edge);
+  }
+
+  /**
+   * replaces the target actor of an edge by a new actor and a new target port
+   * 
+   * @param graph
+   *          SDF graph
+   * @param edge
+   *          SDF Edge
+   * @param newTargetActor
+   *          new target Actor
+   * @param newTargetPort
+   *          new target port
+   */
+  public static void replaceEdgeTargetActor(SDFGraph graph, SDFEdge edge, String newTargetActor, String newTargetPort) {
+    // create the new edge
+    GraphStructureHelper.addEdge(graph, edge.getSource().getName(), edge.getSourceInterface().getName(), newTargetActor, newTargetPort,
+        edge.getProd().intValue(), edge.getCons().intValue(), edge.getDelay().intValue(), (SDFEdge) edge.getPropertyBean().getValue("baseEdge"));
+    // remove the old edge
+    graph.removeEdge(edge);
   }
 }

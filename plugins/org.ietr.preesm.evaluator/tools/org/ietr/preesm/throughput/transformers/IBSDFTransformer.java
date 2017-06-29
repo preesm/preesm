@@ -24,119 +24,57 @@ public abstract class IBSDFTransformer {
     SDFGraph flatSrSDF = SDFTransformer.convertToSrSDF(IBSDF);
 
     // Step 3: Replace each instance of a hierarchical actor by its srSDF subgraph version
-    // get the hierarchical actors of the top graph
-    Hashtable<String, SDFAbstractVertex> actorsToReplcae = new Hashtable<String, SDFAbstractVertex>();
-    for (SDFAbstractVertex a : flatSrSDF.vertexSet()) {
-      if (a.getGraphDescription() != null) {
-        actorsToReplcae.put(a.getName(), a);
-      }
-    }
+    Hashtable<String, SDFAbstractVertex> actorsToReplcae = GraphStructureHelper.getHierarchicalActors(flatSrSDF);
+    while (!actorsToReplcae.isEmpty()) {
+      // replace the hierarchical actor
+      SDFAbstractVertex h = actorsToReplcae.elements().nextElement();
+      SDFGraph srSubgraph = srSDFsubgraphList.get(h.getPropertyBean().getValue("baseActor"));
+      GraphStructureHelper.replaceHierarchicalActor(flatSrSDF, h, srSubgraph);
 
-    // loop the list until it be empty
-    while (actorsToReplcae.size() != 0) {
-      // // actor to process
-      // Actor h = actorsToReplcae.elements().nextElement();
-      //
-      // // get its single-rate subgraph
-      // SDFGraph srSubgraph = srSubGraphs.get(h.BaseActor.id);
-      //
-      // // add every actor and edge of the subgraph to the single-rate graph
-      // for (Actor a : srSubgraph.actors.values()) {
-      // if (a.type == Actor.Type.HIERARCHICAL)
-      // actorsToReplcae.put(h.id + "_" + a.id, singleRate.createHierarchicalActor(h.id + "_" + a.id, a.duration, 1, null, a.BaseActor));
-      // else
-      // singleRate.createActor(h.id + "_" + a.id, a.duration, 1, null, a.BaseActor);
-      // }
-      // for (Edge e : srSubgraph.edges.values())
-      // singleRate.createEdge(null, h.id + "_" + e.sourceActor.id, null, h.id + "_" + e.targetActor.id, null, e.cons, e.prod, e.initialMarking, e.BaseEdge);
-      //
-      // // replace the hierarchical actor
-      // // connect the input edges to interfaces
-      // ArrayList<Edge> edges = new ArrayList<Edge>();
-      // for (Edge e : h.InputEdges.values())
-      // edges.add(e);
-      //
-      // for (Edge e : edges) {
-      // if (withRulres) {
-      // Actor targetActor = singleRate.actors.get(h.id + "_IN");
-      // e.replaceTargetActor(targetActor);
-      // } else {
-      // String interfacePort = e.BaseEdge.targetActorPort;
-      // String interfaceId = ((HierarchicalActor) h.BaseActor).InputInterfaces.get(interfacePort);
-      // Actor targetActor = singleRate.actors.get(h.id + "_" + interfaceId + "_1");
-      // e.replaceTargetActor(targetActor);
-      // }
-      // }
-      // // connect the output edges to interfaces
-      // edges = new ArrayList<Edge>();
-      // for (Edge e : h.OutputEdges.values())
-      // edges.add(e);
-      //
-      // for (Edge e : edges) {
-      // if (withRulres) {
-      // Actor sourceActor = singleRate.actors.get(h.id + "_OUT");
-      // e.replaceSourceActor(sourceActor);
-      // } else {
-      // String interfacePort = e.BaseEdge.sourceActorPort;
-      // String interfaceId = ((HierarchicalActor) h.BaseActor).OutputInterfaces.get(interfacePort);
-      // Actor sourceActor = singleRate.actors.get(h.id + "_" + interfaceId + "_1");
-      // e.replaceSourceActor(sourceActor);
-      // }
-      // }
-      // // remove the hierarchical actor from the single-rate graph
-      // singleRate.actors.remove(h.id);
-      //
-      // // remove the actor from the list of actors to process
-      // actorsToReplcae.remove(h.id);
+      // add the hierarchical actors of the subgraph to the list of actors to replace
+      for (SDFAbstractVertex a : srSubgraph.vertexSet()) {
+        if (a.getGraphDescription() != null) {
+          String actorInstanceNewName = h.getName() + "_" + a.getName();
+          actorsToReplcae.put(actorInstanceNewName, flatSrSDF.getVertex(actorInstanceNewName));
+        }
+      }
+
+      // remove the hierarchical actor from the list of actors to replace
+      actorsToReplcae.remove(h.getName());
     }
 
     return flatSrSDF;
   }
 
+  /**
+   * converts all the SDF subgraphs of the hierarchy into srSDF subgraphs
+   * 
+   * @param IBSDF
+   *          graph
+   * @param withExecRulres
+   *          boolean, add execution rules if true
+   * @return the list of srSDF subgraphs
+   */
   private static Hashtable<String, SDFGraph> convertAllSubgraphs(SDFGraph IBSDF, boolean withExecRulres) {
-    // add the hierarchical actors of the top graph
-    Hashtable<String, SDFAbstractVertex> actorsToProcess = new Hashtable<String, SDFAbstractVertex>();
-    for (SDFAbstractVertex a : IBSDF.vertexSet()) {
-      if (a.getGraphDescription() != null) {
-        actorsToProcess.put(a.getName(), a);
-      }
-    }
+    // get all the hierarchical actors of the IBSDF graph
+    Hashtable<String, SDFAbstractVertex> actorsToConvert = GraphStructureHelper.getAllHierarchicalActors(IBSDF);
 
-    // get all the hierarchical actors of the hierarchy
-    Hashtable<String, SDFAbstractVertex> actorsToConvert = new Hashtable<String, SDFAbstractVertex>();
-    while (actorsToProcess.size() != 0) {
-      SDFAbstractVertex h = actorsToProcess.elements().nextElement();
-      actorsToConvert.put(h.getName(), h);
-
-      // add the hierarchical actors of the top graph
-      for (SDFAbstractVertex a : ((SDFGraph) h.getGraphDescription()).vertexSet()) {
-        if (a.getGraphDescription() != null) {
-          actorsToProcess.put(a.getName(), a);
-        }
-      }
-      actorsToProcess.remove(h.getName());
-    }
-
-    // convert the SDF subgraph of all the hierarchical acotrs in the list
+    // convert the hierarchical actors SDF subgraphs to a srSDF subgraph
     Hashtable<String, SDFGraph> srSDFsubgraphsList = new Hashtable<String, SDFGraph>();
-    for (SDFAbstractVertex a : actorsToConvert.values()) {
-
-      // convert the subgraph to a SRSDF (classical conversion)
-      SDFGraph srSDFsubgraph = SDFTransformer.convertToSrSDF((SDFGraph) a.getGraphDescription());
-
+    for (SDFAbstractVertex h : actorsToConvert.values()) {
+      SDFGraph srSDFsubgraph = SDFTransformer.convertToSrSDF((SDFGraph) h.getGraphDescription());
       // add the execution rules to the srSDF subgraph
       if (withExecRulres) {
         addExecRules(srSDFsubgraph);
       }
-
-      srSDFsubgraphsList.put(a.getName(), srSDFsubgraph);
+      srSDFsubgraphsList.put(h.getName(), srSDFsubgraph);
     }
 
-    return null;
+    return srSDFsubgraphsList;
   }
 
   /**
-   * Adds the execution rules to the srSDF subgraph
+   * Adds the execution rules to a srSDF subgraph
    * 
    * @param srSDF
    *          graph
