@@ -28,7 +28,8 @@ public abstract class SDFTransformer {
     for (SDFAbstractVertex a : SDF.vertexSet()) {
       for (int i = 1; i <= a.getNbRepeatAsInteger(); i++) {
         // create an instance a_i of the actor a
-        GraphStructureHelper.addActor(hsdf_graph, a.getName() + "_" + i, (SDFGraph) a.getGraphDescription(), 1, null, null, a);
+        GraphStructureHelper.addActor(hsdf_graph, a.getName() + "_" + i, (SDFGraph) a.getGraphDescription(), 1,
+            (double) a.getPropertyBean().getValue("duration"), null, a);
         // SDFVertex a_i = new SDFVertex(hsdf_graph);
         // a_i.setId(a.getId() + "_" + i);
         // a_i.setName(a.getName() + "_" + i);
@@ -54,8 +55,7 @@ public abstract class SDFTransformer {
           int d = (int) Math
               .floor((e.getDelay().intValue() + ((i - 1) * e.getProd().intValue()) + k - 1) / (e.getCons().intValue() * e.getTarget().getNbRepeatAsInteger()));
 
-          GraphStructureHelper.addEdge(hsdf_graph, e.getSource().getName() + "_" + i, "to_" + e.getTarget().getName() + "_" + j,
-              e.getTarget().getName() + "_" + j, "from_" + e.getSource().getName() + "_" + i, 1, 1, d, e);
+          GraphStructureHelper.addEdge(hsdf_graph, e.getSource().getName() + "_" + i, null, e.getTarget().getName() + "_" + j, null, 1, 1, d, e);
 
           // // get the source actor
           // SDFAbstractVertex srcActor = hsdf_graph.getVertex(e.getSource().getName() + "_" + i);
@@ -102,7 +102,8 @@ public abstract class SDFTransformer {
     for (SDFAbstractVertex a : SDF.vertexSet()) {
       for (int i = 1; i <= a.getNbRepeatAsInteger(); i++) {
         // create an instance a_i of the actor a
-        GraphStructureHelper.addActor(singleRate, a.getName() + "_" + i, (SDFGraph) a.getGraphDescription(), 1, null, null, a);
+        GraphStructureHelper.addActor(singleRate, a.getName() + "_" + i, (SDFGraph) a.getGraphDescription(), 1,
+            (double) a.getPropertyBean().getValue("duration"), null, a);
 
         // SDFVertex a_i = new SDFVertex(singleRate);
         // a_i.setId(a.getId() + "_" + i);
@@ -136,8 +137,7 @@ public abstract class SDFTransformer {
           int m = Math.min(ma, mb);
           k += (m - 1);
 
-          GraphStructureHelper.addEdge(singleRate, e.getSource().getName() + "_" + i, "to_" + e.getTarget().getName() + "_" + j,
-              e.getTarget().getName() + "_" + j, "from_" + e.getSource().getName() + "_" + i, m, m, d * m, e);
+          GraphStructureHelper.addEdge(singleRate, e.getSource().getName() + "_" + i, null, e.getTarget().getName() + "_" + j, null, m, m, d * m, e);
 
           // // get the source actor
           // SDFAbstractVertex srcActor = singleRate.getVertex(e.getSource().getName() + "_" + i);

@@ -48,9 +48,14 @@ public abstract class GraphStructureHelper {
       srcActor = addActor(graph, srcActorName, null, null, null, null, null);
     }
     // get the source port if not create one
-    SDFInterfaceVertex srcPort = srcActor.getInterface(srcPortName);
-    if (srcPort == null) {
-      srcPort = addSinkPort(srcActor, srcPortName, prod_rate);
+    SDFInterfaceVertex srcPort;
+    if (srcPortName != null) {
+      srcPort = srcActor.getInterface(srcPortName);
+      if (srcPort == null) {
+        srcPort = addSinkPort(srcActor, srcPortName, prod_rate);
+      }
+    } else {
+      srcPort = addSinkPort(srcActor, Identifier.generateOutputPortId() + "_to_" + trgActorName, prod_rate);
     }
 
     // get the target actor if not exists create one
@@ -59,9 +64,14 @@ public abstract class GraphStructureHelper {
       tgtActor = addActor(graph, trgActorName, null, null, null, null, null);
     }
     // get the target port if not exists create one
-    SDFInterfaceVertex tgtPort = tgtActor.getInterface(trgPortName);
-    if (tgtPort == null) {
-      tgtPort = addSrcPort(tgtActor, trgPortName, cons_rate);
+    SDFInterfaceVertex tgtPort;
+    if (trgPortName != null) {
+      tgtPort = tgtActor.getInterface(trgPortName);
+      if (tgtPort == null) {
+        tgtPort = addSrcPort(tgtActor, trgPortName, cons_rate);
+      }
+    } else {
+      tgtPort = addSrcPort(tgtActor, Identifier.generateInputPortId() + "_from_" + srcActorName, cons_rate);
     }
 
     // add the edge to the srSDF graph
