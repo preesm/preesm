@@ -25,6 +25,7 @@ public class GraphSimulationHelper {
 
   // additional information for actors
   public Hashtable<SDFAbstractVertex, ActorExtendedInfo> actorsInfo;
+  // TODO add the extended info to actors as properties
 
   /**
    * @param graph
