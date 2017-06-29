@@ -143,6 +143,14 @@ public abstract class GraphStructureHelper {
     return actor;
   }
 
+  public static void addInputInterface(SDFGraph graph, String actorName, SDFGraph subgraph, Integer rv, Double l, Double z, SDFAbstractVertex Base) {
+
+  }
+
+  public static void addOutputInterface(SDFGraph graph, String actorName, SDFGraph subgraph, Integer rv, Double l, Double z, SDFAbstractVertex Base) {
+
+  }
+
   /**
    * Adds a source port to an actor
    * 
@@ -313,4 +321,5 @@ public abstract class GraphStructureHelper {
     // remove the old edge
     graph.removeEdge(edge);
   }
+
 }

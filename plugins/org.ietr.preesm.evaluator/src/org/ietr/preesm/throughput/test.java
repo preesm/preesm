@@ -41,6 +41,9 @@ public class test {
     // test the srSDF conversion
     testSrSDFConversion(g, scenario);
 
+    // test the creation of an IBSDF graph
+    testIBSDFGraphCreation(scenario);
+
   }
 
   /**
@@ -343,6 +346,47 @@ public class test {
     SDFGraph reducedHSDF = SDFTransformer.convertToReducedHSDF(graph);
     // print the reduced HSDF graph
     testSDFGraph(reducedHSDF, scenario);
+
+    System.out.println("----------------------------");
+  }
+
+  private static void testIBSDFGraphCreation(PreesmScenario scenario) {
+    System.out.println("------ Test IBSDF creation ------");
+    // create the subgraph
+    SDFGraph subgraph = new SDFGraph();
+    subgraph.setName("subgraph");
+    GraphStructureHelper.addActor(subgraph, "E", null, 1, 1., null, null);
+    GraphStructureHelper.addActor(subgraph, "F", null, 1, 1., null, null);
+    GraphStructureHelper.addActor(subgraph, "G", null, 1, 1., null, null);
+    GraphStructureHelper.addActor(subgraph, "H", null, 1, 1., null, null);
+    GraphStructureHelper.addInputInterface(subgraph, "b", null, 1, 0., null, null);
+    GraphStructureHelper.addInputInterface(subgraph, "d", null, 1, 0., null, null);
+    GraphStructureHelper.addOutputInterface(subgraph, "a", null, 1, 0., null, null);
+
+    GraphStructureHelper.addEdge(subgraph, "E", "f", "F", "e", 2, 2, 0, null);
+    GraphStructureHelper.addEdge(subgraph, "F", "g", "G", "f", 2, 2, 2, null);
+    GraphStructureHelper.addEdge(subgraph, "G", "h", "H", "g", 2, 2, 0, null);
+    GraphStructureHelper.addEdge(subgraph, "H", "e", "E", "h", 2, 2, 0, null);
+    GraphStructureHelper.addEdge(subgraph, "b", "e", "E", "in1", 2, 2, 0, null);
+    GraphStructureHelper.addEdge(subgraph, "d", "f", "F", "in2", 2, 2, 0, null);
+    GraphStructureHelper.addEdge(subgraph, "G", "out1", "a", "g", 2, 2, 0, null);
+
+    // create the top graph and add the subgraph to the hierarchical actor
+    SDFGraph topgraph = new SDFGraph();
+    topgraph.setName("subgraph");
+    GraphStructureHelper.addActor(topgraph, "A", null, 1, 1., null, null);
+    GraphStructureHelper.addActor(topgraph, "B", null, 2, 1., null, null);
+    GraphStructureHelper.addActor(topgraph, "C", subgraph, 2, null, null, null);
+    GraphStructureHelper.addActor(topgraph, "D", null, 2, 1., null, null);
+
+    GraphStructureHelper.addEdge(topgraph, "A", "b", "B", "a", 2, 1, 1, null);
+    GraphStructureHelper.addEdge(topgraph, "B", "c", "C", "b", 1, 1, 0, null);
+    GraphStructureHelper.addEdge(topgraph, "B", "d", "D", "b", 1, 1, 0, null);
+    GraphStructureHelper.addEdge(topgraph, "D", "c", "C", "d", 1, 1, 0, null);
+    GraphStructureHelper.addEdge(topgraph, "C", "a", "A", "c", 1, 2, 1, null);
+
+    // test the ibsdf graph
+    testHierarchy(topgraph, scenario);
 
     System.out.println("----------------------------");
   }
