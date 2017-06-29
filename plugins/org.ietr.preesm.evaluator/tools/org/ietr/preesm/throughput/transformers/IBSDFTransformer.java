@@ -1,9 +1,11 @@
 package org.ietr.preesm.throughput.transformers;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
+import org.ietr.preesm.throughput.parsers.GraphStructureHelper;
 
 public abstract class IBSDFTransformer {
 
@@ -133,46 +135,42 @@ public abstract class IBSDFTransformer {
     return null;
   }
 
+  /**
+   * Adds the execution rules to the srSDF subgraph
+   * 
+   * @param srSDF
+   *          graph
+   */
   private static void addExecRules(SDFGraph srSDF) {
-    // create the Start and End actors instead in and out
+    // step 1: add the two special actors Start and End actors
+    GraphStructureHelper.addActor(srSDF, "start", null, 1, 0., null, null);
+    GraphStructureHelper.addActor(srSDF, "end", null, 1, 0., null, null);
 
-    // create one input interface and one output interface and add the back edge
-    Actor IN = srSDFsubgraph.createActor("IN", 0., 1, null, null);
-    Actor OUT = srSDFsubgraph.createActor("OUT", 0., 1, null, null);
-    srSDFsubgraph.createEdge(a.id + "OUTtoIN", OUT.id, null, IN.id, null, 1., 1., 1., null);
+    // add the edge back from End actor to Start actor (no need of the edge from start to end)
+    GraphStructureHelper.addEdge(srSDF, "end", "to_start", "start", "from_end", 1, 1, 1, null);
 
-    ArrayList<Actor> interfacesToRemove = new ArrayList<Actor>();
-
-    for (Actor t : srSDFsubgraph.actors.values()) {
-      if (t.BaseActor.type == Actor.Type.INPUTINTERFACE) {
-        // ArrayList<Edge> edges = new ArrayList<Edge>();
-        // for(Edge e : t.OutputEdges.values())
-        // edges.add(e);
-        //
-        // for(Edge e : edges)
-        // e.replaceSourceActor(IN);
-        interfacesToRemove.add(t);
-
-      } else if (t.BaseActor.type == Actor.Type.OUTPUTINTERFACE) {
-        // ArrayList<Edge> edges = new ArrayList<Edge>();
-        // for(Edge e : t.InputEdges.values())
-        // edges.add(e);
-        //
-        // for(Edge e : edges)
-        // e.replaceTargetActor(OUT);
-        interfacesToRemove.add(t);
-
-      } else {
-        if (!(t.id.equals(IN.id) || t.id.equals(OUT.id))) {
-          // add the connection to IN and OUT
-          srSDFsubgraph.createEdge(t.id + "fromIN", IN.id, null, t.id, null, 1., 1., 0., null);
-          srSDFsubgraph.createEdge(t.id + "toOUT", t.id, null, OUT.id, null, 1., 1., 0., null);
+    // step 2: add the connection between actors/interfaces and start/end actors
+    for (SDFAbstractVertex actor : srSDF.vertexSet()) {
+      if (actor.getName() != "start" && actor.getName() != "end") {
+        if (actor.getKind() == "port") {
+          // add the connection between the interface and start/end actor
+          if (actor instanceof SDFSourceInterfaceVertex) {
+            // input interface
+            GraphStructureHelper.addEdge(srSDF, actor.getName(), "to_start", "start", "from_" + actor.getName(), 1, 1, 0, null);
+          } else if (actor instanceof SDFSinkInterfaceVertex) {
+            // output interface
+            GraphStructureHelper.addEdge(srSDF, "end", "to_" + actor.getName(), actor.getName(), "from_end", 1, 1, 0, null);
+          } else {
+            // unknown kind of port (unsupported)
+            System.err.println("Unsupported kind of port !!");
+          }
+        } else {
+          // add the connection between the actor and start/end actor
+          GraphStructureHelper.addEdge(srSDF, "start", "to_" + actor.getName(), actor.getName(), "from_start", 1, 1, 0, null);
+          GraphStructureHelper.addEdge(srSDF, actor.getName(), "to_end", "end", "from_" + actor.getName(), 1, 1, 0, null);
         }
       }
     }
-
-    for (Actor i : interfacesToRemove)
-      srSDFsubgraph.removeActor(i.id);
   }
 
 }
