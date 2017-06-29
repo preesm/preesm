@@ -14,7 +14,7 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
  *
  */
 public class ASAPSchedule_SDF {
-  private SimulationHelper                                         simulator;  // simulator helper
+  private GraphSimulationHelper                                         simulator;  // simulator helper
   private Double                                                   dur1Iter;   // duration of one iteration of a graph
   private Hashtable<Double, Hashtable<SDFAbstractVertex, Integer>> executions; // list of ready executions to finish
 
@@ -30,7 +30,7 @@ public class ASAPSchedule_SDF {
   public double schedule(SDFGraph graph, PreesmScenario scenario) {
 
     // initialize the simulator
-    this.simulator = new SimulationHelper(graph, scenario);
+    this.simulator = new GraphSimulationHelper(graph, scenario);
     this.dur1Iter = 0.;
 
     // initialize the 1st elements of the list

@@ -15,7 +15,7 @@ import org.ietr.preesm.core.scenario.Timing;
  * 
  *         A simulation helper.
  */
-public class SimulationHelper {
+public class GraphSimulationHelper {
   // SDF graph and scenario
   public SDFGraph       graph;
   public PreesmScenario scenario;
@@ -32,7 +32,7 @@ public class SimulationHelper {
    * @param scenario
    *          contains actors duration
    */
-  public SimulationHelper(SDFGraph graph, PreesmScenario scenario) {
+  public GraphSimulationHelper(SDFGraph graph, PreesmScenario scenario) {
     this.graph = graph;
     this.scenario = scenario;
 
