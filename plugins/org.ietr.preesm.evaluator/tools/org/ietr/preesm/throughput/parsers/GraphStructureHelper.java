@@ -2,6 +2,7 @@ package org.ietr.preesm.throughput.parsers;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import org.ietr.dftools.algorithm.model.AbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -143,12 +144,79 @@ public abstract class GraphStructureHelper {
     return actor;
   }
 
-  public static void addInputInterface(SDFGraph graph, String actorName, SDFGraph subgraph, Integer rv, Double l, Double z, SDFAbstractVertex Base) {
+  public static SDFSourceInterfaceVertex addInputInterface(SDFGraph graph, String interfaceName, Integer rv, Double l, Double z, SDFAbstractVertex Base) {
+    // an interface is an independent actor from its hierarchical parent actor but with the same name of its associated port in the hierarchical actor
+
+    // create an input interface and set the parent graph
+    SDFSourceInterfaceVertex in = new SDFSourceInterfaceVertex();
+    in.setPropertyValue(AbstractVertex.BASE, graph);
+
+    // set the name
+    in.setId(interfaceName);
+    in.setName(interfaceName);
+
+    // set the repetition factor
+    if (rv != null) {
+      in.setNbRepeat(rv);
+    }
+
+    // set the execution duration
+    if (l != null) {
+      in.setPropertyValue("duration", l);
+    }
+
+    // set the normalized consumption/production rate
+    if (z != null) {
+      in.setPropertyValue("normalizedRate", z);
+    }
+
+    // set the base actor
+    if (Base != null) {
+      in.setPropertyValue("baseActor", Base);
+    } else {
+      in.setPropertyValue("baseActor", in);
+    }
+
+    graph.addVertex(in);
+    return in;
 
   }
 
-  public static void addOutputInterface(SDFGraph graph, String actorName, SDFGraph subgraph, Integer rv, Double l, Double z, SDFAbstractVertex Base) {
+  public static SDFSinkInterfaceVertex addOutputInterface(SDFGraph graph, String interfaceName, Integer rv, Double l, Double z, SDFAbstractVertex Base) {
+    // an interface is an independent actor from its hierarchical parent actor but with the same name of its associated port in the hierarchical actor
 
+    // create an output interface and set the parent graph
+    SDFSinkInterfaceVertex out = new SDFSinkInterfaceVertex();
+    out.setPropertyValue(AbstractVertex.BASE, graph);
+
+    // set the name
+    out.setId(interfaceName);
+    out.setName(interfaceName);
+
+    // set the repetition factor
+    if (rv != null) {
+      out.setNbRepeat(rv);
+    }
+
+    // set the execution duration
+    if (l != null) {
+      out.setPropertyValue("duration", l);
+    }
+
+    // set the normalized consumption/production rate
+    if (z != null) {
+      out.setPropertyValue("normalizedRate", z);
+    }
+
+    // set the base actor
+    if (Base != null) {
+      out.setPropertyValue("baseActor", Base);
+    } else {
+      out.setPropertyValue("baseActor", out);
+    }
+
+    graph.addVertex(out);
+    return out;
   }
 
   /**
