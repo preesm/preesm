@@ -12,6 +12,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.throughput.parsers.GraphStructureHelper;
+import org.ietr.preesm.throughput.transformers.IBSDFTransformer;
 import org.ietr.preesm.throughput.transformers.SDFTransformer;
 
 /**
@@ -26,23 +27,26 @@ public class test {
    */
   public static void start(SDFGraph graph, PreesmScenario scenario) {
 
-    // test sdf
-    testSDFGraph(graph, scenario);
-
-    // test scenarion
-    testScenario(graph, scenario);
-
-    // test hierarchy
-    testHierarchy(graph, scenario);
-
-    // test the creation of an SDF graph
-    SDFGraph g = testSDFGraphCreation(scenario);
-
-    // test the srSDF conversion
-    testSrSDFConversion(g, scenario);
-
-    // test the creation of an IBSDF graph
+    // // test sdf
+    // testSDFGraph(graph, scenario);
+    //
+    // // test scenarion
+    // testScenario(graph, scenario);
+    //
+    // // test hierarchy
+    // testHierarchy(graph, scenario);
+    //
+    // // test the creation of an SDF graph
+    // SDFGraph g = testSDFGraphCreation(scenario);
+    //
+    // // test the srSDF conversion
+    // testSrSDFConversion(g, scenario);
+    //
+    // // test the creation of an IBSDF graph
     testIBSDFGraphCreation(scenario);
+
+    // test structure of the graph
+    // testStructure(graph, scenario);
 
   }
 
@@ -69,14 +73,14 @@ public class test {
         e.printStackTrace();
       }
 
-      System.out.println("==> inputs : ");
+      System.out.println("\t inputs : ");
       for (SDFInterfaceVertex input : actor.getSources()) {
-        System.out.println("\t input port name " + input.getName() + " : " + actor.getAssociatedEdge(input).toString());
+        System.out.println("\t\t input port name " + input.getName() + " : " + actor.getAssociatedEdge(input).toString());
       }
 
-      System.out.println("==> outputs : ");
+      System.out.println("\t outputs : ");
       for (SDFInterfaceVertex output : actor.getSinks()) {
-        System.out.println("\t output port name " + output.getName() + " : " + actor.getAssociatedEdge(output).toString());
+        System.out.println("\t\t output port name " + output.getName() + " : " + actor.getAssociatedEdge(output).toString());
       }
     }
 
@@ -85,6 +89,17 @@ public class test {
       System.out.println("name: " + edge.toString());
       System.out.println("e(" + edge.getSource().getName() + "," + edge.getTarget().getName() + "), p(" + edge.getSourceInterface().getName() + ","
           + edge.getTargetInterface().getName() + "), prod=" + edge.getProd() + " cons= " + edge.getCons() + " M0= " + edge.getDelay());
+    }
+
+    for (SDFAbstractVertex actor : graph.getAllVertices()) {
+      if (actor.getGraphDescription() != null) {
+        System.out.println("edges of " + actor.getName());
+        for (SDFEdge edge : ((SDFGraph) actor.getGraphDescription()).edgeSet()) {
+          System.out.println("name: " + edge.toString());
+          System.out.println("e(" + edge.getSource().getName() + "," + edge.getTarget().getName() + "), p(" + edge.getSourceInterface().getName() + ","
+              + edge.getTargetInterface().getName() + "), prod=" + edge.getProd() + " cons= " + edge.getCons() + " M0= " + edge.getDelay());
+        }
+      }
     }
 
     System.out.println("---------------------------");
@@ -359,21 +374,21 @@ public class test {
     GraphStructureHelper.addActor(subgraph, "F", null, 1, 1., null, null);
     GraphStructureHelper.addActor(subgraph, "G", null, 1, 1., null, null);
     GraphStructureHelper.addActor(subgraph, "H", null, 1, 1., null, null);
-    GraphStructureHelper.addInputInterface(subgraph, "b", null, 1, 0., null, null);
-    GraphStructureHelper.addInputInterface(subgraph, "d", null, 1, 0., null, null);
-    GraphStructureHelper.addOutputInterface(subgraph, "a", null, 1, 0., null, null);
+    GraphStructureHelper.addInputInterface(subgraph, "b", 1, 0., null, null);
+    GraphStructureHelper.addInputInterface(subgraph, "d", 1, 0., null, null);
+    GraphStructureHelper.addOutputInterface(subgraph, "a", 1, 0., null, null);
 
     GraphStructureHelper.addEdge(subgraph, "E", "f", "F", "e", 2, 2, 0, null);
     GraphStructureHelper.addEdge(subgraph, "F", "g", "G", "f", 2, 2, 2, null);
     GraphStructureHelper.addEdge(subgraph, "G", "h", "H", "g", 2, 2, 0, null);
     GraphStructureHelper.addEdge(subgraph, "H", "e", "E", "h", 2, 2, 0, null);
-    GraphStructureHelper.addEdge(subgraph, "b", "e", "E", "in1", 2, 2, 0, null);
-    GraphStructureHelper.addEdge(subgraph, "d", "f", "F", "in2", 2, 2, 0, null);
-    GraphStructureHelper.addEdge(subgraph, "G", "out1", "a", "g", 2, 2, 0, null);
+    GraphStructureHelper.addEdge(subgraph, "b", "b", "E", "in1", 2, 2, 0, null);
+    GraphStructureHelper.addEdge(subgraph, "d", "d", "F", "in2", 2, 2, 0, null);
+    GraphStructureHelper.addEdge(subgraph, "G", "out1", "a", "a", 2, 2, 0, null);
 
     // create the top graph and add the subgraph to the hierarchical actor
     SDFGraph topgraph = new SDFGraph();
-    topgraph.setName("subgraph");
+    topgraph.setName("topgraph");
     GraphStructureHelper.addActor(topgraph, "A", null, 1, 1., null, null);
     GraphStructureHelper.addActor(topgraph, "B", null, 2, 1., null, null);
     GraphStructureHelper.addActor(topgraph, "C", subgraph, 2, null, null, null);
@@ -386,9 +401,90 @@ public class test {
     GraphStructureHelper.addEdge(topgraph, "C", "a", "A", "c", 1, 2, 1, null);
 
     // test the ibsdf graph
+    testSDFGraph(topgraph, scenario);
     testHierarchy(topgraph, scenario);
 
+    System.out.println("-------------- CONVERT IBSDF TO SRSDF -----------------");
+    SDFGraph flatSrSDF = IBSDFTransformer.convertToSrSDF(topgraph, false);
+    testSDFGraph(flatSrSDF, scenario);
+
     System.out.println("----------------------------");
+  }
+
+  private static void testStructure(SDFGraph graph, PreesmScenario scenario) {
+    System.out.println("------ Test structure ------");
+
+    // get the hierarchical actor and its subgraph
+    SDFAbstractVertex hierarchicalActor = graph.getVertex("B");
+    SDFGraph subgraph = (SDFGraph) hierarchicalActor.getGraphDescription();
+
+    testSDFGraph(graph, scenario);
+
+    // remove the hierarchical actor
+    // graph.removeVertex(hierarchicalActor);
+
+    // rename the port of the hierarchical actor
+    SDFSourceInterfaceVertex in = (SDFSourceInterfaceVertex) hierarchicalActor.getInterface("a");
+    SDFSinkInterfaceVertex out = (SDFSinkInterfaceVertex) hierarchicalActor.getInterface("c");
+
+    in.setName(in.getName() + "*");
+    out.setName(out.getName() + "*");
+    in.setNbRepeat(100);
+    out.setNbRepeat(200);
+
+    // print info of in interface
+    try {
+      System.out.println(
+          in.getKind() + "  " + in.getName() + ", rv= " + in.getNbRepeat() + ", dur=" + scenario.getTimingManager().getTimingOrDefault(in.getId(), "x86"));
+
+      if (in.getGraphDescription() != null) {
+        System.out.println("actor with a graph description !!");
+        // System.out.println("Hierarchical duration = " + scenario.getTimingManager().generateVertexTimingFromHierarchy(actor, "x86"));
+      }
+
+    } catch (InvalidExpressionException e) {
+      e.printStackTrace();
+    }
+
+    System.out.println("\t inputs : ");
+    for (SDFInterfaceVertex input : in.getSources()) {
+      System.out.println("\t\t input port name " + input.getName() + " : " + in.getAssociatedEdge(input).toString());
+    }
+
+    System.out.println("\t outputs : ");
+    for (SDFInterfaceVertex output : in.getSinks()) {
+      System.out.println("\t\t output port name " + output.getName() + " : " + in.getAssociatedEdge(output).toString());
+    }
+
+    // print info of out interface
+    try {
+      System.out.println(
+          out.getKind() + "  " + out.getName() + ", rv= " + out.getNbRepeat() + ", dur=" + scenario.getTimingManager().getTimingOrDefault(out.getId(), "x86"));
+
+      if (out.getGraphDescription() != null) {
+        System.out.println("actor with a graph description !!");
+        // System.out.println("Hierarchical duration = " + scenario.getTimingManager().generateVertexTimingFromHierarchy(actor, "x86"));
+      }
+
+    } catch (InvalidExpressionException e) {
+      e.printStackTrace();
+    }
+
+    System.out.println("\t inputs : ");
+    for (SDFInterfaceVertex input : out.getSources()) {
+      System.out.println("\t\t input port name " + input.getName() + " : " + out.getAssociatedEdge(input).toString());
+    }
+
+    System.out.println("\t outputs : ");
+    for (SDFInterfaceVertex output : out.getSinks()) {
+      System.out.println("\t\t output port name " + output.getName() + " : " + out.getAssociatedEdge(output).toString());
+    }
+
+    System.out.println("-------   After renaming the interfaces -------------");
+
+    testSDFGraph(graph, scenario);
+
+    System.out.println("\n----------------------------");
   }
 
   /*

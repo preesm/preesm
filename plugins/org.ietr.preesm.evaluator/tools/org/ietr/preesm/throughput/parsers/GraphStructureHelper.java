@@ -316,7 +316,7 @@ public abstract class GraphStructureHelper {
     // Step 1: add the replacement subgraph into the parent graph
     for (SDFAbstractVertex a : replacementGraph.vertexSet()) {
       GraphStructureHelper.addActor(parentGraph, h.getName() + "_" + a.getName(), (SDFGraph) a.getGraphDescription(), 1,
-          (double) a.getPropertyBean().getValue("duration"), null, (SDFAbstractVertex) a.getPropertyBean().getValue("baseActor"));
+          (Double) a.getPropertyBean().getValue("duration"), null, (SDFAbstractVertex) a.getPropertyBean().getValue("baseActor"));
     }
     for (SDFEdge e : replacementGraph.edgeSet()) {
       GraphStructureHelper.addEdge(parentGraph, h.getName() + "_" + e.getSource().getName(), null, h.getName() + "_" + e.getTarget().getName(), null,
