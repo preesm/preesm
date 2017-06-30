@@ -91,6 +91,18 @@ interface DAGOperations {
 	public def boolean isDAGParallel()
 	
 	/**
+	 * Returns a list of root instances that form a part of cycles
+	 * Each list is a separate cycle and contains root instances from the
+	 * DAG that is affected by the cycle under consideration
+	 * 
+	 * @return List of lists each containing instances from cycles
+	 * @throws UnsupportedOperationException This operation cannot work on subset DAGs as they
+	 *  	   don't contain more than one root nodes
+	 * @throws SDF4JException The DAG is not instance independent
+	 */
+	public def List<List<SDFAbstractVertex>> getCycleRoots() throws UnsupportedOperationException, SDF4JException
+	
+	/**
 	 * Rearrange the level sets of DAG such that the DAG is 
 	 * data parallel as well. The function checks if DAG is
 	 * instance independent and returns the level set

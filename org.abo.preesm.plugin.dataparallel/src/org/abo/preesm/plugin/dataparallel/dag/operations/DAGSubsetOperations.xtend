@@ -146,6 +146,16 @@ class DAGSubsetOperations extends DAGFromSDFOperations {
 	}
 	
 	/**
+	 * Overrides {@link DAGOperations#getCycles}
+	 * 
+	 * @throws UnsupportedOperationException As one can't find cycles from 
+	 * a DAG subset
+	 */
+	override getCycleRoots() {
+		throw new UnsupportedOperationException("Can't find cycles from a DAG subset")
+	}
+	
+	/**
 	 * Overrides {@link DAGOperations#rearrange}
 	 */
 	override rearrange() throws SDF4JException {

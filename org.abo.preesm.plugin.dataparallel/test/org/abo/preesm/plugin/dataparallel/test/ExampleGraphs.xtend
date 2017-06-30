@@ -8,6 +8,8 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
 import org.abo.preesm.plugin.dataparallel.test.ExampleGraphs.SDFBuilder
 import org.junit.Assert
+import org.abo.preesm.plugin.dataparallel.dag.operations.DAGFromSDFOperations
+import org.abo.preesm.plugin.dataparallel.SDF2DAG
 
 /**
  * Construct example graphs. 
@@ -71,6 +73,32 @@ class ExampleGraphs {
 	public def void sdfIsSchedulable() {
 		Util.provideAllGraphs.forEach[sdf |
 			Assert.assertTrue(sdf.schedulable) 
+		]
+	}
+	
+	/**
+	 * Check if the graphs are dag independent. This is done
+	 * manually to use the information as a reference in future
+	 * tests
+	 */
+	@org.junit.Test
+	public def void dagInd() {
+		val parameterArray = #[
+			#[acyclicTwoActors, Boolean.TRUE],
+			#[twoActorSelfLoop, Boolean.FALSE],
+			#[twoActorLoop, Boolean.FALSE],
+			#[semanticallyAcyclicCycle, Boolean.TRUE],
+			#[strictlyCyclic, Boolean.TRUE],
+			#[mixedNetwork1, Boolean.TRUE],
+			#[mixedNetwork2, Boolean.FALSE]
+		]
+		
+		parameterArray.forEach[row |
+			val sdf = row.get(0) as SDFGraph
+			val expected = row.get(1) 
+			val dagOps = new DAGFromSDFOperations(new SDF2DAG(sdf))
+			
+			Assert.assertEquals(dagOps.DAGInd, expected)
 		]
 	}
 	

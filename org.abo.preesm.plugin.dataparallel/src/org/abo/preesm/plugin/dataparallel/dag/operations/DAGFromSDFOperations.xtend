@@ -14,6 +14,7 @@ import org.jgrapht.traverse.TopologicalOrderIterator
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.traverse.BreadthFirstIterator
+import org.abo.preesm.plugin.dataparallel.DAGSubset
 
 /**
  * Implementation of {@link DAGOperations} for DAGs constructed from
@@ -88,6 +89,16 @@ class DAGFromSDFOperations implements DAGOperations {
 	protected var boolean dagInd
 	
 	/**
+	 * Hold the cycles in the DAG (only if its instance independent)
+	 */
+	protected val List<List<SDFAbstractVertex>> cycleRoots
+	
+	/**
+	 * Flag to avoid recomputing cycles in DAG
+	 */
+	protected var boolean computeCycles
+	
+	/**
 	 * Constructor used for test setup
 	 * 
 	 * @param dagGen The {@link DAGConstructor} instance
@@ -120,6 +131,8 @@ class DAGFromSDFOperations implements DAGOperations {
 		computeLevels = false
 		dagInd = false
 		computeDAGInd = false
+		computeCycles = false
+		cycleRoots = newArrayList()
 	}
 	
 	/**
@@ -321,6 +334,50 @@ class DAGFromSDFOperations implements DAGOperations {
 			}
 		]
 		return levelSets
+	}
+	
+	/**
+	 * Overrides {@link DAGOperations#getCycles}
+	 */
+	override getCycleRoots() {
+		if(!computeCycles) {
+			if(!isDAGInd) {
+				throw new SDF4JException("Invalid DAG! The DAG is not instance independent")
+			}
+			
+			// Set of actors that have already been grouped. This is non-destructive way of computing
+			val seenRoots = newHashSet()
+			
+			val rootInstances = getRootInstances()
+			rootInstances.forEach[rootInstance |
+				val rootActor = dagGen.instance2Actor.get(rootInstance)
+				if(!seenRoots.contains(rootActor)) {
+					val dependentInstances = newHashSet()
+					
+					val restInstances = getRootInstances.filter[node | dagGen.instance2Actor.get(node) != rootActor]
+					restInstances.forEach[ remainingRootInstance |
+						// Check if this subset DAG contains rootInstance
+						val remainingRootActor = dagGen.instance2Actor.get(remainingRootInstance)
+						if(new DAGSubset(dagGen, remainingRootInstance).actor2Instances.keySet.contains(rootActor)) {
+							// Then perform a counter check
+							
+							if(new DAGSubset(dagGen, rootInstance).actor2Instances.keySet.contains(remainingRootActor)) {
+								// The two nodes are part of the cycle, add them to seen nodes
+								seenRoots.add(rootActor)
+								seenRoots.add(remainingRootActor)
+								dependentInstances.add(remainingRootInstance)
+								dependentInstances.add(rootInstance)										
+							}
+						}
+					]
+					if(!dependentInstances.empty) {
+						cycleRoots.add(dependentInstances.toList)
+					}
+				}
+			]
+			computeCycles = true
+		}	
+		return cycleRoots
 	}
 	
 	/**
