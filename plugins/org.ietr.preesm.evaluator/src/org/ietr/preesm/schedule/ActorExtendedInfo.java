@@ -8,7 +8,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
  *         contains additional information about the actor. Used essentially in the simulation process.
  */
 public class ActorExtendedInfo {
-
+  // TODO delete this class and add class attributes to actor as properties
   public SDFAbstractVertex actor;
   public double            duration;
   public double            startDate;

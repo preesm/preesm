@@ -220,8 +220,16 @@ public class GraphSimulationHelper {
   /**
    * return the list of ready actors to execute
    */
-  public void getReadyActors() {
-
+  public Hashtable<SDFAbstractVertex, Integer> getReadyActorsNbExecutions() {
+    Hashtable<SDFAbstractVertex, Integer> readyActors = new Hashtable<SDFAbstractVertex, Integer>();
+    // get the max number n of executions for each actor, if n>0 then add the actor to the list of ready actors
+    for (SDFAbstractVertex actor : this.graph.vertexSet()) {
+      int n = this.maxNbOfExecutions(actor);
+      if (n > 0) {
+        readyActors.put(actor, n);
+      }
+    }
+    return readyActors;
   }
 
   /**
