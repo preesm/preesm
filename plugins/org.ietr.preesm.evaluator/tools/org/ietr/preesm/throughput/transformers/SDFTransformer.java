@@ -4,6 +4,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
+import org.ietr.preesm.throughput.helpers.MathFunctionsHelper;
 
 /**
  * @author hderoui
@@ -30,17 +31,6 @@ public abstract class SDFTransformer {
         // create an instance a_i of the actor a
         GraphStructureHelper.addActor(hsdf_graph, a.getName() + "_" + i, (SDFGraph) a.getGraphDescription(), 1,
             (Double) a.getPropertyBean().getValue("duration"), null, a);
-        // SDFVertex a_i = new SDFVertex(hsdf_graph);
-        // a_i.setId(a.getId() + "_" + i);
-        // a_i.setName(a.getName() + "_" + i);
-        // a_i.setNbRepeat(1);
-        // a_i.setPropertyValue("baseActor", a);
-        // hsdf_graph.addVertex(a_i);
-        //
-        // // if a is hierarchical add the subgraph to the instance
-        // if (a.getGraphDescription() != null) {
-        // a_i.setGraphDescription(a.getGraphDescription());
-        // }
 
       }
     }
@@ -55,29 +45,8 @@ public abstract class SDFTransformer {
           int d = (int) Math
               .floor((e.getDelay().intValue() + ((i - 1) * e.getProd().intValue()) + k - 1) / (e.getCons().intValue() * e.getTarget().getNbRepeatAsInteger()));
 
+          // add the edge
           GraphStructureHelper.addEdge(hsdf_graph, e.getSource().getName() + "_" + i, null, e.getTarget().getName() + "_" + j, null, 1, 1, d, e);
-
-          // // get the source actor
-          // SDFAbstractVertex srcActor = hsdf_graph.getVertex(e.getSource().getName() + "_" + i);
-          // SDFInterfaceVertex srcPort = new SDFSinkInterfaceVertex();
-          // srcPort.setId("to_" + e.getTarget().getName() + "_" + j);
-          // srcPort.setName("to_" + e.getTarget().getName() + "_" + j);
-          // srcActor.addInterface(srcPort);
-          //
-          // // get the target actor
-          // SDFAbstractVertex tgtActor = hsdf_graph.getVertex(e.getTarget().getName() + "_" + j);
-          // SDFInterfaceVertex tgtPort = new SDFSourceInterfaceVertex();
-          // tgtPort.setId("from_" + e.getSource().getName() + "_" + i);
-          // tgtPort.setName("from_" + e.getSource().getName() + "_" + i);
-          // tgtActor.addInterface(tgtPort);
-          //
-          // // add the edge to the srSDF graph
-          // SDFEdge edge = hsdf_graph.addEdge(srcActor, srcPort, tgtActor, tgtPort);
-          // // edge.setPropertyValue("edgeName", "from_" + e.getSource().getName() + "_" + i + "_to_" + e.getTarget().getName() + "_" + j);
-          // edge.setProd(new SDFIntEdgePropertyType(1));
-          // edge.setCons(new SDFIntEdgePropertyType(1));
-          // edge.setDelay(new SDFIntEdgePropertyType(d));
-          // edge.setPropertyValue("baseEdge", e);
 
         }
       }
@@ -104,19 +73,6 @@ public abstract class SDFTransformer {
         // create an instance a_i of the actor a
         GraphStructureHelper.addActor(singleRate, a.getName() + "_" + i, (SDFGraph) a.getGraphDescription(), 1,
             (Double) a.getPropertyBean().getValue("duration"), null, a);
-
-        // SDFVertex a_i = new SDFVertex(singleRate);
-        // a_i.setId(a.getId() + "_" + i);
-        // a_i.setName(a.getName() + "_" + i);
-        // a_i.setNbRepeat(1);
-        // a_i.setPropertyValue("baseActor", a);
-        // singleRate.addVertex(a_i);
-        //
-        // // if a is hierarchical add the subgraph to the instance
-        // if (a.getGraphDescription() != null) {
-        // a_i.setGraphDescription(a.getGraphDescription());
-        // }
-
       }
     }
 
@@ -137,29 +93,8 @@ public abstract class SDFTransformer {
           int m = Math.min(ma, mb);
           k += (m - 1);
 
+          // add the edge
           GraphStructureHelper.addEdge(singleRate, e.getSource().getName() + "_" + i, null, e.getTarget().getName() + "_" + j, null, m, m, d * m, e);
-
-          // // get the source actor
-          // SDFAbstractVertex srcActor = singleRate.getVertex(e.getSource().getName() + "_" + i);
-          // SDFInterfaceVertex srcPort = new SDFSinkInterfaceVertex();
-          // srcPort.setId("to_" + e.getTarget().getName() + "_" + j);
-          // srcPort.setName("to_" + e.getTarget().getName() + "_" + j);
-          // srcActor.addInterface(srcPort);
-          //
-          // // get the target actor
-          // SDFAbstractVertex tgtActor = singleRate.getVertex(e.getTarget().getName() + "_" + j);
-          // SDFInterfaceVertex tgtPort = new SDFSourceInterfaceVertex();
-          // tgtPort.setId("from_" + e.getSource().getName() + "_" + i);
-          // tgtPort.setName("from_" + e.getSource().getName() + "_" + i);
-          // tgtActor.addInterface(tgtPort);
-          //
-          // // add the edge to the srSDF graph
-          // SDFEdge edge = singleRate.addEdge(srcActor, srcPort, tgtActor, tgtPort);
-          // // edge.setPropertyValue("edgeName", "from_" + e.getSource().getName() + "_" + i + "_to_" + e.getTarget().getName() + "_" + j);
-          // edge.setProd(new SDFIntEdgePropertyType(m));
-          // edge.setCons(new SDFIntEdgePropertyType(m));
-          // edge.setDelay(new SDFIntEdgePropertyType(d * m));
-          // edge.setPropertyValue("baseEdge", e);
 
         }
       }
@@ -196,6 +131,25 @@ public abstract class SDFTransformer {
     dag = SrSDFTransformer.convertToDAG(dag);
 
     return dag;
+  }
+
+  /**
+   * normalize an SDF graph for the liveness test with the sufficient condition and for periodic schedule computation.
+   * 
+   * @param SDF
+   *          graph
+   */
+  public static void normalize(SDFGraph SDF) {
+    double K_RV = 1;
+    for (SDFAbstractVertex actor : SDF.vertexSet()) {
+      K_RV = MathFunctionsHelper.lcm(K_RV, actor.getNbRepeatAsInteger());
+    }
+
+    for (SDFEdge edge : SDF.edgeSet()) {
+      edge.getSource().setPropertyValue("normalizedRate", K_RV / edge.getSource().getNbRepeatAsInteger());
+      edge.getTarget().setPropertyValue("normalizedRate", K_RV / edge.getTarget().getNbRepeatAsInteger());
+      edge.setPropertyValue("normalizationFactor", (K_RV * edge.getCons().intValue()) / edge.getTarget().getNbRepeatAsInteger());
+    }
   }
 
 }
