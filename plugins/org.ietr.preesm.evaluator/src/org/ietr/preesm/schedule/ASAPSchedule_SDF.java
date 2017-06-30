@@ -6,6 +6,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.throughput.helpers.GraphSimulationHelper;
 
 /**
  * @author hderoui

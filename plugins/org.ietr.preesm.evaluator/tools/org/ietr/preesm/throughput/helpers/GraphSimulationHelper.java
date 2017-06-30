@@ -1,4 +1,4 @@
-package org.ietr.preesm.schedule;
+package org.ietr.preesm.throughput.helpers;
 
 import java.util.Hashtable;
 import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;

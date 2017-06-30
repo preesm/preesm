@@ -1,4 +1,4 @@
-package org.ietr.preesm.throughput.parsers;
+package org.ietr.preesm.throughput.helpers;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -11,6 +11,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
+import org.ietr.preesm.throughput.parsers.Identifier;
 
 /**
  * @author hderoui

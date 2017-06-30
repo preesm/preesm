@@ -11,7 +11,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
-import org.ietr.preesm.throughput.parsers.GraphStructureHelper;
+import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.transformers.IBSDFTransformer;
 import org.ietr.preesm.throughput.transformers.SDFTransformer;
 

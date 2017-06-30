@@ -5,7 +5,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.ietr.preesm.throughput.parsers.GraphStructureHelper;
+import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
 
 public abstract class IBSDFTransformer {
 

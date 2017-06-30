@@ -3,7 +3,7 @@ package org.ietr.preesm.throughput.transformers;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.throughput.parsers.GraphStructureHelper;
+import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
 
 /**
  * @author hderoui
