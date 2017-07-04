@@ -250,16 +250,13 @@ During the Maven deploy phase, the content is automatically uploaded to those lo
 | org.ietr.preesm.feature/ | The Preesm feature for end users |
 | org.ietr.preesm.product/ | Maven module for generating the end user products |
 | org.ietr.preesm.rcp.utils/ | Small Eclipse plugin for configuring the products |
-| auto_convert_encoding_and_lineendings.sh | Bash script for converting all file line endings to Linux and charset to UTF-8 |
-| run_checkstyle.sh | Small Bash script that calls Maven with proper arguments to check the coding policy |
-| copyright_template.txt | Copyright template to include in file headers |
-| fix_header_copyright_and_authors.sh | Bash script that replaces copyright template tokens (i.e. %%DATE%%) with data fetched from the git log |
+| run_checkstyle.sh | Small Bash script that calls Maven with proper arguments to check the coding policy. Calls the **Maven Checkstyle Plugin** with configuration from the [coding policy project](https://github.com/preesm/preesm-maven). |
+| copyright_template.txt | Copyright template to include in file headers. Used by the **Maven License Plugin**. |
+| fix_header_copyright_and_authors.sh | Bash script that replaces copyright template tokens (i.e. %%DATE%%) with data fetched from the git log. Use the **Maven License Plugin** and the **git log** commands for filling the headers. |
 | HowToRelease.md | Old release procedure |
 | pom.xml | The main releng POM. Adds two P2 repositories for product and dev feature build. |
 | README.md | This file |
-| update-version.sh | Small Bash script that calls Maven with proper arguments to set a new version for all submodules. |
-| VAADER_checkstyle.xml | Preesm Checkstyle configuration file (developed by VAADER team) |
-| VAADER_eclipse_preferences.epf | Preesm Eclipse preferences file (developed by VAADER team) |
+| update-version.sh | Small Bash script that calls Maven with proper arguments to set a new version for all submodules. Calls the **Maven Tycho Version Plugin**. |
 
 Build Process in Maven
 ----------------------
