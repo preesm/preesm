@@ -38,10 +38,12 @@ package org.ietr.preesm.ui.scenario.editor;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.ietr.dftools.ui.util.FileUtils;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -129,6 +131,7 @@ public class FileSelectionAdapter extends SelectionAdapter {
    */
   @Override
   public void widgetSelected(final SelectionEvent e) {
-    this.filePath.setText(EditorTools.browseFiles(this.shell, this.title, this.fileExtensions));
+    IPath browseFiles = FileUtils.browseFiles(this.shell, this.title, this.fileExtensions);
+    this.filePath.setText(browseFiles.toOSString());
   }
 }
