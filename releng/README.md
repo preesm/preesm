@@ -421,7 +421,7 @@ The third-party dependencies must be installed through update sites. All of them
 
 Eclipse comes with many development facilities. Among them is the code formatter. We provide an [Eclipse Preference File](https://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Ftasks%2Ftimpandexp.htm) that comes with a formatter configuration that respects the Checkstyle coding policy and that is called upon save.
 
-Various small configurations are also included in this preference file (see [source](VAADER_eclipse_preferences.epf)).
+This confirguration is automatically loaded using the M2E Settings Connector and settigns from the [Coding Policy plugin](https://github.com/preesm/preesm-maven).
 
 ### Running Maven from Eclipse
 
