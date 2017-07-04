@@ -1,6 +1,18 @@
 PREESM Changelog
 ================
 
+## Release version X.Y.Z
+*XXXX.XX.XX*
+
+### New Feature
+
+### Changes
+* Update scenario editor: file selection popups now filter content more accurately;
+* Add explicit verions for Xtend dependencies to avoid bugs due to API break;
+* Cleanup releng files
+
+### Bug fix
+
 ## Release version 2.3.0
 *2017.06.26*
 
