@@ -52,6 +52,38 @@ interface DAGConstructor {
 	public def SDFGraph getOutputGraph()
 	
 	/**
+	 * Get Source actors
+	 * Source actors are defined as those actors in the original SDF
+	 * that have no inputs
+	 * 
+	 * @return List of source actors
+	 */
+	public def List<SDFAbstractVertex> getSourceActors()
+	
+	/**
+	 * Get Sink actors
+	 * Sink actors are defined as those actors in the original SDFG that have
+	 * no outputs
+	 * 
+	 * @return List of sink actors
+	 */
+	public def List<SDFAbstractVertex> getSinkActors()
+	
+	/**
+	 * Get instances of source actors
+	 * 
+	 * @return List of instances of source actors
+	 */
+	public def List<SDFAbstractVertex> getSourceInstances()
+	
+	/**
+	 * Get instances of sink actors
+	 * 
+	 * @return List of instances of sink actors
+	 */
+	public def List<SDFAbstractVertex> getSinkInstances()
+	
+	/**
 	 * Check whether the input is valid
 	 * 
 	 * @return true if input is valid

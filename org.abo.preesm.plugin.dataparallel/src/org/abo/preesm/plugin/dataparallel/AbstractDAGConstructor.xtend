@@ -30,6 +30,16 @@ public abstract class AbstractDAGConstructor implements DAGConstructor {
 	protected val Map<SDFAbstractVertex, SDFAbstractVertex> instance2Actor
 	
 	/**
+	 * List of source actors
+	 */
+	protected val List<SDFAbstractVertex> sourceActors
+	
+	/**
+	 * List of sink actors
+	 */
+	protected val List<SDFAbstractVertex> sinkActors
+	
+	/**
 	 * Holds constructed DAG
 	 */
 	protected var SDFGraph outputGraph
@@ -45,6 +55,8 @@ public abstract class AbstractDAGConstructor implements DAGConstructor {
 		this.instance2Actor = newHashMap()
 		this.outputGraph = new SDFGraph()
 		this.exImOrigInstance = newHashMap()
+		this.sourceActors = newArrayList()
+		this.sinkActors = newArrayList()
 	} 
 	
 	protected new() {
@@ -85,5 +97,41 @@ public abstract class AbstractDAGConstructor implements DAGConstructor {
 	 */
 	public override Map<SDFAbstractVertex, SDFAbstractVertex> getExplodeImplodeOrigInstances() {
 		return exImOrigInstance
+	}
+	
+	/**
+	 * {@link DAGConstructor#getSourceActors}
+	 */
+	override List<SDFAbstractVertex> getSourceActors() {
+		return sourceActors
+	}
+	
+	/**
+	 * {@link DAGConstructor#getSinkActors}
+	 */
+	override List<SDFAbstractVertex> getSinkActors() {
+		return sinkActors
+	}
+	
+	/**
+	 * {@link DAGConstructor#getSourceInstances}
+	 */
+	override List<SDFAbstractVertex> getSourceInstances() {
+		val sourceInstances = newArrayList()
+		sourceActors.forEach[ actor |
+			sourceInstances.addAll(actor2Instances.get(actor))
+		]
+		return sourceInstances
+	}
+	
+	/**
+	 * {@link DAGConstructor#getSinkInstances}
+	 */
+	override List<SDFAbstractVertex> getSinkInstances() {
+		val sinkInstances = newArrayList()
+		sinkActors.forEach[actor|
+			sinkInstances.addAll(actor2Instances.get(actor))
+		]
+		return sinkInstances
 	}
 }

@@ -45,6 +45,16 @@ class DAGSubset extends AbstractDAGConstructor {
 	private val List<SDFAbstractVertex> seenNodes
 	
 	/**
+	 * List of instances of source actors
+	 */
+	private val List<SDFAbstractVertex> sourceInstances
+	
+	/**
+	 * List of instances of sink actors
+	 */
+	private val List<SDFAbstractVertex> sinkInstances
+	
+	/**
 	 * Constructor
 	 * 
 	 * @param dagGen {@link SDF2DAG} instance containing original DAG
@@ -68,6 +78,28 @@ class DAGSubset extends AbstractDAGConstructor {
 				
 		// Create subset of the new root node
 		this.seenNodes = new SubsetTopologicalIterator(dagGen, rootNode).toList
+		
+		sinkInstances = newArrayList()
+		sourceInstances = newArrayList()
+		
+		sourceActors.forEach[actor |
+			sourceInstances.addAll(dagGen.actor2Instances.get(actor).filter[instance | seenNodes.contains(instance)].toList)
+		]
+		
+		sinkActors.forEach[actor |
+			sinkInstances.addAll(dagGen.actor2Instances.get(actor).filter[instance | seenNodes.contains(instance)].toList)
+		]
+		
+		sourceActors.clear
+		sinkActors.clear
+		
+		sourceInstances.forEach[instance |
+			sourceActors.add(dagGen.instance2Actor.get(instance))
+		]
+		
+		sinkInstances.forEach[instance |
+			sinkActors.add(dagGen.instance2Actor.get(instance))
+		]
 	}
 	
 	/**
@@ -122,7 +154,7 @@ class DAGSubset extends AbstractDAGConstructor {
 	
 	/**
 	 * The class does not modify the input DAG, but only the associated data-structures.
-	 * No there is nothing to return. Either use the inputGraph or original 
+	 * Now there is nothing to return. Either use the inputGraph or original 
 	 * DAG that was passed
 	 * 
 	 * @throws OperationNotSupportedException 
@@ -174,6 +206,20 @@ class DAGSubset extends AbstractDAGConstructor {
 		}
 		
 		return true
+	}
+	
+	/**
+	 * {@link DAGConstructor#getSourceInstances}
+	 */
+	override getSourceInstances() {
+		return sourceInstances
+	}
+	
+	/**
+	 * {@link DAGConstructor#getSinkInstances}
+	 */
+	override getSinkInstances() {
+		return sinkInstances
 	}
 	
 }

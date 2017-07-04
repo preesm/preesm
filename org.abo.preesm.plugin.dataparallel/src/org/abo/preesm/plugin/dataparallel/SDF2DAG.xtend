@@ -59,6 +59,15 @@ class SDF2DAG extends AbstractDAGConstructor {
 		inputGraph = sdf.clone
 		actor2InstancesLocal = newHashMap()
 		
+		inputGraph.vertexSet.forEach[vertex |
+			if(inputGraph.incomingEdgesOf(vertex).size == 0) {
+				sourceActors.add(vertex)
+			}
+			if(inputGraph.outgoingEdgesOf(vertex).size == 0) {
+				sinkActors.add(vertex)
+			}
+		]
+		
 		if(checkInputIsValid) {
 			hasChanged = true
 			createInstances()
