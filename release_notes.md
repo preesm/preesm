@@ -12,6 +12,7 @@ PREESM Changelog
 * Cleanup releng files
 
 ### Bug fix
+* Fix error handling in UI decorators (show decorators instead of crashing)
 
 ## Release version 2.3.0
 *2017.06.26*
