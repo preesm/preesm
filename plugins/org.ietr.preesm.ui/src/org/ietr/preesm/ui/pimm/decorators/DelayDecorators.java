@@ -42,7 +42,9 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.platform.IPlatformImageConstants;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
+import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.Expression;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -91,7 +93,10 @@ public class DelayDecorators {
     final ImageDecorator imageRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
     imageRenderingDecorator.setMessage("Problems in parameter resolution");
 
-    if (delay.getExpression().evaluate().contains("Error")) {
+    Expression expression = delay.getExpression();
+    try {
+      expression.evaluate();
+    } catch (ExpressionEvaluationException e) {
       imageRenderingDecorator.setX((pe.getGraphicsAlgorithm().getWidth() / 2) - 8);
       imageRenderingDecorator.setY(1);
 
