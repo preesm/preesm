@@ -12,7 +12,8 @@ PREESM Changelog
 * Cleanup releng files
 
 ### Bug fix
-* Fix error handling in UI decorators (show decorators instead of crashing)
+* Fix error handling in UI decorators (show decorators instead of crashing);
+* Fix expression refresh on properties tab of PiMMEditor: now show red background and error message instead of showing multiple popups when expression cannot be evaluated;
 
 ## Release version 2.3.0
 *2017.06.26*
