@@ -42,6 +42,7 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
@@ -49,6 +50,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
+import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
@@ -314,25 +316,44 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
 
       if (bo instanceof Fifo) {
         final Fifo fifo = (Fifo) bo;
-        this.txtTypeObj.setText(fifo.getType());
-
-        this.txtSourcePortExpression.setEnabled(true);
-
         final Expression srcRate = fifo.getSourcePort().getExpression();
-        if (!this.txtSourcePortExpression.getText().equals(srcRate.getString())) {
-          this.txtSourcePortExpression.setText(srcRate.getString());
-        }
-
-        this.lblSourcePortValueObj.setText(srcRate.evaluate());
-
-        this.txtTargetPortExpression.setEnabled(true);
+        final String srcExprString = srcRate.getString();
 
         final Expression tgtRate = fifo.getTargetPort().getExpression();
-        if (!this.txtTargetPortExpression.getText().equals(tgtRate.getString())) {
-          this.txtTargetPortExpression.setText(tgtRate.getString());
+        final String tgtExprString = tgtRate.getString();
+
+        this.txtTypeObj.setText(fifo.getType());
+        this.txtSourcePortExpression.setEnabled(true);
+        if (!this.txtSourcePortExpression.getText().equals(srcExprString)) {
+          this.txtSourcePortExpression.setText(srcExprString);
+        }
+        this.txtTargetPortExpression.setEnabled(true);
+        if (!this.txtTargetPortExpression.getText().equals(tgtExprString)) {
+          this.txtTargetPortExpression.setText(tgtExprString);
         }
 
-        this.lblTargetPortValueObj.setText(tgtRate.evaluate());
+        try {
+          // try out evaluating the expression
+          final String srcExprEvaluation = srcRate.evaluate();
+          // if evaluation went well, just write the result
+          this.lblSourcePortValueObj.setText(srcExprEvaluation);
+          this.txtSourcePortExpression.setBackground(new Color(null, 255, 255, 255));
+        } catch (ExpressionEvaluationException e) {
+          // otherwise print error message and put red background
+          this.lblSourcePortValueObj.setText("Error : " + e.getMessage());
+          this.txtSourcePortExpression.setBackground(new Color(null, 240, 150, 150));
+        }
+        try {
+          // try out evaluating the expression
+          final String tgtExprEvaluation = tgtRate.evaluate();
+          // if evaluation went well, just write the result
+          this.lblTargetPortValueObj.setText(tgtExprEvaluation);
+          this.txtTargetPortExpression.setBackground(new Color(null, 255, 255, 255));
+        } catch (ExpressionEvaluationException e) {
+          // otherwise print error message and put red background
+          this.lblTargetPortValueObj.setText("Error : " + e.getMessage());
+          this.txtTargetPortExpression.setBackground(new Color(null, 240, 150, 150));
+        }
       }
 
     }
