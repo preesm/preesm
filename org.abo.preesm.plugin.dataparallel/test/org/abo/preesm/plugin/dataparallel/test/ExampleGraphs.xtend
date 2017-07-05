@@ -8,8 +8,8 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
 import org.abo.preesm.plugin.dataparallel.test.ExampleGraphs.SDFBuilder
 import org.junit.Assert
-import org.abo.preesm.plugin.dataparallel.dag.operations.DAGFromSDFOperations
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
+import org.abo.preesm.plugin.dataparallel.dag.operations.DAGOperationsImpl
 
 /**
  * Construct example graphs. 
@@ -96,7 +96,7 @@ class ExampleGraphs {
 		parameterArray.forEach[row |
 			val sdf = row.get(0) as SDFGraph
 			val expected = row.get(1) 
-			val dagOps = new DAGFromSDFOperations(new SDF2DAG(sdf))
+			val dagOps = new DAGOperationsImpl(new SDF2DAG(sdf))
 			
 			Assert.assertEquals(dagOps.DAGInd, expected)
 		]

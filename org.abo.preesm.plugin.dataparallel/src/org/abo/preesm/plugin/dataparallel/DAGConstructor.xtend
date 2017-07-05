@@ -1,9 +1,8 @@
 package org.abo.preesm.plugin.dataparallel
 
+import java.util.List
 import java.util.Map
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import java.util.List
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 
 /**
@@ -41,15 +40,6 @@ interface DAGConstructor {
 	 * @return Lookup table of implode/explode and its associated instance
 	 */
 	public def Map<SDFAbstractVertex, SDFAbstractVertex> getExplodeImplodeOrigInstances()
-	
-	/**
-	 * Return the DAG that is constructed
-	 * Note that not all implementations need to return DAG. Some only modify
-	 * its associated data structures, but return the original graph
-	 * 
-	 * @return DAG constructed
-	 */
-	public def SDFGraph getOutputGraph()
 	
 	/**
 	 * Get Source actors

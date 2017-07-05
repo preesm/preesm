@@ -9,7 +9,7 @@ import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
 import org.ietr.dftools.workflow.tools.WorkflowLogger
 import java.util.logging.Logger
 import java.util.logging.Level
-import org.abo.preesm.plugin.dataparallel.dag.operations.DAGFromSDFOperations
+import org.abo.preesm.plugin.dataparallel.dag.operations.DAGOperationsImpl
 
 /**
  * Wrapper class that performs the data-parallel checks and transforms
@@ -32,7 +32,7 @@ class DataParallel extends AbstractTaskImplementation {
 		val dagGen = new SDF2DAG(sdf, logger as Logger)
 		val dag = dagGen.outputGraph
 		
-		val dagOps = new DAGFromSDFOperations(dagGen)
+		val dagOps = new DAGOperationsImpl(dagGen)
 		if(dagOps.isDAGInd)		
 			logger.log(Level.INFO, "SDF is data-Parallel")
 		else {

@@ -6,11 +6,12 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
 import org.abo.preesm.plugin.dataparallel.dag.operations.DAGOperations
 import java.util.Collection
-import org.abo.preesm.plugin.dataparallel.dag.operations.DAGFromSDFOperations
-import org.abo.preesm.plugin.dataparallel.dag.operations.DAGSubsetOperations
 import org.abo.preesm.plugin.dataparallel.DAGSubset
 import org.junit.Assert
 import org.abo.preesm.plugin.dataparallel.DAGConstructor
+import org.abo.preesm.plugin.dataparallel.dag.operations.DAGOperationsImpl
+import org.abo.preesm.plugin.dataparallel.dag.operations.DAGSubsetOperationsImpl
+import org.abo.preesm.plugin.dataparallel.dag.operations.DAGCommonOperations
 
 /**
  * All the tests on DAGConverter that also needs other classes from
@@ -22,9 +23,9 @@ class CombinedTest {
 	
 	protected val DAGConstructor dagGen
 	
-	protected val DAGOperations dagOps
+	protected val DAGCommonOperations dagOps
 	
-	new (SDFGraph sdf, DAGConstructor dagGen, DAGOperations dagOps) {
+	new (SDFGraph sdf, DAGConstructor dagGen, DAGCommonOperations dagOps) {
 		this.sdf = sdf
 		this.dagGen = dagGen
 		this.dagOps = dagOps	
@@ -39,7 +40,7 @@ class CombinedTest {
 			.forEach[sdf |
 				val dagGen = new SDF2DAG(sdf)
 				parameters.add(
-					#[sdf, dagGen, new DAGFromSDFOperations(dagGen)]
+					#[sdf, dagGen, new DAGOperationsImpl(dagGen)]
 				)
 			]
 			
@@ -47,9 +48,9 @@ class CombinedTest {
 		Util.provideAllGraphs
 			.forEach[sdf |
 				val dagGen = new SDF2DAG(sdf)
-				new DAGFromSDFOperations(dagGen).rootInstances.forEach[rootNode |
+				new DAGOperationsImpl(dagGen).rootInstances.forEach[rootNode |
 					parameters.add(
-						#[sdf, new DAGSubset(dagGen, rootNode), new DAGSubsetOperations(dagGen, rootNode)]
+						#[sdf, new DAGSubset(dagGen, rootNode), new DAGSubsetOperationsImpl(dagGen, rootNode)]
 					)
 				]
 			]
@@ -130,5 +131,16 @@ class CombinedTest {
 				]
 			]
 		}
+	}
+	
+	/**
+	 * Test DAG_C (i.e. data-parallel and instance independent) has only
+	 * source actors in the roots. 
+	 * 
+	 * Strong Test
+	 */
+	@org.junit.Test
+	public def void checkSourceActorPresence() {
+		
 	}
 }

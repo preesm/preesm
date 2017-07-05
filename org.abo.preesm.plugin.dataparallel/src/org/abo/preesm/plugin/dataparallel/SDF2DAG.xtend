@@ -25,12 +25,17 @@ import org.ietr.dftools.algorithm.model.visitors.SDF4JException
  * 
  * @author Sudeep Kanur
  */
-class SDF2DAG extends AbstractDAGConstructor {
+final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor {
 	
 	/**
 	 * Hold the cloned version of original SDF graph
 	 */
 	private val SDFGraph inputGraph;
+	
+	/**
+	 * Holds constructed DAG
+	 */
+	protected var SDFGraph outputGraph
 	
 	/**
 	 * Map of all actors with instance. Does not contain implodes and explodes
@@ -53,6 +58,7 @@ class SDF2DAG extends AbstractDAGConstructor {
 	 */
 	new(SDFGraph sdf, Logger logger) throws SDF4JException {
 		super(logger)
+		
 		if(!sdf.isSchedulable) {
 			throw new SDF4JException("Graph " + sdf + " not schedulable")
 		}
@@ -70,11 +76,12 @@ class SDF2DAG extends AbstractDAGConstructor {
 		
 		if(checkInputIsValid) {
 			hasChanged = true
+			this.outputGraph = new SDFGraph()
 			createInstances()
 			linkEdges()
 		} else {
 			hasChanged = false
-			super.outputGraph = inputGraph
+			this.outputGraph = inputGraph
 		}
 		outputGraph.propertyBean.setValue("schedulable", true)
 	}
@@ -116,6 +123,15 @@ class SDF2DAG extends AbstractDAGConstructor {
 		// Its already a DAG
 		return false
 	}
+	
+	/**
+	 * Return the DAG that is constructed
+	 * 
+	 * @return DAG constructed
+	 */
+	public override SDFGraph getOutputGraph() {
+		return outputGraph
+	} 
 	
 	/**
 	 * Create instances according to the repetition count. Also rename the 

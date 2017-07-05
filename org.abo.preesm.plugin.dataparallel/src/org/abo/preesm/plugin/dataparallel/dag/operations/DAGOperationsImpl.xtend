@@ -2,20 +2,15 @@ package org.abo.preesm.plugin.dataparallel.dag.operations
 
 import java.util.List
 import java.util.Map
-import java.util.Set
-import java.util.logging.Level
 import java.util.logging.Logger
 import org.abo.preesm.plugin.dataparallel.DAGConstructor
+import org.abo.preesm.plugin.dataparallel.DAGSubset
+import org.abo.preesm.plugin.dataparallel.DAGTopologicalIterator
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.jgrapht.traverse.GraphIterator
-import org.jgrapht.traverse.TopologicalOrderIterator
-import org.abo.preesm.plugin.dataparallel.SDF2DAG
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.traverse.BreadthFirstIterator
-import org.abo.preesm.plugin.dataparallel.DAGSubset
-import java.util.Collection
+import org.abo.preesm.plugin.dataparallel.PureDAGConstructor
 
 /**
  * Implementation of {@link DAGOperations} for DAGs constructed from
@@ -23,71 +18,17 @@ import java.util.Collection
  * 
  * @author Sudeep Kanur
  */
-class DAGFromSDFOperations implements DAGOperations {
+final class DAGOperationsImpl extends AbstractDAGCommonOperations implements DAGOperations {
 	
 	/**
-	 * Holds the original DAGConstructor instance
+	 * Holds the loop schedule
 	 */
-	protected var SDF2DAG dagGen
+	protected var SDFGraph dagC
 	
 	/**
-	 * Holds the original DAG
+	 * Holds the transient schedule
 	 */
-	protected var SDFGraph inputGraph
-	
-	/**
-	 * Optional logging
-	 */
-	protected var Logger logger
-	
-	/**
-	 * Look up table of instances and its levels
-	 */
-	protected val Map<SDFAbstractVertex, Integer> levels
-	
-	/**
-	 * Flag to avoid recomputing levels again. Its an expensive
-	 * operation
-	 */
-	private var boolean computeLevels
-	
-	/**
-	 * Lookup table of instances and its source instances
-	 */
-	protected var Map<SDFAbstractVertex, List<SDFAbstractVertex>> instanceSources
-	
-	/**
-	 * The topological iterator used. Could be TopologicaOrderIterator or 
-	 * SubsetTopologicalIterator
-	 */
-	protected var GraphIterator<SDFAbstractVertex, SDFEdge> iterator
-	
-	/**
-	 * The map of explode and implode instances linked to its original instance
-	 * This is extracted from dagGen
-	 */
-	protected var Map<SDFAbstractVertex, SDFAbstractVertex> forkJoinOrigInstance
-	
-	/**
-	 * Relevant nodes seen in the DAG or its subset
-	 */
-	protected var List<SDFAbstractVertex> seenNodes
-	
-	/**
-	 * Set of non-data parallel actors
-	 */
-	protected val Set<SDFAbstractVertex> nonParallelActors
-	
-	/**
-	 * Flag to avoid recomputing dag independences. Its an
-	 * expensive operation
-	 */
-	protected var boolean computeDAGInd
-	
-	/**
-	 * Hold the value of computed DAGInd
-	 */
-	protected var boolean dagInd
+	protected var SDFGraph dagT
 	
 	/**
 	 * Hold the cycles in the DAG (only if its instance independent)
@@ -104,21 +45,32 @@ class DAGFromSDFOperations implements DAGOperations {
 	 * 
 	 * @param dagGen The {@link DAGConstructor} instance
 	 */
-	new(SDF2DAG dagGen) {
+	new(PureDAGConstructor dagGen) {
 		this(dagGen, null)
 	}
 	
 	/** Constructor used in plugin
 	 * 
-	 * @param dagGen A {@link SDF2DAG} instance
+	 * @param dagGen A {@link PureDAGConstructor} instance
 	 * @param logger Workflow logger
 	 */
-	new(SDF2DAG dagGen, Logger logger) {
-		this.dagGen = dagGen
-		this.logger = logger
-		this.inputGraph = dagGen.outputGraph
-		iterator = new TopologicalOrderIterator(inputGraph)
-		seenNodes = new TopologicalOrderIterator(inputGraph).toList
+	new(PureDAGConstructor dagGen, Logger logger) {
+		super(dagGen, logger)
+
+		this.cycleRoots = newArrayList()
+		this.dagC = dagGen.outputGraph
+		this.dagT = new SDFGraph
+		
+		computeDAGInd = false
+		computeCycles = false
+		
+		// Do all associated computations
+		initialize()
+	}
+	
+	override initialize() {
+		iterator = new DAGTopologicalIterator(dagGen)
+		seenNodes = new DAGTopologicalIterator(dagGen).toList
 		forkJoinOrigInstance = dagGen.explodeImplodeOrigInstances
 		instanceSources = newHashMap()
 		inputGraph.vertexSet.forEach[instance |
@@ -126,105 +78,46 @@ class DAGFromSDFOperations implements DAGOperations {
 								inputGraph.incomingEdgesOf(instance)
 									.map[edge | edge.source].toList)
 		]
-		// Anything above this line should be overridden
-		levels = newHashMap()
-		nonParallelActors = newHashSet()
-		computeLevels = false
-		dagInd = false
-		computeDAGInd = false
-		computeCycles = false
-		cycleRoots = newArrayList()
+		super.initialize
+		isDAGInd
 	}
 	
 	/**
-	 * Optionally log message when {@link DAGFromSDFOperations#new(dagGen, logger)} is used
+	 * Get seen nodes in the DAG
 	 * 
-	 * @param message The message to log
+	 * @return Nodes seen in the DAG
 	 */
-	protected def void log(String message) {
-		logger?.log(Level.INFO, message)
+	override getSeenNodes() {
+		return seenNodes
 	}
 	
 	/**
-	 * Overrides {@link DAGOperations#getRootInstances}
-	 * Filtered by only those instances that are seen in the DAG
-	 */
-	override getRootInstances() {
-		return inputGraph.vertexSet
-			.filter[instance | seenNodes.contains(instance)]
-			.filter[instance | inputGraph.incomingEdgesOf(instance).size == 0].toList
-	}
-	
-	/**
-	 * Overrides {@link DAGOperations#getRootActors}
-	 * Filtered by only those actors that are seen in the DAG
-	 */
-	override getRootActors() {
-		return getRootInstances().map[instance | dagGen.instance2Actor.get(instance)].toSet.toList
-	}
-	
-	/**
-	 * Overrides {@link DAGOperations#getExitInstances}
-	 * Filtered by only those instances that are seen in the DAG
-	 */
-	override getExitInstances() {
-		val rootInstances = getRootInstances()
-		return inputGraph.vertexSet
-				.filter[instance | seenNodes.contains(instance)]
-				.filter[instance |
-			 		inputGraph.outgoingEdgesOf(instance).size == 0 && !rootInstances.contains(instance)
-				].toList
-	}
-	
-	/**
-	 * Overrides {@link DAGOperations#getAllLevels}
-	 * Only those instances seen in the DAG are considered
-	 */
-	public override Map<SDFAbstractVertex, Integer> getAllLevels() {
-		if(!computeLevels){
-			inputGraph.vertexSet
-				.filter[instance | seenNodes.contains(instance)]
-				.forEach[instance | levels.put(instance, new Integer(0))]
-			while(iterator.hasNext()) {
-				val seenNode = iterator.next()
-				val predecessors = instanceSources.get(seenNode)
-				if(predecessors.isEmpty) {
-					levels.put(seenNode, new Integer(0))
-				} else {
-					val predecessorLevel = levels.filter[node, value | predecessors.contains(node)].values.max
-					if(forkJoinOrigInstance.keySet.contains(seenNode)) {
-						levels.put(seenNode, new Integer(predecessorLevel))
-					} else {
-						levels.put(seenNode, new Integer(predecessorLevel+1))
-					}
-				}
-			}
-			
-			// Properly set the implode and explode according to the level of its original
-			levels.keySet.forEach[node |
-				if(forkJoinOrigInstance.keySet.contains(node)) 
-					levels.put(node, levels.get(forkJoinOrigInstance.get(node)))
-			]
-			computeLevels = true
-		}
-		return levels
-	}
-	
-	/**
-	 * Overrides {@link DAGOperations#getMaxLevel}
-	 */
-	public override int getMaxLevel() {
-		return getMaxLevel(getAllLevels)
-	}
-	
-	/**
-	 * Get maximum level of a given levels
+	 * Get the appropriate topological order iterator for the DAG
+	 * The topological iterator for a subset of a DAG is different
+	 * than the topological iterator of the pure DAG
 	 * 
-	 * @param level set
-	 * @return Maximum of the given levels
+	 * @return Appropriate topological order iterator
 	 */
-	protected def int getMaxLevel(Map<SDFAbstractVertex, Integer> ls) {
-		return (ls.values.max + 1)
+	override getIterator() {
+		return iterator
+	}
+	
+	/**
+	 * Get fork and join (explode and implode) instances
+	 * 
+	 * @return Lookup table of fork-join instances mapped to its original instance
+	 */
+	override getForkJoinOrigInstance() {
+		return forkJoinOrigInstance
+	}
+	
+	/**
+	 * Get sources of instances
+	 * 
+	 * @return Lookup table of instances and a list of its sources
+	 */
+	override getInstanceSources() {
+		return instanceSources
 	}
 	
 	/**
@@ -259,28 +152,6 @@ class DAGFromSDFOperations implements DAGOperations {
 	public override getParallelLevel() {
 		return getParallelLevel(getAllLevels)
 	}
-	 
-	/**
-	 * Override of getLevelSets
-	 * 
-	 * @param Custom levels
-	 * @return Level Set
-	 */
-	protected def List<List<SDFAbstractVertex>> getLevelSets(Map<SDFAbstractVertex, Integer> ls) {
-		val List<List<SDFAbstractVertex>> levelSet = newArrayList()
-		(0..<getMaxLevel(ls)).forEach[levelSet.add(newArrayList)]
-		ls.forEach[instance, level | 
-			levelSet.get(level).add(instance)
-		]
-		return levelSet
-	}
-	
-	/**
-	 * Overrides {@link DAGOperations#getLevelSets}
-	 */
-	public override List<List<SDFAbstractVertex>> getLevelSets() {
-		return getLevelSets(getAllLevels)
-	}
 	
 	/**
 	 * Overrides {@link DAGOperations#isDAGInd}
@@ -288,7 +159,7 @@ class DAGFromSDFOperations implements DAGOperations {
 	override boolean isDAGInd() {
 		val dagIndState = newArrayList
 		rootInstances.forEach[rootNode |
-			val dagOps = new DAGSubsetOperations(dagGen, rootNode)
+			val dagOps = new DAGSubsetOperationsImpl(dagGen, rootNode)
 			dagIndState.add(dagOps.isDAGInd)
 			nonParallelActors.addAll(dagOps.getNonParallelActors)
 		]
@@ -339,7 +210,7 @@ class DAGFromSDFOperations implements DAGOperations {
 	override rearrange() throws SDF4JException {
 		getAllLevels
 		if(!DAGInd){
-			throw new SDF4JException("DAG is not instance independent. Rearraning is meaningless.")
+			throw new SDF4JException("DAG is not instance independent. Rearranging is meaningless.")
 		}
 		val cycles = getCycleRoots
 		if(cycles.empty) {
@@ -433,7 +304,6 @@ class DAGFromSDFOperations implements DAGOperations {
 			// Set of actors that have already been grouped. This is non-destructive way of computing
 			val seenRoots = newHashSet()
 			
-			val rootInstances = getRootInstances()
 			rootInstances.forEach[rootInstance |
 				val rootActor = dagGen.instance2Actor.get(rootInstance)
 				if(!seenRoots.contains(rootActor)) {
@@ -466,15 +336,6 @@ class DAGFromSDFOperations implements DAGOperations {
 	}
 	
 	/**
-	 * Overrides {@link DAGOperations#pickElement}
-	 * Returns the first element that is found
-	 */
-	override SDFAbstractVertex pickElement(Collection<SDFAbstractVertex> set) {
-		val itr = set.iterator
-		return itr.next
-	}
-	
-	/**
 	 * Get maximum of all the instances of a given actor.
 	 * 
 	 * @param The actor 
@@ -494,14 +355,16 @@ class DAGFromSDFOperations implements DAGOperations {
 	}
 	
 	/**
-	 * Get instances of source actors
-	 * Source actors are those that does not have input ports
-	 * 
-	 * @return List of instances of source actors
+	 * Overrides @{link DAGOperations#getDAGC}
 	 */
-	protected def List<SDFAbstractVertex> getSourceInstances() {
-		return getRootInstances
-			.filter[instance | seenNodes.contains(instance)]
-			.filter[instance | !dagGen.instance2Actor.get(instance).sources.empty].toList
+	override SDFGraph getDAGC() {
+		return dagC
+	}
+	
+	/**
+	 * Overrides @{link DAGOperations#getDAGT}
+	 */
+	override SDFGraph getDAGT() {
+		return dagT
 	}
 }

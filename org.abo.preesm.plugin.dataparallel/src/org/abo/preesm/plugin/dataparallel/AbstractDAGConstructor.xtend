@@ -5,7 +5,6 @@ import java.util.Map
 import java.util.logging.Level
 import java.util.logging.Logger
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 
 /**
  * Implement common getter methods and instance variables for {@link DAGConstructor} class
@@ -40,11 +39,6 @@ public abstract class AbstractDAGConstructor implements DAGConstructor {
 	protected val List<SDFAbstractVertex> sinkActors
 	
 	/**
-	 * Holds constructed DAG
-	 */
-	protected var SDFGraph outputGraph
-	
-	/**
 	 * Map of implode/explode instances to its original instance
 	 */
 	protected val Map<SDFAbstractVertex, SDFAbstractVertex> exImOrigInstance
@@ -53,7 +47,6 @@ public abstract class AbstractDAGConstructor implements DAGConstructor {
 		this.logger = logger
 		this.actor2Instances = newHashMap()
 		this.instance2Actor = newHashMap()
-		this.outputGraph = new SDFGraph()
 		this.exImOrigInstance = newHashMap()
 		this.sourceActors = newArrayList()
 		this.sinkActors = newArrayList()
@@ -83,13 +76,6 @@ public abstract class AbstractDAGConstructor implements DAGConstructor {
 	 */
 	public override Map<SDFAbstractVertex, SDFAbstractVertex> getInstance2Actor() {
 		return instance2Actor
-	}
-	
-	/**
-	 * {@link DAGConstructor#getOutputGraph}
-	 */
-	public override SDFGraph getOutputGraph() {
-		return outputGraph
 	}
 	
 	/**

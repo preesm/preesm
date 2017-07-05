@@ -4,14 +4,13 @@ import java.util.HashMap
 import java.util.List
 import java.util.Map
 import java.util.logging.Logger
+import javax.naming.OperationNotSupportedException
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.alg.CycleDetector
-import javax.naming.OperationNotSupportedException
-import org.abo.preesm.plugin.dataparallel.dag.operations.DAGFromSDFOperations
 
 /**
  * A subset of DAG is the set of all the instances that has a reachable path 
@@ -22,7 +21,7 @@ import org.abo.preesm.plugin.dataparallel.dag.operations.DAGFromSDFOperations
  *  
  * @autor Sudeep Kanur
  */
-class DAGSubset extends AbstractDAGConstructor {
+final class DAGSubset extends AbstractDAGConstructor implements DAGConstructor {
 	/**
 	 * Holds the original DAG
 	 */
@@ -37,7 +36,7 @@ class DAGSubset extends AbstractDAGConstructor {
 	/**
 	 * Holds the original DAG constructor
 	 */
-	private val SDF2DAG dagGen
+	private val PureDAGConstructor dagGen
 	
 	/**
 	 * List of nodes that are seen in the current subset of DAG
@@ -62,7 +61,7 @@ class DAGSubset extends AbstractDAGConstructor {
 	 * @param logger Logger instance to log debug messages to output
 	 * @throws SDF4JException If the input graph is not valid
 	 */
-	new(SDF2DAG dagGen, SDFAbstractVertex rootNode, Logger logger) throws SDF4JException {
+	new(PureDAGConstructor dagGen, SDFAbstractVertex rootNode, Logger logger) throws SDF4JException {
 		super(logger)
 		
 		// Check if input is valid
@@ -109,7 +108,7 @@ class DAGSubset extends AbstractDAGConstructor {
 	 * @param rootNode A root node that is used to construct subset of DAG
 	 * @throws SDF4JException If the input graph is not valid
 	 */
-	new(SDF2DAG dagGen, SDFAbstractVertex rootNode) throws SDF4JException {
+	new(PureDAGConstructor dagGen, SDFAbstractVertex rootNode) throws SDF4JException {
 		this(dagGen, rootNode, null)
 	}
 	
@@ -153,24 +152,13 @@ class DAGSubset extends AbstractDAGConstructor {
 	}
 	
 	/**
-	 * The class does not modify the input DAG, but only the associated data-structures.
-	 * Now there is nothing to return. Either use the inputGraph or original 
-	 * DAG that was passed
-	 * 
-	 * @throws OperationNotSupportedException 
-	 */
-	public override SDFGraph getOutputGraph() {
-		throw new OperationNotSupportedException("This object does not construct subset. Nothing to return")
-	}
-	
-	/**
 	 * Check whether the input is valid. Following checks are made
 	 * Cycles, delays and repetition vector, root node exist and is valid root node
 	 * 
 	 * @return true if input is valid, or exception is thrown (false is never returned)
 	 * @throws SDF4JException if the input graph is not a valid DAG or if root node does not exist
 	 */
-	override checkInputIsValid() throws SDF4JException {
+	public override checkInputIsValid() throws SDF4JException {
 		// Check if there are cycles
 		val cycleDetector = new CycleDetector<SDFAbstractVertex, SDFEdge>(inputGraph)
 		if(cycleDetector.detectCycles) {
@@ -195,15 +183,16 @@ class DAGSubset extends AbstractDAGConstructor {
 		
 		// Input graph can't be hierarchical as its already arriving from DAGConstructor
 		
-		// Check if root node exists
 		if(!inputGraph.vertexSet.contains(rootNode)) {
-			throw new SDF4JException("Root node " + rootNode.name + " does not exist in the graph")
+			throw new SDF4JException("Root node " + rootNode.name + " does not exist in the DAG!")
 		}
 		
-		// The root instance should belong to the original DAG 
-		if(!new DAGFromSDFOperations(dagGen).rootInstances.contains(rootNode)) {
+		val rootInstances = inputGraph.vertexSet
+			.filter[instance | inputGraph.incomingEdgesOf(instance).size == 0].toList
+		
+		if(!rootInstances.contains(rootNode)) {
 			throw new SDF4JException("Node " + rootNode.name + " is not a root node of the graph")
-		}
+		}	
 		
 		return true
 	}
@@ -211,14 +200,14 @@ class DAGSubset extends AbstractDAGConstructor {
 	/**
 	 * {@link DAGConstructor#getSourceInstances}
 	 */
-	override getSourceInstances() {
+	public override getSourceInstances() {
 		return sourceInstances
 	}
 	
 	/**
 	 * {@link DAGConstructor#getSinkInstances}
 	 */
-	override getSinkInstances() {
+	public override getSinkInstances() {
 		return sinkInstances
 	}
 	

@@ -2,7 +2,6 @@ package org.abo.preesm.plugin.dataparallel.dag.operations.test
 
 import java.util.Collection
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
-import org.abo.preesm.plugin.dataparallel.dag.operations.DAGFromSDFOperations
 import org.abo.preesm.plugin.dataparallel.dag.operations.DAGOperations
 import org.abo.preesm.plugin.dataparallel.test.ExampleGraphs
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
@@ -11,6 +10,7 @@ import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import org.abo.preesm.plugin.dataparallel.dag.operations.DAGOperationsImpl
 
 /**
  * Setup to test re-timing transformations SDFG
@@ -51,7 +51,7 @@ class RearrangeTest {
 		parameterArray.forEach[
 			val sdf = it.get(0) as SDFGraph
 			val dagGen = new SDF2DAG(sdf)
-			parameters.add(#[sdf, dagGen, new DAGFromSDFOperations(dagGen), it.get(1)])
+			parameters.add(#[sdf, dagGen, new DAGOperationsImpl(dagGen), it.get(1)])
 		]
 		
 		// Graphs that are instance independent, but are not acyclic-like
@@ -65,7 +65,7 @@ class RearrangeTest {
 		cyclicParamterArray.forEach[row |
 			val sdf = row.get(0) as SDFGraph
 			val dagGen = new SDF2DAG(sdf)
-			val dagOps = new DAGFromSDFOperations(dagGen)
+			val dagOps = new DAGOperationsImpl(dagGen)
 			if(!dagOps.DAGInd) {
 				throw new AssertionError("SDF is not instance independent")
 			}
@@ -118,7 +118,7 @@ class RearrangeTest {
 	@Test
 	public def void getCycleRootsIsSubsetOfAllCycles() {
 		// Operation only valid on main DAGs, not its subset
-		if(dagOps instanceof DAGFromSDFOperations) {
+		if(dagOps instanceof DAGOperationsImpl) {
 			val allCycles = new CycleDetector(sdf).findCycles.map[it.name].toSet
 			
 			// Acyclic graphs

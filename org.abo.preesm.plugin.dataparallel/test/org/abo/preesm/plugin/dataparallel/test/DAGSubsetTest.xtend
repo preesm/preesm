@@ -4,12 +4,12 @@ import java.util.Collection
 import org.abo.preesm.plugin.dataparallel.DAGSubset
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
 import org.abo.preesm.plugin.dataparallel.SubsetTopologicalIterator
-import org.abo.preesm.plugin.dataparallel.dag.operations.DAGFromSDFOperations
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import org.abo.preesm.plugin.dataparallel.dag.operations.DAGOperationsImpl
 
 /**
  * Test setup for {@link DAGSubset} class
@@ -35,7 +35,7 @@ class DAGSubsetTest {
 		val parameters = newArrayList()
 		Util.provideAllGraphs.forEach[sdf |
 			val dagGen = new SDF2DAG(sdf)
-			new DAGFromSDFOperations(dagGen).rootInstances.forEach[rootNode |
+			new DAGOperationsImpl(dagGen).rootInstances.forEach[rootNode |
 				parameters.add(#[dagGen, rootNode])
 			]
 		]
