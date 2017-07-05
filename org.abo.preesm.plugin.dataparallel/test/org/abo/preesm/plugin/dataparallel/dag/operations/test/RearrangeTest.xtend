@@ -4,9 +4,7 @@ import java.util.Collection
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
 import org.abo.preesm.plugin.dataparallel.dag.operations.DAGFromSDFOperations
 import org.abo.preesm.plugin.dataparallel.dag.operations.DAGOperations
-import org.abo.preesm.plugin.dataparallel.dag.operations.DAGSubsetOperations
 import org.abo.preesm.plugin.dataparallel.test.ExampleGraphs
-import org.abo.preesm.plugin.dataparallel.test.Util
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.jgrapht.alg.CycleDetector
 import org.junit.Assert
@@ -56,15 +54,6 @@ class RearrangeTest {
 			parameters.add(#[sdf, dagGen, new DAGFromSDFOperations(dagGen), it.get(1)])
 		]
 		
-		// All subset DAGs
-		Util.provideAllGraphs
-		.forEach[sdf |
-			val dagGen = new SDF2DAG(sdf)
-			new DAGFromSDFOperations(dagGen).rootInstances.forEach[rootNode |
-				parameters.add(#[sdf, dagGen, new DAGSubsetOperations(dagGen, rootNode), Boolean.TRUE])
-			]
-		]
-		
 		// Graphs that are instance independent, but are not acyclic-like
 		val cyclicParamterArray = #[
 			// [DAG from SDF, test acyclic rearranging? (false)]
@@ -84,6 +73,23 @@ class RearrangeTest {
 		]
 		
 		return parameters
+	}
+	
+	/**
+	 * Test checks parallel level is -1 for strictly cyclic 
+	 * non-acyclic like graph
+	 * 
+	 * Strong Test
+	 */
+	@Test
+	public def void negativeParallelLevelTest() {
+		if(dagOps.isDAGInd) {
+			
+			// Graph is strictly cyclic and not acyclic-like
+			if(dagGen.sourceInstances.empty && !isRearrangeAcyclic) {
+				Assert.assertTrue(dagOps.parallelLevel == -1)
+			}
+		}
 	}
 	
 	/**
@@ -112,7 +118,7 @@ class RearrangeTest {
 	@Test
 	public def void getCycleRootsIsSubsetOfAllCycles() {
 		// Operation only valid on main DAGs, not its subset
-		if(dagOps instanceof DAGFromSDFOperations && !(dagOps instanceof DAGSubsetOperations)) {
+		if(dagOps instanceof DAGFromSDFOperations) {
 			val allCycles = new CycleDetector(sdf).findCycles.map[it.name].toSet
 			
 			// Acyclic graphs
@@ -132,6 +138,75 @@ class RearrangeTest {
 					]
 				]
 			}
+		}
+	}
+	
+		/**
+	 * Test to check partial rearranging of the actors
+	 * If the DAG is acyclic like, then the effect of rearranging is complete. 
+	 * Max parallel-level SHOULD yield 0. Further, the DAG is parallel
+	 * 
+	 * If the DAG is non-acyclic like, then effect of rearranging is partial
+	 * Max parallel level will minimum of the maximum levels of actors in the
+	 * rest of the cycle (i.e. cycle without the actor of anchoring instance)
+	 * 
+	 * Weak Test
+	 */
+	@Test
+	public def void checkPartialRearranging() {
+		if(dagOps.isDAGInd) {
+			dagOps.rearrange
+			if(isRearrangeAcyclic) {
+				Assert.assertTrue(dagOps.parallelLevel == 0)
+				Assert.assertTrue(dagOps.isDAGParallel)
+			} else {
+				val cycles = dagOps.cycleRoots
+				
+				cycles.forEach[cycle |
+					val restOfCycle = cycle.filter[instance | instance != dagOps.pickElement(cycle)]
+					val minimumParLevel = newArrayList() 
+					restOfCycle.forEach[instance |
+						val actor = dagGen.instance2Actor.get(instance)
+						val levelsOfInstances = newArrayList()
+						dagGen.actor2Instances.get(actor).forEach[node |
+							levelsOfInstances.add(dagOps.allLevels.get(node))
+						]
+						minimumParLevel.add(levelsOfInstances.max)
+					]
+					if(dagOps.parallelLevel != -1) {
+						Assert.assertTrue(minimumParLevel.min <= dagOps.parallelLevel)	
+					}
+				]
+			}
+		}
+	}
+	
+	/**
+	 * Make sure that all the instances of a cycle, except the picked one is
+	 * in the same level
+	 * 
+	 * Strong Test
+	 */
+	@Test
+	public def void restOfCyclesAreArranged() {
+		dagOps.rearrange
+		val cycles = dagOps.cycleRoots
+		
+		if(!cycles.empty) {
+			cycles.forEach[cycle |
+				val anchor = dagOps.pickElement(cycle)
+				val restOfCycle = cycle.filter[instance | instance != anchor]
+				restOfCycle.forEach[instance | 
+					val actor = dagGen.instance2Actor.get(instance)
+					// Check if levels of all the instance of actor are same
+					val levelsOfInstances = newArrayList() 
+					dagGen.actor2Instances.get(actor).forEach[node |
+						levelsOfInstances.add(dagOps.allLevels.get(node))
+					]
+					val maxLevel = levelsOfInstances.max
+					levelsOfInstances.forEach[level | Assert.assertTrue(level == maxLevel)]
+				]
+			]
 		}
 	}
 }

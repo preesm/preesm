@@ -5,6 +5,8 @@ import java.util.List
 import java.util.Map
 import java.util.Set
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
+import java.util.Collection
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 
 /**
  * All supported operations that can be performed on Graphs constructed by classes that
@@ -55,6 +57,23 @@ interface DAGOperations {
 	public def int getMaxLevel()
 	
 	/**
+	 * Get maximum depth/level at which all instances of an actor are contained
+	 * in the same level
+	 * 
+	 * @return If DAG has a parallel level, then it returns the maximum level. Otherwise it returns -1
+	 * @throws UnsupportedOperationException This operation cannot work on subset DAGs.
+	 */
+	public def int getParallelLevel() throws UnsupportedOperationException
+	
+	/**
+	 * Get maximum depth/level at which all instances of an actor are contained for a given levels
+	 * 
+	 * @param Given levels
+	 * Rest are same as {@link DAGOperations#getParallelLevel}
+	 */
+	public def int getParallelLevel(Map<SDFAbstractVertex, Integer> levels) throws UnsupportedOperationException
+	
+	/**
 	 * Get all the level sets for a given DAG. A level set is a set of all instances
 	 * seen at a particular level. Instead of set, we represent them as a list for
 	 * space saving reason. The index of the level set, in this way, represents the level
@@ -103,6 +122,14 @@ interface DAGOperations {
 	public def List<List<SDFAbstractVertex>> getCycleRoots() throws UnsupportedOperationException, SDF4JException
 	
 	/**
+	 * Pick a random instance or actor from a given set
+	 * 
+	 * @param The collection from which the element needs to be picked
+	 * @return Instance or actor that is randomly picked from a set 
+	 */
+	public def SDFAbstractVertex pickElement(Collection<SDFAbstractVertex> set)
+	
+	/**
 	 * Rearrange the level sets of DAG such that the DAG is 
 	 * data parallel as well. The function checks if DAG is
 	 * instance independent and returns the level set
@@ -112,4 +139,20 @@ interface DAGOperations {
 	 * @throws SDF4JException if the DAG is not instance independent
 	 */
 	public def List<List<SDFAbstractVertex>> rearrange() throws SDF4JException
+	
+	/**
+	 * Get the DAG that forms the loop schedule
+	 * 
+	 * @returns SDFGraph The DAG that forms the loop schedule
+	 * @throws UnsupportedOperationException Does not support Subset DAGs
+	 */
+	public def SDFGraph getDAGC() throws UnsupportedOperationException
+	
+	/**
+	 * Get the DAG that forms the transient part
+	 * 
+	 * @return SDFGraph Transient DAG
+	 * @throws UnsupportedOperationException Does not support Subset DAGs
+	 */
+	public def SDFGraph getDAGT() throws UnsupportedOperationException
 }

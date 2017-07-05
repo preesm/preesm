@@ -11,6 +11,7 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger
 import org.jgrapht.traverse.BreadthFirstIterator
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
+import java.util.Map
 
 /**
  * Implement DAGOperations for subsets of DAG. The class does not modify
@@ -92,6 +93,14 @@ class DAGSubsetOperations extends DAGFromSDFOperations {
 			dagInd = isDAGInd.get(0)
 		}
 		return dagInd
+	}
+	
+	override getParallelLevel(Map<SDFAbstractVertex, Integer> ls) {
+		throw new UnsupportedOperationException("Cant' find parallel level for a DAG subset")
+	}
+	
+	override getParallelLevel() {
+		throw new UnsupportedOperationException("Cant' find parallel level for a DAG subset")
 	}
 	
 	/**
