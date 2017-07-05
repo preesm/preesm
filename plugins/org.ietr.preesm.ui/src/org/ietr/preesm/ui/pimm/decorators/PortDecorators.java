@@ -101,7 +101,7 @@ public class PortDecorators {
    */
   protected static IDecorator getPortExpressionDecorator(final Port port, final PictogramElement pe) {
     final ImageDecorator imageRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
-    imageRenderingDecorator.setMessage("Problems in parameter resolution");
+    final String message = "Problems in parameter resolution: ";
 
     final BoxRelativeAnchor a = (BoxRelativeAnchor) pe;
 
@@ -113,6 +113,7 @@ public class PortDecorators {
       } catch (ExpressionEvaluationException e) {
         imageRenderingDecorator.setX(-5);
         imageRenderingDecorator.setY((int) (a.getRelativeHeight() * a.getReferencedGraphicsAlgorithm().getHeight()) - 1);
+        imageRenderingDecorator.setMessage(message + e.getMessage());
 
         return imageRenderingDecorator;
       }
@@ -125,6 +126,7 @@ public class PortDecorators {
       } catch (ExpressionEvaluationException e) {
         imageRenderingDecorator.setX(a.getReferencedGraphicsAlgorithm().getWidth() - 13);
         imageRenderingDecorator.setY((int) (a.getRelativeHeight() * a.getReferencedGraphicsAlgorithm().getHeight()) - 1);
+        imageRenderingDecorator.setMessage(message + e.getMessage());
 
         return imageRenderingDecorator;
       }

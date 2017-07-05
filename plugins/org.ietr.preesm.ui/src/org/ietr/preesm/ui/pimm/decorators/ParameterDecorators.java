@@ -179,7 +179,7 @@ public class ParameterDecorators {
       expression.evaluate();
     } catch (ExpressionEvaluationException e) {
       final ImageDecorator imageRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
-      imageRenderingDecorator.setMessage("Problems in parameter resolution");
+      imageRenderingDecorator.setMessage("Problems in parameter resolution: " + e.getMessage());
       imageRenderingDecorator.setX((pe.getGraphicsAlgorithm().getWidth() / 2) - 8);
       imageRenderingDecorator.setY(8);
 

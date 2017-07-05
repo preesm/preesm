@@ -91,7 +91,6 @@ public class DelayDecorators {
    */
   protected static IDecorator getExpressionDecorator(final Delay delay, final PictogramElement pe) {
     final ImageDecorator imageRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
-    imageRenderingDecorator.setMessage("Problems in parameter resolution");
 
     Expression expression = delay.getExpression();
     try {
@@ -99,6 +98,7 @@ public class DelayDecorators {
     } catch (ExpressionEvaluationException e) {
       imageRenderingDecorator.setX((pe.getGraphicsAlgorithm().getWidth() / 2) - 8);
       imageRenderingDecorator.setY(1);
+      imageRenderingDecorator.setMessage("Problems in parameter resolution: " + e.getMessage());
 
       return imageRenderingDecorator;
     }
