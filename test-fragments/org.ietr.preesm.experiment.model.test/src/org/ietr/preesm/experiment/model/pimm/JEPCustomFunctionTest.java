@@ -34,6 +34,7 @@
  */
 package org.ietr.preesm.experiment.model.pimm;
 
+import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
 import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.junit.Assert;
 import org.junit.Test;
@@ -44,7 +45,12 @@ import org.junit.Test;
 public class JEPCustomFunctionTest {
 
   private void testEvaluation(final String input, final long expected) {
-    final long evaluate = ExpressionEvaluator.evaluate(input);
+    long evaluate = 0;
+    try {
+      evaluate = ExpressionEvaluator.evaluate(input);
+    } catch (final ExpressionEvaluationException e) {
+      Assert.fail();
+    }
     Assert.assertEquals(expected, evaluate);
   }
 

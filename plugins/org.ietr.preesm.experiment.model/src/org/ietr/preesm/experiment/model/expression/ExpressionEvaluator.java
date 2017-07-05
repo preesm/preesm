@@ -47,7 +47,6 @@ import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
 
 /**
- * TODO: clean package, check use references, ...
  *
  * @author anmorvan
  *
@@ -75,10 +74,10 @@ public class ExpressionEvaluator {
     long result;
     try {
       result = ExpressionEvaluator.parse(expression, jep);
-      return result;
     } catch (final ParseException e) {
-      throw new RuntimeException("Parsing Error, check expression syntax" + " : " + expression, e);
+      throw new ExpressionEvaluationException("Could not evaluate " + expression, e);
     }
+    return result;
   }
 
   private static JEP initJep(final Map<String, Number> addInputParameterValues) {
