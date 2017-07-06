@@ -1335,6 +1335,27 @@
          point="org.eclipse.ui.menus">
       <menuContribution
             allPopups="false"
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <command
+              commandId="org.eclipse.ui.views.showView"
+              icon="icons/pi.gif"
+              label="Show in Properties View"
+              style="push">
+           <parameter
+                 name="org.eclipse.ui.views.showView.viewId"
+                 value="org.eclipse.ui.views.PropertySheet">
+           </parameter>
+				<visibleWhen checkEnabled="true">
+					<and>
+					<with variable="activePartId">
+						<equals value="org.ietr.preesm.ui.pimm.editor.diagram"/>
+					</with>
+					</and>
+				</visibleWhen>
+        </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
             locationURI="popup:org.eclipse.ui.popup.any?before=additions">
          <menu
                icon="icons/preesmProject.png"
