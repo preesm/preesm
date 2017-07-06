@@ -510,6 +510,8 @@ This tokens can be automatically filled from git logs.
 
 The script **releng/fix_header_copyright_and_authors.sh** is in charge of calling the Maven plugin with proper arguments and to replace the tokens automatically.
 
+The features license information are not covered by the above script (only the XML comment is covered). It has to be manually edited. This is done in the feature.xml content directly under the `<license>` tags. Note that the content of the license must be surrounded with `<![CDATA[ ... ]]>` in order to avoid having the special characters escaped during the generation of the source feature. This has to be added manualy in the XML content (the feature editor of Eclipse does not support it).
+
 ### Javadoc
 
 The Javadoc is generated only when the releng profile is enabled. It is generated during the phase **process-sources** using the [maven-javadoc-plugin](https://maven.apache.org/plugins/maven-javadoc-plugin/). In order to facilitate browsing the Javadoc of several plugins, the submodule **complete.site** also enables the aggregation of the Javadoc of the plugins during the **package** phase.
