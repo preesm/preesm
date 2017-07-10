@@ -1453,7 +1453,7 @@ public interface PiMMPackage extends EPackage {
   int FUNCTION_PROTOTYPE__NAME = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Parameters</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The feature id for the '<em><b>Parameters</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
@@ -3107,7 +3107,7 @@ public interface PiMMPackage extends EPackage {
     EAttribute FUNCTION_PROTOTYPE__NAME = PiMMPackage.eINSTANCE.getFunctionPrototype_Name();
 
     /**
-     * The meta object literal for the '<em><b>Parameters</b></em>' reference list feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * The meta object literal for the '<em><b>Parameters</b></em>' containment reference list feature. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
      * @generated
      */
