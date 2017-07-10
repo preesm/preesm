@@ -1411,7 +1411,7 @@ public interface PiMMPackage extends EPackage {
   int HREFINEMENT__FILE_PATH = PiMMPackage.REFINEMENT__FILE_PATH;
 
   /**
-   * The feature id for the '<em><b>Loop Prototype</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The feature id for the '<em><b>Loop Prototype</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
@@ -1419,7 +1419,7 @@ public interface PiMMPackage extends EPackage {
   int HREFINEMENT__LOOP_PROTOTYPE = PiMMPackage.REFINEMENT_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Init Prototype</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The feature id for the '<em><b>Init Prototype</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
@@ -3076,14 +3076,14 @@ public interface PiMMPackage extends EPackage {
     EClass HREFINEMENT = PiMMPackage.eINSTANCE.getHRefinement();
 
     /**
-     * The meta object literal for the '<em><b>Loop Prototype</b></em>' reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * The meta object literal for the '<em><b>Loop Prototype</b></em>' containment reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
      * @generated
      */
     EReference HREFINEMENT__LOOP_PROTOTYPE = PiMMPackage.eINSTANCE.getHRefinement_LoopPrototype();
 
     /**
-     * The meta object literal for the '<em><b>Init Prototype</b></em>' reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * The meta object literal for the '<em><b>Init Prototype</b></em>' containment reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
      * @generated
      */
