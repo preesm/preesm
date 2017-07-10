@@ -12,6 +12,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.ietr.dftools.algorithm
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.ietr.preesm.experiment.model.expression,
+ org.ietr.preesm.experiment.model.factory,
  org.ietr.preesm.experiment.model.pimm,
  org.ietr.preesm.experiment.model.pimm.adapter,
  org.ietr.preesm.experiment.model.pimm.impl,
