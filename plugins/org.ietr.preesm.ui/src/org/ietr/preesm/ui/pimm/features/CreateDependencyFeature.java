@@ -46,6 +46,7 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
@@ -353,9 +354,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
     final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
 
     // Create the Fifo
-    final Dependency dependency = PiMMFactory.eINSTANCE.createDependency();
-    dependency.setSetter(setter);
-    dependency.setGetter(getter);
+    final Dependency dependency = PiMMUserFactory.instance.createDependency(setter, getter);
 
     // Add the new Fifo to the graph
     graph.getDependencies().add(dependency);
