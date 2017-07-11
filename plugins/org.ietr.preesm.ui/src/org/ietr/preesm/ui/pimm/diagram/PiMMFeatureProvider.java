@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import org.eclipse.core.internal.resources.File;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IAddFeature;
+import org.eclipse.graphiti.features.ICopyFeature;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
@@ -48,18 +49,21 @@ import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IMoveAnchorFeature;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
+import org.eclipse.graphiti.features.IPasteFeature;
 import org.eclipse.graphiti.features.IReconnectionFeature;
 import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
+import org.eclipse.graphiti.features.context.ICopyContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IDirectEditingContext;
 import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.features.context.IMoveAnchorContext;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
+import org.eclipse.graphiti.features.context.IPasteContext;
 import org.eclipse.graphiti.features.context.IReconnectionContext;
 import org.eclipse.graphiti.features.context.IRemoveContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
@@ -113,6 +117,7 @@ import org.ietr.preesm.ui.pimm.features.AddRefinementFeature;
 import org.ietr.preesm.ui.pimm.features.AddRoundBufferActorFeature;
 import org.ietr.preesm.ui.pimm.features.ClearActorMemoryScriptFeature;
 import org.ietr.preesm.ui.pimm.features.ClearActorRefinementFeature;
+import org.ietr.preesm.ui.pimm.features.CopyFeature;
 import org.ietr.preesm.ui.pimm.features.CreateActorFeature;
 import org.ietr.preesm.ui.pimm.features.CreateBroadcastActorFeature;
 import org.ietr.preesm.ui.pimm.features.CreateConfigInputInterfaceFeature;
@@ -142,6 +147,7 @@ import org.ietr.preesm.ui.pimm.features.MoveDownActorPortFeature;
 import org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature;
 import org.ietr.preesm.ui.pimm.features.OpenMemoryScriptFeature;
 import org.ietr.preesm.ui.pimm.features.OpenRefinementFeature;
+import org.ietr.preesm.ui.pimm.features.PasteFeature;
 import org.ietr.preesm.ui.pimm.features.ReconnectionDependencyFeature;
 import org.ietr.preesm.ui.pimm.features.ReconnectionFifoFeature;
 import org.ietr.preesm.ui.pimm.features.RenameAbstractVertexFeature;
@@ -268,6 +274,16 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     return new ICreateFeature[] { new CreateActorFeature(this), new CreateParameterFeature(this), new CreateConfigInputInterfaceFeature(this),
         new CreateConfigOutputInterfaceFeature(this), new CreateDataInputInterfaceFeature(this), new CreateDataOutputInterfaceFeature(this),
         new CreateBroadcastActorFeature(this), new CreateJoinActorFeature(this), new CreateForkActorFeature(this), new CreateRoundBufferActorFeature(this) };
+  }
+
+  @Override
+  public ICopyFeature getCopyFeature(ICopyContext context) {
+    return new CopyFeature(this);
+  }
+
+  @Override
+  public IPasteFeature getPasteFeature(IPasteContext context) {
+    return new PasteFeature(this);
   }
 
   /*
