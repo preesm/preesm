@@ -5,12 +5,13 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* Enable copy/paste of vertices (actor, parameters, sink/source, special actors, ...) in the graphical PiMM editor (see https://github.com/preesm/preesm/issues/10);
 
 ### Changes
 * Update scenario editor: file selection popups now filter content more accurately;
 * Add explicit verions for Xtend dependencies to avoid bugs due to API break;
 * Cleanup releng files
-* Normalize feature licenses 
+* Normalize feature licenses
 
 ### Bug fix
 * Fix error handling in UI decorators (show decorators instead of crashing);
