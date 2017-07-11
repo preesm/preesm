@@ -84,39 +84,42 @@ public class PasteFeature extends AbstractPasteFeature {
 
     for (final Dependency newDep : newDependencies) {
       dependencies.add(newDep);
-      // getter should be a ConfigInputPort
-      final ConfigInputPort getter = newDep.getGetter();
-      final Anchor getterPE = (Anchor) findPE(getter);
-
-      // setter is either a Parameter or ConfigOutputPort
-      final ISetter setter = newDep.getSetter();
-      final Anchor setterPE;
-      if (setter instanceof ConfigInputInterface) {
-        setterPE = (Anchor) findPE(setter);
-      } else if (setter instanceof Parameter) {
-        final PictogramElement pe = findPE(setter);
-        if (pe instanceof Anchor) {
-          setterPE = (Anchor) pe;
-        } else {
-          final ContainerShape findPE = (ContainerShape) pe;
-          final EList<Anchor> anchors = findPE.getAnchors();
-          if (anchors == null || anchors.size() != 1) {
-            throw new IllegalStateException();
-          }
-          setterPE = anchors.get(0);
-        }
-      } else if (setter instanceof ConfigOutputPort) {
-        setterPE = (Anchor) findPE(setter);
-        throw new UnsupportedOperationException();
-      } else {
-        throw new UnsupportedOperationException();
-      }
-
-      final AddConnectionContext addCtxt = new AddConnectionContext(setterPE, getterPE);
-      addCtxt.setNewObject(newDep);
-      final IAddFeature addFeature = getFeatureProvider().getAddFeature(addCtxt);
-      getDiagramBehavior().executeFeature(addFeature, addCtxt);
+      addGraphicalRepresentationForNewDependency(newDep);
     }
+  }
+
+  private void addGraphicalRepresentationForNewDependency(final Dependency newDep) {
+    // getter should be a ConfigInputPort
+    final ConfigInputPort getter = newDep.getGetter();
+    final Anchor getterPE = (Anchor) findPE(getter);
+
+    // setter is either a Parameter or ConfigOutputPort
+    final ISetter setter = newDep.getSetter();
+    final Anchor setterPE;
+    if (setter instanceof ConfigInputInterface) {
+      setterPE = (Anchor) findPE(setter);
+    } else if (setter instanceof Parameter) {
+      final PictogramElement pe = findPE(setter);
+      if (pe instanceof Anchor) {
+        setterPE = (Anchor) pe;
+      } else {
+        final ContainerShape findPE = (ContainerShape) pe;
+        final EList<Anchor> anchors = findPE.getAnchors();
+        if (anchors == null || anchors.size() != 1) {
+          throw new IllegalStateException();
+        }
+        setterPE = anchors.get(0);
+      }
+    } else if (setter instanceof ConfigOutputPort) {
+      throw new UnsupportedOperationException();
+    } else {
+      throw new UnsupportedOperationException();
+    }
+
+    final AddConnectionContext addCtxt = new AddConnectionContext(setterPE, getterPE);
+    addCtxt.setNewObject(newDep);
+    final IAddFeature addFeature = getFeatureProvider().getAddFeature(addCtxt);
+    getDiagramBehavior().executeFeature(addFeature, addCtxt);
   }
 
   private PictogramElement findPE(final EObject businessObject) {
