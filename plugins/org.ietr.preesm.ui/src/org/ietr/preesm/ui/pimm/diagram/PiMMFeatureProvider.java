@@ -187,55 +187,56 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
   @Override
   public IAddFeature getAddFeature(final IAddContext context) {
     // is object for add request an Actor?
-    if (context.getNewObject() instanceof Actor) {
+    final Object newObject = context.getNewObject();
+    if (newObject instanceof Actor) {
       return new AddActorFeature(this);
     }
 
-    if (context.getNewObject() instanceof BroadcastActor) {
+    if (newObject instanceof BroadcastActor) {
       return new AddBroadcastActorFeature(this);
     }
 
-    if (context.getNewObject() instanceof JoinActor) {
+    if (newObject instanceof JoinActor) {
       return new AddJoinActorFeature(this);
     }
 
-    if (context.getNewObject() instanceof ForkActor) {
+    if (newObject instanceof ForkActor) {
       return new AddForkActorFeature(this);
     }
 
-    if (context.getNewObject() instanceof RoundBufferActor) {
+    if (newObject instanceof RoundBufferActor) {
       return new AddRoundBufferActorFeature(this);
     }
 
-    if (context.getNewObject() instanceof Parameter) {
-      if (((Parameter) context.getNewObject()).isConfigurationInterface()) {
+    if (newObject instanceof Parameter) {
+      if (((Parameter) newObject).isConfigurationInterface()) {
         return new AddConfigInputInterfaceFeature(this);
       } else {
         return new AddParameterFeature(this);
       }
     }
 
-    if (context.getNewObject() instanceof DataInputInterface) {
+    if (newObject instanceof DataInputInterface) {
       return new AddDataInputInterfaceFeature(this);
     }
 
-    if (context.getNewObject() instanceof DataOutputInterface) {
+    if (newObject instanceof DataOutputInterface) {
       return new AddDataOutputInterfaceFeature(this);
     }
 
-    if (context.getNewObject() instanceof ConfigOutputInterface) {
+    if (newObject instanceof ConfigOutputInterface) {
       return new AddConfigOutputInterfaceFeature(this);
     }
 
-    if (context.getNewObject() instanceof Fifo) {
+    if (newObject instanceof Fifo) {
       return new AddFifoFeature(this);
     }
 
-    if (context.getNewObject() instanceof Dependency) {
+    if (newObject instanceof Dependency) {
       return new AddDependencyFeature(this);
     }
 
-    if (context.getNewObject() instanceof File) {
+    if (newObject instanceof File) {
       if (getBusinessObjectForPictogramElement(context.getTargetContainer()) instanceof Actor) {
         return new AddRefinementFeature(this);
       }
