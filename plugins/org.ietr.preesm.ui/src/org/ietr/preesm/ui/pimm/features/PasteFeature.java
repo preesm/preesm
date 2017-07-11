@@ -1,15 +1,28 @@
 package org.ietr.preesm.ui.pimm.features;
 
+import java.util.LinkedList;
+import java.util.List;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IPasteContext;
+import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
+import org.eclipse.graphiti.mm.pictograms.Anchor;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.AbstractPasteFeature;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.ISetter;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
@@ -27,6 +40,11 @@ public class PasteFeature extends AbstractPasteFeature {
     super(fp);
   }
 
+  private final PiGraph getPiGraph() {
+    final Diagram diagram = getDiagram();
+    return (PiGraph) getBusinessObjectForPictogramElement(diagram);
+  }
+
   @Override
   public void paste(final IPasteContext context) {
     // get the EClasses from the clipboard without copying them
@@ -40,15 +58,100 @@ public class PasteFeature extends AbstractPasteFeature {
         final AbstractVertex copy = PiMMUserFactory.instance.copy(vertex);
         final String name = computeUniqueNameForCopy(vertex);
         copy.setName(name);
-
         addGraphicalElementsForCopy(context, copy);
+
+        autoConnectInputConfigPorts(vertex, copy);
       }
     }
   }
 
+  private void autoConnectInputConfigPorts(final AbstractVertex originalVertex, final AbstractVertex vertexCopy) {
+
+    final PiGraph pigraph = getPiGraph();
+    final EList<Dependency> dependencies = pigraph.getDependencies();
+
+    final List<Dependency> newDependencies = new LinkedList<>();
+    for (final Dependency dep : dependencies) {
+      final ConfigInputPort getter = dep.getGetter();
+      if (originalVertex.getConfigInputPorts().contains(getter)) {
+        final ISetter setter = dep.getSetter();
+        final ConfigInputPort getterCopy = lookupInputConfigPort(vertexCopy, getter);
+
+        Dependency newDep = PiMMUserFactory.instance.createDependency(setter, getterCopy);
+        newDependencies.add(newDep);
+      }
+    }
+
+    for (final Dependency newDep : newDependencies) {
+      dependencies.add(newDep);
+      // getter should be a ConfigInputPort
+      final ConfigInputPort getter = newDep.getGetter();
+      final Anchor getterPE = (Anchor) findPE(getter);
+
+      // setter is either a Parameter or ConfigOutputPort
+      final ISetter setter = newDep.getSetter();
+      final Anchor setterPE;
+      if (setter instanceof ConfigInputInterface) {
+        setterPE = (Anchor) findPE(setter);
+      } else if (setter instanceof Parameter) {
+        final PictogramElement pe = findPE(setter);
+        if (pe instanceof Anchor) {
+          setterPE = (Anchor) pe;
+        } else {
+          final ContainerShape findPE = (ContainerShape) pe;
+          final EList<Anchor> anchors = findPE.getAnchors();
+          if (anchors == null || anchors.size() != 1) {
+            throw new IllegalStateException();
+          }
+          setterPE = anchors.get(0);
+        }
+      } else if (setter instanceof ConfigOutputPort) {
+        setterPE = (Anchor) findPE(setter);
+        throw new UnsupportedOperationException();
+      } else {
+        throw new UnsupportedOperationException();
+      }
+
+      final AddConnectionContext addCtxt = new AddConnectionContext(setterPE, getterPE);
+      addCtxt.setNewObject(newDep);
+      final IAddFeature addFeature = getFeatureProvider().getAddFeature(addCtxt);
+      getDiagramBehavior().executeFeature(addFeature, addCtxt);
+    }
+  }
+
+  private PictogramElement findPE(final EObject businessObject) {
+    final PictogramElement boPEs = getFeatureProvider().getPictogramElementForBusinessObject(businessObject);
+    if (boPEs == null) {
+      final String message = "Business objcet [" + businessObject + "] has no graphical representations (several PictogramElements) : \n";
+      throw new IllegalStateException(message);
+    }
+    return boPEs;
+  }
+
+  /**
+   * Lookup the copied getter in the vertex copy. The lookup is based on the name only.
+   *
+   * @param vertexCopy
+   *          vertex copy
+   * @param getter
+   *          input port in the original vertex
+   * @return the vertexCopy's input port whose name matches getter
+   */
+  private ConfigInputPort lookupInputConfigPort(final AbstractVertex vertexCopy, final ConfigInputPort getter) {
+    final EList<ConfigInputPort> configInputPorts = vertexCopy.getConfigInputPorts();
+    ConfigInputPort target = null;
+    for (ConfigInputPort inPort : configInputPorts) {
+      // port has just been copied, so names should be equals
+      if (inPort.getName().equals(getter.getName())) {
+        target = inPort;
+        break;
+      }
+    }
+    return target;
+  }
+
   private String computeUniqueNameForCopy(final AbstractVertex vertex) {
-    final Diagram diagram = getDiagram();
-    final PiGraph pigraph = (PiGraph) getBusinessObjectForPictogramElement(diagram);
+    final PiGraph pigraph = getPiGraph();
     final VertexNameValidator vertexNameValidator = new VertexNameValidator(pigraph, null);
     int i = 0;
     String name = vertex.getName();
@@ -58,7 +161,10 @@ public class PasteFeature extends AbstractPasteFeature {
     return name;
   }
 
-  private void addGraphicalElementsForCopy(final IPasteContext context, final AbstractVertex vertexModelCopy) {
+  /**
+   * Add graphical representation for the vertex copy and its content (that is the input/output ports/configs)
+   */
+  private PictogramElement addGraphicalElementsForCopy(final IPasteContext context, final AbstractVertex vertexModelCopy) {
     final AddContext addCtxt = new AddContext();
     final Diagram diagram = getDiagram();
     // For simplicity paste all objects at the location given in the
@@ -95,6 +201,7 @@ public class PasteFeature extends AbstractPasteFeature {
         addGraphicalRepresentation(addCtxt, childElement);
       }
     });
+    return newVertexPE;
   }
 
   @Override
