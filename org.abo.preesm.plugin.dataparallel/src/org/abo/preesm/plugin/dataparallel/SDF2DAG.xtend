@@ -19,6 +19,7 @@ import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsInd
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
 import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
+import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
 
 /**
  * Construct DAG from a SDF Graph
@@ -63,7 +64,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 			throw new SDF4JException("Graph " + sdf + " not schedulable")
 		}
 		inputGraph = sdf.clone
-		actor2InstancesLocal = newHashMap()
+		actor2InstancesLocal = newHashMap
 		
 		inputGraph.vertexSet.forEach[vertex |
 			if(inputGraph.incomingEdgesOf(vertex).size == 0) {
@@ -126,12 +127,22 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	
 	/**
 	 * Return the DAG that is constructed
+	 * The DAG is the loop schedule
 	 * 
 	 * @return DAG constructed
 	 */
 	public override SDFGraph getOutputGraph() {
 		return outputGraph
-	} 
+	}
+	
+	/**
+	 * Accept method for DAG operations
+	 * 
+	 * @param A {@link DAGOperations} instance
+	 */
+	override accept(DAGOperations visitor) {
+		visitor.visit(this)
+	}
 	
 	/**
 	 * Create instances according to the repetition count. Also rename the 
@@ -140,7 +151,8 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	 protected def void createInstances() {
 	 	// Create instances repetition vector times
 	 	for(actor: inputGraph.vertexSet) {
-	 		val instances = newArrayList()
+	 		log("Actor " + actor + " has " + actor.nbRepeatAsInteger + " instances.")
+	 		val instances = newArrayList
 	 		 
 	 		for(var ii = 0; ii < actor.nbRepeatAsInteger; ii++) {
 	 			// Clone and set properties
@@ -186,7 +198,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 			var absoluteSource = 0
 			var currentBufferSize = edge.delay.intValue
 			
-			val newEdges = newArrayList()
+			val newEdges = newArrayList
 			while(currentBufferSize < bufferSize) {
 				// Index of currently processed source instance among the instances of source actor. 
 				// Similarly for target actor
@@ -473,7 +485,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	 * Update the relevant data-structures associated with the class. 
 	 */
 	protected def void updateMaps(SDFAbstractVertex sourceInstance, SDFAbstractVertex exImInstance) {
-		exImOrigInstance.put(exImInstance, sourceInstance)
+		explodeImplodeOrigInstances.put(exImInstance, sourceInstance)
 		val actor = instance2Actor.get(sourceInstance)
 		val updatedInstances = actor2Instances.get(actor)
 		updatedInstances.add(exImInstance)

@@ -3,16 +3,16 @@ package org.abo.preesm.plugin.dataparallel.test
 import java.util.Collection
 import org.abo.preesm.plugin.dataparallel.DAGSubset
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
-import org.abo.preesm.plugin.dataparallel.SubsetTopologicalIterator
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import org.abo.preesm.plugin.dataparallel.dag.operations.DAGOperationsImpl
+import org.abo.preesm.plugin.dataparallel.iterator.SubsetTopologicalIterator
+import org.abo.preesm.plugin.dataparallel.operations.visitor.RootExitOperations
 
 /**
- * Test setup for {@link DAGSubset} class
+ * Property based test for {@link DAGSubset} instance
  * 
  * @author Sudeep Kanur
  */
@@ -35,7 +35,11 @@ class DAGSubsetTest {
 		val parameters = newArrayList()
 		Util.provideAllGraphs.forEach[sdf |
 			val dagGen = new SDF2DAG(sdf)
-			new DAGOperationsImpl(dagGen).rootInstances.forEach[rootNode |
+			
+			val rootOp = new RootExitOperations
+			dagGen.accept(rootOp)
+			val rootInstances = rootOp.rootInstances
+			rootInstances.forEach[rootNode |
 				parameters.add(#[dagGen, rootNode])
 			]
 		]

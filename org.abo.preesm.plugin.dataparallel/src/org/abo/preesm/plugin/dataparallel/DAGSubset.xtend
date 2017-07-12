@@ -5,12 +5,14 @@ import java.util.List
 import java.util.Map
 import java.util.logging.Logger
 import javax.naming.OperationNotSupportedException
+import org.abo.preesm.plugin.dataparallel.iterator.SubsetTopologicalIterator
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.alg.CycleDetector
+import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGCommonOperations
 
 /**
  * A subset of DAG is the set of all the instances that has a reachable path 
@@ -21,7 +23,7 @@ import org.jgrapht.alg.CycleDetector
  *  
  * @autor Sudeep Kanur
  */
-final class DAGSubset extends AbstractDAGConstructor implements DAGConstructor {
+final class DAGSubset extends AbstractDAGConstructor implements DAGSubsetConstructor {
 	/**
 	 * Holds the original DAG
 	 */
@@ -78,8 +80,8 @@ final class DAGSubset extends AbstractDAGConstructor implements DAGConstructor {
 		// Create subset of the new root node
 		this.seenNodes = new SubsetTopologicalIterator(dagGen, rootNode).toList
 		
-		sinkInstances = newArrayList()
-		sourceInstances = newArrayList()
+		sinkInstances = newArrayList
+		sourceInstances = newArrayList
 		
 		sourceActors.forEach[actor |
 			sourceInstances.addAll(dagGen.actor2Instances.get(actor).filter[instance | seenNodes.contains(instance)].toList)
@@ -148,7 +150,7 @@ final class DAGSubset extends AbstractDAGConstructor implements DAGConstructor {
 	 * @return Lookup table consisting of implode/explode instances belonging to the DAG and its instances
 	 */
 	public override Map<SDFAbstractVertex, SDFAbstractVertex> getExplodeImplodeOrigInstances() {
-		return new HashMap(dagGen.getExplodeImplodeOrigInstances.filter[key, value | seenNodes.contains(value)])
+		return new HashMap(dagGen.explodeImplodeOrigInstances.filter[key, value | seenNodes.contains(value)])
 	}
 	
 	/**
@@ -209,6 +211,33 @@ final class DAGSubset extends AbstractDAGConstructor implements DAGConstructor {
 	 */
 	public override getSinkInstances() {
 		return sinkInstances
+	}
+	
+	/**
+	 * Accept method for DAG operations
+	 * 
+	 * @param A {@link DAGCommonOperations} instance
+	 */
+	override accept(DAGCommonOperations visitor) {
+		visitor.visit(this)
+	}
+	
+	/**
+	 * Get the seen nodes in the subset
+	 * 
+	 * @return Unmodifiable List of nodes that are seen in the subset
+	 */
+	override List<SDFAbstractVertex> getSeenNodes() {
+		return seenNodes
+	}
+	
+	/**
+	 * Get the original DAG for the subset
+	 * 
+	 * @return A {@link PureDAGConstructor} instance that was used to create subset
+	 */
+	override PureDAGConstructor getOriginalDAG() {
+		return dagGen
 	}
 	
 }

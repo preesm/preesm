@@ -3,9 +3,9 @@ package org.abo.preesm.plugin.dataparallel.test
 import java.util.List
 import java.util.NoSuchElementException
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
-import org.abo.preesm.plugin.dataparallel.SubsetTopologicalIterator
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import org.abo.preesm.plugin.dataparallel.iterator.SubsetTopologicalIterator
 
 /**
  * Utility class that holds many useful static functions

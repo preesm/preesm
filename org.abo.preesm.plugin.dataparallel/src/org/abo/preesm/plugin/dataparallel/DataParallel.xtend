@@ -9,7 +9,8 @@ import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
 import org.ietr.dftools.workflow.tools.WorkflowLogger
 import java.util.logging.Logger
 import java.util.logging.Level
-import org.abo.preesm.plugin.dataparallel.dag.operations.DAGOperationsImpl
+import org.abo.preesm.plugin.dataparallel.operations.visitor.RootExitOperations
+import org.abo.preesm.plugin.dataparallel.operations.visitor.DependencyAnalysisOperations
 
 /**
  * Wrapper class that performs the data-parallel checks and transforms
@@ -32,12 +33,18 @@ class DataParallel extends AbstractTaskImplementation {
 		val dagGen = new SDF2DAG(sdf, logger as Logger)
 		val dag = dagGen.outputGraph
 		
-		val dagOps = new DAGOperationsImpl(dagGen)
-		if(dagOps.isDAGInd)		
+		val rootOps = new RootExitOperations
+		dagGen.accept(rootOps)
+		
+		logger.log(Level.INFO, "Root instances are: \n" + rootOps.rootInstances)
+		
+		val depOps = new DependencyAnalysisOperations
+		
+		if(depOps.isIndependent)		
 			logger.log(Level.INFO, "SDF is data-Parallel")
 		else {
 			logger.log(Level.INFO, "SDF is not data-parallel")
-			logger.log(Level.INFO, "Non data-parallel actors are: " + dagOps.nonParallelActors)	
+			logger.log(Level.INFO, "Non data-parallel actors are: " + depOps.instanceDependentActors)	
 		}
 		
 		return newHashMap("SDF" -> dag)
@@ -47,7 +54,7 @@ class DataParallel extends AbstractTaskImplementation {
 	 * No default parameters yet
 	 */
 	override getDefaultParameters() {
-		return newHashMap()
+		return newHashMap
 	}
 	
 	/**

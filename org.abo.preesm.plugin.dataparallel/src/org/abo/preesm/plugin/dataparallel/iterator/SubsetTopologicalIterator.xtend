@@ -1,4 +1,4 @@
-package org.abo.preesm.plugin.dataparallel
+package org.abo.preesm.plugin.dataparallel.iterator
 
 import java.util.Collections
 import java.util.List
@@ -9,6 +9,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.jgrapht.traverse.BreadthFirstIterator
+import org.abo.preesm.plugin.dataparallel.PureDAGConstructor
 
 /**
  * A topological order iterator that traverses a subset of DAG
@@ -35,7 +36,7 @@ class SubsetTopologicalIterator extends BreadthFirstIterator<SDFAbstractVertex, 
 	/**
 	 * Constructor. Mainly used in plugin
 	 * 
-	 * @param dagGen {@link SDF2DAG} instance containing original DAG
+	 * @param dagGen {@link PureDAGConstructor} instance containing original DAG
 	 * @param rootNode Root node
 	 * @param logger For loggin purposes
 	 * @throws NoSuchElementException If root node does not exist or is not a root node
@@ -43,8 +44,8 @@ class SubsetTopologicalIterator extends BreadthFirstIterator<SDFAbstractVertex, 
 	new(PureDAGConstructor dagGen, SDFAbstractVertex rootNode, Logger logger) throws NoSuchElementException {
 		super(dagGen.getOutputGraph, rootNode)
 		this.inputGraph = dagGen.getOutputGraph
-		this.instanceSources = newHashMap()
-		this.instanceEncountered = newArrayList()
+		this.instanceSources = newHashMap
+		this.instanceEncountered = newArrayList
 		
 		val rootInstances = inputGraph.vertexSet
 			.filter[instance | inputGraph.incomingEdgesOf(instance).size == 0].toList
@@ -60,7 +61,7 @@ class SubsetTopologicalIterator extends BreadthFirstIterator<SDFAbstractVertex, 
 		// Iterate first to get the subset of DAG in question
 		new BreadthFirstIterator<SDFAbstractVertex, SDFEdge>(inputGraph, rootNode)
 		.forEach[seenNode | 
-			instanceSources.put(seenNode, newArrayList())
+			instanceSources.put(seenNode, newArrayList)
 		]
 		
 		// Now find the predecessor/source of relevant instances
@@ -75,7 +76,7 @@ class SubsetTopologicalIterator extends BreadthFirstIterator<SDFAbstractVertex, 
 	/**
 	 * Constructor used in Test setup
 	 * 
-	 * @param dagGen {@link SDF2DAG} instance containing a original DAG
+	 * @param dagGen {@link PureDAGConstructor} instance containing a original DAG
 	 * @param rootNode Root node
 	 * @throws NoSuchElementException If root node does not exist or is not a root node
 	 */

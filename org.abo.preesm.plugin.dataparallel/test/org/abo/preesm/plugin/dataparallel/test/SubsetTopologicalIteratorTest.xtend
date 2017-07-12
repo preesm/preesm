@@ -3,12 +3,12 @@ package org.abo.preesm.plugin.dataparallel.test
 import java.util.Collection
 import java.util.NoSuchElementException
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
-import org.abo.preesm.plugin.dataparallel.SubsetTopologicalIterator
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import org.abo.preesm.plugin.dataparallel.dag.operations.DAGOperationsImpl
+import org.abo.preesm.plugin.dataparallel.iterator.SubsetTopologicalIterator
+import org.abo.preesm.plugin.dataparallel.operations.visitor.RootExitOperations
 
 /**
  * Test setup for {@link SubsetTopologicalIterator} class
@@ -29,7 +29,7 @@ class SubsetTopologicalIteratorTest {
 	 */
 	@Parameterized.Parameters
 	public static def Collection<Object[]> instancesToTest() {
-		val parameters = newArrayList()
+		val parameters = newArrayList
 		Util.provideAllGraphs.forEach[sdf | 
 			parameters.add(#[new SDF2DAG(sdf)])
 		]	
@@ -44,17 +44,20 @@ class SubsetTopologicalIteratorTest {
 	 */
 	@Test
 	public def void checkSuccBelongsNRootNodes() {
-		val occurence = newHashMap() // The lookup table
-		val instanceTargets = newHashMap()
+		val occurence = newHashMap // The lookup table
+		val instanceTargets = newHashMap
 		// Get the targets of each node
 		dagGen.outputGraph.vertexSet.forEach[node | 
 			instanceTargets.put(node, dagGen.outputGraph.outgoingEdgesOf(node).map[edge | edge.target].toList)
 		]
-		val dagOps = new DAGOperationsImpl(dagGen)
+		val rootOp = new RootExitOperations
+		dagGen.accept(rootOp)
+		val rootInstances = rootOp.rootInstances
+
 		// Initialize the lookup table
 		dagGen.outputGraph.vertexSet.forEach[node | occurence.put(node, 0)]
 		// Mark the occurence for each root node/subset of DAG
-		dagOps.rootInstances.forEach[rootNode |
+		rootInstances.forEach[rootNode |
 			new SubsetTopologicalIterator(dagGen, rootNode).toList.forEach[node |
 				occurence.put(node, occurence.get(node)+1)
 			]
@@ -71,7 +74,10 @@ class SubsetTopologicalIteratorTest {
 	 */ 
 	@Test(expected = NoSuchElementException)
 	public def void nonRootInstanceRaiseException() {
-		val rootNodes = new DAGOperationsImpl(dagGen).rootInstances
+		val rootOp = new RootExitOperations
+		dagGen.accept(rootOp)
+		val rootNodes = rootOp.rootInstances
+		
 		val nonRootNode = dagGen.outputGraph.vertexSet.filter[node | !rootNodes.contains(node)].toList.get(0)
 		if(nonRootNode === null) {
 			throw new RuntimeException("Non-Root nodes can't be null. Bug in the code!")
@@ -84,8 +90,12 @@ class SubsetTopologicalIteratorTest {
 	 */ 
 	@Test
 	public def void verifyInstanceSources() {
-		new DAGOperationsImpl(dagGen).rootInstances.forEach[ rootNode |
-			val instanceSources = newHashMap()
+		val rootOp = new RootExitOperations
+		dagGen.accept(rootOp)
+		val rootInstances = rootOp.rootInstances
+		
+		rootInstances.forEach[ rootNode |
+			val instanceSources = newHashMap
 			val sit = new SubsetTopologicalIterator(dagGen, rootNode)
 			sit.forEach[seenNode | instanceSources.put(seenNode, newArrayList())]
 			instanceSources.forEach[seenNode, sources |

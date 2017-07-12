@@ -2,6 +2,7 @@ package org.abo.preesm.plugin.dataparallel
 
 import java.util.List
 import java.util.Map
+import java.util.logging.Logger
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 
@@ -11,6 +12,13 @@ import org.ietr.dftools.algorithm.model.visitors.SDF4JException
  * @author Sudeep Kanur
  */
 interface DAGConstructor {
+	
+	/**
+	 * Optionally return the logger
+	 * 
+	 * @return A {@link Logger} instance that was passed
+	 */
+	public def Logger getLogger()
 	
 	/**
 	 * Optionally log message to the console

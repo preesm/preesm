@@ -1,4 +1,4 @@
-package org.abo.preesm.plugin.dataparallel
+package org.abo.preesm.plugin.dataparallel.iterator
 
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
@@ -7,8 +7,10 @@ import java.util.List
 import java.util.Map
 
 /**
- * Interface that iterates through a DAG in topological
- * order only
+ * Interface that iterates through a DAG in topological 
+ * order only. Specialization of GraphIterator for SDFGraphs
+ * 
+ * @author Sudeep Kanur
  */
 public interface DAGTopologicalIteratorInterface extends GraphIterator<SDFAbstractVertex, SDFEdge> {
 	/**
