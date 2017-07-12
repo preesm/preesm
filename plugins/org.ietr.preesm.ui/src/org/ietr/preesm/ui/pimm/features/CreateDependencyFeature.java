@@ -247,10 +247,9 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
         // If the getter is an actor
         if (tgtObj instanceof ExecutableActor) {
           // Create a ConfigInputPort
-          final PictogramElement targetPe = context.getTargetPictogramElement();
-          final AbstractAddActorPortFeature addPortFeature = CreateDependencyFeature.canCreateConfigPort(targetPe, getFeatureProvider(), "config_input");
+          final AbstractAddActorPortFeature addPortFeature = CreateDependencyFeature.canCreateConfigPort(tgtPE, getFeatureProvider(), "config_input");
           if (addPortFeature != null) {
-            final CustomContext targetContext = new CustomContext(new PictogramElement[] { targetPe });
+            final CustomContext targetContext = new CustomContext(new PictogramElement[] { tgtPE });
             // If Src is a Parameter (or config inputPort), give it as default port name
             if (setter instanceof Parameter) {
               addPortFeature.execute(targetContext, ((Parameter) setter).getName());
