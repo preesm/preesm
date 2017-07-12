@@ -78,6 +78,10 @@ public class PasteFeature extends AbstractPasteFeature {
 
   private void autoConnectInputConfigPorts(final AbstractVertex originalVertex, final AbstractVertex vertexCopy) {
 
+    if (originalVertex.eContainer() != vertexCopy.eContainer()) {
+      return;
+    }
+
     final PiGraph pigraph = getPiGraph();
     final EList<Dependency> dependencies = pigraph.getDependencies();
 
@@ -205,6 +209,7 @@ public class PasteFeature extends AbstractPasteFeature {
     addCtxt.setLocation(context.getX(), context.getY());
     addCtxt.setTargetContainer(diagram);
     final PictogramElement newVertexPE = addGraphicalRepresentation(addCtxt, vertexModelCopy);
+    this.links.put(vertexModelCopy, newVertexPE);
 
     final TreeIterator<EObject> vertexChildrenElements = vertexModelCopy.eAllContents();
 
