@@ -174,10 +174,10 @@ public class ParameterDecorators {
    * @return the {@link IDecorator} for the {@link Parameter} or <code>null</code> if the {@link Parameter} have a valid expression.
    */
   protected static IDecorator getExpressionDecorator(final Parameter param, final PictogramElement pe) {
-    Expression expression = param.getExpression();
+    final Expression expression = param.getExpression();
     try {
       expression.evaluate();
-    } catch (ExpressionEvaluationException e) {
+    } catch (final ExpressionEvaluationException e) {
       final ImageDecorator imageRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
       imageRenderingDecorator.setMessage("Problems in parameter resolution: " + e.getMessage());
       imageRenderingDecorator.setX((pe.getGraphicsAlgorithm().getWidth() / 2) - 8);

@@ -338,7 +338,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
           // if evaluation went well, just write the result
           this.lblSourcePortValueObj.setText(srcExprEvaluation);
           this.txtSourcePortExpression.setBackground(new Color(null, 255, 255, 255));
-        } catch (ExpressionEvaluationException e) {
+        } catch (final ExpressionEvaluationException e) {
           // otherwise print error message and put red background
           this.lblSourcePortValueObj.setText("Error : " + e.getMessage());
           this.txtSourcePortExpression.setBackground(new Color(null, 240, 150, 150));
@@ -349,7 +349,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
           // if evaluation went well, just write the result
           this.lblTargetPortValueObj.setText(tgtExprEvaluation);
           this.txtTargetPortExpression.setBackground(new Color(null, 255, 255, 255));
-        } catch (ExpressionEvaluationException e) {
+        } catch (final ExpressionEvaluationException e) {
           // otherwise print error message and put red background
           this.lblTargetPortValueObj.setText("Error : " + e.getMessage());
           this.txtTargetPortExpression.setBackground(new Color(null, 240, 150, 150));

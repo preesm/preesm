@@ -277,12 +277,12 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
   }
 
   @Override
-  public ICopyFeature getCopyFeature(ICopyContext context) {
+  public ICopyFeature getCopyFeature(final ICopyContext context) {
     return new CopyFeature(this);
   }
 
   @Override
-  public IPasteFeature getPasteFeature(IPasteContext context) {
+  public IPasteFeature getPasteFeature(final IPasteContext context) {
     return new PasteFeature(this);
   }
 

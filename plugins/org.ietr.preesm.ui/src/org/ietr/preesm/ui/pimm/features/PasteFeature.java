@@ -55,7 +55,7 @@ public class PasteFeature extends AbstractPasteFeature {
 
   @Override
   public void paste(final IPasteContext context) {
-    links.clear();
+    this.links.clear();
     // get the EClasses from the clipboard without copying them
     // (only copy the pictogram element, not the business object)
     // then create new pictogram elements using the add feature
@@ -72,7 +72,7 @@ public class PasteFeature extends AbstractPasteFeature {
         autoConnectInputConfigPorts(vertex, copy);
       }
     }
-    links.clear();
+    this.links.clear();
   }
 
   private void autoConnectInputConfigPorts(final AbstractVertex originalVertex, final AbstractVertex vertexCopy) {
@@ -92,7 +92,7 @@ public class PasteFeature extends AbstractPasteFeature {
         // check names after creating the dependency (ConfigInputPort.getName() lookup dependency.getSetter()).
         final String copiedName = getterCopy.getName();
         final String origName = getter.getName();
-        if ((copiedName != null && !(copiedName.equals(origName))) || (copiedName == null && origName != null)) {
+        if (((copiedName != null) && !(copiedName.equals(origName))) || ((copiedName == null) && (origName != null))) {
           throw new IllegalStateException();
         }
 
@@ -123,7 +123,7 @@ public class PasteFeature extends AbstractPasteFeature {
       } else {
         final ContainerShape findPE = (ContainerShape) pe;
         final EList<Anchor> anchors = findPE.getAnchors();
-        if (anchors == null || anchors.size() != 1) {
+        if ((anchors == null) || (anchors.size() != 1)) {
           throw new IllegalStateException();
         }
         setterPE = anchors.get(0);
@@ -141,14 +141,13 @@ public class PasteFeature extends AbstractPasteFeature {
   }
 
   private PictogramElement findPE(final EObject businessObject) {
-    if (links.containsKey(businessObject)) {
-      return links.get(businessObject);
+    if (this.links.containsKey(businessObject)) {
+      return this.links.get(businessObject);
     }
 
     final PictogramElement boPEs = getFeatureProvider().getPictogramElementForBusinessObject(businessObject);
     if (boPEs == null) {
       final String message = "Business objcet [" + businessObject + "] has no graphical representations (several PictogramElements) : \n";
-      System.out.println(message);
       throw new IllegalStateException(message);
     }
     return boPEs;
@@ -236,7 +235,7 @@ public class PasteFeature extends AbstractPasteFeature {
           if (chopboxAnchor == null) {
             throw new IllegalStateException();
           }
-          links.put(copiedPort, chopboxAnchor);
+          this.links.put(copiedPort, chopboxAnchor);
         }
       } else {
         addGraphicalRepresentation(addCtxt, childElement);

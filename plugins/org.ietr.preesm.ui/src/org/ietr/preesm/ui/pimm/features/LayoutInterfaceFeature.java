@@ -125,7 +125,7 @@ public class LayoutInterfaceFeature extends AbstractLayoutFeature {
     return true;
   }
 
-  private void layoutParameter(final ContainerShape containerShape, final GraphicsAlgorithm containerGa, IDimension size) {
+  private void layoutParameter(final ContainerShape containerShape, final GraphicsAlgorithm containerGa, final IDimension size) {
     final int width = (size.getWidth() < 18) ? 18 : size.getWidth();
     // Layout the invisible rectangle
     containerGa.setWidth(width);
@@ -138,7 +138,8 @@ public class LayoutInterfaceFeature extends AbstractLayoutFeature {
     }
   }
 
-  private void layoutInterfaceActor(final ContainerShape containerShape, final GraphicsAlgorithm containerGa, final AbstractVertex vertex, IDimension size) {
+  private void layoutInterfaceActor(final ContainerShape containerShape, final GraphicsAlgorithm containerGa, final AbstractVertex vertex,
+      final IDimension size) {
     // Layout the invisible rectangle
     containerGa.setWidth(size.getWidth() + 16 + 3);
     // Layout the label

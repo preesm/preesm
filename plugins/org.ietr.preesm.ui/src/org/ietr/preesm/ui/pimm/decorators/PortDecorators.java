@@ -110,7 +110,7 @@ public class PortDecorators {
 
       try {
         expression.evaluate();
-      } catch (ExpressionEvaluationException e) {
+      } catch (final ExpressionEvaluationException e) {
         imageRenderingDecorator.setX(-5);
         imageRenderingDecorator.setY((int) (a.getRelativeHeight() * a.getReferencedGraphicsAlgorithm().getHeight()) - 1);
         imageRenderingDecorator.setMessage(message + e.getMessage());
@@ -123,7 +123,7 @@ public class PortDecorators {
 
       try {
         expression.evaluate();
-      } catch (ExpressionEvaluationException e) {
+      } catch (final ExpressionEvaluationException e) {
         imageRenderingDecorator.setX(a.getReferencedGraphicsAlgorithm().getWidth() - 13);
         imageRenderingDecorator.setY((int) (a.getRelativeHeight() * a.getReferencedGraphicsAlgorithm().getHeight()) - 1);
         imageRenderingDecorator.setMessage(message + e.getMessage());

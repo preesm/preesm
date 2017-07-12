@@ -177,7 +177,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
    * @param defaultPortName
    *          the port name
    */
-  public void execute(final ICustomContext context, String defaultPortName) {
+  public void execute(final ICustomContext context, final String defaultPortName) {
     // Re-check if only one element is selected
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
@@ -245,7 +245,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
     return boxAnchor;
   }
 
-  private String computePortName(final ICustomContext context, String defaultPortName, final ExecutableActor actor) {
+  private String computePortName(final ICustomContext context, final String defaultPortName, final ExecutableActor actor) {
     // If a name was given in the property, bypass the dialog box
     final Object nameProperty = context.getProperty(AbstractAddActorPortFeature.NAME_PROPERTY);
     final String portName;
@@ -288,8 +288,8 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
    *          the actor to which we add a port
    * @return the new port, or <code>null</code> if something went wrong
    */
-  private Port getNewPortW(String portName, ExecutableActor actor) {
-    Port newPort = getNewPort(portName, actor);
+  private Port getNewPortW(final String portName, final ExecutableActor actor) {
+    final Port newPort = getNewPort(portName, actor);
     this.createdPort = newPort;
     return newPort;
   }

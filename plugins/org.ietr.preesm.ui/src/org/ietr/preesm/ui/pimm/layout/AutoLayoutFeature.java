@@ -270,7 +270,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       for (final AbstractActor actor : currentStage) {
         for (final DataOutputPort port : actor.getDataOutputPorts()) {
           final Fifo outgoingFifo = port.getOutgoingFifo();
-          if (!feedbackFifos.contains(outgoingFifo) && outgoingFifo != null) {
+          if (!feedbackFifos.contains(outgoingFifo) && (outgoingFifo != null)) {
             final DataInputPort targetPort = outgoingFifo.getTargetPort();
             final AbstractActor eContainer = (AbstractActor) targetPort.eContainer();
             nextStage.add(eContainer);
