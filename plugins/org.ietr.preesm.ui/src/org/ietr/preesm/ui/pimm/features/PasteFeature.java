@@ -19,6 +19,7 @@ import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.IPeService;
 import org.eclipse.graphiti.ui.features.AbstractPasteFeature;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
@@ -34,6 +35,7 @@ import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -154,8 +156,8 @@ public class PasteFeature extends AbstractPasteFeature {
       final Fifo originalFifo = fifoEntry.getValue();
       targetPiGraph.getFifos().add(copiedFifo);
 
-      final Anchor sourceAnchor = (Anchor) links.get(copiedFifo.getSourcePort());
-      final Anchor targetAnchor = (Anchor) links.get(copiedFifo.getTargetPort());
+      final Anchor sourceAnchor = (Anchor) findPE(copiedFifo.getSourcePort());
+      final Anchor targetAnchor = (Anchor) findPE(copiedFifo.getTargetPort());
       final AddConnectionContext context = new AddConnectionContext(sourceAnchor, targetAnchor);
       context.setNewObject(copiedFifo);
 
@@ -380,11 +382,19 @@ public class PasteFeature extends AbstractPasteFeature {
               throw new UnsupportedOperationException("Port kind [" + portKind + "] not supported.");
           }
           pe = addPortFeature.addPictogramElement(newVertexPE, copiedPort);
-        } else {
-          pe = GraphitiUi.getPeService().getChopboxAnchor((AnchorContainer) newVertexPE);
-          if (pe == null) {
+        } else if (vertexModelCopy instanceof InterfaceActor) {
+          // the AddIn/OutInterfaceFeature creates an anchor for the only in/out port and place it first in the list
+          final EList<Anchor> anchors = ((AnchorContainer) newVertexPE).getAnchors();
+          if (!anchors.isEmpty()) {
+            pe = anchors.get(0);
+          } else {
             throw new IllegalStateException();
           }
+        } else {
+          final IPeService peService = GraphitiUi.getPeService();
+          final Anchor chopboxAnchor = peService.getChopboxAnchor((AnchorContainer) newVertexPE);
+          chopboxAnchor.setReferencedGraphicsAlgorithm(newVertexPE.getGraphicsAlgorithm());
+          pe = chopboxAnchor;
         }
       } else {
         pe = addGraphicalRepresentation(addCtxt, childElement);
