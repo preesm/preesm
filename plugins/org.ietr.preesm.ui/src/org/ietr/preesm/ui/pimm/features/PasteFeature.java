@@ -137,8 +137,10 @@ public class PasteFeature extends AbstractPasteFeature {
           final DataOutputPort sourcePortCopy = lookupDataOutputPort(sourceCopy, sourcePort);
           final DataInputPort targetPortCopy = lookupDataInputPort(targetCopy, targetPort);
 
-          // TODO copy delay
-          final Fifo copiedFifo = PiMMUserFactory.instance.createFifo(sourcePortCopy, targetPortCopy, fifo.getType(), null);
+          final Delay delay = fifo.getDelay();
+          final Delay delayCopy = PiMMUserFactory.instance.copy(delay);
+
+          final Fifo copiedFifo = PiMMUserFactory.instance.createFifo(sourcePortCopy, targetPortCopy, fifo.getType(), delayCopy);
           newFifos.add(copiedFifo);
         }
       } else {
@@ -251,7 +253,7 @@ public class PasteFeature extends AbstractPasteFeature {
    *          input port in the original vertex
    * @return the vertexCopy's input port whose name matches getter
    */
-  private ConfigInputPort lookupConfigInputPort(final AbstractVertex vertexCopy, final ConfigInputPort getter) {
+  private ConfigInputPort lookupConfigInputPort(final Parameterizable vertexCopy, final ConfigInputPort getter) {
     final EList<ConfigInputPort> copiedConfigInputPorts = vertexCopy.getConfigInputPorts();
     final Parameterizable eContainer = (Parameterizable) getter.eContainer();
     final EList<ConfigInputPort> origConfigInputPorts = eContainer.getConfigInputPorts();

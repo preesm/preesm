@@ -36,6 +36,13 @@ public final class PiMMUserFactory {
   }
 
   /**
+   * Copy an existing Delay
+   */
+  public final Delay copy(final Delay delay) {
+    return (Delay) copier.copy(delay);
+  }
+
+  /**
    *
    */
   public Dependency createDependency(ISetter setter, ConfigInputPort target) {
