@@ -1,7 +1,9 @@
 package org.ietr.preesm.ui.pimm.features;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
@@ -11,16 +13,19 @@ import org.eclipse.graphiti.features.context.IPasteContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.AbstractPasteFeature;
+import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
@@ -46,8 +51,11 @@ public class PasteFeature extends AbstractPasteFeature {
     return (PiGraph) getBusinessObjectForPictogramElement(diagram);
   }
 
+  private final Map<EObject, PictogramElement> links = new LinkedHashMap<>();
+
   @Override
   public void paste(final IPasteContext context) {
+    links.clear();
     // get the EClasses from the clipboard without copying them
     // (only copy the pictogram element, not the business object)
     // then create new pictogram elements using the add feature
@@ -64,6 +72,7 @@ public class PasteFeature extends AbstractPasteFeature {
         autoConnectInputConfigPorts(vertex, copy);
       }
     }
+    links.clear();
   }
 
   private void autoConnectInputConfigPorts(final AbstractVertex originalVertex, final AbstractVertex vertexCopy) {
@@ -120,7 +129,7 @@ public class PasteFeature extends AbstractPasteFeature {
         setterPE = anchors.get(0);
       }
     } else if (setter instanceof ConfigOutputPort) {
-      throw new UnsupportedOperationException();
+      setterPE = (Anchor) findPE(setter);
     } else {
       throw new UnsupportedOperationException();
     }
@@ -132,9 +141,14 @@ public class PasteFeature extends AbstractPasteFeature {
   }
 
   private PictogramElement findPE(final EObject businessObject) {
+    if (links.containsKey(businessObject)) {
+      return links.get(businessObject);
+    }
+
     final PictogramElement boPEs = getFeatureProvider().getPictogramElementForBusinessObject(businessObject);
     if (boPEs == null) {
       final String message = "Business objcet [" + businessObject + "] has no graphical representations (several PictogramElements) : \n";
+      System.out.println(message);
       throw new IllegalStateException(message);
     }
     return boPEs;
@@ -198,24 +212,32 @@ public class PasteFeature extends AbstractPasteFeature {
       if (childElement instanceof Port) {
         final Port copiedPort = (Port) childElement;
         final String portKind = copiedPort.getKind();
-        final AbstractAddActorPortFeature addPortFeature;
-        switch (portKind) {
-          case "input":
-            addPortFeature = new AddDataInputPortFeature(getFeatureProvider());
-            break;
-          case "output":
-            addPortFeature = new AddDataOutputPortFeature(getFeatureProvider());
-            break;
-          case "cfg_input":
-            addPortFeature = new AddConfigInputPortFeature(getFeatureProvider());
-            break;
-          case "cfg_output":
-            addPortFeature = new AddConfigOutputPortFeature(getFeatureProvider());
-            break;
-          default:
-            throw new UnsupportedOperationException("Port kind [" + portKind + "] not supported.");
+        if (vertexModelCopy instanceof ExecutableActor) {
+          final AbstractAddActorPortFeature addPortFeature;
+          switch (portKind) {
+            case "input":
+              addPortFeature = new AddDataInputPortFeature(getFeatureProvider());
+              break;
+            case "output":
+              addPortFeature = new AddDataOutputPortFeature(getFeatureProvider());
+              break;
+            case "cfg_input":
+              addPortFeature = new AddConfigInputPortFeature(getFeatureProvider());
+              break;
+            case "cfg_output":
+              addPortFeature = new AddConfigOutputPortFeature(getFeatureProvider());
+              break;
+            default:
+              throw new UnsupportedOperationException("Port kind [" + portKind + "] not supported.");
+          }
+          addPortFeature.addPictogramElement(newVertexPE, copiedPort);
+        } else {
+          final Anchor chopboxAnchor = GraphitiUi.getPeService().getChopboxAnchor((AnchorContainer) newVertexPE);
+          if (chopboxAnchor == null) {
+            throw new IllegalStateException();
+          }
+          links.put(copiedPort, chopboxAnchor);
         }
-        addPortFeature.addPictogramElement(newVertexPE, copiedPort);
       } else {
         addGraphicalRepresentation(addCtxt, childElement);
       }
