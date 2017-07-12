@@ -72,6 +72,7 @@ public class PasteFeature extends AbstractPasteFeature {
         autoConnectInputConfigPorts(vertex, copy);
       }
     }
+
     this.links.clear();
   }
 
@@ -208,6 +209,7 @@ public class PasteFeature extends AbstractPasteFeature {
     final TreeIterator<EObject> vertexChildrenElements = vertexModelCopy.eAllContents();
 
     vertexChildrenElements.forEachRemaining(childElement -> {
+      final PictogramElement pe;
       if (childElement instanceof Port) {
         final Port copiedPort = (Port) childElement;
         final String portKind = copiedPort.getKind();
@@ -229,17 +231,17 @@ public class PasteFeature extends AbstractPasteFeature {
             default:
               throw new UnsupportedOperationException("Port kind [" + portKind + "] not supported.");
           }
-          addPortFeature.addPictogramElement(newVertexPE, copiedPort);
+          pe = addPortFeature.addPictogramElement(newVertexPE, copiedPort);
         } else {
-          final Anchor chopboxAnchor = GraphitiUi.getPeService().getChopboxAnchor((AnchorContainer) newVertexPE);
-          if (chopboxAnchor == null) {
+          pe = GraphitiUi.getPeService().getChopboxAnchor((AnchorContainer) newVertexPE);
+          if (pe == null) {
             throw new IllegalStateException();
           }
-          this.links.put(copiedPort, chopboxAnchor);
         }
       } else {
-        addGraphicalRepresentation(addCtxt, childElement);
+        pe = addGraphicalRepresentation(addCtxt, childElement);
       }
+      this.links.put(childElement, pe);
     });
     return newVertexPE;
   }
