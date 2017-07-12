@@ -317,9 +317,7 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
       if (setter instanceof Parameter) {
         return ((Parameter) setter).getName();
       } else {
-        // this.name is null and setter is not a parameter.
-        // Should never happen.
-        throw new IllegalStateException();
+        return this.name;
       }
     } else {
       return this.name;
