@@ -11,8 +11,10 @@ PREESM Changelog
 ### Changes
 * Update scenario editor: file selection popups now filter content more accurately;
 * Add explicit verions for Xtend dependencies to avoid bugs due to API break;
-* Cleanup releng files
-* Normalize feature licenses
+* Cleanup releng files;
+* Normalize feature licenses;
+* Fix PiMM Ecore model: Port.name now has a lower bound of 0 to match the semantic of Parameter ConfigInputPorts (which have no name);
+* Refactoring;
 
 ### Bug fix
 * Fix error handling in UI decorators (show decorators instead of crashing);
