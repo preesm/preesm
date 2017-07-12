@@ -23,6 +23,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
@@ -77,7 +78,15 @@ public class PasteFeature extends AbstractPasteFeature {
         final ISetter setter = dep.getSetter();
         final ConfigInputPort getterCopy = lookupInputConfigPort(vertexCopy, getter);
 
-        Dependency newDep = PiMMUserFactory.instance.createDependency(setter, getterCopy);
+        final Dependency newDep = PiMMUserFactory.instance.createDependency(setter, getterCopy);
+
+        // check names after creating the dependency (ConfigInputPort.getName() lookup dependency.getSetter()).
+        final String copiedName = getterCopy.getName();
+        final String origName = getter.getName();
+        if ((copiedName != null && !(copiedName.equals(origName))) || (copiedName == null && origName != null)) {
+          throw new IllegalStateException();
+        }
+
         newDependencies.add(newDep);
       }
     }
@@ -141,15 +150,22 @@ public class PasteFeature extends AbstractPasteFeature {
    * @return the vertexCopy's input port whose name matches getter
    */
   private ConfigInputPort lookupInputConfigPort(final AbstractVertex vertexCopy, final ConfigInputPort getter) {
-    final EList<ConfigInputPort> configInputPorts = vertexCopy.getConfigInputPorts();
-    ConfigInputPort target = null;
-    for (ConfigInputPort inPort : configInputPorts) {
-      // port has just been copied, so names should be equals
-      if (inPort.getName().equals(getter.getName())) {
-        target = inPort;
-        break;
-      }
+    final EList<ConfigInputPort> copiedConfigInputPorts = vertexCopy.getConfigInputPorts();
+    final Parameterizable eContainer = (Parameterizable) getter.eContainer();
+    final EList<ConfigInputPort> origConfigInputPorts = eContainer.getConfigInputPorts();
+
+    if (copiedConfigInputPorts.size() != origConfigInputPorts.size()) {
+      throw new IllegalStateException();
     }
+
+    final ConfigInputPort target;
+    if (origConfigInputPorts.contains(getter)) {
+      final int indexOf = origConfigInputPorts.indexOf(getter);
+      target = copiedConfigInputPorts.get(indexOf);
+    } else {
+      throw new IllegalStateException();
+    }
+
     return target;
   }
 
