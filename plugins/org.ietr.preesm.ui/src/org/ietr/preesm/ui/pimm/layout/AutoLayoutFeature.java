@@ -269,8 +269,11 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       // Find candidates for the next stage in successors of current one
       for (final AbstractActor actor : currentStage) {
         for (final DataOutputPort port : actor.getDataOutputPorts()) {
-          if (!feedbackFifos.contains(port.getOutgoingFifo())) {
-            nextStage.add((AbstractActor) port.getOutgoingFifo().getTargetPort().eContainer());
+          final Fifo outgoingFifo = port.getOutgoingFifo();
+          if (!feedbackFifos.contains(outgoingFifo) && outgoingFifo != null) {
+            final DataInputPort targetPort = outgoingFifo.getTargetPort();
+            final AbstractActor eContainer = (AbstractActor) targetPort.eContainer();
+            nextStage.add(eContainer);
           }
         }
       }
