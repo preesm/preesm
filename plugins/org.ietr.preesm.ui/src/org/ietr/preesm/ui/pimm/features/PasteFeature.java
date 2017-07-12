@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
@@ -12,6 +13,7 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IPasteContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
+import org.eclipse.graphiti.features.context.impl.CustomContext;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -101,25 +103,25 @@ public class PasteFeature extends AbstractPasteFeature {
       }
     }
 
-    connectVertices();
+    connectVertices(context);
 
     this.copiedVertices.clear();
     this.links.clear();
   }
 
-  private void connectVertices() {
-    connectFifos();
+  private void connectVertices(IPasteContext context) {
+    connectFifos(context);
 
     if (getPiGraph() != getOriginalPiGraph()) {
       // connectDependencies();
     }
   }
 
-  private void connectFifos() {
+  private void connectFifos(IPasteContext pasteContext) {
     final EList<Fifo> originalFifos = getOriginalPiGraph().getFifos();
     final PiGraph targetPiGraph = getPiGraph();
 
-    final List<Fifo> newFifos = new LinkedList<>();
+    final Map<Fifo, Fifo> newFifos = new LinkedHashMap<>();
 
     for (final Fifo fifo : originalFifos) {
       final DataOutputPort sourcePort = fifo.getSourcePort();
@@ -137,11 +139,9 @@ public class PasteFeature extends AbstractPasteFeature {
           final DataOutputPort sourcePortCopy = lookupDataOutputPort(sourceCopy, sourcePort);
           final DataInputPort targetPortCopy = lookupDataInputPort(targetCopy, targetPort);
 
-          final Delay delay = fifo.getDelay();
-          final Delay delayCopy = PiMMUserFactory.instance.copy(delay);
+          final Fifo copiedFifo = PiMMUserFactory.instance.createFifo(sourcePortCopy, targetPortCopy, fifo.getType());
+          newFifos.put(copiedFifo, fifo);
 
-          final Fifo copiedFifo = PiMMUserFactory.instance.createFifo(sourcePortCopy, targetPortCopy, fifo.getType(), delayCopy);
-          newFifos.add(copiedFifo);
         }
       } else {
         // not supported
@@ -149,16 +149,32 @@ public class PasteFeature extends AbstractPasteFeature {
       }
     }
 
-    for (Fifo fifo : newFifos) {
-      targetPiGraph.getFifos().add(fifo);
-      final Anchor sourceAnchor = (Anchor) links.get(fifo.getSourcePort());
-      final Anchor targetAnchor = (Anchor) links.get(fifo.getTargetPort());
+    for (Entry<Fifo, Fifo> fifoEntry : newFifos.entrySet()) {
+      final Fifo copiedFifo = fifoEntry.getKey();
+      final Fifo originalFifo = fifoEntry.getValue();
+      targetPiGraph.getFifos().add(copiedFifo);
+
+      final Anchor sourceAnchor = (Anchor) links.get(copiedFifo.getSourcePort());
+      final Anchor targetAnchor = (Anchor) links.get(copiedFifo.getTargetPort());
       final AddConnectionContext context = new AddConnectionContext(sourceAnchor, targetAnchor);
-      context.setNewObject(fifo);
-      // TODO check display delay
+      context.setNewObject(copiedFifo);
 
       final AddFifoFeature addFifoFeature = new AddFifoFeature(getFeatureProvider());
       addFifoFeature.execute(context);
+      final PictogramElement pictogramElementForBusinessObject = getFeatureProvider().getPictogramElementForBusinessObject(copiedFifo);
+
+      // TODO check display delay
+      final Delay delay = originalFifo.getDelay();
+      if (delay != null) {
+        final Delay delayCopy = PiMMUserFactory.instance.copy(delay);
+        System.out.println("copy delay " + delayCopy);
+        final AddDelayFeature addDelayFeature = new AddDelayFeature(getFeatureProvider());
+        final CustomContext customContext = new CustomContext(new PictogramElement[] { pictogramElementForBusinessObject });
+        customContext.setLocation(pasteContext.getX(), pasteContext.getY());
+        addDelayFeature.execute(customContext);
+        copiedFifo.setDelay(delayCopy);
+      }
+
     }
   }
 
