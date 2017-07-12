@@ -3,7 +3,11 @@ package org.ietr.preesm.experiment.model.factory;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 
@@ -39,5 +43,17 @@ public final class PiMMUserFactory {
     dep.setGetter(target);
     dep.setSetter(setter);
     return dep;
+  }
+
+  /**
+   *
+   */
+  public Fifo createFifo(DataOutputPort sourcePortCopy, DataInputPort targetPortCopy, String type, Delay delay) {
+    final Fifo res = factory.createFifo();
+    res.setSourcePort(sourcePortCopy);
+    res.setTargetPort(targetPortCopy);
+    res.setType(type);
+    res.setDelay(delay);
+    return res;
   }
 }
