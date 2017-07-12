@@ -5,6 +5,7 @@ import org.eclipse.graphiti.features.context.ICopyContext;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.AbstractCopyFeature;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.Delay;
 
 /**
  * Graphiti feature that implements the Copy action for PiMM vertices.
@@ -39,7 +40,7 @@ public class CopyFeature extends AbstractCopyFeature {
     // return true, if all selected elements are a Vertices (cannot copy edges)
     for (final PictogramElement pe : pes) {
       final Object bo = getBusinessObjectForPictogramElement(pe);
-      if (!(bo instanceof AbstractVertex)) {
+      if (!(bo instanceof AbstractVertex) && !(bo instanceof Delay)) {
         return false;
       }
     }
