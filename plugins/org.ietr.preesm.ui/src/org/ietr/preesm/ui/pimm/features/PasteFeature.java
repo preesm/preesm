@@ -51,11 +51,30 @@ public class PasteFeature extends AbstractPasteFeature {
     return (PiGraph) getBusinessObjectForPictogramElement(diagram);
   }
 
-  private final Map<EObject, PictogramElement> links = new LinkedHashMap<>();
+  private PiGraph getOriginalPiGraph() {
+    PiGraph result = null;
+    final Object[] originalObjects = getFromClipboard();
+    for (Object o : originalObjects) {
+      if (o instanceof AbstractVertex) {
+        final EObject eContainer = ((AbstractVertex) o).eContainer();
+        if (!(eContainer instanceof PiGraph) || (result != null && result != eContainer)) {
+          // all vertices should be contained by a PiGraph object.
+          throw new IllegalStateException();
+        } else {
+          result = (PiGraph) eContainer;
+        }
+      }
+    }
+    return result;
+  }
+
+  private final Map<EObject, PictogramElement>      links          = new LinkedHashMap<>();
+  private final Map<AbstractVertex, AbstractVertex> copiedVertices = new LinkedHashMap<>();
 
   @Override
   public void paste(final IPasteContext context) {
     this.links.clear();
+    this.copiedVertices.clear();
     // get the EClasses from the clipboard without copying them
     // (only copy the pictogram element, not the business object)
     // then create new pictogram elements using the add feature
@@ -68,17 +87,19 @@ public class PasteFeature extends AbstractPasteFeature {
         final String name = computeUniqueNameForCopy(vertex);
         copy.setName(name);
         addGraphicalElementsForCopy(context, copy);
+        this.copiedVertices.put(vertex, copy);
 
         autoConnectInputConfigPorts(vertex, copy);
       }
     }
 
+    this.copiedVertices.clear();
     this.links.clear();
   }
 
   private void autoConnectInputConfigPorts(final AbstractVertex originalVertex, final AbstractVertex vertexCopy) {
 
-    if (originalVertex.eContainer() != vertexCopy.eContainer()) {
+    if (getPiGraph() != getOriginalPiGraph()) {
       return;
     }
 
@@ -201,11 +222,12 @@ public class PasteFeature extends AbstractPasteFeature {
   /**
    * Add graphical representation for the vertex copy and its content (that is the input/output ports/configs)
    */
-  private PictogramElement addGraphicalElementsForCopy(final IPasteContext context, final AbstractVertex vertexModelCopy) {
+  private void addGraphicalElementsForCopy(final IPasteContext context, final AbstractVertex vertexModelCopy) {
     final AddContext addCtxt = new AddContext();
     final Diagram diagram = getDiagram();
     // For simplicity paste all objects at the location given in the
     // context (no stacking or similar)
+    // TODO: improve location
     addCtxt.setLocation(context.getX(), context.getY());
     addCtxt.setTargetContainer(diagram);
     final PictogramElement newVertexPE = addGraphicalRepresentation(addCtxt, vertexModelCopy);
@@ -248,12 +270,11 @@ public class PasteFeature extends AbstractPasteFeature {
       }
       this.links.put(childElement, pe);
     });
-    return newVertexPE;
   }
 
   @Override
   public boolean canPaste(final IPasteContext context) {
-    // can paste, if all objects on the clipboard are EClasses
+    // can paste, if all objects on the clipboard are Vertices
     final Object[] fromClipboard = getFromClipboard();
     if ((fromClipboard == null) || (fromClipboard.length == 0)) {
       return false;
