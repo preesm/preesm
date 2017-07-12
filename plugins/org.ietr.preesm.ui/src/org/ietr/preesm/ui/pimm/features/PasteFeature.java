@@ -117,6 +117,10 @@ public class PasteFeature extends AbstractPasteFeature {
 
   private void connectFifos() {
     final EList<Fifo> originalFifos = getOriginalPiGraph().getFifos();
+    final PiGraph targetPiGraph = getPiGraph();
+
+    final List<Fifo> newFifos = new LinkedList<>();
+
     for (final Fifo fifo : originalFifos) {
       final DataOutputPort sourcePort = fifo.getSourcePort();
       final DataInputPort targetPort = fifo.getTargetPort();
@@ -127,12 +131,32 @@ public class PasteFeature extends AbstractPasteFeature {
         AbstractActor source = (AbstractActor) sourceVertex;
         AbstractActor target = (AbstractActor) targetVertex;
         if (copiedVertices.containsKey(source) && copiedVertices.containsKey(target)) {
-          System.out.println("copy fifo : " + fifo);
+          final AbstractActor sourceCopy = (AbstractActor) copiedVertices.get(source);
+          final AbstractActor targetCopy = (AbstractActor) copiedVertices.get(target);
+
+          final DataOutputPort sourcePortCopy = lookupDataOutputPort(sourceCopy, sourcePort);
+          final DataInputPort targetPortCopy = lookupDataInputPort(targetCopy, targetPort);
+
+          // TODO copy delay
+          final Fifo copiedFifo = PiMMUserFactory.instance.createFifo(sourcePortCopy, targetPortCopy, fifo.getType(), null);
+          newFifos.add(copiedFifo);
         }
       } else {
         // not supported
         throw new UnsupportedOperationException();
       }
+    }
+
+    for (Fifo fifo : newFifos) {
+      targetPiGraph.getFifos().add(fifo);
+      final Anchor sourceAnchor = (Anchor) links.get(fifo.getSourcePort());
+      final Anchor targetAnchor = (Anchor) links.get(fifo.getTargetPort());
+      final AddConnectionContext context = new AddConnectionContext(sourceAnchor, targetAnchor);
+      context.setNewObject(fifo);
+      // TODO check display delay
+
+      final AddFifoFeature addFifoFeature = new AddFifoFeature(getFeatureProvider());
+      addFifoFeature.execute(context);
     }
   }
 
@@ -150,7 +174,7 @@ public class PasteFeature extends AbstractPasteFeature {
       final ConfigInputPort getter = dep.getGetter();
       if (originalVertex.getConfigInputPorts().contains(getter)) {
         final ISetter setter = dep.getSetter();
-        final ConfigInputPort getterCopy = lookupInputConfigPort(vertexCopy, getter);
+        final ConfigInputPort getterCopy = lookupConfigInputPort(vertexCopy, getter);
 
         final Dependency newDep = PiMMUserFactory.instance.createDependency(setter, getterCopy);
 
@@ -227,7 +251,7 @@ public class PasteFeature extends AbstractPasteFeature {
    *          input port in the original vertex
    * @return the vertexCopy's input port whose name matches getter
    */
-  private ConfigInputPort lookupInputConfigPort(final AbstractVertex vertexCopy, final ConfigInputPort getter) {
+  private ConfigInputPort lookupConfigInputPort(final AbstractVertex vertexCopy, final ConfigInputPort getter) {
     final EList<ConfigInputPort> copiedConfigInputPorts = vertexCopy.getConfigInputPorts();
     final Parameterizable eContainer = (Parameterizable) getter.eContainer();
     final EList<ConfigInputPort> origConfigInputPorts = eContainer.getConfigInputPorts();
@@ -237,6 +261,46 @@ public class PasteFeature extends AbstractPasteFeature {
     }
 
     final ConfigInputPort target;
+    if (origConfigInputPorts.contains(getter)) {
+      final int indexOf = origConfigInputPorts.indexOf(getter);
+      target = copiedConfigInputPorts.get(indexOf);
+    } else {
+      throw new IllegalStateException();
+    }
+
+    return target;
+  }
+
+  private DataInputPort lookupDataInputPort(final AbstractActor vertexCopy, final DataInputPort getter) {
+    final EList<DataInputPort> copiedConfigInputPorts = vertexCopy.getDataInputPorts();
+    final AbstractActor eContainer = (AbstractActor) getter.eContainer();
+    final EList<DataInputPort> origConfigInputPorts = eContainer.getDataInputPorts();
+
+    if (copiedConfigInputPorts.size() != origConfigInputPorts.size()) {
+      throw new IllegalStateException();
+    }
+
+    final DataInputPort target;
+    if (origConfigInputPorts.contains(getter)) {
+      final int indexOf = origConfigInputPorts.indexOf(getter);
+      target = copiedConfigInputPorts.get(indexOf);
+    } else {
+      throw new IllegalStateException();
+    }
+
+    return target;
+  }
+
+  private DataOutputPort lookupDataOutputPort(final AbstractActor vertexCopy, final DataOutputPort getter) {
+    final EList<DataOutputPort> copiedConfigInputPorts = vertexCopy.getDataOutputPorts();
+    final AbstractActor eContainer = (AbstractActor) getter.eContainer();
+    final EList<DataOutputPort> origConfigInputPorts = eContainer.getDataOutputPorts();
+
+    if (copiedConfigInputPorts.size() != origConfigInputPorts.size()) {
+      throw new IllegalStateException();
+    }
+
+    final DataOutputPort target;
     if (origConfigInputPorts.contains(getter)) {
       final int indexOf = origConfigInputPorts.indexOf(getter);
       target = copiedConfigInputPorts.get(indexOf);
