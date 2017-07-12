@@ -107,7 +107,7 @@ public class LayoutInterfaceFeature extends AbstractLayoutFeature {
     final AbstractVertex vertex = (AbstractVertex) getBusinessObjectForPictogramElement(containerShape);
 
     // Retrieve the size of the text
-    IDimension size = GraphitiUi.getUiLayoutService().calculateTextSize(vertex.getName(), ((Text) containerShape.getGraphicsAlgorithm()).getFont());
+    IDimension size = GraphitiUi.getGaService().calculateSize(containerShape.getGraphicsAlgorithm());
     for (final Shape shape : containerShape.getChildren()) {
       final GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
       if (ga instanceof Text) {
