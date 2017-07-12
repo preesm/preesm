@@ -104,10 +104,12 @@ public class LayoutPortFeature extends AbstractLayoutFeature {
     final Port port = (Port) businessObjects.get(0);
 
     // Retrieve the size of the text
-    IDimension size = null;
-    for (final GraphicsAlgorithm ga : bra.getGraphicsAlgorithm().getGraphicsAlgorithmChildren()) {
+    final GraphicsAlgorithm graphicsAlgorithm = bra.getGraphicsAlgorithm();
+    IDimension size = gaService.calculateSize(graphicsAlgorithm);
+    for (final GraphicsAlgorithm ga : graphicsAlgorithm.getGraphicsAlgorithmChildren()) {
       if (ga instanceof Text) {
-        size = GraphitiUi.getUiLayoutService().calculateTextSize(port.getName(), ((Text) ga).getFont());
+        final IDimension calculateTextSize = GraphitiUi.getUiLayoutService().calculateTextSize(port.getName(), ((Text) ga).getFont());
+        size = calculateTextSize == null ? size : calculateTextSize;
       }
     }
 
@@ -118,16 +120,16 @@ public class LayoutPortFeature extends AbstractLayoutFeature {
 
     // Layout the invisible rectangle
     if (bra.getRelativeWidth() == 0.0) {
-      gaService.setLocationAndSize(bra.getGraphicsAlgorithm(), 0, 0, size.getWidth() + anchorGaSize + labelGaSpace, size.getHeight());
+      gaService.setLocationAndSize(graphicsAlgorithm, 0, 0, size.getWidth() + anchorGaSize + labelGaSpace, size.getHeight());
     } else {
-      gaService.setLocationAndSize(bra.getGraphicsAlgorithm(), -size.getWidth() - anchorGaSize - labelGaSpace, 0, size.getWidth() + anchorGaSize + labelGaSpace,
+      gaService.setLocationAndSize(graphicsAlgorithm, -size.getWidth() - anchorGaSize - labelGaSpace, 0, size.getWidth() + anchorGaSize + labelGaSpace,
           size.getHeight());
     }
 
     // Layout the children of the bra
-    for (final GraphicsAlgorithm ga : bra.getGraphicsAlgorithm().getGraphicsAlgorithmChildren()) {
+    for (final GraphicsAlgorithm ga : graphicsAlgorithm.getGraphicsAlgorithmChildren()) {
       if (ga instanceof Text) {
-        gaService.setWidth(ga, bra.getGraphicsAlgorithm().getWidth() - anchorGaSize);
+        gaService.setWidth(ga, graphicsAlgorithm.getWidth() - anchorGaSize);
         if (bra.getRelativeWidth() == 0.0) {
           // input port
           gaService.setLocation(ga, anchorGaSize, 0);
@@ -144,7 +146,7 @@ public class LayoutPortFeature extends AbstractLayoutFeature {
           gaService.setLocation(ga, 0, 0 + ((portFontHeight - anchorGaSize) / 2));
         } else {
           // output port
-          gaService.setLocation(ga, bra.getGraphicsAlgorithm().getWidth() - anchorGaSize, 0 + ((portFontHeight - anchorGaSize) / 2));
+          gaService.setLocation(ga, graphicsAlgorithm.getWidth() - anchorGaSize, 0 + ((portFontHeight - anchorGaSize) / 2));
         }
       }
 
@@ -156,7 +158,7 @@ public class LayoutPortFeature extends AbstractLayoutFeature {
           // portFontHeight - PORT_ANCHOR_GA_SIZE - 2) / 2
         } else {
           // output port
-          gaService.setLocation(ga, bra.getGraphicsAlgorithm().getWidth() - anchorGaSize - 1, -1 + ((portFontHeight - anchorGaSize) / 2));
+          gaService.setLocation(ga, graphicsAlgorithm.getWidth() - anchorGaSize - 1, -1 + ((portFontHeight - anchorGaSize) / 2));
         }
       }
     }
