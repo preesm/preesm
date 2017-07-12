@@ -20,12 +20,17 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.AbstractPasteFeature;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
+import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
@@ -65,6 +70,9 @@ public class PasteFeature extends AbstractPasteFeature {
         }
       }
     }
+    if (result == null) {
+      throw new IllegalStateException();
+    }
     return result;
   }
 
@@ -93,8 +101,39 @@ public class PasteFeature extends AbstractPasteFeature {
       }
     }
 
+    connectVertices();
+
     this.copiedVertices.clear();
     this.links.clear();
+  }
+
+  private void connectVertices() {
+    connectFifos();
+
+    if (getPiGraph() != getOriginalPiGraph()) {
+      // connectDependencies();
+    }
+  }
+
+  private void connectFifos() {
+    final EList<Fifo> originalFifos = getOriginalPiGraph().getFifos();
+    for (final Fifo fifo : originalFifos) {
+      final DataOutputPort sourcePort = fifo.getSourcePort();
+      final DataInputPort targetPort = fifo.getTargetPort();
+      final EObject sourceVertex = sourcePort.eContainer();
+      final EObject targetVertex = targetPort.eContainer();
+      if ((sourceVertex != null && (sourceVertex instanceof AbstractActor)) && (targetVertex != null && (targetVertex instanceof AbstractActor))) {
+        // ok
+        AbstractActor source = (AbstractActor) sourceVertex;
+        AbstractActor target = (AbstractActor) targetVertex;
+        if (copiedVertices.containsKey(source) && copiedVertices.containsKey(target)) {
+          System.out.println("copy fifo : " + fifo);
+        }
+      } else {
+        // not supported
+        throw new UnsupportedOperationException();
+      }
+    }
   }
 
   private void autoConnectInputConfigPorts(final AbstractVertex originalVertex, final AbstractVertex vertexCopy) {
@@ -279,12 +318,18 @@ public class PasteFeature extends AbstractPasteFeature {
     if ((fromClipboard == null) || (fromClipboard.length == 0)) {
       return false;
     }
+    boolean hasOneVertex = false;
     for (final Object object : fromClipboard) {
-      if (!(object instanceof AbstractVertex)) {
-        return false;
+      final boolean objectIsVertex = object instanceof AbstractVertex;
+      if (objectIsVertex) {
+        hasOneVertex = true;
+      } else {
+        if (!(object instanceof Delay)) {
+          return false;
+        }
       }
     }
-    return true;
+    return hasOneVertex;
   }
 
 }
