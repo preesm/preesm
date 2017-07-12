@@ -55,12 +55,11 @@ public final class PiMMUserFactory {
   /**
    *
    */
-  public Fifo createFifo(DataOutputPort sourcePortCopy, DataInputPort targetPortCopy, String type, Delay delay) {
+  public Fifo createFifo(DataOutputPort sourcePortCopy, DataInputPort targetPortCopy, String type) {
     final Fifo res = factory.createFifo();
     res.setSourcePort(sourcePortCopy);
     res.setTargetPort(targetPortCopy);
     res.setType(type);
-    res.setDelay(delay);
     return res;
   }
 }
