@@ -1,15 +1,15 @@
 package org.abo.preesm.plugin.dataparallel.test
 
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.sdf.SDFVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
-import org.abo.preesm.plugin.dataparallel.test.ExampleGraphs.SDFBuilder
-import org.junit.Assert
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
 import org.abo.preesm.plugin.dataparallel.operations.visitor.DependencyAnalysisOperations
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import org.ietr.dftools.algorithm.model.sdf.SDFVertex
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
+import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
+import org.junit.Assert
+import org.junit.Test
 
 /**
  * Construct example graphs. 
@@ -69,7 +69,7 @@ class ExampleGraphs {
 	/**
 	 * Perform schedulability test on the graphs created
 	 */
-	@org.junit.Test
+	@Test
 	public def void sdfIsSchedulable() {
 		Util.provideAllGraphs.forEach[sdf |
 			Assert.assertTrue(sdf.schedulable) 
@@ -81,7 +81,7 @@ class ExampleGraphs {
 	 * manually to use the information as a reference in future
 	 * tests
 	 */
-	@org.junit.Test
+	@Test
 	public def void dagInd() {
 		val parameterArray = #[
 			#[acyclicTwoActors, Boolean.TRUE],
@@ -89,6 +89,7 @@ class ExampleGraphs {
 			#[twoActorLoop, Boolean.FALSE],
 			#[semanticallyAcyclicCycle, Boolean.TRUE],
 			#[strictlyCyclic, Boolean.TRUE],
+			#[strictlyCyclic2, Boolean.TRUE],
 			#[mixedNetwork1, Boolean.TRUE],
 			#[mixedNetwork2, Boolean.FALSE]
 		]
@@ -139,6 +140,27 @@ class ExampleGraphs {
 				.addEdge("c", "outputD", "d", "input", 2, 3, 0)
 				.addEdge("d", "e", 3, 2, 0)
 				.outputGraph
+	}
+	
+	/**
+	 * Create two strictly cyclic SDFG, each containing 4 actors. None of the
+	 * actors have enough tokesn that all the instance can fire. Further, each
+	 * cycle is connected through two actors
+	 */
+	public static def SDFGraph strictlyCyclic2() {
+		return new SDFBuilder()
+					.addEdge("a0", "b0", 2, 3, 2) // Start cycle 1
+					.addEdge("b0", "c0", 3, 2, 3)
+					.addEdge("c0", "d0", 2, 3, 1)
+					.addEdge("d0", "a0", 3, 2, 3) // End cycle 1
+					.addEdge("c0", "outputE", "e", "input", 2, 2, 0) // Intermediate node to cycle 1
+					.addEdge("e", "f", 2, 3, 0) // Intermediate node to intermediate node
+					.addEdge("a1", "b1", 2, 3, 2) // Start cycle 2
+					.addEdge("b1", "c1", 3, 2, 3)
+					.addEdge("c1", "d1", 2, 3, 1)
+					.addEdge("d1", "a1", 3, 2, 3) // End cycle 2
+					.addEdge("f", "output", "d1", "inputF", 3, 3, 1) // Intermediate node to cycle 2
+					.outputGraph
 	}
 	
 	/**

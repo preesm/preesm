@@ -69,6 +69,7 @@ class DAGOperationsTest {
 		val cyclicParamterArray = #[
 			// [DAG from SDF, test acyclic rearranging? (false)]
 			#[ExampleGraphs.strictlyCyclic, Boolean.FALSE],
+			#[ExampleGraphs.strictlyCyclic2, Boolean.FALSE],
 			#[ExampleGraphs.mixedNetwork1, Boolean.FALSE]
 		]
 		

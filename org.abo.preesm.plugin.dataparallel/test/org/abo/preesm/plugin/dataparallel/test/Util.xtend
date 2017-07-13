@@ -33,6 +33,7 @@ class Util {
 			ExampleGraphs.twoActorLoop,
 			ExampleGraphs.semanticallyAcyclicCycle,
 			ExampleGraphs.strictlyCyclic,
+			ExampleGraphs.strictlyCyclic2,
 			ExampleGraphs.mixedNetwork1,
 			ExampleGraphs.mixedNetwork2
 		)
