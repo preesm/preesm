@@ -50,6 +50,12 @@ public abstract class AbstractDAGConstructor implements DAGConstructor {
 	@Accessors(PUBLIC_GETTER, PROTECTED_SETTER)
 	val Map<SDFAbstractVertex, SDFAbstractVertex> explodeImplodeOrigInstances
 	
+	/**
+	 * Map of actor from original input SDFG to all its immediate predecessors
+	 */
+	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	val Map<SDFAbstractVertex, List<SDFAbstractVertex>> actorPredecessor
+	
 	protected new(Logger logger){
 		this.logger = logger
 		this.actor2Instances = newHashMap
@@ -57,6 +63,7 @@ public abstract class AbstractDAGConstructor implements DAGConstructor {
 		this.explodeImplodeOrigInstances = newHashMap
 		this.sourceActors = newArrayList
 		this.sinkActors = newArrayList
+		this.actorPredecessor = newHashMap
 	} 
 	
 	protected new() {

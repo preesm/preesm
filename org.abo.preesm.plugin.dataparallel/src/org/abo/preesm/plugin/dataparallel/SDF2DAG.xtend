@@ -20,6 +20,7 @@ import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
 import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
+import org.jgrapht.alg.CycleDetector
 
 /**
  * Construct DAG from a SDF Graph
@@ -36,7 +37,10 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	/**
 	 * Holds constructed DAG
 	 */
-	protected var SDFGraph outputGraph
+	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	var SDFGraph outputGraph
+	
+
 	
 	/**
 	 * Map of all actors with instance. Does not contain implodes and explodes
@@ -47,8 +51,14 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	/**
 	 * Check if the input SDF graph has changed
 	 */
-	@Accessors(PUBLIC_GETTER, PROTECTED_SETTER)
+	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	protected val boolean hasChanged;
+	
+	/**
+	 * List of all the actors that form the part of the cycles in the original SDFG
+	 */
+	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	val List<SDFAbstractVertex> cycleActors
 	
 	/**
 	 * Constructor. Mainly used in the plugin
@@ -65,6 +75,10 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 		}
 		inputGraph = sdf.clone
 		actor2InstancesLocal = newHashMap
+		cycleActors = newArrayList
+		
+		val cycleDetector = new CycleDetector(inputGraph)
+		cycleActors.addAll(cycleDetector.findCycles)
 		
 		inputGraph.vertexSet.forEach[vertex |
 			if(inputGraph.incomingEdgesOf(vertex).size == 0) {
@@ -73,6 +87,14 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 			if(inputGraph.outgoingEdgesOf(vertex).size == 0) {
 				sinkActors.add(vertex)
 			}
+		]
+		
+		inputGraph.vertexSet.forEach[vertex |
+			val predecessorList = newArrayList
+			inputGraph.incomingEdgesOf(vertex).forEach[edge |
+				predecessorList.add(edge.source)
+			]
+			actorPredecessor.put(vertex, predecessorList)
 		]
 		
 		if(checkInputIsValid) {
@@ -123,16 +145,6 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 		}
 		// Its already a DAG
 		return false
-	}
-	
-	/**
-	 * Return the DAG that is constructed
-	 * The DAG is the loop schedule
-	 * 
-	 * @return DAG constructed
-	 */
-	public override SDFGraph getOutputGraph() {
-		return outputGraph
 	}
 	
 	/**

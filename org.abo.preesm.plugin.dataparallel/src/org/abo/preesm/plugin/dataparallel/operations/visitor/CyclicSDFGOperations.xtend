@@ -1,13 +1,13 @@
 package org.abo.preesm.plugin.dataparallel.operations.visitor
 
-import org.abo.preesm.plugin.dataparallel.SDF2DAG
-import org.abo.preesm.plugin.dataparallel.DAG2DAG
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import java.util.List
-import org.eclipse.xtend.lib.annotations.Accessors
-import org.abo.preesm.plugin.dataparallel.PureDAGConstructor
+import org.abo.preesm.plugin.dataparallel.DAG2DAG
 import org.abo.preesm.plugin.dataparallel.DAGSubset
+import org.abo.preesm.plugin.dataparallel.PureDAGConstructor
+import org.abo.preesm.plugin.dataparallel.SDF2DAG
+import org.abo.preesm.plugin.dataparallel.iterator.SubsetTopologicalIterator
+import org.eclipse.xtend.lib.annotations.Accessors
+import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 
 /**
  * DAG Operation that finds cycles in SDFG that have some
@@ -20,7 +20,7 @@ class CyclicSDFGOperations implements DAGOperations {
 	
 	private var Boolean isDAGInd
 	
-	protected val List<List<SDFAbstractVertex>> cycleRoots
+	protected val List<StrictDAGCycles> cycleRoots
 	
 	/**
 	 * A {@link Boolean} variable indicates if the SDFG has cycles that have some of its
@@ -42,7 +42,7 @@ class CyclicSDFGOperations implements DAGOperations {
 	 * @return List of Lists. Each mutually exclusive list contains instances of cycle in the root set
 	 * @throws SDF4JException If the passed DAG is not instance independent or if visitor method is not called
 	 */
-	public def List<List<SDFAbstractVertex>> getCycleRoots() throws SDF4JException {
+	public def List<StrictDAGCycles> getCycleRoots() throws SDF4JException {
 		if(isDAGInd === null) {
 			throw new SDF4JException("Make sure a visitor has been passed")
 		}
@@ -81,6 +81,12 @@ class CyclicSDFGOperations implements DAGOperations {
 		dagGen.accept(rootVisitor)
 		val rootInstances = rootVisitor.rootInstances
 		
+		// Get the original level
+		val levelOp = new LevelsOperations
+		dagGen.accept(levelOp)
+		val levels = levelOp.levels
+		
+		val cycleRoots = newArrayList
 		rootInstances.forEach[rootInstance |
 			val rootActor = dagGen.instance2Actor.get(rootInstance)
 			if(!seenRoots.contains(rootActor)) {
@@ -102,8 +108,25 @@ class CyclicSDFGOperations implements DAGOperations {
 						}
 					}
 				]
+				
 				if(!dependentInstances.empty) {
-					cycleRoots.add(dependentInstances.toList)
+					cycleRoots.addAll(dependentInstances)
+				}
+				
+				val instancesInThisCycle = newHashSet
+				dependentInstances.forEach[ root |
+					val seenNodesThisRoot = new SubsetTopologicalIterator(dagGen, root).toList
+					val cyclesNodes = seenNodesThisRoot.filter[node | dagGen.cycleActors.contains(dagGen.instance2Actor.get(node))]
+					instancesInThisCycle.addAll(cyclesNodes)
+				]
+				
+				val levelsOfInstancesInThisCycle = levels.filter[instance, level | instancesInThisCycle.contains(instance)]
+				
+				if(!dependentInstances.empty && !levelsOfInstancesInThisCycle.empty) {
+					this.cycleRoots.add(new StrictDAGCycles (
+						instancesInThisCycle.toList,
+						levelsOfInstancesInThisCycle
+					))	
 				}
 			}
 		]

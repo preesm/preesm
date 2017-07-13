@@ -22,7 +22,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph
  */
 class LevelsOperations implements DAGCommonOperations {
 	
-	private var SDFGraph inputGraph
+	private var SDFGraph dag
 	
 	private var List<SDFAbstractVertex> seenNodes
 	
@@ -47,7 +47,7 @@ class LevelsOperations implements DAGCommonOperations {
 	 * for a pure DAG as well as a subset of a DAG
 	 */
 	protected def void computeAllLevels() {
-		inputGraph.vertexSet
+		dag.vertexSet
 			.filter[instance | seenNodes.contains(instance)]
 			.forEach[instance | levels.put(instance, new Integer(0))]
 		while(iterator.hasNext()) {
@@ -80,8 +80,8 @@ class LevelsOperations implements DAGCommonOperations {
 	 * @param dagGen A {@link SDF2DAG} instance
 	 */
 	override visit(SDF2DAG dagGen) {
-		inputGraph = dagGen.outputGraph
-		seenNodes = inputGraph.vertexSet.toList
+		dag = dagGen.outputGraph
+		seenNodes = dag.vertexSet.toList
 		iterator = new DAGTopologicalIterator(dagGen)
 		forkJoinOrigInstance = dagGen.explodeImplodeOrigInstances
 		instanceSources.putAll(iterator.instanceSources)
@@ -96,7 +96,7 @@ class LevelsOperations implements DAGCommonOperations {
 	 * @param dagGen A {@link DAGSubset} instance
 	 */
 	override visit(DAGSubset dagGen) {
-		inputGraph = dagGen.inputGraph
+		dag = dagGen.inputGraph
 		seenNodes = dagGen.seenNodes
 		
 		// Get the root node and subsequently the iterator
@@ -124,8 +124,8 @@ class LevelsOperations implements DAGCommonOperations {
 	 * @param dagGen A {@link DAG2DAG} instance
 	 */
 	override visit(DAG2DAG dagGen) {
-		inputGraph = dagGen.outputGraph
-		seenNodes = inputGraph.vertexSet.toList
+		dag = dagGen.outputGraph
+		seenNodes = dag.vertexSet.toList
 		iterator = new DAGTopologicalIterator(dagGen)
 		forkJoinOrigInstance = dagGen.explodeImplodeOrigInstances
 		instanceSources.putAll(iterator.instanceSources)

@@ -5,6 +5,10 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsIndexer
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
+import org.eclipse.xtend.lib.annotations.Accessors
+import java.util.List
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import java.util.ArrayList
 
 /**
  * Class that creates re-populates all necessary data-structures for a new
@@ -17,6 +21,12 @@ class DAG2DAG extends AbstractDAGConstructor implements PureDAGConstructor {
 	 * Holds the input {@link SDFGraph} instance
 	 */
 	protected val SDFGraph newGraph
+	
+	/**
+	 * List of all the actors that form the part of the cycles in the original SDFG
+	 */
+	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	val List<SDFAbstractVertex> cycleActors
 	
 	/**
 	 * Constructor to use in plugins
@@ -78,6 +88,11 @@ class DAG2DAG extends AbstractDAGConstructor implements PureDAGConstructor {
 		
 		explodeImplodeOrigInstances.clear()
 		explodeImplodeOrigInstances.putAll(oldDAGGen.explodeImplodeOrigInstances)
+		
+		actorPredecessor.clear()
+		actorPredecessor.putAll(oldDAGGen.actorPredecessor)
+		
+		this.cycleActors = new ArrayList(oldDAGGen.cycleActors)
 	}
 	
 	/**

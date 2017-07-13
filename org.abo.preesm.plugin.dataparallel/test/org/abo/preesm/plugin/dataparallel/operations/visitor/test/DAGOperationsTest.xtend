@@ -4,6 +4,11 @@ import java.util.Collection
 import org.abo.preesm.plugin.dataparallel.DAG2DAG
 import org.abo.preesm.plugin.dataparallel.PureDAGConstructor
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
+import org.abo.preesm.plugin.dataparallel.operations.visitor.CyclicSDFGOperations
+import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
+import org.abo.preesm.plugin.dataparallel.operations.visitor.DependencyAnalysisOperations
+import org.abo.preesm.plugin.dataparallel.operations.visitor.OperationsUtils
+import org.abo.preesm.plugin.dataparallel.operations.visitor.RearrangeOperations
 import org.abo.preesm.plugin.dataparallel.test.ExampleGraphs
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.jgrapht.alg.CycleDetector
@@ -11,10 +16,6 @@ import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import org.abo.preesm.plugin.dataparallel.operations.visitor.DependencyAnalysisOperations
-import org.abo.preesm.plugin.dataparallel.operations.visitor.OperationsUtils
-import org.abo.preesm.plugin.dataparallel.operations.visitor.RearrangeOperations
-import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
 
 /**
  * Property based tests for operations that implement {@link DAGOperations} on
@@ -23,7 +24,7 @@ import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
  * @author Sudeep Kanur 
  */
 @RunWith(Parameterized)
-class DAGOperationsVisitorTest {
+class DAGOperationsTest {
 	
 	protected val SDFGraph sdf
 	
@@ -90,7 +91,7 @@ class DAGOperationsVisitorTest {
 	}
 	
 	/**
-	 * Test checks parallel level is -1 for strictly cyclic 
+	 * Test checks parallel level is null for strictly cyclic 
 	 * non-acyclic like graph
 	 * 
 	 * Strong Test
@@ -101,9 +102,15 @@ class DAGOperationsVisitorTest {
 		dagGen.accept(depOp)
 		if(depOp.isIndependent) {
 			
-			// Graph is strictly cyclic and not acyclic-like
+			// Graph is not acyclic-like
 			if(dagGen.sourceInstances.empty && !isAcyclicLike) {
-				Assert.assertTrue(OperationsUtils.getParallelLevel(dagGen) === null)
+				// Perform for each cycle
+				val cycleOp = new CyclicSDFGOperations
+				dagGen.accept(cycleOp)
+				
+				cycleOp.cycleRoots.forEach[ cycle |
+					Assert.assertTrue(OperationsUtils.getParallelLevel(dagGen, cycle.levels) === null)
+				]
 			}
 		}
 	}
@@ -114,7 +121,7 @@ class DAGOperationsVisitorTest {
 	 * 
 	 * Strong Test
 	 */
-	@org.junit.Test
+	@Test
 	public def void implodeExplodeInSameLevelAsOrig() {
 		val rearrangeOp = new RearrangeOperations
 		dagGen.accept(rearrangeOp)
@@ -217,7 +224,7 @@ class DAGOperationsVisitorTest {
 		if(!sdfgCycles.empty && !isAcyclicLike) {
 			Assert.assertTrue(!cycleRoots.empty)
 			
-			cycleRoots.forEach[it.forEach [node |
+			cycleRoots.forEach[it.roots.forEach [ node |
 					val actor = dagGen.instance2Actor.get(node)
 					Assert.assertTrue(sdfgCycles.contains(actor.name))
 				]
@@ -245,8 +252,8 @@ class DAGOperationsVisitorTest {
 			val cycles = rearrangeOp.cycleRoots
 			
 			cycles.forEach[cycle |
-				val restOfCycle = cycle.filter[instance |
-					instance != OperationsUtils.pickElement(cycle)
+				val restOfCycle = cycle.roots.filter[instance |
+					instance != OperationsUtils.pickElement(cycle.roots)
 				]
 				val minimumParLevel = newArrayList
 				restOfCycle.forEach[instance |
@@ -270,7 +277,7 @@ class DAGOperationsVisitorTest {
 	 * 
 	 * Strong Test
 	 */
-	@org.junit.Test
+	@Test
 	public def void restOfCyclesAreArranged() {
 		val rearrangeOp = new RearrangeOperations
 		dagGen.accept(rearrangeOp)
@@ -279,8 +286,8 @@ class DAGOperationsVisitorTest {
 		if(!isAcyclicLike) {
 			val cycles = rearrangeOp.cycleRoots
 			cycles.forEach[cycle |
-				val anchor = OperationsUtils.pickElement(cycle)
-				val restOfCycle = cycle.filter[instance | instance != anchor]
+				val anchor = OperationsUtils.pickElement(cycle.roots)
+				val restOfCycle = cycle.roots.filter[instance | instance != anchor]
 				restOfCycle.forEach[instance | 
 					val actor = dagGen.instance2Actor.get(instance)
 					// Check if levels of all the instance of actor are same
