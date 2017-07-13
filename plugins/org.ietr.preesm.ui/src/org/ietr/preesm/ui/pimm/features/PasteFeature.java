@@ -105,18 +105,13 @@ public class PasteFeature extends AbstractPasteFeature {
       }
     }
 
-    connectVertices(context);
-
-    this.copiedVertices.clear();
-    this.links.clear();
-  }
-
-  private void connectVertices(IPasteContext context) {
     connectFifos(context);
 
     if (getPiGraph() != getOriginalPiGraph()) {
       // connectDependencies();
     }
+    this.copiedVertices.clear();
+    this.links.clear();
   }
 
   private void connectFifos(IPasteContext pasteContext) {
@@ -182,12 +177,22 @@ public class PasteFeature extends AbstractPasteFeature {
           pe.getLink().getBusinessObjects().clear();
           pe.getLink().getBusinessObjects().add(delayCopy);
         }
+        // add input port anchors
+        final EList<ConfigInputPort> configInputPorts = delayCopy.getConfigInputPorts();
+        for (ConfigInputPort port : configInputPorts) {
+          final IPeService peService = GraphitiUi.getPeService();
+          final Anchor chopboxAnchor = peService.getChopboxAnchor((AnchorContainer) createdPEs.get(0));
+          chopboxAnchor.setReferencedGraphicsAlgorithm(createdPEs.get(0).getGraphicsAlgorithm());
+          this.links.put(port, chopboxAnchor);
+
+        }
+        autoConnectInputConfigPorts(delay, delayCopy);
       }
 
     }
   }
 
-  private void autoConnectInputConfigPorts(final AbstractVertex originalVertex, final AbstractVertex vertexCopy) {
+  private void autoConnectInputConfigPorts(final Parameterizable originalParameterizable, final Parameterizable parameterizableCopy) {
 
     if (getPiGraph() != getOriginalPiGraph()) {
       return;
@@ -199,9 +204,9 @@ public class PasteFeature extends AbstractPasteFeature {
     final List<Dependency> newDependencies = new LinkedList<>();
     for (final Dependency dep : dependencies) {
       final ConfigInputPort getter = dep.getGetter();
-      if (originalVertex.getConfigInputPorts().contains(getter)) {
+      if (originalParameterizable.getConfigInputPorts().contains(getter)) {
         final ISetter setter = dep.getSetter();
-        final ConfigInputPort getterCopy = lookupConfigInputPort(vertexCopy, getter);
+        final ConfigInputPort getterCopy = lookupConfigInputPort(parameterizableCopy, getter);
 
         final Dependency newDep = PiMMUserFactory.instance.createDependency(setter, getterCopy);
 
