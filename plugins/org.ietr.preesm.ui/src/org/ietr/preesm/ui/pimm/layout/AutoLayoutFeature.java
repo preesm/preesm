@@ -85,7 +85,6 @@ import org.ietr.preesm.ui.pimm.features.DeleteDelayFeature;
 import org.ietr.preesm.ui.pimm.features.MoveAbstractActorFeature;
 import org.ietr.preesm.ui.pimm.util.DiagramPiGraphLinkHelper;
 
-// TODO: Auto-generated Javadoc
 /**
  * {@link AbstractCustomFeature} automating the layout process for PiMM graphs.
  *
@@ -265,7 +264,6 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     // Register first stage
     stages.add(currentStage);
-
     do {
       // Find candidates for the next stage in successors of current one
       for (final AbstractActor actor : currentStage) {
@@ -307,7 +305,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     // If the last stage is empty (if there were only dataOutputInterface)
     // remove it
-    if (stages.get(stages.size() - 1).size() == 0) {
+    if (stages.get(stages.size() - 1).isEmpty()) {
       stages.remove(stages.size() - 1);
     }
 
@@ -378,7 +376,6 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
    */
   @Override
   public void execute(final ICustomContext context) {
-    System.out.println("Layout the diagram");
     final Diagram diagram = getDiagram();
 
     // Check if there are parameterization cycles in the graph.
@@ -768,7 +765,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
             ffc.getBendpoints().add(Graphiti.getGaCreateService().createPoint(xPos, yPos));
 
           } else {
-            System.out.println(getter.getClass());
+            throw new UnsupportedOperationException();
           }
         }
       }
@@ -783,7 +780,6 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     for (final Dependency dependency : allDependencies) {
       currentY += AutoLayoutFeature.DEPENDENCY_SPACE;
       currentX += AutoLayoutFeature.DEPENDENCY_SPACE / 2;
-      currentYUsed = false;
 
       // get the FFC
       final FreeFormConnection ffc = DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, dependency);
@@ -951,9 +947,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
           bPoints.remove(0);
         }
         final int pX = posX;
-        bPoints.sort((p1, p2) -> {
-          return Math.abs(p1.getX() - pX) - Math.abs(p2.getX() - pX);
-        });
+        bPoints.sort((p1, p2) -> Math.abs(p1.getX() - pX) - Math.abs(p2.getX() - pX));
 
         final int posY = ((bPoints.get(0).getY() + bPoints.get(1).getY()) - AddDelayFeature.DELAY_SIZE) / 2;
 
@@ -1092,7 +1086,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
    * @throws RuntimeException
    *           the runtime exception
    */
-  protected void stageByStageActorLayout(final Diagram diagram, final List<List<AbstractActor>> stagedActors) throws RuntimeException {
+  protected void stageByStageActorLayout(final Diagram diagram, final List<List<AbstractActor>> stagedActors) {
     // Init the stageGap and stageWidth attributes
     this.stageWidth = new ArrayList<>();
     this.stagesGaps = new ArrayList<>();
@@ -1147,9 +1141,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     final List<AbstractActor> srcActors = findSrcActors(feedbackFifos, actors);
 
     // 3. BFS-style stage by stage construction
-    final List<List<AbstractActor>> stages = createActorStages(feedbackFifos, actors, srcActors);
-
-    return stages;
+    return createActorStages(feedbackFifos, actors, srcActors);
   }
 
   /**
@@ -1189,7 +1181,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       }
 
       if (paramPE == null) {
-        throw new RuntimeException("No PE was found for parameter :" + param.getName());
+        throw new NullPointerException("No PE was found for parameter :" + param.getName());
       }
 
       // Get the Graphics algorithm
