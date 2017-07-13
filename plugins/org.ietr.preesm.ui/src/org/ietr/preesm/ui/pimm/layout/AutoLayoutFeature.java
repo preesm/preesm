@@ -357,8 +357,10 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       // Find candidates for the next stage in successors of current one
       for (final Parameter param : currentStage) {
         for (final Dependency dependency : param.getOutgoingDependencies()) {
-          if (dependency.getGetter().eContainer() instanceof Parameter) {
-            nextStage.add((Parameter) dependency.getGetter().eContainer());
+          final ConfigInputPort getter = dependency.getGetter();
+          final EObject eContainer = getter.eContainer();
+          if (eContainer instanceof Parameter) {
+            nextStage.add((Parameter) eContainer);
           }
         }
       }
