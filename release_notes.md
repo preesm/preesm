@@ -8,6 +8,7 @@ PREESM Changelog
 * Enable copy/paste of vertices (actor, parameters, sink/source, special actors, ...) in the graphical PiMM editor (see https://github.com/preesm/preesm/issues/10);
    * Connects parameters and parameter configurations if paste occurs in the same diagram;
    * Copies fifos when copying group of actors, and connect delay dependencies if paste occurs in the same graph;
+   * Copies dependencies between copied ISetters and copied Parameterizables;
 
 ### Changes
 * Update scenario editor: file selection popups now filter content more accurately;
