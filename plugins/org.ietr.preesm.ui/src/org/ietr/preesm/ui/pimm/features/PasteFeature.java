@@ -165,16 +165,23 @@ public class PasteFeature extends AbstractPasteFeature {
       addFifoFeature.execute(context);
       final PictogramElement pictogramElementForBusinessObject = getFeatureProvider().getPictogramElementForBusinessObject(copiedFifo);
 
-      // TODO check display delay
       final Delay delay = originalFifo.getDelay();
       if (delay != null) {
         final Delay delayCopy = PiMMUserFactory.instance.copy(delay);
-        System.out.println("copy delay " + delayCopy);
         final AddDelayFeature addDelayFeature = new AddDelayFeature(getFeatureProvider());
         final CustomContext customContext = new CustomContext(new PictogramElement[] { pictogramElementForBusinessObject });
         customContext.setLocation(pasteContext.getX(), pasteContext.getY());
         addDelayFeature.execute(customContext);
+        // one delay is created during the addDelayFeature.
+        // Force reference to the one created above ?
+        // check config input ports...
         copiedFifo.setDelay(delayCopy);
+        // and overwrite links
+        final List<PictogramElement> createdPEs = addDelayFeature.getCreatedPEs();
+        for (PictogramElement pe : createdPEs) {
+          pe.getLink().getBusinessObjects().clear();
+          pe.getLink().getBusinessObjects().add(delayCopy);
+        }
       }
 
     }
