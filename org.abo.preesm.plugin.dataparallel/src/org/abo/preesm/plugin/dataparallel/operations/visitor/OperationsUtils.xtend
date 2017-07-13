@@ -40,7 +40,7 @@ class OperationsUtils {
 		levels.forEach[instance, level | 
 			levelSet.get(level).add(instance)
 		]
-		return levelSet
+		return levelSet.filter[set | !set.empty].toList
 	}
 	
 	/**
@@ -205,9 +205,8 @@ class OperationsUtils {
 	 * @return If DAG has a parallel level, then it returns the maximum level. Otherwise it returns null
 	 */
 	public static def Integer getParallelLevel(PureDAGConstructor dagGen, Map<SDFAbstractVertex, Integer> levels) {
-		
 		for(level: getLevelSets(levels)) {
-			val currentLevel = levels.get(level.get(0)) 
+			val currentLevel = levels.get(level.get(0)) 	
 			val actors = newHashSet
 			val allInstances = newArrayList
 			// Get all actors in the current level
