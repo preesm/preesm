@@ -237,7 +237,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   protected List<List<AbstractActor>> createActorStages(final List<Fifo> feedbackFifos, final List<AbstractActor> actors, final List<AbstractActor> srcActors) {
     final List<List<AbstractActor>> stages = new ArrayList<>();
 
-    //
+    // init first stage with src actors
     final List<AbstractActor> processedActors = new ArrayList<>();
     processedActors.addAll(srcActors);
     Set<AbstractActor> nextStage = new LinkedHashSet<>();
@@ -264,44 +264,20 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     // Register first stage
     stages.add(currentStage);
+    System.out.println("before infinite loop");
+    boolean test;
     do {
-      // Find candidates for the next stage in successors of current one
-      for (final AbstractActor actor : currentStage) {
-        for (final DataOutputPort port : actor.getDataOutputPorts()) {
-          final Fifo outgoingFifo = port.getOutgoingFifo();
-          if (!feedbackFifos.contains(outgoingFifo) && (outgoingFifo != null)) {
-            final DataInputPort targetPort = outgoingFifo.getTargetPort();
-            final AbstractActor eContainer = (AbstractActor) targetPort.eContainer();
-            nextStage.add(eContainer);
-          }
-        }
-      }
-
-      // Check if all predecessors of the candidates have already been
-      // added in a previous stages
-      iter = nextStage.iterator();
-      while (iter.hasNext()) {
-        final AbstractActor actor = iter.next();
-        boolean hasUnstagedPredecessor = false;
-        for (final DataInputPort port : actor.getDataInputPorts()) {
-          final Fifo incomingFifo = port.getIncomingFifo();
-          hasUnstagedPredecessor |= !feedbackFifos.contains(incomingFifo) && !processedActors.contains(incomingFifo.getSourcePort().eContainer());
-        }
-        if (hasUnstagedPredecessor) {
-          iter.remove();
-        } else if ((actor instanceof DataOutputInterface)) {
-          dataOutputInterfaces.add(actor);
-          processedActors.add(actor);
-          iter.remove();
-        }
-      }
+      iterate(feedbackFifos, processedActors, nextStage, currentStage, dataOutputInterfaces);
 
       // Prepare next iteration
       currentStage = new ArrayList<>(nextStage);
       stages.add(currentStage);
       processedActors.addAll(currentStage);
       nextStage = new LinkedHashSet<>();
-    } while (processedActors.size() < actors.size());
+
+      test = processedActors.size() < actors.size();
+    } while (test);
+    System.out.println("after infinite loop");
 
     // If the last stage is empty (if there were only dataOutputInterface)
     // remove it
@@ -314,6 +290,51 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     }
 
     return stages;
+  }
+
+  private void iterate(final List<Fifo> feedbackFifos, final List<AbstractActor> processedActors, Set<AbstractActor> nextStage,
+      List<AbstractActor> currentStage, final List<AbstractActor> dataOutputInterfaces) {
+    // Find candidates for the next stage in successors of current one
+    findCandidates(feedbackFifos, nextStage, currentStage);
+
+    // Check if all predecessors of the candidates have already been
+    // added in a previous stages
+    check(feedbackFifos, processedActors, nextStage, dataOutputInterfaces);
+  }
+
+  private void findCandidates(final List<Fifo> feedbackFifos, Set<AbstractActor> nextStage, List<AbstractActor> currentStage) {
+    for (final AbstractActor actor : currentStage) {
+      for (final DataOutputPort port : actor.getDataOutputPorts()) {
+        final Fifo outgoingFifo = port.getOutgoingFifo();
+        if (!feedbackFifos.contains(outgoingFifo) && (outgoingFifo != null)) {
+          final DataInputPort targetPort = outgoingFifo.getTargetPort();
+          final AbstractActor eContainer = (AbstractActor) targetPort.eContainer();
+          nextStage.add(eContainer);
+        }
+      }
+    }
+  }
+
+  private void check(final List<Fifo> feedbackFifos, final List<AbstractActor> processedActors, Set<AbstractActor> nextStage,
+      final List<AbstractActor> dataOutputInterfaces) {
+    Iterator<AbstractActor> iter;
+    iter = nextStage.iterator();
+    while (iter.hasNext()) {
+      final AbstractActor actor = iter.next();
+      boolean hasUnstagedPredecessor = false;
+      for (final DataInputPort port : actor.getDataInputPorts()) {
+        final Fifo incomingFifo = port.getIncomingFifo();
+        hasUnstagedPredecessor |= !feedbackFifos.contains(incomingFifo) && incomingFifo != null
+            && !processedActors.contains(incomingFifo.getSourcePort().eContainer());
+      }
+      if (hasUnstagedPredecessor) {
+        iter.remove();
+      } else if ((actor instanceof DataOutputInterface)) {
+        dataOutputInterfaces.add(actor);
+        processedActors.add(actor);
+        iter.remove();
+      }
+    }
   }
 
   /**
@@ -518,7 +539,10 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       boolean hasInputFifos = false;
 
       for (final DataInputPort port : actor.getDataInputPorts()) {
-        hasInputFifos |= !feedbackFifos.contains(port.getIncomingFifo());
+        final Fifo incomingFifo = port.getIncomingFifo();
+        final boolean contains = feedbackFifos.contains(incomingFifo);
+        final boolean fifoNotNull = incomingFifo != null;
+        hasInputFifos |= !contains && fifoNotNull;
       }
 
       if (!hasInputFifos) {
@@ -910,7 +934,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
       // Remove all FIFOs ending at next stage from the interstage Fifo
       // list
-      interStageFifos.removeIf(f -> stageDst.contains(f.getTargetPort().eContainer()));
+      interStageFifos.removeIf(f -> f == null || stageDst.contains(f.getTargetPort().eContainer()));
 
       // Layout Fifos to reach the next stage without going over an actor
       layoutInterStageFifos(diagram, interStageFifos, this.stageWidth.get(i + 1), this.stagesGaps.get(i + 1));
