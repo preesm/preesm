@@ -44,6 +44,7 @@ import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -111,10 +112,11 @@ public class DiagramPiGraphLinkHelper {
   public static ContainerShape getDelayPE(final Diagram diagram, final Fifo fifo) throws RuntimeException {
     // Get all delays with identical attributes (may not be the
     // right delay is several delays have the same properties.)
-    final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, fifo.getDelay());
+    final Delay delay = fifo.getDelay();
+    final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, delay);
     PictogramElement pe = null;
     for (final PictogramElement p : pes) {
-      if ((p instanceof ContainerShape) && (Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(p) == fifo.getDelay())) {
+      if ((p instanceof ContainerShape) && (Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(p) == delay)) {
         pe = p;
       }
     }
