@@ -80,13 +80,13 @@ public class PasteFeature extends AbstractPasteFeature {
     return result;
   }
 
-  private final Map<EObject, PictogramElement>      links          = new LinkedHashMap<>();
-  private final Map<AbstractVertex, AbstractVertex> copiedVertices = new LinkedHashMap<>();
+  private final Map<EObject, PictogramElement>        links          = new LinkedHashMap<>();
+  private final Map<Parameterizable, Parameterizable> copiedObjects = new LinkedHashMap<>();
 
   @Override
   public void paste(final IPasteContext context) {
     this.links.clear();
-    this.copiedVertices.clear();
+    this.copiedObjects.clear();
     // get the EClasses from the clipboard without copying them
     // (only copy the pictogram element, not the business object)
     // then create new pictogram elements using the add feature
@@ -99,7 +99,7 @@ public class PasteFeature extends AbstractPasteFeature {
         final String name = computeUniqueNameForCopy(vertex);
         copy.setName(name);
         addGraphicalElementsForCopy(context, copy);
-        this.copiedVertices.put(vertex, copy);
+        this.copiedObjects.put(vertex, copy);
 
         autoConnectInputConfigPorts(vertex, copy);
       }
@@ -108,10 +108,85 @@ public class PasteFeature extends AbstractPasteFeature {
     connectFifos(context);
 
     if (getPiGraph() != getOriginalPiGraph()) {
-      // connectDependencies();
+      connectDependencies(context);
     }
-    this.copiedVertices.clear();
+
+    postProcess();
+
+    this.copiedObjects.clear();
     this.links.clear();
+  }
+
+  private void postProcess() {
+    for (Entry<Parameterizable, Parameterizable> e : copiedObjects.entrySet()) {
+      final Parameterizable value = e.getValue();
+      if (value instanceof ExecutableActor) {
+        // continue
+      } else {
+        final EList<ConfigInputPort> configInputPorts = value.getConfigInputPorts();
+        List<ConfigInputPort> portsToRemove = new LinkedList<>();
+        for (ConfigInputPort port : configInputPorts) {
+          if (port.getIncomingDependency() == null) {
+            portsToRemove.add(port);
+          }
+        }
+        configInputPorts.removeAll(portsToRemove);
+      }
+    }
+  }
+
+  private void connectDependencies(IPasteContext pasteContextd) {
+    final List<Dependency> originalDependencies = getOriginalPiGraph().getDependencies();
+
+    final PiGraph targetPiGraph = getPiGraph();
+
+    for (final Dependency dep : originalDependencies) {
+      final ISetter setter = dep.getSetter();
+      final boolean sourceOk;
+      if (setter instanceof Parameter) {
+        sourceOk = copiedObjects.containsKey(setter);
+      } else if (setter instanceof ConfigOutputPort) {
+        sourceOk = copiedObjects.containsKey(setter.eContainer());
+      } else {
+        sourceOk = false;
+      }
+
+      final ConfigInputPort getter = dep.getGetter();
+      final boolean targetOk;
+      final Parameterizable targetParameterizable = (Parameterizable) getter.eContainer();
+      if (targetParameterizable instanceof AbstractVertex) {
+        targetOk = copiedObjects.containsKey(targetParameterizable);
+      } else if (targetParameterizable instanceof Delay) {
+        final Fifo fifo = (Fifo) targetParameterizable.eContainer();
+        final EObject fifoSource = fifo.getSourcePort().eContainer();
+        final EObject fifoTarget = fifo.getTargetPort().eContainer();
+        targetOk = copiedObjects.containsKey(fifoSource) && copiedObjects.containsKey(fifoTarget);
+      } else {
+        targetOk = false;
+      }
+
+      if (sourceOk && targetOk) {
+        final Parameterizable copiedParameterizable = copiedObjects.get(targetParameterizable);
+        // lookup copied setter
+        ISetter copiedSetter = null;
+        if (setter instanceof Parameter) {
+          copiedSetter = (Parameter) copiedObjects.get(setter);
+        } else if (setter instanceof ConfigOutputPort) {
+          final AbstractActor originalActor = (AbstractActor) setter.eContainer();
+          final ConfigOutputPort originalConfigPort = (ConfigOutputPort) setter;
+          final AbstractActor copiedActor = (AbstractActor) copiedObjects.get(originalActor);
+          final ConfigOutputPort lookupConfigOutputPort = lookupConfigOutputPort(copiedActor, originalConfigPort);
+          copiedSetter = lookupConfigOutputPort;
+        } else {
+          throw new IllegalStateException();
+        }
+
+        final ConfigInputPort copiedConfigInputPort = lookupConfigInputPort(copiedParameterizable, getter);
+        final Dependency newDep = PiMMUserFactory.instance.createDependency(copiedSetter, copiedConfigInputPort);
+        targetPiGraph.getDependencies().add(newDep);
+        addGraphicalRepresentationForNewDependency(newDep);
+      }
+    }
   }
 
   private void connectFifos(IPasteContext pasteContext) {
@@ -129,9 +204,9 @@ public class PasteFeature extends AbstractPasteFeature {
         // ok
         AbstractActor source = (AbstractActor) sourceVertex;
         AbstractActor target = (AbstractActor) targetVertex;
-        if (copiedVertices.containsKey(source) && copiedVertices.containsKey(target)) {
-          final AbstractActor sourceCopy = (AbstractActor) copiedVertices.get(source);
-          final AbstractActor targetCopy = (AbstractActor) copiedVertices.get(target);
+        if (copiedObjects.containsKey(source) && copiedObjects.containsKey(target)) {
+          final AbstractActor sourceCopy = (AbstractActor) copiedObjects.get(source);
+          final AbstractActor targetCopy = (AbstractActor) copiedObjects.get(target);
 
           final DataOutputPort sourcePortCopy = lookupDataOutputPort(sourceCopy, sourcePort);
           final DataInputPort targetPortCopy = lookupDataInputPort(targetCopy, targetPort);
@@ -187,6 +262,7 @@ public class PasteFeature extends AbstractPasteFeature {
 
         }
         autoConnectInputConfigPorts(delay, delayCopy);
+        copiedObjects.put(delay, delayCopy);
       }
 
     }
@@ -301,6 +377,35 @@ public class PasteFeature extends AbstractPasteFeature {
     }
 
     return target;
+  }
+
+  /**
+   * Lookup the copied getter in the vertex copy. The lookup is based on the name only.
+   *
+   * @param vertexCopy
+   *          vertex copy
+   * @param getter
+   *          input port in the original vertex
+   * @return the vertexCopy's input port whose name matches getter
+   */
+  private ConfigOutputPort lookupConfigOutputPort(final AbstractActor vertexCopy, final ConfigOutputPort setter) {
+    final EList<ConfigOutputPort> copiedConfigOutputPorts = vertexCopy.getConfigOutputPorts();
+    final AbstractActor eContainer = (AbstractActor) setter.eContainer();
+    final EList<ConfigOutputPort> origConfigOutputPorts = eContainer.getConfigOutputPorts();
+
+    if (copiedConfigOutputPorts.size() != origConfigOutputPorts.size()) {
+      throw new IllegalStateException();
+    }
+
+    final ConfigOutputPort source;
+    if (origConfigOutputPorts.contains(setter)) {
+      final int indexOf = origConfigOutputPorts.indexOf(setter);
+      source = copiedConfigOutputPorts.get(indexOf);
+    } else {
+      throw new IllegalStateException();
+    }
+
+    return source;
   }
 
   private DataInputPort lookupDataInputPort(final AbstractActor vertexCopy, final DataInputPort getter) {
