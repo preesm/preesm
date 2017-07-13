@@ -90,7 +90,7 @@ class CyclicSDFGOperations implements DAGOperations {
 		rootInstances.forEach[rootInstance |
 			val rootActor = dagGen.instance2Actor.get(rootInstance)
 			if(!seenRoots.contains(rootActor)) {
-				val dependentInstances = newHashSet
+				val dependentRootInstances = newHashSet
 				
 				val restInstances = rootInstances.filter[node | dagGen.instance2Actor.get(node) != rootActor]
 				restInstances.forEach[remainingRootInstance |
@@ -103,18 +103,18 @@ class CyclicSDFGOperations implements DAGOperations {
 							// The two nodes are part of the cycle, add them to seen nodes
 							seenRoots.add(rootActor)
 							seenRoots.add(remainingRootActor)
-							dependentInstances.add(remainingRootInstance)
-							dependentInstances.add(rootInstance)
+							dependentRootInstances.add(remainingRootInstance)
+							dependentRootInstances.add(rootInstance)
 						}
 					}
 				]
 				
-				if(!dependentInstances.empty) {
-					cycleRoots.addAll(dependentInstances)
+				if(!dependentRootInstances.empty) {
+					cycleRoots.addAll(dependentRootInstances)
 				}
 				
 				val instancesInThisCycle = newHashSet
-				dependentInstances.forEach[ root |
+				dependentRootInstances.forEach[ root |
 					val seenNodesThisRoot = new SubsetTopologicalIterator(dagGen, root).toList
 					val cyclesNodes = seenNodesThisRoot.filter[node | dagGen.cycleActors.contains(dagGen.instance2Actor.get(node))]
 					instancesInThisCycle.addAll(cyclesNodes)
@@ -122,9 +122,9 @@ class CyclicSDFGOperations implements DAGOperations {
 				
 				val levelsOfInstancesInThisCycle = levels.filter[instance, level | instancesInThisCycle.contains(instance)]
 				
-				if(!dependentInstances.empty && !levelsOfInstancesInThisCycle.empty) {
+				if(!dependentRootInstances.empty && !levelsOfInstancesInThisCycle.empty) {
 					this.cycleRoots.add(new StrictDAGCycles (
-						instancesInThisCycle.toList,
+						dependentRootInstances.toList,
 						levelsOfInstancesInThisCycle
 					))	
 				}

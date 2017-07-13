@@ -253,11 +253,11 @@ class DAGOperationsTest {
 			val cycles = rearrangeOp.cycleRoots
 			
 			cycles.forEach[cycle |
-				val restOfCycle = cycle.roots.filter[instance |
+				val restOfRootsInCycle = cycle.roots.filter[instance |
 					instance != OperationsUtils.pickElement(cycle.roots)
 				]
 				val minimumParLevel = newArrayList
-				restOfCycle.forEach[instance |
+				restOfRootsInCycle.forEach[instance |
 					val actor = dagGen.instance2Actor.get(instance)
 					val levelsOfInstances = newArrayList
 					dagGen.actor2Instances.get(actor).forEach[node |
@@ -265,7 +265,8 @@ class DAGOperationsTest {
 					]
 					minimumParLevel.add(levelsOfInstances.max)
 				]
-				val parallelLevel = OperationsUtils.getParallelLevel(dagGen, rearrangedLevels)
+				val rearrangedInstancesOfThisCycle = rearrangedLevels.filter[instance, level | cycle.levels.keySet.contains(instance)]
+				val parallelLevel = OperationsUtils.getParallelLevel(dagGen, rearrangedInstancesOfThisCycle)
 				Assert.assertTrue(parallelLevel !== null)
 				Assert.assertTrue(minimumParLevel.min <= parallelLevel)
 			]

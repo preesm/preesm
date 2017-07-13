@@ -97,21 +97,22 @@ class RearrangeOperations extends CyclicSDFGOperations implements DAGOperations 
 		} else {
 			dagT = new DAG2DAG(dagGen, dagGen.logger)
 			// DAG is non-acyclic like
-			val allInstancesInCycles = newArrayList
+			val allRootsInCycles = newArrayList
 			val cycles = super.cycleRoots
 			cycles.forEach[cycle | 
-				allInstancesInCycles.addAll(cycle)
+				allRootsInCycles.addAll(cycle.roots)
 			]
 			
 			cycles.forEach[cycle |
+				val cycleRoots = cycle.roots
 				val rootInstancesToBeSorted = newArrayList
-				val anchor = OperationsUtils.pickElement(cycle)
-				val instancesOfOtherCycles = allInstancesInCycles.filter[instance | !cycle.contains(instance)].toList
+				val anchor = OperationsUtils.pickElement(cycleRoots)
+				val rootsOfOtherCycles = allRootsInCycles.filter[instance | !cycleRoots.contains(instance)].toList
 				val sourceInstances = dagGen.sourceInstances
 				
 				// Filter out instances from other cycles and source instances
 				rootInstances.forEach[instance |
-					if(!(instancesOfOtherCycles.contains(instance)) && !(sourceInstances.contains(instance)) && (instance != anchor)) {
+					if(!(rootsOfOtherCycles.contains(instance)) && !(sourceInstances.contains(instance)) && (instance != anchor)) {
 						rootInstancesToBeSorted.add(instance)
 					}
 				]
