@@ -74,6 +74,7 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.util.DependencyCycleDetector;
@@ -493,7 +494,9 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     for (final Parameter p : params) {
       boolean hasDependencies = false;
       for (final ConfigInputPort port : p.getConfigInputPorts()) {
-        hasDependencies |= port.getIncomingDependency().getSetter() instanceof Parameter;
+        final Dependency incomingDependency = port.getIncomingDependency();
+        final ISetter setter = incomingDependency.getSetter();
+        hasDependencies |= setter instanceof Parameter;
       }
 
       if (!hasDependencies) {
