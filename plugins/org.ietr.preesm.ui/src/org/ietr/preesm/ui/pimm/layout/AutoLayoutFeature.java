@@ -264,7 +264,6 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     // Register first stage
     stages.add(currentStage);
-    System.out.println("before infinite loop");
     boolean test;
     do {
       iterate(feedbackFifos, processedActors, nextStage, currentStage, dataOutputInterfaces);
@@ -277,7 +276,6 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
       test = processedActors.size() < actors.size();
     } while (test);
-    System.out.println("after infinite loop");
 
     // If the last stage is empty (if there were only dataOutputInterface)
     // remove it
