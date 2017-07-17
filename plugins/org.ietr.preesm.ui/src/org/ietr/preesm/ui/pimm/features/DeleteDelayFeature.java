@@ -53,7 +53,6 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 
-// TODO: Auto-generated Javadoc
 /**
  * Delete feature to remove a {@link Delay} from a {@link Fifo}.
  *
@@ -89,6 +88,7 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
     }
 
     // Super call to delete the dependencies linked to the delay
+    // Do it after deleting the connection (if it exists) to avoid looping infinitely
     super.preDelete(context);
   }
 
