@@ -23,6 +23,7 @@ PREESM Changelog
 * Fix expression refresh on properties tab of PiMMEditor: now show red background and error message instead of showing multiple popups when expression cannot be evaluated;
 * Fix deletion of actor + connected delay;
 * Fix auto layout freezes when fifos input/output ports are not connected;
+* Fix port deletion: do not delete connection if port deletion is canceled;
 
 ## Release version 2.3.0
 *2017.06.26*
