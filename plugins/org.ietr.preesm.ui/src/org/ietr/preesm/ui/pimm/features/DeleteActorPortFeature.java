@@ -39,6 +39,7 @@ package org.ietr.preesm.ui.pimm.features;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -81,13 +82,16 @@ public class DeleteActorPortFeature extends DefaultDeleteFeature {
     final BoxRelativeAnchor bra = (BoxRelativeAnchor) context.getPictogramElement();
     final GraphicsAlgorithm actorGA = bra.getReferencedGraphicsAlgorithm();
 
-    // Begin by deleting the Fifos or dependencies linked to this port
-    deleteConnectedConnection(bra);
-
     // Delete the port
     super.delete(context);
-    // Force the layout computation
-    layoutPictogramElement(actorGA.getPictogramElement());
+
+    if (hasDoneChanges()) {
+      // Begin by deleting the Fifos or dependencies linked to this port
+      deleteConnectedConnection(bra);
+
+      // Force the layout computation
+      layoutPictogramElement(actorGA.getPictogramElement());
+    }
   }
 
   /**
@@ -118,8 +122,10 @@ public class DeleteActorPortFeature extends DefaultDeleteFeature {
     }
 
     // Actually delete
-    for (final IDeleteFeature delFeature : delFeatures.keySet()) {
-      delFeature.delete(delFeatures.get(delFeature));
+    for (final Entry<IDeleteFeature, IDeleteContext> deleteEntry : delFeatures.entrySet()) {
+      final IDeleteFeature deleteFeature = deleteEntry.getKey();
+      final IDeleteContext deleteContext = deleteEntry.getValue();
+      deleteFeature.delete(deleteContext);
     }
   }
 
