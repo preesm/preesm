@@ -154,7 +154,7 @@ public class DiagramPiGraphLinkHelper {
     // if PE is still null.. something is deeply wrong with this
     // graph !
     if (ffc == null) {
-      throw new RuntimeException("Pictogram element associated Edge " + edge + " could not be found.");
+      throw new RuntimeException("Pictogram element associated to edge " + edge + " could not be found.");
     }
     return ffc;
   }
