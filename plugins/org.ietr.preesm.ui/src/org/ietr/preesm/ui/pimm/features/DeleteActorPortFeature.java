@@ -37,13 +37,15 @@
  */
 package org.ietr.preesm.ui.pimm.features;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IDeleteContext;
+import org.eclipse.graphiti.features.context.IMultiDeleteInfo;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.MultiDeleteInfo;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
@@ -52,8 +54,8 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.Port;
 
-// TODO: Auto-generated Javadoc
 /**
  * Delete feature for the ports.
  *
@@ -80,18 +82,33 @@ public class DeleteActorPortFeature extends DefaultDeleteFeature {
   public void delete(final IDeleteContext context) {
     // Retrieve the graphic algorithm of the enclosing actor
     final BoxRelativeAnchor bra = (BoxRelativeAnchor) context.getPictogramElement();
+
     final GraphicsAlgorithm actorGA = bra.getReferencedGraphicsAlgorithm();
 
-    // Delete the port
-    super.delete(context);
+    // fetch user decision beforehand
+    final boolean userDecision;
+    final IMultiDeleteInfo multiDeleteInfo = context.getMultiDeleteInfo();
+    if (multiDeleteInfo != null) {
+      userDecision = !multiDeleteInfo.isShowDialog();
+    } else {
+      userDecision = super.getUserDecision(context);
+    }
 
-    if (hasDoneChanges()) {
+    if (userDecision) {
+      // create a new delete context to avoid having multiple popups during deletion
+      final DeleteContext deleteContext;
+      deleteContext = new DeleteContext(context.getPictogramElement());
+      deleteContext.setMultiDeleteInfo(new MultiDeleteInfo(false, false, 0));
+
       // Begin by deleting the Fifos or dependencies linked to this port
       deleteConnectedConnection(bra);
 
       // Force the layout computation
       layoutPictogramElement(actorGA.getPictogramElement());
+      // Delete the port
+      super.delete(deleteContext);
     }
+
   }
 
   /**
@@ -105,9 +122,13 @@ public class DeleteActorPortFeature extends DefaultDeleteFeature {
     // the deleteFeatures and their context.
     Map<IDeleteFeature, IDeleteContext> delFeatures;
     delFeatures = new LinkedHashMap<>();
-    final EList<Connection> connections = bra.getIncomingConnections();
+
+    final List<Connection> connections = new ArrayList<>();
+    connections.addAll(bra.getIncomingConnections());
     connections.addAll(bra.getOutgoingConnections());
+
     for (final Connection connect : connections) {
+
       final DeleteContext delCtxt = new DeleteContext(connect);
       delCtxt.setMultiDeleteInfo(null);
       final IDeleteFeature delFeature = getFeatureProvider().getDeleteFeature(delCtxt);
