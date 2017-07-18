@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import javafx.util.Pair;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
@@ -64,7 +65,7 @@ public class PasteFeature extends AbstractPasteFeature {
   private PiGraph getOriginalPiGraph() {
     PiGraph result = null;
     final Object[] originalObjects = getFromClipboard();
-    for (Object o : originalObjects) {
+    for (final Object o : originalObjects) {
       if (o instanceof VertexCopy) {
         final EObject eContainer = ((VertexCopy) o).originalPiGraph;
         result = (PiGraph) eContainer;
@@ -88,20 +89,28 @@ public class PasteFeature extends AbstractPasteFeature {
     // (only copy the pictogram element, not the business object)
     // then create new pictogram elements using the add feature
     final Object[] objects = getFromClipboard();
+    final List<VertexCopy> copies = new LinkedList<>();
     for (final Object object : objects) {
       if (object instanceof VertexCopy) {
-        final VertexCopy vertexCopy = (VertexCopy) object;
-
-        AbstractVertex vertex = vertexCopy.originalVertex;
-
-        final AbstractVertex copy = vertexCopy.copiedVertex;
-        final String name = computeUniqueNameForCopy(vertex);
-        copy.setName(name);
-        addGraphicalElementsForCopy(context, vertexCopy);
-        this.copiedObjects.put(vertex, copy);
-
-        autoConnectInputConfigPorts(vertex, copy);
+        copies.add((VertexCopy) object);
       }
+    }
+
+    final Map<VertexCopy, Pair<Integer, Integer>> caluclatePositions = caluclatePositions(context, copies);
+
+    for (final VertexCopy vertexCopy : copies) {
+      final AbstractVertex vertex = vertexCopy.originalVertex;
+
+      final AbstractVertex copy = PiMMUserFactory.instance.copy(vertex);
+      final String name = computeUniqueNameForCopy(vertex);
+      copy.setName(name);
+      final Pair<Integer, Integer> pair = caluclatePositions.get(vertexCopy);
+      final Integer x = pair.getKey();
+      final Integer y = pair.getValue();
+      addGraphicalElementsForCopy(context, vertexCopy, copy, x, y);
+      this.copiedObjects.put(vertex, copy);
+
+      autoConnectInputConfigPorts(vertex, copy);
     }
 
     connectFifos(context);
@@ -116,15 +125,45 @@ public class PasteFeature extends AbstractPasteFeature {
     this.links.clear();
   }
 
+  private Map<VertexCopy, Pair<Integer, Integer>> caluclatePositions(final IPasteContext context, final List<VertexCopy> copies) {
+    Map<VertexCopy, Pair<Integer, Integer>> positions = new LinkedHashMap<>();
+    // determine the surrounding box
+    int maxX = Integer.MIN_VALUE;
+    int minX = Integer.MAX_VALUE;
+    int maxY = Integer.MIN_VALUE;
+    int minY = Integer.MAX_VALUE;
+    for (VertexCopy copy : copies) {
+      final int originalX = copy.originalX;
+      final int originalY = copy.originalY;
+      maxX = Math.max(maxX, originalX);
+      maxY = Math.max(maxY, originalY);
+      minX = Math.min(minX, originalX);
+      minY = Math.min(minY, originalY);
+    }
+
+    int avgX = (maxX + minX) / 2;
+    int avgY = (maxY + minY) / 2;
+
+    final int pasteX = context.getX();
+    final int pasteY = context.getY();
+
+    for (VertexCopy copy : copies) {
+      final int newX = pasteX + (copy.originalX - avgX);
+      final int newY = pasteY + (copy.originalY - avgY);
+      positions.put(copy, new Pair<Integer, Integer>(newX, newY));
+    }
+    return positions;
+  }
+
   private void postProcess() {
-    for (Entry<Parameterizable, Parameterizable> e : copiedObjects.entrySet()) {
+    for (final Entry<Parameterizable, Parameterizable> e : this.copiedObjects.entrySet()) {
       final Parameterizable value = e.getValue();
       if (value instanceof ExecutableActor) {
         // continue
       } else {
         final EList<ConfigInputPort> configInputPorts = value.getConfigInputPorts();
-        List<ConfigInputPort> portsToRemove = new LinkedList<>();
-        for (ConfigInputPort port : configInputPorts) {
+        final List<ConfigInputPort> portsToRemove = new LinkedList<>();
+        for (final ConfigInputPort port : configInputPorts) {
           if (port.getIncomingDependency() == null) {
             portsToRemove.add(port);
           }
@@ -151,15 +190,15 @@ public class PasteFeature extends AbstractPasteFeature {
   }
 
   private void connectDep(final PiGraph targetPiGraph, final ISetter setter, final ConfigInputPort getter, final Parameterizable targetParameterizable) {
-    final Parameterizable copiedParameterizable = copiedObjects.get(targetParameterizable);
+    final Parameterizable copiedParameterizable = this.copiedObjects.get(targetParameterizable);
     // lookup copied setter
     ISetter copiedSetter = null;
     if (setter instanceof Parameter) {
-      copiedSetter = (Parameter) copiedObjects.get(setter);
+      copiedSetter = (Parameter) this.copiedObjects.get(setter);
     } else if (setter instanceof ConfigOutputPort) {
       final AbstractActor originalActor = (AbstractActor) setter.eContainer();
       final ConfigOutputPort originalConfigPort = (ConfigOutputPort) setter;
-      final AbstractActor copiedActor = (AbstractActor) copiedObjects.get(originalActor);
+      final AbstractActor copiedActor = (AbstractActor) this.copiedObjects.get(originalActor);
       final ConfigOutputPort lookupConfigOutputPort = lookupConfigOutputPort(copiedActor, originalConfigPort);
       copiedSetter = lookupConfigOutputPort;
     } else {
@@ -175,28 +214,28 @@ public class PasteFeature extends AbstractPasteFeature {
   private boolean shouldConnectDep(final ISetter setter, final Parameterizable targetParameterizable) {
     final boolean sourceOk;
     if (setter instanceof Parameter) {
-      sourceOk = copiedObjects.containsKey(setter);
+      sourceOk = this.copiedObjects.containsKey(setter);
     } else if (setter instanceof ConfigOutputPort) {
-      sourceOk = copiedObjects.containsKey(setter.eContainer());
+      sourceOk = this.copiedObjects.containsKey(setter.eContainer());
     } else {
       sourceOk = false;
     }
 
     final boolean targetOk;
     if (targetParameterizable instanceof AbstractVertex) {
-      targetOk = copiedObjects.containsKey(targetParameterizable);
+      targetOk = this.copiedObjects.containsKey(targetParameterizable);
     } else if (targetParameterizable instanceof Delay) {
       final Fifo fifo = (Fifo) targetParameterizable.eContainer();
       final EObject fifoSource = fifo.getSourcePort().eContainer();
       final EObject fifoTarget = fifo.getTargetPort().eContainer();
-      targetOk = copiedObjects.containsKey(fifoSource) && copiedObjects.containsKey(fifoTarget);
+      targetOk = this.copiedObjects.containsKey(fifoSource) && this.copiedObjects.containsKey(fifoTarget);
     } else {
       targetOk = false;
     }
     return sourceOk && targetOk;
   }
 
-  private void connectFifos(IPasteContext pasteContext) {
+  private void connectFifos(final IPasteContext pasteContext) {
     final EList<Fifo> originalFifos = getOriginalPiGraph().getFifos();
     final PiGraph targetPiGraph = getPiGraph();
 
@@ -207,8 +246,8 @@ public class PasteFeature extends AbstractPasteFeature {
     addFifos(pasteContext, targetPiGraph, newFifos);
   }
 
-  private void addFifos(IPasteContext pasteContext, final PiGraph targetPiGraph, final Map<Fifo, Fifo> newFifos) {
-    for (Entry<Fifo, Fifo> fifoEntry : newFifos.entrySet()) {
+  private void addFifos(final IPasteContext pasteContext, final PiGraph targetPiGraph, final Map<Fifo, Fifo> newFifos) {
+    for (final Entry<Fifo, Fifo> fifoEntry : newFifos.entrySet()) {
       final Fifo copiedFifo = fifoEntry.getKey();
       final Fifo originalFifo = fifoEntry.getValue();
       targetPiGraph.getFifos().add(copiedFifo);
@@ -230,7 +269,7 @@ public class PasteFeature extends AbstractPasteFeature {
     }
   }
 
-  private void copyDelay(IPasteContext pasteContext, final Fifo copiedFifo, final PictogramElement pictogramElementForBusinessObject, final Delay delay) {
+  private void copyDelay(final IPasteContext pasteContext, final Fifo copiedFifo, final PictogramElement pictogramElementForBusinessObject, final Delay delay) {
     final Delay delayCopy = PiMMUserFactory.instance.copy(delay);
     final AddDelayFeature addDelayFeature = new AddDelayFeature(getFeatureProvider());
     final CustomContext customContext = new CustomContext(new PictogramElement[] { pictogramElementForBusinessObject });
@@ -242,13 +281,13 @@ public class PasteFeature extends AbstractPasteFeature {
     copiedFifo.setDelay(delayCopy);
     // and overwrite links
     final List<PictogramElement> createdPEs = addDelayFeature.getCreatedPEs();
-    for (PictogramElement pe : createdPEs) {
+    for (final PictogramElement pe : createdPEs) {
       pe.getLink().getBusinessObjects().clear();
       pe.getLink().getBusinessObjects().add(delayCopy);
     }
     // add input port anchors
     final EList<ConfigInputPort> configInputPorts = delayCopy.getConfigInputPorts();
-    for (ConfigInputPort port : configInputPorts) {
+    for (final ConfigInputPort port : configInputPorts) {
       final IPeService peService = GraphitiUi.getPeService();
       final Anchor chopboxAnchor = peService.getChopboxAnchor((AnchorContainer) createdPEs.get(0));
       chopboxAnchor.setReferencedGraphicsAlgorithm(createdPEs.get(0).getGraphicsAlgorithm());
@@ -256,7 +295,7 @@ public class PasteFeature extends AbstractPasteFeature {
 
     }
     autoConnectInputConfigPorts(delay, delayCopy);
-    copiedObjects.put(delay, delayCopy);
+    this.copiedObjects.put(delay, delayCopy);
   }
 
   private void copyFifos(final EList<Fifo> originalFifos, final Map<Fifo, Fifo> newFifos) {
@@ -265,13 +304,13 @@ public class PasteFeature extends AbstractPasteFeature {
       final DataInputPort targetPort = fifo.getTargetPort();
       final EObject sourceVertex = sourcePort.eContainer();
       final EObject targetVertex = targetPort.eContainer();
-      if ((sourceVertex != null && (sourceVertex instanceof AbstractActor)) && (targetVertex != null && (targetVertex instanceof AbstractActor))) {
+      if (((sourceVertex != null) && (sourceVertex instanceof AbstractActor)) && ((targetVertex != null) && (targetVertex instanceof AbstractActor))) {
         // ok
-        AbstractActor source = (AbstractActor) sourceVertex;
-        AbstractActor target = (AbstractActor) targetVertex;
-        if (copiedObjects.containsKey(source) && copiedObjects.containsKey(target)) {
-          final AbstractActor sourceCopy = (AbstractActor) copiedObjects.get(source);
-          final AbstractActor targetCopy = (AbstractActor) copiedObjects.get(target);
+        final AbstractActor source = (AbstractActor) sourceVertex;
+        final AbstractActor target = (AbstractActor) targetVertex;
+        if (this.copiedObjects.containsKey(source) && this.copiedObjects.containsKey(target)) {
+          final AbstractActor sourceCopy = (AbstractActor) this.copiedObjects.get(source);
+          final AbstractActor targetCopy = (AbstractActor) this.copiedObjects.get(target);
 
           final DataOutputPort sourcePortCopy = lookupDataOutputPort(sourceCopy, sourcePort);
           final DataInputPort targetPortCopy = lookupDataInputPort(targetCopy, targetPort);
@@ -479,17 +518,17 @@ public class PasteFeature extends AbstractPasteFeature {
   /**
    * Add graphical representation for the vertex copy and its content (that is the input/output ports/configs)
    */
-  private void addGraphicalElementsForCopy(final IPasteContext context, final VertexCopy vertexCopyObject) {
+  private void addGraphicalElementsForCopy(final IPasteContext context, final VertexCopy vertexCopyObject, final AbstractVertex vertexModelCopy, final int x,
+      final int y) {
     final AddContext addCtxt = new AddContext();
     final Diagram diagram = getDiagram();
     // For simplicity paste all objects at the location given in the
     // context (no stacking or similar)
     // TODO: improve location
 
-    addCtxt.setLocation(context.getX(), context.getY());
+    addCtxt.setLocation(x, y);
     addCtxt.setTargetContainer(diagram);
 
-    final AbstractVertex vertexModelCopy = vertexCopyObject.copiedVertex;
     final PictogramElement newVertexPE = addGraphicalRepresentation(addCtxt, vertexModelCopy);
     this.links.put(vertexModelCopy, newVertexPE);
 

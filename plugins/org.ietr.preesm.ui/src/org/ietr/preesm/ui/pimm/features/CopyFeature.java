@@ -8,7 +8,6 @@ import org.eclipse.graphiti.features.context.ICopyContext;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.AbstractCopyFeature;
-import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -31,7 +30,6 @@ public class CopyFeature extends AbstractCopyFeature {
     Diagram          originalDiagram;
     AbstractVertex   originalVertex;
     PiGraph          originalPiGraph;
-    AbstractVertex   copiedVertex;
 
   }
 
@@ -54,10 +52,8 @@ public class CopyFeature extends AbstractCopyFeature {
         vertexCopy.originalPictogramElement = pe;
         vertexCopy.originalPiGraph = (PiGraph) getDiagram().getLink().getBusinessObjects().get(0);
         vertexCopy.originalVertex = (AbstractVertex) bo;
-        vertexCopy.originalX = 0;
-        vertexCopy.originalY = 0;
-        final AbstractVertex copy = PiMMUserFactory.instance.copy(vertexCopy.originalVertex);
-        vertexCopy.copiedVertex = copy;
+        vertexCopy.originalX = pe.getGraphicsAlgorithm().getX();
+        vertexCopy.originalY = pe.getGraphicsAlgorithm().getY();
         copies.add(vertexCopy);
       }
 
