@@ -68,7 +68,7 @@ public class PasteFeature extends AbstractPasteFeature {
         final EObject eContainer = ((AbstractVertex) o).eContainer();
         if (!(eContainer instanceof PiGraph) || (result != null && result != eContainer)) {
           // all vertices should be contained by a PiGraph object.
-          throw new IllegalStateException();
+          throw new IllegalStateException("Paste elements that have been deleted is not supported");
         } else {
           result = (PiGraph) eContainer;
         }
@@ -80,7 +80,7 @@ public class PasteFeature extends AbstractPasteFeature {
     return result;
   }
 
-  private final Map<EObject, PictogramElement>        links          = new LinkedHashMap<>();
+  private final Map<EObject, PictogramElement>        links         = new LinkedHashMap<>();
   private final Map<Parameterizable, Parameterizable> copiedObjects = new LinkedHashMap<>();
 
   @Override
