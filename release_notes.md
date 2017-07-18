@@ -1,7 +1,7 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
+## Release version 2.4.0
 *XXXX.XX.XX*
 
 ### New Feature
@@ -24,6 +24,7 @@ PREESM Changelog
 * Fix deletion of actor + connected delay;
 * Fix auto layout freezes when fifos input/output ports are not connected;
 * Fix port deletion: do not delete connection if port deletion is canceled;
+* Fix port deletion: properly delete delays
 
 ## Release version 2.3.0
 *2017.06.26*
