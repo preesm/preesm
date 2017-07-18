@@ -153,7 +153,7 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
       final BasicDiagnostic result = new BasicDiagnostic();
       try {
         final Diagram diagram = this.diagramBehavior.getDiagramContainer().getDiagramTypeProvider().getDiagram();
-        if ((resource != null) && !checker.checkGraph((PiGraph) resource.getContents().get(0))) {
+        if ((resource != null) && !resource.getContents().isEmpty() && !checker.checkGraph((PiGraph) resource.getContents().get(0))) {
           // Warnings
           for (final Entry<String, EObject> msgs : checker.getWarningMsgs().entrySet()) {
             final String msg = msgs.getKey();

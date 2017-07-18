@@ -50,7 +50,6 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class AddActorFromRefinementFeature.
  */
@@ -86,10 +85,7 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
     } else {
       final String fileExtension = ((IFile) context.getNewObject()).getFileExtension();
 
-      if ("pi".equals(fileExtension) || "h".equals(fileExtension) || "idl".equals(fileExtension)) {
-        return true;
-      }
-      return false;
+      return "pi".equals(fileExtension) || "h".equals(fileExtension) || "idl".equals(fileExtension);
     }
   }
 

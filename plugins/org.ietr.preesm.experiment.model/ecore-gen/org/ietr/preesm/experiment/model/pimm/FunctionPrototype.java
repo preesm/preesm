@@ -82,16 +82,16 @@ public interface FunctionPrototype extends PiMMVisitable {
   void setName(String value);
 
   /**
-   * Returns the value of the '<em><b>Parameters</b></em>' reference list. The list contents are of type
+   * Returns the value of the '<em><b>Parameters</b></em>' containment reference list. The list contents are of type
    * {@link org.ietr.preesm.experiment.model.pimm.FunctionParameter}. <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Parameters</em>' reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
    *
-   * @return the value of the '<em>Parameters</em>' reference list.
+   * @return the value of the '<em>Parameters</em>' containment reference list.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getFunctionPrototype_Parameters()
-   * @model
+   * @model containment="true"
    * @generated
    */
   EList<FunctionParameter> getParameters();

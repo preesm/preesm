@@ -131,7 +131,7 @@ public class FileSelectionAdapter extends SelectionAdapter {
    */
   @Override
   public void widgetSelected(final SelectionEvent e) {
-    IPath browseFiles = FileUtils.browseFiles(this.shell, this.title, this.fileExtensions);
+    final IPath browseFiles = FileUtils.browseFiles(this.shell, this.title, this.fileExtensions);
     this.filePath.setText(browseFiles.toOSString());
   }
 }

@@ -57,7 +57,6 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 
-// TODO: Auto-generated Javadoc
 /**
  * Layout Feature for {@link InterfaceActor} and Config Input Interface (i.e. {@link Parameter}).
  *
@@ -108,7 +107,7 @@ public class LayoutInterfaceFeature extends AbstractLayoutFeature {
     final AbstractVertex vertex = (AbstractVertex) getBusinessObjectForPictogramElement(containerShape);
 
     // Retrieve the size of the text
-    IDimension size = null;
+    IDimension size = GraphitiUi.getGaService().calculateSize(containerShape.getGraphicsAlgorithm());
     for (final Shape shape : containerShape.getChildren()) {
       final GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
       if (ga instanceof Text) {
@@ -117,45 +116,51 @@ public class LayoutInterfaceFeature extends AbstractLayoutFeature {
     }
 
     if (vertex instanceof InterfaceActor) {
-      // Layout the invisible rectangle
-      containerGa.setWidth(size.getWidth() + 16 + 3);
-      // Layout the label
-      for (final Shape shape : containerShape.getChildren()) {
-        final GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
-        if (ga instanceof Text) {
-          switch (((InterfaceActor) vertex).getKind()) {
-            case DataInputInterface.KIND:
-              ga.setWidth(size.getWidth());
-              Graphiti.getGaService().setLocation(ga, 0, 0);
-              break;
-            case DataOutputInterface.KIND:
-              ga.setWidth(size.getWidth());
-              Graphiti.getGaService().setLocation(ga, 16 + 3, 0);
-              break;
-            case ConfigOutputInterface.KIND:
-              ga.setWidth(size.getWidth());
-              Graphiti.getGaService().setLocation(ga, 16 + 3, 0);
-              break;
-            default:
-          }
-
-        }
-      }
+      layoutInterfaceActor(containerShape, containerGa, vertex, size);
     }
 
     if (vertex instanceof Parameter) {
-      final int width = (size.getWidth() < 18) ? 18 : size.getWidth();
-      // Layout the invisible rectangle
-      containerGa.setWidth(width);
-      // Layout the label
-      for (final Shape shape : containerShape.getChildren()) {
-        final GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
-        if (ga instanceof Text) {
-          ga.setWidth(width);
-        }
-      }
+      layoutParameter(containerShape, containerGa, size);
     }
     return true;
+  }
+
+  private void layoutParameter(final ContainerShape containerShape, final GraphicsAlgorithm containerGa, final IDimension size) {
+    final int width = (size.getWidth() < 18) ? 18 : size.getWidth();
+    // Layout the invisible rectangle
+    containerGa.setWidth(width);
+    // Layout the label
+    for (final Shape shape : containerShape.getChildren()) {
+      final GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
+      if (ga instanceof Text) {
+        ga.setWidth(width);
+      }
+    }
+  }
+
+  private void layoutInterfaceActor(final ContainerShape containerShape, final GraphicsAlgorithm containerGa, final AbstractVertex vertex,
+      final IDimension size) {
+    // Layout the invisible rectangle
+    containerGa.setWidth(size.getWidth() + 16 + 3);
+    // Layout the label
+    for (final Shape shape : containerShape.getChildren()) {
+      final GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
+      if (ga instanceof Text) {
+        switch (((InterfaceActor) vertex).getKind()) {
+          case DataInputInterface.KIND:
+            ga.setWidth(size.getWidth());
+            Graphiti.getGaService().setLocation(ga, 0, 0);
+            break;
+          case DataOutputInterface.KIND:
+          case ConfigOutputInterface.KIND:
+            ga.setWidth(size.getWidth());
+            Graphiti.getGaService().setLocation(ga, 16 + 3, 0);
+            break;
+          default:
+        }
+
+      }
+    }
   }
 
 }

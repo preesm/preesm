@@ -142,8 +142,8 @@ public interface PiGraph extends AbstractActor {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return ECollections.newBasicEList(getVertices().stream().filter(v -> v
-   *        instanceof Actor).map(v -> (Actor) v).collect(Collectors.toList()));'"
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return
+   *        ECollections.newBasicEList(getVertices().stream().filter(Actor.class::isInstance).map(Actor.class::cast).collect(Collectors.toList()));'"
    * @generated
    */
   EList<Actor> getActors();

@@ -40,7 +40,6 @@ package org.ietr.preesm.experiment.model.pimm;
 import org.eclipse.emf.common.util.EList;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Parameterizable</b></em>'. <!-- end-user-doc -->
  *

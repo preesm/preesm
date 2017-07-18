@@ -1530,7 +1530,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
         EPackageImpl.IS_ORDERED);
 
     initEClass(this.portEClass, Port.class, "Port", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getPort_Name(), this.ecorePackage.getEString(), "name", null, 1, 1, Port.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
+    initEAttribute(getPort_Name(), this.ecorePackage.getEString(), "name", null, 0, 1, Port.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
         EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
         EPackageImpl.IS_ORDERED);
     initEAttribute(getPort_Kind(), this.ecorePackage.getEString(), "kind", null, 1, 1, Port.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
@@ -1654,10 +1654,10 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     initEClass(this.hRefinementEClass, HRefinement.class, "HRefinement", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
     initEReference(getHRefinement_LoopPrototype(), getFunctionPrototype(), null, "loopPrototype", null, 1, 1, HRefinement.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
+        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
     initEReference(getHRefinement_InitPrototype(), getFunctionPrototype(), null, "initPrototype", null, 0, 1, HRefinement.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
+        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
     initEClass(this.functionPrototypeEClass, FunctionPrototype.class, "FunctionPrototype", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
@@ -1666,7 +1666,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
         !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
         !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
     initEReference(getFunctionPrototype_Parameters(), getFunctionParameter(), null, "parameters", null, 0, -1, FunctionPrototype.class,
-        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES,
         !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
     initEClass(this.functionParameterEClass, FunctionParameter.class, "FunctionParameter", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,

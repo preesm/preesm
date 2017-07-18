@@ -361,7 +361,7 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
           // if evaluation went well, just write the result
           this.lblValueObj.setText(eltExprEvaluation);
           this.txtExpression.setBackground(new Color(null, 255, 255, 255));
-        } catch (ExpressionEvaluationException e) {
+        } catch (final ExpressionEvaluationException e) {
           // otherwise print error message and put red background
           this.lblValueObj.setText("Error : " + e.getMessage());
           this.txtExpression.setBackground(new Color(null, 240, 150, 150));

@@ -39,6 +39,7 @@ package org.ietr.preesm.ui.pimm.features;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -52,7 +53,6 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 
-// TODO: Auto-generated Javadoc
 /**
  * Delete feature for {@link Parameterizable}s elements.
  *
@@ -97,8 +97,10 @@ public class DeleteParameterizableFeature extends DefaultDeleteFeature {
     }
 
     // Actually delete
-    for (final IDeleteFeature delFeature : delFeatures.keySet()) {
-      delFeature.delete(delFeatures.get(delFeature));
+    for (final Entry<IDeleteFeature, IDeleteContext> deleteEntry : delFeatures.entrySet()) {
+      final IDeleteFeature deleteFeature = deleteEntry.getKey();
+      final IDeleteContext deleteContext = deleteEntry.getValue();
+      deleteFeature.delete(deleteContext);
     }
   }
 

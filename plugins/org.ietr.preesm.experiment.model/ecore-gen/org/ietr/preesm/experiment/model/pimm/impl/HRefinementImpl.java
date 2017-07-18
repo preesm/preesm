@@ -38,6 +38,7 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 
 import java.util.List;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
@@ -69,7 +70,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  */
 public class HRefinementImpl extends RefinementImpl implements HRefinement {
   /**
-   * The cached value of the '{@link #getLoopPrototype() <em>Loop Prototype</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getLoopPrototype() <em>Loop Prototype</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @see #getLoopPrototype()
    * @generated
@@ -77,7 +78,7 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
    */
   protected FunctionPrototype loopPrototype;
   /**
-   * The cached value of the '{@link #getInitPrototype() <em>Init Prototype</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getInitPrototype() <em>Init Prototype</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @see #getInitPrototype()
    * @generated
@@ -113,26 +114,27 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
    */
   @Override
   public FunctionPrototype getLoopPrototype() {
-    if ((this.loopPrototype != null) && this.loopPrototype.eIsProxy()) {
-      final InternalEObject oldLoopPrototype = (InternalEObject) this.loopPrototype;
-      this.loopPrototype = (FunctionPrototype) eResolveProxy(oldLoopPrototype);
-      if (this.loopPrototype != oldLoopPrototype) {
-        if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE, oldLoopPrototype, this.loopPrototype));
-        }
-      }
-    }
     return this.loopPrototype;
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the function prototype
    * @generated
    */
-  public FunctionPrototype basicGetLoopPrototype() {
-    return this.loopPrototype;
+  public NotificationChain basicSetLoopPrototype(final FunctionPrototype newLoopPrototype, NotificationChain msgs) {
+    final FunctionPrototype oldLoopPrototype = this.loopPrototype;
+    this.loopPrototype = newLoopPrototype;
+    if (eNotificationRequired()) {
+      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE, oldLoopPrototype,
+          newLoopPrototype);
+      if (msgs == null) {
+        msgs = notification;
+      } else {
+        msgs.add(notification);
+      }
+    }
+    return msgs;
   }
 
   /**
@@ -144,10 +146,22 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
    */
   @Override
   public void setLoopPrototype(final FunctionPrototype newLoopPrototype) {
-    final FunctionPrototype oldLoopPrototype = this.loopPrototype;
-    this.loopPrototype = newLoopPrototype;
-    if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE, oldLoopPrototype, this.loopPrototype));
+    if (newLoopPrototype != this.loopPrototype) {
+      NotificationChain msgs = null;
+      if (this.loopPrototype != null) {
+        msgs = ((InternalEObject) this.loopPrototype).eInverseRemove(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE,
+            null, msgs);
+      }
+      if (newLoopPrototype != null) {
+        msgs = ((InternalEObject) newLoopPrototype).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE, null,
+            msgs);
+      }
+      msgs = basicSetLoopPrototype(newLoopPrototype, msgs);
+      if (msgs != null) {
+        msgs.dispatch();
+      }
+    } else if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE, newLoopPrototype, newLoopPrototype));
     }
   }
 
@@ -211,26 +225,27 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
    */
   @Override
   public FunctionPrototype getInitPrototype() {
-    if ((this.initPrototype != null) && this.initPrototype.eIsProxy()) {
-      final InternalEObject oldInitPrototype = (InternalEObject) this.initPrototype;
-      this.initPrototype = (FunctionPrototype) eResolveProxy(oldInitPrototype);
-      if (this.initPrototype != oldInitPrototype) {
-        if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.HREFINEMENT__INIT_PROTOTYPE, oldInitPrototype, this.initPrototype));
-        }
-      }
-    }
     return this.initPrototype;
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the function prototype
    * @generated
    */
-  public FunctionPrototype basicGetInitPrototype() {
-    return this.initPrototype;
+  public NotificationChain basicSetInitPrototype(final FunctionPrototype newInitPrototype, NotificationChain msgs) {
+    final FunctionPrototype oldInitPrototype = this.initPrototype;
+    this.initPrototype = newInitPrototype;
+    if (eNotificationRequired()) {
+      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.HREFINEMENT__INIT_PROTOTYPE, oldInitPrototype,
+          newInitPrototype);
+      if (msgs == null) {
+        msgs = notification;
+      } else {
+        msgs.add(notification);
+      }
+    }
+    return msgs;
   }
 
   /**
@@ -242,11 +257,39 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
    */
   @Override
   public void setInitPrototype(final FunctionPrototype newInitPrototype) {
-    final FunctionPrototype oldInitPrototype = this.initPrototype;
-    this.initPrototype = newInitPrototype;
-    if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.HREFINEMENT__INIT_PROTOTYPE, oldInitPrototype, this.initPrototype));
+    if (newInitPrototype != this.initPrototype) {
+      NotificationChain msgs = null;
+      if (this.initPrototype != null) {
+        msgs = ((InternalEObject) this.initPrototype).eInverseRemove(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.HREFINEMENT__INIT_PROTOTYPE,
+            null, msgs);
+      }
+      if (newInitPrototype != null) {
+        msgs = ((InternalEObject) newInitPrototype).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.HREFINEMENT__INIT_PROTOTYPE, null,
+            msgs);
+      }
+      msgs = basicSetInitPrototype(newInitPrototype, msgs);
+      if (msgs != null) {
+        msgs.dispatch();
+      }
+    } else if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.HREFINEMENT__INIT_PROTOTYPE, newInitPrototype, newInitPrototype));
     }
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+    switch (featureID) {
+      case PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE:
+        return basicSetLoopPrototype(null, msgs);
+      case PiMMPackage.HREFINEMENT__INIT_PROTOTYPE:
+        return basicSetInitPrototype(null, msgs);
+    }
+    return super.eInverseRemove(otherEnd, featureID, msgs);
   }
 
   /**
@@ -265,15 +308,9 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
   public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
     switch (featureID) {
       case PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE:
-        if (resolve) {
-          return getLoopPrototype();
-        }
-        return basicGetLoopPrototype();
+        return getLoopPrototype();
       case PiMMPackage.HREFINEMENT__INIT_PROTOTYPE:
-        if (resolve) {
-          return getInitPrototype();
-        }
-        return basicGetInitPrototype();
+        return getInitPrototype();
     }
     return super.eGet(featureID, resolve, coreType);
   }

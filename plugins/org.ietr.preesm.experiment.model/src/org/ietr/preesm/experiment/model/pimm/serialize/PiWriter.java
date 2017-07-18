@@ -374,6 +374,9 @@ public class PiWriter {
 
     // Set the source and target attributes
     final ISetter setter = dependency.getSetter();
+    if (setter == null) {
+      throw new NullPointerException("Setter of the dependency is null");
+    }
     AbstractVertex source = null;
     if (setter instanceof ConfigOutputPort) {
       source = (AbstractVertex) setter.eContainer();

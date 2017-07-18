@@ -174,73 +174,91 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
    *
    * @param context
    *          the context
-   * @param portName
+   * @param defaultPortName
    *          the port name
    */
-  public void execute(final ICustomContext context, String portName) {
+  public void execute(final ICustomContext context, final String defaultPortName) {
     // Re-check if only one element is selected
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
-      // Retrieve the container shape (corresponding to the actor)
-      final ContainerShape containerShape = (ContainerShape) pes[0];
-      // Retrieve the rectangle graphic algorithm
-      final GraphicsAlgorithm gaRectangle = pes[0].getGraphicsAlgorithm();
-      // Get the PeCreateService
-      final IPeCreateService peCreateService = Graphiti.getPeCreateService();
-      // Get the GaService
-      final IGaService gaService = Graphiti.getGaService();
+      final PictogramElement pe = pes[0];
       // Get the actor
-      final ExecutableActor actor = (ExecutableActor) getBusinessObjectForPictogramElement(containerShape);
+      final ExecutableActor actor = (ExecutableActor) getBusinessObjectForPictogramElement(pe);
 
-      // If a name was given in the property, bypass the dialog box
-      final Object nameProperty = context.getProperty(AbstractAddActorPortFeature.NAME_PROPERTY);
-      if ((nameProperty != null) && (nameProperty instanceof String)) {
-        portName = (String) nameProperty;
-      } else {
-        portName = PiMMUtil.askString(getName(), getDescription(), portName, new PortNameValidator(actor, null));
-        if (portName == null) {
-          this.hasDoneChanges = false;
-          return;
-        }
+      final String portName = computePortName(context, defaultPortName, actor);
+      if (portName == null) {
+        return;
       }
-
-      // create an box relative anchor
-      final BoxRelativeAnchor boxAnchor = peCreateService.createBoxRelativeAnchor(containerShape);
-      this.createdAnchor = boxAnchor;
-      if (getPosition() == PortPosition.LEFT) {
-        boxAnchor.setRelativeWidth(0.0);
-      } else {
-        boxAnchor.setRelativeWidth(1.0);
-      }
-      boxAnchor.setRelativeHeight(0.5); // The height will be fixed by the
-      // layout feature
-      boxAnchor.setReferencedGraphicsAlgorithm(gaRectangle);
-
       // Get the new Port and add it to the Graph
-      final Port newPort = getNewPort(portName, actor);
-      this.createdPort = newPort;
+      final Port newPort = getNewPortW(portName, actor);
 
-      // create invisible rectangle
-      final Rectangle invisibleRectangle = gaService.createInvisibleRectangle(boxAnchor);
-
-      // Add a text label for the box relative anchor
-      addPortLabel(invisibleRectangle, portName);
-
-      // add a graphics algorithm for the box relative anchor
-      addPortGA(invisibleRectangle);
-
-      // link the Pictogram element to the port in the business model
-      link(boxAnchor, newPort);
-
-      // Layout the port
-      layoutPictogramElement(boxAnchor);
-
-      // Layout the actor
-      layoutPictogramElement(containerShape);
-      updatePictogramElement(containerShape);
+      // Add graphical representation of this port
+      addPictogramElement(pe, newPort);
 
       this.hasDoneChanges = true;
     }
+  }
+
+  /**
+   *
+   */
+  public BoxRelativeAnchor addPictogramElement(final PictogramElement pe, final Port newPort) {
+    // Retrieve the rectangle graphic algorithm
+    final GraphicsAlgorithm gaRectangle = pe.getGraphicsAlgorithm();
+    // Get the PeCreateService
+    final IPeCreateService peCreateService = Graphiti.getPeCreateService();
+    // Get the GaService
+    final IGaService gaService = Graphiti.getGaService();
+
+    // Retrieve the container shape (corresponding to the actor)
+    final ContainerShape containerShape = (ContainerShape) pe;
+    // create an box relative anchor
+    final BoxRelativeAnchor boxAnchor = peCreateService.createBoxRelativeAnchor(containerShape);
+    this.createdAnchor = boxAnchor;
+    if (getPosition() == PortPosition.LEFT) {
+      boxAnchor.setRelativeWidth(0.0);
+    } else {
+      boxAnchor.setRelativeWidth(1.0);
+    }
+    boxAnchor.setRelativeHeight(0.5); // The height will be fixed by the
+    // layout feature
+    boxAnchor.setReferencedGraphicsAlgorithm(gaRectangle);
+
+    // create invisible rectangle
+    final Rectangle invisibleRectangle = gaService.createInvisibleRectangle(boxAnchor);
+
+    // Add a text label for the box relative anchor
+    addPortLabel(invisibleRectangle, newPort.getName());
+
+    // add a graphics algorithm for the box relative anchor
+    addPortGA(invisibleRectangle);
+
+    // link the Pictogram element to the port in the business model
+    link(boxAnchor, newPort);
+
+    // Layout the port
+    layoutPictogramElement(boxAnchor);
+
+    // Layout the actor
+    layoutPictogramElement(containerShape);
+    updatePictogramElement(containerShape);
+    return boxAnchor;
+  }
+
+  private String computePortName(final ICustomContext context, final String defaultPortName, final ExecutableActor actor) {
+    // If a name was given in the property, bypass the dialog box
+    final Object nameProperty = context.getProperty(AbstractAddActorPortFeature.NAME_PROPERTY);
+    final String portName;
+    if ((nameProperty != null) && (nameProperty instanceof String)) {
+      portName = (String) nameProperty;
+    } else {
+      portName = PiMMUtil.askString(getName(), getDescription(), defaultPortName, new PortNameValidator(actor, null));
+      if (portName == null) {
+        this.hasDoneChanges = false;
+        return null;
+      }
+    }
+    return portName;
   }
 
   /**
@@ -270,6 +288,12 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
    *          the actor to which we add a port
    * @return the new port, or <code>null</code> if something went wrong
    */
+  private Port getNewPortW(final String portName, final ExecutableActor actor) {
+    final Port newPort = getNewPort(portName, actor);
+    this.createdPort = newPort;
+    return newPort;
+  }
+
   public abstract Port getNewPort(String portName, ExecutableActor actor);
 
   /**

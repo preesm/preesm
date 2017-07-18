@@ -38,11 +38,14 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 
 import java.util.Collection;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-import org.eclipse.emf.ecore.util.EObjectResolvingEList;
+import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.InternalEList;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
@@ -81,7 +84,7 @@ public class FunctionPrototypeImpl extends EObjectImpl implements FunctionProtot
   protected String name = FunctionPrototypeImpl.NAME_EDEFAULT;
 
   /**
-   * The cached value of the '{@link #getParameters() <em>Parameters</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getParameters() <em>Parameters</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @see #getParameters()
    * @generated
@@ -145,7 +148,7 @@ public class FunctionPrototypeImpl extends EObjectImpl implements FunctionProtot
   @Override
   public EList<FunctionParameter> getParameters() {
     if (this.parameters == null) {
-      this.parameters = new EObjectResolvingEList<>(FunctionParameter.class, this, PiMMPackage.FUNCTION_PROTOTYPE__PARAMETERS);
+      this.parameters = new EObjectContainmentEList<>(FunctionParameter.class, this, PiMMPackage.FUNCTION_PROTOTYPE__PARAMETERS);
     }
     return this.parameters;
   }
@@ -263,6 +266,20 @@ public class FunctionPrototypeImpl extends EObjectImpl implements FunctionProtot
   @Override
   public void accept(final PiMMVisitor v) {
     v.visitFunctionPrototype(this);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+    switch (featureID) {
+      case PiMMPackage.FUNCTION_PROTOTYPE__PARAMETERS:
+        return ((InternalEList<?>) getParameters()).basicRemove(otherEnd, msgs);
+    }
+    return super.eInverseRemove(otherEnd, featureID, msgs);
   }
 
   /*
