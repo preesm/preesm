@@ -95,10 +95,12 @@ public class PasteFeature extends AbstractPasteFeature {
       if (object instanceof AbstractVertex) {
         final AbstractVertex vertex = (AbstractVertex) object;
 
+        final PictogramElement[] allPictogramElementsForBusinessObject = getFeatureProvider().getAllPictogramElementsForBusinessObject(vertex);
+
         final AbstractVertex copy = PiMMUserFactory.instance.copy(vertex);
         final String name = computeUniqueNameForCopy(vertex);
         copy.setName(name);
-        addGraphicalElementsForCopy(context, copy);
+        addGraphicalElementsForCopy(context, copy, allPictogramElementsForBusinessObject);
         this.copiedObjects.put(vertex, copy);
 
         autoConnectInputConfigPorts(vertex, copy);
@@ -108,7 +110,7 @@ public class PasteFeature extends AbstractPasteFeature {
     connectFifos(context);
 
     if (getPiGraph() != getOriginalPiGraph()) {
-      connectDependencies(context);
+      connectDependencies();
     }
 
     postProcess();
@@ -135,58 +137,66 @@ public class PasteFeature extends AbstractPasteFeature {
     }
   }
 
-  private void connectDependencies(IPasteContext pasteContextd) {
+  private void connectDependencies() {
     final List<Dependency> originalDependencies = getOriginalPiGraph().getDependencies();
 
     final PiGraph targetPiGraph = getPiGraph();
 
     for (final Dependency dep : originalDependencies) {
       final ISetter setter = dep.getSetter();
-      final boolean sourceOk;
-      if (setter instanceof Parameter) {
-        sourceOk = copiedObjects.containsKey(setter);
-      } else if (setter instanceof ConfigOutputPort) {
-        sourceOk = copiedObjects.containsKey(setter.eContainer());
-      } else {
-        sourceOk = false;
-      }
-
       final ConfigInputPort getter = dep.getGetter();
-      final boolean targetOk;
       final Parameterizable targetParameterizable = (Parameterizable) getter.eContainer();
-      if (targetParameterizable instanceof AbstractVertex) {
-        targetOk = copiedObjects.containsKey(targetParameterizable);
-      } else if (targetParameterizable instanceof Delay) {
-        final Fifo fifo = (Fifo) targetParameterizable.eContainer();
-        final EObject fifoSource = fifo.getSourcePort().eContainer();
-        final EObject fifoTarget = fifo.getTargetPort().eContainer();
-        targetOk = copiedObjects.containsKey(fifoSource) && copiedObjects.containsKey(fifoTarget);
-      } else {
-        targetOk = false;
-      }
-
-      if (sourceOk && targetOk) {
-        final Parameterizable copiedParameterizable = copiedObjects.get(targetParameterizable);
-        // lookup copied setter
-        ISetter copiedSetter = null;
-        if (setter instanceof Parameter) {
-          copiedSetter = (Parameter) copiedObjects.get(setter);
-        } else if (setter instanceof ConfigOutputPort) {
-          final AbstractActor originalActor = (AbstractActor) setter.eContainer();
-          final ConfigOutputPort originalConfigPort = (ConfigOutputPort) setter;
-          final AbstractActor copiedActor = (AbstractActor) copiedObjects.get(originalActor);
-          final ConfigOutputPort lookupConfigOutputPort = lookupConfigOutputPort(copiedActor, originalConfigPort);
-          copiedSetter = lookupConfigOutputPort;
-        } else {
-          throw new IllegalStateException();
-        }
-
-        final ConfigInputPort copiedConfigInputPort = lookupConfigInputPort(copiedParameterizable, getter);
-        final Dependency newDep = PiMMUserFactory.instance.createDependency(copiedSetter, copiedConfigInputPort);
-        targetPiGraph.getDependencies().add(newDep);
-        addGraphicalRepresentationForNewDependency(newDep);
+      final boolean shouldConnectDep = shouldConnectDep(setter, targetParameterizable);
+      if (shouldConnectDep) {
+        connectDep(targetPiGraph, setter, getter, targetParameterizable);
       }
     }
+  }
+
+  private void connectDep(final PiGraph targetPiGraph, final ISetter setter, final ConfigInputPort getter, final Parameterizable targetParameterizable) {
+    final Parameterizable copiedParameterizable = copiedObjects.get(targetParameterizable);
+    // lookup copied setter
+    ISetter copiedSetter = null;
+    if (setter instanceof Parameter) {
+      copiedSetter = (Parameter) copiedObjects.get(setter);
+    } else if (setter instanceof ConfigOutputPort) {
+      final AbstractActor originalActor = (AbstractActor) setter.eContainer();
+      final ConfigOutputPort originalConfigPort = (ConfigOutputPort) setter;
+      final AbstractActor copiedActor = (AbstractActor) copiedObjects.get(originalActor);
+      final ConfigOutputPort lookupConfigOutputPort = lookupConfigOutputPort(copiedActor, originalConfigPort);
+      copiedSetter = lookupConfigOutputPort;
+    } else {
+      throw new IllegalStateException();
+    }
+
+    final ConfigInputPort copiedConfigInputPort = lookupConfigInputPort(copiedParameterizable, getter);
+    final Dependency newDep = PiMMUserFactory.instance.createDependency(copiedSetter, copiedConfigInputPort);
+    targetPiGraph.getDependencies().add(newDep);
+    addGraphicalRepresentationForNewDependency(newDep);
+  }
+
+  private boolean shouldConnectDep(final ISetter setter, final Parameterizable targetParameterizable) {
+    final boolean sourceOk;
+    if (setter instanceof Parameter) {
+      sourceOk = copiedObjects.containsKey(setter);
+    } else if (setter instanceof ConfigOutputPort) {
+      sourceOk = copiedObjects.containsKey(setter.eContainer());
+    } else {
+      sourceOk = false;
+    }
+
+    final boolean targetOk;
+    if (targetParameterizable instanceof AbstractVertex) {
+      targetOk = copiedObjects.containsKey(targetParameterizable);
+    } else if (targetParameterizable instanceof Delay) {
+      final Fifo fifo = (Fifo) targetParameterizable.eContainer();
+      final EObject fifoSource = fifo.getSourcePort().eContainer();
+      final EObject fifoTarget = fifo.getTargetPort().eContainer();
+      targetOk = copiedObjects.containsKey(fifoSource) && copiedObjects.containsKey(fifoTarget);
+    } else {
+      targetOk = false;
+    }
+    return sourceOk && targetOk;
   }
 
   private void connectFifos(IPasteContext pasteContext) {
@@ -195,6 +205,64 @@ public class PasteFeature extends AbstractPasteFeature {
 
     final Map<Fifo, Fifo> newFifos = new LinkedHashMap<>();
 
+    copyFifos(originalFifos, newFifos);
+
+    addFifos(pasteContext, targetPiGraph, newFifos);
+  }
+
+  private void addFifos(IPasteContext pasteContext, final PiGraph targetPiGraph, final Map<Fifo, Fifo> newFifos) {
+    for (Entry<Fifo, Fifo> fifoEntry : newFifos.entrySet()) {
+      final Fifo copiedFifo = fifoEntry.getKey();
+      final Fifo originalFifo = fifoEntry.getValue();
+      targetPiGraph.getFifos().add(copiedFifo);
+
+      final Anchor sourceAnchor = (Anchor) findPE(copiedFifo.getSourcePort());
+      final Anchor targetAnchor = (Anchor) findPE(copiedFifo.getTargetPort());
+      final AddConnectionContext context = new AddConnectionContext(sourceAnchor, targetAnchor);
+      context.setNewObject(copiedFifo);
+
+      final AddFifoFeature addFifoFeature = new AddFifoFeature(getFeatureProvider());
+      addFifoFeature.execute(context);
+      final PictogramElement pictogramElementForBusinessObject = getFeatureProvider().getPictogramElementForBusinessObject(copiedFifo);
+
+      final Delay delay = originalFifo.getDelay();
+      if (delay != null) {
+        copyDelay(pasteContext, copiedFifo, pictogramElementForBusinessObject, delay);
+      }
+
+    }
+  }
+
+  private void copyDelay(IPasteContext pasteContext, final Fifo copiedFifo, final PictogramElement pictogramElementForBusinessObject, final Delay delay) {
+    final Delay delayCopy = PiMMUserFactory.instance.copy(delay);
+    final AddDelayFeature addDelayFeature = new AddDelayFeature(getFeatureProvider());
+    final CustomContext customContext = new CustomContext(new PictogramElement[] { pictogramElementForBusinessObject });
+    customContext.setLocation(pasteContext.getX(), pasteContext.getY());
+    addDelayFeature.execute(customContext);
+    // one delay is created during the addDelayFeature.
+    // Force reference to the one created above ?
+    // check config input ports...
+    copiedFifo.setDelay(delayCopy);
+    // and overwrite links
+    final List<PictogramElement> createdPEs = addDelayFeature.getCreatedPEs();
+    for (PictogramElement pe : createdPEs) {
+      pe.getLink().getBusinessObjects().clear();
+      pe.getLink().getBusinessObjects().add(delayCopy);
+    }
+    // add input port anchors
+    final EList<ConfigInputPort> configInputPorts = delayCopy.getConfigInputPorts();
+    for (ConfigInputPort port : configInputPorts) {
+      final IPeService peService = GraphitiUi.getPeService();
+      final Anchor chopboxAnchor = peService.getChopboxAnchor((AnchorContainer) createdPEs.get(0));
+      chopboxAnchor.setReferencedGraphicsAlgorithm(createdPEs.get(0).getGraphicsAlgorithm());
+      this.links.put(port, chopboxAnchor);
+
+    }
+    autoConnectInputConfigPorts(delay, delayCopy);
+    copiedObjects.put(delay, delayCopy);
+  }
+
+  private void copyFifos(final EList<Fifo> originalFifos, final Map<Fifo, Fifo> newFifos) {
     for (final Fifo fifo : originalFifos) {
       final DataOutputPort sourcePort = fifo.getSourcePort();
       final DataInputPort targetPort = fifo.getTargetPort();
@@ -220,52 +288,6 @@ public class PasteFeature extends AbstractPasteFeature {
         throw new UnsupportedOperationException();
       }
     }
-
-    for (Entry<Fifo, Fifo> fifoEntry : newFifos.entrySet()) {
-      final Fifo copiedFifo = fifoEntry.getKey();
-      final Fifo originalFifo = fifoEntry.getValue();
-      targetPiGraph.getFifos().add(copiedFifo);
-
-      final Anchor sourceAnchor = (Anchor) findPE(copiedFifo.getSourcePort());
-      final Anchor targetAnchor = (Anchor) findPE(copiedFifo.getTargetPort());
-      final AddConnectionContext context = new AddConnectionContext(sourceAnchor, targetAnchor);
-      context.setNewObject(copiedFifo);
-
-      final AddFifoFeature addFifoFeature = new AddFifoFeature(getFeatureProvider());
-      addFifoFeature.execute(context);
-      final PictogramElement pictogramElementForBusinessObject = getFeatureProvider().getPictogramElementForBusinessObject(copiedFifo);
-
-      final Delay delay = originalFifo.getDelay();
-      if (delay != null) {
-        final Delay delayCopy = PiMMUserFactory.instance.copy(delay);
-        final AddDelayFeature addDelayFeature = new AddDelayFeature(getFeatureProvider());
-        final CustomContext customContext = new CustomContext(new PictogramElement[] { pictogramElementForBusinessObject });
-        customContext.setLocation(pasteContext.getX(), pasteContext.getY());
-        addDelayFeature.execute(customContext);
-        // one delay is created during the addDelayFeature.
-        // Force reference to the one created above ?
-        // check config input ports...
-        copiedFifo.setDelay(delayCopy);
-        // and overwrite links
-        final List<PictogramElement> createdPEs = addDelayFeature.getCreatedPEs();
-        for (PictogramElement pe : createdPEs) {
-          pe.getLink().getBusinessObjects().clear();
-          pe.getLink().getBusinessObjects().add(delayCopy);
-        }
-        // add input port anchors
-        final EList<ConfigInputPort> configInputPorts = delayCopy.getConfigInputPorts();
-        for (ConfigInputPort port : configInputPorts) {
-          final IPeService peService = GraphitiUi.getPeService();
-          final Anchor chopboxAnchor = peService.getChopboxAnchor((AnchorContainer) createdPEs.get(0));
-          chopboxAnchor.setReferencedGraphicsAlgorithm(createdPEs.get(0).getGraphicsAlgorithm());
-          this.links.put(port, chopboxAnchor);
-
-        }
-        autoConnectInputConfigPorts(delay, delayCopy);
-        copiedObjects.put(delay, delayCopy);
-      }
-
-    }
   }
 
   private void autoConnectInputConfigPorts(final Parameterizable originalParameterizable, final Parameterizable parameterizableCopy) {
@@ -283,7 +305,6 @@ public class PasteFeature extends AbstractPasteFeature {
       if (originalParameterizable.getConfigInputPorts().contains(getter)) {
         final ISetter setter = dep.getSetter();
         final ConfigInputPort getterCopy = lookupConfigInputPort(parameterizableCopy, getter);
-
         final Dependency newDep = PiMMUserFactory.instance.createDependency(setter, getterCopy);
 
         // check names after creating the dependency (ConfigInputPort.getName() lookup dependency.getSetter()).
@@ -292,7 +313,6 @@ public class PasteFeature extends AbstractPasteFeature {
         if (((copiedName != null) && !(copiedName.equals(origName))) || ((copiedName == null) && (origName != null))) {
           throw new IllegalStateException();
         }
-
         newDependencies.add(newDep);
       }
     }
@@ -462,14 +482,19 @@ public class PasteFeature extends AbstractPasteFeature {
   /**
    * Add graphical representation for the vertex copy and its content (that is the input/output ports/configs)
    */
-  private void addGraphicalElementsForCopy(final IPasteContext context, final AbstractVertex vertexModelCopy) {
+  private void addGraphicalElementsForCopy(final IPasteContext context, final AbstractVertex vertexModelCopy,
+      final PictogramElement[] allPictogramElementsForBusinessObject) {
     final AddContext addCtxt = new AddContext();
     final Diagram diagram = getDiagram();
     // For simplicity paste all objects at the location given in the
     // context (no stacking or similar)
     // TODO: improve location
+
+    // final PictogramElement pictogramElement = allPictogramElementsForBusinessObject[0];
+
     addCtxt.setLocation(context.getX(), context.getY());
     addCtxt.setTargetContainer(diagram);
+
     final PictogramElement newVertexPE = addGraphicalRepresentation(addCtxt, vertexModelCopy);
     this.links.put(vertexModelCopy, newVertexPE);
 
