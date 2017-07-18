@@ -44,9 +44,11 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.platform.IPlatformImageConstants;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
+import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.DependencyCycleDetector;
@@ -99,26 +101,32 @@ public class PortDecorators {
    */
   protected static IDecorator getPortExpressionDecorator(final Port port, final PictogramElement pe) {
     final ImageDecorator imageRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
-    imageRenderingDecorator.setMessage("Problems in parameter resolution");
+    final String message = "Problems in parameter resolution: ";
 
     final BoxRelativeAnchor a = (BoxRelativeAnchor) pe;
 
     if (port instanceof DataInputPort) {
-      final String evaluation = ((DataInputPort) port).getExpression().evaluate();
+      final Expression expression = ((DataInputPort) port).getExpression();
 
-      if (evaluation.contains("Error")) {
+      try {
+        expression.evaluate();
+      } catch (final ExpressionEvaluationException e) {
         imageRenderingDecorator.setX(-5);
         imageRenderingDecorator.setY((int) (a.getRelativeHeight() * a.getReferencedGraphicsAlgorithm().getHeight()) - 1);
+        imageRenderingDecorator.setMessage(message + e.getMessage());
 
         return imageRenderingDecorator;
       }
     }
     if ((port instanceof DataOutputPort) && !(port instanceof ConfigOutputPort)) {
-      final String evaluation = ((DataOutputPort) port).getExpression().evaluate();
+      final Expression expression = ((DataOutputPort) port).getExpression();
 
-      if (evaluation.contains("Error")) {
+      try {
+        expression.evaluate();
+      } catch (final ExpressionEvaluationException e) {
         imageRenderingDecorator.setX(a.getReferencedGraphicsAlgorithm().getWidth() - 13);
         imageRenderingDecorator.setY((int) (a.getRelativeHeight() * a.getReferencedGraphicsAlgorithm().getHeight()) - 1);
+        imageRenderingDecorator.setMessage(message + e.getMessage());
 
         return imageRenderingDecorator;
       }

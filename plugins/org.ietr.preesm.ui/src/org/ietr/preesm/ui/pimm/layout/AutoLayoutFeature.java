@@ -74,6 +74,7 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.util.DependencyCycleDetector;
@@ -84,7 +85,6 @@ import org.ietr.preesm.ui.pimm.features.DeleteDelayFeature;
 import org.ietr.preesm.ui.pimm.features.MoveAbstractActorFeature;
 import org.ietr.preesm.ui.pimm.util.DiagramPiGraphLinkHelper;
 
-// TODO: Auto-generated Javadoc
 /**
  * {@link AbstractCustomFeature} automating the layout process for PiMM graphs.
  *
@@ -237,7 +237,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   protected List<List<AbstractActor>> createActorStages(final List<Fifo> feedbackFifos, final List<AbstractActor> actors, final List<AbstractActor> srcActors) {
     final List<List<AbstractActor>> stages = new ArrayList<>();
 
-    //
+    // init first stage with src actors
     final List<AbstractActor> processedActors = new ArrayList<>();
     processedActors.addAll(srcActors);
     Set<AbstractActor> nextStage = new LinkedHashSet<>();
@@ -264,46 +264,22 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     // Register first stage
     stages.add(currentStage);
-
+    boolean test;
     do {
-      // Find candidates for the next stage in successors of current one
-      for (final AbstractActor actor : currentStage) {
-        for (final DataOutputPort port : actor.getDataOutputPorts()) {
-          if (!feedbackFifos.contains(port.getOutgoingFifo())) {
-            nextStage.add((AbstractActor) port.getOutgoingFifo().getTargetPort().eContainer());
-          }
-        }
-      }
-
-      // Check if all predecessors of the candidates have already been
-      // added in a previous stages
-      iter = nextStage.iterator();
-      while (iter.hasNext()) {
-        final AbstractActor actor = iter.next();
-        boolean hasUnstagedPredecessor = false;
-        for (final DataInputPort port : actor.getDataInputPorts()) {
-          final Fifo incomingFifo = port.getIncomingFifo();
-          hasUnstagedPredecessor |= !feedbackFifos.contains(incomingFifo) && !processedActors.contains(incomingFifo.getSourcePort().eContainer());
-        }
-        if (hasUnstagedPredecessor) {
-          iter.remove();
-        } else if ((actor instanceof DataOutputInterface)) {
-          dataOutputInterfaces.add(actor);
-          processedActors.add(actor);
-          iter.remove();
-        }
-      }
+      iterate(feedbackFifos, processedActors, nextStage, currentStage, dataOutputInterfaces);
 
       // Prepare next iteration
       currentStage = new ArrayList<>(nextStage);
       stages.add(currentStage);
       processedActors.addAll(currentStage);
       nextStage = new LinkedHashSet<>();
-    } while (processedActors.size() < actors.size());
+
+      test = processedActors.size() < actors.size();
+    } while (test);
 
     // If the last stage is empty (if there were only dataOutputInterface)
     // remove it
-    if (stages.get(stages.size() - 1).size() == 0) {
+    if (stages.get(stages.size() - 1).isEmpty()) {
       stages.remove(stages.size() - 1);
     }
 
@@ -312,6 +288,51 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     }
 
     return stages;
+  }
+
+  private void iterate(final List<Fifo> feedbackFifos, final List<AbstractActor> processedActors, Set<AbstractActor> nextStage,
+      List<AbstractActor> currentStage, final List<AbstractActor> dataOutputInterfaces) {
+    // Find candidates for the next stage in successors of current one
+    findCandidates(feedbackFifos, nextStage, currentStage);
+
+    // Check if all predecessors of the candidates have already been
+    // added in a previous stages
+    check(feedbackFifos, processedActors, nextStage, dataOutputInterfaces);
+  }
+
+  private void findCandidates(final List<Fifo> feedbackFifos, Set<AbstractActor> nextStage, List<AbstractActor> currentStage) {
+    for (final AbstractActor actor : currentStage) {
+      for (final DataOutputPort port : actor.getDataOutputPorts()) {
+        final Fifo outgoingFifo = port.getOutgoingFifo();
+        if (!feedbackFifos.contains(outgoingFifo) && (outgoingFifo != null)) {
+          final DataInputPort targetPort = outgoingFifo.getTargetPort();
+          final AbstractActor eContainer = (AbstractActor) targetPort.eContainer();
+          nextStage.add(eContainer);
+        }
+      }
+    }
+  }
+
+  private void check(final List<Fifo> feedbackFifos, final List<AbstractActor> processedActors, Set<AbstractActor> nextStage,
+      final List<AbstractActor> dataOutputInterfaces) {
+    Iterator<AbstractActor> iter;
+    iter = nextStage.iterator();
+    while (iter.hasNext()) {
+      final AbstractActor actor = iter.next();
+      boolean hasUnstagedPredecessor = false;
+      for (final DataInputPort port : actor.getDataInputPorts()) {
+        final Fifo incomingFifo = port.getIncomingFifo();
+        hasUnstagedPredecessor |= !feedbackFifos.contains(incomingFifo) && incomingFifo != null
+            && !processedActors.contains(incomingFifo.getSourcePort().eContainer());
+      }
+      if (hasUnstagedPredecessor) {
+        iter.remove();
+      } else if ((actor instanceof DataOutputInterface)) {
+        dataOutputInterfaces.add(actor);
+        processedActors.add(actor);
+        iter.remove();
+      }
+    }
   }
 
   /**
@@ -336,8 +357,10 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       // Find candidates for the next stage in successors of current one
       for (final Parameter param : currentStage) {
         for (final Dependency dependency : param.getOutgoingDependencies()) {
-          if (dependency.getGetter().eContainer() instanceof Parameter) {
-            nextStage.add((Parameter) dependency.getGetter().eContainer());
+          final ConfigInputPort getter = dependency.getGetter();
+          final EObject eContainer = getter.eContainer();
+          if (eContainer instanceof Parameter) {
+            nextStage.add((Parameter) eContainer);
           }
         }
       }
@@ -374,7 +397,6 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
    */
   @Override
   public void execute(final ICustomContext context) {
-    System.out.println("Layout the diagram");
     final Diagram diagram = getDiagram();
 
     // Check if there are parameterization cycles in the graph.
@@ -490,7 +512,9 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     for (final Parameter p : params) {
       boolean hasDependencies = false;
       for (final ConfigInputPort port : p.getConfigInputPorts()) {
-        hasDependencies |= port.getIncomingDependency().getSetter() instanceof Parameter;
+        final Dependency incomingDependency = port.getIncomingDependency();
+        final ISetter setter = incomingDependency.getSetter();
+        hasDependencies |= setter instanceof Parameter;
       }
 
       if (!hasDependencies) {
@@ -515,7 +539,10 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       boolean hasInputFifos = false;
 
       for (final DataInputPort port : actor.getDataInputPorts()) {
-        hasInputFifos |= !feedbackFifos.contains(port.getIncomingFifo());
+        final Fifo incomingFifo = port.getIncomingFifo();
+        final boolean contains = feedbackFifos.contains(incomingFifo);
+        final boolean fifoNotNull = incomingFifo != null;
+        hasInputFifos |= !contains && fifoNotNull;
       }
 
       if (!hasInputFifos) {
@@ -762,7 +789,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
             ffc.getBendpoints().add(Graphiti.getGaCreateService().createPoint(xPos, yPos));
 
           } else {
-            System.out.println(getter.getClass());
+            throw new UnsupportedOperationException();
           }
         }
       }
@@ -777,7 +804,6 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     for (final Dependency dependency : allDependencies) {
       currentY += AutoLayoutFeature.DEPENDENCY_SPACE;
       currentX += AutoLayoutFeature.DEPENDENCY_SPACE / 2;
-      currentYUsed = false;
 
       // get the FFC
       final FreeFormConnection ffc = DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, dependency);
@@ -908,7 +934,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
       // Remove all FIFOs ending at next stage from the interstage Fifo
       // list
-      interStageFifos.removeIf(f -> stageDst.contains(f.getTargetPort().eContainer()));
+      interStageFifos.removeIf(f -> f == null || stageDst.contains(f.getTargetPort().eContainer()));
 
       // Layout Fifos to reach the next stage without going over an actor
       layoutInterStageFifos(diagram, interStageFifos, this.stageWidth.get(i + 1), this.stagesGaps.get(i + 1));
@@ -945,9 +971,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
           bPoints.remove(0);
         }
         final int pX = posX;
-        bPoints.sort((p1, p2) -> {
-          return Math.abs(p1.getX() - pX) - Math.abs(p2.getX() - pX);
-        });
+        bPoints.sort((p1, p2) -> Math.abs(p1.getX() - pX) - Math.abs(p2.getX() - pX));
 
         final int posY = ((bPoints.get(0).getY() + bPoints.get(1).getY()) - AddDelayFeature.DELAY_SIZE) / 2;
 
@@ -1086,7 +1110,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
    * @throws RuntimeException
    *           the runtime exception
    */
-  protected void stageByStageActorLayout(final Diagram diagram, final List<List<AbstractActor>> stagedActors) throws RuntimeException {
+  protected void stageByStageActorLayout(final Diagram diagram, final List<List<AbstractActor>> stagedActors) {
     // Init the stageGap and stageWidth attributes
     this.stageWidth = new ArrayList<>();
     this.stagesGaps = new ArrayList<>();
@@ -1141,9 +1165,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     final List<AbstractActor> srcActors = findSrcActors(feedbackFifos, actors);
 
     // 3. BFS-style stage by stage construction
-    final List<List<AbstractActor>> stages = createActorStages(feedbackFifos, actors, srcActors);
-
-    return stages;
+    return createActorStages(feedbackFifos, actors, srcActors);
   }
 
   /**
@@ -1183,7 +1205,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       }
 
       if (paramPE == null) {
-        throw new RuntimeException("No PE was found for parameter :" + param.getName());
+        throw new NullPointerException("No PE was found for parameter :" + param.getName());
       }
 
       // Get the Graphics algorithm

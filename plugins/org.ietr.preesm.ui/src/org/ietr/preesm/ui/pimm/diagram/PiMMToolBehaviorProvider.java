@@ -57,6 +57,7 @@ import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
@@ -242,4 +243,14 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
     return super.getCommandFeature(context, hint);
   }
 
+  @Override
+  public boolean equalsBusinessObjects(final Object o1, final Object o2) {
+    boolean equalsBusinessObjects = super.equalsBusinessObjects(o1, o2);
+    if ((o1 instanceof ConfigInputPort) && (o2 instanceof ConfigInputPort)) {
+      final ConfigInputPort cip1 = (ConfigInputPort) o1;
+      final ConfigInputPort cip2 = (ConfigInputPort) o2;
+      equalsBusinessObjects &= super.equalsBusinessObjects(cip1.eContainer(), cip2.eContainer());
+    }
+    return equalsBusinessObjects;
+  }
 }

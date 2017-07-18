@@ -194,10 +194,9 @@ public class ReconnectionDependencyFeature extends DefaultReconnectionFeature {
         // If the getter is an actor
         if (getterObject instanceof ExecutableActor) {
           // Create a ConfigInputPort
-          final PictogramElement targetPe = context.getTargetPictogramElement();
-          final AbstractAddActorPortFeature addPortFeature = CreateDependencyFeature.canCreateConfigPort(targetPe, getFeatureProvider(), "config_input");
+          final AbstractAddActorPortFeature addPortFeature = CreateDependencyFeature.canCreateConfigPort(tgtPE, getFeatureProvider(), "config_input");
           if (addPortFeature != null) {
-            final CustomContext targetContext = new CustomContext(new PictogramElement[] { targetPe });
+            final CustomContext targetContext = new CustomContext(new PictogramElement[] { tgtPE });
             addPortFeature.execute(targetContext);
             ((ReconnectionContext) context).setNewAnchor(addPortFeature.getCreatedAnchor());
             getter = addPortFeature.getCreatedPort();

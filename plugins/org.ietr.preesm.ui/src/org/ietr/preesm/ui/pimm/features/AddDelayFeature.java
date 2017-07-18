@@ -38,6 +38,7 @@
 package org.ietr.preesm.ui.pimm.features;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -59,7 +60,6 @@ import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 
-// TODO: Auto-generated Javadoc
 /**
  * Add feature responsible for creating and adding a delay to a {@link Fifo}.
  *
@@ -71,6 +71,11 @@ public class AddDelayFeature extends AbstractCustomFeature {
 
   /** The Constant DELAY_SIZE. */
   public static final int DELAY_SIZE = 16;
+
+  /**
+   * XXX Hack to keep track of created PEs in order to link them with the proper delay (not the one created in the execute() method...)
+   */
+  private List<PictogramElement> createdPEs;
 
   /**
    * The default constructor for {@link AddDelayFeature}.
@@ -136,7 +141,7 @@ public class AddDelayFeature extends AbstractCustomFeature {
     if (!canExecute(context)) {
       return;
     }
-
+    createdPEs = new LinkedList<>();
     // Get the Fifo
     final PictogramElement[] pes = context.getPictogramElements();
     final FreeFormConnection connection = (FreeFormConnection) pes[0];
@@ -167,10 +172,12 @@ public class AddDelayFeature extends AbstractCustomFeature {
           AddDelayFeature.DELAY_SIZE, AddDelayFeature.DELAY_SIZE);
     }
     link(containerShape, delay);
+    createdPEs.add(containerShape);
 
     // Add a ChopBoxAnchor for the Delay
     final ChopboxAnchor cba = peCreateService.createChopboxAnchor(containerShape);
     link(cba, delay);
+    createdPEs.add(cba);
 
     final int posX = context.getX();
     final int posY = context.getY();
@@ -267,5 +274,9 @@ public class AddDelayFeature extends AbstractCustomFeature {
 
     // Reconnect the original connection
     connection.setStart(cba);
+  }
+
+  public List<PictogramElement> getCreatedPEs() {
+    return createdPEs;
   }
 }

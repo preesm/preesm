@@ -43,7 +43,9 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.platform.IPlatformImageConstants;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
+import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.util.DependencyCycleDetector;
 import org.ietr.preesm.ui.pimm.diagram.PiMMImageProvider;
@@ -172,9 +174,12 @@ public class ParameterDecorators {
    * @return the {@link IDecorator} for the {@link Parameter} or <code>null</code> if the {@link Parameter} have a valid expression.
    */
   protected static IDecorator getExpressionDecorator(final Parameter param, final PictogramElement pe) {
-    if (param.getExpression().evaluate().contains("Error")) {
+    final Expression expression = param.getExpression();
+    try {
+      expression.evaluate();
+    } catch (final ExpressionEvaluationException e) {
       final ImageDecorator imageRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
-      imageRenderingDecorator.setMessage("Problems in parameter resolution");
+      imageRenderingDecorator.setMessage("Problems in parameter resolution: " + e.getMessage());
       imageRenderingDecorator.setX((pe.getGraphicsAlgorithm().getWidth() / 2) - 8);
       imageRenderingDecorator.setY(8);
 

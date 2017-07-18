@@ -39,6 +39,7 @@ package org.ietr.preesm.ui.pimm.features;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IDeleteContext;
@@ -49,7 +50,6 @@ import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 
-// TODO: Auto-generated Javadoc
 /**
  * Delete Feature for {@link AbstractActor}.
  *
@@ -77,13 +77,21 @@ public class DeleteAbstractActorFeature extends DeleteParameterizableFeature {
     super.preDelete(context);
 
     // Delete all the Fifo and dependencies linked to this actor
+    final Map<IDeleteFeature, IDeleteContext> delFeatures = findPorts(context);
+    for (final Entry<IDeleteFeature, IDeleteContext> deleteEntry : delFeatures.entrySet()) {
+      final IDeleteFeature deleteFeature = deleteEntry.getKey();
+      final IDeleteContext deleteContext = deleteEntry.getValue();
+      deleteFeature.delete(deleteContext);
+    }
+  }
+
+  private Map<IDeleteFeature, IDeleteContext> findPorts(final IDeleteContext context) {
     final ContainerShape cs = (ContainerShape) context.getPictogramElement();
 
     // First create all the deleteFeatures and their context and store them
     // in a Map. (this is because cs.getAnchor cannot be modified while
     // iterated on)
-    Map<IDeleteFeature, IDeleteContext> delFeatures;
-    delFeatures = new LinkedHashMap<>();
+    final Map<IDeleteFeature, IDeleteContext> delFeatures = new LinkedHashMap<>();
     for (final Anchor anchor : cs.getAnchors()) {
       // Skip the current iteration if the anchor is not a
       // BoxRelativeAnchor
@@ -98,12 +106,6 @@ public class DeleteAbstractActorFeature extends DeleteParameterizableFeature {
       delCtxt.setMultiDeleteInfo(multi);
       delFeatures.put(delPortFeature, delCtxt);
     }
-
-    // Actually delete
-    for (final IDeleteFeature delFeature : delFeatures.keySet()) {
-      delFeature.delete(delFeatures.get(delFeature));
-    }
-
+    return delFeatures;
   }
-
 }

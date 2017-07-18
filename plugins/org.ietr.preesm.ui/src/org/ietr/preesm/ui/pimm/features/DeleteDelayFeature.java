@@ -49,10 +49,10 @@ import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 
-// TODO: Auto-generated Javadoc
 /**
  * Delete feature to remove a {@link Delay} from a {@link Fifo}.
  *
@@ -79,10 +79,16 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
   public void preDelete(final IDeleteContext context) {
     // Transform the two connections linked to the delay back into a single
     // one. before deleting the delay.
-
-    disconnectDelayFromFifo(context);
+    PictogramElement pictogramElement = context.getPictogramElement();
+    Object[] allBusinessObjectsForPictogramElement = getAllBusinessObjectsForPictogramElement(pictogramElement);
+    if (allBusinessObjectsForPictogramElement.length > 0) {
+      // only disconnect if business delay exists.
+      // this delay could have been already deleted by the delete actor feature when selecting multiple elements
+      disconnectDelayFromFifo(context);
+    }
 
     // Super call to delete the dependencies linked to the delay
+    // Do it after deleting the connection (if it exists) to avoid looping infinitely
     super.preDelete(context);
   }
 

@@ -44,6 +44,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
@@ -311,8 +312,13 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
    */
   @Override
   public String getName() {
-    if ((this.name == null) && (this.incomingDependency.getSetter() instanceof Parameter)) {
-      return ((Parameter) this.incomingDependency.getSetter()).getName();
+    if ((this.name == null) && (this.incomingDependency != null)) {
+      final ISetter setter = this.incomingDependency.getSetter();
+      if (setter instanceof Parameter) {
+        return ((Parameter) setter).getName();
+      } else {
+        return this.name;
+      }
     } else {
       return this.name;
     }

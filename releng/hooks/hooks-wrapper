@@ -1,9 +1,0 @@
-#!/bin/bash
-if [ -x $0.local ]; then
-	echo " Local hook found for $0"
-    $0.local "$@" || exit $?
-fi
-if [ -x releng/hooks/$(basename $0) ]; then
-	echo " Shared hook found for $0"
-    releng/hooks/$(basename $0) "$@" || exit $?
-fi

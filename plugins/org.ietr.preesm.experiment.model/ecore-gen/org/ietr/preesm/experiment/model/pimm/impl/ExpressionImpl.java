@@ -46,6 +46,7 @@ import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
+import org.nfunk.jep.ParseException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -129,10 +130,13 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
    * <!-- begin-user-doc --> Evaluate expression of the class for which it is called. <!-- end-user-doc -->
    *
    * @return the result of the expression evaluated as an int.
+   * @throws ParseException
    */
   @Override
   public String evaluate() {
-    return Long.toString(ExpressionEvaluator.evaluate(this));
+    long evaluate;
+    evaluate = ExpressionEvaluator.evaluate(this);
+    return Long.toString(evaluate);
   }
 
   /**

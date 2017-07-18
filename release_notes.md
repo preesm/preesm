@@ -1,6 +1,32 @@
 PREESM Changelog
 ================
 
+## Release version 2.4.0
+*2017.07.18*
+
+### New Feature
+* Enable copy/paste of vertices (actor, parameters, sink/source, special actors, ...) in the graphical PiMM editor (see https://github.com/preesm/preesm/issues/10);
+   * Connects parameters and parameter configurations if paste occurs in the same diagram;
+   * Copies fifos when copying group of actors, and connect delay dependencies if paste occurs in the same diagram;
+   * Copies dependencies between copied ISetters and copied Parameterizables if paste occurs in a different diagram;
+
+### Changes
+* Update scenario editor: file selection popups now filter content more accurately;
+* Add explicit verions for Xtend dependencies to avoid bugs due to API break;
+* Cleanup releng files;
+* Normalize feature licenses;
+* Fix PiMM Ecore model: Port.name now has a lower bound of 0 to match the semantic of Parameter ConfigInputPorts (which have no name);
+* Refactoring;
+* Update DFTools to version 1.4.1 and Graphiti to 1.2.1;
+
+### Bug fix
+* Fix error handling in UI decorators (show decorators instead of crashing);
+* Fix expression refresh on properties tab of PiMMEditor: now show red background and error message instead of showing multiple popups when expression cannot be evaluated;
+* Fix deletion of actor + connected delay;
+* Fix auto layout freezes when fifos input/output ports are not connected;
+* Fix port deletion: do not delete connection if port deletion is canceled;
+* Fix port deletion: properly delete delays
+
 ## Release version 2.3.0
 *2017.06.26*
 

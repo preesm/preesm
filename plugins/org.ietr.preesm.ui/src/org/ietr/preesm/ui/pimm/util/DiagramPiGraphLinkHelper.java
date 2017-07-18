@@ -43,7 +43,9 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.graphiti.services.ILinkService;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -111,10 +113,13 @@ public class DiagramPiGraphLinkHelper {
   public static ContainerShape getDelayPE(final Diagram diagram, final Fifo fifo) throws RuntimeException {
     // Get all delays with identical attributes (may not be the
     // right delay is several delays have the same properties.)
-    final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, fifo.getDelay());
+    final Delay delay = fifo.getDelay();
+    final ILinkService linkService = Graphiti.getLinkService();
+    final List<PictogramElement> pes = linkService.getPictogramElements(diagram, delay);
     PictogramElement pe = null;
     for (final PictogramElement p : pes) {
-      if ((p instanceof ContainerShape) && (Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(p) == fifo.getDelay())) {
+      final EObject businessObjectForLinkedPictogramElement = linkService.getBusinessObjectForLinkedPictogramElement(p);
+      if ((p instanceof ContainerShape) && (businessObjectForLinkedPictogramElement == delay)) {
         pe = p;
       }
     }
@@ -149,7 +154,7 @@ public class DiagramPiGraphLinkHelper {
     // if PE is still null.. something is deeply wrong with this
     // graph !
     if (ffc == null) {
-      throw new RuntimeException("Pictogram element associated Edge " + edge + " could not be found.");
+      throw new RuntimeException("Pictogram element associated to edge " + edge + " could not be found.");
     }
     return ffc;
   }

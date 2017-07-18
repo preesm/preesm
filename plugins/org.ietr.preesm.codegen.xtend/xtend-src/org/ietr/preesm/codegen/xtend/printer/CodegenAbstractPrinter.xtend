@@ -45,13 +45,17 @@ import org.eclipse.xtend.lib.annotations.Accessors
 import org.eclipse.xtend2.lib.StringConcatenation
 import org.ietr.preesm.codegen.xtend.model.codegen.Block
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
+import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator
 import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock
+import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt
 import org.ietr.preesm.codegen.xtend.model.codegen.Communication
 import org.ietr.preesm.codegen.xtend.model.codegen.Constant
 import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
+import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
+import org.ietr.preesm.codegen.xtend.model.codegen.IntVar
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
@@ -59,12 +63,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
-import org.ietr.preesm.codegen.xtend.model.codegen.IntVar
-import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator
 import org.ietr.preesm.codegen.xtend.model.codegen.util.CodegenSwitch
 import org.ietr.preesm.codegen.xtend.task.CodegenException
-import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt
 
 enum PrinterState {
 	PRINTING_DEFINITIONS,
@@ -461,9 +461,14 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 		result.add(printLoopBlockHeader(loopBlock))
 
 		// Visit all codeElements
-		result.addAll(loopBlock.codeElts.map[doSwitch])
+		val codeElts = loopBlock.codeElts
+		for (e : codeElts) {
+			val res = doSwitch(e)
+			result.add(res)
+		}
 
-		result.add(printLoopBlockFooter(loopBlock))
+		val printLoopBlockFooter2 = printLoopBlockFooter(loopBlock)
+		result.add(printLoopBlockFooter2)
 
 		return result.join('')
 	}

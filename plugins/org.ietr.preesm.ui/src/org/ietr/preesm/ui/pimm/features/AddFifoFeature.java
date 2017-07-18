@@ -44,8 +44,10 @@ import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.impl.AbstractAddFeature;
 import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
+import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
+import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -88,7 +90,7 @@ public class AddFifoFeature extends AbstractAddFeature {
   @Override
   public PictogramElement add(final IAddContext context) {
     final IAddConnectionContext addContext = (IAddConnectionContext) context;
-    final Fifo addedFifo = (Fifo) context.getNewObject();
+    final Fifo addedFifo = (Fifo) addContext.getNewObject();
     final IPeCreateService peCreateService = Graphiti.getPeCreateService();
 
     // if added Fifo has no resource we add it to the resource
@@ -162,7 +164,9 @@ public class AddFifoFeature extends AbstractAddFeature {
     // Call the move feature of the anchor owner to layout the connection
     final MoveAbstractActorFeature moveFeature = new MoveAbstractActorFeature(getFeatureProvider());
     // Move source
-    ContainerShape cs = (ContainerShape) connection.getStart().getReferencedGraphicsAlgorithm().getPictogramElement();
+    final Anchor start = connection.getStart();
+    final GraphicsAlgorithm referencedGraphicsAlgorithm = start.getReferencedGraphicsAlgorithm();
+    ContainerShape cs = (ContainerShape) referencedGraphicsAlgorithm.getPictogramElement();
     MoveShapeContext moveCtxt = new MoveShapeContext(cs);
     moveCtxt.setDeltaX(0);
     moveCtxt.setDeltaY(0);
@@ -170,7 +174,9 @@ public class AddFifoFeature extends AbstractAddFeature {
     moveCtxt.setLocation(csLoc.getX(), csLoc.getY());
     moveFeature.moveShape(moveCtxt);
     // Move target
-    cs = (ContainerShape) connection.getEnd().getReferencedGraphicsAlgorithm().getPictogramElement();
+    final Anchor end = connection.getEnd();
+    final GraphicsAlgorithm referencedGraphicsAlgorithm2 = end.getReferencedGraphicsAlgorithm();
+    cs = (ContainerShape) referencedGraphicsAlgorithm2.getPictogramElement();
     moveCtxt = new MoveShapeContext(cs);
     moveCtxt.setDeltaX(0);
     moveCtxt.setDeltaY(0);

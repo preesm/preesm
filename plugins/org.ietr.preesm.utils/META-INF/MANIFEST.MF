@@ -2,15 +2,15 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PREESM utilities
 Bundle-SymbolicName: org.ietr.preesm.utils
-Bundle-Version: 2.3.0
+Bundle-Version: 2.4.0
 Bundle-Activator: org.ietr.preesm.utils.Activator
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtend.lib,
  org.eclipse.emf.ecore,
  org.eclipse.core.resources,
- org.ietr.dftools.algorithm,
- org.ietr.dftools.workflow,
+ org.ietr.dftools.algorithm;bundle-version="1.2.1",
+ org.ietr.dftools.workflow;bundle-version="1.2.1",
  org.ietr.preesm.experiment.model
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

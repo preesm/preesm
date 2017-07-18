@@ -54,52 +54,52 @@ package org.ietr.preesm.experiment.model.pimm;
 public interface HRefinement extends Refinement {
 
   /**
-   * Returns the value of the '<em><b>Loop Prototype</b></em>' reference. <!-- begin-user-doc -->
+   * Returns the value of the '<em><b>Loop Prototype</b></em>' containment reference. <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Loop Prototype</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
    *
-   * @return the value of the '<em>Loop Prototype</em>' reference.
+   * @return the value of the '<em>Loop Prototype</em>' containment reference.
    * @see #setLoopPrototype(FunctionPrototype)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getHRefinement_LoopPrototype()
-   * @model required="true"
+   * @model containment="true" required="true"
    * @generated
    */
   FunctionPrototype getLoopPrototype();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.HRefinement#getLoopPrototype <em>Loop Prototype</em>}' reference. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.HRefinement#getLoopPrototype <em>Loop Prototype</em>}' containment reference. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
    *
    * @param value
-   *          the new value of the '<em>Loop Prototype</em>' reference.
+   *          the new value of the '<em>Loop Prototype</em>' containment reference.
    * @see #getLoopPrototype()
    * @generated
    */
   void setLoopPrototype(FunctionPrototype value);
 
   /**
-   * Returns the value of the '<em><b>Init Prototype</b></em>' reference. <!-- begin-user-doc -->
+   * Returns the value of the '<em><b>Init Prototype</b></em>' containment reference. <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Init Prototype</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
    *
-   * @return the value of the '<em>Init Prototype</em>' reference.
+   * @return the value of the '<em>Init Prototype</em>' containment reference.
    * @see #setInitPrototype(FunctionPrototype)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getHRefinement_InitPrototype()
-   * @model
+   * @model containment="true"
    * @generated
    */
   FunctionPrototype getInitPrototype();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.HRefinement#getInitPrototype <em>Init Prototype</em>}' reference. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.HRefinement#getInitPrototype <em>Init Prototype</em>}' containment reference. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
    *
    * @param value
-   *          the new value of the '<em>Init Prototype</em>' reference.
+   *          the new value of the '<em>Init Prototype</em>' containment reference.
    * @see #getInitPrototype()
    * @generated
    */

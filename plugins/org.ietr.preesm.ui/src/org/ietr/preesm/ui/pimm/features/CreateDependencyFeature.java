@@ -46,6 +46,7 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
@@ -246,10 +247,9 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
         // If the getter is an actor
         if (tgtObj instanceof ExecutableActor) {
           // Create a ConfigInputPort
-          final PictogramElement targetPe = context.getTargetPictogramElement();
-          final AbstractAddActorPortFeature addPortFeature = CreateDependencyFeature.canCreateConfigPort(targetPe, getFeatureProvider(), "config_input");
+          final AbstractAddActorPortFeature addPortFeature = CreateDependencyFeature.canCreateConfigPort(tgtPE, getFeatureProvider(), "config_input");
           if (addPortFeature != null) {
-            final CustomContext targetContext = new CustomContext(new PictogramElement[] { targetPe });
+            final CustomContext targetContext = new CustomContext(new PictogramElement[] { tgtPE });
             // If Src is a Parameter (or config inputPort), give it as default port name
             if (setter instanceof Parameter) {
               addPortFeature.execute(targetContext, ((Parameter) setter).getName());
@@ -353,9 +353,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
     final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
 
     // Create the Fifo
-    final Dependency dependency = PiMMFactory.eINSTANCE.createDependency();
-    dependency.setSetter(setter);
-    dependency.setGetter(getter);
+    final Dependency dependency = PiMMUserFactory.instance.createDependency(setter, getter);
 
     // Add the new Fifo to the graph
     graph.getDependencies().add(dependency);

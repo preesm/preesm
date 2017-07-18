@@ -49,6 +49,7 @@ import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -57,6 +58,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
+import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
@@ -291,88 +293,83 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
    */
   @Override
   public void refresh() {
-    final PictogramElement pe = getSelectedPictogramElement();
-    String name = null;
-    Expression e = null;
-    final boolean expressionFocus = this.txtExpression.isFocusControl();
-    final Point sel = this.txtExpression.getSelection();
+    final PictogramElement pictogramElement = getSelectedPictogramElement();
+    String elementName = null;
+    Expression elementValueExpression = null;
+    final boolean expressionHasFocus = this.txtExpression.isFocusControl();
+    final Point selelection = this.txtExpression.getSelection();
     this.txtExpression.setEnabled(false);
 
-    if (pe != null) {
-      final Object bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
-      if (bo == null) {
+    if (pictogramElement != null) {
+      final Object businessObject = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pictogramElement);
+      if (businessObject == null) {
         return;
       }
 
-      if (bo instanceof Parameter) {
-        name = ((Parameter) bo).getName();
-        e = ((Parameter) bo).getExpression();
-      } // end Parameter
+      if (businessObject instanceof Parameter) {
+        elementName = ((Parameter) businessObject).getName();
+        elementValueExpression = ((Parameter) businessObject).getExpression();
+      } else if (businessObject instanceof DataPort) {
+        final DataPort iPort = ((DataPort) businessObject);
 
-      // if (bo instanceof DataOutputPort) {
-      // DataOutputPort oPort = ((DataOutputPort) bo);
-      //
-      // if (oPort.eContainer() instanceof DataInputInterface) {
-      // name = ((DataInputInterface) oPort.eContainer()).getName();
-      // } else {
-      // name = oPort.getName();
-      // }
-      //
-      // e = oPort.getExpression();
-      // }// end OutputPort
-
-      if (bo instanceof DataPort) {
-        final DataPort iPort = ((DataPort) bo);
-
-        this.comboAnnotation.select(((DataPort) bo).getAnnotation().getValue());
+        this.comboAnnotation.select(((DataPort) businessObject).getAnnotation().getValue());
 
         if (iPort.eContainer() instanceof DataOutputInterface) {
-          name = ((DataOutputInterface) iPort.eContainer()).getName();
+          elementName = ((DataOutputInterface) iPort.eContainer()).getName();
         } else {
-          name = iPort.getName();
+          elementName = iPort.getName();
         }
 
-        e = iPort.getExpression();
+        elementValueExpression = iPort.getExpression();
 
-      } // end InputPort
-
-      if (bo instanceof InterfaceActor) {
-        final InterfaceActor iface = ((InterfaceActor) bo);
-        name = iface.getName();
+      } else if (businessObject instanceof InterfaceActor) {
+        final InterfaceActor iface = ((InterfaceActor) businessObject);
+        elementName = iface.getName();
 
         if (iface instanceof DataInputInterface) {
-          e = iface.getDataOutputPorts().get(0).getExpression();
+          elementValueExpression = iface.getDataOutputPorts().get(0).getExpression();
         } else if (iface instanceof DataOutputInterface) {
-          e = iface.getDataInputPorts().get(0).getExpression();
+          elementValueExpression = iface.getDataInputPorts().get(0).getExpression();
         } else {
-          e = null;
+          elementValueExpression = null;
         }
 
-      } // end InterfaceActor
-
-      if (bo instanceof Delay) {
-        if (((Delay) bo).eContainer() instanceof Fifo) {
-          final Fifo fifo = (Fifo) ((Delay) bo).eContainer();
-          name = fifo.getId();
-          e = fifo.getDelay().getExpression();
+      } else if (businessObject instanceof Delay) {
+        if (((Delay) businessObject).eContainer() instanceof Fifo) {
+          final Fifo fifo = (Fifo) ((Delay) businessObject).eContainer();
+          elementName = fifo.getId();
+          elementValueExpression = fifo.getDelay().getExpression();
         }
-      } // end Delay
+      } else {
+        throw new UnsupportedOperationException();
+      }
 
-      this.lblNameObj.setText(name == null ? " " : name);
-      if (e != null) {
-        if (!(bo instanceof InterfaceActor)) {
+      this.lblNameObj.setText(elementName == null ? " " : elementName);
+      if (elementValueExpression != null) {
+        if (!(businessObject instanceof InterfaceActor)) {
           this.txtExpression.setEnabled(true);
         }
 
-        if (this.txtExpression.getText().compareTo(e.getString()) != 0) {
-          this.txtExpression.setText(e.getString());
+        final String eltExprString = elementValueExpression.getString();
+        if (this.txtExpression.getText().compareTo(eltExprString) != 0) {
+          this.txtExpression.setText(eltExprString);
         }
 
-        this.lblValueObj.setText(e.evaluate());
+        try {
+          // try out evaluating the expression
+          final String eltExprEvaluation = elementValueExpression.evaluate();
+          // if evaluation went well, just write the result
+          this.lblValueObj.setText(eltExprEvaluation);
+          this.txtExpression.setBackground(new Color(null, 255, 255, 255));
+        } catch (final ExpressionEvaluationException e) {
+          // otherwise print error message and put red background
+          this.lblValueObj.setText("Error : " + e.getMessage());
+          this.txtExpression.setBackground(new Color(null, 240, 150, 150));
+        }
 
-        if (expressionFocus) {
+        if (expressionHasFocus) {
           this.txtExpression.setFocus();
-          this.txtExpression.setSelection(sel);
+          this.txtExpression.setSelection(selelection);
         }
       }
     }

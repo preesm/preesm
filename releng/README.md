@@ -132,7 +132,7 @@ Having coding standards is a must in a project developed by several people from 
 
 We arbitrarily decided to fork from the [Google Java Style](https://google.github.io/styleguide/javaguide.html), and focus on the code shape, that is using spaces for indentation, where to put the bracket, what to do with empty lines, etc.; and not on naming or best practices. This allows to keep a consistent version control history, while minimizing the restriction over developer choice of implementation.
 
-The coding style is automatically checked during the build process using the [Maven Checkstyle plugin](https://maven.apache.org/plugins/maven-checkstyle-plugin/) and within the Eclipse IDE using the [Eclipse Checkstyle plugin](http://eclipse-cs.sourceforge.net/). On top of that, we provide an [Eclipse Preferences File](https://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Ftasks%2Ftimpandexp.htm) that configures the [Eclipse Java Code Style](https://help.eclipse.org/neon/topic/org.eclipse.jdt.doc.user/reference/preferences/java/ref-preferences-code-style.htm) for that coding style. Using such automatic formatting tool (triggered on save), developers can focus on the implementation, not the style (see [developers doc](http://preesm.sourceforge.net/website/index.php?id=developer)).
+The coding style is automatically checked during the build process using the [Maven Checkstyle plugin](https://maven.apache.org/plugins/maven-checkstyle-plugin/) and within the Eclipse IDE using the [Eclipse Checkstyle plugin](http://eclipse-cs.sourceforge.net/). On top of that, we provide preference files (stored in the [coding policy project](https://github.com/preesm/preesm-maven)) that configures the [Eclipse Java Code Style](https://help.eclipse.org/neon/topic/org.eclipse.jdt.doc.user/reference/preferences/java/ref-preferences-code-style.htm) for that coding style. Using such automatic formatting tool (triggered on save), developers can focus on the implementation, not the style (see [developers doc](http://preesm.sourceforge.net/website/index.php?id=developer)).
 
 Reading:
 
@@ -250,16 +250,13 @@ During the Maven deploy phase, the content is automatically uploaded to those lo
 | org.ietr.preesm.feature/ | The Preesm feature for end users |
 | org.ietr.preesm.product/ | Maven module for generating the end user products |
 | org.ietr.preesm.rcp.utils/ | Small Eclipse plugin for configuring the products |
-| auto_convert_encoding_and_lineendings.sh | Bash script for converting all file line endings to Linux and charset to UTF-8 |
-| run_checkstyle.sh | Small Bash script that calls Maven with proper arguments to check the coding policy |
-| copyright_template.txt | Copyright template to include in file headers |
-| fix_header_copyright_and_authors.sh | Bash script that replaces copyright template tokens (i.e. %%DATE%%) with data fetched from the git log |
+| run_checkstyle.sh | Small Bash script that calls Maven with proper arguments to check the coding policy. Calls the **Maven Checkstyle Plugin** with configuration from the [coding policy project](https://github.com/preesm/preesm-maven). |
+| copyright_template.txt | Copyright template to include in file headers. Used by the **Maven License Plugin**. |
+| fix_header_copyright_and_authors.sh | Bash script that replaces copyright template tokens (i.e. %%DATE%%) with data fetched from the git log. Use the **Maven License Plugin** and the **git log** commands for filling the headers. |
 | HowToRelease.md | Old release procedure |
 | pom.xml | The main releng POM. Adds two P2 repositories for product and dev feature build. |
 | README.md | This file |
-| update-version.sh | Small Bash script that calls Maven with proper arguments to set a new version for all submodules. |
-| VAADER_checkstyle.xml | Preesm Checkstyle configuration file (developed by VAADER team) |
-| VAADER_eclipse_preferences.epf | Preesm Eclipse preferences file (developed by VAADER team) |
+| update-version.sh | Small Bash script that calls Maven with proper arguments to set a new version for all submodules. Calls the **Maven Tycho Version Plugin**. |
 
 Build Process in Maven
 ----------------------
@@ -424,7 +421,7 @@ The third-party dependencies must be installed through update sites. All of them
 
 Eclipse comes with many development facilities. Among them is the code formatter. We provide an [Eclipse Preference File](https://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Ftasks%2Ftimpandexp.htm) that comes with a formatter configuration that respects the Checkstyle coding policy and that is called upon save.
 
-Various small configurations are also included in this preference file (see [source](VAADER_eclipse_preferences.epf)).
+This confirguration is automatically loaded using the M2E Settings Connector and settigns from the [Coding Policy plugin](https://github.com/preesm/preesm-maven).
 
 ### Running Maven from Eclipse
 
@@ -512,6 +509,8 @@ The current header file has two tokens that should be replaced :
 This tokens can be automatically filled from git logs.
 
 The script **releng/fix_header_copyright_and_authors.sh** is in charge of calling the Maven plugin with proper arguments and to replace the tokens automatically.
+
+The features license information are not covered by the above script (only the XML comment is covered). It has to be manually edited. This is done in the feature.xml content directly under the `<license>` tags. Note that the content of the license must be surrounded with `<![CDATA[ ... ]]>` in order to avoid having the special characters escaped during the generation of the source feature. This has to be added manualy in the XML content (the feature editor of Eclipse does not support it).
 
 ### Javadoc
 
