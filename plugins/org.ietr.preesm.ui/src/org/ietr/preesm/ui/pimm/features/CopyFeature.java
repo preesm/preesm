@@ -1,11 +1,17 @@
 package org.ietr.preesm.ui.pimm.features;
 
+import java.util.LinkedList;
+import java.util.List;
+import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICopyContext;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.AbstractCopyFeature;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 /**
  * Graphiti feature that implements the Copy action for PiMM vertices.
@@ -15,6 +21,20 @@ import org.ietr.preesm.experiment.model.pimm.Delay;
  */
 public class CopyFeature extends AbstractCopyFeature {
 
+  /**
+   * Structural class to store the copied elements. The EObject inheritance is used for enabling the Graphiti clipboard (only stores EObjects).
+   */
+  public static class VertexCopy extends EObjectImpl {
+    int              originalX;
+    int              originalY;
+    PictogramElement originalPictogramElement;
+    Diagram          originalDiagram;
+    AbstractVertex   originalVertex;
+    PiGraph          originalPiGraph;
+    AbstractVertex   copiedVertex;
+
+  }
+
   public CopyFeature(final IFeatureProvider fp) {
     super(fp);
   }
@@ -22,13 +42,29 @@ public class CopyFeature extends AbstractCopyFeature {
   @Override
   public void copy(final ICopyContext context) {
     final PictogramElement[] pes = context.getPictogramElements();
-    final Object[] bos = new Object[pes.length];
+
+    final List<VertexCopy> copies = new LinkedList<>();
+
     for (int i = 0; i < pes.length; i++) {
       final PictogramElement pe = pes[i];
-      bos[i] = getBusinessObjectForPictogramElement(pe);
+      final Object bo = getBusinessObjectForPictogramElement(pe);
+      if (bo instanceof AbstractVertex) {
+        final VertexCopy vertexCopy = new VertexCopy();
+        vertexCopy.originalDiagram = getDiagram();
+        vertexCopy.originalPictogramElement = pe;
+        vertexCopy.originalPiGraph = (PiGraph) getDiagram().getLink().getBusinessObjects().get(0);
+        vertexCopy.originalVertex = (AbstractVertex) bo;
+        vertexCopy.originalX = 0;
+        vertexCopy.originalY = 0;
+        final AbstractVertex copy = PiMMUserFactory.instance.copy(vertexCopy.originalVertex);
+        vertexCopy.copiedVertex = copy;
+        copies.add(vertexCopy);
+      }
+
     }
     // put all business objects to the clipboard
-    putToClipboard(bos);
+    final VertexCopy[] array = copies.toArray(new VertexCopy[copies.size()]);
+    putToClipboard(array);
   }
 
   @Override

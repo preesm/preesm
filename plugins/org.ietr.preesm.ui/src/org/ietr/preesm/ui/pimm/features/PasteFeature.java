@@ -41,6 +41,7 @@ import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
+import org.ietr.preesm.ui.pimm.features.CopyFeature.VertexCopy;
 
 /**
  * Graphiti feature that implements the Paste feature for PiMM Vertices. Creates a new copy of the PiMM element recursively, and insert pictogram elements for
@@ -64,14 +65,10 @@ public class PasteFeature extends AbstractPasteFeature {
     PiGraph result = null;
     final Object[] originalObjects = getFromClipboard();
     for (Object o : originalObjects) {
-      if (o instanceof AbstractVertex) {
-        final EObject eContainer = ((AbstractVertex) o).eContainer();
-        if (!(eContainer instanceof PiGraph) || (result != null && result != eContainer)) {
-          // all vertices should be contained by a PiGraph object.
-          throw new IllegalStateException("Paste elements that have been deleted is not supported");
-        } else {
-          result = (PiGraph) eContainer;
-        }
+      if (o instanceof VertexCopy) {
+        final EObject eContainer = ((VertexCopy) o).originalPiGraph;
+        result = (PiGraph) eContainer;
+        break;
       }
     }
     if (result == null) {
@@ -92,15 +89,15 @@ public class PasteFeature extends AbstractPasteFeature {
     // then create new pictogram elements using the add feature
     final Object[] objects = getFromClipboard();
     for (final Object object : objects) {
-      if (object instanceof AbstractVertex) {
-        final AbstractVertex vertex = (AbstractVertex) object;
+      if (object instanceof VertexCopy) {
+        final VertexCopy vertexCopy = (VertexCopy) object;
 
-        final PictogramElement[] allPictogramElementsForBusinessObject = getFeatureProvider().getAllPictogramElementsForBusinessObject(vertex);
+        AbstractVertex vertex = vertexCopy.originalVertex;
 
-        final AbstractVertex copy = PiMMUserFactory.instance.copy(vertex);
+        final AbstractVertex copy = vertexCopy.copiedVertex;
         final String name = computeUniqueNameForCopy(vertex);
         copy.setName(name);
-        addGraphicalElementsForCopy(context, copy, allPictogramElementsForBusinessObject);
+        addGraphicalElementsForCopy(context, vertexCopy);
         this.copiedObjects.put(vertex, copy);
 
         autoConnectInputConfigPorts(vertex, copy);
@@ -482,19 +479,17 @@ public class PasteFeature extends AbstractPasteFeature {
   /**
    * Add graphical representation for the vertex copy and its content (that is the input/output ports/configs)
    */
-  private void addGraphicalElementsForCopy(final IPasteContext context, final AbstractVertex vertexModelCopy,
-      final PictogramElement[] allPictogramElementsForBusinessObject) {
+  private void addGraphicalElementsForCopy(final IPasteContext context, final VertexCopy vertexCopyObject) {
     final AddContext addCtxt = new AddContext();
     final Diagram diagram = getDiagram();
     // For simplicity paste all objects at the location given in the
     // context (no stacking or similar)
     // TODO: improve location
 
-    // final PictogramElement pictogramElement = allPictogramElementsForBusinessObject[0];
-
     addCtxt.setLocation(context.getX(), context.getY());
     addCtxt.setTargetContainer(diagram);
 
+    final AbstractVertex vertexModelCopy = vertexCopyObject.copiedVertex;
     final PictogramElement newVertexPE = addGraphicalRepresentation(addCtxt, vertexModelCopy);
     this.links.put(vertexModelCopy, newVertexPE);
 
@@ -554,13 +549,9 @@ public class PasteFeature extends AbstractPasteFeature {
     }
     boolean hasOneVertex = false;
     for (final Object object : fromClipboard) {
-      final boolean objectIsVertex = object instanceof AbstractVertex;
+      final boolean objectIsVertex = object instanceof VertexCopy;
       if (objectIsVertex) {
         hasOneVertex = true;
-      } else {
-        if (!(object instanceof Delay)) {
-          return false;
-        }
       }
     }
     return hasOneVertex;
