@@ -2,7 +2,7 @@ PREESM Changelog
 ================
 
 ## Release version 2.4.0
-*XXXX.XX.XX*
+*2017.07.18*
 
 ### New Feature
 * Enable copy/paste of vertices (actor, parameters, sink/source, special actors, ...) in the graphical PiMM editor (see https://github.com/preesm/preesm/issues/10);
@@ -17,6 +17,7 @@ PREESM Changelog
 * Normalize feature licenses;
 * Fix PiMM Ecore model: Port.name now has a lower bound of 0 to match the semantic of Parameter ConfigInputPorts (which have no name);
 * Refactoring;
+* Update DFTools to version 1.4.1 and Graphiti to 1.2.1;
 
 ### Bug fix
 * Fix error handling in UI decorators (show decorators instead of crashing);
