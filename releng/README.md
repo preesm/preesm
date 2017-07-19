@@ -787,4 +787,9 @@ TODO
 
 ### Update to a New Eclipse Version
 
-TODO
+Approximately every year, the Eclipse foundation releases a new Eclipse version. This implies new P2 repositories (update sites) for this new version. To follow the new Eclipse release, Preesm projects have to be updated accordingly:
+
+*   Update the `<repositories>` section in the parent POM file (the two first P2 repositories reference latest Eclipse and Eclipse updates repositories);
+*   Update the feature and dev feature discovery sites with new repository URLs and names;
+*   Build locally and tryout the product, the update site using the Java package of the latest Eclipse version, the dev meta feature + source code;
+*   Fix errors, if any.
