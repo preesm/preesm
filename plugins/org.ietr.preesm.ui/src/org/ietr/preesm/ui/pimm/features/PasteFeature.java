@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javafx.util.Pair;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
@@ -23,6 +22,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.IPeService;
 import org.eclipse.graphiti.ui.features.AbstractPasteFeature;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
@@ -194,7 +194,7 @@ public class PasteFeature extends AbstractPasteFeature {
     // lookup copied setter
     ISetter copiedSetter = null;
     if (setter instanceof Parameter) {
-      copiedSetter = (Parameter) this.copiedObjects.get(setter);
+      copiedSetter = (Parameter) this.copiedObjects.get((Parameter) setter);
     } else if (setter instanceof ConfigOutputPort) {
       final AbstractActor originalActor = (AbstractActor) setter.eContainer();
       final ConfigOutputPort originalConfigPort = (ConfigOutputPort) setter;
@@ -214,7 +214,7 @@ public class PasteFeature extends AbstractPasteFeature {
   private boolean shouldConnectDep(final ISetter setter, final Parameterizable targetParameterizable) {
     final boolean sourceOk;
     if (setter instanceof Parameter) {
-      sourceOk = this.copiedObjects.containsKey(setter);
+      sourceOk = this.copiedObjects.containsKey((Parameter) setter);
     } else if (setter instanceof ConfigOutputPort) {
       sourceOk = this.copiedObjects.containsKey(setter.eContainer());
     } else {

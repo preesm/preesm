@@ -19,5 +19,5 @@ Export-Package: org.ietr.preesm.codegen.xtend.model.codegen,
  org.ietr.preesm.codegen.xtend.model.codegen.impl,
  org.ietr.preesm.codegen.xtend.model.codegen.util,
  org.ietr.preesm.codegen.xtend.task
-Bundle-Version: 2.4.0
+Bundle-Version: 2.4.1
 
