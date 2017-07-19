@@ -82,13 +82,13 @@
     <repository>
       <id>Neon</id>
       <layout>p2</layout>
-      <url>${eclipse.mirror}/releases/neon/</url>
+      <url>${eclipse.mirror}/releases/oxygen/</url>
     </repository>
     <!-- add Neon updates for latest releases -->
     <repository>
       <id>Neon Updates</id>
       <layout>p2</layout>
-      <url>${eclipse.mirror}/eclipse/updates/4.6</url>
+      <url>${eclipse.mirror}/eclipse/updates/4.7</url>
     </repository>
     <!-- add TMF repository for latest Xtend -->
     <repository>
