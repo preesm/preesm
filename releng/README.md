@@ -117,7 +117,7 @@ Using the **releng** [Maven profile](http://maven.apache.org/guides/introduction
 *   Generate [Eclipse source bundles](http://help.eclipse.org/luna/index.jsp?topic=%2Forg.eclipse.pde.doc.user%2Ftasks%2Fpde_individual_source.htm) for all the plugins;
 *   Generate a P2 Repository ([Eclipse update-site](https://wiki.eclipse.org/Eclipse_Project_Update_Sites));
 *   Generate [Eclipse products](https://wiki.eclipse.org/FAQ_What_is_an_Eclipse_product%3F) for Win32/64, Linux 32/64, OSX 64;
-*   Generate an [Eclipse feature](https://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Fconcepts%2Fconcepts-25.htm) referencing all necessary development tools for a fast and easy setup of the IDE;
+*   Generate an [Eclipse feature](https://help.eclipse.org/oxygen/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Fconcepts%2Fconcepts-25.htm) referencing all necessary development tools for a fast and easy setup of the IDE;
 *   Deploy the generated Javadoc, update-site and products online.
 
 ### Eclipse IDE
@@ -132,7 +132,7 @@ Having coding standards is a must in a project developed by several people from 
 
 We arbitrarily decided to fork from the [Google Java Style](https://google.github.io/styleguide/javaguide.html), and focus on the code shape, that is using spaces for indentation, where to put the bracket, what to do with empty lines, etc.; and not on naming or best practices. This allows to keep a consistent version control history, while minimizing the restriction over developer choice of implementation.
 
-The coding style is automatically checked during the build process using the [Maven Checkstyle plugin](https://maven.apache.org/plugins/maven-checkstyle-plugin/) and within the Eclipse IDE using the [Eclipse Checkstyle plugin](http://eclipse-cs.sourceforge.net/). On top of that, we provide preference files (stored in the [coding policy project](https://github.com/preesm/preesm-maven)) that configures the [Eclipse Java Code Style](https://help.eclipse.org/neon/topic/org.eclipse.jdt.doc.user/reference/preferences/java/ref-preferences-code-style.htm) for that coding style. Using such automatic formatting tool (triggered on save), developers can focus on the implementation, not the style (see [developers doc](http://preesm.sourceforge.net/website/index.php?id=developer)).
+The coding style is automatically checked during the build process using the [Maven Checkstyle plugin](https://maven.apache.org/plugins/maven-checkstyle-plugin/) and within the Eclipse IDE using the [Eclipse Checkstyle plugin](http://eclipse-cs.sourceforge.net/). On top of that, we provide preference files (stored in the [coding policy project](https://github.com/preesm/preesm-maven)) that configures the [Eclipse Java Code Style](https://help.eclipse.org/oxygen/topic/org.eclipse.jdt.doc.user/reference/preferences/java/ref-preferences-code-style.htm) for that coding style. Using such automatic formatting tool (triggered on save), developers can focus on the implementation, not the style (see [developers doc](http://preesm.sourceforge.net/website/index.php?id=developer)).
 
 Reading:
 
@@ -290,11 +290,11 @@ Third party plugins dependencies are resolved using external P2 repositories, su
 </properties>
 <!-- ... -->
 <repositories>
-  <!-- add Neon repository to resolve dependencies -->
+  <!-- add Eclipse repository to resolve dependencies -->
   <repository>
-    <id>Neon</id>
+    <id>Oxygen</id>
     <layout>p2</layout>
-    <url>${eclipse.mirror}/releases/neon/</url>
+    <url>${eclipse.mirror}/releases/oxygen/</url>
   </repository>
   <!-- ... -->
   <!-- add Preesm repository to resolve dependencies -->
@@ -419,7 +419,7 @@ The third-party dependencies must be installed through update sites. All of them
 
 ### Eclipse Preferences
 
-Eclipse comes with many development facilities. Among them is the code formatter. We provide an [Eclipse Preference File](https://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Ftasks%2Ftimpandexp.htm) that comes with a formatter configuration that respects the Checkstyle coding policy and that is called upon save.
+Eclipse comes with many development facilities. Among them is the code formatter. We provide an [Eclipse Preference File](https://help.eclipse.org/oxygen/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Ftasks%2Ftimpandexp.htm) that comes with a formatter configuration that respects the Checkstyle coding policy and that is called upon save.
 
 This confirguration is automatically loaded using the M2E Settings Connector and settigns from the [Coding Policy plugin](https://github.com/preesm/preesm-maven).
 
@@ -518,9 +518,9 @@ The Javadoc is generated only when the releng profile is enabled. It is generate
 
 ### Feature
 
-The elements found in an update site are [Installable Units (IU)](https://wiki.eclipse.org/Installable_Units). Eclipse plugins are IUs. However in order to install all plugins at once, an [Eclipse feature](https://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Fconcepts%2Fconcepts-25.htm) can be used.
+The elements found in an update site are [Installable Units (IU)](https://wiki.eclipse.org/Installable_Units). Eclipse plugins are IUs. However in order to install all plugins at once, an [Eclipse feature](https://help.eclipse.org/oxygen/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Fconcepts%2Fconcepts-25.htm) can be used.
 
-An Eclipse feature is declared as an Eclipse project, with a [feature.xml](https://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Freference%2Fmisc%2Ffeature_manifest.html) file defining various information, as the list of plugins it contains, the license, contacts, referenced update sites, etc. It can be built using the Tycho Maven plugins by specifying [eclipse-feature](https://wiki.eclipse.org/Tycho/Packaging_Types#eclipse-feature) as packaging type. The Preesm update site and product both use this feature during their build process.
+An Eclipse feature is declared as an Eclipse project, with a [feature.xml](https://help.eclipse.org/oxygen/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Freference%2Fmisc%2Ffeature_manifest.html) file defining various information, as the list of plugins it contains, the license, contacts, referenced update sites, etc. It can be built using the Tycho Maven plugins by specifying [eclipse-feature](https://wiki.eclipse.org/Tycho/Packaging_Types#eclipse-feature) as packaging type. The Preesm update site and product both use this feature during their build process.
 
 The configuration of a feature is done within the **feature.xml** file. This file can be edited using the [Feature Editor](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.pde.doc.user%2Ftasks%2Fpde_feature_build.htm) from Eclipse PDE tools. If you know what you are doing, you can edit it as an XML file.
 
@@ -540,8 +540,8 @@ The feature requires new repositories to make sure latest releases are installed
 <!-- The following section tells where to lookup missing imported features -->
 <url>
   <!-- Eclipse main repos -->
-  <discovery label="Neon" url="http://mirror.ibcp.fr/pub/eclipse/releases/neon/"/>
-  <discovery label="Neon Updates" url="http://mirror.ibcp.fr/pub/eclipse/eclipse/updates/4.6"/>
+  <discovery label="Eclipse" url="http://mirror.ibcp.fr/pub/eclipse/releases/oxygen/"/>
+  <discovery label="Eclipse Updates" url="http://mirror.ibcp.fr/pub/eclipse/eclipse/updates/4.7"/>
 
   <!-- TMF Repo for latest xtend -->
   <discovery label="TMF Releases" url="http://mirror.ibcp.fr/pub/eclipse/modeling/tmf/xtext/updates/releases/"/>
@@ -556,7 +556,7 @@ The feature requires new repositories to make sure latest releases are installed
 </url>
 ```
 
-These references are used when installing the reference from an Eclipse installation. During the Maven build, these repositories should be added. The Preesm, TMF and Neons repositories are already included in the parent POM (see [Dependencies](#dependencies)). The extra development plugins, however, need to be found during the build process, for bundling the dev feature and generating the complete site (sadly, Tycho does not use this `<discovery>` tags during the build). Therefore, intermediate releng POM declares new P2 repositories (in order to share this configuration with the site project):
+These references are used when installing the reference from an Eclipse installation. During the Maven build, these repositories should be added. The Preesm, TMF and Eclipses repositories are already included in the parent POM (see [Dependencies](#dependencies)). The extra development plugins, however, need to be found during the build process, for bundling the dev feature and generating the complete site (sadly, Tycho does not use this `<discovery>` tags during the build). Therefore, intermediate releng POM declares new P2 repositories (in order to share this configuration with the site project):
 ```XML
   <!-- Extra repositories for building the all-in-one dev feature -->
   <repositories>
