@@ -734,8 +734,7 @@ To check the coding policy from Eclipse, the [developer page](http://preesm.sour
 
 In the root folder of the project, run
 
-*   `mvn -Dtycho.mode=maven -P releng org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=X.Y.Z
-`
+*   `mvn -Dtycho.mode=maven -P releng org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=X.Y.Z`
 
 **Note:** The variable **tycho.mode** set to **maven** disable Tycho dependency resolver. Resolving P2 dependencies takes a long time is useless for setting the new version, thus we can skip it.
 
@@ -758,12 +757,13 @@ This can be run from Eclipse (see previous Howto).
 *   create a new eclipse plugin in the **/plugins** folder;
     *   do not add .project, .settings, .classpath (everything should be configured in the Maven settings)
 *   copy POM file from another existing plugin, and update project name;
-*   make sure the version in the MANIFEST.MF matches the version in the parent pom
+*   make sure the version in the MANIFEST.MF matches the version in the parent pom;
     *   **-SNAPSHOT** in the POM file translates to **.qualifier** in the MANIFEST
-*   insert new module in parent pom `<modules>` section with the name of the folder under **/plugins**
-*   in the **releng/org.ietr.preesm.feature/feature.xml**, add the new plugin as 'included plugin'
-*   create test fragment
+*   insert new module in parent pom `<modules>` section with the name of the folder under **/plugins**;
+*   in the **releng/org.ietr.preesm.feature/feature.xml**, add the new plugin as 'included plugin';
+*   create test fragment;
     *   add module in test-fragment intermediate pom
+*   tell people working with source code to import the new plugin in their Elcipse workspace.
 
 ### Add New Dependency
 
@@ -792,4 +792,5 @@ Approximately every year, the Eclipse foundation releases a new Eclipse version.
 *   Update the `<repositories>` section in the parent POM file (the two first P2 repositories reference latest Eclipse and Eclipse updates repositories);
 *   Update the feature and dev feature discovery sites with new repository URLs and names;
 *   Build locally and tryout the product, the update site using the Java package of the latest Eclipse version, the dev meta feature + source code;
-*   Fix errors, if any.
+*   Fix errors, if any;
+*   Keep consistent Eclipse versions with Graphiti, DFTools and Preesm.
