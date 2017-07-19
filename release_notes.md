@@ -1,6 +1,13 @@
 PREESM Changelog
 ================
 
+## Release version 2.4.1
+*2017.07.19*
+
+### Bug fix
+* Fix dependency issue;
+* Fix Parameter lookup in Dynamic PiMM 2 to SDF task;
+
 ## Release version 2.4.0
 *2017.07.18*
 
