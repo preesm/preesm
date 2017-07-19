@@ -90,7 +90,7 @@ public class DynamicPiMM2SDFLauncher {
     final int nbExecutions = this.scenario.getSimulationManager().getNumberOfTopExecutions();
 
     for (final Parameter param : this.graph.getParameters()) {
-      final List<Integer> pValues = parametersValues.get(param.getName());
+      final List<Integer> pValues = parametersValues.get(param);
       if (pValues != null) {
         outerParametersValues.put(param, pValues);
       }
