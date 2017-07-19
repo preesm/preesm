@@ -51,7 +51,7 @@
       <feature id="org.eclipse.ecf.core.ssl.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
       <feature id="org.eclipse.e4.rcp"/>
-      <feature id="org.eclipse.cdt" version="9.2.1.201703062208"/>
+      <feature id="org.eclipse.cdt"/>
       <feature id="org.eclipse.cdt.gnu.dsf"/>
       <feature id="org.eclipse.cdt.gnu.build"/>
       <feature id="org.eclipse.cdt.platform"/>

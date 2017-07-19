@@ -570,8 +570,8 @@ Version 1.0 dated 2006-09-05.]]>
    <!-- The following section tells where to lookup missing imported features -->
    <url>
       <!-- Eclipse main repos -->
-      <discovery label="Neon" url="http://mirror.ibcp.fr/pub/eclipse/releases/neon/"/>
-      <discovery label="Neon Updates" url="http://mirror.ibcp.fr/pub/eclipse/eclipse/updates/4.6"/>
+      <discovery label="Oxygen" url="http://mirror.ibcp.fr/pub/eclipse/releases/oxygen/"/>
+      <discovery label="Oxygen Updates" url="http://mirror.ibcp.fr/pub/eclipse/eclipse/updates/4.7"/>
 
       <!-- TMF Repo for latest xtend -->
       <discovery label="TMF Releases" url="http://mirror.ibcp.fr/pub/eclipse/modeling/tmf/xtext/updates/releases/"/>

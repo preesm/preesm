@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Upgrade to Eclipse Oxygen;
 
 ### Bug fix
 

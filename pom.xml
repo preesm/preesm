@@ -78,17 +78,17 @@
   </properties>
 
   <repositories>
-    <!-- add Neon repository to resolve dependencies -->
+    <!-- add Eclipse repository to resolve dependencies -->
     <repository>
-      <id>Neon</id>
+      <id>Oxygen</id>
       <layout>p2</layout>
-      <url>${eclipse.mirror}/releases/neon/</url>
+      <url>${eclipse.mirror}/releases/oxygen/</url>
     </repository>
-    <!-- add Neon updates for latest releases -->
+    <!-- add Eclipse updates for latest releases -->
     <repository>
-      <id>Neon Updates</id>
+      <id>Oxygen Updates</id>
       <layout>p2</layout>
-      <url>${eclipse.mirror}/eclipse/updates/4.6</url>
+      <url>${eclipse.mirror}/eclipse/updates/4.7</url>
     </repository>
     <!-- add TMF repository for latest Xtend -->
     <repository>
