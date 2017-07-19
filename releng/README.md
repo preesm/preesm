@@ -728,7 +728,7 @@ In the root folder of the project, run
 
 Alternatively, from a shell, the script `/releng/run_checkstyle.sh` wraps the Maven call.
 
-To check the coding policy from Eclipse, the [developer page](http://preesm.sourceforge.net/website/index.php?id=building-preesm) explains how to set up the Checkstyle Eclipse Plugin.
+Within Eclipse, the Dev Meta Feature automatically installs the M2E Checkstyle Plugin, which in turn automatically loads the Checkstyle coding policy from the parent POM file.
 
 ### Update Project Version
 
