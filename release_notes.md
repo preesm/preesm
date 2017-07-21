@@ -8,6 +8,7 @@ PREESM Changelog
 
 ### Changes
 * Upgrade to Eclipse Oxygen;
+* Use new Graphiti extension point name (new version);
 
 ### Bug fix
 
