@@ -357,7 +357,7 @@
       </runtime>
    </extension>
    <extension
-         point="org.ietr.graphiti.model.definition">
+         point="graphiti.definition">
       <configuration
             extension="graphml"
             name="GraphML"
