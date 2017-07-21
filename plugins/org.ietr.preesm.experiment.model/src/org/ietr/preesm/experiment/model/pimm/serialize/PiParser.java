@@ -38,14 +38,22 @@
 package org.ietr.preesm.experiment.model.pimm.serialize;
 
 import java.io.InputStream;
+import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.common.util.WrappedException;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.architecture.utils.DomUtil;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
@@ -69,8 +77,10 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
+import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
+import org.ietr.preesm.experiment.model.pimm.util.SubgraphConnector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -84,6 +94,39 @@ import org.w3c.dom.NodeList;
  * @author jheulot
  */
 public class PiParser {
+
+  /**
+   * Gets the pi graph.
+   *
+   * @param algorithmURL
+   *          URL of the Algorithm.
+   * @return the {@link PiGraph} algorithm.
+   * @throws InvalidModelException
+   *           the invalid model exception
+   * @throws CoreException
+   *           the core exception
+   */
+  public static PiGraph getPiGraph(final String algorithmURL) throws InvalidModelException, CoreException {
+    PiGraph pigraph = null;
+    final ResourceSet resourceSet = new ResourceSetImpl();
+
+    final URI uri = URI.createPlatformResourceURI(algorithmURL, true);
+    if ((uri.fileExtension() == null) || !uri.fileExtension().contentEquals("pi")) {
+      return null;
+    }
+    Resource ressource;
+    try {
+      ressource = resourceSet.getResource(uri, true);
+      pigraph = (PiGraph) (ressource.getContents().get(0));
+
+      final SubgraphConnector connector = new SubgraphConnector();
+      connector.connectSubgraphs(pigraph);
+    } catch (final WrappedException e) {
+      WorkflowLogger.getLogger().log(Level.SEVERE, "The algorithm file \"" + uri + "\" specified by the scenario does not exist any more.");
+    }
+
+    return pigraph;
+  }
 
   /**
    * Retrieve the value of a property of the given {@link Element}. A property is a data element child of the given element.<br>
