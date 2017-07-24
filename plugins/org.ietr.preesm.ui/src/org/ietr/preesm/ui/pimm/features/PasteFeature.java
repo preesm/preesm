@@ -208,7 +208,7 @@ public class PasteFeature extends AbstractPasteFeature {
     final ConfigInputPort copiedConfigInputPort = lookupConfigInputPort(copiedParameterizable, getter);
     final Dependency newDep = PiMMUserFactory.instance.createDependency(copiedSetter, copiedConfigInputPort);
     targetPiGraph.getDependencies().add(newDep);
-    addGraphicalRepresentationForNewDependency(newDep);
+    addGraphicalRepresentationForDependency(newDep);
   }
 
   private boolean shouldConnectDep(final ISetter setter, final Parameterizable targetParameterizable) {
@@ -355,11 +355,14 @@ public class PasteFeature extends AbstractPasteFeature {
 
     for (final Dependency newDep : newDependencies) {
       dependencies.add(newDep);
-      addGraphicalRepresentationForNewDependency(newDep);
+      addGraphicalRepresentationForDependency(newDep);
     }
   }
 
-  private void addGraphicalRepresentationForNewDependency(final Dependency newDep) {
+  /**
+   *
+   */
+  public void addGraphicalRepresentationForDependency(final Dependency newDep) {
     // getter should be a ConfigInputPort
     final ConfigInputPort getter = newDep.getGetter();
     final Anchor getterPE = (Anchor) findPE(getter);
@@ -518,7 +521,7 @@ public class PasteFeature extends AbstractPasteFeature {
   /**
    * Add graphical representation for the vertex copy and its content (that is the input/output ports/configs)
    */
-  private void addGraphicalElementsForCopy(final IPasteContext context, final VertexCopy vertexCopyObject, final AbstractVertex vertexModelCopy, final int x,
+  public void addGraphicalElementsForCopy(final IPasteContext context, final VertexCopy vertexCopyObject, final AbstractVertex vertexModelCopy, final int x,
       final int y) {
     final AddContext addCtxt = new AddContext();
     final Diagram diagram = getDiagram();
