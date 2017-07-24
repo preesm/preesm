@@ -77,7 +77,7 @@ import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.util.SubgraphConnector;
+import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -241,6 +241,21 @@ public class ScenarioParser {
         this.scenario.getParameterValueManager().addParameterValue(p);
       }
     }
+  }
+
+  /**
+   * Gets the pi graph.
+   *
+   * @param algorithmURL
+   *          URL of the Algorithm.
+   * @return the {@link PiGraph} algorithm.
+   * @throws InvalidModelException
+   *           the invalid model exception
+   * @throws CoreException
+   *           the core exception
+   */
+  public static PiGraph getPiGraph(String algorithmURL) throws InvalidModelException, CoreException {
+    return PiParser.getPiGraph(algorithmURL);
   }
 
   /**
@@ -637,39 +652,6 @@ public class ScenarioParser {
     }
 
     return algorithm;
-  }
-
-  /**
-   * Gets the pi graph.
-   *
-   * @param url
-   *          URL of the Algorithm.
-   * @return the {@link PiGraph} algorithm.
-   * @throws InvalidModelException
-   *           the invalid model exception
-   * @throws CoreException
-   *           the core exception
-   */
-  public static PiGraph getPiGraph(final String url) throws InvalidModelException, CoreException {
-    PiGraph pigraph = null;
-    final ResourceSet resourceSet = new ResourceSetImpl();
-
-    final URI uri = URI.createPlatformResourceURI(url, true);
-    if ((uri.fileExtension() == null) || !uri.fileExtension().contentEquals("pi")) {
-      return null;
-    }
-    Resource ressource;
-    try {
-      ressource = resourceSet.getResource(uri, true);
-      pigraph = (PiGraph) (ressource.getContents().get(0));
-
-      final SubgraphConnector connector = new SubgraphConnector();
-      connector.connectSubgraphs(pigraph);
-    } catch (final WrappedException e) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "The algorithm file \"" + uri + "\" specified by the scenario does not exist any more.");
-    }
-
-    return pigraph;
   }
 
   /**
