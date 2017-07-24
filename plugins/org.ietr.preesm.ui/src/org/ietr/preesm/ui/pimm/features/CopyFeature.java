@@ -24,12 +24,12 @@ public class CopyFeature extends AbstractCopyFeature {
    * Structural class to store the copied elements. The EObject inheritance is used for enabling the Graphiti clipboard (only stores EObjects).
    */
   public static class VertexCopy extends EObjectImpl {
-    int              originalX;
-    int              originalY;
-    PictogramElement originalPictogramElement;
-    Diagram          originalDiagram;
-    AbstractVertex   originalVertex;
-    PiGraph          originalPiGraph;
+    public int              originalX;
+    public int              originalY;
+    public PictogramElement originalPictogramElement;
+    public Diagram          originalDiagram;
+    public AbstractVertex   originalVertex;
+    public PiGraph          originalPiGraph;
 
   }
 
