@@ -94,7 +94,7 @@ public class DiagramPiGraphLinkHelper {
     }
 
     if (actorPE == null) {
-      throw new RuntimeException("No PE was found for actor :" + actor.getName());
+      throw new RuntimeException("No PE was found for actor: " + actor.getName());
     }
     return actorPE;
   }
