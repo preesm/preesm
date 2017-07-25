@@ -11,6 +11,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.schedule.PeriodicSchedule_SDF;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.transformers.IBSDFTransformer;
 import org.ietr.preesm.throughput.transformers.SDFTransformer;
@@ -47,6 +48,9 @@ public class test {
 
     // test structure of the graph
     // testStructure(graph, scenario);
+
+    // test periodic schedule
+    testPeriodicSchedule(graph, scenario);
 
   }
 
@@ -323,9 +327,9 @@ public class test {
     // edge.setCons(new SDFIntEdgePropertyType(2));
     // edge.setDelay(new SDFIntEdgePropertyType(0));
 
-    GraphStructureHelper.addActor(graph, "A", null, null, null, null, null);
-    GraphStructureHelper.addActor(graph, "B", null, null, null, null, null);
-    GraphStructureHelper.addActor(graph, "C", null, null, null, null, null);
+    GraphStructureHelper.addActor(graph, "A", null, null, 1., null, null);
+    GraphStructureHelper.addActor(graph, "B", null, null, 1., null, null);
+    GraphStructureHelper.addActor(graph, "C", null, null, 1., null, null);
     GraphStructureHelper.addSrcPort(graph.getVertex("C"), "b", 3);
     GraphStructureHelper.addSinkPort(graph.getVertex("C"), "a", 7);
 
@@ -485,6 +489,38 @@ public class test {
     testSDFGraph(graph, scenario);
 
     System.out.println("\n----------------------------");
+  }
+
+  /**
+   * test Periodic schedule
+   * 
+   * @param graph
+   *          SDF graph
+   * @param scenario
+   *          contains actors duration
+   */
+  private static void testPeriodicSchedule(SDFGraph graph, PreesmScenario scenario) {
+    System.out.println("------ Test srSDF convertion ------");
+
+    // copy the duration from scenario to graph properties
+
+    // get an SDF graph
+    SDFGraph SDF = testSDFGraphCreation(scenario);
+
+    PeriodicSchedule_SDF periodic = new PeriodicSchedule_SDF();
+    double th = periodic.schedule(SDF, PeriodicSchedule_SDF.Method.LinearProgram_Gurobi, false);
+
+    System.out.println("SDF throughput = " + th);
+
+    // convert the SDF graph to a srSDF graph
+    SDFGraph srSDF = SDFTransformer.convertToSrSDF(graph);
+    // print the srSDF graph
+    testSDFGraph(srSDF, scenario);
+
+    th = periodic.schedule(srSDF, PeriodicSchedule_SDF.Method.LinearProgram_Gurobi, false);
+    System.out.println("srSDF throughput = " + th);
+
+    System.out.println("----------------------------");
   }
 
   /*

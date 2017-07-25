@@ -6,8 +6,10 @@ import org.apache.commons.lang.math.Fraction;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.preesm.mathematicalModels.PeriodicScheduleModel_GLPK;
 import org.ietr.preesm.mathematicalModels.PeriodicScheduleModel_Gurobi;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
+import org.ietr.preesm.throughput.helpers.MathFunctionsHelper;
 import org.ietr.preesm.throughput.transformers.SDFTransformer;
 
 /**
@@ -102,44 +104,33 @@ public class PeriodicSchedule_SDF {
     return throughput.doubleValue();
   }
 
-  public double computeNormalizedPeriod(SDFGraph g, Method method) {
+  /**
+   * @param graph
+   *          SDF graph
+   * @param method
+   *          Math model or Algorithm
+   */
+  public void computeNormalizedPeriod(SDFGraph graph, Method method) {
+    System.out.println("computing Kopt !!");
     switch (method) {
       case Algorithm: {
         // use one of the known algorithm to compute the optimal K
-        return -1;
+        break;
       }
       case LinearProgram_Gurobi: {
-        System.out.println("computing Kopt !!");
         // use the linear programming to compute the optimal K
         PeriodicScheduleModel_Gurobi model = new PeriodicScheduleModel_Gurobi();
-
-        // PeriodicScheduleModel model = new PeriodicScheduleModel();
-        double period = model.getNormalizedPeriod(g);
-
-        // set he normalized period
-        g.normalizedPeriod = period;
-        System.out.println("Kopt found !! " + period);
-
-        return period;
-
+        model.computeNormalizedPeriod(graph);
+        break;
       }
       case LinearProgram_GLPK: {
-        System.out.println("computing Kopt !!");
         // use the linear programming to compute the optimal K
-        PeriodicScheduleModel model = new PeriodicScheduleModel();
-
-        // PeriodicScheduleModel model = new PeriodicScheduleModel();
-        double period = model.getNormalizedPeriod(g);
-
-        // set he normalized period
-        g.normalizedPeriod = period;
-        System.out.println("Kopt found !! " + period);
-
-        return period;
-
+        PeriodicScheduleModel_GLPK model = new PeriodicScheduleModel_GLPK();
+        model.computeNormalizedPeriod(graph);
+        break;
       }
       default:
-        return -1;
+        break;
     }
   }
 
@@ -173,65 +164,83 @@ public class PeriodicSchedule_SDF {
     return maxThroughput;
   }
 
-  public double computeDurationOfIteration(SDFGraph g) {
-    Hashtable<String, Double> S = this.computeActorsFirstExecutionStartDate(g);
-    // Hashtable<String, Double> vertexFinishTime = new Hashtable<>(g.actors.size());
-    double K = g.normalizedPeriod;
-
-    double maxS = 0;
+  /**
+   * Computes the duration of the first iteration of the graph
+   * 
+   * @param graph
+   *          SDF graph
+   * @return latency
+   */
+  public double computeGraphLatency(SDFGraph graph) {
+    // formule : S(t) = S(t0) + w*t
+    // finish date = S(t) + L
+    // for each actor computes the finish date of its last execution (RV)
+    // latency = the max finish date
+    double maxFinishDate = 0;
 
     // compute the finish time for every actor
-    // System.out.println("finish Time :");
-    for (Actor a : g.actors.values()) {
-      double Z = a.normalizationValue;
-      double RV = a.repetitionFactor;
-      double l = a.duration;
+    for (SDFAbstractVertex actor : graph.vertexSet()) {
+      double s0 = (double) actor.getPropertyBean().getValue("firstExecutionStartDate");
+      double w = (double) actor.getPropertyBean().getValue("executionPeriod");
+      double l = (double) actor.getPropertyBean().getValue("duration"); // or use the scenario
 
-      double finishTime = S.get(a.id) + (RV - 1) * K * Z + l;
-      // vertexFinishTime.put(a.id, finishTime);
-      // System.out.println("S("+a.id+")= " + S.get(a.id)+" + " + (RV-1) + "*" + K + "*" + Z +" + "+ l +" = "+ finishTime + " == "+ RV*K*Z);
+      // finish date
+      double finishDateOfLastExecution = s0 + w * actor.getNbRepeatAsInteger() + l;
 
-      if (finishTime > maxS)
-        maxS = finishTime;
+      if (finishDateOfLastExecution > maxFinishDate) {
+        maxFinishDate = finishDateOfLastExecution;
+      }
     }
 
-    // for now take the hall iteration
-    // duration = RV*W = RV*K*Z
-    // WRONG!! RV*K*Z = RV*Z*K = D*K = average time for iteration
-    // Actor a = g.actors.elements().nextElement();
-    // double d = a.repetitionFactor*K*a.normalizationValue;
-
-    // duration = max(S(outI)+RV*l , RV*K*Z)
-
-    // System.out.println("L="+maxS);
-    return maxS;
+    return maxFinishDate;
   }
 
   /**
-   * compute the duration of a complete iteration
+   * compute the duration of the graph period as RV(a)*W(a) where a is an arbitrary actor of the graph
    * 
-   * @param g
-   * @return
+   * @param graph
+   *          SDF graph
+   * @return graph period
    */
-  public Hashtable<String, Double> computeActorsFirstExecutionStartDate(SDFGraph g) {
+  public double computeGraphPeriod(SDFGraph graph) {
+    // get an arbitrary actor from the graph
+    SDFAbstractVertex actor = graph.vertexSet().iterator().next();
+    double w = (double) actor.getPropertyBean().getValue("executionPeriod");
+    double graphPeriod = actor.getNbRepeatAsInteger() * w;
 
-    // compute starting times
+    return graphPeriod;
+  }
+
+  /**
+   * compute the start date of the first execution of each actor
+   * 
+   * @param graph
+   *          SDF graph
+   */
+  public void computeActorsFirstExecutionStartDate(SDFGraph graph) {
     /*
      * see Ben Abid paper : step 1: add a dummy vertex to the graph step 2: connect the new actor to every actor of the graph with a null value step 3: use the
      * bellman ford algorithm to compute the starting times as the longest path from the dummy node to all actors
      */
 
-    // Revalue the edges : v = L + k*(out - M - gcd) (use the normalized version of the graph)
-    Hashtable<String, Double> edgeValue = new Hashtable<>(g.edges.size());
-    for (Edge e : g.edges.values()) {
-      double v = e.sourceActor.duration + g.normalizedPeriod * (e.prod - e.initialMarking - tool.gcd(e.cons, e.prod)) * e.normalizationFactor;
-      edgeValue.put(e.id, v);
+    // set edges value : v = L + k*h (use the normalized version of the graph)
+    // h = (out - M0 - gcd)* alpha(e)
+    Hashtable<String, Double> edgeValue = new Hashtable<>(graph.edgeSet().size());
+    for (SDFEdge e : graph.edgeSet()) {
+      double l = (double) e.getSource().getPropertyBean().getValue("duration");
+      double k = ((Fraction) graph.getPropertyBean().getValue("normalizedPeriod")).doubleValue();
+      double gcd = MathFunctionsHelper.gcd(e.getProd().intValue(), e.getCons().intValue());
+      double alpha = (double) e.getPropertyBean().getValue("normalizationFactor");
+      double h = (e.getCons().intValue() - e.getDelay().intValue() - gcd) * alpha;
+      double v = l + k * h;
+      edgeValue.put((String) e.getPropertyBean().getValue("edgeName"), v);
     }
 
     // initialize the vertex distance
-    Hashtable<String, Double> vertexDistance = new Hashtable<>(g.actors.size());
-    for (Actor a : g.actors.values())
-      vertexDistance.put(a.id, .0);
+    Hashtable<String, Double> vertexDistance = new Hashtable<>(graph.vertexSet().size());
+    // for (SDFAbstractVertex a : graph.vertexSet()) {
+    // vertexDistance.put(a.getName(), .0);
+    // }
 
     // // saving the parents (No need for now)
     // Hashtable<String, String> vertexParent = new Hashtable<>(g.actors.size());
@@ -240,15 +249,20 @@ public class PeriodicSchedule_SDF {
 
     // source vertex to evaluate all parts of the graph
     // add the dummy actor to the graph
-    g.createActor("dummy", null, null, null, null);
+    SDFAbstractVertex dummy = GraphStructureHelper.addActor(graph, "dummy", null, null, null, null, null);
+
     // connect the dummy actor to all actors
-    for (Actor a : g.actors.values()) {
-      g.createEdge("dummy_" + a.id, "dummy", null, a.id, null, 1., 1., 0., null);
-      vertexDistance.put(a.id, .0);
+    for (SDFAbstractVertex a : graph.vertexSet()) {
+      // add an edge between the dummy actor and the selected actor
+      SDFEdge e = GraphStructureHelper.addEdge(graph, "dummy", null, a.getName(), null, 1, 1, 0, null);
+      // set the value of the added edge to 0
+      edgeValue.put((String) e.getPropertyBean().getValue("edgeName"), 0.);
+      // set the vertex distance to 0
+      vertexDistance.put(a.getName(), .0);
     }
     // set the distance between the dummy actor and the rest of actor to 0
-    for (Edge e : g.actors.get("dummy").OutputEdges.values())
-      edgeValue.put(e.id, .0);
+    // for (Edge e : graph.actors.get("dummy").OutputEdges.values())
+    // edgeValue.put(e.id, .0);
 
     // // print the edge value
     // for(Edge e: g.edges.values())
@@ -257,24 +271,24 @@ public class PeriodicSchedule_SDF {
     // // initialize the source vertex
     // //vertexDistance.put("dummy", .0); // it is already done in the previous loop
     // System.out.println("the source vertex = dummy");
-    System.out.println("G = (" + g.actors.size() + " , " + g.edges.size() + ")");
+    // System.out.println("G = (" + graph.actors.size() + " , " + graph.edges.size() + ")");
 
     // counter for the V-1 iterations
     int count = 0;
 
     // a condition for the while loop
-    // no need to complete the V-1 iterations if the distance of any actor
-    // does not change
+    // no need to complete the V-1 iterations if the distance of any actor does not change
     boolean repete = true;
 
     // relax edges
-    while (repete && count < g.actors.size() - 1) {
+    while (repete && count < graph.vertexSet().size() - 1) {
       repete = false;
-      for (Edge e : g.edges.values()) {
+      for (SDFEdge e : graph.edgeSet()) {
         // test the distance
-        if (vertexDistance.get(e.targetActor.id) < vertexDistance.get(e.sourceActor.id) + edgeValue.get(e.id)) {
+        double newDistance = vertexDistance.get(e.getSource().getName()) + edgeValue.get((String) e.getPropertyBean().getValue("edgeName"));
+        if (vertexDistance.get(e.getTarget().getName()) < newDistance) {
           // update the distance
-          vertexDistance.put(e.targetActor.id, vertexDistance.get(e.sourceActor.id) + edgeValue.get(e.id));
+          vertexDistance.put(e.getTarget().getName(), newDistance);
           // update the parent
           // vertexParent.replace(e.targetActor.id, e.sourceActor.id);
           // we need to perform another iteration
@@ -299,7 +313,12 @@ public class PeriodicSchedule_SDF {
     // }
 
     // remove the dummy actor
-    g.removeActor("dummy");
+    graph.removeVertex(dummy);
+
+    // save the start date into actors properties
+    for (SDFAbstractVertex a : graph.vertexSet()) {
+      a.setPropertyValue("firstExecutionStartDate", vertexDistance.get(a.getName()));
+    }
 
     // Print distance to verify
     // for (Actor a : g.actors.values()){
@@ -308,7 +327,6 @@ public class PeriodicSchedule_SDF {
     // System.out.println(a.id + " = " + a.startDate + " to " + a.finishDate);
     // }
 
-    return vertexDistance;
   }
 
 }

@@ -80,7 +80,8 @@ public abstract class GraphStructureHelper {
 
     // add the edge to the srSDF graph
     SDFEdge edge = graph.addEdge(srcActor, srcPort, tgtActor, tgtPort);
-    // edge.setPropertyValue("edgeName", "from_" + e.getSource().getName() + "_" + i + "_to_" + e.getTarget().getName() + "_" + j);
+    edge.setPropertyValue("edgeName", "from_" + srcActorName + "_" + srcPortName + "_to_" + trgActorName + "_" + trgPortName);
+    edge.setPropertyValue("edgeId", Identifier.generateEdgeId());
     edge.setProd(new SDFIntEdgePropertyType(prod_rate));
     edge.setCons(new SDFIntEdgePropertyType(cons_rate));
     edge.setDelay(new SDFIntEdgePropertyType(delay));
