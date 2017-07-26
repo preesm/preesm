@@ -242,27 +242,29 @@ public class PasteFeature extends AbstractPasteFeature {
 
   private void connectFifos() {
     final EList<Fifo> originalFifos = getOriginalPiGraph().getFifos();
-    final PiGraph targetPiGraph = getPiGraph();
 
     final Map<Fifo, Fifo> newFifos = new LinkedHashMap<>();
 
     copyFifos(originalFifos, newFifos);
 
-    addFifos(targetPiGraph, newFifos);
+    addFifos(newFifos);
   }
 
-  private void addFifos(final PiGraph targetPiGraph, final Map<Fifo, Fifo> newFifos) {
+  private void addFifos(final Map<Fifo, Fifo> newFifos) {
+
+    final PiGraph piGraph = getPiGraph();
+
     for (final Entry<Fifo, Fifo> fifoEntry : newFifos.entrySet()) {
       final Fifo copiedFifo = fifoEntry.getKey();
       final Fifo originalFifo = fifoEntry.getValue();
-      targetPiGraph.getFifos().add(copiedFifo);
+      piGraph.getFifos().add(copiedFifo);
 
       final FreeFormConnection addGraphicalRepresentationForFifo = addGraphicalRepresentationForFifo(copiedFifo);
 
       final Delay delay = originalFifo.getDelay();
       if (delay != null) {
         final Delay delayCopy = PiMMUserFactory.instance.copy(delay);
-        addGraphicialRepresentationForDelay(copiedFifo, addGraphicalRepresentationForFifo, delayCopy);
+        addGraphicalRepresentationForDelay(copiedFifo, addGraphicalRepresentationForFifo, delayCopy);
         autoConnectInputConfigPorts(delay, delayCopy);
         this.copiedObjects.put(delay, delayCopy);
       }
@@ -287,7 +289,7 @@ public class PasteFeature extends AbstractPasteFeature {
   /**
    *
    */
-  public void addGraphicialRepresentationForDelay(final Fifo copiedFifo, final FreeFormConnection fifoConnection, final Delay delayCopy) {
+  public void addGraphicalRepresentationForDelay(final Fifo copiedFifo, final FreeFormConnection fifoConnection, final Delay delayCopy) {
 
     // the add delay feature can only execute if the fifos delay is null.
     copiedFifo.setDelay(null);
