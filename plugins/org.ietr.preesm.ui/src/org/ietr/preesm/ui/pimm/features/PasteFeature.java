@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IPasteContext;
@@ -284,8 +285,11 @@ public class PasteFeature extends AbstractPasteFeature {
       final Delay delay) {
     final Delay delayCopy = PiMMUserFactory.instance.copy(delay);
     final AddDelayFeature addDelayFeature = new AddDelayFeature(getFeatureProvider());
+
     final CustomContext customContext = new CustomContext(new PictogramElement[] { pictogramElementForBusinessObject });
-    customContext.setLocation(pasteContext.getX(), pasteContext.getY());
+    final ILocation connectionMidpoint = GraphitiUi.getPeService().getConnectionMidpoint(pictogramElementForBusinessObject, 0.5);
+    customContext.setLocation(connectionMidpoint.getX(), connectionMidpoint.getY());
+
     addDelayFeature.execute(customContext);
     // one delay is created during the addDelayFeature.
     // Force reference to the one created above ?
