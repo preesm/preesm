@@ -261,7 +261,10 @@ public class PasteFeature extends AbstractPasteFeature {
 
       final Delay delay = originalFifo.getDelay();
       if (delay != null) {
-        copyDelay(copiedFifo, addGraphicalRepresentationForFifo, delay);
+        final Delay delayCopy = PiMMUserFactory.instance.copy(delay);
+        addGraphicialRepresentationForDelay(copiedFifo, addGraphicalRepresentationForFifo, delayCopy);
+        autoConnectInputConfigPorts(delay, delayCopy);
+        this.copiedObjects.put(delay, delayCopy);
       }
 
     }
@@ -281,25 +284,31 @@ public class PasteFeature extends AbstractPasteFeature {
     return (FreeFormConnection) add;
   }
 
-  private void copyDelay(final Fifo copiedFifo, final FreeFormConnection pictogramElementForBusinessObject, final Delay delay) {
-    final Delay delayCopy = PiMMUserFactory.instance.copy(delay);
+  /**
+   *
+   */
+  public void addGraphicialRepresentationForDelay(final Fifo copiedFifo, final FreeFormConnection fifoConnection, final Delay delayCopy) {
+
+    // the add delay feature can only execute if the fifos delay is null.
+    copiedFifo.setDelay(null);
+
+    // add graphical element for delay
     final AddDelayFeature addDelayFeature = new AddDelayFeature(getFeatureProvider());
-
-    final CustomContext customContext = new CustomContext(new PictogramElement[] { pictogramElementForBusinessObject });
-    final ILocation connectionMidpoint = GraphitiUi.getPeService().getConnectionMidpoint(pictogramElementForBusinessObject, 0.5);
+    final CustomContext customContext = new CustomContext(new PictogramElement[] { fifoConnection });
+    final ILocation connectionMidpoint = GraphitiUi.getPeService().getConnectionMidpoint(fifoConnection, 0.5);
     customContext.setLocation(connectionMidpoint.getX(), connectionMidpoint.getY());
-
     addDelayFeature.execute(customContext);
-    // one delay is created during the addDelayFeature.
-    // Force reference to the one created above ?
-    // check config input ports...
+
+    // one delay is created during the addDelayFeature: overwrite it with the copy
     copiedFifo.setDelay(delayCopy);
-    // and overwrite links
+
+    // also overwrite Graphiti links
     final List<PictogramElement> createdPEs = addDelayFeature.getCreatedPEs();
     for (final PictogramElement pe : createdPEs) {
       pe.getLink().getBusinessObjects().clear();
       pe.getLink().getBusinessObjects().add(delayCopy);
     }
+
     // add input port anchors
     final EList<ConfigInputPort> configInputPorts = delayCopy.getConfigInputPorts();
     for (final ConfigInputPort port : configInputPorts) {
@@ -307,10 +316,7 @@ public class PasteFeature extends AbstractPasteFeature {
       final Anchor chopboxAnchor = peService.getChopboxAnchor((AnchorContainer) createdPEs.get(0));
       chopboxAnchor.setReferencedGraphicsAlgorithm(createdPEs.get(0).getGraphicsAlgorithm());
       this.links.put(port, chopboxAnchor);
-
     }
-    autoConnectInputConfigPorts(delay, delayCopy);
-    this.copiedObjects.put(delay, delayCopy);
   }
 
   private void copyFifos(final EList<Fifo> originalFifos, final Map<Fifo, Fifo> newFifos) {
@@ -408,6 +414,7 @@ public class PasteFeature extends AbstractPasteFeature {
     final AddConnectionContext addCtxt = new AddConnectionContext(setterPE, getterPE);
     addCtxt.setNewObject(newDep);
     final IAddFeature addFeature = getFeatureProvider().getAddFeature(addCtxt);
+
     getDiagramBehavior().executeFeature(addFeature, addCtxt);
   }
 
