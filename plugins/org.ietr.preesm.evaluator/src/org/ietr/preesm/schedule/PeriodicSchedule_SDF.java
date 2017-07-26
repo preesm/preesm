@@ -38,12 +38,77 @@ public class PeriodicSchedule_SDF {
   /**
    * tests if a periodic schedule exists for an SDF graph using the same sufficient condition of Alix Munier for the liveness of SDF graphs.
    * 
-   * @param g
+   * @param graph
    *          SDF graph
    * @return true if periodic schedule exists
    */
-  public boolean isPeriodic(SDFGraph g) {
-    // TODO add the liveness module
+  public boolean isPeriodic(SDFGraph graph) {
+    // set edges value : v = h (use the normalized version of the graph)
+    // h = (out - M0 - gcd)* alpha(e)
+    Hashtable<String, Double> edgeValue = new Hashtable<>(graph.edgeSet().size());
+    for (SDFEdge e : graph.edgeSet()) {
+      double gcd = MathFunctionsHelper.gcd(e.getProd().intValue(), e.getCons().intValue());
+      double alpha = (double) e.getPropertyBean().getValue("normalizationFactor");
+      double h = (e.getDelay().intValue() - e.getCons().intValue() + gcd) * alpha;
+      edgeValue.put((String) e.getPropertyBean().getValue("edgeName"), h);
+    }
+
+    // initialize the vertex distance
+    Hashtable<String, Double> vertexDistance = new Hashtable<>(graph.vertexSet().size());
+    for (SDFAbstractVertex a : graph.vertexSet()) {
+      vertexDistance.put(a.getName(), Double.POSITIVE_INFINITY);
+    }
+
+    // // print the edge value
+    // for(Edge e: g.edges.values())
+    // System.out.println("v(" + e.sourceActor.id + "," + e.targetActor.id + ") = " + edgeValue.get(e.id));
+
+    // in case of a non strongly connected graph we need to choose many source vertex to evaluate all parts of the graph
+    for (SDFAbstractVertex vertexSource : graph.vertexSet()) {
+      if (vertexDistance.get(vertexSource.getName()) == Double.POSITIVE_INFINITY) {
+        // initialize the source vertex
+        vertexDistance.put(vertexSource.getName(), 0.);
+
+        // counter for the V-1 iterations
+        int count = 0;
+
+        // a condition for the while loop
+        // no need to complete the V-1 iterations if the distance of any actor does not change
+        boolean repete = true;
+
+        // relax edges
+        while (repete && count < graph.vertexSet().size() - 1) {
+          repete = false;
+          for (SDFEdge e : graph.edgeSet()) {
+            // test the distance
+            double newDistance = vertexDistance.get(e.getSource().getName()) + edgeValue.get((String) e.getPropertyBean().getValue("edgeName"));
+            if (vertexDistance.get(e.getTarget().getName()) > newDistance) {
+              // update the distance
+              vertexDistance.put(e.getTarget().getName(), newDistance);
+              // we need to perform another iteration
+              repete = true;
+            }
+          }
+          // Increments the iteration counter
+          count++;
+        }
+
+        // check for negative circuit if we complete the v-1 iterations
+        if (count == graph.vertexSet().size() - 1) {
+          // relax all the edges
+          for (SDFEdge e : graph.edgeSet()) {
+            if (vertexDistance.get(e.getTarget().getName()) > vertexDistance.get(e.getSource().getName())
+                + edgeValue.get((String) e.getPropertyBean().getValue("edgeName"))) {
+              // negative circuit detected if a part of the graph is not live the global graph is not too
+              System.err.println("Negativ cycle detected !!");
+              // System.err.println("This graph has no Periodic Schedule !");
+              return false;
+            }
+          }
+        }
+      }
+    }
+
     return true;
   }
 
@@ -68,6 +133,7 @@ public class PeriodicSchedule_SDF {
 
     // if a periodic schedule exists for the graph
     if (isPeriodic(graph)) {
+      System.out.println("This graph admit a periodic schedule !");
       // add a self loop edge for each actor if selfLoopEdge = true
       ArrayList<SDFEdge> selfLoopEdgesList = null;
       if (selfLoopEdge) {
@@ -97,7 +163,7 @@ public class PeriodicSchedule_SDF {
       this.computeActorsFirstExecutionStartDate(graph);
 
     } else {
-      System.out.println("a periodic schedule does not exist for this graph");
+      System.err.println("A Periodic Schedule does not exist for this graph");
       // return -1 as an error
     }
 
@@ -242,11 +308,6 @@ public class PeriodicSchedule_SDF {
     // vertexDistance.put(a.getName(), .0);
     // }
 
-    // // saving the parents (No need for now)
-    // Hashtable<String, String> vertexParent = new Hashtable<>(g.actors.size());
-    // for (Actor a : g.actors.values())
-    // vertexParent.put(a.id, "");
-
     // source vertex to evaluate all parts of the graph
     // add the dummy actor to the graph
     SDFAbstractVertex dummy = GraphStructureHelper.addActor(graph, "dummy", null, null, null, null, null);
@@ -260,18 +321,6 @@ public class PeriodicSchedule_SDF {
       // set the vertex distance to 0
       vertexDistance.put(a.getName(), .0);
     }
-    // set the distance between the dummy actor and the rest of actor to 0
-    // for (Edge e : graph.actors.get("dummy").OutputEdges.values())
-    // edgeValue.put(e.id, .0);
-
-    // // print the edge value
-    // for(Edge e: g.edges.values())
-    // System.out.println("v(" + e.sourceActor.id + "," + e.targetActor.id + ") = " + edgeValue.get(e.id));
-
-    // // initialize the source vertex
-    // //vertexDistance.put("dummy", .0); // it is already done in the previous loop
-    // System.out.println("the source vertex = dummy");
-    // System.out.println("G = (" + graph.actors.size() + " , " + graph.edges.size() + ")");
 
     // counter for the V-1 iterations
     int count = 0;
@@ -289,8 +338,6 @@ public class PeriodicSchedule_SDF {
         if (vertexDistance.get(e.getTarget().getName()) < newDistance) {
           // update the distance
           vertexDistance.put(e.getTarget().getName(), newDistance);
-          // update the parent
-          // vertexParent.replace(e.targetActor.id, e.sourceActor.id);
           // we need to perform another iteration
           repete = true;
         }
@@ -299,19 +346,6 @@ public class PeriodicSchedule_SDF {
       count++;
     }
 
-    // check for negative circuit if we complete the v-1 iterations
-    // if (count == g.actors.size() - 1) {
-    // // relax all the edges
-    // for (Edge e : g.edges.values()) {
-    // if (vertexDistance.get(e.targetActor.id) < vertexDistance.get(e.sourceActor.id) + edgeValue.get(e.id)) {
-    // // negative circuit detected
-    // // if a part of the graph is not live the global graph is
-    // // not too
-    // System.out.println("Negativ circuit detected !!");
-    // }
-    // }
-    // }
-
     // remove the dummy actor
     graph.removeVertex(dummy);
 
@@ -319,14 +353,5 @@ public class PeriodicSchedule_SDF {
     for (SDFAbstractVertex a : graph.vertexSet()) {
       a.setPropertyValue("firstExecutionStartDate", vertexDistance.get(a.getName()));
     }
-
-    // Print distance to verify
-    // for (Actor a : g.actors.values()){
-    // a.startDate = vertexDistance.get(a.id);
-    // a.finishDate = a.startDate + a.duration;
-    // System.out.println(a.id + " = " + a.startDate + " to " + a.finishDate);
-    // }
-
   }
-
 }
