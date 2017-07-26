@@ -256,12 +256,11 @@ public class PasteFeature extends AbstractPasteFeature {
       final Fifo originalFifo = fifoEntry.getValue();
       targetPiGraph.getFifos().add(copiedFifo);
 
-      addGraphicalRepresentationForFifo(copiedFifo);
-      final PictogramElement pictogramElementForBusinessObject = getFeatureProvider().getPictogramElementForBusinessObject(copiedFifo);
+      final FreeFormConnection addGraphicalRepresentationForFifo = addGraphicalRepresentationForFifo(copiedFifo);
 
       final Delay delay = originalFifo.getDelay();
       if (delay != null) {
-        copyDelay(pasteContext, copiedFifo, pictogramElementForBusinessObject, delay);
+        copyDelay(pasteContext, copiedFifo, addGraphicalRepresentationForFifo, delay);
       }
 
     }
@@ -281,7 +280,8 @@ public class PasteFeature extends AbstractPasteFeature {
     return (FreeFormConnection) add;
   }
 
-  private void copyDelay(final IPasteContext pasteContext, final Fifo copiedFifo, final PictogramElement pictogramElementForBusinessObject, final Delay delay) {
+  private void copyDelay(final IPasteContext pasteContext, final Fifo copiedFifo, final FreeFormConnection pictogramElementForBusinessObject,
+      final Delay delay) {
     final Delay delayCopy = PiMMUserFactory.instance.copy(delay);
     final AddDelayFeature addDelayFeature = new AddDelayFeature(getFeatureProvider());
     final CustomContext customContext = new CustomContext(new PictogramElement[] { pictogramElementForBusinessObject });
