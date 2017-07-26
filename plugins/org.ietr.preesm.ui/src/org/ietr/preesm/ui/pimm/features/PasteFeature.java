@@ -109,7 +109,7 @@ public class PasteFeature extends AbstractPasteFeature {
       final Pair<Integer, Integer> pair = caluclatePositions.get(vertexCopy);
       final Integer x = pair.getKey();
       final Integer y = pair.getValue();
-      addGraphicalRepresentationForVertex(vertexCopy, copy, x, y);
+      addGraphicalRepresentationForVertex(copy, x, y);
       this.copiedObjects.put(vertex, copy);
 
       autoConnectInputConfigPorts(vertex, copy);
@@ -536,7 +536,7 @@ public class PasteFeature extends AbstractPasteFeature {
   /**
    * Add graphical representation for the vertex copy and its content (that is the input/output ports/configs)
    */
-  public void addGraphicalRepresentationForVertex(final VertexCopy vertexCopyObject, final AbstractVertex vertexModelCopy, final int x, final int y) {
+  public void addGraphicalRepresentationForVertex(final AbstractVertex vertexModelCopy, final int x, final int y) {
     final AddContext addCtxt = new AddContext();
     final Diagram diagram = getDiagram();
 
