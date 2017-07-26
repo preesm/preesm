@@ -18,6 +18,7 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.IPeService;
 import org.eclipse.graphiti.ui.features.AbstractPasteFeature;
@@ -155,7 +156,10 @@ public class PasteFeature extends AbstractPasteFeature {
     return positions;
   }
 
-  private void postProcess() {
+  /**
+   *
+   */
+  public void postProcess() {
     for (final Entry<Parameterizable, Parameterizable> e : this.copiedObjects.entrySet()) {
       final Parameterizable value = e.getValue();
       if (value instanceof ExecutableActor) {
@@ -252,13 +256,7 @@ public class PasteFeature extends AbstractPasteFeature {
       final Fifo originalFifo = fifoEntry.getValue();
       targetPiGraph.getFifos().add(copiedFifo);
 
-      final Anchor sourceAnchor = (Anchor) findPE(copiedFifo.getSourcePort());
-      final Anchor targetAnchor = (Anchor) findPE(copiedFifo.getTargetPort());
-      final AddConnectionContext context = new AddConnectionContext(sourceAnchor, targetAnchor);
-      context.setNewObject(copiedFifo);
-
-      final AddFifoFeature addFifoFeature = new AddFifoFeature(getFeatureProvider());
-      addFifoFeature.execute(context);
+      addGraphicalRepresentationForFifo(copiedFifo);
       final PictogramElement pictogramElementForBusinessObject = getFeatureProvider().getPictogramElementForBusinessObject(copiedFifo);
 
       final Delay delay = originalFifo.getDelay();
@@ -267,6 +265,20 @@ public class PasteFeature extends AbstractPasteFeature {
       }
 
     }
+  }
+
+  /**
+   *
+   */
+  public FreeFormConnection addGraphicalRepresentationForFifo(final Fifo copiedFifo) {
+    final Anchor sourceAnchor = (Anchor) findPE(copiedFifo.getSourcePort());
+    final Anchor targetAnchor = (Anchor) findPE(copiedFifo.getTargetPort());
+    final AddConnectionContext context = new AddConnectionContext(sourceAnchor, targetAnchor);
+    context.setNewObject(copiedFifo);
+
+    final AddFifoFeature addFifoFeature = new AddFifoFeature(getFeatureProvider());
+    final PictogramElement add = addFifoFeature.add(context);
+    return (FreeFormConnection) add;
   }
 
   private void copyDelay(final IPasteContext pasteContext, final Fifo copiedFifo, final PictogramElement pictogramElementForBusinessObject, final Delay delay) {
@@ -525,9 +537,6 @@ public class PasteFeature extends AbstractPasteFeature {
       final int y) {
     final AddContext addCtxt = new AddContext();
     final Diagram diagram = getDiagram();
-    // For simplicity paste all objects at the location given in the
-    // context (no stacking or similar)
-    // TODO: improve location
 
     addCtxt.setLocation(x, y);
     addCtxt.setTargetContainer(diagram);
