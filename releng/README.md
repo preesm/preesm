@@ -767,7 +767,40 @@ This can be run from Eclipse (see previous Howto).
 
 ### Add New Dependency
 
-TODO
+*["One should not reinvent the wheel."](https://en.wikipedia.org/wiki/Reinventing_the_wheel)*
+
+Reusing existing implementations is common and advisable in many situations. Doing it properly requires a little rigor in order to avoid it leading to maintainabilty mess or even legal complication.
+
+#### Licensing Issues
+
+Almost all countries follow some rules about intellectual property. Source code and derived binaries (libraries/executables) fall under these rules. This has led to several legal developments in the past (here is [top 10 for 2015](https://opensource.com/law/16/1/top-10-open-source-legal-developments-2015)). Such development must be avoided:
+
+* In the case of plain source code, do not copy/paste without, at least,  citing the source in a nearby comment;
+* Always check the license title (at least) of the third party tool/library you are using, and make sure it is compatible with the Preesm license. The current Preesm license is the [CeCILL-C](http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html), that is GPL compatible. This [Wikipedia page](https://en.wikipedia.org/wiki/Comparison_of_free_and_open-source_software_licenses) provides a list of licenses and their compatibility with GPL, FSF, Debian, ...
+* When the license is not compatible with CeCILL-C:
+   * Find a compatible alternative;
+   * Create a new, independent, plug-in: As stated in the [GPL license](https://www.gnu.org/licenses/old-licenses/gpl-2.0-faq.en.html#TOCGPLAndPlugins), *"A main program that is separate from its plug-ins makes no requirements for the plug-ins."* Since Preesm can run without a new independent plugin, it makes the plugin free of the CeCILL-C contamination. Thus a license that respects the third party library can be used;
+
+Note: Pieces of software can be multi-licensed, the running license dependending on some arbitrary criteria (research/education, country, price, name, ...). Especially, some tools are provided under academic/research/science/education/... license. It usually means that you can **produce scientific results** using that license, but you can **not publish any tools** directly linked to it. Naturally, the terms of a third party license are unique and one should adapt to it.
+
+
+#### Packaging
+
+Idealy, the third party dependencies should be stored independently from the source code. The Preesm tool uses an [independent P2 repository](https://github.com/preesm/externaldeps) to store its dependencies. New dependencies should be integrated to this repository (follow [this doc](https://github.com/preesm/externaldeps#details)).
+
+##### Prototyping Way
+
+Since using the P2 repository is a little too time consuming and complex, prototypes should use an other, faster and simpler, way to add third party dependencies:
+
+* Copy the Jar in the plug-in that needs it, under `/lib/`;
+* Open the `META-INF/MANIFEST.MF` file, under "Runtime" tab, in the Classpath section (bottom right), click on "Add ..." and select the Jar file;
+* Open the `build.properties` file under the same plugin, and in the "Binary Build" column, make sure the Jar file is selected;
+
+This should make the classes under the Jar available in your plug-in.
+
+##### Things to avoid
+
+* Do not use global/system path variables: there is no garanty other people use the same configuration.
 
 ### Apply a Fix in Graphiti/DFTools
 
