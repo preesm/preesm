@@ -126,6 +126,7 @@ public class PeriodicSchedule_SDF {
    */
 
   public double schedule(SDFGraph graph, Method method, boolean selfLoopEdge) {
+    System.out.println("Scheduling the graph ...");
     double throughput = -1.;
 
     // Step 1: normalize the graph
@@ -134,6 +135,7 @@ public class PeriodicSchedule_SDF {
     // if a periodic schedule exists for the graph
     if (isPeriodic(graph)) {
       System.out.println("This graph admit a periodic schedule !");
+
       // add a self loop edge for each actor if selfLoopEdge = true
       ArrayList<SDFEdge> selfLoopEdgesList = null;
       if (selfLoopEdge) {
@@ -176,27 +178,25 @@ public class PeriodicSchedule_SDF {
    * @param method
    *          Math model or Algorithm
    */
-  public void computeNormalizedPeriod(SDFGraph graph, Method method) {
-    System.out.println("computing Kopt !!");
+  public Fraction computeNormalizedPeriod(SDFGraph graph, Method method) {
+    System.out.println("Computing the normalized period of the graph ...");
     switch (method) {
       case Algorithm: {
         // use one of the known algorithm to compute the optimal K
-        break;
+        return null;
       }
       case LinearProgram_Gurobi: {
         // use the linear programming to compute the optimal K
         PeriodicScheduleModel_Gurobi model = new PeriodicScheduleModel_Gurobi();
-        model.computeNormalizedPeriod(graph);
-        break;
+        return model.computeNormalizedPeriod(graph);
       }
       case LinearProgram_GLPK: {
         // use the linear programming to compute the optimal K
         PeriodicScheduleModel_GLPK model = new PeriodicScheduleModel_GLPK();
-        model.computeNormalizedPeriod(graph);
-        break;
+        return model.computeNormalizedPeriod(graph);
       }
       default:
-        break;
+        return null;
     }
   }
 
@@ -208,6 +208,7 @@ public class PeriodicSchedule_SDF {
    * @return the maximum throughput of the periodic schedule
    */
   public double computeActorsPeriod(SDFGraph graph) {
+    System.out.println("Computing Actors duration ...");
     // get the normalized period of the graph
     Fraction k = (Fraction) graph.getPropertyBean().getValue("normalizedPeriod");
 
@@ -238,6 +239,7 @@ public class PeriodicSchedule_SDF {
    * @return latency
    */
   public double computeGraphLatency(SDFGraph graph) {
+    System.out.println("Computing graph latency ...");
     // formule : S(t) = S(t0) + w*t
     // finish date = S(t) + L
     // for each actor computes the finish date of its last execution (RV)
@@ -269,6 +271,7 @@ public class PeriodicSchedule_SDF {
    * @return graph period
    */
   public double computeGraphPeriod(SDFGraph graph) {
+    System.out.println("Computing graph period ...");
     // get an arbitrary actor from the graph
     SDFAbstractVertex actor = graph.vertexSet().iterator().next();
     double w = (double) actor.getPropertyBean().getValue("executionPeriod");
@@ -284,6 +287,7 @@ public class PeriodicSchedule_SDF {
    *          SDF graph
    */
   public void computeActorsFirstExecutionStartDate(SDFGraph graph) {
+    System.out.println("Computing actors first execution start date ...");
     /*
      * see Ben Abid paper : step 1: add a dummy vertex to the graph step 2: connect the new actor to every actor of the graph with a null value step 3: use the
      * bellman ford algorithm to compute the starting times as the longest path from the dummy node to all actors

@@ -106,7 +106,7 @@ public class PeriodicScheduleModel_Gurobi {
 
     // set he normalized period
     SDF.setPropertyValue("normalizedPeriod", period);
-    System.out.println("Kopt found !! " + period);
+    System.out.println("Normalized period found K = " + period);
 
     return period;
 

@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
@@ -63,8 +64,7 @@ public class ThroughputPlugin extends AbstractTaskImplementation {
     SR, // Schedule-Replace technique
     ESR, // Evaluate-Schedule-Replace method
     HPeriodic, // Hierarchical Periodic Schedule method
-    Periodic, // Periodic schedule based method
-    ASAPSDF3 // ASAP based method (SDF3)
+    Classic, // Based on Flattening the hierarchy
   }
 
   // Plug-in parameters
@@ -81,7 +81,24 @@ public class ThroughputPlugin extends AbstractTaskImplementation {
     ThroughputMethod method = ThroughputMethod.valueOf(parameters.get("method"));
 
     // test the inputs
-    test.start(inputGraph, scenario);
+    // test.start(inputGraph, scenario);
+
+    // Pahse 0: Copy actors duration from the scenario to actors properties
+    for (SDFAbstractVertex actor : inputGraph.getAllVertices()) {
+      if (actor.getKind() == "vertex") {
+        if (actor.getGraphDescription() == null) {
+          // if atomic actor then copy the duration indicated in the scenario
+          double duration = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
+          actor.setPropertyValue("duration", duration);
+        } else {
+          // if hierarchical actor then as default the duration is 1 (the hierarchical actor will be replaced by its subgraph)
+          actor.setPropertyValue("duration", 1.);
+        }
+      } else {
+        // As default, the duration interfaces in neglected (duration = 0)
+        actor.setPropertyValue("duration", 0.);
+      }
+    }
 
     // Compute the throughput of the graph
     double throughput = 0;
@@ -104,11 +121,10 @@ public class ThroughputPlugin extends AbstractTaskImplementation {
         throughput = HPeriodic.evaluate(inputGraph, scenario);
         break;
 
-      case Periodic:
-        // Periodic schedule based method
-        // TODO : convert first the IBSDF Graph to a srSDR graph
-        PeriodicSchedule periodic = new PeriodicSchedule();
-        throughput = periodic.evaluate(inputGraph, scenario);
+      case Classic:
+        // Based on flattening the hierarchy into a Flat srSDF graph
+        ClassicalMethod classicalMethod = new ClassicalMethod();
+        throughput = classicalMethod.evaluate(inputGraph, scenario);
         break;
 
       default:
