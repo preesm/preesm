@@ -44,7 +44,7 @@ public class test {
     // testSrSDFConversion(g, scenario);
     //
     // // test the creation of an IBSDF graph
-    testIBSDFGraphCreation(scenario);
+    // testIBSDFGraphCreation(scenario);
 
     // test structure of the graph
     // testStructure(graph, scenario);
@@ -340,7 +340,11 @@ public class test {
     System.out.println("SDF graph created !!");
     System.out.println("Print the graph ...");
 
-    testSDFGraph(graph, scenario);
+    for (SDFAbstractVertex actor : graph.vertexSet()) {
+      System.out.println("Function:test: duration=" + (Double) actor.getPropertyBean().getValue("duration") + " actorName=" + actor.getName());
+    }
+
+    // testSDFGraph(graph, scenario);
 
     System.out.println("----------------------------");
     return graph;
@@ -500,7 +504,7 @@ public class test {
    *          contains actors duration
    */
   private static void testPeriodicSchedule(SDFGraph graph, PreesmScenario scenario) {
-    System.out.println("------ Test srSDF convertion ------");
+    System.out.println("------ Test Periodic ------");
 
     // copy the duration from scenario to graph properties
 
@@ -508,14 +512,13 @@ public class test {
     SDFGraph SDF = testSDFGraphCreation(scenario);
 
     PeriodicSchedule_SDF periodic = new PeriodicSchedule_SDF();
-    // double th = periodic.schedule(SDF, PeriodicSchedule_SDF.Method.LinearProgram_Gurobi, false);
-    double th = 0;
+    double th = periodic.schedule(SDF, PeriodicSchedule_SDF.Method.LinearProgram_Gurobi, false);
     System.out.println("SDF throughput = " + th);
 
     // convert the SDF graph to a srSDF graph
-    SDFGraph srSDF = SDFTransformer.convertToSrSDF(graph);
+    SDFGraph srSDF = SDFTransformer.convertToSrSDF(SDF);
     // print the srSDF graph
-    testSDFGraph(srSDF, scenario);
+    // testSDFGraph(srSDF, scenario);
 
     th = periodic.schedule(srSDF, PeriodicSchedule_SDF.Method.LinearProgram_Gurobi, false);
     System.out.println("srSDF throughput = " + th);

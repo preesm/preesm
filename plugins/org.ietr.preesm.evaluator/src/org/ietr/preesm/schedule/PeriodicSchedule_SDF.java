@@ -61,7 +61,7 @@ public class PeriodicSchedule_SDF {
    */
 
   public double schedule(SDFGraph graph, Method method, boolean selfLoopEdge) {
-    Fraction throughput = Fraction.getFraction(-1);
+    double throughput = -1.;
 
     // Step 1: normalize the graph
     SDFTransformer.normalize(graph);
@@ -101,7 +101,7 @@ public class PeriodicSchedule_SDF {
       // return -1 as an error
     }
 
-    return throughput.doubleValue();
+    return throughput;
   }
 
   /**
@@ -141,7 +141,7 @@ public class PeriodicSchedule_SDF {
    *          SDF graph
    * @return the maximum throughput of the periodic schedule
    */
-  public Fraction computeActorsPeriod(SDFGraph graph) {
+  public double computeActorsPeriod(SDFGraph graph) {
     // get the normalized period of the graph
     Fraction k = (Fraction) graph.getPropertyBean().getValue("normalizedPeriod");
 
@@ -150,7 +150,7 @@ public class PeriodicSchedule_SDF {
 
     // define the execution period of each actor of the graph as w=k*z
     for (SDFAbstractVertex actor : graph.vertexSet()) {
-      Fraction w = k.multiplyBy(Fraction.getFraction((int) actor.getPropertyBean().getValue("normalizedRate")));
+      Fraction w = k.multiplyBy(Fraction.getFraction((Double) actor.getPropertyBean().getValue("normalizedRate")));
       actor.setPropertyValue("executionPeriod", w.doubleValue());
 
       // test if the current execution period is greater than maxW
@@ -160,7 +160,7 @@ public class PeriodicSchedule_SDF {
     }
 
     // return the maximum throughput as 1/maxW
-    Fraction maxThroughput = Fraction.getFraction(maxW.getDenominator(), maxW.getNumerator());
+    double maxThroughput = 1 / maxW.doubleValue();
     return maxThroughput;
   }
 

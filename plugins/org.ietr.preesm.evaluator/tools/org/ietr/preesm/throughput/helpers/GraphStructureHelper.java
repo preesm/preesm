@@ -109,8 +109,8 @@ public abstract class GraphStructureHelper {
    *          the actor base
    * @return the created actor
    */
-  public static SDFVertex addActor(SDFGraph graph, String actorName, SDFGraph subgraph, Integer rv, Double l, Double z, SDFAbstractVertex Base) {
-    SDFVertex actor = new SDFVertex(graph);
+  public static SDFAbstractVertex addActor(SDFGraph graph, String actorName, SDFGraph subgraph, Integer rv, Double l, Double z, SDFAbstractVertex Base) {
+    SDFAbstractVertex actor = new SDFVertex(graph);
     // set the name
     actor.setId(actorName);
     actor.setName(actorName);

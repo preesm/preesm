@@ -31,7 +31,7 @@ public class PeriodicScheduleModel_Gurobi {
     // timerPerSche.start();
 
     edgeVar = new Hashtable<String, GRBVar>(SDF.edgeSet().size());
-    Fraction period = Fraction.getFraction(0);
+    Fraction period = Fraction.getFraction(0.);
 
     try {
       // ----- create the Gurobi model ---------------------------------
@@ -49,7 +49,7 @@ public class PeriodicScheduleModel_Gurobi {
       // ----- Objectif function -------------------------------------
       GRBLinExpr expr = new GRBLinExpr();
       for (SDFEdge e : SDF.edgeSet()) {
-        expr.addTerm((double) e.getSource().getPropertyBean().getValue("duration"), edgeVar.get((String) e.getPropertyBean().getValue("edgeName")));
+        expr.addTerm((Double) e.getSource().getPropertyBean().getValue("duration"), edgeVar.get((String) e.getPropertyBean().getValue("edgeName")));
       }
       model.setObjective(expr, GRB.MAXIMIZE);
 
@@ -87,8 +87,12 @@ public class PeriodicScheduleModel_Gurobi {
       // ----- solve the problem -------------------------------------
       model.optimize();
 
-      if (model.get(GRB.DoubleAttr.ObjVal) > 0) {
-        period = Fraction.getFraction(model.get(GRB.DoubleAttr.ObjVal));
+      if (model.get(GRB.IntAttr.Status) == GRB.Status.INFEASIBLE) {
+        System.err.println("Model is infeasible or unbounded");
+      } else {
+        if (model.get(GRB.DoubleAttr.ObjVal) > 0) {
+          period = Fraction.getFraction(model.get(GRB.DoubleAttr.ObjVal));
+        }
       }
       model.dispose();
       env.dispose();
