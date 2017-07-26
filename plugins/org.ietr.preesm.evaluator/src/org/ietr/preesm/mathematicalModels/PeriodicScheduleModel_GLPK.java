@@ -2,7 +2,7 @@ package org.ietr.preesm.mathematicalModels;
 
 import java.util.Hashtable;
 import java.util.Map.Entry;
-import org.apache.commons.lang.math.Fraction;
+import org.apache.commons.lang3.math.Fraction;
 import org.gnu.glpk.GLPK;
 import org.gnu.glpk.SWIGTYPE_p_double;
 import org.gnu.glpk.SWIGTYPE_p_int;

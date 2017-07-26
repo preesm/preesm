@@ -7,7 +7,7 @@ import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
 import java.util.Hashtable;
-import org.apache.commons.lang.math.Fraction;
+import org.apache.commons.lang3.math.Fraction;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -94,7 +94,7 @@ public class PeriodicScheduleModel_Gurobi {
       env.dispose();
     } catch (GRBException e) {
       // TODO Auto-generated catch block
-      // e1.printStackTrace();
+      e.printStackTrace();
     }
 
     // timerPerSche.stop();

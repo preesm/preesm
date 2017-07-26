@@ -508,8 +508,8 @@ public class test {
     SDFGraph SDF = testSDFGraphCreation(scenario);
 
     PeriodicSchedule_SDF periodic = new PeriodicSchedule_SDF();
-    double th = periodic.schedule(SDF, PeriodicSchedule_SDF.Method.LinearProgram_Gurobi, false);
-
+    // double th = periodic.schedule(SDF, PeriodicSchedule_SDF.Method.LinearProgram_Gurobi, false);
+    double th = 0;
     System.out.println("SDF throughput = " + th);
 
     // convert the SDF graph to a srSDF graph
