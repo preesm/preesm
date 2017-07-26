@@ -115,7 +115,7 @@ public class PasteFeature extends AbstractPasteFeature {
       autoConnectInputConfigPorts(vertex, copy);
     }
 
-    connectFifos(context);
+    connectFifos();
 
     if (getPiGraph() != getOriginalPiGraph()) {
       connectDependencies();
@@ -240,7 +240,7 @@ public class PasteFeature extends AbstractPasteFeature {
     return sourceOk && targetOk;
   }
 
-  private void connectFifos(final IPasteContext pasteContext) {
+  private void connectFifos() {
     final EList<Fifo> originalFifos = getOriginalPiGraph().getFifos();
     final PiGraph targetPiGraph = getPiGraph();
 
@@ -248,10 +248,10 @@ public class PasteFeature extends AbstractPasteFeature {
 
     copyFifos(originalFifos, newFifos);
 
-    addFifos(pasteContext, targetPiGraph, newFifos);
+    addFifos(targetPiGraph, newFifos);
   }
 
-  private void addFifos(final IPasteContext pasteContext, final PiGraph targetPiGraph, final Map<Fifo, Fifo> newFifos) {
+  private void addFifos(final PiGraph targetPiGraph, final Map<Fifo, Fifo> newFifos) {
     for (final Entry<Fifo, Fifo> fifoEntry : newFifos.entrySet()) {
       final Fifo copiedFifo = fifoEntry.getKey();
       final Fifo originalFifo = fifoEntry.getValue();
@@ -261,7 +261,7 @@ public class PasteFeature extends AbstractPasteFeature {
 
       final Delay delay = originalFifo.getDelay();
       if (delay != null) {
-        copyDelay(pasteContext, copiedFifo, addGraphicalRepresentationForFifo, delay);
+        copyDelay(copiedFifo, addGraphicalRepresentationForFifo, delay);
       }
 
     }
@@ -281,8 +281,7 @@ public class PasteFeature extends AbstractPasteFeature {
     return (FreeFormConnection) add;
   }
 
-  private void copyDelay(final IPasteContext pasteContext, final Fifo copiedFifo, final FreeFormConnection pictogramElementForBusinessObject,
-      final Delay delay) {
+  private void copyDelay(final Fifo copiedFifo, final FreeFormConnection pictogramElementForBusinessObject, final Delay delay) {
     final Delay delayCopy = PiMMUserFactory.instance.copy(delay);
     final AddDelayFeature addDelayFeature = new AddDelayFeature(getFeatureProvider());
 
