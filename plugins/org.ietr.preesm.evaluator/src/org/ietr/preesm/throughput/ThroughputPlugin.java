@@ -93,10 +93,12 @@ public class ThroughputPlugin extends AbstractTaskImplementation {
         } else {
           // if hierarchical actor then as default the duration is 1 (the hierarchical actor will be replaced by its subgraph)
           actor.setPropertyValue("duration", 1.);
+          scenario.getTimingManager().setTiming(actor.getId(), "x86", 1);
         }
       } else {
         // As default, the duration interfaces in neglected (duration = 0)
         actor.setPropertyValue("duration", 0.);
+        scenario.getTimingManager().setTiming(actor.getId(), "x86", 0);
       }
     }
 

@@ -23,6 +23,8 @@ public class ClassicalMethod {
    * @return throughput of the graph
    */
   public double evaluate(SDFGraph inputGraph, PreesmScenario scenario) {
+    System.out.println("Computing the throughput of the graph using classical method ...");
+
     // Phase 1: convert the IBSDF graph to a flat srSDF graph
     System.out.println("Phase 1: convert the IBSDF graph to a flat srSDF graph");
     SDFGraph srSDF = IBSDFTransformer.convertToSrSDF(inputGraph, false);

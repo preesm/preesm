@@ -15,7 +15,7 @@ import org.ietr.preesm.throughput.helpers.GraphSimulationHelper;
  *
  */
 public class ASAPSchedule_SDF {
-  private GraphSimulationHelper                                         simulator;  // simulator helper
+  private GraphSimulationHelper                                    simulator;  // simulator helper
   private Double                                                   dur1Iter;   // duration of one iteration of a graph
   private Hashtable<Double, Hashtable<SDFAbstractVertex, Integer>> executions; // list of ready executions to finish
 
