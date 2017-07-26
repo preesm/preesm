@@ -79,6 +79,7 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.util.DependencyCycleDetector;
 import org.ietr.preesm.experiment.model.pimm.util.FifoCycleDetector;
+import org.ietr.preesm.ui.pimm.diagram.PiMMDiagramEditor;
 import org.ietr.preesm.ui.pimm.features.AddDelayFeature;
 import org.ietr.preesm.ui.pimm.features.AddParameterFeature;
 import org.ietr.preesm.ui.pimm.features.DeleteDelayFeature;
@@ -399,6 +400,10 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   public void execute(final ICustomContext context) {
     final Diagram diagram = getDiagram();
 
+    // some unexplained behavior makes the auto layout feature crash when the selection is not empty.
+    // exact cause is not uncovered yet ...
+    emptyEditorSelcetion(diagram);
+
     // Check if there are parameterization cycles in the graph.
     // In such a case, do not layout !
     final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(diagram);
@@ -427,6 +432,11 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     // Step 4 - Layout Parameters and dependencies
     layoutParameters(diagram);
+  }
+
+  private void emptyEditorSelcetion(final Diagram diagram) {
+    final PiMMDiagramEditor activeEditor = (PiMMDiagramEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+    activeEditor.selectPictogramElements(new PictogramElement[] { diagram });
   }
 
   /**
