@@ -5,6 +5,7 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* Add menu entry to call the .diagram generator. This allows to generate the .diagram file from a PiMM Model (.pi) file;
 
 ### Changes
 * Upgrade to Eclipse Oxygen;
