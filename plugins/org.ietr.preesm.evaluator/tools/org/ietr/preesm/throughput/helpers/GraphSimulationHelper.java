@@ -8,7 +8,6 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.Timing;
 
 /**
  * @author hderoui
@@ -47,12 +46,15 @@ public class GraphSimulationHelper {
     actorsInfo = new Hashtable<SDFAbstractVertex, ActorExtendedInfo>(graph.vertexSet().size());
     for (SDFAbstractVertex actor : graph.vertexSet()) {
 
-      // get the actor duration from the scenario. If default set to 0;
-      double dur = 0;
-      Timing timing = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86");
-      if (timing.getVertexId() != "default") {
-        dur = timing.getTime();
-      }
+      // // get the actor duration from the scenario. If default set to 0;
+      // double dur = 0;
+      // Timing timing = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86");
+      // if (timing.getVertexId() != "default") {
+      // dur = timing.getTime();
+      // }
+
+      // get the duration if the actor from its "duration" property
+      double dur = (double) actor.getPropertyBean().getValue("duration");
 
       ActorExtendedInfo info = new ActorExtendedInfo(actor, dur, 0, 0, 0, 0);
       actorsInfo.put(actor, info);
