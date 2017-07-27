@@ -45,13 +45,13 @@ class ExampleGraphs {
 						 						dst
 						 					}
 						 	
-			val outPort = new SDFSourceInterfaceVertex
+			val outPort = new SDFSinkInterfaceVertex
 			outPort.setName(sourceOutName)
-			source.addSource(outPort)
+			source.addSink(outPort)
 			
-			val inPort = new SDFSinkInterfaceVertex
+			val inPort = new SDFSourceInterfaceVertex
 			inPort.setName(targetInName)
-			target.addSink(inPort)
+			target.addSource(inPort)
 			
 			outputGraph.addEdge(source, outPort, target, inPort, new SDFIntEdgePropertyType(prod), new SDFIntEdgePropertyType(cons), new SDFIntEdgePropertyType(delay))				
 			return this
@@ -74,6 +74,17 @@ class ExampleGraphs {
 		Util.provideAllGraphs.forEach[sdf |
 			Assert.assertTrue(sdf.schedulable) 
 		]
+	}
+	
+	/**
+	 * Check that the graphs can be cleaned
+	 */
+	@org.junit.Test
+	public def void sdfCanBeCleaned() {
+		Util.provideAllGraphs.forEach[sdf |
+			// Ideally this does not throw any exception
+			sdf.clean()
+		]		
 	}
 	
 	/**
