@@ -31,7 +31,7 @@ public class ClassicalMethod {
 
     // Phase 2: compute the throughput of the flat srSDF graph using the periodic schedule
     System.out.println("Phase 2: compute the throughput of the flat srSDF graph using the periodic schedule");
-    // -> Step 1: normalize the graph (using the normalization process or just by converting the srSDF graph to an HSDF graph)
+    // -> Step 1: normalize the graph
     SDFTransformer.normalize(srSDF);
 
     // -> Step 2: compute the normalized period
