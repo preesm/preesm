@@ -37,7 +37,7 @@
  */
 package org.ietr.preesm.ui.pimm.features;
 
-import org.eclipse.core.internal.resources.File;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
@@ -45,11 +45,6 @@ import org.eclipse.graphiti.features.impl.AbstractAddFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class AddRefinementFeature.
- */
-@SuppressWarnings("restriction")
 /**
  * When a file is drag and dropped on an actor, the feature attempts to set this file as the refinement of the actor.
  *
@@ -77,15 +72,11 @@ public class AddRefinementFeature extends AbstractAddFeature {
    */
   @Override
   public boolean canAdd(final IAddContext context) {
-    if (!(context.getNewObject() instanceof File)) {
+    if (!(context.getNewObject() instanceof IFile)) {
       return false;
     } else {
-      final String fileExtension = ((File) context.getNewObject()).getFileExtension();
-
-      if (fileExtension.equals("pi") || fileExtension.equals("h") || fileExtension.equals("idl")) {
-        return true;
-      }
-      return false;
+      final String fileExtension = ((IFile) context.getNewObject()).getFileExtension();
+      return fileExtension.equals("pi") || fileExtension.equals("h") || fileExtension.equals("idl");
     }
   }
 
@@ -98,7 +89,7 @@ public class AddRefinementFeature extends AbstractAddFeature {
   public PictogramElement add(final IAddContext context) {
     final SetActorRefinementFeature setRefinementFeature = new SetActorRefinementFeature(getFeatureProvider());
 
-    final IPath newFilePath = ((File) context.getNewObject()).getFullPath();
+    final IPath newFilePath = ((IFile) context.getNewObject()).getFullPath();
 
     final Actor actor = (Actor) getBusinessObjectForPictogramElement(context.getTargetContainer());
 

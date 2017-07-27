@@ -56,7 +56,6 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DefaultMarkerBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramBehavior;
-import org.eclipse.graphiti.ui.internal.GraphitiUIPlugin;
 import org.eclipse.graphiti.ui.internal.T;
 import org.eclipse.swt.widgets.Display;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -64,7 +63,6 @@ import org.ietr.preesm.experiment.model.pimm.serialize.PiResourceImpl;
 import org.ietr.preesm.pimm.algorithm.checker.PiMMAlgorithmChecker;
 import org.ietr.preesm.ui.Activator;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class inheriting from the {@link DefaultMarkerBehavior}. This class was created to define a custom {@link DefaultMarkerBehavior} that does not reset problems
  * related to graphs on startup of the editor.
@@ -72,7 +70,6 @@ import org.ietr.preesm.ui.Activator;
  * @author kdesnos
  *
  */
-@SuppressWarnings("restriction")
 public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
 
   /**
@@ -140,11 +137,9 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
    *
    * @param resource
    *          the resource
-   * @param exception
-   *          the exception
    * @return the diagnostic
    */
-  public Diagnostic checkPiResourceProblems(final Resource resource, final Exception exception) {
+  public Diagnostic checkPiResourceProblems(final Resource resource) {
     // Check for errors before saving
     final PiMMAlgorithmChecker checker = new PiMMAlgorithmChecker();
 
@@ -153,21 +148,15 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
       final BasicDiagnostic result = new BasicDiagnostic();
       try {
         final Diagram diagram = this.diagramBehavior.getDiagramContainer().getDiagramTypeProvider().getDiagram();
-        if ((resource != null) && !resource.getContents().isEmpty() && !checker.checkGraph((PiGraph) resource.getContents().get(0))) {
+        if (!resource.getContents().isEmpty() && !checker.checkGraph((PiGraph) resource.getContents().get(0))) {
           // Warnings
           for (final Entry<String, EObject> msgs : checker.getWarningMsgs().entrySet()) {
             final String msg = msgs.getKey();
-            // Diagnostic for .pi file, removed for simplicity
-            //
-            // BasicDiagnostic d = new
-            // BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.WARNING,
-            // Activator.PLUGIN_ID, 0, msg, new Object[] {
-            // msgs.getValue() });
-            // result.add(d);
             final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, msgs.getValue());
-            final String uriFragment = ((EObject) pes.get(0)).eResource().getURIFragment(pes.get(0));
+            final PictogramElement pictogramElement = pes.get(0);
+            final String uriFragment = pictogramElement.eResource().getURIFragment(pictogramElement);
             final BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.WARNING, Activator.PLUGIN_ID, 0, msg,
-                new Object[] { pes.get(0), uriFragment });
+                new Object[] { pictogramElement, uriFragment });
 
             result.add(d);
           }
@@ -175,15 +164,11 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
           // Errors
           for (final Entry<String, EObject> msgs : checker.getErrorMsgs().entrySet()) {
             final String msg = msgs.getKey();
-            // Diagnostic for .pi file, removed for simplicity
-            //
-            // BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.ERROR,
-            // Activator.PLUGIN_ID, 0, msg, new Object[] { resource });
-            // result.add(d);
             final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, msgs.getValue());
-            final String uriFragment = ((EObject) pes.get(0)).eResource().getURIFragment(pes.get(0));
+            final PictogramElement pictogramElement = pes.get(0);
+            final String uriFragment = pictogramElement.eResource().getURIFragment(pictogramElement);
             final BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.ERROR, Activator.PLUGIN_ID, 0, msg,
-                new Object[] { pes.get(0), uriFragment });
+                new Object[] { pictogramElement, uriFragment });
 
             result.add(d);
           }
@@ -225,7 +210,7 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
     final TransactionalEditingDomain editingDomain = this.diagramBehavior.getEditingDomain();
     if (this.updateProblemIndication && (editingDomain != null)) {
       final ResourceSet resourceSet = editingDomain.getResourceSet();
-      final BasicDiagnostic diagnostic = new BasicDiagnostic(Diagnostic.OK, GraphitiUIPlugin.PLUGIN_ID, 0, null, new Object[] { resourceSet });
+      final BasicDiagnostic diagnostic = new BasicDiagnostic(Diagnostic.OK, Activator.PLUGIN_ID, 0, null, new Object[] { resourceSet });
       for (final Diagnostic childDiagnostic : this.resourceToDiagnosticMap.values()) {
         if (childDiagnostic.getSeverity() != Diagnostic.OK) {
           diagnostic.add(childDiagnostic);
@@ -258,24 +243,28 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
       if (notification.getNotifier() instanceof PiResourceImpl) {
         switch (notification.getFeatureID(Resource.class)) {
           case Resource.RESOURCE__IS_LOADED:
-          case Resource.RESOURCE__IS_MODIFIED: {
-            final Resource resource = (Resource) notification.getNotifier();
-            final Diagnostic diagnostic = checkPiResourceProblems(resource, null);
-            if (diagnostic.getSeverity() != Diagnostic.OK) {
-              PiMMMarkerBehavior.this.resourceToDiagnosticMap.put(resource, diagnostic);
-            } else {
-              PiMMMarkerBehavior.this.resourceToDiagnosticMap.remove(resource);
-            }
-
-            if (PiMMMarkerBehavior.this.updateProblemIndication) {
-              Display.getDefault().asyncExec(() -> refreshProblemIndication());
-            }
+          case Resource.RESOURCE__IS_MODIFIED:
+            notify(notification);
             break;
-          }
           default:
+            // nothing
         }
       } else {
         super.notifyChanged(notification);
+      }
+    }
+
+    private void notify(final Notification notification) {
+      final Resource resource = (Resource) notification.getNotifier();
+      final Diagnostic diagnostic = checkPiResourceProblems(resource);
+      if (diagnostic.getSeverity() != Diagnostic.OK) {
+        PiMMMarkerBehavior.this.resourceToDiagnosticMap.put(resource, diagnostic);
+      } else {
+        PiMMMarkerBehavior.this.resourceToDiagnosticMap.remove(resource);
+      }
+
+      if (PiMMMarkerBehavior.this.updateProblemIndication) {
+        Display.getDefault().asyncExec(() -> refreshProblemIndication());
       }
     }
 

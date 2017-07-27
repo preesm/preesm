@@ -38,7 +38,7 @@
 package org.ietr.preesm.ui.pimm.diagram;
 
 import java.util.ArrayList;
-import org.eclipse.core.internal.resources.File;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICopyFeature;
@@ -164,7 +164,6 @@ import org.ietr.preesm.ui.pimm.features.UpdateDiagramFeature;
 import org.ietr.preesm.ui.pimm.features.UpdatePortFeature;
 import org.ietr.preesm.ui.pimm.layout.AutoLayoutFeature;
 
-// TODO: Auto-generated Javadoc
 /**
  * {@link DefaultFeatureProvider} for the {@link Diagram} with type {@link PiMMFeatureProvider}.
  *
@@ -172,7 +171,6 @@ import org.ietr.preesm.ui.pimm.layout.AutoLayoutFeature;
  * @author jheulot
  *
  */
-@SuppressWarnings("restriction")
 public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
   /**
@@ -242,7 +240,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       return new AddDependencyFeature(this);
     }
 
-    if (newObject instanceof File) {
+    if (newObject instanceof IFile) {
       if (getBusinessObjectForPictogramElement(context.getTargetContainer()) instanceof Actor) {
         return new AddRefinementFeature(this);
       }
