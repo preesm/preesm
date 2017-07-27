@@ -28,11 +28,13 @@ import org.eclipse.graphiti.mm.pictograms.PictogramLink;
 import org.eclipse.graphiti.mm.pictograms.PictogramsFactory;
 import org.eclipse.graphiti.platform.IDiagramBehavior;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.graphiti.ui.editor.IDiagramEditorInput;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorDescriptor;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
@@ -58,9 +60,6 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
   private static final IWorkspace     WORKSPACE      = ResourcesPlugin.getWorkspace();
   private static final IWorkspaceRoot WORKSPACE_ROOT = WORKSPACE.getRoot();
 
-  // TODO remove
-  private static final boolean BYPASS_CONFIRM_DIALOG = WORKSPACE != WORKSPACE.getRoot();
-
   @Override
   public Object execute(ExecutionEvent event) throws ExecutionException {
 
@@ -76,10 +75,12 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
       boolean diagramAlreadyExists = checkExists(diagramFilePath);
 
       int userDecision = SWT.OK;
-      if (!BYPASS_CONFIRM_DIALOG && diagramAlreadyExists) {
+      if (diagramAlreadyExists) {
         userDecision = askUserConfirmation(shell, diagramFilePath);
+
       }
       if (!diagramAlreadyExists || userDecision == SWT.OK) {
+        closeEditorIfOpen(diagramFilePath);
         // Get PiGraph, init empty Diagram, and link them together
         PiGraph graph = ScenarioParser.getPiGraph(fullPath.toString());
         Diagram diagram = Graphiti.getPeCreateService().createDiagram("PiMM", graph.getName(), true);
@@ -97,6 +98,26 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
     }
 
     return null;
+  }
+
+  private void closeEditorIfOpen(final IPath diagramFilePath) {
+    final IWorkbench workbench = Activator.getDefault().getWorkbench();
+    final IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
+    final IEditorPart activeEditor = page.getActiveEditor();
+    if (activeEditor instanceof PiMMDiagramEditor) {
+      PiMMDiagramEditor diagEditor = (PiMMDiagramEditor) activeEditor;
+      // check if current diagram editor targets the diagram file we want to overwrite
+      final IDiagramEditorInput diagramEditorInput = diagEditor.getDiagramEditorInput();
+      final URI uri = diagramEditorInput.getUri();
+      final URI trimFragment = uri.trimFragment();
+      final URI createPlatformResourceURI = URI.createPlatformResourceURI(diagramFilePath.toString(), false);
+      final boolean equals = trimFragment.equals(createPlatformResourceURI);
+      if (equals) {
+        // close current editor
+        ((PiMMDiagramEditor) activeEditor).close();
+      }
+    }
+
   }
 
   private int askUserConfirmation(final Shell shell, final IPath diagramFilePath) {
