@@ -633,25 +633,29 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     final List<Parameter> paramVertOrder = new LinkedList<>(stagedParameters.get(stagedParameters.size() - 1));
     for (int stageIdx = stagedParameters.size() - 2; stageIdx >= 0; stageIdx--) {
       for (final Parameter param : stagedParameters.get(stageIdx)) {
-        // Find index of successors in paramVertOrder
-        int lastIdx = -1;
-        int firstIdx = -1;
-        for (final Dependency dependency : param.getOutgoingDependencies()) {
-          final Object getter = dependency.getGetter().eContainer();
-          if (getter instanceof Parameter) {
-            final int paramOrder = paramVertOrder.indexOf(getter);
-            firstIdx = ((firstIdx == -1) || (paramOrder < firstIdx)) ? paramOrder : firstIdx;
-            lastIdx = (paramOrder > lastIdx) ? paramOrder : lastIdx;
-          }
-        }
-
-        // Insert in the middle of param indexes
-        lastIdx = (lastIdx == -1) ? 0 : lastIdx;
-        firstIdx = (firstIdx == -1) ? 0 : firstIdx;
-        paramVertOrder.add((lastIdx + firstIdx + 1) / 2, param);
+        reorderParameter(paramVertOrder, param);
       }
     }
     return paramVertOrder;
+  }
+
+  private void reorderParameter(final List<Parameter> paramVertOrder, final Parameter param) {
+    // Find index of successors in paramVertOrder
+    int lastIdx = -1;
+    int firstIdx = -1;
+    for (final Dependency dependency : param.getOutgoingDependencies()) {
+      final Object getter = dependency.getGetter().eContainer();
+      if (getter instanceof Parameter) {
+        final int paramOrder = paramVertOrder.indexOf(getter);
+        firstIdx = ((firstIdx == -1) || (paramOrder < firstIdx)) ? paramOrder : firstIdx;
+        lastIdx = (paramOrder > lastIdx) ? paramOrder : lastIdx;
+      }
+    }
+
+    // Insert in the middle of param indexes
+    lastIdx = (lastIdx == -1) ? 0 : lastIdx;
+    firstIdx = (firstIdx == -1) ? 0 : firstIdx;
+    paramVertOrder.add((lastIdx + firstIdx + 1) / 2, param);
   }
 
   /*
@@ -714,103 +718,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
       for (final Dependency dependency : param.getOutgoingDependencies()) {
         processedDependencies.add(dependency);
-
-        // Get the polyline
-        final FreeFormConnection ffc = DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, dependency);
-
-        // Get the type of the getter
-        final EObject getter = dependency.getGetter().eContainer();
-        if (getter instanceof Parameter) {
-          // Get stage
-          final int getterStage = getParameterStage(stagedParameters, (Parameter) getter);
-          // layout only if getter is more than one stage away from
-          // setter
-          final int xPosition = this.paramXPositions.get(param);
-          final int yPosition = this.yParamInitPos - ((stagedParameters.size() - 1 - (getterStage - 1)) * AutoLayoutFeature.Y_SPACE_PARAM);
-          final Point bPoint = Graphiti.getGaCreateService().createPoint(xPosition, yPosition);
-          ffc.getBendpoints().add(bPoint);
-
-        } else {
-
-          // Add a first point below the actor
-          currentYUsed = true;
-          final int xPosition = this.paramXPositions.get(param);
-          final Point bPoint = Graphiti.getGaCreateService().createPoint(xPosition, currentY);
-          ffc.getBendpoints().add(0, bPoint);
-
-          if ((getter instanceof DataInputInterface) || (getter instanceof DataOutputInterface)) {
-
-            // Get position of target
-            final PictogramElement getterPE = DiagramPiGraphLinkHelper.getActorPE(diagram, (AbstractActor) getter);
-
-            // Get the Graphics algorithm
-            final GraphicsAlgorithm actorGA = getterPE.getGraphicsAlgorithm();
-
-            // Check if actor is first of its stage
-            final int stage = getActorStage((AbstractActor) getter, this.stagedActors);
-            final int index = this.stagedActors.get(stage).indexOf(getter);
-
-            if (index == 0) {
-              // Add a new bendpoint on top of it
-              ffc.getBendpoints().add(ffc.getBendpoints().size(),
-                  Graphiti.getGaCreateService().createPoint(actorGA.getX() + (actorGA.getWidth() / 2), currentY));
-            } else {
-              int xPos = actorGA.getX();
-              xPos -= currentX;
-              // Add a new bendpoint on top of it
-              ffc.getBendpoints().add(ffc.getBendpoints().size(), Graphiti.getGaCreateService().createPoint(xPos, currentY));
-              // Add a new bendpoint next to it
-              ffc.getBendpoints().add(ffc.getBendpoints().size(),
-                  Graphiti.getGaCreateService().createPoint(xPos, actorGA.getY() - AutoLayoutFeature.BENDPOINT_SPACE));
-            }
-
-          } else if (getter instanceof AbstractActor) {
-
-            // Retrieve the last bendpoint of the ffc (added when
-            // the
-            // actor was moved.)
-            final Point lastBp = ffc.getBendpoints().get(ffc.getBendpoints().size() - 1);
-            // Move it
-            lastBp.setX(lastBp.getX() - currentX);
-            // Add a new bendpoint on top of it
-            ffc.getBendpoints().add(ffc.getBendpoints().size() - 1, Graphiti.getGaCreateService().createPoint(lastBp.getX(), currentY));
-          } else if (getter instanceof Delay) {
-            // Get the gap end of the delay
-            // (or the gap just before if the delay is a feedback
-            // delay
-            // of an actor)
-            final PictogramElement delayPE = DiagramPiGraphLinkHelper.getDelayPE(diagram, (Fifo) getter.eContainer());
-            final GraphicsAlgorithm delayGA = delayPE.getGraphicsAlgorithm();
-
-            int gapEnd = -1;
-            for (int i = 0; i < this.stageWidth.size(); i++) {
-              final Range range = this.stageWidth.get(i);
-              // If the delay is within this stage
-              if ((range.start < delayGA.getX()) && (range.end > delayGA.getX())) {
-                gapEnd = range.start;
-              }
-
-              // If the delay is between this stage and the
-              // previous
-              if ((i > 0) && (range.start > delayGA.getX()) && (gapEnd == -1)) {
-                gapEnd = range.start;
-              }
-            }
-
-            // Add a new bendpoint on top of the gap
-            final int xPos = gapEnd - AutoLayoutFeature.BENDPOINT_SPACE - currentX;
-            ffc.getBendpoints().add(Graphiti.getGaCreateService().createPoint(xPos, currentY));
-
-            // Add a bendpoint next to the delay
-            int yPos = delayGA.getY();
-            yPos += ((delayGA.getX() < xPos) && ((delayGA.getX() + delayGA.getWidth()) > xPos)) ? -AutoLayoutFeature.FIFO_SPACE
-                : 3 * AutoLayoutFeature.FIFO_SPACE;
-            ffc.getBendpoints().add(Graphiti.getGaCreateService().createPoint(xPos, yPos));
-
-          } else {
-            throw new UnsupportedOperationException();
-          }
-        }
+        currentYUsed = processDependency(diagram, stagedParameters, currentY, currentX, currentYUsed, param, dependency);
       }
     }
     // Check if dependencies were not layouted
@@ -842,6 +750,120 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       ffc.getBendpoints().add(Graphiti.getCreateService().createPoint(paramXPosition - AutoLayoutFeature.X_SPACE_PARAM, currentY));
       ffc.getBendpoints().add(Graphiti.getCreateService().createPoint(paramXPosition - AutoLayoutFeature.X_SPACE_PARAM,
           this.yParamInitPos - ((stagedParameters.size() - 1 - paramStage) * AutoLayoutFeature.Y_SPACE_PARAM) - (AddParameterFeature.PARAM_HEIGHT / 2)));
+    }
+  }
+
+  private boolean processDependency(final Diagram diagram, final List<List<Parameter>> stagedParameters, int currentY, int currentX, boolean currentYUsed,
+      final Parameter param, final Dependency dependency) {
+    // Get the polyline
+    final FreeFormConnection ffc = DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, dependency);
+
+    // Get the type of the getter
+    final EObject getter = dependency.getGetter().eContainer();
+    final boolean newYUsed;
+    if (getter instanceof Parameter) {
+      newYUsed = currentYUsed;
+      layoutDependencyToParamter(stagedParameters, param, ffc, getter);
+    } else {
+      // Add a first point below the parameter
+      newYUsed = true;
+      final int xPosition = this.paramXPositions.get(param);
+      final Point bPoint = Graphiti.getGaCreateService().createPoint(xPosition, currentY);
+      ffc.getBendpoints().add(0, bPoint);
+
+      if ((getter instanceof DataInputInterface) || (getter instanceof DataOutputInterface)) {
+        // fix strange behavior with FFC for interfaces ...
+        ffc.getBendpoints().clear();
+        ffc.getBendpoints().add(0, bPoint);
+        layoutDependencyToInterface(diagram, currentY, currentX, ffc, getter);
+      } else if (getter instanceof AbstractActor) {
+        layoutDependencyToActor(currentY, currentX, ffc);
+      } else if (getter instanceof Delay) {
+        layoutDependencyToDelay(diagram, currentY, currentX, ffc, getter);
+      } else {
+        throw new UnsupportedOperationException();
+      }
+    }
+    return newYUsed;
+  }
+
+  private void layoutDependencyToParamter(final List<List<Parameter>> stagedParameters, final Parameter param, final FreeFormConnection ffc,
+      final EObject getter) {
+    // Get stage
+    final int getterStage = getParameterStage(stagedParameters, (Parameter) getter);
+    // layout only if getter is more than one stage away from
+    // setter
+    final int xPosition = this.paramXPositions.get(param);
+    final int yPosition = this.yParamInitPos - ((stagedParameters.size() - 1 - (getterStage - 1)) * AutoLayoutFeature.Y_SPACE_PARAM);
+    final Point bPoint = Graphiti.getGaCreateService().createPoint(xPosition, yPosition);
+    ffc.getBendpoints().add(bPoint);
+  }
+
+  private void layoutDependencyToDelay(final Diagram diagram, int currentY, int currentX, final FreeFormConnection ffc, final EObject getter) {
+    // Get the gap end of the delay
+    // (or the gap just before if the delay is a feedback
+    // delay
+    // of an actor)
+    final PictogramElement delayPE = DiagramPiGraphLinkHelper.getDelayPE(diagram, (Fifo) getter.eContainer());
+    final GraphicsAlgorithm delayGA = delayPE.getGraphicsAlgorithm();
+
+    int gapEnd = -1;
+    for (int i = 0; i < this.stageWidth.size(); i++) {
+      final Range range = this.stageWidth.get(i);
+      // If the delay is within this stage
+      if ((range.start < delayGA.getX()) && (range.end > delayGA.getX())) {
+        gapEnd = range.start;
+      }
+
+      // If the delay is between this stage and the
+      // previous
+      if ((i > 0) && (range.start > delayGA.getX()) && (gapEnd == -1)) {
+        gapEnd = range.start;
+      }
+    }
+
+    // Add a new bendpoint on top of the gap
+    final int xPos = gapEnd - AutoLayoutFeature.BENDPOINT_SPACE - currentX;
+    ffc.getBendpoints().add(Graphiti.getGaCreateService().createPoint(xPos, currentY));
+
+    // Add a bendpoint next to the delay
+    int yPos = delayGA.getY();
+    yPos += ((delayGA.getX() < xPos) && ((delayGA.getX() + delayGA.getWidth()) > xPos)) ? -AutoLayoutFeature.FIFO_SPACE : 3 * AutoLayoutFeature.FIFO_SPACE;
+    ffc.getBendpoints().add(Graphiti.getGaCreateService().createPoint(xPos, yPos));
+  }
+
+  private void layoutDependencyToActor(int currentY, int currentX, final FreeFormConnection ffc) {
+    // Retrieve the last bendpoint of the ffc (added when
+    // the
+    // actor was moved.)
+    final Point lastBp = ffc.getBendpoints().get(ffc.getBendpoints().size() - 1);
+    // Move it
+    lastBp.setX(lastBp.getX() - currentX);
+    // Add a new bendpoint on top of it
+    ffc.getBendpoints().add(ffc.getBendpoints().size() - 1, Graphiti.getGaCreateService().createPoint(lastBp.getX(), currentY));
+  }
+
+  private void layoutDependencyToInterface(final Diagram diagram, int currentY, int currentX, final FreeFormConnection ffc, final EObject getter) {
+    // Get position of target
+    final PictogramElement getterPE = DiagramPiGraphLinkHelper.getActorPE(diagram, (AbstractActor) getter);
+
+    // Get the Graphics algorithm
+    final GraphicsAlgorithm actorGA = getterPE.getGraphicsAlgorithm();
+
+    // Check if actor is first of its stage
+    final int stage = getActorStage((AbstractActor) getter, this.stagedActors);
+    final int index = this.stagedActors.get(stage).indexOf(getter);
+
+    if (index == 0) {
+      // Add a new bendpoint on top of it
+      ffc.getBendpoints().add(ffc.getBendpoints().size(), Graphiti.getGaCreateService().createPoint(actorGA.getX() + (actorGA.getWidth() / 2), currentY));
+    } else {
+      int xPos = actorGA.getX();
+      xPos -= currentX;
+      // Add a new bendpoint on top of it
+      ffc.getBendpoints().add(ffc.getBendpoints().size(), Graphiti.getGaCreateService().createPoint(xPos, currentY));
+      // Add a new bendpoint next to it
+      ffc.getBendpoints().add(ffc.getBendpoints().size(), Graphiti.getGaCreateService().createPoint(xPos, actorGA.getY() - AutoLayoutFeature.BENDPOINT_SPACE));
     }
   }
 
