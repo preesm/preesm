@@ -132,6 +132,15 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       }
     }
 
+    @Override
+    public int hashCode() {
+      // see https://stackoverflow.com/questions/11742593/what-is-the-hashcode-for-a-custom-class-having-just-two-int-properties/11742634#11742634
+      int hash = 17;
+      hash = hash * 31 + this.start;
+      hash = hash * 31 + this.end;
+      return hash;
+    }
+
     /*
      * (non-Javadoc)
      *

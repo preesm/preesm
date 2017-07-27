@@ -43,7 +43,6 @@ import org.eclipse.emf.common.ui.MarkerHelper;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.edit.ui.util.EditUIMarkerHelper;
 
-// TODO: Auto-generated Javadoc
 /**
  * The purpose of this custom {@link MarkerHelper} is to associate a new attribute to the {@link IMarker} created in the {@link PiMMDiagramEditor}. This
  * attribute contains a {@link String} corresponding to the uriFragment that can be used to access the pictogram element to which the marker is associated.
