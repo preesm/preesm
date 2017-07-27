@@ -3,7 +3,7 @@ package org.ietr.preesm.throughput;
 import org.apache.commons.lang3.math.Fraction;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.schedule.PeriodicSchedule_SDF;
+import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
 import org.ietr.preesm.throughput.transformers.IBSDFTransformer;
 import org.ietr.preesm.throughput.transformers.SDFTransformer;
 
@@ -35,8 +35,8 @@ public class ClassicalMethod {
     SDFTransformer.normalize(srSDF);
 
     // -> Step 2: compute the normalized period
-    PeriodicSchedule_SDF periodic = new PeriodicSchedule_SDF();
-    Fraction k = periodic.computeNormalizedPeriod(srSDF, PeriodicSchedule_SDF.Method.LinearProgram_Gurobi);
+    PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
+    Fraction k = periodic.computeNormalizedPeriod(srSDF, PeriodicScheduler_SDF.Method.LinearProgram_Gurobi);
 
     // -> Step 3: compute the throughput as 1/k
     double throughput = 1 / k.doubleValue();

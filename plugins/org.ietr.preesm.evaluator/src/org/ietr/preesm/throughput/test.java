@@ -11,7 +11,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
-import org.ietr.preesm.schedule.PeriodicSchedule_SDF;
+import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.transformers.IBSDFTransformer;
 import org.ietr.preesm.throughput.transformers.SDFTransformer;
@@ -511,8 +511,8 @@ public class test {
     // get an SDF graph
     SDFGraph SDF = testSDFGraphCreation(scenario);
 
-    PeriodicSchedule_SDF periodic = new PeriodicSchedule_SDF();
-    double th = periodic.schedule(SDF, PeriodicSchedule_SDF.Method.LinearProgram_Gurobi, false);
+    PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
+    double th = periodic.schedule(SDF, PeriodicScheduler_SDF.Method.LinearProgram_Gurobi, false);
     System.out.println("SDF throughput = " + th);
 
     // convert the SDF graph to a srSDF graph
@@ -520,7 +520,7 @@ public class test {
     // print the srSDF graph
     // testSDFGraph(srSDF, scenario);
 
-    th = periodic.schedule(srSDF, PeriodicSchedule_SDF.Method.LinearProgram_Gurobi, false);
+    th = periodic.schedule(srSDF, PeriodicScheduler_SDF.Method.LinearProgram_Gurobi, false);
     System.out.println("srSDF throughput = " + th);
 
     System.out.println("----------------------------");

@@ -23,7 +23,7 @@ import org.ietr.preesm.throughput.transformers.SDFTransformer;
  * @author HDeroui
  *
  */
-public class PeriodicSchedule_SDF {
+public class PeriodicScheduler_SDF {
 
   /**
    * @author HDeroui

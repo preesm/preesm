@@ -324,4 +324,14 @@ public class GraphSimulationHelper {
     }
   }
 
+  /**
+   * Resets actors execution counter.
+   * 
+   */
+  public void resetExecutionCounter() {
+    for (ActorExtendedInfo a : this.actorsInfo.values()) {
+      a.executionsCounter = 0;
+    }
+  }
+
 }

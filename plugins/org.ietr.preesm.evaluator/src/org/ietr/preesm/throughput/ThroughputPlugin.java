@@ -155,7 +155,7 @@ public class ThroughputPlugin extends AbstractTaskImplementation {
     // check the consistency by computing the RV of the graph
     IBSDFConsistency.computeRV(inputGraph);
 
-    // Pahse 0: Copy actors duration from the scenario to actors properties
+    // Copy actors duration from the scenario to actors properties
     for (SDFAbstractVertex actor : inputGraph.getAllVertices()) {
       if (actor.getKind() == "vertex") {
         if (actor.getGraphDescription() == null) {
