@@ -23,6 +23,12 @@ class DAG2DAG extends AbstractDAGConstructor implements PureDAGConstructor {
 	protected val SDFGraph newGraph
 	
 	/**
+	 * Holds the cloned version of original input {@link SDFGraph}
+	 */
+	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	val SDFGraph inputSDFGraph
+	
+	/**
 	 * List of all the actors that form the part of the cycles in the original SDFG
 	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
@@ -38,6 +44,8 @@ class DAG2DAG extends AbstractDAGConstructor implements PureDAGConstructor {
 		super(logger)
 		newGraph = new SDFGraph()
 		val dag = oldDAGGen.outputGraph
+		
+		inputSDFGraph = oldDAGGen.inputSDFGraph
 		
 		// Copy the old SDFGraph
 		

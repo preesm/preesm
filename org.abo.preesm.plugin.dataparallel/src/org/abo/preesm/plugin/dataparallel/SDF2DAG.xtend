@@ -32,7 +32,8 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	/**
 	 * Hold the cloned version of original SDF graph
 	 */
-	private val SDFGraph inputGraph;
+	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	val SDFGraph inputSDFGraph;
 	
 	/**
 	 * Holds constructed DAG
@@ -73,25 +74,25 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 		if(!sdf.isSchedulable) {
 			throw new SDF4JException("Graph " + sdf + " not schedulable")
 		}
-		inputGraph = sdf.clone
+		inputSDFGraph = sdf.clone
 		actor2InstancesLocal = newHashMap
 		cycleActors = newArrayList
 		
-		val cycleDetector = new CycleDetector(inputGraph)
+		val cycleDetector = new CycleDetector(inputSDFGraph)
 		cycleActors.addAll(cycleDetector.findCycles)
 		
-		inputGraph.vertexSet.forEach[vertex |
-			if(inputGraph.incomingEdgesOf(vertex).size == 0) {
+		inputSDFGraph.vertexSet.forEach[vertex |
+			if(inputSDFGraph.incomingEdgesOf(vertex).size == 0) {
 				sourceActors.add(vertex)
 			}
-			if(inputGraph.outgoingEdgesOf(vertex).size == 0) {
+			if(inputSDFGraph.outgoingEdgesOf(vertex).size == 0) {
 				sinkActors.add(vertex)
 			}
 		]
 		
-		inputGraph.vertexSet.forEach[vertex |
+		inputSDFGraph.vertexSet.forEach[vertex |
 			val predecessorList = newArrayList
-			inputGraph.incomingEdgesOf(vertex).forEach[edge |
+			inputSDFGraph.incomingEdgesOf(vertex).forEach[edge |
 				predecessorList.add(edge.source)
 			]
 			actorPredecessor.put(vertex, predecessorList)
@@ -104,7 +105,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 			linkEdges()
 		} else {
 			hasChanged = false
-			this.outputGraph = inputGraph
+			this.outputGraph = inputSDFGraph
 		}
 		outputGraph.propertyBean.setValue("schedulable", true)
 	}
@@ -130,17 +131,17 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	 */
 	public override boolean checkInputIsValid() throws SDF4JException {
 		// Check if DAG is flattened
-		for(vertex: inputGraph.vertexSet) {
+		for(vertex: inputSDFGraph.vertexSet) {
 			if( (vertex.graphDescription !== null) && (vertex.graphDescription instanceof SDFGraph)) {
-				throw new SDF4JException("The graph " + inputGraph.name + " must be flattened.")				
+				throw new SDF4JException("The graph " + inputSDFGraph.name + " must be flattened.")				
 			}
 		}		
 		// Check if repetition vector is greater than 1
-		for(vertex: inputGraph.vertexSet) {
+		for(vertex: inputSDFGraph.vertexSet) {
 			if(vertex.nbRepeatAsInteger > 1) return true
 		}		
 		// Check if delay tokens exist. DAG should not have any of those
-		for(edge: inputGraph.edgeSet) {
+		for(edge: inputSDFGraph.edgeSet) {
 			if(edge.delay.intValue > 0) return true
 		}
 		// Its already a DAG
@@ -162,7 +163,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	 */
 	 protected def void createInstances() {
 	 	// Create instances repetition vector times
-	 	for(actor: inputGraph.vertexSet) {
+	 	for(actor: inputSDFGraph.vertexSet) {
 	 		log("Actor " + actor + " has " + actor.nbRepeatAsInteger + " instances.")
 	 		val instances = newArrayList
 	 		 
@@ -189,7 +190,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	protected def void linkEdges() {
 		// Edges that have delay tokens greater than buffer size need not have any
 		// links in the DAG
-		val filteredEdges = inputGraph.edgeSet.filter[edge |
+		val filteredEdges = inputSDFGraph.edgeSet.filter[edge |
 			edge.delay.intValue < edge.cons.intValue * edge.target.nbRepeatAsInteger
 		]
 		

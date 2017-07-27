@@ -24,6 +24,13 @@ interface PureDAGConstructor extends DAGConstructor {
 	public def SDFGraph getOutputGraph()
 	
 	/**
+	 * Return the input SDFG
+	 * 
+	 * @return input SDFG
+	 */
+	public def SDFGraph getInputSDFGraph()
+	
+	/**
 	 * Return the map of actor from original SDFG to all its immediate
 	 * predecessor
 	 * 
