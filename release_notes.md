@@ -10,11 +10,12 @@ PREESM Changelog
 ### Changes
 * Upgrade to Eclipse Oxygen;
 * Use new Graphiti extension point name (new version);
-* Refactor paste feature;
+* Refactoring;
 
 ### Bug fix
 * Fix autolayout issue that prevented the feature to work when selection was not empty;
 * Fix positionning of Delays when using copy/paste;
+* Fix autolayout of dependencies targetting graph interfaces;
 
 ## Release version 2.4.1
 *2017.07.19*
