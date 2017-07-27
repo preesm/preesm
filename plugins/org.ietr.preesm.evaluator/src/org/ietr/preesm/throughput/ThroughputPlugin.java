@@ -47,6 +47,7 @@ import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.deadlock.IBSDFConsistency;
 
 /**
  * @author hderoui
@@ -80,27 +81,8 @@ public class ThroughputPlugin extends AbstractTaskImplementation {
     PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
     ThroughputMethod method = ThroughputMethod.valueOf(parameters.get("method"));
 
-    // test the inputs
-    // test.start(inputGraph, scenario);
-
-    // Pahse 0: Copy actors duration from the scenario to actors properties
-    for (SDFAbstractVertex actor : inputGraph.getAllVertices()) {
-      if (actor.getKind() == "vertex") {
-        if (actor.getGraphDescription() == null) {
-          // if atomic actor then copy the duration indicated in the scenario
-          double duration = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
-          actor.setPropertyValue("duration", duration);
-        } else {
-          // if hierarchical actor then as default the duration is 1 (the hierarchical actor will be replaced by its subgraph)
-          actor.setPropertyValue("duration", 1.);
-          scenario.getTimingManager().setTiming(actor.getId(), "x86", 1);
-        }
-      } else {
-        // As default, the duration interfaces in neglected (duration = 0)
-        actor.setPropertyValue("duration", 0.);
-        scenario.getTimingManager().setTiming(actor.getId(), "x86", 0);
-      }
-    }
+    // init & test
+    this.init(inputGraph, scenario);
 
     // Compute the throughput of the graph
     double throughput = 0;
@@ -156,6 +138,41 @@ public class ThroughputPlugin extends AbstractTaskImplementation {
   @Override
   public String monitorMessage() {
     return "Evaluating the graph throughput";
+  }
+
+  /**
+   * initialize the graph before computing the throughput
+   * 
+   * @param inputGraph
+   *          SDF/IBSDF graph
+   * @param scenario
+   *          contains actors duration
+   */
+  private void init(SDFGraph inputGraph, PreesmScenario scenario) {
+    // test the inputs
+    // test.start(inputGraph, scenario);
+
+    // check the consistency by computing the RV of the graph
+    IBSDFConsistency.computeRV(inputGraph);
+
+    // Pahse 0: Copy actors duration from the scenario to actors properties
+    for (SDFAbstractVertex actor : inputGraph.getAllVertices()) {
+      if (actor.getKind() == "vertex") {
+        if (actor.getGraphDescription() == null) {
+          // if atomic actor then copy the duration indicated in the scenario
+          double duration = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
+          actor.setPropertyValue("duration", duration);
+        } else {
+          // if hierarchical actor then as default the duration is 1 (the hierarchical actor will be replaced by its subgraph)
+          actor.setPropertyValue("duration", 1.);
+          scenario.getTimingManager().setTiming(actor.getId(), "x86", 1);
+        }
+      } else {
+        // As default, the duration interfaces in neglected (duration = 0)
+        actor.setPropertyValue("duration", 0.);
+        scenario.getTimingManager().setTiming(actor.getId(), "x86", 0);
+      }
+    }
   }
 
 }
