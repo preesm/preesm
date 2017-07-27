@@ -798,6 +798,8 @@ Since using the P2 repository is a little too time consuming and complex, protot
 
 This should make the classes under the Jar available in your plug-in.
 
+Please also note that binaries should not be part of the source repository, and some mesures are taken to enforce so. For instance, the git configuration [ignores all Jar files](https://github.com/preesm/preesm/blob/master/.gitignore#L18). Adding a Jar in the Git repository requires extra effort.
+
 ##### Things to avoid
 
 * Do not use global/system path variables: there is no garanty other people use the same configuration.
