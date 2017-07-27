@@ -46,7 +46,6 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 
-// TODO: Auto-generated Javadoc
 /**
  * Custom feature to rename an {@link AbstractVertex}.
  *

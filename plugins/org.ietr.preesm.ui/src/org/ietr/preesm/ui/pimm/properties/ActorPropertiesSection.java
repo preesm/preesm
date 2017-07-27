@@ -71,7 +71,6 @@ import org.ietr.preesm.ui.pimm.features.OpenRefinementFeature;
 import org.ietr.preesm.ui.pimm.features.SetActorMemoryScriptFeature;
 import org.ietr.preesm.ui.pimm.features.SetActorRefinementFeature;
 
-// TODO: Auto-generated Javadoc
 /**
  * Properties Section used for Actors.
  *
@@ -327,7 +326,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
           final ExecutableActor actor = (ExecutableActor) bo;
           if (ActorPropertiesSection.this.txtNameObj.getText().compareTo(actor.getName()) != 0) {
             setNewName(actor, ActorPropertiesSection.this.txtNameObj.getText());
-            getDiagramTypeProvider().getDiagramBehavior().refreshContent();
+            getDiagramTypeProvider().getFeatureProvider().layoutIfPossible(new LayoutContext(pe));
           }
         } // end Actor
       }
