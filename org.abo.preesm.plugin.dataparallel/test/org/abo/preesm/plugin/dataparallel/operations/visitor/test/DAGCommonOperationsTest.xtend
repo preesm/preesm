@@ -22,6 +22,8 @@ import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGCommonOperations
 import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
 import org.abo.preesm.plugin.dataparallel.operations.visitor.DependencyAnalysisOperations
 import org.abo.preesm.plugin.dataparallel.operations.visitor.OperationsUtils
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
 
 /**
  * Perform property based tests for operations that
@@ -191,6 +193,34 @@ class DAGCommonOperationsTest {
 				]
 			]
 		}
+	}
+	
+	/**
+	 * Root instances have no implode instances and exit instances
+	 * have no explode instances. Reverse is not true
+	 * 
+	 * Weak test
+	 */
+	@org.junit.Test
+	public def void rootNoImplodeExitNoExplode() {
+		val rootExitOp = new RootExitOperations
+		acceptVisitor(dagGen, rootExitOp)
+		val rootInstances = rootExitOp.rootInstances
+		val exitInstances = rootExitOp.exitInstances
+		
+		rootInstances.forEach[instance |
+			val implodes = dagGen.explodeImplodeOrigInstances.filter[ impExp, origInstance |
+				origInstance == instance && (impExp instanceof SDFJoinVertex)
+			]
+			Assert.assertTrue(implodes.empty)
+		]
+		
+		exitInstances.forEach[instance |
+			val explodes = dagGen.explodeImplodeOrigInstances.filter[impExp, origInstance |
+				origInstance == instance && (impExp instanceof SDFForkVertex)
+			]
+			Assert.assertTrue(explodes.empty)
+		]
 	}
 
 	/**
