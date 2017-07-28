@@ -2,6 +2,7 @@ package org.ietr.preesm.throughput;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import org.ietr.dftools.algorithm.model.IInterface;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
@@ -75,6 +76,12 @@ public class test {
 
       } catch (InvalidExpressionException e) {
         e.printStackTrace();
+      }
+
+      System.out.println("\t interfaces : ");
+      for (IInterface inter : actor.getInterfaces()) {
+        SDFInterfaceVertex input = (SDFInterfaceVertex) inter;
+        System.out.println("\t\t input port name " + input.getName() + " : " + actor.getAssociatedEdge(input).toString());
       }
 
       System.out.println("\t inputs : ");

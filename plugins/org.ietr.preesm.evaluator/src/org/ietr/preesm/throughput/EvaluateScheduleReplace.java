@@ -4,10 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
 import org.apache.commons.lang3.math.Fraction;
+import org.ietr.dftools.algorithm.model.IInterface;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
+import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.parsers.Identifier;
 import org.ietr.preesm.throughput.transformers.SDFTransformer;
 import org.ietr.preesm.throughput.transformers.SrSDFTransformer;
@@ -61,7 +66,8 @@ public class EvaluateScheduleReplace {
       }
     }
     for (SDFAbstractVertex actor : actorToReplace) {
-      replace(srSDF, actor);
+      SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
+      GraphStructureHelper.replaceHierarchicalActor(srSDF, actor, subgraphExecutionModelList.get(baseActor.getName()));
     }
 
     // Step 4: compute the throughput of the top graph using the periodic schedule
@@ -111,7 +117,8 @@ public class EvaluateScheduleReplace {
       }
     }
     for (SDFAbstractVertex actor : actorToReplace) {
-      replace(srSDF, actor);
+      SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
+      GraphStructureHelper.replaceHierarchicalActor(srSDF, actor, subgraphExecutionModelList.get(baseActor.getName()));
     }
 
     // delete all replacement graphs that are no longer needed
@@ -170,7 +177,7 @@ public class EvaluateScheduleReplace {
    * ASAP + ALAP schedule
    * 
    * @param graph
-   *          graph
+   *          DAG
    */
   private void schedule(SDFGraph graph) {
     // ASAP schedule to determine the start/finish date for each actor and the latency constraint
@@ -185,204 +192,85 @@ public class EvaluateScheduleReplace {
   }
 
   // construction function
-  private SDFGraph modelSEM(SDFAbstractVertex h, SDFGraph graph, Fraction K) {
-    boolean disconnected = true;
+  private SDFGraph modelSEM(SDFAbstractVertex HActor, SDFGraph subgraph, Fraction K) {
     // construct the replacement graph for the hierarchical actor
     // step 1: get all interfaces execution start time and create a new actor for each interface
     // step 2: construct the time line
     // step 3: connect the interfaces to the time line
     // step 4: add the period actor to the time line
 
-    // list of interfaces
-    Hashtable<String, Actor> interfaceActorList = new Hashtable<>();
-    Hashtable<Double, ArrayList<Actor>> InterfacesClassifiedByTime = new Hashtable<Double, ArrayList<Actor>>();
+    // create the subgraph execution model
+    SDFGraph subgraphExecutionModel = new SDFGraph();
+    subgraphExecutionModel.setName(Identifier.generateSDFGraphId());
 
-    // the replacement graph
-    SDFGraph replacementGraph = new SDFGraph(Identifier.generateSDFGraphId());
+    // list of time line actors
+    Hashtable<Double, SDFAbstractVertex> timeLineActors = new Hashtable<>();
 
-    // step 1
-    // create an actor for each interface
-    for (Actor a : graph.actors.values()) {
-      // input interfaces
-      if (a.BaseActor.type == Actor.Type.INPUTINTERFACE && ((HierarchicalActor) h).getInputInterfacePort(a.BaseActor.id) != null) {
-        // create the new actor for the input interface
-        Actor newIn = replacementGraph.createActor(h.id + "_" + a.id, 0., 1, null, a.BaseActor);
-        interfaceActorList.put(a.id, newIn);
+    // create the interfaces and connect them to their associated time actor
+    for (IInterface iInterface : HActor.getInterfaces()) {
+      // add the interface to the subgraph execution model
+      SDFAbstractVertex subgraphInterface = subgraph.getVertex(((SDFInterfaceVertex) iInterface).getName() + "_1");
+      SDFAbstractVertex SEM_inetrface = GraphStructureHelper.addActor(subgraphExecutionModel, subgraphInterface.getName(), null,
+          subgraphInterface.getNbRepeatAsInteger(), (Double) subgraphInterface.getPropertyBean().getValue("duration"), null,
+          (SDFAbstractVertex) subgraphInterface.getPropertyBean().getValue("baseActor"));
 
-        // get the real start date and the first target actor : to replace with the start date of the interface directly
-        // double startDate = Double.MAX_VALUE;
-        // for (Edge e : a.OutputEdges.values())
-        // if (e.targetActor.startDate < startDate) startDate = e.targetActor.startDate;
-        double startDate = a.startDate;
-        System.out.println("input interface " + a.id + " start at " + startDate);
-        if (startDate != Double.POSITIVE_INFINITY) {
-          disconnected = false;
-        }
+      // get the execution start date of the interface
+      Double startDate = (Double) subgraphInterface.getPropertyBean().getValue("startDate");
 
-        if (InterfacesClassifiedByTime.containsKey(startDate)) {
-          InterfacesClassifiedByTime.get(startDate).add(a);
-        } else {
-          InterfacesClassifiedByTime.put(startDate, new ArrayList<Actor>());
-          InterfacesClassifiedByTime.get(startDate).add(a);
-        }
+      // get the associated time actor, if not yet exists then create one and add it to the subgraph execution model
+      SDFAbstractVertex timeActor = null;
+      if (timeLineActors.containsKey(startDate)) {
+        timeActor = timeLineActors.get(startDate);
+      } else {
+        timeActor = GraphStructureHelper.addActor(subgraphExecutionModel, "time" + startDate, null, 1, 0., null, null);
+        timeLineActors.put(startDate, timeActor);
       }
 
-      // output interfaces
-      if (a.BaseActor.type == Actor.Type.OUTPUTINTERFACE && ((HierarchicalActor) h).getOutputInterfacePort(a.BaseActor.id) != null) {
-
-        // create the new actor for the output interface
-        Actor newOut = replacementGraph.createActor(h.id + "_" + a.id, a.InputEdges.elements().nextElement().sourceActor.duration, 1, null, a.BaseActor);
-        interfaceActorList.put(a.id, newOut);
-
-        // get the real start date and the first target actor
-        double startDate = a.startDate;
-        startDate -= a.InputEdges.elements().nextElement().sourceActor.duration;
-        if (InterfacesClassifiedByTime.containsKey(startDate)) {
-          InterfacesClassifiedByTime.get(startDate).add(a);
-        } else {
-          InterfacesClassifiedByTime.put(startDate, new ArrayList<Actor>());
-          InterfacesClassifiedByTime.get(startDate).add(a);
-        }
+      // connect the interface to its associated time line actor
+      if (iInterface instanceof SDFSourceInterfaceVertex) {
+        // case of input interface : add an edge from the interface to the time actor
+        GraphStructureHelper.addEdge(subgraphExecutionModel, SEM_inetrface.getName(), null, timeActor.getName(), null, 1, 1, 0, null);
+      } else if (iInterface instanceof SDFSinkInterfaceVertex) {
+        // case of output interface : add an edge from the time actor to the interface
+        GraphStructureHelper.addEdge(subgraphExecutionModel, timeActor.getName(), null, SEM_inetrface.getName(), null, 1, 1, 0, null);
       }
     }
 
-    // step 2 & 3:
-    // order the time line
-    ArrayList<Double> orderedTimeLine = new ArrayList<Double>(InterfacesClassifiedByTime.keySet());
+    // sort the time actors and connect them by transition actors
+    ArrayList<Double> orderedTimeLine = new ArrayList<Double>(timeLineActors.keySet());
     Collections.sort(orderedTimeLine);
 
-    // construct the time line
-    Hashtable<Double, Actor> timeLineActor = new Hashtable<Double, Actor>();
-
-    // create an actor for each time in the time line
-    // connect the time line with the interfaces
-    for (int i = 0; i < orderedTimeLine.size(); i++) {
-      Double time = orderedTimeLine.get(i);
-      Actor timeActor = replacementGraph.createActor(h.id + "_time" + time, 0., 1, null, null);
-      timeLineActor.put(time, timeActor);
-      for (Actor a : InterfacesClassifiedByTime.get(time)) {
-        if (a.BaseActor.type == Actor.Type.INPUTINTERFACE) {
-          replacementGraph.createEdge(null, interfaceActorList.get(a.id).id, null, timeActor.id, null, 1., 1., 0., null);
-        } else {
-          replacementGraph.createEdge(null, timeActor.id, null, interfaceActorList.get(a.id).id, null, 1., 1., 0., null);
-        }
-      }
-    }
-
-    // add the connections between the time line actors
+    // construct the time line by connecting the time actors using transition actors
     for (int i = 0; i < orderedTimeLine.size() - 1; i++) {
-      // create the transition actor
-      Actor TransitActor = replacementGraph.createActor(h.id + "_time" + orderedTimeLine.get(i) + "_" + orderedTimeLine.get(i + 1),
-          orderedTimeLine.get(i + 1) - orderedTimeLine.get(i), 1, null, null);
-      // add the edge connection
-      replacementGraph.createEdge(null, timeLineActor.get(orderedTimeLine.get(i)).id, null, TransitActor.id, null, 1., 1., 0., null);
-      replacementGraph.createEdge(null, TransitActor.id, null, timeLineActor.get(orderedTimeLine.get(i + 1)).id, null, 1., 1., 0., null);
+      // add the transition actor to the subgraph execution model
+      SDFAbstractVertex TransitionActor = GraphStructureHelper.addActor(subgraphExecutionModel,
+          "time" + orderedTimeLine.get(i) + "_to_time" + orderedTimeLine.get(i + 1), null, 1, orderedTimeLine.get(i + 1) - orderedTimeLine.get(i), null, null);
+
+      // add time actor i with the time actor i+1 through the transition actor
+      GraphStructureHelper.addEdge(subgraphExecutionModel, timeLineActors.get(orderedTimeLine.get(i)).getName(), null, TransitionActor.getName(), null, 1, 1, 0,
+          null);
+      GraphStructureHelper.addEdge(subgraphExecutionModel, TransitionActor.getName(), null, timeLineActors.get(orderedTimeLine.get(i + 1)).getName(), null, 1,
+          1, 0, null);
     }
 
-    // step 4
-    // add the K loop to the time line
-    if (graph.normalizedPeriod > 0) {
-      if (!disconnected) {
-        Double firstTime_value = null;
-        Double lastTime_value = null;
-        // if first != inifity
-        if (orderedTimeLine.get(0) != Double.POSITIVE_INFINITY) {
-          firstTime_value = orderedTimeLine.get(0);
-          // if size = 1
-          if (orderedTimeLine.size() <= 1) {
-            lastTime_value = orderedTimeLine.get(0);
-          } else {
-            // if last == positif
-            if (orderedTimeLine.get(orderedTimeLine.size() - 1) == Double.POSITIVE_INFINITY) {
-              lastTime_value = orderedTimeLine.get(orderedTimeLine.size() - 2);
-            } else {
-              lastTime_value = orderedTimeLine.get(orderedTimeLine.size() - 1);
-            }
-          }
+    // add the period actor
+    if (K.doubleValue() > 0) {
+      // get the first and the last time actor of time line
+      double firstTime = orderedTimeLine.get(0);
+      double lastTime = orderedTimeLine.get(orderedTimeLine.size() - 1);
+      SDFAbstractVertex fistTimeActor = timeLineActors.get(firstTime);
+      SDFAbstractVertex lastTimeActor = timeLineActors.get(lastTime);
 
-          Actor firstTime = timeLineActor.get(firstTime_value);
-          Actor lastTime = timeLineActor.get(lastTime_value);
-          Actor PeriodicActor = replacementGraph.createActor(h.id + "_periodic", K.numerator - lastTime_value + firstTime_value, 1, null, null);
+      // create the period actor
+      SDFAbstractVertex periodActor = GraphStructureHelper.addActor(subgraphExecutionModel, "period", null, 1, K.getNumerator() - (lastTime - firstTime), null,
+          null);
 
-          // add the back edge of the hierarchical actor
-          replacementGraph.createEdge(null, lastTime.id, null, PeriodicActor.id, null, 1., 1., 0., null);
-          replacementGraph.createEdge(null, PeriodicActor.id, null, firstTime.id, null, 1., 1., K.denominator, null);
-
-        } else {
-          // Actor PeriodicActor = replacementGraph.createActor(h.id + "_periodic", K.numerator, 1, null, null);
-          // replacementGraph.createEdge(null, PeriodicActor.id, null, PeriodicActor.id, null, 1., 1., K.denominator, null);
-        }
-      } else {
-        if (K.value() > this.MaxK) {
-          this.MaxK = K.value();
-        }
-      }
-
-    }
-    return replacementGraph;
-  }
-
-  // replacement function
-  private void replace(SDFGraph graph, SDFAbstractVertex h) {
-    // replace an instance of the hierarchical actor by its replacement graph
-    // step 1: clone the replacement graph of the hierarchical actor
-    // step 2: connect the interfaces with source and target actors
-
-    // step 1
-    // clone the replacement graph
-    SDFGraph replGraph = subgraphExecutionModelList.get(h.BaseActor.id);
-
-    // clone actors
-    Hashtable<String, Actor> timelinegraphActors = new Hashtable<>();
-    Hashtable<String, Actor> timelinegraphInterfaces = new Hashtable<>();
-
-    for (Actor t : replGraph.actors.values()) {
-      String[] actorIDSplit = t.id.split("_");
-      actorIDSplit[0] = h.id;
-      String actorID = String.join("_", actorIDSplit);
-
-      Actor nt = graph.createActor(actorID, t.duration, t.repetitionFactor, t.normalizationValue, t.BaseActor);
-      timelinegraphActors.put(t.id, nt);
-
-      if (t.BaseActor.type == Actor.Type.INPUTINTERFACE) {
-        timelinegraphInterfaces.put(((HierarchicalActor) h.BaseActor).getInputInterfacePort(t.BaseActor.id), nt);
-      }
-      if (t.BaseActor.type == Actor.Type.OUTPUTINTERFACE) {
-        timelinegraphInterfaces.put(((HierarchicalActor) h.BaseActor).getOutputInterfacePort(t.BaseActor.id), nt);
-      }
-    }
-    // clone the edges
-    for (Edge e : replGraph.edges.values()) {
-      graph.createEdge(null, timelinegraphActors.get(e.sourceActor.id).id, null, timelinegraphActors.get(e.targetActor.id).id, null, e.cons, e.prod,
-          e.initialMarking, e.BaseEdge);
+      // connect the period actor to the time line
+      GraphStructureHelper.addEdge(subgraphExecutionModel, lastTimeActor.getName(), null, periodActor.getName(), null, 1, 1, 0, null);
+      GraphStructureHelper.addEdge(subgraphExecutionModel, periodActor.getName(), null, fistTimeActor.getName(), null, 1, 1, K.getDenominator(), null);
     }
 
-    // 2. connect the interfaces interface
-    // process the input interfaces
-    ArrayList<Edge> edgelist = new ArrayList<Edge>();
-    for (Edge e : h.InputEdges.values()) {
-      edgelist.add(e);
-    }
-    for (Edge e : edgelist) {
-      e.replaceTargetActor(timelinegraphInterfaces.get(e.BaseEdge.targetActorPort));
-    }
-
-    // process the output interfaces
-    edgelist = new ArrayList<Edge>();
-    for (Edge e : h.OutputEdges.values()) {
-      edgelist.add(e);
-    }
-    for (Edge e : edgelist) {
-      e.replaceSourceActor(timelinegraphInterfaces.get(e.BaseEdge.sourceActorPort));
-
-      // reveal the hidden delays
-      // int n = HActorsOutputInterfaceCount.get(h.BaseActor.id).get(timelinegraphInterfaces.get(e.BaseEdge.sourceActorPort).BaseActor.id);
-      // e.delay += (n*e.cons);
-      // e.initialMarking = e.delay;
-    }
-
-    // remove the hierarchical actor from the top graph
-    graph.actors.remove(h.id);
+    return subgraphExecutionModel;
   }
 
 }
