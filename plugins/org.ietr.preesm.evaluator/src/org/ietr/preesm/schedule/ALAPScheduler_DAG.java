@@ -1,206 +1,127 @@
 package org.ietr.preesm.schedule;
 
 import java.util.ArrayList;
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.throughput.helpers.Stopwatch;
+import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
+import org.ietr.preesm.throughput.helpers.GraphSimulationHelper;
 
 /**
  * @author hderoui
  *
  */
 public class ALAPScheduler_DAG {
-  // list of actor to execute
-  public ArrayList<Actor> actorToExecute;
-  public double           maxDate;
+  private GraphSimulationHelper        simulator;       // simulator helper
+  private Double                       maxDate;         // throughput constraint
+  private ArrayList<SDFAbstractVertex> actorsToExecute; // list of actors to execute
 
-  // Schedule the graph : set the starting date and finish date
   /**
-   * @param sg
-   *          srSDF graph
+   * Schedule the graph using an ASAP schedule and return the duration of the graph iteration
+   * 
+   * @param graph
+   *          SDF graph
+   * @param simulator
+   *          graph simulator helper
    * @param ThConstDate
    *          throughput constraint
-   * @return duration
+   * @return the duration of a graph iteration
    */
-  public double schedule(SDFGraph sg, double ThConstDate) {
-    // timer
-    Stopwatch timerASAPSche = new Stopwatch();
-    timerASAPSche.start();
+  public double schedule(SDFGraph graph, GraphSimulationHelper simulator, double ThConstDate) {
 
-    // set the maxDate constraint
-    // maxDate = getMaxDate(sg);
-    maxDate = ThConstDate;
+    // initialize the simulator and the list of actor to execute
+    this.simulator = simulator;
+    this.maxDate = ThConstDate;
+    actorsToExecute = new ArrayList<SDFAbstractVertex>();
+    this.initialzeList(graph);
 
-    // initialize the 1st element of the list
-    actorToExecute = new ArrayList<>();
-    initializeList(sg);
+    while (!actorsToExecute.isEmpty()) {
+      // execute the first actor of the list
+      SDFAbstractVertex currentActor = actorsToExecute.get(0);
+      this.simulator.consume(currentActor, -1);
 
-    // execute all actors of the list
-    while (!actorToExecute.isEmpty()) {
-      // execute the actor
-      actorToExecute.get(0).consume(-1);
+      // verify the target actors of the executed actor if they are ready to be executed
+      for (SDFInterfaceVertex input : currentActor.getSources()) {
 
-      // verify if the target actors are ready
-      for (Edge e : actorToExecute.get(0).InputEdges.values()) {
-        if (is_ready(e.sourceActor)) {
-          // consume 1 data tokens
-          e.sourceActor.produce(-1);
+        // execute 1 time the target actor if it is ready
+        SDFAbstractVertex sourceActor = currentActor.getAssociatedEdge(input).getTarget();
+        if (this.isReady(sourceActor)) {
+          // consume 1 time
+          this.simulator.produce(sourceActor, -1);
+
           // set the finish date
-          e.sourceActor.startDate = e.sourceActor.finishDate - e.sourceActor.duration;
-          // System.out.println("Exec " + e.sourceActor.id +" ::"+ e.sourceActor.startDate+ " = " +e.sourceActor.finishDate+ " - " +e.sourceActor.duration);
+          double startDate = this.simulator.getFinishDate(sourceActor) - this.simulator.getActorDuration(sourceActor);
+          this.simulator.setStartDate(sourceActor, startDate);
+
           // add the execution to the list
-          actorToExecute.add(e.sourceActor);
+          actorsToExecute.add(sourceActor);
         }
       }
 
       // remove the current actor from the list
-      actorToExecute.remove(0);
+      actorsToExecute.remove(0);
     }
 
-    timerASAPSche.stop();
-    System.out.println("DAG Graph Scheduled in " + timerASAPSche.toString());
-    return timerASAPSche.value();
-  }
+    // check if the simulation is completed
+    // if (this.simulator.isIterationCompleted()) {
+    // System.out.println("Iteration complete !!");
+    // } else {
+    // System.err.println("Iteration not complete !!");
+    // }
 
-  // function to initialize the list of ready actors to execute
-  /**
-   * @param g
-   *          graph
-   */
-  private void initializeList(SDFGraph g) {
-    // loop actors
-    for (Actor a : g.actors.values()) {
-      // if ready
-      if (is_ready(a)) {
-        // consume N data tokens
-        a.produce(-1);
-        if (a.finishDate == Double.POSITIVE_INFINITY) {
-          a.finishDate = this.maxDate;
-        }
-        // set the finish date
-        a.startDate = a.finishDate - a.duration;
-        // System.out.println("Exec " + a.id +" ::"+ a.startDate+ " = " +a.finishDate+ " - " +a.duration);
-        // add the execution to the list
-        actorToExecute.add(a);
-      }
-    }
-  }
-
-  // define the max date (throughput max date constraint)
-  /**
-   * @param g
-   *          graph
-   * @return max date
-   */
-  private double getMaxDate(SDFGraph g) {
-    double maxDate = 0;
-    for (Actor a : g.actors.values()) {
-      if (a.finishDate > maxDate) {
-        maxDate = a.finishDate;
-      }
-    }
-    System.out.println("THROUGHPUT CONSTRAINT = " + maxDate);
+    System.out.println("SDF Graph Scheduled in ");// + timerASAPSche.toString());
     return maxDate;
   }
 
   /**
-   * @param a
-   *          actor
-   * @return true
+   * Initialize the list of ready executions
+   * 
+   * @param g
+   *          SDF graph
    */
-  public boolean is_ready(Actor a) {
-    double maxFinishDate = Double.POSITIVE_INFINITY;
-    if (a.executionCounter > 0) {
+  private void initialzeList(SDFGraph g) {
+    // loop actors
+    for (SDFAbstractVertex actor : g.vertexSet()) {
+      // if ready
+      if (this.isReady(actor)) {
+        // consume N data tokens
+        this.simulator.consume(actor, 1);
+        // set the finish date
+        double finishDate = this.simulator.getStartDate(actor) + this.simulator.getActorDuration(actor);
+        this.simulator.setfinishDate(actor, finishDate);
+        // add the execution to the list
+        this.actorsToExecute.add(actor);
+      }
+    }
+  }
+
+  /**
+   * verify if the actor is ready to be executed
+   * 
+   * @param actor
+   *          actor to verify
+   * @return true if it is ready
+   */
+  private boolean isReady(SDFAbstractVertex actor) {
+    double maxStartDate = 0;
+    if (this.simulator.getExecutionCounter(actor) > 0) {
       return false;
     } else {
       boolean ready = true;
-      for (Edge e : a.OutputEdges.values()) {
-        if (e.delay == 0) {
+      for (SDFInterfaceVertex input : actor.getSources()) {
+        SDFEdge edge = actor.getAssociatedEdge(input);
+        if (edge.getDelay().intValue() == 0) {
           ready = false;
           break;
         } else {
-          if (e.targetActor.startDate < maxFinishDate) {
-            maxFinishDate = e.targetActor.startDate;
+          if (this.simulator.getFinishDate(edge.getSource()) > maxStartDate) {
+            maxStartDate = this.simulator.getFinishDate(edge.getSource());
           }
         }
       }
-      if (a.BaseActor.type != Actor.Type.OUTPUTINTERFACE) {
-        a.finishDate = maxFinishDate;
-      }
+      this.simulator.setStartDate(actor, maxStartDate);
       return ready;
     }
   }
 
-  // public int is_ready(Actor a){
-  // // initialize the counter with a max value = RV - counter
-  // double maxFinishDate = Double.POSITIVE_INFINITY;
-  // int maxExecutions = a.repetitionFactor - a.executionCounter;
-  // if(maxExecutions <= 0){
-  // return 0;
-  // }else{
-  // for(Edge e : a.OutputEdges.values()){
-  // int n = (int) Math.floor(e.delay / e.cons);
-  // double d = e.targetActor.startDate;
-  // // if n = 0, it means that the actor is not ready to be fired
-  // if(n < maxExecutions) maxExecutions = n;
-  // if(d < maxFinishDate) maxFinishDate = d;
-  // }
-  // if(a.type != Actor.Type.OUTPUTINTERFACE)
-  // a.finishDate = maxFinishDate;
-  // return maxExecutions;
-  // }
-  // }
-
-  // // alap schedule for dag graph
-  //
-  // // list of ready actors
-  //
-  // // list of executed actors
-  //
-  //
-  // // function for ALAP schedule
-  // public double schedule(){
-  // // need a deadline to respect
-  // /*
-  // * loop output interfaces to define the deadline
-  // *
-  // * case of DAG what we can do : (ASAP)
-  // * loop all the actors and add those without any inputs edges to the
-  // initial list
-  // * Schedule the graph by a DFS the same as the traditional schedule
-  // *
-  // * case of DAG what we can do : (ALAP)
-  // * loop all the actors and add those without any outputs edges to the
-  // initial list
-  // * and set their start date to double.maxvalue
-  // *
-  // * add the interface too
-  // * then schedule the graph like the traditional schedule
-  // * (set an array to check if an actor was scheduled or not yet for both
-  // ASAP and ALAP)
-  // *
-  // *
-  // *
-  // *
-  // * */
-  //
-  //
-  // // step 1: initialize the first list
-  // // since we are in the case of a DAG its more simple :
-  // // we add all actors without output interface
-  // // if actor is not an interface then set its start date to max value of a
-  // double
-  //
-  //
-  // // step
-  //
-  //
-  // return 0;
-  // }
-  //
-  // // function to initialize the list of actors
-  // private void initializeListOfReadyActors(){
-  // //initialize the list
-  //
-  //
-  // }
 }

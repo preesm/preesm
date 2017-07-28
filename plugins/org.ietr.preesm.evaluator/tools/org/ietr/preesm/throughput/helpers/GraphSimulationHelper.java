@@ -270,6 +270,29 @@ public class GraphSimulationHelper {
   }
 
   /**
+   * get the execution counter
+   * 
+   * @param actor
+   *          actor
+   * @return execution counter
+   */
+  public int getExecutionCounter(SDFAbstractVertex actor) {
+    return (int) actor.getPropertyBean().getValue("executionCounter");
+  }
+
+  /**
+   * Set the execution counters
+   * 
+   * @param actor
+   *          actor
+   * @param n
+   *          number of execution to set
+   */
+  public void setExecutionCounter(SDFAbstractVertex actor, int n) {
+    actor.setPropertyValue("executionCounter", n);
+  }
+
+  /**
    * check if the graph has completed an iteration
    * 
    * @return true if the graph iteration is complete
