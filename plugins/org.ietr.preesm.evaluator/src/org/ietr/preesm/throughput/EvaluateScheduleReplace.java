@@ -11,6 +11,8 @@ import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.schedule.ALAPScheduler_DAG;
+import org.ietr.preesm.schedule.ASAPScheduler_DAG;
 import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.parsers.Identifier;
@@ -22,6 +24,8 @@ import org.ietr.preesm.throughput.transformers.SrSDFTransformer;
  *
  */
 public class EvaluateScheduleReplace {
+
+  PreesmScenario preesmScenario;
   /*
    * Evaluate-Schedule-Replace technique : Evaluate the throughput of a relaxed execution of an ibsdf graph. It consists of three main process, Evaluate,
    * Schedule and Replace. The technique analyze the subgraph in terms of time dependencies and replace it with a small graph that represents its execution
@@ -42,6 +46,8 @@ public class EvaluateScheduleReplace {
    * @return the throughput of the graph
    */
   public double evaluate(SDFGraph inputGraph, PreesmScenario scenario) {
+    this.preesmScenario = scenario;
+
     System.out.println("Computing the throughput of the graph using Evaluate-Schedule-Replace (ESR) method ...");
 
     // Step 1: Construct the subgraph execution model for the hierarchical actors of the top graph
@@ -181,14 +187,15 @@ public class EvaluateScheduleReplace {
    */
   private void schedule(SDFGraph graph) {
     // ASAP schedule to determine the start/finish date for each actor and the latency constraint
-    // ASAPScheduler_DAG ASAP_DAG = new ASAPScheduler_DAG();
-    // ASAP_DAG.schedule(graph, false);
+    ASAPScheduler_DAG ASAP_DAG = new ASAPScheduler_DAG();
+    ASAP_DAG.schedule(graph, this.preesmScenario);
 
     // reset the execution counter of each actor
+    ASAP_DAG.simulator.resetExecutionCounter();
 
     // step 2: ALAP schedule ESR paper version
-    // ALAPScheduler_DAG ALAP = new ALAPScheduler_DAG();
-    // ALAP.schedule(graph, ASAP_DAG.iterDur, false);
+    ALAPScheduler_DAG ALAP = new ALAPScheduler_DAG();
+    ALAP.schedule(graph, ASAP_DAG.simulator, ASAP_DAG.dur1Iter);
   }
 
   // construction function

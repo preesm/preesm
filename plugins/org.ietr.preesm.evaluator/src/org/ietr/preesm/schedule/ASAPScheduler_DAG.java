@@ -14,7 +14,7 @@ import org.ietr.preesm.throughput.helpers.GraphSimulationHelper;
  */
 public class ASAPScheduler_DAG {
   public GraphSimulationHelper         simulator;       // simulator helper
-  private Double                       dur1Iter;        // duration of one iteration of a graph
+  public Double                        dur1Iter;        // duration of one iteration of a graph
   private ArrayList<SDFAbstractVertex> actorsToExecute; // list of actors to execute
 
   /**
