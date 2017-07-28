@@ -1,106 +1,141 @@
 package org.ietr.preesm.schedule;
 
-import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Map.Entry;
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.throughput.helpers.Stopwatch;
+import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
+import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.throughput.helpers.GraphSimulationHelper;
 
 /**
  * @author hderoui
  *
+ *         ASAP scheduler : Ghamarian + Lee + Hamza version
+ *
  */
 public class ASAPScheduler_DAG {
+  private GraphSimulationHelper                                    simulator;  // simulator helper
+  private Double                                                   dur1Iter;   // duration of one iteration of a graph
+  private Hashtable<Double, Hashtable<SDFAbstractVertex, Integer>> executions; // list of ready executions to finish
 
-  // list of actor to execute
-  public Double           iterDur;
-  public ArrayList<Actor> actorToExecute;
-
-  // Schedule the graph : set the starting date and finish date
   /**
-   * @param sg
-   *          srSDF graph
-   * @return duration
+   * Schedule the graph using an ASAP schedule and return the duration of the graph iteration
+   * 
+   * @param graph
+   *          SDF graph
+   * @param scenario
+   *          contains actors duration
+   * @return the duration of a graph iteration
    */
-  public double schedule(SDFGraph sg) {
-    // timer
-    Stopwatch timerASAPSche = new Stopwatch();
-    timerASAPSche.start();
+  public double schedule(SDFGraph graph, PreesmScenario scenario) {
 
-    // initialize the 1st element of the list
-    actorToExecute = new ArrayList<>();
-    initializeList(sg);
-    this.iterDur = 0.;
+    // initialize the simulator
+    this.simulator = new GraphSimulationHelper(graph, scenario);
+    this.dur1Iter = 0.;
 
-    // execute all actors of the list
-    while (!actorToExecute.isEmpty()) {
-      // execute the actor
-      actorToExecute.get(0).produce(1);
+    // initialize the 1st elements of the list
+    executions = new Hashtable<Double, Hashtable<SDFAbstractVertex, Integer>>();
+    this.initialzeList(graph);
 
-      // update the duration of 1 iteration
-      if (this.iterDur < actorToExecute.get(0).finishDate) {
-        this.iterDur = actorToExecute.get(0).finishDate;
-      }
-
-      // verify if the target actors are ready
-      for (Edge e : actorToExecute.get(0).OutputEdges.values()) {
-        if (is_ready(e.targetActor)) {
-          // consume 1 data tokens
-          e.targetActor.consume(1);
-          // set the finish date
-          e.targetActor.finishDate = e.targetActor.startDate + e.targetActor.duration;
-          // add the execution to the list
-          actorToExecute.add(e.targetActor);
+    while (!executions.isEmpty()) {
+      // pick the execution list with the earliest finish date
+      double t = Double.MAX_VALUE;
+      for (double keyT : executions.keySet()) {
+        if (t >= keyT) {
+          t = keyT;
         }
       }
 
-      // remove the current actor from the list
-      actorToExecute.remove(0);
-    }
-
-    timerASAPSche.stop();
-    System.out.println("DAG Graph Scheduled in " + timerASAPSche.toString());
-    return timerASAPSche.value();
-  }
-
-  // function to initialize the list of ready actors to be executed
-  private void initializeList(SDFGraph g) {
-    // loop actors
-    for (Actor a : g.actors.values()) {
-      // if ready
-      if (is_ready(a)) {
-        // consume N data tokens
-        a.consume(1);
-        // set the finish date
-        a.finishDate = a.startDate + a.duration;
-        // add the execution to the list
-        actorToExecute.add(a);
+      // update the duration of the iteration
+      if (dur1Iter < t) {
+        dur1Iter = t;
       }
-    }
-  }
 
-  // test if an actor is ready to be executed one time
-  /**
-   * @param a
-   *          actor
-   * @return true
-   */
-  public boolean is_ready(Actor a) {
-    double maxStartDate = 0;
-    if (a.executionCounter > 0) {
-      return false;
-    } else {
-      boolean ready = true;
-      for (Edge e : a.InputEdges.values()) {
-        if (e.delay == 0) {
-          ready = false;
-          break;
-        } else {
-          if (e.sourceActor.finishDate > maxStartDate) {
-            maxStartDate = e.sourceActor.finishDate;
+      // execute the list of executions
+      Hashtable<SDFAbstractVertex, Integer> listTExec = executions.get(t);
+      executions.remove(t);
+
+      for (Entry<SDFAbstractVertex, Integer> execution : listTExec.entrySet()) {
+
+        // produce n*prod data tokens
+        this.simulator.produce(execution.getKey(), execution.getValue());
+
+        // verify the target actors of the executed actor if they are ready to be executed
+        for (SDFInterfaceVertex output : execution.getKey().getSinks()) {
+
+          // execute n times the target actor if it is ready
+          SDFAbstractVertex targetActor = execution.getKey().getAssociatedEdge(output).getTarget();
+          int n = this.simulator.maxExecToCompleteAnIteration(targetActor);
+
+          if (n > 0) {
+            // consume N data tokens
+            this.simulator.consume(targetActor, n);
+
+            // set the start date
+            this.simulator.setStartDate(targetActor, t);
+
+            // set the finish date
+            double finishDate = this.simulator.getStartDate(targetActor) + this.simulator.getActorDuration(targetActor);
+            this.simulator.setfinishDate(targetActor, finishDate);
+
+            // add the execution to the list
+            if (executions.containsKey(finishDate)) {
+              Hashtable<SDFAbstractVertex, Integer> listExec = executions.get(finishDate);
+              if (listExec.containsKey(targetActor)) {
+                int old = listExec.get(targetActor);
+                listExec.put(targetActor, (old + n));
+              } else {
+                listExec.put(targetActor, n);
+              }
+            } else {
+              executions.put(finishDate, new Hashtable<SDFAbstractVertex, Integer>());
+              executions.get(finishDate).put(targetActor, n);
+            }
           }
         }
       }
-      a.startDate = maxStartDate;
-      return ready;
+    }
+
+    // check if the simulation is completed
+    if (this.simulator.isIterationCompleted()) {
+      System.out.println("Iteration complete !!");
+    } else {
+      System.err.println("Iteration not complete !!");
+    }
+
+    System.out.println("SDF Graph Scheduled in ");// + timerASAPSche.toString());
+    return dur1Iter;
+  }
+
+  /**
+   * Initialize the list of ready executions
+   * 
+   * @param g
+   *          SDF graph
+   */
+  private void initialzeList(SDFGraph g) {
+    // loop actors
+    for (SDFAbstractVertex actor : g.vertexSet()) {
+      // get the max n
+      int n = this.simulator.maxExecToCompleteAnIteration(actor);
+      // if ready
+      if (n > 0) {
+        // consume N data tokens
+        this.simulator.consume(actor, n);
+        // set the start date
+        this.simulator.setStartDate(actor, 0.);
+        // set the finish date
+        double finishDate = this.simulator.getStartDate(actor) + this.simulator.getActorDuration(actor);
+        this.simulator.setfinishDate(actor, finishDate);
+        // add the execution to the list
+        if (executions.containsKey(finishDate)) {
+          executions.get(finishDate).put(actor, n);
+        } else {
+          executions.put(finishDate, new Hashtable<SDFAbstractVertex, Integer>());
+          executions.get(finishDate).put(actor, n);
+        }
+      }
     }
   }
 
