@@ -5,6 +5,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.preesm.throughput.helpers.GraphSimulationHelper;
 
 /**
@@ -85,10 +86,10 @@ public class ALAPScheduler_DAG {
       // if ready
       if (this.isReady(actor)) {
         // consume N data tokens
-        this.simulator.consume(actor, 1);
+        this.simulator.produce(actor, -1);
         // set the finish date
-        double finishDate = this.simulator.getStartDate(actor) + this.simulator.getActorDuration(actor);
-        this.simulator.setfinishDate(actor, finishDate);
+        double startDate = this.simulator.getFinishDate(actor) - this.simulator.getActorDuration(actor);
+        this.simulator.setStartDate(actor, startDate);
         // add the execution to the list
         this.actorsToExecute.add(actor);
       }
@@ -103,23 +104,26 @@ public class ALAPScheduler_DAG {
    * @return true if it is ready
    */
   private boolean isReady(SDFAbstractVertex actor) {
-    double maxStartDate = 0;
+    double maxFinishDate = this.maxDate;
     if (this.simulator.getExecutionCounter(actor) > 0) {
       return false;
     } else {
       boolean ready = true;
-      for (SDFInterfaceVertex input : actor.getSources()) {
-        SDFEdge edge = actor.getAssociatedEdge(input);
+      for (SDFInterfaceVertex output : actor.getSinks()) {
+        SDFEdge edge = actor.getAssociatedEdge(output);
         if (edge.getDelay().intValue() == 0) {
           ready = false;
           break;
         } else {
-          if (this.simulator.getFinishDate(edge.getSource()) > maxStartDate) {
-            maxStartDate = this.simulator.getFinishDate(edge.getSource());
+          if (this.simulator.getStartDate(edge.getTarget()) < maxFinishDate) {
+            maxFinishDate = this.simulator.getStartDate(edge.getTarget());
           }
         }
       }
-      this.simulator.setStartDate(actor, maxStartDate);
+      SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
+      if (!(baseActor instanceof SDFSinkInterfaceVertex)) {
+        this.simulator.setfinishDate(actor, maxFinishDate);
+      }
       return ready;
     }
   }
