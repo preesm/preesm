@@ -1,16 +1,17 @@
 package org.abo.preesm.plugin.dataparallel.operations.visitor
 
-import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
-import org.abo.preesm.plugin.dataparallel.SDF2DAG
-import org.abo.preesm.plugin.dataparallel.DAG2DAG
-import org.eclipse.xtend.lib.annotations.Accessors
-import java.util.Map
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import java.util.List
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
-import org.abo.preesm.plugin.dataparallel.PureDAGConstructor
+import java.util.Map
+import org.abo.preesm.plugin.dataparallel.DAG2DAG
 import org.abo.preesm.plugin.dataparallel.DAGComputationBug
+import org.abo.preesm.plugin.dataparallel.PureDAGConstructor
+import org.abo.preesm.plugin.dataparallel.SDF2DAG
 import org.abo.preesm.plugin.dataparallel.iterator.SubsetTopologicalIterator
+import org.eclipse.xtend.lib.annotations.Accessors
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
+import org.ietr.dftools.algorithm.model.visitors.SDF4JException
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
 
 /**
  * DAG operation that finds the instances that needs to be moved in the
@@ -29,12 +30,32 @@ class MovableInstances implements DAGOperations {
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	val Map<SDFAbstractVertex, Integer> rearrangedLevels
 	
+	/**
+	 * List of all the instances that are to be moved in the 
+	 * transient DAG
+	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	val List<SDFAbstractVertex> movableInstances
+	
+	/**
+	 * List of all the instances that also form root instance of
+	 * some or the other cycle
+	 */
+	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	val List<SDFAbstractVertex> movableRootInstances
+	
+	/**
+	 * List of all the instances that form the end of the chain
+	 * starting from the {@link MovableInstances#movableRootInstances}
+	 */
+	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	val List<SDFAbstractVertex> movableExitInstances
 	
 	new() {
 		rearrangedLevels = newHashMap
 		movableInstances = newArrayList
+		movableRootInstances = newArrayList
+		movableExitInstances = newArrayList
 	}
 	
 	/**
@@ -92,7 +113,7 @@ class MovableInstances implements DAGOperations {
 				rootInstances.forEach[instance |
 					if(!(rootsOfOtherCycles.contains(instance)) && 
 					   !(sourceInstances.contains(instance)) &&
-					   !(instance != anchor)
+					   (instance != anchor)
 					) {
 						rootInstancesToBeSorted.add(instance)
 					}
@@ -107,16 +128,43 @@ class MovableInstances implements DAGOperations {
 				// Maximum level starting from 0, where the instances need to be moved. 
 				// Make sure the instance from source actors are ignored, otherwise, lbar
 				// will always result 0
-				val lbar = OperationsUtils.getParallelLevel(dagGen, 
-					rearrangedLevels.filter[instance, level |
-						!(sourceInstances.contains(instance)) &&
-						instancesOfThisCycle.contains(instance)
-					]
-				)
+				val lbar = (new GetParallelLevelBuilder)
+							.addDagGen(dagGen)
+							.addOrigLevels(rearrangedLevels)
+							.addSubsetLevels(rearrangedLevels.filter[instance, level |
+												!(sourceInstances.contains(instance)) &&
+												instancesOfThisCycle.contains(instance)])
+							.build()
 				
-				movableInstances.addAll(rearrangedLevels.filter[instance, level |
-					level < lbar && instancesOfThisCycle.contains(instance)
-				].keySet)
+				val sit = new SubsetTopologicalIterator(dagGen, anchor)
+				while(sit.hasNext) {
+					val instance = sit.next
+					val instanceLevel = rearrangedLevels.get(instance)
+					if(instanceLevel < lbar) {
+						movableInstances.add(instance)
+						
+						if(instanceLevel == 0 && !(instance instanceof SDFForkVertex)) {
+							movableRootInstances.add(instance)
+						} else if(instanceLevel == (lbar - 1)) {
+							
+							// Check if there is an explode instance of this instance
+							if(!(instance instanceof SDFForkVertex) && !(instance instanceof SDFJoinVertex)) {
+								val expImpInstances = dagGen.explodeImplodeOrigInstances.filter[expImp, origInstance |
+									(origInstance == instance) && (expImp instanceof SDFForkVertex)
+								]
+								if(expImpInstances.empty) {
+									// No explode instance associated with this
+									movableExitInstances.add(instance)
+								} 
+								// else Wait until its explode instance is seen and then add it									
+							} else {
+								if(instance instanceof SDFForkVertex) {
+									movableExitInstances.add(instance)	
+								}
+							}
+						}
+					}
+				}
 			]
 		}
 	}

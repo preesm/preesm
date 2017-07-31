@@ -193,22 +193,31 @@ class OperationsUtils {
 		dagGen.accept(levelOps)
 		val levelSet = levelOps.levels
 		
-		return getParallelLevel(dagGen, levelSet)
+		return getParallelLevel(dagGen, levelSet, levelSet)
 	}
 	
 	/**
+	 * Use {@link GetParallelLevelBuilder} instead of this method
+	 * 
 	 * Get maximum depth/level at which all instances of an actor are contained for a given levels
 	 * Rest are same as {@link OperationsUtils#getParallelLevel}
 	 * 
 	 * @param dagGen A {@link PureDAGConstructor} used to get instance to actor mappings and vice-versa
-	 * @param Given levels
+	 * @param origLevels Original level set containing all instances
+	 * @param levels Given levels, with possible restricted levels
 	 * @return If DAG has a parallel level, then it returns the maximum level. Otherwise it returns null
 	 */
-	public static def Integer getParallelLevel(PureDAGConstructor dagGen, Map<SDFAbstractVertex, Integer> levels) {
+	public static def Integer getParallelLevel(PureDAGConstructor dagGen,
+		Map<SDFAbstractVertex, Integer> origLevels, 
+		Map<SDFAbstractVertex, Integer> levels) {
+			
+		val origLevelSets = getLevelSets(origLevels)
+		
+		// Populate only those actors that are relevant to the given level set
 		for(level: getLevelSets(levels)) {
-			val currentLevel = levels.get(level.get(0)) 	
+			val currentLevel = levels.get(level.get(0))			
 			val actors = newHashSet
-			val allInstances = newArrayList
+			val allInstances = newArrayList		
 			// Get all actors in the current level
 			level.forEach[instance | actors.add(dagGen.instance2Actor.get(instance))]
 			
@@ -218,8 +227,10 @@ class OperationsUtils {
 				allInstances.addAll(instances)
 			]
 			
-			// A level set is parallel, if a level set contains all instances of all actors
-			if(allInstances.filter[instance | !level.contains(instance)].empty) {
+			val origLevel = origLevelSets.filter[l | l.contains(level.get(0))].get(0)
+
+			// A level set is parallel, if the original level set contains all instances of all actors
+			if(allInstances.filter[instance | !origLevel.contains(instance)].empty) {
 				return currentLevel
 			}
 		}

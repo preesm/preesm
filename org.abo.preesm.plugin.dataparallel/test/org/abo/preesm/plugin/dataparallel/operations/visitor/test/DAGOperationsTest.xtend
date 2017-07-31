@@ -9,6 +9,7 @@ import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
 import org.abo.preesm.plugin.dataparallel.operations.visitor.DependencyAnalysisOperations
 import org.abo.preesm.plugin.dataparallel.operations.visitor.MovableInstances
 import org.abo.preesm.plugin.dataparallel.operations.visitor.OperationsUtils
+import org.abo.preesm.plugin.dataparallel.operations.visitor.RootExitOperations
 import org.abo.preesm.plugin.dataparallel.test.ExampleGraphs
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.jgrapht.alg.CycleDetector
@@ -16,6 +17,10 @@ import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
+import org.abo.preesm.plugin.dataparallel.operations.visitor.LevelsOperations
+import org.abo.preesm.plugin.dataparallel.operations.visitor.GetParallelLevelBuilder
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
 
 /**
  * Property based tests for operations that implement {@link DAGOperations} on
@@ -101,6 +106,8 @@ class DAGOperationsTest {
 	public def void negativeParallelLevelTest() {
 		val depOp = new DependencyAnalysisOperations
 		dagGen.accept(depOp)
+		val levelsOp = new LevelsOperations
+		dagGen.accept(levelsOp)
 		if(depOp.isIndependent) {
 			
 			// Graph is not acyclic-like
@@ -110,7 +117,12 @@ class DAGOperationsTest {
 				dagGen.accept(cycleOp)
 				
 				cycleOp.cycleRoots.forEach[ cycle |
-					Assert.assertTrue(OperationsUtils.getParallelLevel(dagGen, cycle.levels) === null)
+					val parallelLevel = (new GetParallelLevelBuilder)
+											.addOrigLevels(cycle.levels)
+											.addSubsetLevels(cycle.levels)
+											.addDagGen(dagGen)
+											.build()
+					Assert.assertTrue(parallelLevel === null)
 				]
 			}
 		}
@@ -156,7 +168,12 @@ class DAGOperationsTest {
 			Assert.assertTrue(OperationsUtils.isParallel(dagGen, movableInstanceVisitor.rearrangedLevels))
 			
 			// Further, the parallel level SHOULD be 0
-			Assert.assertEquals(OperationsUtils.getParallelLevel(dagGen, movableInstanceVisitor.rearrangedLevels), 0)
+			val parallelLevel = (new GetParallelLevelBuilder)
+									.addOrigLevels(movableInstanceVisitor.rearrangedLevels)
+									.addSubsetLevels(movableInstanceVisitor.rearrangedLevels)
+									.addDagGen(dagGen)
+									.build()
+			Assert.assertEquals(parallelLevel, 0)
 		}
 	}
 	
@@ -172,8 +189,7 @@ class DAGOperationsTest {
 	 * 
 	 * Weak Test (Tests only if it belongs, not equality)
 	 */
-	 
-	@Test
+	@org.junit.Test
 	public def void cycleRootsIsSubsetOfAllCycles() {
 		val sdfgCycles = new CycleDetector(sdf).findCycles.map[it.name].toSet
 		
@@ -224,7 +240,7 @@ class DAGOperationsTest {
 	 * 
 	 * Weak Test
 	 */
-	@org.junit.Test
+	@Test
 	public def void checkPartialRearranging() {
 		val moveInstanceVisitor = new MovableInstances
 		dagGen.accept(moveInstanceVisitor)
@@ -253,6 +269,70 @@ class DAGOperationsTest {
 			]
 			Assert.assertFalse(nonParallelLevelSet.empty)
 			Assert.assertFalse(OperationsUtils.isParallel(dagGen, nonParallelLevelSet))
+		}
+	}
+	
+	/**
+	 * Test relation between movableInstances, movableRootInstances, movableExitInstances
+	 * 
+	 * MovableRootInstances are also root nodes
+	 * If movableExitInstance is explode, then its corresponding original actor will be in 
+	 * movableInstance
+	 * If movableExitInstance is not explode, then it does not have an explode instance at all
+	 * MovableExitInstances and movableRootInstances are subset of movableInstances
+	 * All have anchor instances
+	 * 
+	 * Weak Test
+	 */
+	@Test
+	public def void movableInstancesTest() {
+		val moveInstanceVisitor = new MovableInstances
+		dagGen.accept(moveInstanceVisitor)
+		
+		if(!isAcyclicLike) {
+			val movableRootInstances = moveInstanceVisitor.movableRootInstances
+			val movableInstances = moveInstanceVisitor.movableInstances
+			val movableExitInstances = moveInstanceVisitor.movableExitInstances
+			
+			// Get root nodes
+			val rootVisitor = new RootExitOperations
+			dagGen.accept(rootVisitor)
+			val rootInstances = rootVisitor.rootInstances
+			
+			// Get anchor nodes
+			val cycleDetectOp = new CyclicSDFGOperations
+			dagGen.accept(cycleDetectOp)
+			val anchorInstances = newArrayList 
+			cycleDetectOp.cycleRoots.forEach[cycle |
+				val cycleRoots = cycle.roots
+				anchorInstances.add(OperationsUtils.pickElement(cycleRoots))
+			]
+			Assert.assertTrue(!anchorInstances.empty)
+			
+			movableRootInstances.forEach[instance |
+				Assert.assertTrue(rootInstances.contains(instance))
+				Assert.assertTrue(movableInstances.contains(instance))
+			]  
+			
+			movableExitInstances.forEach[instance |
+				Assert.assertTrue(!(instance instanceof SDFJoinVertex))
+				if(instance instanceof SDFForkVertex) {
+					val origInstance = dagGen.explodeImplodeOrigInstances.get(instance)
+					Assert.assertTrue(movableInstances.contains(origInstance))
+				} else {
+					// Get list of explode instance of this instance
+					val explodeInstances = dagGen.explodeImplodeOrigInstances.filter[expImp, origInstance |
+						(expImp instanceof SDFForkVertex) && (origInstance == instance)
+					]
+					Assert.assertTrue(explodeInstances.keySet.empty)
+				}
+				Assert.assertTrue(movableInstances.contains(instance))
+			]
+
+			anchorInstances.forEach[instance |
+				Assert.assertTrue(movableInstances.contains(instance))
+				Assert.assertTrue(movableRootInstances.contains(instance))
+			]
 		}
 	}
 }
