@@ -7,8 +7,8 @@ import org.abo.preesm.plugin.dataparallel.SDF2DAG
 import org.abo.preesm.plugin.dataparallel.operations.visitor.CyclicSDFGOperations
 import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
 import org.abo.preesm.plugin.dataparallel.operations.visitor.DependencyAnalysisOperations
+import org.abo.preesm.plugin.dataparallel.operations.visitor.MovableInstances
 import org.abo.preesm.plugin.dataparallel.operations.visitor.OperationsUtils
-import org.abo.preesm.plugin.dataparallel.operations.visitor.RearrangeOperations
 import org.abo.preesm.plugin.dataparallel.test.ExampleGraphs
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.jgrapht.alg.CycleDetector
@@ -124,28 +124,16 @@ class DAGOperationsTest {
 	 */
 	@Test
 	public def void implodeExplodeInSameLevelAsOrig() {
-		val rearrangeOp = new RearrangeOperations
-		dagGen.accept(rearrangeOp)
+		val movableOp = new MovableInstances
+		dagGen.accept(movableOp)
 		
-		// First test the dagCLevels
-		val dagCLevels = rearrangeOp.dagCLevels
+		val dagCLevels = movableOp.rearrangedLevels
 		dagCLevels.forEach[node, level |
 			if(dagGen.explodeImplodeOrigInstances.keySet.contains(node)) {
 				val origNode = dagGen.explodeImplodeOrigInstances.get(node)
 				Assert.assertEquals(dagCLevels.get(origNode), level)
 			}
 		]
-		
-		// Then check the same for dagTLevels
-		val dagTLevels = rearrangeOp.dagTLevels
-		if(dagTLevels !== null) {
-			dagTLevels.forEach[node, level|
-				if(dagGen.explodeImplodeOrigInstances.keySet.contains(node)) {
-					val origNode = dagGen.explodeImplodeOrigInstances.get(node)
-					Assert.assertEquals(dagTLevels.get(origNode), level)
-				}
-			]
-		}
 	}
 	
 	/**
@@ -158,23 +146,17 @@ class DAGOperationsTest {
 		val depOp = new DependencyAnalysisOperations
 		dagGen.accept(depOp)
 		if(isAcyclicLike && depOp.isIndependent){
-			val rearrangeVisitor = new RearrangeOperations
-			dagGen.accept(rearrangeVisitor)
-			
-			// Check that dagT is not-populated
-			Assert.assertEquals(rearrangeVisitor.dagT, null)
-			
-			// Check that datTlevels are empty
-			Assert.assertTrue(rearrangeVisitor.dagTLevels.empty)
+			val movableInstanceVisitor = new MovableInstances
+			dagGen.accept(movableInstanceVisitor)
 			
 			// Level set should be populated with something
-			Assert.assertFalse(rearrangeVisitor.dagCLevels.empty)
+			Assert.assertFalse(movableInstanceVisitor.rearrangedLevels.empty)
 			
 			// Now check if the newly created levels are data-parallel
-			Assert.assertTrue(OperationsUtils.isParallel(rearrangeVisitor.dagC, rearrangeVisitor.dagCLevels))
+			Assert.assertTrue(OperationsUtils.isParallel(dagGen, movableInstanceVisitor.rearrangedLevels))
 			
 			// Further, the parallel level SHOULD be 0
-			Assert.assertEquals(OperationsUtils.getParallelLevel(dagGen, rearrangeVisitor.dagCLevels), 0)
+			Assert.assertEquals(OperationsUtils.getParallelLevel(dagGen, movableInstanceVisitor.rearrangedLevels), 0)
 		}
 	}
 	
@@ -196,7 +178,7 @@ class DAGOperationsTest {
 		val sdfgCycles = new CycleDetector(sdf).findCycles.map[it.name].toSet
 		
 		// Get the cycles that have instances in root
-		val cycleOp = new RearrangeOperations
+		val cycleOp = new CyclicSDFGOperations
 		dagGen.accept(cycleOp)
 		val cycleRoots = cycleOp.cycleRoots
 		
@@ -236,71 +218,41 @@ class DAGOperationsTest {
 	/**
 	 * Test to check partial rearranging of the actors
 	 * 
-	 * When the DAG is non-acyclic like, then effect of rearranging is partial
-	 * Max parallel level will be minimum of the maximum levels of actors in the
-	 * rest of the cycle (i.e. cycle without the actor of anchoring instance)
+	 * In a non-acyclic-like DAG, the movable instances are not at the same level as its siblings.
+	 * On the other hand, rest of the instances of the DAG (that are not in movable instances) are
+	 * in the same level
 	 * 
 	 * Weak Test
 	 */
-	@Test
+	@org.junit.Test
 	public def void checkPartialRearranging() {
-		val rearrangeOp = new RearrangeOperations
-		dagGen.accept(rearrangeOp)
+		val moveInstanceVisitor = new MovableInstances
+		dagGen.accept(moveInstanceVisitor)
 		
-		val rearrangedLevels = rearrangeOp.dagCLevels
+		val rearrangedLevels = moveInstanceVisitor.rearrangedLevels
 		
 		if(!isAcyclicLike) {
-			val cycles = rearrangeOp.cycleRoots
+			val moveableInstances = moveInstanceVisitor.movableInstances
+			val moveableActors = newHashSet
+			moveableInstances.forEach[instance |
+				moveableActors.add(dagGen.instance2Actor.get(instance))
+			]
 			
-			cycles.forEach[cycle |
-				val restOfRootsInCycle = cycle.roots.filter[instance |
-					instance != OperationsUtils.pickElement(cycle.roots)
-				]
-				val minimumParLevel = newArrayList
-				restOfRootsInCycle.forEach[instance |
-					val actor = dagGen.instance2Actor.get(instance)
-					val levelsOfInstances = newArrayList
-					dagGen.actor2Instances.get(actor).forEach[node |
-						levelsOfInstances.add(rearrangedLevels.get(node))
-					]
-					minimumParLevel.add(levelsOfInstances.max)
-				]
-				val rearrangedInstancesOfThisCycle = rearrangedLevels.filter[instance, level | cycle.levels.keySet.contains(instance)]
-				val parallelLevel = OperationsUtils.getParallelLevel(dagGen, rearrangedInstancesOfThisCycle)
-				Assert.assertTrue(parallelLevel !== null)
-				Assert.assertTrue(minimumParLevel.min <= parallelLevel)
+			// Create a new level set minus moveableInstances
+			val parallelLevelSet = rearrangedLevels.filter[instance, level |
+				val actor = dagGen.instance2Actor.get(instance)
+				!moveableActors.contains(actor)
 			]
-		}
-	}
-	
-	/**
-	 * Make sure that all the instances of a cycle, except the picked one is
-	 * in the same level
-	 * 
-	 * Strong Test
-	 */
-	@Test
-	public def void restOfCyclesAreArranged() {
-		val rearrangeOp = new RearrangeOperations
-		dagGen.accept(rearrangeOp)
-		val rearrangedLevels = rearrangeOp.dagCLevels
-		
-		if(!isAcyclicLike) {
-			val cycles = rearrangeOp.cycleRoots
-			cycles.forEach[cycle |
-				val anchor = OperationsUtils.pickElement(cycle.roots)
-				val restOfCycle = cycle.roots.filter[instance | instance != anchor]
-				restOfCycle.forEach[instance | 
-					val actor = dagGen.instance2Actor.get(instance)
-					// Check if levels of all the instance of actor are same
-					val levelsOfInstances = newArrayList
-					dagGen.actor2Instances.get(actor).forEach[node |
-						levelsOfInstances.add(rearrangedLevels.get(node))
-					]
-					val maxLevel = levelsOfInstances.max
-					levelsOfInstances.forEach[level | Assert.assertTrue(level == maxLevel)]
-				]
+			Assert.assertFalse(parallelLevelSet.empty)
+			Assert.assertTrue(OperationsUtils.isParallel(dagGen, parallelLevelSet))
+			
+			// Create a new level set of only moveableInstances
+			val nonParallelLevelSet = rearrangedLevels.filter[instance, level |
+				val actor = dagGen.instance2Actor.get(instance)
+				moveableActors.contains(actor)
 			]
+			Assert.assertFalse(nonParallelLevelSet.empty)
+			Assert.assertFalse(OperationsUtils.isParallel(dagGen, nonParallelLevelSet))
 		}
 	}
 }
