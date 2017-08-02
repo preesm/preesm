@@ -39,7 +39,7 @@ class DataParallel extends AbstractTaskImplementation {
 		logger.log(Level.INFO, "Root instances are: \n" + rootOps.rootInstances)
 		
 		val depOps = new DependencyAnalysisOperations
-		
+		dagGen.accept(depOps)
 		if(depOps.isIndependent)		
 			logger.log(Level.INFO, "SDF is data-Parallel")
 		else {
