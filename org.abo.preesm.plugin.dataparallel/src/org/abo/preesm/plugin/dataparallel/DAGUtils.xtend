@@ -14,7 +14,7 @@ class DAGUtils {
 	
 	/**
 	 * Find a vertex of "source" graph occurring "dest" graph
-	 * @param vertex The vertex to be found in "source" graph
+	 * @param vertex The vertex to be found in "dest" graph
 	 * @param source The vertex is initially in this graph
 	 * @param dest Check the occurrence in this graph
 	 * @return vertex in "dest" graph 
