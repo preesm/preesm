@@ -277,6 +277,7 @@ class DAGOperationsTest {
 	 * Test relation between movableInstances, movableRootInstances, movableExitInstances
 	 * 
 	 * MovableRootInstances are also root nodes
+	 * MovableRootInstances cannot have implode nodes
 	 * If movableExitInstance is explode, then its corresponding original actor will be in 
 	 * movableInstance
 	 * If movableExitInstance is not explode, then it does not have an explode instance at all
@@ -313,6 +314,7 @@ class DAGOperationsTest {
 			movableRootInstances.forEach[instance |
 				Assert.assertTrue(rootInstances.contains(instance))
 				Assert.assertTrue(movableInstances.contains(instance))
+				Assert.assertTrue(!(instance instanceof SDFJoinVertex))
 			]  
 			
 			movableExitInstances.forEach[instance |
