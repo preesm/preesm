@@ -100,6 +100,7 @@ class ExampleGraphs {
 			#[twoActorLoop, Boolean.FALSE],
 			#[semanticallyAcyclicCycle, Boolean.TRUE],
 			#[strictlyCyclic, Boolean.TRUE],
+			#[strictlyCyclicDual, Boolean.TRUE],
 			#[strictlyCyclic2, Boolean.TRUE],
 			#[mixedNetwork1, Boolean.TRUE],
 			#[mixedNetwork2, Boolean.FALSE]
@@ -172,6 +173,21 @@ class ExampleGraphs {
 					.addEdge("d1", "a1", 3, 2, 3) // End cycle 2
 					.addEdge("f", "output", "d1", "inputF", 3, 3, 1) // Intermediate node to cycle 2
 					.outputGraph
+	}
+	
+	/**
+	 * Create another configuration of strictly cyclic SDF containing 4 actors. None
+	 * of the actor has enough tokens that all the instances can fire
+	 * This is just the dual of the strictlyCyclic graph
+	 * A(2) -(4)-> (3)B(3) -(1)-> (2)C(2) -(4)-> (2)D(2) -(1)-> (2)A
+	 */
+	public static def SDFGraph strictlyCyclicDual() {
+		return new SDFBuilder()
+				.addEdge("a", "b", 2, 3, 4)
+				.addEdge("b", "c", 3, 2, 1)
+				.addEdge("c", "d", 2, 3, 4)
+				.addEdge("d", "a", 3, 2, 1)
+				.outputGraph
 	}
 	
 	/**

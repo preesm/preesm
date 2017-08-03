@@ -39,6 +39,7 @@ class SrSDFDAGCoIteratorTest {
 		
 		val parameterArray = #[
 			ExampleGraphs.strictlyCyclic,
+			ExampleGraphs.strictlyCyclicDual,
 			ExampleGraphs.strictlyCyclic2,
 			ExampleGraphs.mixedNetwork1
 		]
