@@ -44,6 +44,7 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.context.impl.CustomContext;
 import org.eclipse.graphiti.features.context.impl.LayoutContext;
+import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
@@ -71,7 +72,6 @@ import org.ietr.preesm.ui.pimm.features.OpenRefinementFeature;
 import org.ietr.preesm.ui.pimm.features.SetActorMemoryScriptFeature;
 import org.ietr.preesm.ui.pimm.features.SetActorRefinementFeature;
 
-// TODO: Auto-generated Javadoc
 /**
  * Properties Section used for Actors.
  *
@@ -327,7 +327,8 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
           final ExecutableActor actor = (ExecutableActor) bo;
           if (ActorPropertiesSection.this.txtNameObj.getText().compareTo(actor.getName()) != 0) {
             setNewName(actor, ActorPropertiesSection.this.txtNameObj.getText());
-            getDiagramTypeProvider().getDiagramBehavior().refreshContent();
+            getDiagramTypeProvider().getFeatureProvider().updateIfPossible(new UpdateContext(pe));
+            getDiagramTypeProvider().getFeatureProvider().layoutIfPossible(new LayoutContext(pe));
           }
         } // end Actor
       }

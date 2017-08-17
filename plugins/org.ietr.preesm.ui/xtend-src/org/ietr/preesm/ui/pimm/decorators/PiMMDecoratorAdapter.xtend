@@ -43,30 +43,30 @@ import org.eclipse.graphiti.dt.IDiagramTypeProvider
 import org.eclipse.graphiti.mm.pictograms.PictogramElement
 import org.eclipse.graphiti.tb.IDecorator
 import org.eclipse.xtend.lib.annotations.Accessors
+import java.util.LinkedHashMap
 
 /**
- * This class manages the list of IDecorator associated to the 
+ * This class manages the list of IDecorator associated to the
  * PictogramElement of a graph.</br>
  * The purpose of this class is to listen for changes of the PiGraph targeted
  * by the current Editor. Each time something is changed in the graph, the
- * PiMMDecoratorAdapter clears the map of decorators associated to the 
+ * PiMMDecoratorAdapter clears the map of decorators associated to the
  * PictogramElement of the graph in order to force their update. Otherwise,
  * pre-computed IDecorator stored in the Map are used when required by the
  * editor.
- * 
+ *
  * @author kdesnos
  */
-@SuppressWarnings("unchecked")
 public class PiMMDecoratorAdapter extends EContentAdapter {
 
 	@Accessors
 	Map<PictogramElement, IDecorator[]> pesAndDecorators
 
 	new(IDiagramTypeProvider diagramTypeProvider) {
-		pesAndDecorators = newHashMap
+		pesAndDecorators = new LinkedHashMap
 	}
 
-	/** 
+	/**
 	 * Is called each time a change is made in the PiGraph
 	 */
 	override notifyChanged(Notification notification) {
@@ -85,8 +85,8 @@ public class PiMMDecoratorAdapter extends EContentAdapter {
 
 	def void checkGraphChanges(Notification notification) {
 		pesAndDecorators.clear
-	// TODO If computations become slow, a switch could be used to 
-	// activate / deactivate decorator computations depending on the 
+	// TODO If computations become slow, a switch could be used to
+	// activate / deactivate decorator computations depending on the
 	// notification notifier.
 	}
 }

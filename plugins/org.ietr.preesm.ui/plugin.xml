@@ -357,7 +357,7 @@
       </runtime>
    </extension>
    <extension
-         point="org.ietr.graphiti.model.definition">
+         point="graphiti.definition">
       <configuration
             extension="graphml"
             name="GraphML"
@@ -1389,6 +1389,29 @@
                </visibleWhen>
             </command>
             <command
+                  commandId="org.ietr.preesm.ui.command.PiMM2Diagram"
+                  icon="icons/pi.gif"
+                  label="Generate .diagram"
+                  style="push">
+               <visibleWhen
+                     checkEnabled="true">
+                  <with
+                        variable="selection">
+                     <iterate
+                           ifEmpty="false"
+                           operator="and">
+                        <adapt
+                              type="org.eclipse.core.resources.IResource">
+                           <test
+                                 property="org.eclipse.core.resources.extension"
+                                 value="pi">
+                           </test>
+                        </adapt>
+                     </iterate>
+                  </with>
+               </visibleWhen>
+            </command>
+            <command
                   commandId="org.ietr.preesm.ui.command.ScenarioGenerator"
                   icon="icons/preesm4mini.PNG"
                   label="Generate Scenario"
@@ -1467,6 +1490,10 @@
             name="PiMM Checker">
       </command>
       <command
+            id="org.ietr.preesm.ui.command.PiMM2Diagram"
+            name="Generate Diagram file from PiMM Graph">
+      </command>
+      <command
             id="org.ietr.preesm.ui.command.ScenarioGenerator"
             name="Scenario Generator">
       </command>
@@ -1481,6 +1508,10 @@
       <handler
             class="org.ietr.preesm.ui.pimm.checker.popup.actions.PiMMAlgorithmCheckerPopup"
             commandId="org.ietr.preesm.ui.command.PimmChecker">
+      </handler>
+      <handler
+            class="org.ietr.preesm.ui.pimm.checker.popup.actions.PiMM2DiagramGeneratorPopup"
+            commandId="org.ietr.preesm.ui.command.PiMM2Diagram">
       </handler>
       <handler
             class="org.ietr.preesm.ui.pimm.checker.popup.actions.ScenariosGeneratorPopup"

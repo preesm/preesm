@@ -1,6 +1,22 @@
 PREESM Changelog
 ================
 
+## Release version 2.4.2
+*2017.08.17*
+
+### New Feature
+* Add menu entry to call the .diagram generator. This allows to generate the .diagram file from a PiMM Model (.pi) file;
+
+### Changes
+* Upgrade to Eclipse Oxygen;
+* Use new Graphiti extension point name (new version);
+* Refactoring;
+
+### Bug fix
+* Fix autolayout issue that prevented the feature to work when selection was not empty;
+* Fix positionning of Delays when using copy/paste;
+* Fix autolayout of dependencies targetting graph interfaces;
+
 ## Release version 2.4.1
 *2017.07.19*
 
