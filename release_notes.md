@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 2.4.2
+*2017.08.17*
 
 ### New Feature
 * Add menu entry to call the .diagram generator. This allows to generate the .diagram file from a PiMM Model (.pi) file;
