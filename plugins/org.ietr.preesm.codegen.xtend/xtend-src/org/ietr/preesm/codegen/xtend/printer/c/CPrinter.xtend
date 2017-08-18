@@ -359,6 +359,10 @@ class CPrinter extends DefaultPrinter {
 		
 		#include "x86.h"
 		
+		// Declare computation thread functions
+		«FOR coreBlock : printerBlocks»
+		void *computationThread_Core«(coreBlock as CoreBlock).coreID»(void *arg);
+		«ENDFOR»
 		
 		pthread_barrier_t iter_barrier;
 		int stopThreads;
