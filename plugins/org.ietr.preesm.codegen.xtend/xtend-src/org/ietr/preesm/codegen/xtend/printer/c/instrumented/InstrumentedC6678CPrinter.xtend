@@ -65,6 +65,12 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 	 */
 	var currentOperationMemcpy = new LinkedHashSet<CharSequence>();
 	
+	override createSecondaryFiles(List<Block> printerBlocks, List<Block> allBlocks) {
+		val result = super.createSecondaryFiles(printerBlocks, allBlocks)
+		result.remove("main.c")
+		return result
+	}
+	
 	/**
 	 * This methods prints a call to the cache invalidate method for each
 	 * {@link PortDirection#INPUT input} {@link Buffer} of the given

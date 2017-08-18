@@ -63,6 +63,12 @@ class PapifiedCPrinter extends CPrinter {
 		String PAPI_eventCodeSet = "PAPI_eventCodeSet_";
 		String PAPI_eventSet = "PAPI_eventSet_";
 	
+	override createSecondaryFiles(List<Block> printerBlocks, List<Block> allBlocks) {
+		val result = super.createSecondaryFiles(printerBlocks, allBlocks)
+		result.remove("main.c")
+		return result
+	}
+	
 	/**
 	 * Add a required library for PAPI utilization 
 	 * 
