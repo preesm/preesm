@@ -54,6 +54,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 import org.ietr.preesm.codegen.xtend.task.CodegenException
 import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
+import org.ietr.preesm.codegen.xtend.model.codegen.Block
 
 class MPPA2Printer extends CPrinter {
 
@@ -62,6 +63,12 @@ class MPPA2Printer extends CPrinter {
 	 * whose target and destination are identical.
 	 */
 	protected boolean IGNORE_USELESS_MEMCPY = true
+	
+	override createSecondaryFiles(List<Block> printerBlocks, List<Block> allBlocks) {
+		val result = super.createSecondaryFiles(printerBlocks, allBlocks)
+		result.remove("main.c")
+		return result
+	}
 
 	override printCoreBlockHeader(CoreBlock block) '''
 		/**

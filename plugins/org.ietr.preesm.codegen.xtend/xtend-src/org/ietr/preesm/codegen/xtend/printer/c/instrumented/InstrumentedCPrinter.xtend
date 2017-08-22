@@ -264,7 +264,7 @@ class InstrumentedCPrinter extends CPrinter {
 	'''
 	
 	override createSecondaryFiles(List<Block> printerBlocks, List<Block> allBlocks) {
-		var result = new LinkedHashMap<String,CharSequence>
+		val result = super.createSecondaryFiles(printerBlocks,allBlocks);
 		result.put("analysis.csv", printAnalysisCsvFile)
 		return result
 	}
