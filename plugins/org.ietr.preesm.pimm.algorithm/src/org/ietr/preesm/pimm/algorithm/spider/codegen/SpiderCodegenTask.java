@@ -84,6 +84,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     final String graphCode = launcher.generateGraphCode(pg);
     final String fctCode = launcher.generateFunctionCode(pg);
     final String hCode = launcher.generateHeaderCode(pg);
+    final String mCode = launcher.generateMainCode(pg);
 
     // Get the workspace
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -110,6 +111,9 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     final String piFctfilePath = "fct_" + pg.getName() + ".cpp";
     final File piFctFile = new File(folder, piFctfilePath);
 
+    final String cppMainfilePath = "main.cpp";
+    final File cppMainFile = new File(folder, cppMainfilePath);
+
     // Write the files
     try (FileWriter piGraphWriter = new FileWriter(piGraphFile)) {
       piGraphWriter.write(graphCode);
@@ -125,6 +129,12 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
 
     try (FileWriter hWriter = new FileWriter(hFile)) {
       hWriter.write(hCode);
+    } catch (final IOException e) {
+      e.printStackTrace();
+    }
+
+    try (FileWriter cppMainWriter = new FileWriter(cppMainFile)) {
+      cppMainWriter.write(mCode);
     } catch (final IOException e) {
       e.printStackTrace();
     }

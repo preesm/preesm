@@ -7,6 +7,7 @@ Bundle-Activator: org.ietr.preesm.pimm.algorithm.Activator
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
+ org.eclipse.xtend.lib;bundle-version="2.11.0",
  org.ietr.preesm.core,
  org.ietr.preesm.codegen
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -15,3 +16,4 @@ Export-Package: org.ietr.preesm.pimm.algorithm.checker,
  org.ietr.preesm.pimm.algorithm.checker.task,
  org.ietr.preesm.pimm.algorithm.pimm2sdf,
  org.ietr.preesm.pimm.algorithm.spider.codegen
+

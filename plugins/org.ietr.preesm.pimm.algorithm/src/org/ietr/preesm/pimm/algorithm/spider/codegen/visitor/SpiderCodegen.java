@@ -60,6 +60,7 @@ import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.pimm.algorithm.SpiderMainFilePrinter;
 import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderNameGenerator;
 
 // TODO: Auto-generated Javadoc
@@ -274,6 +275,10 @@ public class SpiderCodegen {
     append("#endif//" + pg.getName().toUpperCase() + "_H\n");
 
     return this.cppString.toString();
+  }
+
+  public String generateMainCode(final PiGraph pg) {
+    return SpiderMainFilePrinter.print(pg);
   }
 
   /**
