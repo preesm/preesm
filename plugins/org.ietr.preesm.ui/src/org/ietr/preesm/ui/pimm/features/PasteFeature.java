@@ -158,7 +158,7 @@ public class PasteFeature extends AbstractPasteFeature {
   }
 
   /**
-   *
+   * Post process the pasted objects. Actually remove parameter input ports that have no associated dependencies
    */
   public void postProcess() {
     for (final Entry<Parameterizable, Parameterizable> e : this.copiedObjects.entrySet()) {
