@@ -75,6 +75,24 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Block
 class CPrinter extends DefaultPrinter {
 
 	/**
+	 * Set to true if a main file should be generated. Set at object creation in constructor.
+	 */
+	private final boolean generateMainFile;
+
+	def boolean generateMainFile() {
+		return this.generateMainFile;
+	}
+
+	new() {
+		// generate a main file by default
+		this(true);
+	}
+
+	new(boolean generateMainFile) {
+		this.generateMainFile = generateMainFile;
+	}
+
+	/**
 	 * Temporary global var to ignore the automatic suppression of memcpy
 	 * whose target and destination are identical.
 	 */
@@ -344,7 +362,9 @@ class CPrinter extends DefaultPrinter {
 	
 	override createSecondaryFiles(List<Block> printerBlocks, List<Block> allBlocks) {
 		val result = super.createSecondaryFiles(printerBlocks, allBlocks);
-		result.put("main.c", printMain(printerBlocks))
+		if (generateMainFile()) {
+			result.put("main.c", printMain(printerBlocks))
+		}
 		return result
 	}
 	

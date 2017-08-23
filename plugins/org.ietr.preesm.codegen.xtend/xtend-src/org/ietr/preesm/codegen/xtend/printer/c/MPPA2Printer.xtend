@@ -42,33 +42,31 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
 import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.Communication
 import org.ietr.preesm.codegen.xtend.model.codegen.Constant
+import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
+import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 import org.ietr.preesm.codegen.xtend.task.CodegenException
-import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
-import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
-import org.ietr.preesm.codegen.xtend.model.codegen.Block
 
 class MPPA2Printer extends CPrinter {
+
+	new() {
+		// do not generate a main file
+		super(false)
+	}
 
 	/**
 	 * Temporary global var to ignore the automatic suppression of memcpy
 	 * whose target and destination are identical.
 	 */
 	protected boolean IGNORE_USELESS_MEMCPY = true
-	
-	override createSecondaryFiles(List<Block> printerBlocks, List<Block> allBlocks) {
-		val result = super.createSecondaryFiles(printerBlocks, allBlocks)
-		result.remove("main.c")
-		return result
-	}
 
 	override printCoreBlockHeader(CoreBlock block) '''
 		/**

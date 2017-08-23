@@ -62,6 +62,18 @@ import org.ietr.preesm.codegen.xtend.printer.c.CPrinter
  */
 class InstrumentedCPrinter extends CPrinter {
 
+	new() {
+		// generate a main file
+		this(true);
+	}
+
+	/**
+	 * expose argument to child classes
+	 */
+	new(boolean generateMainFile) {
+		super(generateMainFile)
+	}
+
 	/**
 	 * Buffer storing the timing dumped by the actors
 	 */

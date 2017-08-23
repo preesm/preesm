@@ -58,18 +58,18 @@ import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
 import java.util.LinkedHashSet
 
 class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
-		
+
+	new() {
+		// do not generate a main file
+		super(false)
+	}
+
 	/**
 	 * Set of CharSequence used to avoid calling the same cache operation 
 	 * multiple times in a broadcast or roundbuffer call. 
 	 */
 	var currentOperationMemcpy = new LinkedHashSet<CharSequence>();
 	
-	override createSecondaryFiles(List<Block> printerBlocks, List<Block> allBlocks) {
-		val result = super.createSecondaryFiles(printerBlocks, allBlocks)
-		result.remove("main.c")
-		return result
-	}
 	
 	/**
 	 * This methods prints a call to the cache invalidate method for each

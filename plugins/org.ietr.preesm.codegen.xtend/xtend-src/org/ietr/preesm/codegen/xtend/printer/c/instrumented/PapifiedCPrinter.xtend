@@ -52,6 +52,12 @@ import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
  */
  
 class PapifiedCPrinter extends CPrinter {
+
+	new() {
+		// do not generate a main file
+		super(false)
+	}
+
 	/**
 	 * Strings with the headers of the PAPI variables
 	 */
@@ -62,13 +68,7 @@ class PapifiedCPrinter extends CPrinter {
 		String PAPI_end_usec = "PAPI_end_usec_";
 		String PAPI_eventCodeSet = "PAPI_eventCodeSet_";
 		String PAPI_eventSet = "PAPI_eventSet_";
-	
-	override createSecondaryFiles(List<Block> printerBlocks, List<Block> allBlocks) {
-		val result = super.createSecondaryFiles(printerBlocks, allBlocks)
-		result.remove("main.c")
-		return result
-	}
-	
+
 	/**
 	 * Add a required library for PAPI utilization 
 	 * 
