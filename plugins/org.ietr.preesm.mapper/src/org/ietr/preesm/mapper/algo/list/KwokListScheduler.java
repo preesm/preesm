@@ -48,7 +48,6 @@ import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * List scheduler from Yu Kwong Kwok PhD thesis.
  *
@@ -56,13 +55,6 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
  * @author mpelcat
  */
 public class KwokListScheduler {
-
-  /**
-   * constructor.
-   */
-  public KwokListScheduler() {
-    super();
-  }
 
   /**
    * operatorvertexstarttime: Return the date when the operator is ready to process the vertex.
@@ -81,7 +73,7 @@ public class KwokListScheduler {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public long listImplementationCost(final MapperDAG dag, MapperDAGVertex vertex, final ComponentInstance operator, final IAbc simu,
+  private long listImplementationCost(final MapperDAG dag, MapperDAGVertex vertex, final ComponentInstance operator, final IAbc simu,
       final boolean minimizeVStartorOpEnd) throws WorkflowException {
 
     // check the vertex is into the DAG
