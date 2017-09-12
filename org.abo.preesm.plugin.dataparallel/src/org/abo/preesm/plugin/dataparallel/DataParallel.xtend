@@ -11,6 +11,11 @@ import java.util.logging.Logger
 import java.util.logging.Level
 import org.abo.preesm.plugin.dataparallel.operations.visitor.RootExitOperations
 import org.abo.preesm.plugin.dataparallel.operations.visitor.DependencyAnalysisOperations
+import org.abo.preesm.plugin.dataparallel.operations.visitor.RearrangeDAG
+import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation
+import org.eclipse.xtend.lib.annotations.Accessors
+import org.abo.preesm.plugin.dataparallel.operations.visitor.LevelsOperations
+import org.abo.preesm.plugin.dataparallel.operations.visitor.OperationsUtils
 
 /**
  * Wrapper class that performs the data-parallel checks and transforms
@@ -18,6 +23,12 @@ import org.abo.preesm.plugin.dataparallel.operations.visitor.DependencyAnalysisO
  * @author Sudeep Kanur
  */
 class DataParallel extends AbstractTaskImplementation {
+	
+	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	val KEY_TrSDF = "TrSDF"
+	
+	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	val KEY_CySDF = "CySDF"
 	
 	/**
 	 * Execute the plugin
@@ -27,11 +38,10 @@ class DataParallel extends AbstractTaskImplementation {
 	 * 
 	 */
 	override execute(Map<String, Object> inputs, Map<String, String> parameters, IProgressMonitor monitor, String nodeName, Workflow workflow) throws WorkflowException {
-		val sdf = inputs.get("SDF") as SDFGraph
+		val sdf = inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH) as SDFGraph
 		val logger = WorkflowLogger.logger
 		
 		val dagGen = new SDF2DAG(sdf, logger as Logger)
-		val dag = dagGen.outputGraph
 		
 		val rootOps = new RootExitOperations
 		dagGen.accept(rootOps)
@@ -40,14 +50,31 @@ class DataParallel extends AbstractTaskImplementation {
 		
 		val depOps = new DependencyAnalysisOperations
 		dagGen.accept(depOps)
-		if(depOps.isIndependent)		
-			logger.log(Level.INFO, "SDF is data-Parallel")
+		if(depOps.isIndependent) {
+			logger.log(Level.INFO, "SDF is DAG-independent")
+			val levelOps = new LevelsOperations
+			dagGen.accept(levelOps)
+			val levels = levelOps.levels
+			if(OperationsUtils.isParallel(dagGen, levels)) {
+				logger.log(Level.INFO, "SDF is also data-parallel")
+			} else {
+				logger.log(Level.INFO, "SDF is not data-parallel. Rearranging...")
+				
+				// Get transient graph
+				val rearrangeVisitor = new RearrangeDAG(sdf, logger)
+				dagGen.accept(rearrangeVisitor)
+				
+				return newHashMap(KEY_TrSDF -> rearrangeVisitor.transientGraph,
+								  KEY_CySDF -> new SDF2DAG(rearrangeVisitor.cyclicGraph).outputGraph)
+			}
+		}
 		else {
-			logger.log(Level.INFO, "SDF is not data-parallel")
-			logger.log(Level.INFO, "Non data-parallel actors are: " + depOps.instanceDependentActors)	
+			logger.log(Level.INFO, "SDF is not DAG-independent")
+			logger.log(Level.INFO, " Actors with dependent instances are: " + depOps.instanceDependentActors)
 		}
 		
-		return newHashMap("SDF" -> dag)
+		return newHashMap(KEY_TrSDF -> null,
+						  KEY_CySDF -> null)
 	}
 	
 	/**

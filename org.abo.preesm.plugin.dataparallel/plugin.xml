@@ -15,7 +15,11 @@
          </inputs>
          <outputs>
             <output
-                  id="SDF"
+                  id="TrSDF"
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+            </output>
+            <output
+                  id="CySDF"
                   object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
             </output>
          </outputs>

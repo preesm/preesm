@@ -21,6 +21,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
 import org.abo.preesm.plugin.dataparallel.operations.visitor.LevelsOperations
 import org.abo.preesm.plugin.dataparallel.operations.visitor.GetParallelLevelBuilder
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
+import org.abo.preesm.plugin.dataparallel.operations.visitor.RearrangeDAG
 
 /**
  * Property based tests for operations that implement {@link DAGOperations} on
@@ -281,6 +282,7 @@ class DAGOperationsTest {
 	 * If movableExitInstance is explode, then its corresponding original actor will be in 
 	 * movableInstance
 	 * If movableExitInstance is not explode, then it does not have an explode instance at all
+	 * MovableExitInstance cannot be implode nodes
 	 * MovableExitInstances and movableRootInstances are subset of movableInstances
 	 * All have anchor instances
 	 * 
@@ -337,5 +339,20 @@ class DAGOperationsTest {
 				Assert.assertTrue(movableRootInstances.contains(instance))
 			]
 		}
+	}
+	
+	/**
+	 * Test generation of transient SrSDF graph
+	 * There are not many properties to test, except check the fact that
+	 * the movable instances are indeed moved in the SrSDF
+	 */
+	@org.junit.Test
+	public def void checkRearranging() {
+		val rearrangeVisitor = new RearrangeDAG(sdf)
+		dagGen.accept(rearrangeVisitor)
+		val cySDF = rearrangeVisitor.cyclicGraph
+		
+		// Convert SrSDF to DAG
+		val cyDAG = (new SDF2DAG(cySDF)).outputGraph		
 	}
 }

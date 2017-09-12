@@ -487,6 +487,24 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 			}
 		}
 		
+		// Remove any unconnected implode and explode actors and related interfaces
+		val removableVertices = newArrayList // Mark the vertices to be removed
+		outputGraph.vertexSet.forEach[vertex |
+			if(outputGraph.incomingEdgesOf(vertex).empty) {
+				if(vertex instanceof SDFJoinVertex) {
+					removableVertices.add(vertex)
+				}
+			}
+			if(outputGraph.outgoingEdgesOf(vertex).empty) {
+				if(vertex instanceof SDFForkVertex) {
+					removableVertices.add(vertex)
+				}
+			}
+		]
+		removableVertices.forEach[vertex| // Remove the actual vertex
+			outputGraph.removeVertex(vertex)
+		]
+		
 		// Make sure all the ports are in order
 		if(!SpecialActorPortsIndexer.checkIndexes(outputGraph)) {
 			throw new SDF4JException("There are still special actors with non-indexed ports. Contact PREESM developers")
