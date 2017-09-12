@@ -7,6 +7,11 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
 
+/**
+ * @author hderoui
+ *
+ *         IBSDF Transformer class : contains the method to transform an IBSDF graph into a flat srSDF graph
+ */
 public abstract class IBSDFTransformer {
 
   /**

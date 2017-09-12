@@ -16,7 +16,7 @@ import org.ietr.preesm.throughput.parsers.Identifier;
 /**
  * @author hderoui
  *
- *         A structure helper to simplify the manipulation of an SDF graph structure
+ *         A structure helper to simplify the manipulation of the structure of a SDF graph
  * 
  */
 public abstract class GraphStructureHelper {
@@ -34,16 +34,17 @@ public abstract class GraphStructureHelper {
    *          the name of the target actor
    * @param trgPortName
    *          the name of the target port
-   * @param prod
+   * @param prod_rate
    *          the production rate of the edge
-   * @param cons
-   *          the consumption of the edge
-   * @param d
+   * @param cons_rate
+   *          the consumption rate of the edge
+   * @param delay
    *          the delay of the edge
    * @param base
-   *          the base edge
-   * @return the created edge
+   *          the parent edge
+   * @return the created SDF edge
    */
+
   public static SDFEdge addEdge(SDFGraph graph, String srcActorName, String srcPortName, String trgActorName, String trgPortName, int prod_rate, int cons_rate,
       int delay, SDFEdge base) {
     // get the source actor if not exists create one
@@ -146,8 +147,25 @@ public abstract class GraphStructureHelper {
     return actor;
   }
 
+  /**
+   * add an input interface to a subgraph
+   * 
+   * @param graph
+   *          the SDF subgraph
+   * @param interfaceName
+   *          the name of the input interface (the same name of its associated port in its hierarchical parent actor)
+   * @param rv
+   *          the repetition factor of the interface
+   * @param l
+   *          the execution duration of the interface
+   * @param z
+   *          the normalized rate
+   * @param Base
+   *          the base interface of the input interface
+   * @return the created input interface
+   */
   public static SDFSourceInterfaceVertex addInputInterface(SDFGraph graph, String interfaceName, Integer rv, Double l, Double z, SDFAbstractVertex Base) {
-    // an interface is an independent actor from its hierarchical parent actor but with the same name of its associated port in the hierarchical actor
+    // an interface is an independent actor from its hierarchical parent actor but with the same name of its associated port in the hierarchical parent actor
 
     // create an input interface and set the parent graph
     SDFSourceInterfaceVertex in = new SDFSourceInterfaceVertex();
@@ -184,6 +202,23 @@ public abstract class GraphStructureHelper {
 
   }
 
+  /**
+   * add an output interface to a subgraph
+   * 
+   * @param graph
+   *          the SDF subgraph
+   * @param interfaceName
+   *          the name of the output interface (the same name of its associated port in its hierarchical parent actor)
+   * @param rv
+   *          the repetition factor of the interface
+   * @param l
+   *          the execution duration of the interface
+   * @param z
+   *          the normalized rate
+   * @param Base
+   *          the base interface of the output interface
+   * @return the created output interface
+   */
   public static SDFSinkInterfaceVertex addOutputInterface(SDFGraph graph, String interfaceName, Integer rv, Double l, Double z, SDFAbstractVertex Base) {
     // an interface is an independent actor from its hierarchical parent actor but with the same name of its associated port in the hierarchical actor
 
@@ -313,6 +348,16 @@ public abstract class GraphStructureHelper {
     return hierarchicalActorsList;
   }
 
+  /**
+   * replace a hierarchical actor by a sdf/srSDF graph
+   * 
+   * @param parentGraph
+   *          the graph containing the hierarchical actor
+   * @param h
+   *          the hierarchical actor
+   * @param replacementGraph
+   *          the replacement graph
+   */
   public static void replaceHierarchicalActor(SDFGraph parentGraph, SDFAbstractVertex h, SDFGraph replacementGraph) {
 
     // Step 1: add the replacement subgraph into the parent graph
