@@ -173,6 +173,59 @@ public class PeriodicScheduler_SDF {
   }
 
   /**
+   * computes the throughput of a graph based on the periodic schedule
+   * 
+   * @param graph
+   *          SDF graph
+   * @param method
+   *          method
+   * @param selfLoopEdge
+   *          boolean
+   * @return throughput
+   */
+  public Double computeGraphThroughput(SDFGraph graph, Method method, boolean selfLoopEdge) {
+    double throughput = -1.;
+
+    // Step 1: normalize the graph
+    SDFTransformer.normalize(graph);
+
+    // if a periodic schedule exists for the graph
+    if (isPeriodic(graph)) {
+      System.out.println("This graph admit a periodic schedule !");
+
+      // add a self loop edge for each actor if selfLoopEdge = true
+      ArrayList<SDFEdge> selfLoopEdgesList = null;
+      if (selfLoopEdge) {
+        selfLoopEdgesList = new ArrayList<>(graph.vertexSet().size());
+        for (SDFAbstractVertex actor : graph.vertexSet()) {
+          SDFEdge edge = GraphStructureHelper.addEdge(graph, actor.getName(), null, actor.getName(), null,
+              (Integer) actor.getPropertyBean().getValue("normalizedRate"), (Integer) actor.getPropertyBean().getValue("normalizedRate"),
+              (Integer) actor.getPropertyBean().getValue("normalizedRate"), null);
+          selfLoopEdgesList.add(edge);
+        }
+      }
+
+      // Step 2: compute the normalized period K
+      this.computeNormalizedPeriod(graph, method);
+
+      // remove the self loop edges added before
+      if (selfLoopEdge) {
+        for (SDFEdge edge : selfLoopEdgesList) {
+          graph.removeEdge(edge);
+        }
+      }
+
+      // Step 3: compute actors period and define the maximum throughput of the computed periodic schedule
+      throughput = this.computeActorsPeriod(graph);
+
+    } else {
+      System.err.println("A Periodic Schedule does not exist for this graph");
+      // return -1 as an error
+    }
+    return throughput;
+  }
+
+  /**
    * @param graph
    *          SDF graph
    * @param method
