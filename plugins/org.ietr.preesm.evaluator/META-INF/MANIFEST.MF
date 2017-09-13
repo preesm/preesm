@@ -10,9 +10,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.ietr.preesm.algorithm;bundle-version="2.2.10",
  org.apache.commons.lang3;bundle-version="3.5.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  lib/gurobi.jar,
  lib/glpk-java.jar
-Export-Package: org.ietr.preesm.evaluator
+Export-Package: org.ietr.preesm.evaluator,
+ org.ietr.preesm.mathematicalModels,
+ org.ietr.preesm.schedule
 Bundle-Vendor: IETR/INSA Rennes
+Bundle-ActivationPolicy: lazy

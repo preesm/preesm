@@ -18,9 +18,9 @@ import org.ietr.preesm.throughput.helpers.MathFunctionsHelper;
  * @author hderoui
  *
  */
-public class PeriodicScheduleModel_GLPK {
+public class PeriodicScheduleModel_GLPK implements SolverMethod {
+
   public Hashtable<String, Integer> edgeIndex;
-  // get solution
 
   /**
    * @param SDF
@@ -137,4 +137,5 @@ public class PeriodicScheduleModel_GLPK {
     }
     return null;
   }
+
 }

@@ -6,8 +6,8 @@ import org.apache.commons.lang3.math.Fraction;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.evaluator.mathModels.PeriodicScheduleModel_Gurobi;
-import org.ietr.preesm.mathematicalModels.PeriodicScheduleModel_GLPK;
+import org.ietr.preesm.evaluator.Activator;
+import org.ietr.preesm.mathematicalModels.SolverMethod;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.helpers.MathFunctionsHelper;
 import org.ietr.preesm.throughput.transformers.SDFTransformer;
@@ -180,23 +180,20 @@ public class PeriodicScheduler_SDF {
    */
   public Fraction computeNormalizedPeriod(SDFGraph graph, Method method) {
     System.out.println("Computing the normalized period of the graph ...");
-    switch (method) {
-      case Algorithm: {
-        // use one of the known algorithm to compute the optimal K
-        return null;
-      }
-      case LinearProgram_Gurobi: {
-        // use the linear programming to compute the optimal K
-        PeriodicScheduleModel_Gurobi model = new PeriodicScheduleModel_Gurobi();
-        return model.computeNormalizedPeriod(graph);
-      }
-      case LinearProgram_GLPK: {
-        // use the linear programming to compute the optimal K
-        PeriodicScheduleModel_GLPK model = new PeriodicScheduleModel_GLPK();
-        return model.computeNormalizedPeriod(graph);
-      }
-      default:
-        return null;
+
+    // Set Gurobi as the default solver
+    if (method == null) {
+      method = Method.LinearProgram_Gurobi;
+    }
+
+    if (Activator.solverMethodRegistry.containsKey(method)) {
+      SolverMethod solverMethod = Activator.solverMethodRegistry.get(method);
+      return solverMethod.computeNormalizedPeriod(graph);
+    } else {
+      // use the default method : GLPK
+      System.err.println(method.toString() + " method is not available ! \nTrying to use " + Method.LinearProgram_GLPK.toString() + " ...");
+      SolverMethod solverMethod = Activator.solverMethodRegistry.get(Method.LinearProgram_GLPK);
+      return solverMethod.computeNormalizedPeriod(graph);
     }
   }
 
@@ -274,9 +271,9 @@ public class PeriodicScheduler_SDF {
     System.out.println("Computing graph period ...");
     // get an arbitrary actor from the graph
     SDFAbstractVertex actor = graph.vertexSet().iterator().next();
-    double w = (double) actor.getPropertyBean().getValue("executionPeriod");
-    double graphPeriod = actor.getNbRepeatAsInteger() * w;
-
+    // double w = (double) actor.getPropertyBean().getValue("executionPeriod");
+    double k = ((Fraction) graph.getPropertyBean().getValue("normalizedPeriod")).doubleValue();
+    double graphPeriod = k * ((Double) actor.getPropertyBean().getValue("normalizedRate")) * actor.getNbRepeatAsInteger();
     return graphPeriod;
   }
 
