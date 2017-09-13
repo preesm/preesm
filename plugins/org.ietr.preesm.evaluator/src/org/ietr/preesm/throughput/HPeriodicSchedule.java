@@ -2,11 +2,12 @@ package org.ietr.preesm.throughput;
 
 import org.apache.commons.lang3.math.Fraction;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.schedule.ASAPScheduler_SDF;
 import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
+import org.ietr.preesm.throughput.parsers.Identifier;
 import org.ietr.preesm.throughput.transformers.SDFTransformer;
 
 /**
@@ -26,6 +27,12 @@ public class HPeriodicSchedule {
    */
   public double evaluate(SDFGraph inputGraph, PreesmScenario scenario) {
     this.preesmScenario = scenario;
+
+    // add the name property for each edge of the graph
+    for (SDFEdge e : inputGraph.edgeSet()) {
+      e.setPropertyValue("edgeName", Identifier.generateEdgeId());
+    }
+
     System.out.println("Computing the throughput of the graph using Hierarchical Periodic Schedule ...");
 
     // Step 1: define the execution duration of each hierarchical actor
@@ -58,7 +65,7 @@ public class HPeriodicSchedule {
     SDFTransformer.normalize(srSDF);
     // compute its normalized period K
     PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
-    Fraction k = periodic.computeNormalizedPeriod(srSDF, PeriodicScheduler_SDF.Method.LinearProgram_Gurobi);
+    Fraction k = periodic.computeNormalizedPeriod(srSDF, null);
     // compute its throughput as 1/K
     double throughput = 1 / k.doubleValue();
     System.out.println("Throughput of the graph = " + throughput);
@@ -74,6 +81,12 @@ public class HPeriodicSchedule {
    * @return the duration of the subgraph
    */
   public double setHierarchicalActorsDuration(SDFGraph subgraph) {
+
+    // add the name property for each edge of the graph
+    for (SDFEdge e : subgraph.edgeSet()) {
+      e.setPropertyValue("edgeName", Identifier.generateEdgeId());
+    }
+
     // recursive function
     for (SDFAbstractVertex actor : subgraph.vertexSet()) {
       if (actor.getGraphDescription() != null) {
@@ -84,9 +97,16 @@ public class HPeriodicSchedule {
       }
     }
 
-    // compute the subgraph duration using an ASAP schedule
-    ASAPScheduler_SDF asap = new ASAPScheduler_SDF();
-    return asap.schedule(subgraph, this.preesmScenario);
+    // compute the subgraph period using the periodic schedule
+    // Step 4: compute the throughput with the Periodic Schedule
+    System.out.println("Step 4: compute the throughput using the Periodic Schedule");
+    // normalize the graph
+    SDFTransformer.normalize(subgraph);
+    // compute its normalized period K
+    PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
+    periodic.computeNormalizedPeriod(subgraph, null);
+    // compute the subgraph period
+    return periodic.computeGraphPeriod(subgraph);
   }
 
 }
