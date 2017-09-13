@@ -1,6 +1,5 @@
 package org.ietr.preesm.throughput;
 
-import org.apache.commons.lang3.math.Fraction;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -35,7 +34,7 @@ public class HPeriodicSchedule {
 
     System.out.println("Computing the throughput of the graph using Hierarchical Periodic Schedule ...");
 
-    // Step 1: define the execution duration of each hierarchical actor
+    // Step 1: define the execution duration of each hierarchical actor and add a self loop to it
     System.out.println("Step 1: define the execution duration of each hierarchical actor");
     for (SDFAbstractVertex actor : inputGraph.vertexSet()) {
       if (actor.getGraphDescription() != null) {
@@ -43,31 +42,15 @@ public class HPeriodicSchedule {
         Double duration = this.setHierarchicalActorsDuration((SDFGraph) actor.getGraphDescription());
         actor.setPropertyValue("duration", duration);
         this.preesmScenario.getTimingManager().setTiming(actor.getId(), "x86", duration.longValue());
+        // add the self loop
+        GraphStructureHelper.addEdge(inputGraph, actor.getName(), null, actor.getName(), null, 1, 1, 1, null);
       }
     }
 
-    // Step 2: convert the topGraph to a srSDF graph
-    System.out.println("Step 2: convert the topGraph to a srSDF graph");
-    SDFGraph srSDF = SDFTransformer.convertToSrSDF(inputGraph);
-
-    // Step 3: add a self loop edge to each hierarchical actor
-    System.out.println("Step 3: add a self loop edge to each hierarchical actor");
-    for (SDFAbstractVertex actor : srSDF.vertexSet()) {
-      SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
-      if (baseActor.getGraphDescription() != null) {
-        GraphStructureHelper.addEdge(srSDF, actor.getName(), null, actor.getName(), null, 1, 1, 1, null);
-      }
-    }
-
-    // Step 4: compute the throughput with the Periodic Schedule
+    // Step 3: compute the throughput with the Periodic Schedule
     System.out.println("Step 4: compute the throughput using the Periodic Schedule");
-    // normalize the graph
-    SDFTransformer.normalize(srSDF);
-    // compute its normalized period K
     PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
-    Fraction k = periodic.computeNormalizedPeriod(srSDF, null);
-    // compute its throughput as 1/K
-    double throughput = 1 / k.doubleValue();
+    double throughput = periodic.computeGraphThroughput(inputGraph, null, false);
     System.out.println("Throughput of the graph = " + throughput);
 
     return throughput;
@@ -94,6 +77,8 @@ public class HPeriodicSchedule {
         Double duration = this.setHierarchicalActorsDuration((SDFGraph) actor.getGraphDescription());
         actor.setPropertyValue("duration", duration);
         this.preesmScenario.getTimingManager().setTiming(actor.getId(), "x86", duration.longValue());
+        // add the self loop
+        GraphStructureHelper.addEdge(subgraph, actor.getName(), null, actor.getName(), null, 1, 1, 1, null);
       }
     }
 
@@ -101,12 +86,14 @@ public class HPeriodicSchedule {
     // Step 4: compute the throughput with the Periodic Schedule
     System.out.println("Step 4: compute the throughput using the Periodic Schedule");
     // normalize the graph
-    SDFTransformer.normalize(subgraph);
+    SDFGraph g = subgraph;
+    // SDFGraph g = SDFTransformer.convertToSrSDF(subgraph);
+    SDFTransformer.normalize(g);
     // compute its normalized period K
     PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
-    periodic.computeNormalizedPeriod(subgraph, null);
+    periodic.computeNormalizedPeriod(g, null);
     // compute the subgraph period
-    return periodic.computeGraphPeriod(subgraph);
+    return periodic.computeGraphPeriod(g);
   }
 
 }
