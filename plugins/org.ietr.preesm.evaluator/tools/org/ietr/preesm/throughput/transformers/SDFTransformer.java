@@ -141,38 +141,16 @@ public abstract class SDFTransformer {
    */
   public static void normalize(SDFGraph SDF) {
 
-    // double K = 1; // LCM(RV(a)*Cons(e,a)) for each input edge of each actor
-    // // compute K
-    // for(Edge e: g.edges.values())
-    // K=tool.lcm(K,e.targetActor.repetitionFactor*e.prod);
-    // // compute Z
-    // for(Actor a: g.actors.values())
-    // a.normalizationValue = K/a.repetitionFactor;
-    // // compute Alpha
-    // for(Edge e: g.edges.values())
-    // e.normalizationFactor = (e.sourceActor.normalizationValue/e.cons);
-
-    double k = 1;
-    for (SDFEdge e : SDF.edgeSet()) {
-      k = MathFunctionsHelper.lcm(k, e.getTarget().getNbRepeatAsInteger() * e.getCons().intValue());
-    }
+    double K_RV = 1;
     for (SDFAbstractVertex actor : SDF.vertexSet()) {
-      actor.setPropertyValue("normalizedRate", k / actor.getNbRepeatAsInteger());
-    }
-    for (SDFEdge e : SDF.edgeSet()) {
-      e.setPropertyValue("normalizationFactor", ((double) e.getSource().getPropertyBean().getValue("normalizedRate")) / e.getProd().intValue());
+      K_RV = MathFunctionsHelper.lcm(K_RV, actor.getNbRepeatAsInteger());
     }
 
-    // double K_RV = 1;
-    // for (SDFAbstractVertex actor : SDF.vertexSet()) {
-    // K_RV = MathFunctionsHelper.lcm(K_RV, actor.getNbRepeatAsInteger());
-    // }
-    //
-    // for (SDFEdge edge : SDF.edgeSet()) {
-    // edge.getSource().setPropertyValue("normalizedRate", K_RV / edge.getSource().getNbRepeatAsInteger());
-    // edge.getTarget().setPropertyValue("normalizedRate", K_RV / edge.getTarget().getNbRepeatAsInteger());
-    // edge.setPropertyValue("normalizationFactor", (K_RV * edge.getCons().intValue()) / edge.getTarget().getNbRepeatAsInteger());
-    // }
+    for (SDFEdge edge : SDF.edgeSet()) {
+      edge.getSource().setPropertyValue("normalizedRate", K_RV / edge.getSource().getNbRepeatAsInteger());
+      edge.getTarget().setPropertyValue("normalizedRate", K_RV / edge.getTarget().getNbRepeatAsInteger());
+      edge.setPropertyValue("normalizationFactor", K_RV / (edge.getCons().intValue() * edge.getTarget().getNbRepeatAsInteger()));
+    }
   }
 
 }
