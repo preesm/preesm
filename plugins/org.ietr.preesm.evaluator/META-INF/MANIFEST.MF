@@ -11,7 +11,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.commons.lang3;bundle-version="3.5.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
- lib/gurobi.jar,
  lib/glpk-java.jar
 Export-Package: org.ietr.preesm.evaluator,
  org.ietr.preesm.mathematicalModels,
