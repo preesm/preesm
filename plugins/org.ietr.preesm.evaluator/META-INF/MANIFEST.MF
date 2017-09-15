@@ -5,10 +5,9 @@ Bundle-SymbolicName: org.ietr.preesm.evaluator;singleton:=true
 Bundle-Version: 2.7.0.qualifier
 Bundle-Activator: org.ietr.preesm.evaluator.Activator
 Require-Bundle: org.eclipse.core.runtime,
+ org.apache.commons.lang3;bundle-version="3.5.0",
  org.ietr.preesm.core,
  org.ietr.preesm.algorithm
- org.ietr.preesm.algorithm;bundle-version="2.2.10",
- org.apache.commons.lang3;bundle-version="3.5.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/glpk-java.jar
