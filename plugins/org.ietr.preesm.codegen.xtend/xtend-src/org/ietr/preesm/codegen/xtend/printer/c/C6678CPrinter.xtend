@@ -55,7 +55,12 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 
 class C6678CPrinter extends CPrinter {
-	
+
+	new() {
+		// do not generate a main file
+		super(false)
+	}
+
 	/**
 	 * Set of CharSequence used to avoid calling the same cache operation 
 	 * multiple times in a broadcast or roundbuffer call. 

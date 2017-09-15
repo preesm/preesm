@@ -62,6 +62,18 @@ import org.ietr.preesm.codegen.xtend.printer.c.CPrinter
  */
 class InstrumentedCPrinter extends CPrinter {
 
+	new() {
+		// generate a main file
+		this(true);
+	}
+
+	/**
+	 * expose argument to child classes
+	 */
+	new(boolean generateMainFile) {
+		super(generateMainFile)
+	}
+
 	/**
 	 * Buffer storing the timing dumped by the actors
 	 */
@@ -264,7 +276,7 @@ class InstrumentedCPrinter extends CPrinter {
 	'''
 	
 	override createSecondaryFiles(List<Block> printerBlocks, List<Block> allBlocks) {
-		var result = new LinkedHashMap<String,CharSequence>
+		val result = super.createSecondaryFiles(printerBlocks,allBlocks);
 		result.put("analysis.csv", printAnalysisCsvFile)
 		return result
 	}

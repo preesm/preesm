@@ -1,6 +1,13 @@
 PREESM Changelog
 ================
 
+## Release version 2.5.0
+*2017.09.15*
+
+### Changes
+* The code generator now generates a main.c(pp) file that adapts to the number of available cores, instead of having to manually edit the CMake file;
+* Minor refactoring;
+
 ## Release version 2.4.2
 *2017.08.17*
 

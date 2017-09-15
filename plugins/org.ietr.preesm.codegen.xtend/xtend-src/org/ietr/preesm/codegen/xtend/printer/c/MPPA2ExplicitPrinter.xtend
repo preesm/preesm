@@ -60,6 +60,11 @@ import org.ietr.preesm.codegen.xtend.task.CodegenException
 
 class MPPA2ExplicitPrinter extends CPrinter {
 
+	new() {
+		// do not generate a main file
+		super(false)
+	}
+
 	/**
 	 * Temporary global var to ignore the automatic suppression of memcpy
 	 * whose target and destination are identical.
