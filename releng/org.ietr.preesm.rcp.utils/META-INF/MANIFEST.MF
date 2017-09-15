@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: RCP Utils
 Bundle-SymbolicName: org.ietr.preesm.rcp.utils;singleton:=true
-Bundle-Version: 2.5.0
+Bundle-Version: 2.5.0.qualifier
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.ietr.preesm.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
