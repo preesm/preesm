@@ -7,6 +7,8 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* The code generator now generates a main.c(pp) file that adapts to the number of available cores, instead of having to manually edit the CMake file;
+* Minor refactoring;
 
 ### Bug fix
 
