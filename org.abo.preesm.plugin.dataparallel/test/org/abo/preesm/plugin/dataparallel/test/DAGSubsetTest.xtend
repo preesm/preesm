@@ -10,6 +10,10 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.abo.preesm.plugin.dataparallel.iterator.SubsetTopologicalIterator
 import org.abo.preesm.plugin.dataparallel.operations.visitor.RootExitOperations
+import org.jgrapht.alg.CycleDetector
+import org.abo.preesm.plugin.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
+import org.jgrapht.graph.DirectedSubgraph
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 
 /**
  * Property based test for {@link DAGSubset} instance
@@ -41,6 +45,31 @@ class DAGSubsetTest {
 			val rootInstances = rootOp.rootInstances
 			rootInstances.forEach[rootNode |
 				parameters.add(#[dagGen, rootNode])
+			]
+		]
+		
+		Util.provideAllGraphs.forEach[ sdf |			
+			// Get strongly connected components
+			val strongCompDetector = new KosarajuStrongConnectivityInspector(sdf)
+					
+			// Collect strongly connected component that has loops in it
+			// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
+			strongCompDetector.stronglyConnectedComponents.forEach[ subgraph |
+				val cycleDetector = new CycleDetector(subgraph as 
+					DirectedSubgraph<SDFAbstractVertex, SDFEdge>) 
+				if(cycleDetector.detectCycles) {
+					// ASSUMPTION: Strongly connected component of a directed graph contains atleast
+					// one loop
+					val dagGen = new SDF2DAG(subgraph as
+						DirectedSubgraph<SDFAbstractVertex, SDFEdge>)
+					
+					val rootOp = new RootExitOperations
+					dagGen.accept(rootOp)
+					val rootInstances = rootOp.rootInstances
+					rootInstances.forEach[rootNode |
+						parameters.add(#[dagGen, rootNode])
+					]
+				}
 			]
 		]
 		return parameters

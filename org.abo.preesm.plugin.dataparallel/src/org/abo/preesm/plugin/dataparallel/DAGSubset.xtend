@@ -160,7 +160,7 @@ final class DAGSubset extends AbstractDAGConstructor implements DAGSubsetConstru
 	 * @return true if input is valid, or exception is thrown (false is never returned)
 	 * @throws SDF4JException if the input graph is not a valid DAG or if root node does not exist
 	 */
-	public override checkInputIsValid() throws SDF4JException {
+	public def boolean checkInputIsValid() throws SDF4JException {
 		// Check if there are cycles
 		val cycleDetector = new CycleDetector<SDFAbstractVertex, SDFEdge>(inputGraph)
 		if(cycleDetector.detectCycles) {

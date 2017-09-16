@@ -1,14 +1,15 @@
 package org.abo.preesm.plugin.dataparallel
 
+import java.util.ArrayList
+import java.util.List
 import java.util.logging.Logger
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsIndexer
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
 import org.eclipse.xtend.lib.annotations.Accessors
-import java.util.List
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import java.util.ArrayList
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsIndexer
+import org.jgrapht.graph.AbstractGraph
 
 /**
  * Class that creates re-populates all necessary data-structures for a new
@@ -26,7 +27,7 @@ class DAG2DAG extends AbstractDAGConstructor implements PureDAGConstructor {
 	 * Holds the cloned version of original input {@link SDFGraph}
 	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
-	val SDFGraph inputSDFGraph
+	val AbstractGraph<SDFAbstractVertex, SDFEdge> inputGraph
 	
 	/**
 	 * List of all the actors that form the part of the cycles in the original SDFG
@@ -45,7 +46,7 @@ class DAG2DAG extends AbstractDAGConstructor implements PureDAGConstructor {
 		newGraph = new SDFGraph()
 		val dag = oldDAGGen.outputGraph
 		
-		inputSDFGraph = oldDAGGen.inputSDFGraph
+		inputGraph = oldDAGGen.inputGraph
 		
 		// Copy the old SDFGraph
 		
@@ -119,16 +120,6 @@ class DAG2DAG extends AbstractDAGConstructor implements PureDAGConstructor {
 	 */	
 	override getOutputGraph() {
 		return newGraph
-	}
-	
-	/**
-	 * Check if the input is valid and transformation is needed
-	 * The input is always valid for this class
-	 *  
-	 * @return true
-	 */
-	override checkInputIsValid() throws SDF4JException {
-		return true
 	}
 	
 	/**

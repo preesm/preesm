@@ -21,6 +21,8 @@ import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
 import org.jgrapht.alg.CycleDetector
+import org.jgrapht.graph.DirectedSubgraph
+import org.jgrapht.graph.AbstractGraph
 
 /**
  * Construct DAG from a SDF Graph
@@ -33,7 +35,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	 * Hold the cloned version of original SDF graph
 	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
-	val SDFGraph inputSDFGraph;
+	val AbstractGraph<SDFAbstractVertex, SDFEdge> inputGraph;
 	
 	/**
 	 * Holds constructed DAG
@@ -41,7 +43,17 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	var SDFGraph outputGraph
 	
-
+	/**
+	 * True if the original graph is SDFGraph
+	 */
+	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	var Boolean isInputSDFGraph
+	
+	/**
+	 * True if the original graph is a Subgraph
+	 */
+	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	var Boolean isInputSubgraph
 	
 	/**
 	 * Map of all actors with instance. Does not contain implodes and explodes
@@ -50,102 +62,123 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	protected val Map<SDFAbstractVertex, List<SDFAbstractVertex>> actor2InstancesLocal;
 	
 	/**
-	 * Check if the input SDF graph has changed
-	 */
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
-	protected val boolean hasChanged;
-	
-	/**
 	 * List of all the actors that form the part of the cycles in the original SDFG
 	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	val List<SDFAbstractVertex> cycleActors
 	
 	/**
-	 * Constructor. Mainly used in the plugin
+	 * Protected constructor used for both SDF and subgraph of SDF. It cannot be used for anything
+	 * else. Hence the constructor is protected.
 	 * 
-	 * @param sdf the sdf graph for which DAG is created
-	 * @param logger log messages to console
-	 * @throws SDF4JException If the input sdf graph is not schedulable 
+	 * @param graph SDF or Subgraph
+	 * @param logger Logger instance
+	 * @param isSDF True if the passed graph is SDF. False if passed graph is a subgraph of SDFGraph
 	 */
-	new(SDFGraph sdf, Logger logger) throws SDF4JException {
+	protected new(AbstractGraph<SDFAbstractVertex, SDFEdge> graph, Logger logger, Boolean isSDF) {
 		super(logger)
 		
-		if(!sdf.isSchedulable) {
-			throw new SDF4JException("Graph " + sdf + " not schedulable")
+		if(isSDF) {
+			this.isInputSDFGraph = true
+			this.isInputSubgraph = false
+		} else {
+			this.isInputSDFGraph = false
+			this.isInputSubgraph = true
 		}
-		inputSDFGraph = sdf.clone
+		
+		inputGraph = graph
 		actor2InstancesLocal = newHashMap
 		cycleActors = newArrayList
 		
-		val cycleDetector = new CycleDetector(inputSDFGraph)
-		cycleActors.addAll(cycleDetector.findCycles)
-		
-		inputSDFGraph.vertexSet.forEach[vertex |
-			if(inputSDFGraph.incomingEdgesOf(vertex).size == 0) {
-				sourceActors.add(vertex)
-			}
-			if(inputSDFGraph.outgoingEdgesOf(vertex).size == 0) {
-				sinkActors.add(vertex)
-			}
-		]
-		
-		inputSDFGraph.vertexSet.forEach[vertex |
-			val predecessorList = newArrayList
-			inputSDFGraph.incomingEdgesOf(vertex).forEach[edge |
-				predecessorList.add(edge.source)
+		if(isSDF) { // Its an SDF graph
+			val sdfGraph = graph as SDFGraph
+			val cycleDetector = new CycleDetector(sdfGraph)
+			cycleActors.addAll(cycleDetector.findCycles)
+			
+			sdfGraph.vertexSet.forEach[vertex |
+				if(sdfGraph.incomingEdgesOf(vertex).size == 0) {
+					sourceActors.add(vertex)
+				}
+				if(sdfGraph.outgoingEdgesOf(vertex).size == 0) {
+					sinkActors.add(vertex)
+				}
 			]
-			actorPredecessor.put(vertex, predecessorList)
-		]
-		
-		if(checkInputIsValid) {
-			hasChanged = true
-			this.outputGraph = new SDFGraph()
-			createInstances()
-			linkEdges()
-		} else {
-			hasChanged = false
-			this.outputGraph = inputSDFGraph
+			
+			sdfGraph.vertexSet.forEach[vertex |
+				val predecessorList = newArrayList
+				sdfGraph.incomingEdgesOf(vertex).forEach[edge |
+					predecessorList.add(edge.source)
+				]
+				actorPredecessor.put(vertex, predecessorList)
+			]
+		} else { // Its a subgraph of SDFGraph
+			val subgraph = graph as DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+			val cycleDetector = new CycleDetector(subgraph)
+			cycleActors.addAll(cycleDetector.findCycles)
+			
+			subgraph.vertexSet.forEach[vertex |
+				if(subgraph.incomingEdgesOf(vertex).size == 0) {
+					sourceActors.add(vertex)
+				}
+				if(subgraph.outgoingEdgesOf(vertex).size == 0) {
+					sinkActors.add(vertex)
+				}
+			]
+			
+			subgraph.vertexSet.forEach[vertex |
+				val predecessorList = newArrayList
+				subgraph.incomingEdgesOf(vertex).forEach[edge |
+					predecessorList.add(edge.source)
+				]
+				actorPredecessor.put(vertex, predecessorList)
+			]
 		}
+		
+		this.outputGraph = new SDFGraph()
+		createInstances()
+		linkEdges()
 		outputGraph.propertyBean.setValue("schedulable", true)
 	}
 	
 	/**
-	 * Constructor without logging information. Mainly used for test 
-	 * setup
+	 * Constructor for a {@link SDFGraph} instance. Mainly used in the plugin
 	 * 
 	 * @param sdf the sdf graph for which DAG is created
-	 * @throws SDF4JException If the input sdf graph is not schedulable 
+	 * @param logger log messages to console
 	 */
-	new(SDFGraph sdf) throws SDF4JException {
-		this(sdf, null)
+	new(SDFGraph sdf, Logger logger) {
+		this(sdf, logger, true)
 	}
 	
 	/**
-	 * Check if the input is valid and transformation is needed
-	 * Checks the following conditions
-	 * DAG is flattened, repetition vector is greater than 1, delay tokens exist
+	 * Constructor for a  subgraphs instance. Mainly used in the plugin
 	 * 
-	 * @return boolean True if input is valid, false if input is already a DAG
-	 * @throws SDF4JException if the input graph is not flattened
+	 * @param subgraph A {@link DirectedSubgraph<SDFAbstractVertex, SDFEdge>} instance from which
+	 * DAG is created
+	 * @param logger log messages to console
 	 */
-	public override boolean checkInputIsValid() throws SDF4JException {
-		// Check if DAG is flattened
-		for(vertex: inputSDFGraph.vertexSet) {
-			if( (vertex.graphDescription !== null) && (vertex.graphDescription instanceof SDFGraph)) {
-				throw new SDF4JException("The graph " + inputSDFGraph.name + " must be flattened.")				
-			}
-		}		
-		// Check if repetition vector is greater than 1
-		for(vertex: inputSDFGraph.vertexSet) {
-			if(vertex.nbRepeatAsInteger > 1) return true
-		}		
-		// Check if delay tokens exist. DAG should not have any of those
-		for(edge: inputSDFGraph.edgeSet) {
-			if(edge.delay.intValue > 0) return true
-		}
-		// Its already a DAG
-		return false
+	new(DirectedSubgraph<SDFAbstractVertex, SDFEdge> subgraph, Logger logger) {
+		this(subgraph, logger, false)
+	}
+	
+	/**
+	 * Constructor without logging information for SDFGraphs. Mainly used for test 
+	 * setup
+	 * 
+	 * @param sdf the sdf graph for which DAG is created
+	 */
+	new(SDFGraph sdf) {
+		this(sdf as AbstractGraph<SDFAbstractVertex, SDFEdge>, null, true)
+	}
+	
+	/**
+	 * Constructor without logging information for subgraphs of SDFGraph. Mainly used for test
+	 * setup
+	 * 
+	 * @param subgraph The {@link DirectedSubgraph<SDFAbstractVertex, SDFEdge>} instance of SDFGraph
+	 */
+	new(DirectedSubgraph<SDFAbstractVertex, SDFEdge> subgraph) {
+		this(subgraph as AbstractGraph<SDFAbstractVertex, SDFEdge>, null, false)
 	}
 	
 	/**
@@ -163,7 +196,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	 */
 	 protected def void createInstances() {
 	 	// Create instances repetition vector times
-	 	for(actor: inputSDFGraph.vertexSet) {
+	 	for(actor: inputGraph.vertexSet) {
 	 		log("Actor " + actor + " has " + actor.nbRepeatAsInteger + " instances.")
 	 		val instances = newArrayList
 	 		 
@@ -190,7 +223,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	protected def void linkEdges() {
 		// Edges that have delay tokens greater than buffer size need not have any
 		// links in the DAG
-		val filteredEdges = inputSDFGraph.edgeSet.filter[edge |
+		val filteredEdges = inputGraph.edgeSet.filter[edge |
 			edge.delay.intValue < edge.cons.intValue * edge.target.nbRepeatAsInteger
 		]
 		

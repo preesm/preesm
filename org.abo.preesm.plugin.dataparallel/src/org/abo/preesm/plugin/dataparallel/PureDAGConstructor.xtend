@@ -1,11 +1,12 @@
 package org.abo.preesm.plugin.dataparallel
 
-import org.abo.preesm.plugin.dataparallel.DAGConstructor
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import java.util.List
 import java.util.Map
+import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import org.jgrapht.graph.AbstractGraph
 
 /**
  * Interface for construction of Pure DAGs only. 
@@ -28,7 +29,7 @@ interface PureDAGConstructor extends DAGConstructor {
 	 * 
 	 * @return input SDFG
 	 */
-	public def SDFGraph getInputSDFGraph()
+	public def AbstractGraph<SDFAbstractVertex, SDFEdge> getInputGraph()
 	
 	/**
 	 * Return the map of actor from original SDFG to all its immediate

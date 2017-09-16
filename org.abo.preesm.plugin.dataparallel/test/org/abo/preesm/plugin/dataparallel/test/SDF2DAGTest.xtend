@@ -1,17 +1,20 @@
 package org.abo.preesm.plugin.dataparallel.test
 
-import org.abo.preesm.plugin.dataparallel.SDF2DAG
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.junit.runners.Parameterized
-import org.junit.runner.RunWith
 import java.util.Collection
-import org.junit.Assert
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
+import org.abo.preesm.plugin.dataparallel.SDF2DAG
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
 import org.jgrapht.alg.CycleDetector
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
+import org.jgrapht.graph.AbstractGraph
+import org.jgrapht.graph.DirectedSubgraph
+import org.junit.Assert
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
+import org.abo.preesm.plugin.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
 
 /**
  * Test construction of DAG from SDF. Both manual and automatic methods are
@@ -23,17 +26,32 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 class SDF2DAGTest {
 	val SDF2DAG dagGen
 	
+	val AbstractGraph<SDFAbstractVertex, SDFEdge> sdf
+	
 	val int explodeInstanceCount
 	
 	val int implodeInstanceCount
 	
 	val int totalInstanceCount
 	
-	new(SDFGraph sdf, int explodeInstanceCount, int implodeInstanceCount, int totalInstanceCount){
-		dagGen = new SDF2DAG(sdf)
+	val boolean checkCounts
+	
+	val boolean isSDF
+	
+	new(AbstractGraph<SDFAbstractVertex, SDFEdge> sdf, int explodeInstanceCount, 
+		int implodeInstanceCount, int totalInstanceCount, boolean isSDF, boolean checkCounts
+	){
+		this.sdf = sdf
+		if(isSDF) {
+			dagGen = new SDF2DAG(sdf as SDFGraph)
+		} else {
+			dagGen = new SDF2DAG(sdf as DirectedSubgraph<SDFAbstractVertex, SDFEdge>)
+		}
 		this.explodeInstanceCount = explodeInstanceCount
 		this.implodeInstanceCount = implodeInstanceCount
-		this.totalInstanceCount = totalInstanceCount	
+		this.totalInstanceCount = totalInstanceCount
+		this.isSDF = isSDF	
+		this.checkCounts = checkCounts
 	}
 	
 	/**
@@ -51,87 +69,106 @@ class SDF2DAGTest {
 			#[ExampleGraphs.semanticallyAcyclicCycle, 3, 4, 17],
 			#[ExampleGraphs.strictlyCyclic, 4, 6, 20],
 			#[ExampleGraphs.mixedNetwork1, 6, 7, 32],
-			#[ExampleGraphs.mixedNetwork2, 7, 7, 33]
+			#[ExampleGraphs.mixedNetwork2, 7, 7, 33],
+			#[ExampleGraphs.nestedStrongGraph, 3, 3, 20]
 		]
 		parameterArray.forEach[
-			parameters.add(#[it.get(0) as SDFGraph, it.get(1), it.get(2), it.get(3)])
+			// #[sdf, explode count, implode count, total vertices, isSDF, shouldCount?]
+			parameters.add(#[it.get(0) as SDFGraph, it.get(1), it.get(2), it.get(3), true, true])
+		]
+		
+		parameterArray.forEach[
+			// Get strongly connected components
+			val strongCompDetector = new KosarajuStrongConnectivityInspector(it.get(0) as SDFGraph)
+		
+			val stronglyConnectedComponents = strongCompDetector.stronglyConnectedSets.size
+			
+			// Collect strongly connected component that has loops in it
+			// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
+			strongCompDetector.stronglyConnectedComponents.forEach[ subgraph |
+				val cycleDetector = new CycleDetector(subgraph as
+					DirectedSubgraph<SDFAbstractVertex, SDFEdge>) 
+				if(cycleDetector.detectCycles) {
+					// ASSUMPTION: Strongly connected component of a directed graph contains atleast
+					// one loop
+					if( (stronglyConnectedComponents == 1) 
+						&& 
+						((it.get(0) as SDFGraph).vertexSet.size 
+							== 
+						strongCompDetector.stronglyConnectedSets.get(0).size)) {
+						println(strongCompDetector.stronglyConnectedSets)
+						// #[sdf, explode count, implode count, total vertices, isSDF, shouldCount?]
+						parameters.add(#[subgraph, it.get(1), it.get(2), it.get(3), false, true])
+					} else {
+						// #[sdf, explode count, implode count, total vertices, isSDF, shouldCount?]
+						parameters.add(#[subgraph, 0, 0, 0, false, false])	
+					}
+				}
+			]
 		]
 		return parameters
 	}
 	
 	/**
-	 * Check that check input SDF is a valid input.
-	 */
-	@org.junit.Test
-	public def void sdfIsNotHSDF() {
-		Assert.assertTrue(dagGen.checkInputIsValid())
-	}
-	
-	/**
-	 * Should throw an exception if a hierarchical SDF
-	 * is being passed
-	 */
-	@org.junit.Test(expected = SDF4JException)
-	public def void exceptionHierGraph() {
-		new SDF2DAG(ExampleGraphs.acyclicHierarchicalTwoActors)
-	}
-	
-	/**
 	 * Check the count of explode instances
 	 */
-	@org.junit.Test
+	@Test
 	public def void checkExplodeInstanceCount() {
-		val explodeInstance = dagGen.outputGraph.vertexSet.filter[instance |
-			instance instanceof SDFForkVertex && instance.name.toLowerCase.contains("explode")
-		].size
-		Assert.assertEquals(explodeInstance, explodeInstanceCount)
+		if(checkCounts) {
+			val explodeInstance = dagGen.outputGraph.vertexSet.filter[instance |
+				instance instanceof SDFForkVertex && instance.name.toLowerCase.contains("explode")
+			].size
+			Assert.assertEquals(explodeInstance, explodeInstanceCount)	
+		}
 	}
 	
 	/**
 	 * Check the count of implode instances
 	 */
-	@org.junit.Test
+	@Test
 	public def void checkImplodeInstanceCount() {
-		val implodeInstance = dagGen.outputGraph.vertexSet.filter[instance |
-			instance instanceof SDFJoinVertex && instance.name.toLowerCase.contains("implode")
-		].size
-		Assert.assertEquals(implodeInstance, implodeInstanceCount)
+		if(checkCounts) {
+			val implodeInstance = dagGen.outputGraph.vertexSet.filter[instance |
+				instance instanceof SDFJoinVertex && instance.name.toLowerCase.contains("implode")
+			].size
+			Assert.assertEquals(implodeInstance, implodeInstanceCount)
+		}
 	}
 	
 	/**
 	 * Check the count of number of instances
 	 */
-	@org.junit.Test
+	@Test
 	public def void checkTotalInstanceCount() {
-		Assert.assertEquals(dagGen.outputGraph.vertexSet.size, totalInstanceCount)
-	}
-	
-	/**
-	 * Make sure DAG has no delays
-	 */
-	@org.junit.Test
-	public def void noDelays() {
-		dagGen.outputGraph.edgeSet.forEach[edge |
-			Assert.assertTrue(edge.delay.intValue == 0)
-		]
+		if(checkCounts) {
+			Assert.assertEquals(dagGen.outputGraph.vertexSet.size, totalInstanceCount)
+		}
 	}
 	
 	/**
 	 * Make sure that the instances of each actor sums up to total instances seen
 	 * in the DAG
 	 */
-	@org.junit.Test
+	@Test
 	public def void actor2InstancesHasAllVertices() {
-		val allVerticesFromMaps = dagGen.actor2Instances.values.flatten.size
-		Assert.assertEquals(dagGen.outputGraph.vertexSet.size, allVerticesFromMaps)
+		if(checkCounts) {
+			val allVerticesFromMaps = dagGen.actor2Instances.values.flatten.size
+			Assert.assertEquals(dagGen.outputGraph.vertexSet.size, allVerticesFromMaps)
+		}
 	}
 	
 	/**
 	 * Make sure that DAG has no cycles. As the base graph representation is SDFGraph
 	 * this is not automatically gauranteed and hence the test
 	 */
-	@org.junit.Test
+	@Test
 	public def void dagHasNoCycles() {
-		Assert.assertFalse(new CycleDetector<SDFAbstractVertex, SDFEdge>(dagGen.outputGraph).detectCycles)
+		if(isSDF) {
+			Assert.assertTrue((sdf as SDFGraph).isSchedulable)
+		}
+		if(checkCounts) {
+			Assert.assertFalse(new CycleDetector<SDFAbstractVertex, 
+				SDFEdge>(dagGen.outputGraph).detectCycles)
+		}
 	}
 }

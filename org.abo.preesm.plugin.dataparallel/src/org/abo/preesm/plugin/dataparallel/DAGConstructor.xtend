@@ -4,7 +4,6 @@ import java.util.List
 import java.util.Map
 import java.util.logging.Logger
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 
 /**
  * Construct DAG from SDF or from another DAG
@@ -80,11 +79,4 @@ interface DAGConstructor {
 	 * @return List of instances of sink actors
 	 */
 	public def List<SDFAbstractVertex> getSinkInstances()
-	
-	/**
-	 * Check whether the input is valid
-	 * 
-	 * @return true if input is valid
-	 */
-	public def boolean checkInputIsValid() throws SDF4JException
 }

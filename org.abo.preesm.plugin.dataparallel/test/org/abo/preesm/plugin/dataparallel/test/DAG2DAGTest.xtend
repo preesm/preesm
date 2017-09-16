@@ -4,13 +4,17 @@ import java.util.Collection
 import java.util.HashMap
 import org.abo.preesm.plugin.dataparallel.DAG2DAG
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import org.abo.preesm.plugin.dataparallel.operations.visitor.LevelsOperations
+import org.abo.preesm.plugin.dataparallel.operations.visitor.OperationsUtils
+import org.jgrapht.alg.CycleDetector
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import org.abo.preesm.plugin.dataparallel.operations.visitor.LevelsOperations
-import org.abo.preesm.plugin.dataparallel.operations.visitor.OperationsUtils
+import org.abo.preesm.plugin.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
+import org.jgrapht.graph.DirectedSubgraph
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 
 /**
  * Property based test to check construction of DAG from another DAG
@@ -22,11 +26,8 @@ class DAG2DAGTest {
 	
 	protected val SDF2DAG dagGen
 	
-	protected val SDFGraph sdf
-	
-	new(SDF2DAG dagGen, SDFGraph sdf) {
+	new(SDF2DAG dagGen) {
 		this.dagGen = dagGen
-		this.sdf = sdf
 	}
 	
 	@Parameterized.Parameters
@@ -35,7 +36,28 @@ class DAG2DAGTest {
 		
 		Util.provideAllGraphs.forEach[sdf |
 			val dagGen = new SDF2DAG(sdf)
-			parameters.add(#[dagGen, sdf])
+			parameters.add(#[dagGen])
+		]
+		
+		Util.provideAllGraphs.forEach[ sdf |			
+			// Get strongly connected components
+			val strongCompDetector = new KosarajuStrongConnectivityInspector(sdf)
+					
+			// Collect strongly connected component that has loops in it
+			// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
+			strongCompDetector.stronglyConnectedComponents.forEach[ subgraph |
+				val cycleDetector = new CycleDetector(subgraph as 
+					DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+				) 
+				if(cycleDetector.detectCycles) {
+					// ASSUMPTION: Strongly connected component of a directed graph contains atleast
+					// one loop
+					val dagGen = new SDF2DAG(subgraph as 
+						DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+					)
+					parameters.add(#[dagGen])
+				}
+			]
 		]
 		
 		return parameters
