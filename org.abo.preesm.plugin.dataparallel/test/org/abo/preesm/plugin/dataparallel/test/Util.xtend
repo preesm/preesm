@@ -36,7 +36,8 @@ class Util {
 			ExampleGraphs.strictlyCyclicDual,
 			ExampleGraphs.strictlyCyclic2,
 			ExampleGraphs.mixedNetwork1,
-			ExampleGraphs.mixedNetwork2
+			ExampleGraphs.mixedNetwork2,
+			ExampleGraphs.nestedStrongGraph
 		)
 	}
 	

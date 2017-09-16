@@ -72,14 +72,14 @@ class ExampleGraphs {
 	@Test
 	public def void sdfIsSchedulable() {
 		Util.provideAllGraphs.forEach[sdf |
-			Assert.assertTrue(sdf.schedulable) 
+			Assert.assertTrue(sdf.isSchedulable) 
 		]
 	}
 	
 	/**
 	 * Check that the graphs can be cleaned
 	 */
-	@org.junit.Test
+	@Test
 	public def void sdfCanBeCleaned() {
 		Util.provideAllGraphs.forEach[sdf |
 			// Ideally this does not throw any exception
@@ -103,7 +103,8 @@ class ExampleGraphs {
 			#[strictlyCyclicDual, Boolean.TRUE],
 			#[strictlyCyclic2, Boolean.TRUE],
 			#[mixedNetwork1, Boolean.TRUE],
-			#[mixedNetwork2, Boolean.FALSE]
+			#[mixedNetwork2, Boolean.FALSE],
+			#[nestedStrongGraph, Boolean.TRUE]
 		]
 		
 		parameterArray.forEach[row |
@@ -116,6 +117,25 @@ class ExampleGraphs {
 			
 			Assert.assertEquals(depOp.isIndependent, expected)
 		]
+	}
+	
+	/**
+	 * Create a strongly connected graph. The graph is instance-independent, but not data-parallel.
+	 * Z (1) -(1)-> (1) A (2) --> (3) B (3) --> (2) C (1) --> (1) D
+	 * B (3) -(6)-> (2) A
+	 * C (1) -(3)-> (1) A
+	 * 
+	 * @return SDF graph 
+	 */
+	public static def SDFGraph nestedStrongGraph() {
+		return new SDFBuilder()
+				.addEdge("z", "a2", 1, 1, 1)
+				.addEdge("a2", "b2", 2, 3, 0)
+				.addEdge("b2", "c2", 3, 2, 0)
+				.addEdge("c2", "d2", 1, 1, 0)
+				.addEdge("b2", "outputA", "a2", "inputB", 3, 2, 6)
+				.addEdge("c2", "outputA", "a2", "inputC", 1, 1, 3)
+				.outputGraph
 	}
 	
 	/**
