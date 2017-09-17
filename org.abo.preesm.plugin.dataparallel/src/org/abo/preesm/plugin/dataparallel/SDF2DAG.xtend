@@ -6,6 +6,7 @@ import java.util.Map
 import java.util.Set
 import java.util.logging.Logger
 import java.util.regex.Pattern
+import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
@@ -19,10 +20,9 @@ import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsInd
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
 import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
-import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
 import org.jgrapht.alg.CycleDetector
-import org.jgrapht.graph.DirectedSubgraph
 import org.jgrapht.graph.AbstractGraph
+import org.jgrapht.graph.DirectedSubgraph
 
 /**
  * Construct DAG from a SDF Graph
@@ -193,6 +193,8 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	/**
 	 * Create instances according to the repetition count. Also rename the 
 	 * instances
+	 * 
+	 * @param isHSDF True if the input graph is HSDF
 	 */
 	 protected def void createInstances() {
 	 	// Create instances repetition vector times
@@ -203,7 +205,11 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	 		for(var ii = 0; ii < actor.nbRepeatAsInteger; ii++) {
 	 			// Clone and set properties
 	 			val instance = actor.clone
-	 			instance.name = actor.name + "_" + ii;
+	 			if(actor.nbRepeatAsInteger == 1) {
+	 				instance.name = actor.name
+	 			} else {
+	 				instance.name = actor.name + "_" + ii;
+	 			}
 	 			instance.nbRepeat = 1
 	 			
 	 			// Add to maps
@@ -343,7 +349,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 				// We rename the output ports. Contrary to the ports of join/roundbuffer, no special processing
 				// is needed to order the edges
 				if( (sourceInstances.get(sourceIndex) == originalSourceInstances.get(sourceIndex))
-					&& (!explode || !((originalSourceInstances.get(sourceIndex) instanceof SDFBroadcastVertex) 
+					&& (!explode && !((originalSourceInstances.get(sourceIndex) instanceof SDFBroadcastVertex) 
 						|| (originalSourceInstances.get(sourceIndex) instanceof SDFForkVertex)))) {
 					// if the source does not need new ports
 					if(sourceInstances.get(sourceIndex).getSink(edge.sourceInterface.name) !== null) {
@@ -523,15 +529,18 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 		// Remove any unconnected implode and explode actors and related interfaces
 		val removableVertices = newArrayList // Mark the vertices to be removed
 		outputGraph.vertexSet.forEach[vertex |
-			if(outputGraph.incomingEdgesOf(vertex).empty) {
-				if(vertex instanceof SDFJoinVertex) {
-					removableVertices.add(vertex)
+			// Remove only those explode/implode instances that are not added by the user
+			if(explodeImplodeOrigInstances.keySet.contains(vertex)) {
+				if(outputGraph.incomingEdgesOf(vertex).empty) {
+					if(vertex instanceof SDFJoinVertex) {
+						removableVertices.add(vertex)
+					}
 				}
-			}
-			if(outputGraph.outgoingEdgesOf(vertex).empty) {
-				if(vertex instanceof SDFForkVertex) {
-					removableVertices.add(vertex)
-				}
+				if(outputGraph.outgoingEdgesOf(vertex).empty) {
+					if(vertex instanceof SDFForkVertex) {
+						removableVertices.add(vertex)
+					}
+				}	
 			}
 		]
 		removableVertices.forEach[vertex| // Remove the actual vertex
@@ -539,10 +548,10 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 		]
 		
 		// Make sure all the ports are in order
-		if(!SpecialActorPortsIndexer.checkIndexes(outputGraph)) {
+		if(isInputSDFGraph && !SpecialActorPortsIndexer.checkIndexes(outputGraph)) {
 			throw new SDF4JException("There are still special actors with non-indexed ports. Contact PREESM developers")
 		}
-		SpecialActorPortsIndexer.sortIndexedPorts(outputGraph)
+		SpecialActorPortsIndexer.sortIndexedPorts(outputGraph)	
 	}
 	
 	/**

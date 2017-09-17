@@ -62,7 +62,7 @@ class SDF2DAGTest {
 	public static def Collection<Object[]> instancesToTest() {
 		val parameters = newArrayList()
 		val parameterArray = #[
-//			#[sdf, explode count, implode count, total vertices
+//			#[sdf, explode count, implode count, total vertices, isInstanceIndependent?
 			#[ExampleGraphs.acyclicTwoActors, 1, 2, 11],
 			#[ExampleGraphs.twoActorSelfLoop, 1, 2, 11],
 			#[ExampleGraphs.twoActorLoop, 4, 4, 16],
@@ -70,16 +70,18 @@ class SDF2DAGTest {
 			#[ExampleGraphs.strictlyCyclic, 4, 6, 20],
 			#[ExampleGraphs.mixedNetwork1, 6, 7, 32],
 			#[ExampleGraphs.mixedNetwork2, 7, 7, 33],
-			#[ExampleGraphs.nestedStrongGraph, 3, 3, 20]
+			#[ExampleGraphs.nestedStrongGraph, 3, 3, 20],
+			#[ExampleGraphs.costStrongComponent, 0, 1, 78]
 		]
 		parameterArray.forEach[
 			// #[sdf, explode count, implode count, total vertices, isSDF, shouldCount?]
 			parameters.add(#[it.get(0) as SDFGraph, it.get(1), it.get(2), it.get(3), true, true])
 		]
 		
-		parameterArray.forEach[
+		parameterArray.forEach[ 
+			val sdf = it.get(0) as SDFGraph
 			// Get strongly connected components
-			val strongCompDetector = new KosarajuStrongConnectivityInspector(it.get(0) as SDFGraph)
+			val strongCompDetector = new KosarajuStrongConnectivityInspector(sdf)
 		
 			val stronglyConnectedComponents = strongCompDetector.stronglyConnectedSets.size
 			
@@ -96,7 +98,6 @@ class SDF2DAGTest {
 						((it.get(0) as SDFGraph).vertexSet.size 
 							== 
 						strongCompDetector.stronglyConnectedSets.get(0).size)) {
-						println(strongCompDetector.stronglyConnectedSets)
 						// #[sdf, explode count, implode count, total vertices, isSDF, shouldCount?]
 						parameters.add(#[subgraph, it.get(1), it.get(2), it.get(3), false, true])
 					} else {

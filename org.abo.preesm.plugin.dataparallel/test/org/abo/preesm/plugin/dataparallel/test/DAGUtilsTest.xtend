@@ -38,6 +38,26 @@ class DAGUtilsTest {
 	}
 	
 	/**
+	 * Test vertices in a graph have unique names
+	 * 
+	 * ASSUMPTION: This forms the basis for coiteration. The test ensures that is the case
+	 */
+	@org.junit.Test
+	public def void nameAreUnique() {
+		val hsdfNameList = newArrayList
+		hsdf.vertexSet.forEach[vertex | 
+			Assert.assertTrue(!hsdfNameList.contains(vertex.name))
+			hsdfNameList.add(vertex.name)
+		]
+		
+		val dagNameList = newArrayList
+		dag.vertexSet.forEach[vertex |
+			Assert.assertTrue(!dagNameList.contains(vertex.name))
+			dagNameList.add(vertex.name)
+		]
+	}
+	
+	/**
 	 * All vertices, except implode/explode of HSDF should also 
 	 * exist in DAG
 	 * 
