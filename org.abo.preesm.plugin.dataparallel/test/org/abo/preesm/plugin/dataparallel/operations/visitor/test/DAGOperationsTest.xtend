@@ -7,21 +7,20 @@ import org.abo.preesm.plugin.dataparallel.SDF2DAG
 import org.abo.preesm.plugin.dataparallel.operations.visitor.CyclicSDFGOperations
 import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
 import org.abo.preesm.plugin.dataparallel.operations.visitor.DependencyAnalysisOperations
+import org.abo.preesm.plugin.dataparallel.operations.visitor.GetParallelLevelBuilder
+import org.abo.preesm.plugin.dataparallel.operations.visitor.LevelsOperations
 import org.abo.preesm.plugin.dataparallel.operations.visitor.MovableInstances
 import org.abo.preesm.plugin.dataparallel.operations.visitor.OperationsUtils
 import org.abo.preesm.plugin.dataparallel.operations.visitor.RootExitOperations
 import org.abo.preesm.plugin.dataparallel.test.ExampleGraphs
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
 import org.jgrapht.alg.CycleDetector
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
-import org.abo.preesm.plugin.dataparallel.operations.visitor.LevelsOperations
-import org.abo.preesm.plugin.dataparallel.operations.visitor.GetParallelLevelBuilder
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
-import org.abo.preesm.plugin.dataparallel.operations.visitor.RearrangeDAG
 
 /**
  * Property based tests for operations that implement {@link DAGOperations} on
@@ -191,7 +190,7 @@ class DAGOperationsTest {
 	 * 
 	 * Weak Test (Tests only if it belongs, not equality)
 	 */
-	@org.junit.Test
+	@Test
 	public def void cycleRootsIsSubsetOfAllCycles() {
 		val sdfgCycles = new CycleDetector(sdf).findCycles.map[it.name].toSet
 		
@@ -346,13 +345,13 @@ class DAGOperationsTest {
 	 * There are not many properties to test, except check the fact that
 	 * the movable instances are indeed moved in the SrSDF
 	 */
-	@org.junit.Test
-	public def void checkRearranging() {
-		val rearrangeVisitor = new RearrangeDAG(sdf)
-		dagGen.accept(rearrangeVisitor)
-		val cySDF = rearrangeVisitor.cyclicGraph
-		
-		// Convert SrSDF to DAG
-		val cyDAG = (new SDF2DAG(cySDF)).outputGraph		
-	}
+//	@org.junit.Test
+//	public def void checkRearranging() {
+//		val rearrangeVisitor = new RearrangeDAG(sdf)
+//		dagGen.accept(rearrangeVisitor)
+//		val cySDF = rearrangeVisitor.cyclicGraph
+//		
+//		// Convert SrSDF to DAG
+//		val cyDAG = (new SDF2DAG(cySDF)).outputGraph		
+//	}
 }
