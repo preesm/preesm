@@ -42,11 +42,15 @@ class DAGCommonOperationsTest {
 	
 	protected val boolean isParallel
 	
-	new(DAGConstructor dagGen, DAGTopologicalIteratorInterface iterator, SDFAbstractVertex rootNode, boolean isParallel) {
+	protected val boolean isBranchSetCompatible
+	
+	new(DAGConstructor dagGen, DAGTopologicalIteratorInterface iterator, SDFAbstractVertex rootNode, 
+		boolean isParallel, boolean isBranchSetCompatible) {
 		this.dagGen = dagGen
 		this.iterator = iterator
 		this.rootNode = rootNode
-		this.isParallel = isParallel	
+		this.isParallel = isParallel
+		this.isBranchSetCompatible = isBranchSetCompatible	
 	}
 	
 	@Parameterized.Parameters
@@ -56,29 +60,31 @@ class DAGCommonOperationsTest {
 		 * 2. Iterator that completely traverses this DAG
 		 * 3. Root node with which subset was created. Null if none
 		 * 4. If the DAG is data parallel as well
+		 * 5. If the graph is compatible with computation of branch set as outlined in DASIP 2017 paper
 		 */
 		val parameters = newArrayList
 		
 		// Add all SDF2DAG instances. Additionally, none of them are parallel
-		Util.provideAllGraphs
-			.map[sdf | new SDF2DAG(sdf)]
-			.forEach[dagGen |
+		Util.provideAllGraphsContext
+			.forEach[sdfContext |
+				val dagGen = new SDF2DAG(sdfContext.graph)
 				val iterator  = new DAGTopologicalIterator(dagGen)
-				parameters.add(#[dagGen, iterator, null, false])
+				parameters.add(#[dagGen, iterator, null, false, sdfContext.isBranchSetCompatible])
 			]
 		
 		// Create new DAG2DAG instances and add all of them. Additionally, none of them are parallel
-		Util.provideAllGraphs
-			.map[sdf | new SDF2DAG(sdf)]
-			.forEach[dagGen |
+		Util.provideAllGraphsContext
+			.forEach[sdfContext |
+				val dagGen = new SDF2DAG(sdfContext.graph)
 				val iterator = new DAGTopologicalIterator(dagGen)
-				parameters.add(#[new DAG2DAG(dagGen), iterator, null, false])
+				parameters.add(#[new DAG2DAG(dagGen), iterator, null, false, 
+					sdfContext.isBranchSetCompatible])
 			]
 			
 		// Add all subsets. They are naturally parallel
-		Util.provideAllGraphs
-			.map[sdf | new SDF2DAG(sdf)]
-			.forEach[dagGen |
+		Util.provideAllGraphsContext
+			.forEach[sdfContext |
+				val dagGen = new SDF2DAG(sdfContext.graph)
 				// Get root nodes
 				var rootVisitor = new RootExitOperations
 				dagGen.accept(rootVisitor)
@@ -87,7 +93,8 @@ class DAGCommonOperationsTest {
 				// Add subsets created from SDF2DAG
 				rootInstances.forEach[rootNode |
 					val iterator = new SubsetTopologicalIterator(dagGen, rootNode)
-					parameters.add(#[new DAGSubset(dagGen, rootNode), iterator, rootNode, true])
+					parameters.add(#[new DAGSubset(dagGen, rootNode), iterator, rootNode, true, 
+						sdfContext.isBranchSetCompatible])
 				]
 				
 				// Add subsets created from DAG2DAG
@@ -97,7 +104,8 @@ class DAGCommonOperationsTest {
 				rootInstances = rootVisitor.rootInstances
 				rootInstances.forEach[rootNode |
 					val iterator = new SubsetTopologicalIterator(dag2Dag, rootNode)
-					parameters.add(#[new DAGSubset(dag2Dag, rootNode), iterator, rootNode, true])
+					parameters.add(#[new DAGSubset(dag2Dag, rootNode), iterator, rootNode, true, 
+						sdfContext.isBranchSetCompatible])
 				]
 			]
 		
@@ -314,55 +322,57 @@ class DAGCommonOperationsTest {
 	 * Warning! Computing branch sets can result in memory overflow for large graph (stereo vision application)
 	 * 
 	 * Branch sets are calculated by keeping track of all the predecessors and inserting the current node in its
-	 * path (memoization)
+	 * path (memoization). This technique is outlined in DASIP 2017 paper
 	 */
 	 @org.junit.Test
 	public def void instancesInEachPathAreInCorrectLevels() {
-	 	val forkJoinOrigInstance = dagGen.explodeImplodeOrigInstances
-	 	val instanceSources = iterator.instanceSources
-	 	val levelOp = new LevelsOperations
-	 	acceptVisitor(dagGen, levelOp)
-	 	val allLevels = levelOp.levels
-	 	val instance2Paths = newHashMap // Holds the predecessors seen for each node
-	 	val newLevels = newHashMap // The new levels are stored here
-	 	
-	 	// Compute levels seen at each node using maximum number of instances seen in
-	 	// previous paths
- 		iterator.forEach[node | 
-			val sourceList = instanceSources.get(node)
-			newLevels.put(node, 0)
-			if(sourceList.isEmpty) {
-				val paths = #[#[node]]
-				instance2Paths.put(node, paths)
-			} else {
-				val newPaths = newArrayList
-				sourceList.forEach[source |
-					instance2Paths.get(source).forEach[path |
-						val newPath = new ArrayList(path)
-						newPath.add(node)
-						newPaths.add(newPath)
-					] 
-				]
-				instance2Paths.put(node, newPaths)
-				// remember that each path contains the current node as well
-				newLevels.put(node, newPaths.map[path | 
-					path.filter[source |
-						!forkJoinOrigInstance.keySet.contains(source)
-					].size
-				].max - 1) 
-			}
-		]
-	
-		// Now adjust the levels of implode and explodes
-		newLevels.forEach[node, level| 
-			if(forkJoinOrigInstance.keySet.contains(node))
-				newLevels.put(node, newLevels.get(forkJoinOrigInstance.get(node)))
-		]
-	
-		// Now check if calculation done in this way is same as computed levels
-		newLevels.forEach[node, level|
-			Assert.assertEquals(level, allLevels.get(node))
-		]
+		if(isBranchSetCompatible) {
+			val forkJoinOrigInstance = dagGen.explodeImplodeOrigInstances
+		 	val instanceSources = iterator.instanceSources
+		 	val levelOp = new LevelsOperations
+		 	acceptVisitor(dagGen, levelOp)
+		 	val allLevels = levelOp.levels
+		 	val instance2Paths = newHashMap // Holds the predecessors seen for each node
+		 	val newLevels = newHashMap // The new levels are stored here
+		 	
+		 	// Compute levels seen at each node using maximum number of instances seen in
+		 	// previous paths
+	 		iterator.forEach[node | 
+				val sourceList = instanceSources.get(node)
+				newLevels.put(node, 0)
+				if(sourceList.isEmpty) {
+					val paths = #[#[node]]
+					instance2Paths.put(node, paths)
+				} else {
+					val newPaths = newArrayList
+					sourceList.forEach[source |
+						instance2Paths.get(source).forEach[path |
+							val newPath = new ArrayList(path)
+							newPath.add(node)
+							newPaths.add(newPath)
+						] 
+					]
+					instance2Paths.put(node, newPaths)
+					// remember that each path contains the current node as well
+					newLevels.put(node, newPaths.map[path | 
+						path.filter[source |
+							!forkJoinOrigInstance.keySet.contains(source)
+						].size
+					].max - 1) 
+				}
+			]
+		
+			// Now adjust the levels of implode and explodes
+			newLevels.forEach[node, level| 
+				if(forkJoinOrigInstance.keySet.contains(node))
+					newLevels.put(node, newLevels.get(forkJoinOrigInstance.get(node)))
+			]
+		
+			// Now check if calculation done in this way is same as computed levels
+			newLevels.forEach[node, level|
+				Assert.assertEquals(level, allLevels.get(node))
+			]	
+		}
 	 }
 	 
 	/**
@@ -377,50 +387,52 @@ class DAGCommonOperationsTest {
 	 * Strong test
 	 * 
 	 * Warning! Branch set calculation can blow up for complicated graphs (with
-	 * too many branches per instances like broadcast)
+	 * too many branches per instances like broadcast). This technique is outlined in DASIP 2017 paper
 	 */
 	@org.junit.Test
 	public def void establishDagIndependenceUsingBranchSets() {
-		// Populate all the necessary data-structures
-		val instanceSources = iterator.instanceSources
-		val forkJoinInstance = dagGen.explodeImplodeOrigInstances.keySet
-		val depOp = new DependencyAnalysisOperations
-		acceptVisitor(dagGen, depOp)
-		val nonParallelActorsOrig = depOp.instanceDependentActors
-		val isDAGInd = depOp.isIndependent
-		val instance2Paths = newHashMap // Holds the predecessor levels of each node
-		val nonParallelActors = newHashSet // Holds non-parallel actors
-		val dagIndState = new ArrayList(#[true]) // Holds the state if DAG is instance independent
-		
-		iterator.forEach[node |
-			val sourceList = instanceSources.get(node)
-			val actor = dagGen.instance2Actor.get(node)
-			if(sourceList.isEmpty) {
-				val paths = #[#[node]]
-				instance2Paths.put(node, paths)
-			} else {
-				val newPaths = newArrayList
-					sourceList.forEach[source |
-					instance2Paths.get(source).forEach[path |
-						val actorsInPath = new ArrayList(path)
-											.filter[instance | !forkJoinInstance.contains(instance)]
-											.map[instance | dagGen.instance2Actor.get(instance)].toList
-						if(!forkJoinInstance.contains(node) && actorsInPath.contains(actor)) {
-							dagIndState.set(0, false)
-							nonParallelActors.add(actor)	
-						}
-						val newPath = new ArrayList(path)
-						newPath.add(node)
-						newPaths.add(newPath)
+		if(isBranchSetCompatible) {
+			// Populate all the necessary data-structures
+			val instanceSources = iterator.instanceSources
+			val forkJoinInstance = dagGen.explodeImplodeOrigInstances.keySet
+			val depOp = new DependencyAnalysisOperations
+			acceptVisitor(dagGen, depOp)
+			val nonParallelActorsOrig = depOp.instanceDependentActors
+			val isDAGInd = depOp.isIndependent
+			val instance2Paths = newHashMap // Holds the predecessor levels of each node
+			val nonParallelActors = newHashSet // Holds non-parallel actors
+			val dagIndState = new ArrayList(#[true]) // Holds the state if DAG is instance independent
+			
+			iterator.forEach[node |
+				val sourceList = instanceSources.get(node)
+				val actor = dagGen.instance2Actor.get(node)
+				if(sourceList.isEmpty) {
+					val paths = #[#[node]]
+					instance2Paths.put(node, paths)
+				} else {
+					val newPaths = newArrayList
+						sourceList.forEach[source |
+						instance2Paths.get(source).forEach[path |
+							val actorsInPath = new ArrayList(path)
+												.filter[instance | !forkJoinInstance.contains(instance)]
+												.map[instance | dagGen.instance2Actor.get(instance)].toList
+							if(!forkJoinInstance.contains(node) && actorsInPath.contains(actor)) {
+								dagIndState.set(0, false)
+								nonParallelActors.add(actor)	
+							}
+							val newPath = new ArrayList(path)
+							newPath.add(node)
+							newPaths.add(newPath)
+						]
 					]
-				]
-				instance2Paths.put(node, newPaths)
-			}
-		]
-		
-		// Now check if DAGInd calculation is correct
-		Assert.assertEquals(isDAGInd, dagIndState.get(0))
-		Assert.assertEquals(nonParallelActorsOrig, nonParallelActors)
+					instance2Paths.put(node, newPaths)
+				}
+			]
+			
+			// Now check if DAGInd calculation is correct
+			Assert.assertEquals(isDAGInd, dagIndState.get(0))
+			Assert.assertEquals(nonParallelActorsOrig, nonParallelActors)	
+		}
 	}
 	
 	/**

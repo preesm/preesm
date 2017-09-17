@@ -15,14 +15,7 @@ import org.abo.preesm.plugin.dataparallel.iterator.SubsetTopologicalIterator
  */
 class Util {
 	/**
-	 * Provide all example SDF graphs in this order
-	 * acyclicTwoActors
-	 * twoActorSelfLoop
-	 * twoActorLoop
-	 * semanticallyAcyclicCycle
-	 * strictlyCyclic
-	 * mixedNetwork1
-	 * mixedNetowrk2
+	 * Provide all example SDF graph
 	 * 
 	 * @return List of all example SDF graphs
 	 */
@@ -37,7 +30,31 @@ class Util {
 			ExampleGraphs.strictlyCyclic2,
 			ExampleGraphs.mixedNetwork1,
 			ExampleGraphs.mixedNetwork2,
-			ExampleGraphs.nestedStrongGraph
+			ExampleGraphs.nestedStrongGraph,
+			ExampleGraphs.costStrongComponent
+		)
+	}
+	
+	/**
+	 * Provide all example SDF graphs with context
+	 * The context contains information if the relevant graph should be 
+	 * executed to check branch sets
+	 * 
+	 * @return List of all example SDF graphs
+	 */
+	public static def List<ExampleGraphContext> provideAllGraphsContext() {
+		return newArrayList(
+			new ExampleGraphContext(ExampleGraphs.acyclicTwoActors, true),
+			new ExampleGraphContext(ExampleGraphs.twoActorSelfLoop, true),
+			new ExampleGraphContext(ExampleGraphs.twoActorLoop, true),
+			new ExampleGraphContext(ExampleGraphs.semanticallyAcyclicCycle, true),
+			new ExampleGraphContext(ExampleGraphs.strictlyCyclic, true),
+			new ExampleGraphContext(ExampleGraphs.strictlyCyclicDual, true),
+			new ExampleGraphContext(ExampleGraphs.strictlyCyclic2, true),
+			new ExampleGraphContext(ExampleGraphs.mixedNetwork1, true),
+			new ExampleGraphContext(ExampleGraphs.mixedNetwork2, true),
+			new ExampleGraphContext(ExampleGraphs.nestedStrongGraph, true),
+			new ExampleGraphContext(ExampleGraphs.costStrongComponent, false)
 		)
 	}
 	

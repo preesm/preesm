@@ -10,6 +10,10 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
 import org.junit.Assert
 import org.junit.Test
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
 
 /**
  * Construct example graphs. 
@@ -28,23 +32,45 @@ class ExampleGraphs {
 			outputGraph = new SDFGraph()
 		}
 		
-		public def SDFBuilder addEdge(String sourceName, String sourceOutName, String targetName, String targetInName, int prod, int cons, int delay) {
-			val SDFAbstractVertex source = if(outputGraph.vertexSet.exists[node | node.name == sourceName]) 
-										   		outputGraph.vertexSet.filter[node | node.name == sourceName].get(0) 
-										   else {
-												val src = new SDFVertex() => [name = sourceName]
-												outputGraph.addVertex(src)
-												src
-											}
-
-			val SDFAbstractVertex target = if(outputGraph.vertexSet.exists[node | node.name == targetName]) 
-												outputGraph.vertexSet.filter[node | node.name == targetName].get(0) 
-						 					else {
-						 						val dst = new SDFVertex() => [name = targetName]
-						 						outputGraph.addVertex(dst)
-						 						dst
-						 					}
-						 	
+		private def SDFAbstractVertex createVertex(String type) {			
+			switch(type) {
+				case SDFRoundBufferVertex.ROUND_BUFFER: {
+					return new SDFRoundBufferVertex
+				}
+				case SDFBroadcastVertex.BROADCAST: {
+					return new SDFBroadcastVertex
+				}
+				case SDFJoinVertex.JOIN : {
+					return new SDFJoinVertex
+				}
+				case SDFForkVertex.FORK : {
+					return new SDFForkVertex
+				}
+				case SDFVertex.VERTEX: {
+					return new SDFVertex
+				}
+			}
+		}
+		
+		public def SDFBuilder addEdge(String sourceName, String sourceType, String sourceOutName,
+			String targetName, String targetType, String targetInName,
+			int prod, int cons, int delay) {
+				
+			val SDFAbstractVertex source = if(outputGraph.vertexSet.exists[node | node.name == sourceName]) {
+				outputGraph.vertexSet.filter[node | node.name == sourceName].get(0)	
+			} else {
+				val SDFAbstractVertex src = createVertex(sourceType) => [name = sourceName]
+				outputGraph.addVertex(src)
+				src
+			}
+			val SDFAbstractVertex target = if(outputGraph.vertexSet.exists[node | node.name == targetName]) {
+												outputGraph.vertexSet.filter[node | node.name == targetName].get(0)
+				} else {
+					val SDFAbstractVertex dst = createVertex(targetType) => [name = targetName]
+					outputGraph.addVertex(dst)
+					dst
+				}
+												
 			val outPort = new SDFSinkInterfaceVertex
 			outPort.setName(sourceOutName)
 			source.addSink(outPort)
@@ -53,11 +79,23 @@ class ExampleGraphs {
 			inPort.setName(targetInName)
 			target.addSource(inPort)
 			
-			outputGraph.addEdge(source, outPort, target, inPort, new SDFIntEdgePropertyType(prod), new SDFIntEdgePropertyType(cons), new SDFIntEdgePropertyType(delay))				
+			outputGraph.addEdge(source, outPort, target, inPort, 
+				new SDFIntEdgePropertyType(prod), 
+				new SDFIntEdgePropertyType(cons), 
+				new SDFIntEdgePropertyType(delay)
+			)				
 			return this
 		}
 		
-		public def SDFBuilder addEdge(String sourceName, String targetName, int prod, int cons, int delay) {
+		public def SDFBuilder addEdge(String sourceName, String sourceOutName, 
+			String targetName, String targetInName, int prod, int cons, int delay) {
+			return addEdge(sourceName, SDFVertex.VERTEX, sourceOutName,
+						   targetName, SDFVertex.VERTEX, targetInName,
+						   prod, cons, delay)
+		}
+		
+		public def SDFBuilder addEdge(String sourceName, String targetName, 
+			int prod, int cons, int delay) {
 			return addEdge(sourceName, "output", targetName, "input", prod, cons, delay)
 		}
 		
@@ -95,6 +133,7 @@ class ExampleGraphs {
 	@Test
 	public def void dagInd() {
 		val parameterArray = #[
+			//#[sdf, ]
 			#[acyclicTwoActors, Boolean.TRUE],
 			#[twoActorSelfLoop, Boolean.FALSE],
 			#[twoActorLoop, Boolean.FALSE],
@@ -104,7 +143,8 @@ class ExampleGraphs {
 			#[strictlyCyclic2, Boolean.TRUE],
 			#[mixedNetwork1, Boolean.TRUE],
 			#[mixedNetwork2, Boolean.FALSE],
-			#[nestedStrongGraph, Boolean.TRUE]
+			#[nestedStrongGraph, Boolean.TRUE],
+			#[costStrongComponent, Boolean.FALSE]
 		]
 		
 		parameterArray.forEach[row |
@@ -117,6 +157,40 @@ class ExampleGraphs {
 			
 			Assert.assertEquals(depOp.isIndependent, expected)
 		]
+	}
+	
+	/**
+	 * Strongly connected component of stereo vision application that gives error with SDF2DAG
+	 * creation.
+	 * Don't add this to Util as calculating branch sets using traditional method (as mentioned in
+	 * the paper) will take a long long time to complete.
+	 */
+	public static def SDFGraph costStrongComponent() {
+		val height = 380
+		val width = 434
+		val size = height * width
+		val rep = 19
+		val sdf = new SDFBuilder()
+				.addEdge("Broadcast5", SDFBroadcastVertex.BROADCAST, "back", 
+						 "CostConstruction", SDFVertex.VERTEX, "back", 1, 1, 8)
+				.addEdge("CostConstruction", "disparityError", "AggregateCost", "disparityError", 
+					size, size, 0)
+				.addEdge("AggregateCost", "aggregatedDisparity", "disparitySelect", "aggregatedDisparity", 
+					size, size, 0)
+				.addEdge("Broadcast5", SDFBroadcastVertex.BROADCAST, "out1", 
+						 "disparitySelect", SDFVertex.VERTEX, "currentResult", 
+						 size, size, size)
+				.addEdge("disparitySelect", "backBestCost", "disparitySelect", "bestCostFeed", 
+					(height*width+1), (height*width+1), size+1)
+				.addEdge("disparitySelect", SDFVertex.VERTEX, "result", 
+						 "Broadcast5", SDFBroadcastVertex.BROADCAST, "in", 
+						 size, size, 0)
+				.addEdge("Broadcast5", SDFBroadcastVertex.BROADCAST, "out0",
+						 "Out", SDFVertex.VERTEX, "in", 
+						 size, rep * size, 0)
+				.outputGraph
+		sdf.vertexSet.filter[vertex | vertex.name != "Out"].forEach[vertex | vertex.nbRepeat = 19]
+		return sdf
 	}
 	
 	/**
