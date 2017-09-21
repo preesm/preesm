@@ -1,29 +1,34 @@
 package org.abo.preesm.plugin.dataparallel.operations.visitor.test
 
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
-import java.util.Collection
-import org.abo.preesm.plugin.dataparallel.test.Util
-import org.abo.preesm.plugin.dataparallel.SDF2DAG
-import org.abo.preesm.plugin.dataparallel.iterator.DAGTopologicalIterator
-import org.abo.preesm.plugin.dataparallel.DAG2DAG
-import org.abo.preesm.plugin.dataparallel.operations.visitor.RootExitOperations
-import org.abo.preesm.plugin.dataparallel.iterator.SubsetTopologicalIterator
-import org.abo.preesm.plugin.dataparallel.iterator.DAGTopologicalIteratorInterface
-import org.abo.preesm.plugin.dataparallel.DAGConstructor
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.abo.preesm.plugin.dataparallel.operations.visitor.LevelsOperations
-import org.junit.Assert
 import java.util.ArrayList
+import java.util.Collection
+import org.abo.preesm.plugin.dataparallel.DAG2DAG
+import org.abo.preesm.plugin.dataparallel.DAGConstructor
 import org.abo.preesm.plugin.dataparallel.DAGSubset
 import org.abo.preesm.plugin.dataparallel.DAGSubsetConstructor
 import org.abo.preesm.plugin.dataparallel.PureDAGConstructor
+import org.abo.preesm.plugin.dataparallel.SDF2DAG
+import org.abo.preesm.plugin.dataparallel.iterator.DAGTopologicalIterator
+import org.abo.preesm.plugin.dataparallel.iterator.DAGTopologicalIteratorInterface
+import org.abo.preesm.plugin.dataparallel.iterator.SubsetTopologicalIterator
+import org.abo.preesm.plugin.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
 import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGCommonOperations
 import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
 import org.abo.preesm.plugin.dataparallel.operations.visitor.DependencyAnalysisOperations
+import org.abo.preesm.plugin.dataparallel.operations.visitor.LevelsOperations
 import org.abo.preesm.plugin.dataparallel.operations.visitor.OperationsUtils
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
+import org.abo.preesm.plugin.dataparallel.operations.visitor.RootExitOperations
+import org.abo.preesm.plugin.dataparallel.test.Util
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
+import org.jgrapht.alg.CycleDetector
+import org.jgrapht.graph.DirectedSubgraph
+import org.junit.Assert
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
 
 /**
  * Perform property based tests for operations that
@@ -69,7 +74,12 @@ class DAGCommonOperationsTest {
 			.forEach[sdfContext |
 				val dagGen = new SDF2DAG(sdfContext.graph)
 				val iterator  = new DAGTopologicalIterator(dagGen)
-				parameters.add(#[dagGen, iterator, null, false, sdfContext.isBranchSetCompatible])
+				parameters.add(#[dagGen
+								, iterator
+								, null
+								, false
+								, sdfContext.isBranchSetCompatible
+				])
 			]
 		
 		// Create new DAG2DAG instances and add all of them. Additionally, none of them are parallel
@@ -77,8 +87,11 @@ class DAGCommonOperationsTest {
 			.forEach[sdfContext |
 				val dagGen = new SDF2DAG(sdfContext.graph)
 				val iterator = new DAGTopologicalIterator(dagGen)
-				parameters.add(#[new DAG2DAG(dagGen), iterator, null, false, 
-					sdfContext.isBranchSetCompatible])
+				parameters.add(#[new DAG2DAG(dagGen)
+								, iterator
+								, null
+								, false
+								, sdfContext.isBranchSetCompatible])
 			]
 			
 		// Add all subsets. They are naturally parallel
@@ -93,8 +106,11 @@ class DAGCommonOperationsTest {
 				// Add subsets created from SDF2DAG
 				rootInstances.forEach[rootNode |
 					val iterator = new SubsetTopologicalIterator(dagGen, rootNode)
-					parameters.add(#[new DAGSubset(dagGen, rootNode), iterator, rootNode, true, 
-						sdfContext.isBranchSetCompatible])
+					parameters.add(#[new DAGSubset(dagGen, rootNode)
+									, iterator
+									, rootNode
+									, true
+									, sdfContext.isBranchSetCompatible])
 				]
 				
 				// Add subsets created from DAG2DAG
@@ -104,8 +120,48 @@ class DAGCommonOperationsTest {
 				rootInstances = rootVisitor.rootInstances
 				rootInstances.forEach[rootNode |
 					val iterator = new SubsetTopologicalIterator(dag2Dag, rootNode)
-					parameters.add(#[new DAGSubset(dag2Dag, rootNode), iterator, rootNode, true, 
-						sdfContext.isBranchSetCompatible])
+					parameters.add(#[new DAGSubset(dag2Dag, rootNode)
+									, iterator
+									, rootNode
+									, true
+									, sdfContext.isBranchSetCompatible])
+				]
+			]
+			
+			// Test on subgraphs
+			Util.provideAllGraphsContext.forEach[sdfContext |
+				val sdf = sdfContext.graph
+					
+				// Get strongly connected components
+				val strongCompDetector = new KosarajuStrongConnectivityInspector(sdf)
+				
+				// Collect strongly connected component that has loops in it
+				// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
+				strongCompDetector.stronglyConnectedComponents.forEach[ subgraph |
+					val cycleDetector = new CycleDetector(subgraph as
+						DirectedSubgraph<SDFAbstractVertex, SDFEdge>)
+					val subgraphDir = subgraph as DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+					if(cycleDetector.detectCycles) {
+						// ASSUMPTION: Strongly connected component of a directed graph contains atleast
+						// one loop
+						val dagGen = new SDF2DAG(subgraphDir)
+						
+						// Test SDF2DAG
+						parameters.add(#[dagGen
+										, new DAGTopologicalIterator(dagGen)
+										, null
+										, false
+										, sdfContext.isBranchSetCompatible
+						])
+						
+						// Test DAG2DAG
+						parameters.add(#[new DAG2DAG(dagGen)
+										, new DAGTopologicalIterator(dagGen)
+										, null
+										, false
+										, sdfContext.isBranchSetCompatible
+						])
+					}
 				]
 			]
 		
@@ -125,7 +181,7 @@ class DAGCommonOperationsTest {
 	 * 
 	 * Weak Test
 	 */
-	@org.junit.Test
+	@Test
 	public def void sourceInstancesAreRootInstances() {
 		val rootOp = new RootExitOperations
 		acceptVisitor(dagGen, rootOp)
@@ -141,7 +197,7 @@ class DAGCommonOperationsTest {
 	 * 
 	 * Weak Test
 	 */
-	@org.junit.Test
+	@Test
 	public def void sinkInstancesAreExitInstances() {
 		val rootExitOp = new RootExitOperations
 		acceptVisitor(dagGen, rootExitOp)
@@ -161,7 +217,7 @@ class DAGCommonOperationsTest {
 	 * 
 	 * Strong Test
 	 */
-	@org.junit.Test
+	@Test
 	public def void allInstanceOfSourceAreInRoot() {
 		if(dagGen instanceof SDF2DAG) {
 			val rootOp = new RootExitOperations
@@ -183,7 +239,7 @@ class DAGCommonOperationsTest {
 	 * 
 	 * Strong test
 	 */
-	@org.junit.Test
+	@Test
 	public def void allInstancesOfSinkAreInExit() {
 		if(dagGen instanceof SDF2DAG) {
 			val rootExitOp = new RootExitOperations
@@ -209,7 +265,7 @@ class DAGCommonOperationsTest {
 	 * 
 	 * Weak test
 	 */
-	@org.junit.Test
+	@Test
 	public def void rootNoImplodeExitNoExplode() {
 		val rootExitOp = new RootExitOperations
 		acceptVisitor(dagGen, rootExitOp)
@@ -237,7 +293,7 @@ class DAGCommonOperationsTest {
 	 * 
 	 * Strong test
 	 */
-	@org.junit.Test
+	@Test
 	public def void levelsOfRootIsZero() {
 		// Get root instances and its associated implode and explode
 		val rootOp = new RootExitOperations
@@ -272,7 +328,7 @@ class DAGCommonOperationsTest {
 	 * 
 	 * Weak test
 	 */
-	@org.junit.Test
+	@Test
 	public def void levelsOfSourcesLessThanCurrent() {
 		// Gather all relevant data-structures
 		
@@ -324,7 +380,7 @@ class DAGCommonOperationsTest {
 	 * Branch sets are calculated by keeping track of all the predecessors and inserting the current node in its
 	 * path (memoization). This technique is outlined in DASIP 2017 paper
 	 */
-	 @org.junit.Test
+	 @Test
 	public def void instancesInEachPathAreInCorrectLevels() {
 		if(isBranchSetCompatible) {
 			val forkJoinOrigInstance = dagGen.explodeImplodeOrigInstances
@@ -389,7 +445,7 @@ class DAGCommonOperationsTest {
 	 * Warning! Branch set calculation can blow up for complicated graphs (with
 	 * too many branches per instances like broadcast). This technique is outlined in DASIP 2017 paper
 	 */
-	@org.junit.Test
+	@Test
 	public def void establishDagIndependenceUsingBranchSets() {
 		if(isBranchSetCompatible) {
 			// Populate all the necessary data-structures
@@ -446,7 +502,7 @@ class DAGCommonOperationsTest {
 	 * 
 	 * Strong Test, Manually defined
 	 */
-	@org.junit.Test
+	@Test
 	public def void checkDAGisDataParallel() {
 		val depOp = new DependencyAnalysisOperations
 		acceptVisitor(dagGen, depOp)

@@ -70,7 +70,7 @@ class SDF2DAGTest {
 			#[ExampleGraphs.strictlyCyclic, 4, 6, 20],
 			#[ExampleGraphs.mixedNetwork1, 6, 7, 32],
 			#[ExampleGraphs.mixedNetwork2, 7, 7, 33],
-			#[ExampleGraphs.nestedStrongGraph, 3, 3, 20],
+			#[ExampleGraphs.nestedStrongGraph, 3, 2, 19],
 			#[ExampleGraphs.costStrongComponent, 0, 1, 78]
 		]
 		parameterArray.forEach[
