@@ -49,12 +49,19 @@ class DAGCommonOperationsTest {
 	
 	protected val boolean isBranchSetCompatible
 	
-	new(DAGConstructor dagGen, DAGTopologicalIteratorInterface iterator, SDFAbstractVertex rootNode, 
-		boolean isParallel, boolean isBranchSetCompatible) {
+	protected val Boolean isInstanceIndependent
+	
+	new(DAGConstructor dagGen
+		, DAGTopologicalIteratorInterface iterator
+		, SDFAbstractVertex rootNode
+		, Boolean isInstanceIndependent
+		, boolean isParallel
+		, boolean isBranchSetCompatible) {
 		this.dagGen = dagGen
 		this.iterator = iterator
 		this.rootNode = rootNode
 		this.isParallel = isParallel
+		this.isInstanceIndependent = isInstanceIndependent
 		this.isBranchSetCompatible = isBranchSetCompatible	
 	}
 	
@@ -77,6 +84,7 @@ class DAGCommonOperationsTest {
 				parameters.add(#[dagGen
 								, iterator
 								, null
+								, sdfContext.isInstanceIndependent
 								, false
 								, sdfContext.isBranchSetCompatible
 				])
@@ -90,6 +98,7 @@ class DAGCommonOperationsTest {
 				parameters.add(#[new DAG2DAG(dagGen)
 								, iterator
 								, null
+								, sdfContext.isInstanceIndependent
 								, false
 								, sdfContext.isBranchSetCompatible])
 			]
@@ -109,6 +118,7 @@ class DAGCommonOperationsTest {
 					parameters.add(#[new DAGSubset(dagGen, rootNode)
 									, iterator
 									, rootNode
+									, null
 									, true
 									, sdfContext.isBranchSetCompatible])
 				]
@@ -123,6 +133,7 @@ class DAGCommonOperationsTest {
 					parameters.add(#[new DAGSubset(dag2Dag, rootNode)
 									, iterator
 									, rootNode
+									, null
 									, true
 									, sdfContext.isBranchSetCompatible])
 				]
@@ -150,6 +161,7 @@ class DAGCommonOperationsTest {
 						parameters.add(#[dagGen
 										, new DAGTopologicalIterator(dagGen)
 										, null
+										, sdfContext.isInstanceIndependent
 										, false
 										, sdfContext.isBranchSetCompatible
 						])
@@ -158,6 +170,7 @@ class DAGCommonOperationsTest {
 						parameters.add(#[new DAG2DAG(dagGen)
 										, new DAGTopologicalIterator(dagGen)
 										, null
+										, sdfContext.isInstanceIndependent
 										, false
 										, sdfContext.isBranchSetCompatible
 						])
@@ -488,6 +501,23 @@ class DAGCommonOperationsTest {
 			// Now check if DAGInd calculation is correct
 			Assert.assertEquals(isDAGInd, dagIndState.get(0))
 			Assert.assertEquals(nonParallelActorsOrig, nonParallelActors)	
+		}
+	}
+	
+	/**
+	 * Cross checks if graphs are instance indpendent as well
+	 * 
+	 * Warning! The test is not generic. It depends on manually defined parameters
+	 * 
+	 * Strong test, Manually defined
+	 */
+	@org.junit.Test
+	public def void checkDAGisInstanceIndependent() {
+		if(isInstanceIndependent !== null && isInstanceIndependent) {
+			val depOp = new DependencyAnalysisOperations
+			acceptVisitor(dagGen, depOp)
+			val isDAGInd = depOp.isIndependent
+			Assert.assertEquals(isDAGInd, isInstanceIndependent)
 		}
 	}
 	

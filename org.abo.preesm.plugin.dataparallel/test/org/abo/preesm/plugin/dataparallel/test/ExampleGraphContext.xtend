@@ -18,4 +18,9 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 	 * DASIP 2017 paper.
 	 */
 	boolean isBranchSetCompatible
+	
+	/**
+	 * True if the graph is instance independent
+	 */
+	boolean isInstanceIndependent
 }

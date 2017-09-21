@@ -44,17 +44,17 @@ class Util {
 	 */
 	public static def List<ExampleGraphContext> provideAllGraphsContext() {
 		return newArrayList(
-			new ExampleGraphContext(ExampleGraphs.acyclicTwoActors, true),
-			new ExampleGraphContext(ExampleGraphs.twoActorSelfLoop, true),
-			new ExampleGraphContext(ExampleGraphs.twoActorLoop, true),
-			new ExampleGraphContext(ExampleGraphs.semanticallyAcyclicCycle, true),
-			new ExampleGraphContext(ExampleGraphs.strictlyCyclic, true),
-			new ExampleGraphContext(ExampleGraphs.strictlyCyclicDual, true),
-			new ExampleGraphContext(ExampleGraphs.strictlyCyclic2, true),
-			new ExampleGraphContext(ExampleGraphs.mixedNetwork1, true),
-			new ExampleGraphContext(ExampleGraphs.mixedNetwork2, true),
-			new ExampleGraphContext(ExampleGraphs.nestedStrongGraph, true),
-			new ExampleGraphContext(ExampleGraphs.costStrongComponent, false)
+			new ExampleGraphContext(ExampleGraphs.acyclicTwoActors, true, true),
+			new ExampleGraphContext(ExampleGraphs.twoActorSelfLoop, true, false),
+			new ExampleGraphContext(ExampleGraphs.twoActorLoop, true, false),
+			new ExampleGraphContext(ExampleGraphs.semanticallyAcyclicCycle, true, true),
+			new ExampleGraphContext(ExampleGraphs.strictlyCyclic, true, true),
+			new ExampleGraphContext(ExampleGraphs.strictlyCyclicDual, true, true),
+			new ExampleGraphContext(ExampleGraphs.strictlyCyclic2, true, true),
+			new ExampleGraphContext(ExampleGraphs.mixedNetwork1, true, true),
+			new ExampleGraphContext(ExampleGraphs.mixedNetwork2, true, false),
+			new ExampleGraphContext(ExampleGraphs.nestedStrongGraph, true, true),
+			new ExampleGraphContext(ExampleGraphs.costStrongComponent, false, false)
 		)
 	}
 	
