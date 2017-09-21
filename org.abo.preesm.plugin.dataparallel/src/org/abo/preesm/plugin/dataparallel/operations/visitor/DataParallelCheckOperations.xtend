@@ -103,7 +103,6 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 			this.isInstanceIndependent = true
 		} else {
 			val outputSDF = sdf.clone
-			val dagGen = new SDF2DAG(sdf, this.logger)
 			
 			// Get strongly connected components
 			val strongCompDetector = new KosarajuStrongConnectivityInspector(outputSDF)
@@ -131,16 +130,17 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 			// Perform DAG instance check on each strongly connected subgraph
 			isolatedStronglyConnectedComponents.forEach[subgraph |
 				
+				val subgraphDAGGen = new SDF2DAG(subgraph)
 				val depOps = new DependencyAnalysisOperations
-				dagGen.accept(depOps)				 
+				subgraphDAGGen.accept(depOps)
 				subgraphInstInd.add(depOps.isIndependent)
 				if(!depOps.instanceDependentActors.empty) {
 					subgraphDepActors.addAll(depOps.instanceDependentActors.toList)
 				}
-				 
+				
 				val levelOps = new LevelsOperations
-				dagGen.accept(levelOps)
-				subgraphDataPar.add(OperationsUtils.isParallel(dagGen, levelOps.levels))
+				subgraphDAGGen.accept(levelOps)
+				subgraphDataPar.add(OperationsUtils.isParallel(subgraphDAGGen, levelOps.levels))
 			]
 			
 			this.isDataParallel = subgraphDataPar.forall[value | value == true]
