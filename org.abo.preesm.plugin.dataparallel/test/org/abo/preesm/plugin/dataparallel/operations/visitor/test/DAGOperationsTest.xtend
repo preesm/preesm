@@ -12,7 +12,7 @@ import org.abo.preesm.plugin.dataparallel.operations.visitor.LevelsOperations
 import org.abo.preesm.plugin.dataparallel.operations.visitor.MovableInstances
 import org.abo.preesm.plugin.dataparallel.operations.visitor.OperationsUtils
 import org.abo.preesm.plugin.dataparallel.operations.visitor.RootExitOperations
-import org.abo.preesm.plugin.dataparallel.test.ExampleGraphs
+import org.abo.preesm.plugin.dataparallel.test.Util
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
@@ -57,41 +57,15 @@ class DAGOperationsTest {
 		 */
 		val parameters = newArrayList
 		
-		val parameterArray = #[
-			#[ExampleGraphs.acyclicTwoActors, Boolean.TRUE],
-			#[ExampleGraphs.semanticallyAcyclicCycle, Boolean.TRUE]
-		]
-		
 		// Add SDF2DAG and DAG2DAG
-		parameterArray.forEach[
-			val sdf = it.get(0) as SDFGraph
-			val dagGen = new SDF2DAG(sdf)
-			parameters.add(#[sdf, dagGen, it.get(1)])
-			parameters.add(#[sdf, new DAG2DAG(dagGen), it.get(1)])
-		]
-		
-		// Graphs that are instance independent, but are not acyclic-like
-		val cyclicParamterArray = #[
-			// [DAG from SDF, test acyclic rearranging? (false)]
-			#[ExampleGraphs.strictlyCyclic, Boolean.FALSE],
-			#[ExampleGraphs.strictlyCyclicDual, Boolean.FALSE],
-			#[ExampleGraphs.strictlyCyclic2, Boolean.FALSE],
-			#[ExampleGraphs.mixedNetwork1, Boolean.FALSE]
-		]
-		
-		// Make sure all the cyclic graphs are DAG-Ind
-		cyclicParamterArray.forEach[row |
-			val sdf = row.get(0) as SDFGraph
-			val dagGen = new SDF2DAG(sdf)
-			
-			val parallelVisitor = new DependencyAnalysisOperations
-			dagGen.accept(parallelVisitor)
-	
-			if(!parallelVisitor.isIndependent) {
-				throw new AssertionError("SDF is not instance independent")
+		Util.provideAllGraphsContext.forEach[sdfContext |
+			// Only add instance independent graphs
+			if(sdfContext.instanceIndependent) {
+				val sdf = sdfContext.graph
+				val dagGen = new SDF2DAG(sdf)
+				parameters.add(#[sdf, dagGen, sdfContext.acyclic])
+				parameters.add(#[sdf, new DAG2DAG(dagGen), sdfContext.acyclic])	
 			}
-			parameters.add(#[sdf, dagGen, row.get(1)])
-			parameters.add(#[sdf, new DAG2DAG(dagGen), row.get(1)])
 		]
 		
 		return parameters
@@ -205,8 +179,6 @@ class DAGOperationsTest {
 			Assert.assertFalse(cycleOp.containsCycles)
 			
 			Assert.assertTrue(cycleRoots.empty)
-			
-			Assert.assertTrue(isAcyclicLike)
 		}
 		
 		// SDFG has cycles, but is acyclic-like
@@ -248,7 +220,10 @@ class DAGOperationsTest {
 		
 		val rearrangedLevels = moveInstanceVisitor.rearrangedLevels
 		
-		if(!isAcyclicLike) {
+		// Does it have cycles in it?
+		val cycleDetector = new CycleDetector(sdf)
+		
+		if(!isAcyclicLike && cycleDetector.detectCycles) {
 			val moveableInstances = moveInstanceVisitor.movableInstances
 			val moveableActors = newHashSet
 			moveableInstances.forEach[instance |
@@ -292,7 +267,11 @@ class DAGOperationsTest {
 		val moveInstanceVisitor = new MovableInstances
 		dagGen.accept(moveInstanceVisitor)
 		
-		if(!isAcyclicLike) {
+		// Does it have cycles in it?
+		val cycleDetector = new CycleDetector(sdf)
+		
+		// Perform the test if it has cycles in it and is not acyclic-like
+		if(!isAcyclicLike && cycleDetector.detectCycles) {
 			val movableRootInstances = moveInstanceVisitor.movableRootInstances
 			val movableInstances = moveInstanceVisitor.movableInstances
 			val movableExitInstances = moveInstanceVisitor.movableExitInstances
