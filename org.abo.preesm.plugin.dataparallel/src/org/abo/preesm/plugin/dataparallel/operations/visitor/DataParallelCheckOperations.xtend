@@ -115,47 +115,50 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 		} else {
 			// SDF has other kinds of loops. So it can never be data-parallel on its own
 			this.isDataParallel = false
-			val outputSDF = sdf.clone
 			
-			// Get strongly connected components
-			val strongCompDetector = new KosarajuStrongConnectivityInspector(outputSDF)
-		
-			// Collect strongly connected component that has loops in it
-			// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
-			strongCompDetector.getStronglyConnectedComponents.forEach[ subgraph |
-				val cycleDetector = new CycleDetector(subgraph as 
-					DirectedSubgraph<SDFAbstractVertex, SDFEdge>
-				) 
-				if(cycleDetector.detectCycles) {
-					// ASSUMPTION: Strongly connected component of a directed graph contains atleast
-					// one loop
-					isolatedStronglyConnectedComponents.add(subgraph as 
-						DirectedSubgraph<SDFAbstractVertex, SDFEdge>
-					)
-				}
-			]	
-			
-			// Arrays to collect dependency information from each strongly connected component
+			// Arrays to collect dependency information from each strongly connected component of
+			// each SDF subgraph
 			val subgraphInstInd = newArrayList
 			val subgraphDepActors = newArrayList
 			
-			// Perform DAG instance check on each strongly connected subgraph
-			isolatedStronglyConnectedComponents.forEach[subgraph |
-				
-				val subgraphDAGGen = new SDF2DAG(subgraph)
-				val depOps = new DependencyAnalysisOperations
-				subgraphDAGGen.accept(depOps)
-				subgraphInstInd.add(depOps.isIndependent)
-				
-				if(!depOps.isIndependent) {					
-					if(!depOps.instanceDependentActors.empty) {
-						subgraphDepActors.addAll(depOps.instanceDependentActors.toList)
-					} else {
-						throw new DAGComputationBug("SDFG has instance dependence. But dependent " +
-							" actor set is empty!")
+			// Process each unconnected SDF subgraphs at a time
+			acyclicLikeVisitor.SDFSubgraphs.forEach[sdfSubgraph |
+				// Get strongly connected components
+				val strongCompDetector = new KosarajuStrongConnectivityInspector(sdfSubgraph)
+			
+				// Collect strongly connected component that has loops in it
+				// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
+				strongCompDetector.getStronglyConnectedComponents.forEach[ subgraph |
+					val cycleDetector = new CycleDetector(subgraph as 
+						DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+					) 
+					if(cycleDetector.detectCycles) {
+						// ASSUMPTION: Strongly connected component of a directed graph contains atleast
+						// one loop
+						isolatedStronglyConnectedComponents.add(subgraph as 
+							DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+						)
 					}
-				}
-			]
+				]	
+								
+				// Perform DAG instance check on each strongly connected subgraph
+				isolatedStronglyConnectedComponents.forEach[subgraph |
+					
+					val subgraphDAGGen = new SDF2DAG(subgraph)
+					val depOps = new DependencyAnalysisOperations
+					subgraphDAGGen.accept(depOps)
+					subgraphInstInd.add(depOps.isIndependent)
+					
+					if(!depOps.isIndependent) {					
+						if(!depOps.instanceDependentActors.empty) {
+							subgraphDepActors.addAll(depOps.instanceDependentActors.toList)
+						} else {
+							throw new DAGComputationBug("SDFG has instance dependence. But dependent " +
+								" actor set is empty!")
+						}
+					}
+				]
+			]			
 			
 			this.isInstanceIndependent = subgraphInstInd.forall[value | value == true]
 			

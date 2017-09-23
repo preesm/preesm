@@ -8,6 +8,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.alg.CycleDetector
+import java.util.List
 
 /**
  * Class that detects Acyclic-like patterns from a given subgraph
@@ -24,6 +25,9 @@ class AcyclicLikeSubgraphDetector implements IGraphVisitor<SDFGraph, SDFAbstract
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	var Boolean isAcyclicLike
 	
+	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	var SDFGraph processedSDF
+	
 	/**
 	 * Constructor
 	 * 
@@ -31,6 +35,7 @@ class AcyclicLikeSubgraphDetector implements IGraphVisitor<SDFGraph, SDFAbstract
 	 */
 	new(Logger log) {
 		this.isAcyclicLike = null
+		this.processedSDF = null
 	}
 	
 	/**
@@ -47,9 +52,9 @@ class AcyclicLikeSubgraphDetector implements IGraphVisitor<SDFGraph, SDFAbstract
 	}
 	
 	override visit(SDFGraph sdf) throws SDF4JException {
-		val processSDF = sdf.clone
+		processedSDF = sdf.clone
 		val removableEdges = newArrayList
-		processSDF.edgeSet.forEach[edge |
+		processedSDF.edgeSet.forEach[edge |
 			val prod = edge.prod.intValue
 			val cons = edge.cons.intValue
 			val delay = edge.delay.intValue
@@ -63,11 +68,50 @@ class AcyclicLikeSubgraphDetector implements IGraphVisitor<SDFGraph, SDFAbstract
 		]
 		
 		removableEdges.forEach[edge |
-			processSDF.removeEdge(edge)
+			processedSDF.removeEdge(edge)
 		]
 		
-		val cycleDetector = new CycleDetector(processSDF)
+		val cycleDetector = new CycleDetector(processedSDF)
 		isAcyclicLike = !cycleDetector.detectCycles
+	}
+	
+	/**
+	 * Return list of independent SDF subgraphs whose connectivity may be broken because of
+	 * removing edges. Edges that have delays >= production rate (or consumption rate) can create
+	 * breakage in the otherwise connected SDF graph. 
+	 * 
+	 * @return List of subgraphs that are cloned from original SDF graph, but contains only connected
+	 * components
+	 */
+	def List<SDFGraph> getSDFSubgraphs() {
+		val sdfSubgraphs = newArrayList
+		
+		processedSDF.allSubGraphs.forEach[subgraphVertexList |
+			val sdfSubgraph = processedSDF.clone
+			val removableEdges = newArrayList
+			val removableVertices = newArrayList
+			
+			sdfSubgraph.edgeSet.forEach[edge |
+				if(! subgraphVertexList.contains(edge.source)) {
+					removableEdges.add(edge)
+					removableVertices.add(edge.source)
+				}
+				if(! subgraphVertexList.contains(edge.target)) {
+					removableEdges.add(edge)
+					removableVertices.add(edge.target)
+				}
+			]
+			
+			removableEdges.forEach[edge |
+				sdfSubgraph.removeEdge(edge)
+			]
+			removableVertices.forEach[vertex |
+				sdfSubgraph.removeVertex(vertex)
+			]
+			sdfSubgraphs.add(sdfSubgraph)
+		]
+		
+		return sdfSubgraphs
 	}
 	
 	override visit(SDFAbstractVertex sdfVertex) throws SDF4JException {

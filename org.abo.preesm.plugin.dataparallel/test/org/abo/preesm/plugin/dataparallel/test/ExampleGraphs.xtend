@@ -260,7 +260,7 @@ class ExampleGraphs {
 					.addEdge("c0", "d0", 2, 3, 1)
 					.addEdge("d0", "a0", 3, 2, 3) // End cycle 1
 					.addEdge("c0", "outputE", "e", "input", 2, 2, 0) // Intermediate node to cycle 1
-					.addEdge("e", "f", 2, 3, 0) // Intermediate node to intermediate node
+					.addEdge("e", "f", 2, 3, 6) // Intermediate node to intermediate node
 					.addEdge("a1", "b1", 2, 3, 2) // Start cycle 2
 					.addEdge("b1", "c1", 3, 2, 3)
 					.addEdge("c1", "d1", 2, 3, 1)
