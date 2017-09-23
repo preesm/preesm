@@ -67,7 +67,7 @@ class RootExitVisitorManualTest {
 			#[ExampleGraphs.semanticallyAcyclicCycle, #["c_0", "c_1", "c_2", "d_0"], #["b_0", "b_1"], #["c", "d"]],
 			#[ExampleGraphs.strictlyCyclic, #["a_0", "c_0"], #["a_2", "b_1", "d_1"], #["a", "c"]],
 			#[ExampleGraphs.strictlyCyclicDual, #["b_0", "d_0"], #["a_1", "a_2", "c_1", "c_2"], #["b", "d"]],
-			#[ExampleGraphs.strictlyCyclic2, #["a0_0", "c0_0", "a1_0", "c1_0"], #["a0_2", "b0_1", "d0_1", "a1_2", "b1_1", "d1_1"], #["a0", "c0", "a1", "c1"]],
+			#[ExampleGraphs.strictlyCyclic2, #["a0_0", "c0_0", "f_0", "f_1", "a1_0", "c1_0"], #["a0_2", "b0_1", "d0_1", "e_0", "e_1", "e_2", "a1_2", "b1_1", "d1_1"], #["a0", "c0", "f", "a1", "c1"]],
 			#[ExampleGraphs.mixedNetwork1, #["b_0", "c_0", "z_0", "z_1", "z_2", "z_3", "z_4", "z_5"], #["a_1", "a_2", "b_1", "e_0", "e_1", "e_2"], #["b", "c", "z"]],
 			#[ExampleGraphs.mixedNetwork2, #["b_0", "z_0", "z_1", "z_2", "z_3", "z_4", "z_5"], #["a_1", "a_2", "e_0", "e_1", "e_2"], #["b", "z"]]
 		]
