@@ -3,6 +3,7 @@ package org.abo.preesm.plugin.dataparallel.operations.visitor
 import java.util.List
 import java.util.logging.Level
 import java.util.logging.Logger
+import org.abo.preesm.plugin.dataparallel.DAGComputationBug
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
 import org.abo.preesm.plugin.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
 import org.eclipse.xtend.lib.annotations.Accessors
@@ -101,7 +102,19 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 			log(Level.INFO, "SDF is acyclic. Hence, independent and data-parallel")
 			this.isDataParallel = true
 			this.isInstanceIndependent = true
+		} 
+		
+		// Check if the graph is acyclic like
+		val acyclicLikeVisitor = new AcyclicLikeSubgraphDetector(logger)
+		sdf.accept(acyclicLikeVisitor)
+		
+		if(acyclicLikeVisitor.isAcyclicLike) {
+			log(Level.INFO, "SDF is acyclic-like. Hence, independent and data-parallel")
+			this.isDataParallel = true
+			this.isInstanceIndependent = true
 		} else {
+			// SDF has other kinds of loops. So it can never be data-parallel on its own
+			this.isDataParallel = false
 			val outputSDF = sdf.clone
 			
 			// Get strongly connected components
@@ -124,7 +137,6 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 			
 			// Arrays to collect dependency information from each strongly connected component
 			val subgraphInstInd = newArrayList
-			val subgraphDataPar = newArrayList
 			val subgraphDepActors = newArrayList
 			
 			// Perform DAG instance check on each strongly connected subgraph
@@ -134,28 +146,23 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 				val depOps = new DependencyAnalysisOperations
 				subgraphDAGGen.accept(depOps)
 				subgraphInstInd.add(depOps.isIndependent)
-				if(!depOps.instanceDependentActors.empty) {
-					subgraphDepActors.addAll(depOps.instanceDependentActors.toList)
-				}
 				
-				val levelOps = new LevelsOperations
-				subgraphDAGGen.accept(levelOps)
-				subgraphDataPar.add(OperationsUtils.isParallel(subgraphDAGGen, levelOps.levels))
+				if(!depOps.isIndependent) {					
+					if(!depOps.instanceDependentActors.empty) {
+						subgraphDepActors.addAll(depOps.instanceDependentActors.toList)
+					} else {
+						throw new DAGComputationBug("SDFG has instance dependence. But dependent " +
+							" actor set is empty!")
+					}
+				}
 			]
 			
-			this.isDataParallel = subgraphDataPar.forall[value | value == true]
 			this.isInstanceIndependent = subgraphInstInd.forall[value | value == true]
 			
 			if(isInstanceIndependent) {
-				log(Level.INFO, "SDF is instance-independent")
-				
-				if(isDataParallel) {
-					log(Level.INFO, "SDF is data-parallel as well")
-				} else {
-					log(Level.INFO, "SDF is not data-parallel. Rearranging..")
-				}
+				log(Level.INFO, "SDF is instance-independent, but not data-parallel. Rearranging")
 			} else {
-				log(Level.INFO, "SDF is not instance-independent, therefore not data-parallel")
+				log(Level.INFO, "SDF is not instance-independent, therefore not data-parallel.")
 				log(Level.INFO, "Actors with instance dependency are: " + subgraphDepActors)
 			}
 		}

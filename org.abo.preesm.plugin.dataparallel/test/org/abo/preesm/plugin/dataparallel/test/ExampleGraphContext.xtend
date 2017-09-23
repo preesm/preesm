@@ -23,4 +23,9 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 	 * True if the graph is instance independent
 	 */
 	boolean isInstanceIndependent
+	
+	/**
+	 * True if the graph is acyclic as well
+	 */
+	boolean isAcyclic
 }
