@@ -79,94 +79,59 @@ class MovableInstances implements DAGOperations {
 		dagGen.accept(rootVisitor)
 		val rootInstances = rootVisitor.rootInstances
 		
+		val anchorActor = OperationsUtils.pickElement(rootVisitor.rootActors)
+		// Get all associated instances that belong to same actor
+		val anchorInstances = dagGen.actor2Instances.get(anchorActor).filter[instance |
+			rootInstances.contains(instance)
+		]
+		
 		// Get levels
 		val levelVisitor = new LevelsOperations
 		dagGen.accept(levelVisitor)
 		rearrangedLevels.putAll(levelVisitor.levels)
 		
-		// Get cycles
-		val cyclicSDFGVisitor = new CyclicSDFGOperations
-		dagGen.accept(cyclicSDFGVisitor)
-		val hasCycles = cyclicSDFGVisitor.containsCycles
-		if(!hasCycles) {
-			// DAG is acyclic-like
-			rearrangeAcyclic(dagGen, rootInstances)
-		}else {
-			// DAG is non-acyclic like
-			val allRootsInCycles = newArrayList
-			val cycleRootsVisitor = new CyclicSDFGOperations
-			dagGen.accept(cycleRootsVisitor)
-			val cycles = cycleRootsVisitor.cycleRoots
-			cycles.forEach[cycle |
-				allRootsInCycles.addAll(cycle.roots)
-			]
-			
-			cycles.forEach[cycle |
-				val cycleRoots = cycle.roots
-				val rootInstancesToBeSorted = newArrayList
-				val anchor = OperationsUtils.pickElement(cycleRoots)
-				val rootsOfOtherCycles = allRootsInCycles.filter[instance | 
-					!cycleRoots.contains(instance)].toList
-				val sourceInstances = dagGen.sourceInstances
-				
-				// Filter out instances from other cycles and source instances
-				rootInstances.forEach[instance |
-					if(!(rootsOfOtherCycles.contains(instance)) && 
-					   !(sourceInstances.contains(instance)) &&
-					   (instance != anchor)
-					) {
-						rootInstancesToBeSorted.add(instance)
-					}
-				]
-				
-				// Partially rearrange cycle
-				rearrangeAcyclic(dagGen, rootInstancesToBeSorted)
-				
-				// All instances of this strict cycle
-				val instancesOfThisCycle = cycle.levels.keySet
-				
-				// Maximum level starting from 0, where the instances need to be moved. 
-				// Make sure the instance from source actors are ignored, otherwise, lbar
-				// will always result 0
-				val lbar = (new GetParallelLevelBuilder)
-							.addDagGen(dagGen)
-							.addOrigLevels(rearrangedLevels)
-							.addSubsetLevels(rearrangedLevels.filter[instance, level |
-												!(sourceInstances.contains(instance)) &&
-												instancesOfThisCycle.contains(instance)])
-							.build()
-				
-				val sit = new SubsetTopologicalIterator(dagGen, anchor)
-				while(sit.hasNext) {
-					val instance = sit.next
-					val instanceLevel = rearrangedLevels.get(instance)
-					if(instanceLevel < lbar) {
-						movableInstances.add(instance)
-						
-						if(instanceLevel == 0 && !(instance instanceof SDFForkVertex)) {
-							movableRootInstances.add(instance)
-						} else if(instanceLevel == (lbar - 1)) {
-							
-							// Check if there is an explode instance of this instance
-							if(!(instance instanceof SDFForkVertex) && !(instance instanceof SDFJoinVertex)) {
-								val expImpInstances = dagGen.explodeImplodeOrigInstances.filter[expImp, origInstance |
-									(origInstance == instance) && (expImp instanceof SDFForkVertex)
-								]
-								if(expImpInstances.empty) {
-									// No explode instance associated with this
-									movableExitInstances.add(instance)
-								} 
-								// else Wait until its explode instance is seen and then add it									
-							} else {
-								if(instance instanceof SDFForkVertex) {
-									movableExitInstances.add(instance)	
-								}
+		rearrangeAcyclic(dagGen, rootInstances)
+		
+		// Maximum level starting from 0, where the instances need to be moved.
+		// Make sure the instances from source actors are ignored, otherwise, lbar
+		// will always result to 0. This can be done by removing all edges that has delays
+		// greater than or equal to production rate (or consumption rate)
+		val lbar = (new GetParallelLevelBuilder)
+					.addDagGen(dagGen)
+					.addOrigLevels(rearrangedLevels)
+					.addSubsetLevels(rearrangedLevels)
+					.build()
+		
+		anchorInstances.forEach[anchor |
+			val sit = new SubsetTopologicalIterator(dagGen, anchor)
+			while(sit.hasNext) {
+				val instance = sit.next
+				val instanceLevel = rearrangedLevels.get(instance)
+				if(instanceLevel < lbar) {
+					movableInstances.add(instance)
+					
+					if(instanceLevel == 0 && !(instance instanceof SDFForkVertex)) {
+						movableRootInstances.add(instance)
+					} else if(instanceLevel == (lbar -1)) {
+						// Check if there is an explode instance of this instance
+						if(!(instance instanceof SDFForkVertex) && !(instance instanceof SDFJoinVertex)) {
+							val expImpInstances = dagGen.explodeImplodeOrigInstances.filter[expImp, origInstance |
+								(origInstance == instance) && (expImp instanceof SDFForkVertex)
+							]
+							if(expImpInstances.empty) {
+								// No explode instance associated with this
+								movableExitInstances.add(instance)
+							} 
+							// else wait until its explode instance is seen and then add it
+						} else {
+							if(instance instanceof SDFForkVertex) {
+								movableExitInstances.add(instance)
 							}
 						}
 					}
 				}
-			]
-		}
+			}
+		]
 	}
 	
 	/**

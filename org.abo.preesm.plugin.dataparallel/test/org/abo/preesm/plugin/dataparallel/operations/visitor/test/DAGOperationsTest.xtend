@@ -21,6 +21,11 @@ import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import org.abo.preesm.plugin.dataparallel.operations.visitor.AcyclicLikeSubgraphDetector
+import org.abo.preesm.plugin.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
+import org.jgrapht.graph.DirectedSubgraph
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 
 /**
  * Property based tests for operations that implement {@link DAGOperations} on
@@ -215,36 +220,52 @@ class DAGOperationsTest {
 	 */
 	@Test
 	public def void checkPartialRearranging() {
-		val moveInstanceVisitor = new MovableInstances
-		dagGen.accept(moveInstanceVisitor)
-		
-		val rearrangedLevels = moveInstanceVisitor.rearrangedLevels
-		
-		// Does it have cycles in it?
-		val cycleDetector = new CycleDetector(sdf)
-		
-		if(!isAcyclicLike && cycleDetector.detectCycles) {
-			val moveableInstances = moveInstanceVisitor.movableInstances
-			val moveableActors = newHashSet
-			moveableInstances.forEach[instance |
-				moveableActors.add(dagGen.instance2Actor.get(instance))
+		val acyclicLikeVisitor = new AcyclicLikeSubgraphDetector
+		sdf.accept(acyclicLikeVisitor)
+		if(!acyclicLikeVisitor.isAcyclicLike) {
+			acyclicLikeVisitor.SDFSubgraphs.forEach[sdfSubgraph |
+				// Get strongly connected components
+				val strongCompDetector = new KosarajuStrongConnectivityInspector(sdfSubgraph)
+				
+				// Collect strongly connected component that has loops in it
+				// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
+				strongCompDetector.getStronglyConnectedComponents.forEach[ subgraph |
+					val dirSubGraph = subgraph as DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+					val cycleDetector = new CycleDetector(dirSubGraph) 
+					if(cycleDetector.detectCycles) {
+						// ASSUMPTION: Strongly connected component of a directed graph contains atleast
+						// one loop. Perform the tests now. As only instance independent graphs are
+						// added, no check is made
+						val subgraphDAGGen = new SDF2DAG(dirSubGraph)
+						val moveInstanceVisitor = new MovableInstances
+						subgraphDAGGen.accept(moveInstanceVisitor)
+						
+						val rearrangedLevels = moveInstanceVisitor.rearrangedLevels
+						
+						val moveableInstances = moveInstanceVisitor.movableInstances
+						val moveableActors = newHashSet
+						moveableInstances.forEach[instance |
+							moveableActors.add(subgraphDAGGen.instance2Actor.get(instance))
+						]
+						
+						// Create a new level set minus moveableInstances
+						val parallelLevelSet = rearrangedLevels.filter[instance, level |
+							val actor = subgraphDAGGen.instance2Actor.get(instance)
+							!moveableActors.contains(actor)
+						]
+						Assert.assertFalse(parallelLevelSet.empty)
+						Assert.assertTrue(OperationsUtils.isParallel(subgraphDAGGen, parallelLevelSet))
+						
+						// Create a new level set of only moveableInstances
+						val nonParallelLevelSet = rearrangedLevels.filter[instance, level |
+							val actor = subgraphDAGGen.instance2Actor.get(instance)
+							moveableActors.contains(actor)
+						]
+						Assert.assertFalse(nonParallelLevelSet.empty)
+						Assert.assertFalse(OperationsUtils.isParallel(subgraphDAGGen, nonParallelLevelSet))
+					}
+				]
 			]
-			
-			// Create a new level set minus moveableInstances
-			val parallelLevelSet = rearrangedLevels.filter[instance, level |
-				val actor = dagGen.instance2Actor.get(instance)
-				!moveableActors.contains(actor)
-			]
-			Assert.assertFalse(parallelLevelSet.empty)
-			Assert.assertTrue(OperationsUtils.isParallel(dagGen, parallelLevelSet))
-			
-			// Create a new level set of only moveableInstances
-			val nonParallelLevelSet = rearrangedLevels.filter[instance, level |
-				val actor = dagGen.instance2Actor.get(instance)
-				moveableActors.contains(actor)
-			]
-			Assert.assertFalse(nonParallelLevelSet.empty)
-			Assert.assertFalse(OperationsUtils.isParallel(dagGen, nonParallelLevelSet))
 		}
 	}
 	
@@ -264,57 +285,58 @@ class DAGOperationsTest {
 	 */
 	@Test
 	public def void movableInstancesTest() {
-		val moveInstanceVisitor = new MovableInstances
-		dagGen.accept(moveInstanceVisitor)
-		
-		// Does it have cycles in it?
-		val cycleDetector = new CycleDetector(sdf)
-		
-		// Perform the test if it has cycles in it and is not acyclic-like
-		if(!isAcyclicLike && cycleDetector.detectCycles) {
-			val movableRootInstances = moveInstanceVisitor.movableRootInstances
-			val movableInstances = moveInstanceVisitor.movableInstances
-			val movableExitInstances = moveInstanceVisitor.movableExitInstances
-			
-			// Get root nodes
-			val rootVisitor = new RootExitOperations
-			dagGen.accept(rootVisitor)
-			val rootInstances = rootVisitor.rootInstances
-			
-			// Get anchor nodes
-			val cycleDetectOp = new CyclicSDFGOperations
-			dagGen.accept(cycleDetectOp)
-			val anchorInstances = newArrayList 
-			cycleDetectOp.cycleRoots.forEach[cycle |
-				val cycleRoots = cycle.roots
-				anchorInstances.add(OperationsUtils.pickElement(cycleRoots))
-			]
-			Assert.assertTrue(!anchorInstances.empty)
-			
-			movableRootInstances.forEach[instance |
-				Assert.assertTrue(rootInstances.contains(instance))
-				Assert.assertTrue(movableInstances.contains(instance))
-				Assert.assertTrue(!(instance instanceof SDFJoinVertex))
-			]  
-			
-			movableExitInstances.forEach[instance |
-				Assert.assertTrue(!(instance instanceof SDFJoinVertex))
-				if(instance instanceof SDFForkVertex) {
-					val origInstance = dagGen.explodeImplodeOrigInstances.get(instance)
-					Assert.assertTrue(movableInstances.contains(origInstance))
-				} else {
-					// Get list of explode instance of this instance
-					val explodeInstances = dagGen.explodeImplodeOrigInstances.filter[expImp, origInstance |
-						(expImp instanceof SDFForkVertex) && (origInstance == instance)
-					]
-					Assert.assertTrue(explodeInstances.keySet.empty)
-				}
-				Assert.assertTrue(movableInstances.contains(instance))
-			]
-
-			anchorInstances.forEach[instance |
-				Assert.assertTrue(movableInstances.contains(instance))
-				Assert.assertTrue(movableRootInstances.contains(instance))
+		val acyclicLikeVisitor = new AcyclicLikeSubgraphDetector
+		sdf.accept(acyclicLikeVisitor)
+		if(!acyclicLikeVisitor.isAcyclicLike) {
+			acyclicLikeVisitor.SDFSubgraphs.forEach[sdfSubgraph |
+				// Get strongly connected components
+				val strongCompDetector = new KosarajuStrongConnectivityInspector(sdfSubgraph)
+				
+				// Collect strongly connected component that has loops in it
+				// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
+				strongCompDetector.getStronglyConnectedComponents.forEach[ subgraph |
+					val dirSubGraph = subgraph as DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+					val cycleDetector = new CycleDetector(dirSubGraph) 
+					if(cycleDetector.detectCycles) {
+						// ASSUMPTION: Strongly connected component of a directed graph contains atleast
+						// one loop. Perform the tests now. As only instance independent graphs are
+						// added, no check is made
+						
+						val subgraphDAGGen = new SDF2DAG(dirSubGraph)
+						val moveInstanceVisitor = new MovableInstances
+						subgraphDAGGen.accept(moveInstanceVisitor)
+						
+						val movableRootInstances = moveInstanceVisitor.movableRootInstances
+						val movableInstances = moveInstanceVisitor.movableInstances
+						val movableExitInstances = moveInstanceVisitor.movableExitInstances
+						
+						// Get root nodes
+						val rootVisitor = new RootExitOperations
+						subgraphDAGGen.accept(rootVisitor)
+						val rootInstances = rootVisitor.rootInstances
+						
+						movableRootInstances.forEach[instance |
+							Assert.assertTrue(rootInstances.contains(instance))
+							Assert.assertTrue(movableInstances.contains(instance))
+							Assert.assertTrue(!(instance instanceof SDFJoinVertex))
+						]
+						
+						movableExitInstances.forEach[instance |
+							Assert.assertTrue(!(instance instanceof SDFJoinVertex))
+							if(instance instanceof SDFForkVertex) {
+								val origInstance = subgraphDAGGen.explodeImplodeOrigInstances.get(instance)
+								Assert.assertTrue(movableInstances.contains(origInstance))
+							} else {
+								// Get list of explode instance of this instance
+								val explodeInstances = dagGen.explodeImplodeOrigInstances.filter[expImp, origInstance |
+									(expImp instanceof SDFForkVertex) && (origInstance == instance)
+								]
+								Assert.assertTrue(explodeInstances.keySet.empty)	
+							}
+							Assert.assertTrue(movableInstances.contains(instance))
+						]
+					}
+				]
 			]
 		}
 	}
