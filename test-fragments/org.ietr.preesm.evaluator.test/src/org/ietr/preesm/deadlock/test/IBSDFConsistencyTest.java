@@ -11,7 +11,7 @@ import org.junit.Test;
 
 /**
  * 
- * Unit test of SDFConsistency class
+ * Unit test of IBSDFConsistency class
  * 
  * @author hderoui
  * 
