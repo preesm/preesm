@@ -120,6 +120,10 @@ public class PeriodicScheduleModel_GLPK implements SolverMethod {
     Fraction period = Fraction.getFraction(GLPK.glp_get_obj_val(prob));
     GLPK.glp_delete_prob(prob);
     GLPK.glp_free_env();
+
+    SDF.setPropertyValue("normalizedPeriod", period);
+    System.out.println("Normalized period found K = " + period);
+
     return period;
   }
 

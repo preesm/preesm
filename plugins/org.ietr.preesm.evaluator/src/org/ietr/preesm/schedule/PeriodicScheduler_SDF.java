@@ -162,7 +162,7 @@ public class PeriodicScheduler_SDF {
       throughput = this.computeActorsPeriod(graph);
 
       // Step 4: compute the start date of the first execution of each actor
-      this.computeActorsFirstExecutionStartDate(graph);
+      this.computeActorsStartingTime(graph);
 
     } else {
       System.err.println("A Periodic Schedule does not exist for this graph");
@@ -336,7 +336,7 @@ public class PeriodicScheduler_SDF {
    * @param graph
    *          SDF graph
    */
-  public void computeActorsFirstExecutionStartDate(SDFGraph graph) {
+  public void computeActorsStartingTime(SDFGraph graph) {
     System.out.println("Computing actors first execution start date ...");
     /*
      * see Ben Abid paper : step 1: add a dummy vertex to the graph step 2: connect the new actor to every actor of the graph with a null value step 3: use the

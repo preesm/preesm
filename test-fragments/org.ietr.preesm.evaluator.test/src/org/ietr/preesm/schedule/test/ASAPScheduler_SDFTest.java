@@ -16,12 +16,12 @@ public class ASAPScheduler_SDFTest {
 
   @Test
   public void testIterationDurationShouldBeComputed() {
-    // generate a DAG
-    SDFGraph dag = generateSDFGraphABC326();
+    // generate a SDF graph
+    SDFGraph sdf = generateSDFGraphABC326();
 
-    // schedule the DAG
+    // schedule the SDF graph
     ASAPScheduler_SDF scheduler = new ASAPScheduler_SDF();
-    double durationOf1Iteration = scheduler.schedule(dag, null);
+    double durationOf1Iteration = scheduler.schedule(sdf, null);
 
     // check the value of the duration
     Assert.assertEquals(3.0, durationOf1Iteration, 0);
