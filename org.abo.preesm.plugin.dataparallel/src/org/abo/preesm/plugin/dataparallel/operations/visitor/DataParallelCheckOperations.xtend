@@ -14,6 +14,7 @@ import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.alg.CycleDetector
 import org.jgrapht.graph.DirectedSubgraph
+import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
 
 /**
  * Isolate strongly connected components of the original
@@ -36,8 +37,15 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 	 * it is rearranged according to DASIP 2017 paper "Detection of Data-Parallelism in SDFG"
 	 * Otherwise, it contains original input graph.
 	 */
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	@Accessors(PUBLIC_GETTER, PROTECTED_SETTER)
 	var SDFGraph cyclicGraph
+	
+	/**
+	 * Retiming info. Information required for scheduling and code generation stages.
+	 * WARNING! This is not stable yet
+	 */
+	@Accessors(PUBLIC_GETTER, PROTECTED_SETTER)
+	var RetimingInfo info
 	
 	/**
 	 * True if the @{link SDFGraph} is data-parallel as well
@@ -62,6 +70,7 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 	new(Logger logger) {
 		isolatedStronglyConnectedComponents = newArrayList
 		this.logger = logger
+		this.info = null
 	}
 	
 	/**
@@ -87,8 +96,6 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 			throw new SDF4JException("Graph " + sdf + " not schedulable")
 		}
 		
-		this.cyclicGraph = sdf.clone
-		
 		// Check if DAG is flattened
 		for(vertex: sdf.vertexSet) {
 			if( (vertex.graphDescription !== null) && (vertex.graphDescription instanceof SDFGraph)) {
@@ -102,7 +109,12 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 			log(Level.INFO, "SDF is acyclic. Hence, independent and data-parallel")
 			this.isDataParallel = true
 			this.isInstanceIndependent = true
-		} 
+		}
+		
+		// Generate the mandatory single rate graph
+		val srsdfVisitor = new ToHSDFVisitor
+		sdf.accept(srsdfVisitor) 
+		val srsdf = srsdfVisitor.output
 		
 		// Check if the graph is acyclic like
 		val acyclicLikeVisitor = new AcyclicLikeSubgraphDetector(logger)
@@ -120,6 +132,9 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 			// each SDF subgraph
 			val subgraphInstInd = newArrayList
 			val subgraphDepActors = newArrayList
+			
+			// WIP
+//			val info = new RetimingInfo(srsdf, newHashMap, newHashMap)
 			
 			// Process each unconnected SDF subgraphs at a time
 			acyclicLikeVisitor.SDFSubgraphs.forEach[sdfSubgraph |
@@ -149,7 +164,15 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 					subgraphDAGGen.accept(depOps)
 					subgraphInstInd.add(depOps.isIndependent)
 					
-					if(!depOps.isIndependent) {					
+					if(depOps.isIndependent) {
+						// Rearrange the loops as the subgraph is instance independent
+						// WIP
+//						val movableInstanceVisitor = new MovableInstances
+//						subgraphDAGGen.accept(movableInstanceVisitor)
+//						val retimingVisitor = new RearrangeOperations(srsdf, info)
+//						subgraphDAGGen.accept(retimingVisitor)
+						
+					} else {					
 						if(!depOps.instanceDependentActors.empty) {
 							subgraphDepActors.addAll(depOps.instanceDependentActors.toList)
 						} else {
@@ -169,6 +192,8 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 				log(Level.INFO, "Actors with instance dependency are: " + subgraphDepActors)
 			}
 		}
+		this.cyclicGraph = srsdf
+//		this.info = info // WIP
 	}
 	
 	override visit(SDFEdge sdfEdge) {

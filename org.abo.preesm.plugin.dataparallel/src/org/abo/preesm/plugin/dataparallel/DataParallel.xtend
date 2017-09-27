@@ -21,7 +21,7 @@ import org.abo.preesm.plugin.dataparallel.operations.visitor.DataParallelCheckOp
 class DataParallel extends AbstractTaskImplementation {
 	
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
-	val KEY_TrSDF = "TrSDF"
+	val KEY_INFO = "Info"
 	
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	val KEY_CySDF = "CySDF"
@@ -45,8 +45,9 @@ class DataParallel extends AbstractTaskImplementation {
 		val checker = new DataParallelCheckOperations(logger as Logger)
 		sdf.accept(checker)
 		
-		return newHashMap(KEY_TrSDF -> null,
-						  KEY_CySDF -> checker.cyclicGraph)
+		return newHashMap(KEY_INFO -> null,
+						  KEY_CySDF -> checker.cyclicGraph
+		)
 	}
 	
 	/**

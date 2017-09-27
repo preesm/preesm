@@ -15,12 +15,12 @@
          </inputs>
          <outputs>
             <output
-                  id="TrSDF"
+                  id="CySDF"
                   object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
             </output>
             <output
-                  id="CySDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  id="Info"
+                  object="org.abo.preesm.plugin.dataparallel.operations.visitor.RetimingInfo">
             </output>
          </outputs>
       </task>
