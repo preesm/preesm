@@ -1,5 +1,7 @@
 package org.ietr.preesm.throughput.transformers.test;
 
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.deadlock.IBSDFConsistency;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
@@ -21,6 +23,34 @@ public class IBSDFTransformerTest {
     // generate an IBSDF graph
     SDFGraph ibsdf = generateIBSDFGraph();
 
+    // flatten the hierarchy with the execution rules
+    SDFGraph flatSrSDF = IBSDFTransformer.convertToSrSDF(ibsdf, true);
+
+    // check the number of actors and the number of edges
+    // actors 53 = 2 + 3*(1 + 2 + 6 + 4 + 1 + 2) + 3
+    // edges 176
+    for (SDFAbstractVertex a : flatSrSDF.vertexSet()) {
+      System.out.println("Actor " + a.getId());
+    }
+
+    for (SDFEdge e : flatSrSDF.edgeSet()) {
+      System.out.println("Edge " + e.toString());
+    }
+
+    int nbActor = flatSrSDF.vertexSet().size();
+    int nbEdges = flatSrSDF.edgeSet().size();
+
+    Assert.assertEquals(53, nbActor);
+    Assert.assertEquals(176, nbEdges);
+
+  }
+
+  @Test
+  public void testIBSDFGraphShouldBeTranformedToRelaxedSrSDFGraph() {
+
+    // generate an IBSDF graph
+    SDFGraph ibsdf = generateIBSDFGraph();
+
     // flatten the hierarchy
     SDFGraph flatSrSDF = IBSDFTransformer.convertToSrSDF(ibsdf, false);
 
@@ -33,22 +63,10 @@ public class IBSDFTransformerTest {
     Assert.assertEquals(47, nbActor);
     Assert.assertEquals(95, nbEdges);
 
-    // flatten the hierarchy with the execution rules
-    flatSrSDF = IBSDFTransformer.convertToSrSDF(ibsdf, true);
-
-    // check the number of actors and the number of edges
-    // actors 53 = 2 + 3*(1 + 2 + 6 + 4 + 1 + 2) + 3
-    // edges 176
-    nbActor = flatSrSDF.vertexSet().size();
-    nbEdges = flatSrSDF.edgeSet().size();
-
-    Assert.assertEquals(53, nbActor);
-    Assert.assertEquals(176, nbEdges);
-
   }
 
   /**
-   * generates an IBSDF graph
+   * generate an IBSDF graph to test methods
    * 
    * @return IBSDF graph
    */
@@ -71,31 +89,30 @@ public class IBSDFTransformerTest {
     // create the subgraph
     SDFGraph subgraph = new SDFGraph();
     subgraph.setName("subgraph");
-    GraphStructureHelper.addActor(subgraph, "D", null, null, null, null, null);
-    GraphStructureHelper.addActor(subgraph, "E", null, null, null, null, null);
-    GraphStructureHelper.addActor(subgraph, "F", null, null, null, null, null);
-    GraphStructureHelper.addInputInterface(subgraph, "a", null, null, null, null);
-    GraphStructureHelper.addOutputInterface(subgraph, "c", null, null, null, null);
+    GraphStructureHelper.addActor(subgraph, "D", null, null, 1., null, null);
+    GraphStructureHelper.addActor(subgraph, "E", null, null, 1., null, null);
+    GraphStructureHelper.addActor(subgraph, "F", null, null, 1., null, null);
+    GraphStructureHelper.addInputInterface(subgraph, "a", null, 0., null, null);
+    GraphStructureHelper.addOutputInterface(subgraph, "c", null, 0., null, null);
 
     GraphStructureHelper.addEdge(subgraph, "a", null, "E", null, 2, 1, 0, null);
     GraphStructureHelper.addEdge(subgraph, "E", null, "F", null, 2, 3, 0, null);
-    GraphStructureHelper.addEdge(subgraph, "F", null, "D", null, 1, 2, 2, null);
+    GraphStructureHelper.addEdge(subgraph, "F", null, "D", null, 1, 2, 0, null);
     GraphStructureHelper.addEdge(subgraph, "D", null, "E", null, 3, 1, 3, null);
     GraphStructureHelper.addEdge(subgraph, "F", null, "c", null, 3, 1, 0, null);
 
     // create the top graph and add the subgraph to the hierarchical actor B
     SDFGraph topgraph = new SDFGraph();
     topgraph.setName("topgraph");
-    GraphStructureHelper.addActor(topgraph, "A", null, null, null, null, null);
+    GraphStructureHelper.addActor(topgraph, "A", null, null, 1., null, null);
     GraphStructureHelper.addActor(topgraph, "B", subgraph, null, null, null, null);
-    GraphStructureHelper.addActor(topgraph, "C", null, null, null, null, null);
+    GraphStructureHelper.addActor(topgraph, "C", null, null, 1., null, null);
 
     GraphStructureHelper.addEdge(topgraph, "A", null, "B", "a", 3, 2, 3, null);
     GraphStructureHelper.addEdge(topgraph, "B", "c", "C", null, 1, 1, 0, null);
     GraphStructureHelper.addEdge(topgraph, "C", null, "A", null, 2, 3, 3, null);
 
     IBSDFConsistency.computeRV(topgraph);
-
     return topgraph;
   }
 }

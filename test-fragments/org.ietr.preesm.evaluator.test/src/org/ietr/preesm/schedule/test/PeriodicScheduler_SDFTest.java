@@ -2,6 +2,7 @@ package org.ietr.preesm.schedule.test;
 
 import org.apache.commons.lang3.math.Fraction;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.preesm.deadlock.SDFConsistency;
 import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
 import org.junit.Assert;
@@ -34,10 +35,11 @@ public class PeriodicScheduler_SDFTest {
 
     // check the value of the normalized period of the graph
     double k = ((Fraction) sdf.getPropertyBean().getValue("normalizedPeriod")).doubleValue();
-    Assert.assertEquals(1 / 13, k, 0);
+    Assert.assertEquals(13, k, 0);
 
     // check the value of the throughput
-    Assert.assertEquals(1 / 234, throughput, 0);
+    double throughputExpected = 1. / 234.;
+    Assert.assertEquals(throughputExpected, throughput, 0);
 
     // check the execution period of actors
     // W(t1)=39, W(t2)=26, W(t3)=78, W(t4)=78, W(t5)=234
@@ -103,6 +105,7 @@ public class PeriodicScheduler_SDFTest {
     GraphStructureHelper.addEdge(graph, "t5", null, "t1", null, 6, 1, 6, null);
     GraphStructureHelper.addEdge(graph, "t5", null, "t2", null, 9, 1, 9, null);
 
+    SDFConsistency.computeRV(graph);
     return graph;
   }
 }

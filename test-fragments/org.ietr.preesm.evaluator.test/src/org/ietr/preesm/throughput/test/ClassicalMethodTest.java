@@ -1,6 +1,7 @@
 package org.ietr.preesm.throughput.test;
 
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.preesm.deadlock.IBSDFConsistency;
 import org.ietr.preesm.throughput.ClassicalMethod;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
 import org.junit.Assert;
@@ -25,7 +26,7 @@ public class ClassicalMethodTest {
     double th = method.evaluate(ibsdf, null);
 
     // check the throughput value
-    Assert.assertEquals(1 / 7, th, 0);
+    Assert.assertEquals(1 / 7., th, 0);
 
   }
 
@@ -53,29 +54,30 @@ public class ClassicalMethodTest {
     // create the subgraph
     SDFGraph subgraph = new SDFGraph();
     subgraph.setName("subgraph");
-    GraphStructureHelper.addActor(subgraph, "D", null, null, null, null, null);
-    GraphStructureHelper.addActor(subgraph, "E", null, null, null, null, null);
-    GraphStructureHelper.addActor(subgraph, "F", null, null, null, null, null);
-    GraphStructureHelper.addInputInterface(subgraph, "a", null, null, null, null);
-    GraphStructureHelper.addOutputInterface(subgraph, "c", null, null, null, null);
+    GraphStructureHelper.addActor(subgraph, "D", null, null, 1., null, null);
+    GraphStructureHelper.addActor(subgraph, "E", null, null, 1., null, null);
+    GraphStructureHelper.addActor(subgraph, "F", null, null, 1., null, null);
+    GraphStructureHelper.addInputInterface(subgraph, "a", null, 0., null, null);
+    GraphStructureHelper.addOutputInterface(subgraph, "c", null, 0., null, null);
 
     GraphStructureHelper.addEdge(subgraph, "a", null, "E", null, 2, 1, 0, null);
     GraphStructureHelper.addEdge(subgraph, "E", null, "F", null, 2, 3, 0, null);
-    GraphStructureHelper.addEdge(subgraph, "F", null, "D", null, 1, 2, 2, null);
+    GraphStructureHelper.addEdge(subgraph, "F", null, "D", null, 1, 2, 0, null);
     GraphStructureHelper.addEdge(subgraph, "D", null, "E", null, 3, 1, 3, null);
     GraphStructureHelper.addEdge(subgraph, "F", null, "c", null, 3, 1, 0, null);
 
     // create the top graph and add the subgraph to the hierarchical actor B
     SDFGraph topgraph = new SDFGraph();
     topgraph.setName("topgraph");
-    GraphStructureHelper.addActor(topgraph, "A", null, null, null, null, null);
+    GraphStructureHelper.addActor(topgraph, "A", null, null, 1., null, null);
     GraphStructureHelper.addActor(topgraph, "B", subgraph, null, null, null, null);
-    GraphStructureHelper.addActor(topgraph, "C", null, null, null, null, null);
+    GraphStructureHelper.addActor(topgraph, "C", null, null, 1., null, null);
 
     GraphStructureHelper.addEdge(topgraph, "A", null, "B", "a", 3, 2, 3, null);
     GraphStructureHelper.addEdge(topgraph, "B", "c", "C", null, 1, 1, 0, null);
     GraphStructureHelper.addEdge(topgraph, "C", null, "A", null, 2, 3, 3, null);
 
+    IBSDFConsistency.computeRV(topgraph);
     return topgraph;
   }
 }

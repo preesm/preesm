@@ -61,12 +61,15 @@ public abstract class IBSDFTransformer {
    * @return the list of srSDF subgraphs
    */
   private static Hashtable<String, SDFGraph> convertAllSubgraphs(SDFGraph IBSDF, boolean withExecRulres) {
+    // the list of srSDF subgraphs
+    Hashtable<String, SDFGraph> srSDFsubgraphsList = new Hashtable<String, SDFGraph>();
+
     // get all the hierarchical actors of the IBSDF graph
     Hashtable<String, SDFAbstractVertex> actorsToConvert = GraphStructureHelper.getAllHierarchicalActors(IBSDF);
 
     // convert the hierarchical actors SDF subgraphs to a srSDF subgraph
-    Hashtable<String, SDFGraph> srSDFsubgraphsList = new Hashtable<String, SDFGraph>();
     for (SDFAbstractVertex h : actorsToConvert.values()) {
+      // System.out.println("====> converting the subgraph of actor " + h.getId());
       SDFGraph srSDFsubgraph = SDFTransformer.convertToSrSDF((SDFGraph) h.getGraphDescription());
       // add the execution rules to the srSDF subgraph
       if (withExecRulres) {
@@ -95,18 +98,14 @@ public abstract class IBSDFTransformer {
     // step 2: add the connection between actors/interfaces and start/end actors
     for (SDFAbstractVertex actor : srSDF.vertexSet()) {
       if (actor.getName() != "start" && actor.getName() != "end") {
-        if (actor.getKind() == "port") {
-          // add the connection between the interface and start/end actor
-          if (actor instanceof SDFSourceInterfaceVertex) {
-            // input interface
-            GraphStructureHelper.addEdge(srSDF, actor.getName(), "to_start", "start", "from_" + actor.getName(), 1, 1, 0, null);
-          } else if (actor instanceof SDFSinkInterfaceVertex) {
-            // output interface
-            GraphStructureHelper.addEdge(srSDF, "end", "to_" + actor.getName(), actor.getName(), "from_end", 1, 1, 0, null);
-          } else {
-            // unknown kind of port (unsupported)
-            System.err.println("Unsupported kind of port !!");
-          }
+        // add the connection between the interface and start/end actor
+        SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
+        if (baseActor instanceof SDFSourceInterfaceVertex) {
+          // input interface
+          GraphStructureHelper.addEdge(srSDF, actor.getName(), "to_start", "start", "from_" + actor.getName(), 1, 1, 0, null);
+        } else if (baseActor instanceof SDFSinkInterfaceVertex) {
+          // output interface
+          GraphStructureHelper.addEdge(srSDF, "end", "to_" + actor.getName(), actor.getName(), "from_end", 1, 1, 0, null);
         } else {
           // add the connection between the actor and start/end actor
           GraphStructureHelper.addEdge(srSDF, "start", "to_" + actor.getName(), actor.getName(), "from_start", 1, 1, 0, null);

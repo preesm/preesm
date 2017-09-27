@@ -46,13 +46,13 @@ public class SrSDFTransformerTest {
 
     // check if all the edges between Ai and Bi have been removed
     int nbEdge;
-    nbEdge = dag.getVertex("A1").getSources().size();
+    nbEdge = dag.getVertex("A1").getSinks().size();
     Assert.assertEquals(0, nbEdge);
 
-    nbEdge = dag.getVertex("A2").getSources().size();
+    nbEdge = dag.getVertex("A2").getSinks().size();
     Assert.assertEquals(0, nbEdge);
 
-    nbEdge = dag.getVertex("A3").getSources().size();
+    nbEdge = dag.getVertex("A3").getSinks().size();
     Assert.assertEquals(0, nbEdge);
 
     // check if all the edges have zero delay

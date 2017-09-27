@@ -30,6 +30,8 @@ public class ALAPScheduler_DAGTest {
     Assert.assertEquals(0.0, asap.simulator.getStartDate(dag.getVertex("B")), 0);
     Assert.assertEquals(5.0, asap.simulator.getStartDate(dag.getVertex("C")), 0);
 
+    asap.simulator.resetExecutionCounter();
+
     // ALAP schedule the DAG
     ALAPScheduler_DAG alap = new ALAPScheduler_DAG();
     double durationOf1Iteration = alap.schedule(dag, asap.simulator, ThConstraint);
@@ -39,7 +41,7 @@ public class ALAPScheduler_DAGTest {
 
     // check the start date of each actor
     Assert.assertEquals(0.0, alap.simulator.getStartDate(dag.getVertex("A")), 0);
-    Assert.assertEquals(10.0, alap.simulator.getStartDate(dag.getVertex("B")), 0);
+    Assert.assertEquals(3.0, alap.simulator.getStartDate(dag.getVertex("B")), 0);
     Assert.assertEquals(5.0, alap.simulator.getStartDate(dag.getVertex("C")), 0);
   }
 

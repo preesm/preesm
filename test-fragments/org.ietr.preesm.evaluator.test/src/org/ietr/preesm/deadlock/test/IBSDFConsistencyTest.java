@@ -56,7 +56,7 @@ public class IBSDFConsistencyTest {
     // change the production rate of the edge EF so that the subgraph becomes non consistent
     SDFGraph subgraph = (SDFGraph) ibsdf.getVertex("B").getGraphDescription();
     SDFAbstractVertex E = subgraph.getVertex("E");
-    E.getAssociatedEdge(E.getSources().iterator().next()).setProd(new SDFIntEdgePropertyType(10));
+    E.getAssociatedEdge(E.getSinks().iterator().next()).setProd(new SDFIntEdgePropertyType(10));
 
     // evaluate the consistency
     consistent = IBSDFConsistency.computeRV(ibsdf);

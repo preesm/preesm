@@ -63,12 +63,14 @@ public abstract class SDFTransformer {
    * @return srSDF graph
    */
   public static SDFGraph convertToSrSDF(SDFGraph SDF) {
+    // System.out.println("====> converting the subgraph " + SDF.getName());
     // create the SRSDF
     SDFGraph singleRate = new SDFGraph();
     singleRate.setName(SDF.getName() + "_srSDF");
 
     // create actors instances
     for (SDFAbstractVertex a : SDF.vertexSet()) {
+      // System.out.println("====> duplicating actor " + a.getId());
       for (int i = 1; i <= a.getNbRepeatAsInteger(); i++) {
         // create an instance a_i of the actor a
         GraphStructureHelper.addActor(singleRate, a.getName() + "_" + i, (SDFGraph) a.getGraphDescription(), 1,

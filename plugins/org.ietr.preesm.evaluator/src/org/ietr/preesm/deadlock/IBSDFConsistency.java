@@ -10,6 +10,8 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 public abstract class IBSDFConsistency {
 
   /**
+   * Compute the Repetition factor of all actors of the hierarchy
+   * 
    * @param graph
    *          IBSDF graph
    * @return true if consistent

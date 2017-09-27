@@ -7,6 +7,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.evaluator.Activator;
+import org.ietr.preesm.mathematicalModels.PeriodicScheduleModel_GLPK;
 import org.ietr.preesm.mathematicalModels.SolverMethod;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.helpers.MathFunctionsHelper;
@@ -141,10 +142,11 @@ public class PeriodicScheduler_SDF {
       if (selfLoopEdge) {
         selfLoopEdgesList = new ArrayList<>(graph.vertexSet().size());
         for (SDFAbstractVertex actor : graph.vertexSet()) {
-          SDFEdge edge = GraphStructureHelper.addEdge(graph, actor.getName(), null, actor.getName(), null,
-              (Integer) actor.getPropertyBean().getValue("normalizedRate"), (Integer) actor.getPropertyBean().getValue("normalizedRate"),
-              (Integer) actor.getPropertyBean().getValue("normalizedRate"), null);
+          int z = ((Double) actor.getPropertyBean().getValue("normalizedRate")).intValue();
+          Double alpha = 1.;
+          SDFEdge edge = GraphStructureHelper.addEdge(graph, actor.getName(), null, actor.getName(), null, z, z, z, null);
           selfLoopEdgesList.add(edge);
+          edge.setPropertyValue("normalizationFactor", alpha);
         }
       }
 
@@ -246,6 +248,10 @@ public class PeriodicScheduler_SDF {
       // use the default method : GLPK
       System.err.println(method.toString() + " method is not available ! \nTrying to use " + Method.LinearProgram_GLPK.toString() + " ...");
       SolverMethod solverMethod = Activator.solverMethodRegistry.get(Method.LinearProgram_GLPK);
+      // if the activator have not been executed yet, then instantiate the solverMethod manually ()
+      if (solverMethod == null) {
+        solverMethod = new PeriodicScheduleModel_GLPK();
+      }
       return solverMethod.computeNormalizedPeriod(graph);
     }
   }

@@ -23,7 +23,7 @@ public class PeriodicScheduleModel_GLPKTest {
     PeriodicScheduleModel_GLPK model = new PeriodicScheduleModel_GLPK();
     double k = model.computeNormalizedPeriod(ABC).doubleValue();
     // check the value of K
-    Assert.assertEquals(3, k, 0);
+    Assert.assertEquals(1, k, 0);
   }
 
   /**

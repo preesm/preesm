@@ -409,12 +409,13 @@ public abstract class GraphStructureHelper {
    * @param newSourcePort
    *          new source port
    */
-  public static void replaceEdgeSourceActor(SDFGraph graph, SDFEdge edge, String newSourceActor, String newSourcePort) {
+  public static SDFEdge replaceEdgeSourceActor(SDFGraph graph, SDFEdge edge, String newSourceActor, String newSourcePort) {
     // create the new edge
-    GraphStructureHelper.addEdge(graph, newSourceActor, newSourcePort, edge.getTarget().getName(), edge.getTargetInterface().getName(),
+    SDFEdge nweEdge = GraphStructureHelper.addEdge(graph, newSourceActor, newSourcePort, edge.getTarget().getName(), edge.getTargetInterface().getName(),
         edge.getProd().intValue(), edge.getCons().intValue(), edge.getDelay().intValue(), (SDFEdge) edge.getPropertyBean().getValue("baseEdge"));
     // remove the old edge
     graph.removeEdge(edge);
+    return nweEdge;
   }
 
   /**
@@ -429,12 +430,13 @@ public abstract class GraphStructureHelper {
    * @param newTargetPort
    *          new target port
    */
-  public static void replaceEdgeTargetActor(SDFGraph graph, SDFEdge edge, String newTargetActor, String newTargetPort) {
+  public static SDFEdge replaceEdgeTargetActor(SDFGraph graph, SDFEdge edge, String newTargetActor, String newTargetPort) {
     // create the new edge
-    GraphStructureHelper.addEdge(graph, edge.getSource().getName(), edge.getSourceInterface().getName(), newTargetActor, newTargetPort,
+    SDFEdge nweEdge = GraphStructureHelper.addEdge(graph, edge.getSource().getName(), edge.getSourceInterface().getName(), newTargetActor, newTargetPort,
         edge.getProd().intValue(), edge.getCons().intValue(), edge.getDelay().intValue(), (SDFEdge) edge.getPropertyBean().getValue("baseEdge"));
     // remove the old edge
     graph.removeEdge(edge);
+    return nweEdge;
   }
 
 }

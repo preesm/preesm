@@ -12,6 +12,9 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.deadlock.IBSDFConsistency;
+import org.ietr.preesm.schedule.ALAPScheduler_DAG;
+import org.ietr.preesm.schedule.ASAPScheduler_DAG;
 import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.transformers.IBSDFTransformer;
@@ -51,8 +54,13 @@ public class TestPlugin {
     // testStructure(graph, scenario);
 
     // test periodic schedule
-    testPeriodicSchedule(graph, scenario);
+    // testPeriodicSchedule(graph, scenario);
 
+    // test ALAP schedule
+    // testIterationDurationShouldBeComputed();
+
+    // test IBSDF to srSDF
+    testIBSDFGraphShouldBeTranformedToFlatSrSDFGraph();
   }
 
   /**
@@ -531,6 +539,122 @@ public class TestPlugin {
     System.out.println("srSDF throughput = " + th);
 
     System.out.println("----------------------------");
+  }
+
+  /**
+   * 
+   */
+  private static void testIterationDurationShouldBeComputed() {
+    // generate a DAG
+    SDFGraph dag = generateDAGOfGraphABC();
+
+    // schedule the DAG by an ASAP to get the throughput constraint
+    ASAPScheduler_DAG asap = new ASAPScheduler_DAG();
+    double ThConstraint = asap.schedule(dag, null);
+
+    asap.simulator.resetExecutionCounter();
+
+    // ALAP schedule the DAG
+    ALAPScheduler_DAG alap = new ALAPScheduler_DAG();
+    double durationOf1Iteration = alap.schedule(dag, asap.simulator, ThConstraint);
+    System.out.println("dur = " + durationOf1Iteration);
+    System.out.println("s(A) = " + alap.simulator.getStartDate(dag.getVertex("A")));
+    System.out.println("s(B) = " + alap.simulator.getStartDate(dag.getVertex("B")));
+    System.out.println("s(C) = " + alap.simulator.getStartDate(dag.getVertex("C")));
+  }
+
+  /**
+   * @return SDF Graph
+   */
+  private static SDFGraph generateDAGOfGraphABC() {
+    // Actors: A B C
+    // Edges: AC=(1,1); BC=(1,1);
+    // RV[A=1, B=1, C=1]
+    // Actors duration: A=5, B=2, C=7
+    // Duration of the first iteration = 12
+
+    // create DAG testABC
+    SDFGraph graph = new SDFGraph();
+    graph.setName("testABC");
+
+    // add actors
+    GraphStructureHelper.addActor(graph, "A", null, 1, 5., null, null);
+    GraphStructureHelper.addActor(graph, "B", null, 1, 2., null, null);
+    GraphStructureHelper.addActor(graph, "C", null, 1, 7., null, null);
+
+    // add edges
+    GraphStructureHelper.addEdge(graph, "A", null, "C", null, 1, 1, 0, null);
+    GraphStructureHelper.addEdge(graph, "B", null, "C", null, 1, 1, 0, null);
+
+    return graph;
+  }
+
+  /**
+   * 
+   */
+  private static void testIBSDFGraphShouldBeTranformedToFlatSrSDFGraph() {
+
+    // generate an IBSDF graph
+    SDFGraph ibsdf = generateIBSDFGraph();
+
+    // flatten the hierarchy
+    SDFGraph flatSrSDF = IBSDFTransformer.convertToSrSDF(ibsdf, false);
+
+    // flatten the hierarchy with the execution rules
+    ibsdf = generateIBSDFGraph();
+    flatSrSDF = IBSDFTransformer.convertToSrSDF(ibsdf, true);
+
+  }
+
+  /**
+   * generate an IBSDF graph to test methods
+   * 
+   * @return IBSDF graph
+   */
+  private static SDFGraph generateIBSDFGraph() {
+    // Actors: A B[DEF] C
+    // actor B is a hierarchical actor described by the subgraph DEF
+    // a is the input interface of the subgraph DEF, associated with the input edge coming from A
+    // the input interface is linked to the sub-actor E
+    // c is the output interface of the subgraph DEF, associated with the output edge going to C
+    // the output interface is linked to the sub-actor F
+
+    // Edges of the top graph ABC : AB=(3,2); BC=(1,1); CA=(2,3)
+    // Edges of the subgraph DEF : aE=(2,1); EF=(2,3); FD=(1,2); DE=(3,1); Fc=(3,1)
+
+    // RV(top-graph) = [A=2, B=3, C=3]
+    // RV(sub-graph) = [D=2, E=6, F=4]
+    // after computing the RV of the subgraph the consumption/production rate of the interfaces are multiplied by their RV, then RV of interfaces is set to 1
+    // the resulted rates of edges : aE=(6,1); Fc=(3,12)
+
+    // create the subgraph
+    SDFGraph subgraph = new SDFGraph();
+    subgraph.setName("subgraph");
+    GraphStructureHelper.addActor(subgraph, "D", null, null, 1., null, null);
+    GraphStructureHelper.addActor(subgraph, "E", null, null, 1., null, null);
+    GraphStructureHelper.addActor(subgraph, "F", null, null, 1., null, null);
+    GraphStructureHelper.addInputInterface(subgraph, "a", null, 0., null, null);
+    GraphStructureHelper.addOutputInterface(subgraph, "c", null, 0., null, null);
+
+    GraphStructureHelper.addEdge(subgraph, "a", null, "E", null, 2, 1, 0, null);
+    GraphStructureHelper.addEdge(subgraph, "E", null, "F", null, 2, 3, 0, null);
+    GraphStructureHelper.addEdge(subgraph, "F", null, "D", null, 1, 2, 0, null);
+    GraphStructureHelper.addEdge(subgraph, "D", null, "E", null, 3, 1, 3, null);
+    GraphStructureHelper.addEdge(subgraph, "F", null, "c", null, 3, 1, 0, null);
+
+    // create the top graph and add the subgraph to the hierarchical actor B
+    SDFGraph topgraph = new SDFGraph();
+    topgraph.setName("topgraph");
+    GraphStructureHelper.addActor(topgraph, "A", null, null, 1., null, null);
+    GraphStructureHelper.addActor(topgraph, "B", subgraph, null, null, null, null);
+    GraphStructureHelper.addActor(topgraph, "C", null, null, 1., null, null);
+
+    GraphStructureHelper.addEdge(topgraph, "A", null, "B", "a", 3, 2, 3, null);
+    GraphStructureHelper.addEdge(topgraph, "B", "c", "C", null, 1, 1, 0, null);
+    GraphStructureHelper.addEdge(topgraph, "C", null, "A", null, 2, 3, 3, null);
+
+    IBSDFConsistency.computeRV(topgraph);
+    return topgraph;
   }
 
   /*

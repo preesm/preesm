@@ -41,7 +41,9 @@ public class HPeriodicSchedule {
         // set the duration of the hierarchical actor
         Double duration = this.setHierarchicalActorsDuration((SDFGraph) actor.getGraphDescription());
         actor.setPropertyValue("duration", duration);
-        this.preesmScenario.getTimingManager().setTiming(actor.getId(), "x86", duration.longValue());
+        if (this.preesmScenario != null) {
+          this.preesmScenario.getTimingManager().setTiming(actor.getId(), "x86", duration.longValue());
+        }
         // add the self loop
         GraphStructureHelper.addEdge(inputGraph, actor.getName(), null, actor.getName(), null, 1, 1, 1, null);
       }

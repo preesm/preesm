@@ -353,7 +353,7 @@ public class GraphSimulationHelper {
    */
   public void resetExecutionCounter() {
     for (SDFAbstractVertex actor : this.graph.vertexSet()) {
-      actor.setPropertyValue("executionsCounter", 0);
+      actor.setPropertyValue("executionCounter", 0);
     }
   }
 

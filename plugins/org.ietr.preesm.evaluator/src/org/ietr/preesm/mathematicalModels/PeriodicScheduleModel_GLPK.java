@@ -51,7 +51,7 @@ public class PeriodicScheduleModel_GLPK implements SolverMethod {
       GLPK.glp_set_col_bnds(prob, edgeIndex.get((String) e.getPropertyBean().getValue("edgeName")), GLPK.GLP_LO, 0.0, 0.0); // all variable must be positive
       GLPK.glp_set_col_kind(prob, edgeIndex.get((String) e.getPropertyBean().getValue("edgeName")), GLPK.GLP_CV); // set the type of the variables
       GLPK.glp_set_obj_coef(prob, edgeIndex.get((String) e.getPropertyBean().getValue("edgeName")),
-          (double) e.getSource().getPropertyBean().getValue("duration")); // coefficient in the objective function
+          (Double) e.getSource().getPropertyBean().getValue("duration")); // coefficient in the objective function
     }
 
     // ----- Constraints ------------------------------------------
@@ -97,7 +97,7 @@ public class PeriodicScheduleModel_GLPK implements SolverMethod {
     for (SDFEdge e : SDF.edgeSet()) {
       GLPK.intArray_setitem(ind, j, edgeIndex.get((String) e.getPropertyBean().getValue("edgeName")));
       double h = (e.getDelay().intValue() - e.getCons().intValue() + MathFunctionsHelper.gcd(e.getProd().intValue(), e.getCons().intValue()))
-          * (double) e.getPropertyBean().getValue("normalizationFactor");
+          * ((Double) e.getPropertyBean().getValue("normalizationFactor"));
       GLPK.doubleArray_setitem(val, j, h);
       j++;
     }

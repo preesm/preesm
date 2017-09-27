@@ -138,9 +138,9 @@ public class SDFTransformerTest {
 
     // check if all the edges between A and B have been removed
     for (SDFAbstractVertex actor : dag.vertexSet()) {
-      String baseActor = (String) actor.getPropertyBean().getValue("baseActor");
-      if (baseActor.equals("A")) {
-        int nbEdge = actor.getSources().size();
+      SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
+      if (baseActor.getId().equals("A")) {
+        int nbEdge = actor.getSinks().size();
         Assert.assertEquals(0, nbEdge);
       }
     }

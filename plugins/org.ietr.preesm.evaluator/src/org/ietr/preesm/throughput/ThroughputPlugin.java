@@ -150,7 +150,7 @@ public class ThroughputPlugin extends AbstractTaskImplementation {
    */
   private void init(SDFGraph inputGraph, PreesmScenario scenario) {
     // test the inputs
-    // test.start(inputGraph, scenario);
+    // TestPlugin.start(null, null);
 
     // check the consistency by computing the RV of the graph
     IBSDFConsistency.computeRV(inputGraph);

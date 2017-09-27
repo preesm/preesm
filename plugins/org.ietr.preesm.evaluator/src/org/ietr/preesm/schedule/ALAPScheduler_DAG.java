@@ -45,7 +45,7 @@ public class ALAPScheduler_DAG {
       for (SDFInterfaceVertex input : currentActor.getSources()) {
 
         // execute 1 time the target actor if it is ready
-        SDFAbstractVertex sourceActor = currentActor.getAssociatedEdge(input).getTarget();
+        SDFAbstractVertex sourceActor = currentActor.getAssociatedEdge(input).getSource();
         if (this.isReady(sourceActor)) {
           // consume 1 time
           this.simulator.produce(sourceActor, -1);

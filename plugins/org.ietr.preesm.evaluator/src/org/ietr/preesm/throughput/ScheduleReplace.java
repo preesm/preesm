@@ -35,7 +35,9 @@ public class ScheduleReplace {
         // set the duration of the hierarchical actor
         Double duration = this.setHierarchicalActorsDuration((SDFGraph) actor.getGraphDescription());
         actor.setPropertyValue("duration", duration);
-        this.preesmScenario.getTimingManager().setTiming(actor.getId(), "x86", duration.longValue());
+        if (preesmScenario != null) {
+          this.preesmScenario.getTimingManager().setTiming(actor.getId(), "x86", duration.longValue());
+        }
       }
     }
 
