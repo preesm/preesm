@@ -52,7 +52,7 @@ public class ASAPScheduler_SDFTest {
     // add edges
     GraphStructureHelper.addEdge(graph, "A", null, "B", null, 2, 3, 6, null);
     GraphStructureHelper.addEdge(graph, "B", null, "C", null, 3, 1, 0, null);
-    GraphStructureHelper.addEdge(graph, "C", null, "A", null, 2, 4, 0, null);
+    GraphStructureHelper.addEdge(graph, "C", null, "A", null, 1, 2, 0, null);
 
     return graph;
   }

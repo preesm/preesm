@@ -40,7 +40,7 @@ public abstract class SrSDFTransformer {
    * 
    * @param srSDF
    *          graph
-   * @return HSDF graph
+   * @return DAG
    */
   public static SDFGraph convertToDAG(SDFGraph srSDF) {
     // clone the srSDF
