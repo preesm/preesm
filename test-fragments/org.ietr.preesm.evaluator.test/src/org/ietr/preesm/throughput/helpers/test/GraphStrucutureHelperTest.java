@@ -1,10 +1,12 @@
 package org.ietr.preesm.throughput.helpers.test;
 
+import java.util.Hashtable;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
+import org.ietr.preesm.deadlock.IBSDFConsistency;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
 import org.junit.Assert;
 import org.junit.Test;
@@ -230,6 +232,92 @@ public class GraphStrucutureHelperTest {
     Assert.assertEquals(0, sdf.getVertex("C").getSources().size());
     Assert.assertEquals(1, sdf.getVertex("C").getSinks().size());
 
+  }
+
+  @Test
+  public void testHierarchicalAcotrsShouldBeReturnd() {
+
+    // generate an IBSDF graph
+    SDFGraph ibsdf = generateIBSDFGraph3levels();
+
+    // get the hierarchical acotrs of the topgraph
+    Hashtable<String, SDFAbstractVertex> listOfHierarchicalActors = GraphStructureHelper.getHierarchicalActors(ibsdf);
+
+    // check the results
+    Assert.assertNotNull(listOfHierarchicalActors);
+    Assert.assertEquals(1, listOfHierarchicalActors.size());
+    Assert.assertEquals("B", listOfHierarchicalActors.entrySet().iterator().next().getKey());
+  }
+
+  @Test
+  public void testAllHierarchicalAcotrsShouldBeReturnd() {
+
+    // generate an IBSDF graph
+    SDFGraph ibsdf = generateIBSDFGraph3levels();
+
+    // get the hierarchical acotrs of the topgraph
+    Hashtable<String, SDFAbstractVertex> listOfHierarchicalActors = GraphStructureHelper.getAllHierarchicalActors(ibsdf);
+
+    // check the results
+    Assert.assertNotNull(listOfHierarchicalActors);
+    Assert.assertEquals(2, listOfHierarchicalActors.size());
+    Assert.assertNotNull(listOfHierarchicalActors.get("B"));
+    Assert.assertNotNull(listOfHierarchicalActors.get("D"));
+  }
+
+  /**
+   * generate an IBSDF graph to test methods
+   * 
+   * @return IBSDF graph
+   */
+  public SDFGraph generateIBSDFGraph3levels() {
+    // Actors: A B[D[GH]EF] C
+    // actor B and D are hierarchical
+
+    // level 0 (toplevel): A B C
+    // level 1: D E F
+    // level 2: GH
+
+    // create the subgraph GH
+    SDFGraph GH = new SDFGraph();
+    GH.setName("subgraph");
+    GraphStructureHelper.addActor(GH, "G", null, null, 1., null, null);
+    GraphStructureHelper.addActor(GH, "H", null, null, 1., null, null);
+    GraphStructureHelper.addInputInterface(GH, "f", null, 0., null, null);
+    GraphStructureHelper.addOutputInterface(GH, "e", null, 0., null, null);
+
+    GraphStructureHelper.addEdge(GH, "f", null, "G", null, 1, 1, 0, null);
+    GraphStructureHelper.addEdge(GH, "G", null, "F", null, 1, 1, 0, null);
+    GraphStructureHelper.addEdge(GH, "H", null, "e", null, 1, 1, 0, null);
+
+    // create the subgraph DEF
+    SDFGraph DEF = new SDFGraph();
+    DEF.setName("subgraph");
+    GraphStructureHelper.addActor(DEF, "D", GH, null, 1., null, null);
+    GraphStructureHelper.addActor(DEF, "E", null, null, 1., null, null);
+    GraphStructureHelper.addActor(DEF, "F", null, null, 1., null, null);
+    GraphStructureHelper.addInputInterface(DEF, "a", null, 0., null, null);
+    GraphStructureHelper.addOutputInterface(DEF, "c", null, 0., null, null);
+
+    GraphStructureHelper.addEdge(DEF, "a", null, "E", null, 2, 1, 0, null);
+    GraphStructureHelper.addEdge(DEF, "E", null, "F", null, 2, 3, 0, null);
+    GraphStructureHelper.addEdge(DEF, "F", null, "D", "f", 1, 2, 0, null);
+    GraphStructureHelper.addEdge(DEF, "D", "e", "E", null, 3, 1, 3, null);
+    GraphStructureHelper.addEdge(DEF, "F", null, "c", null, 3, 1, 0, null);
+
+    // create the top graph and add the subgraph to the hierarchical actor B
+    SDFGraph topgraph = new SDFGraph();
+    topgraph.setName("topgraph");
+    GraphStructureHelper.addActor(topgraph, "A", null, null, 1., null, null);
+    GraphStructureHelper.addActor(topgraph, "B", DEF, null, null, null, null);
+    GraphStructureHelper.addActor(topgraph, "C", null, null, 1., null, null);
+
+    GraphStructureHelper.addEdge(topgraph, "A", null, "B", "a", 3, 2, 3, null);
+    GraphStructureHelper.addEdge(topgraph, "B", "c", "C", null, 1, 1, 0, null);
+    GraphStructureHelper.addEdge(topgraph, "C", null, "A", null, 2, 3, 3, null);
+
+    IBSDFConsistency.computeRV(topgraph);
+    return topgraph;
   }
 
 }
