@@ -83,14 +83,18 @@ class MovableInstances implements DAGOperations {
 		// Get all associated instances that belong to same actor
 		val anchorInstances = dagGen.actor2Instances.get(anchorActor).filter[instance |
 			rootInstances.contains(instance)
-		]
+		].toList
+		
+		val relevantRootInstances = rootInstances.filter[instance |
+			!anchorInstances.contains(instance)
+		].toList
 		
 		// Get levels
 		val levelVisitor = new LevelsOperations
 		dagGen.accept(levelVisitor)
 		rearrangedLevels.putAll(levelVisitor.levels)
 		
-		rearrangeAcyclic(dagGen, rootInstances)
+		rearrangeAcyclic(dagGen, relevantRootInstances)
 		
 		// Maximum level starting from 0, where the instances need to be moved.
 		// Make sure the instances from source actors are ignored, otherwise, lbar
@@ -210,8 +214,9 @@ class MovableInstances implements DAGOperations {
 								}
 							}
 						}
+
 						rearrangedLevels.put(node, levelOfNode)
-						
+							
 						val maxActorLevel = OperationsUtils.getMaxActorLevel(dagGen, 
 							dagGen.instance2Actor.get(node), rearrangedLevels)
 						if(levelOfNode != maxActorLevel) {

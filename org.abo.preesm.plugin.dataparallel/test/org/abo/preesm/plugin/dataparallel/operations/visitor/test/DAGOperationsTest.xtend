@@ -310,6 +310,13 @@ class DAGOperationsTest {
 						val movableInstances = moveInstanceVisitor.movableInstances
 						val movableExitInstances = moveInstanceVisitor.movableExitInstances
 						
+						// If movableInstances is not empty, then root and exit instances 
+						// cannot be empty
+						if(!movableInstances.empty) {
+							Assert.assertFalse(movableRootInstances.empty)
+							Assert.assertFalse(movableExitInstances.empty)
+						}
+						
 						// Get root nodes
 						val rootVisitor = new RootExitOperations
 						subgraphDAGGen.accept(rootVisitor)
