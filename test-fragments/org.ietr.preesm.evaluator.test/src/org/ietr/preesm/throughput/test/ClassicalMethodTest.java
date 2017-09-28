@@ -23,10 +23,25 @@ public class ClassicalMethodTest {
 
     // compute its throughput by classical method
     ClassicalMethod method = new ClassicalMethod();
-    double th = method.evaluate(ibsdf, null);
+    double th = method.evaluate(ibsdf, null, false);
 
     // check the throughput value
     Assert.assertEquals(1 / 7., th, 0);
+
+  }
+
+  @Test
+  public void testConstrainedThroughputShouldBeComputed() {
+
+    // generate the IBSDF graph AB[DEF]C
+    SDFGraph ibsdf = generateIBSDFGraph();
+
+    // compute its throughput by classical method
+    ClassicalMethod method = new ClassicalMethod();
+    double th = method.evaluate(ibsdf, null, true);
+
+    // check the throughput value
+    Assert.assertEquals(1 / 8., th, 0);
 
   }
 

@@ -22,12 +22,12 @@ public class ClassicalMethod {
    *          contains actors duration
    * @return throughput of the graph
    */
-  public double evaluate(SDFGraph inputGraph, PreesmScenario scenario) {
+  public double evaluate(SDFGraph inputGraph, PreesmScenario scenario, boolean withExecRulres) {
     System.out.println("Computing the throughput of the graph using classical method ...");
 
     // Phase 1: convert the IBSDF graph to a flat srSDF graph
     System.out.println("Phase 1: convert the IBSDF graph to a flat srSDF graph");
-    SDFGraph srSDF = IBSDFTransformer.convertToSrSDF(inputGraph, false);
+    SDFGraph srSDF = IBSDFTransformer.convertToSrSDF(inputGraph, withExecRulres);
 
     // Phase 2: compute the throughput of the flat srSDF graph using the periodic schedule
     System.out.println("Phase 2: compute the throughput of the flat srSDF graph using the periodic schedule");

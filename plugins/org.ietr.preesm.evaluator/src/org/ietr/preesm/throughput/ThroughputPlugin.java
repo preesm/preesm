@@ -108,7 +108,7 @@ public class ThroughputPlugin extends AbstractTaskImplementation {
       case Classic:
         // Based on flattening the hierarchy into a Flat srSDF graph
         ClassicalMethod classicalMethod = new ClassicalMethod();
-        throughput = classicalMethod.evaluate(inputGraph, scenario);
+        throughput = classicalMethod.evaluate(inputGraph, scenario, false);
         break;
 
       default:
