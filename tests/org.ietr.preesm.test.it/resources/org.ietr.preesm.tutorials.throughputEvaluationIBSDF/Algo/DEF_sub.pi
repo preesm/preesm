@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">DEF_sub</data>
+        <node id="c" kind="snk">
+            <port annotation="NONE" expr="1" kind="input" name="c"/>
+        </node>
+        <node id="E" kind="actor">
+            <port annotation="NONE" expr="1" kind="input" name="d"/>
+            <port annotation="NONE" expr="1" kind="input" name="a"/>
+            <port annotation="NONE" expr="2" kind="output" name="f"/>
+        </node>
+        <node id="D" kind="actor">
+            <port annotation="NONE" expr="2" kind="input" name="f"/>
+            <port annotation="NONE" expr="3" kind="output" name="e"/>
+        </node>
+        <node id="a" kind="src">
+            <port annotation="NONE" expr="2" kind="output" name="a"/>
+        </node>
+        <node id="F" kind="actor">
+            <port annotation="NONE" expr="3" kind="input" name="e"/>
+            <port annotation="NONE" expr="1" kind="output" name="d"/>
+            <port annotation="NONE" expr="3" kind="output" name="c"/>
+        </node>
+        <edge kind="fifo" source="E" sourceport="f" target="F"
+            targetport="e" type="int"/>
+        <edge kind="fifo" source="F" sourceport="d" target="D"
+            targetport="f" type="int"/>
+        <edge expr="3" kind="fifo" source="D" sourceport="e" target="E"
+            targetport="d" type="int">
+            <data key="delay"/>
+        </edge>
+        <edge kind="fifo" source="a" sourceport="a" target="E"
+            targetport="a" type="int"/>
+        <edge kind="fifo" source="F" sourceport="c" target="c"
+            targetport="c" type="int"/>
+    </graph>
+</graphml>
