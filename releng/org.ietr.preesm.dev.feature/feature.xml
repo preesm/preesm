@@ -609,6 +609,9 @@ Version 1.0 dated 2006-09-05.]]>
       <import feature="org.sonatype.tycho.m2e.feature"/>
       <import feature="nl.topicus.m2e.settings.feature"/>
 
+      <!-- TM Terminal -->
+      <import feature="org.eclipse.tm.terminal.feature"/>
+
       <!-- IETR dependencies -->
       <import feature="org.ietr.externaldeps.aio.deps"/>
       <import feature="org.ietr.graphiti.feature"/>

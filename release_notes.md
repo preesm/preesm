@@ -5,6 +5,7 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* Add feature dependency to TM Terminal to have easy terminal access;
 
 ### Changes
 
