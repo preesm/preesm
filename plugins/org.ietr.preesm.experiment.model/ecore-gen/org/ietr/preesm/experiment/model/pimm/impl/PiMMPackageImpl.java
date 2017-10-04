@@ -373,7 +373,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     // Obtain or create and register package
     final PiMMPackageImpl thePiMMPackage = (PiMMPackageImpl) (EPackage.Registry.INSTANCE.get(PiMMPackage.eNS_URI) instanceof PiMMPackageImpl
-        ? EPackage.Registry.INSTANCE.get(PiMMPackage.eNS_URI) : new PiMMPackageImpl());
+        ? EPackage.Registry.INSTANCE.get(PiMMPackage.eNS_URI)
+        : new PiMMPackageImpl());
 
     PiMMPackageImpl.isInited = true;
 
@@ -1495,6 +1496,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     initEReference(getAbstractActor_ConfigOutputPorts(), getConfigOutputPort(), null, "configOutputPorts", null, 0, -1, AbstractActor.class,
         !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES,
         !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+
+    addEOperation(this.abstractActorEClass, getPort(), "getAllPorts", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     initEClass(this.piGraphEClass, PiGraph.class, "PiGraph", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
     initEReference(getPiGraph_Vertices(), getAbstractActor(), null, "vertices", null, 0, -1, PiGraph.class, !EPackageImpl.IS_TRANSIENT,

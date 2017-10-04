@@ -75,13 +75,15 @@ public class VisitorPackageImpl extends EPackageImpl implements VisitorPackage {
 
     // Obtain or create and register package
     final VisitorPackageImpl theVisitorPackage = (VisitorPackageImpl) (EPackage.Registry.INSTANCE.get(VisitorPackage.eNS_URI) instanceof VisitorPackageImpl
-        ? EPackage.Registry.INSTANCE.get(VisitorPackage.eNS_URI) : new VisitorPackageImpl());
+        ? EPackage.Registry.INSTANCE.get(VisitorPackage.eNS_URI)
+        : new VisitorPackageImpl());
 
     VisitorPackageImpl.isInited = true;
 
     // Obtain or create and register interdependencies
     final PiMMPackageImpl thePiMMPackage = (PiMMPackageImpl) (EPackage.Registry.INSTANCE.getEPackage(PiMMPackage.eNS_URI) instanceof PiMMPackageImpl
-        ? EPackage.Registry.INSTANCE.getEPackage(PiMMPackage.eNS_URI) : PiMMPackage.eINSTANCE);
+        ? EPackage.Registry.INSTANCE.getEPackage(PiMMPackage.eNS_URI)
+        : PiMMPackage.eINSTANCE);
 
     // Create package meta-data objects
     theVisitorPackage.createPackageContents();

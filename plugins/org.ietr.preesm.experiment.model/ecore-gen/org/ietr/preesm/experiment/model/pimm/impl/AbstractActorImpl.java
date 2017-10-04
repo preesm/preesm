@@ -41,6 +41,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.eclipse.emf.common.notify.NotificationChain;
+import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
@@ -281,6 +283,21 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements Ab
       this.configOutputPorts = new EObjectContainmentEList<>(ConfigOutputPort.class, this, PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS);
     }
     return this.configOutputPorts;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EList<Port> getAllPorts() {
+    final BasicEList<Port> result = ECollections.newBasicEList();
+    result.addAll(getConfigOutputPorts());
+    result.addAll(getConfigInputPorts());
+    result.addAll(getDataInputPorts());
+    result.addAll(getDataOutputPorts());
+    return ECollections.unmodifiableEList(result);
   }
 
   /*

@@ -103,6 +103,16 @@ public interface AbstractActor extends AbstractVertex {
   EList<ConfigOutputPort> getConfigOutputPorts();
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='final BasicEList&lt;Port&gt; result =
+   *        ECollections.newBasicEList();\nresult.addAll(getConfigOutputPorts());\nresult.addAll(getConfigInputPorts());\nresult.addAll(getDataInputPorts());\nresult.addAll(getDataOutputPorts());\nreturn
+   *        ECollections.unmodifiableEList(result);'"
+   * @generated
+   */
+  EList<Port> getAllPorts();
+
+  /**
    * Gets the path.
    *
    * @return the path
