@@ -598,6 +598,7 @@ Version 1.0 dated 2006-09-05.]]>
       <import feature="org.eclipse.gef.sdk"/>
       <import feature="org.eclipse.emf.sdk"/>
       <import feature="org.eclipse.graphiti.sdk.plus.feature"/>
+      <import feature="org.eclipse.graphiti.sdk.plus.feature.source"/>
 
       <!-- Git & Checkstyle -->
       <import feature="org.eclipse.egit"/>

@@ -6,6 +6,7 @@ PREESM Changelog
 
 ### New Feature
 * Add feature dependency to TM Terminal to have easy terminal access;
+* Add feature dependency to Graphiti SDK Plus source in the dev feature;
 
 ### Changes
 
