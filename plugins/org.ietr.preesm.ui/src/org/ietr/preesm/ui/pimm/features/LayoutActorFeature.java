@@ -80,7 +80,14 @@ import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
  */
 public class LayoutActorFeature extends AbstractLayoutFeature {
 
-  public static final int INITIAL_GAP = 2;
+  /**
+   *
+   */
+  public static final int INITIAL_GAP = 5;
+  /**
+   *
+   */
+  public static final int BOTTOM_GAP  = 3;
   /**
    * Gap between ports in pixels
    */
@@ -143,10 +150,9 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 
           // Retrieve the size of the text
           final IDimension size = GraphitiUi.getUiLayoutService().calculateTextSize(text, font);
-
           // Retrieve the space of the name
-          // (+5 to add space and lighten the actor representation)
-          nameHeight = size.getHeight() + INITIAL_GAP;
+          // (+ port gap to add space and lighten the actor representation)
+          nameHeight = size.getHeight() + PORT_GAP;
         }
       }
     }
@@ -210,7 +216,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
       anchorMaxHeight = Math.max(cfgInputsHeight, cfgOutputsHeight) + Math.max(inputsHeight, outputsHeight);
     }
 
-    return anchorMaxHeight + nameHeight + INITIAL_GAP;
+    return anchorMaxHeight + nameHeight + INITIAL_GAP + BOTTOM_GAP;
   }
 
   /**
@@ -300,8 +306,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
       anchorWidth += 8;
     }
 
-    final int maxWidth = Math.max(anchorWidth, nameWidth);
-    return maxWidth;
+    return Math.max(anchorWidth, nameWidth);
   }
 
   /*
@@ -474,7 +479,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
     // Place the inputs
     final int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
     // The first port is placed below the name
-    int y = portFontHeight + PORT_GAP + INITIAL_GAP; // font.height + a space of 5
+    int y = portFontHeight + PORT_GAP + INITIAL_GAP;
     for (int i = 0; i < inputs.size(); i++) {
       final int configSpace = (i < nbConfigInput) ? 0 : maxNbConfigPort - nbConfigInput;
       final double relativeHeight = (y + ((i + configSpace) * (portFontHeight + PORT_GAP))) / (double) newHeigt;
@@ -486,7 +491,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
     }
 
     // Place the outputs
-    y = portFontHeight + PORT_GAP + INITIAL_GAP; // font.height + a space of 5
+    y = portFontHeight + PORT_GAP + INITIAL_GAP;
     for (int i = 0; i < outputs.size(); i++) {
       final int configSpace = (i < nbConfigOutput) ? 0 : maxNbConfigPort - nbConfigOutput;
       final double relativeHeight = (y + ((i + configSpace) * (portFontHeight + PORT_GAP))) / (double) newHeigt;
