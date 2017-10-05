@@ -9,6 +9,8 @@ PREESM Changelog
 * Add feature dependency to Graphiti SDK Plus source in the dev feature;
 
 ### Changes
+* Changes actor ports layout: add more gap for better readability;
+* Autolayout feature now relayout actor content (for better rendering of old PiSDF graph);
 
 ### Bug fix
 

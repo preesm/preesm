@@ -47,11 +47,14 @@ import java.util.Map;
 import java.util.Set;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
+import org.eclipse.graphiti.features.context.impl.LayoutContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
@@ -66,6 +69,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
@@ -77,12 +81,15 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.DependencyCycleDetector;
 import org.ietr.preesm.experiment.model.pimm.util.FifoCycleDetector;
 import org.ietr.preesm.ui.pimm.diagram.PiMMDiagramEditor;
 import org.ietr.preesm.ui.pimm.features.AddDelayFeature;
 import org.ietr.preesm.ui.pimm.features.AddParameterFeature;
 import org.ietr.preesm.ui.pimm.features.DeleteDelayFeature;
+import org.ietr.preesm.ui.pimm.features.LayoutActorFeature;
+import org.ietr.preesm.ui.pimm.features.LayoutPortFeature;
 import org.ietr.preesm.ui.pimm.features.MoveAbstractActorFeature;
 import org.ietr.preesm.ui.pimm.util.DiagramPiGraphLinkHelper;
 
@@ -429,18 +436,51 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     this.hasDoneChange = true;
 
-    // Step 1 - Clear all bendpoints
+    // Step 1 - Layout actor content (name, ports, ...)
+    layoutActorContent(diagram);
+
+    // Step 2 - Clear all bendpoints
     DiagramPiGraphLinkHelper.clearBendpoints(diagram);
 
-    // Step 2 - Layout actors in precedence order
+    // Step 3 - Layout actors in precedence order
     // (ignoring cycles / delayed FIFOs in cycles)
     layoutActors(diagram);
 
-    // Step 3 - Layout fifo connections
+    // Step 4 - Layout fifo connections
     layoutFifos(diagram);
 
-    // Step 4 - Layout Parameters and dependencies
+    // Step 5 - Layout Parameters and dependencies
     layoutParameters(diagram);
+  }
+
+  private final void layoutActorContent(final Diagram diagram) {
+    final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(diagram);
+
+    final List<Actor> actors = graph.getActors();
+    for (final Actor a : actors) {
+      final List<PictogramElement> actorPEs = Graphiti.getLinkService().getPictogramElements(diagram, a);
+      for (final PictogramElement p : actorPEs) {
+        if (p instanceof ContainerShape) {
+          final LayoutContext layoutContext = new LayoutContext(p);
+          final ILayoutFeature layoutFeature = new LayoutActorFeature(getFeatureProvider());
+          layoutFeature.layout(layoutContext);
+          break;
+        }
+      }
+      final EList<Port> allPorts = a.getAllPorts();
+      for (final Port p : allPorts) {
+        final List<PictogramElement> pictogramElements = Graphiti.getLinkService().getPictogramElements(diagram, p);
+
+        // TODO: check the PE is an anchor box
+        final PictogramElement portBox = pictogramElements.get(0);
+
+        final GraphicsAlgorithm graphicsAlgorithm = portBox.getGraphicsAlgorithm();
+
+        final LayoutContext layoutContext = new LayoutContext(portBox);
+        final ILayoutFeature layoutPortFeature = new LayoutPortFeature(getFeatureProvider());
+        layoutPortFeature.layout(layoutContext);
+      }
+    }
   }
 
   private void emptyEditorSelcetion(final Diagram diagram) {
