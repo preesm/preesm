@@ -59,6 +59,7 @@ import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
+import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -470,15 +471,14 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       final EList<Port> allPorts = a.getAllPorts();
       for (final Port p : allPorts) {
         final List<PictogramElement> pictogramElements = Graphiti.getLinkService().getPictogramElements(diagram, p);
-
-        // TODO: check the PE is an anchor box
-        final PictogramElement portBox = pictogramElements.get(0);
-
-        final GraphicsAlgorithm graphicsAlgorithm = portBox.getGraphicsAlgorithm();
-
-        final LayoutContext layoutContext = new LayoutContext(portBox);
-        final ILayoutFeature layoutPortFeature = new LayoutPortFeature(getFeatureProvider());
-        layoutPortFeature.layout(layoutContext);
+        for (final PictogramElement pe : pictogramElements) {
+          if (pe instanceof BoxRelativeAnchor) {
+            final LayoutContext layoutContext = new LayoutContext(pe);
+            final ILayoutFeature layoutPortFeature = new LayoutPortFeature(getFeatureProvider());
+            layoutPortFeature.layout(layoutContext);
+            break;
+          }
+        }
       }
     }
   }
