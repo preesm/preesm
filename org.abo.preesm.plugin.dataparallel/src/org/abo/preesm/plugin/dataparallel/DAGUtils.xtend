@@ -1,7 +1,8 @@
 package org.abo.preesm.plugin.dataparallel
 
+import org.ietr.dftools.algorithm.model.AbstractGraph
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 
 /**
@@ -20,8 +21,10 @@ class DAGUtils {
 	 * @return vertex in "dest" graph 
 	 * @throws SDF4JException If the vertex is not present in source graph
 	 */
-	static def SDFAbstractVertex findVertex(SDFAbstractVertex vertex, SDFGraph source, 
-		SDFGraph dest) throws SDF4JException {
+	static def SDFAbstractVertex findVertex(SDFAbstractVertex vertex
+											, AbstractGraph<SDFAbstractVertex, SDFEdge> source
+											, AbstractGraph<SDFAbstractVertex, SDFEdge> dest) 
+											throws SDF4JException {
 		if(!source.vertexSet.contains(vertex)) {
 			throw new SDF4JException("The given vertex is not in source graph. Check the order")
 		}
