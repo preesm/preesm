@@ -143,7 +143,7 @@ public abstract class SDFLiveness {
   public static boolean symbolicExecution(SDFGraph sdf) {
     // execute the graph until it finishes an iteration
     ASAPScheduler_SDF scheduler = new ASAPScheduler_SDF();
-    scheduler.schedule(sdf, null);
+    scheduler.schedule(sdf);
 
     // the live attribute of the scheduler will indicate if the schedule has succeeded to schedule a complete iteration
     return scheduler.live;

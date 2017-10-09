@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
-import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.throughput.helpers.GraphSimulationHelper;
 import org.ietr.preesm.throughput.helpers.Stopwatch;
 
@@ -25,17 +24,15 @@ public class ASAPScheduler_SDF {
    * Schedule the graph using an ASAP schedule and return the duration of the graph iteration
    * 
    * @param graph
-   *          SDF graph
-   * @param scenario
-   *          contains actors duration
+   *          SDF graph contains actors duration
    * @return the duration of a graph iteration
    */
-  public double schedule(SDFGraph graph, PreesmScenario scenario) {
+  public double schedule(SDFGraph graph) {
     Stopwatch timer = new Stopwatch();
     timer.start();
 
     // initialize the simulator
-    this.simulator = new GraphSimulationHelper(graph, scenario);
+    this.simulator = new GraphSimulationHelper(graph);
     this.dur1Iter = 0.;
 
     // initialize the 1st elements of the list

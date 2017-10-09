@@ -3,7 +3,6 @@ package org.ietr.preesm.throughput;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.helpers.Stopwatch;
@@ -16,18 +15,16 @@ import org.ietr.preesm.throughput.transformers.SDFTransformer;
  */
 public class HPeriodicSchedule {
 
-  public Stopwatch       timer;
-  private PreesmScenario preesmScenario;
+  public Stopwatch timer;
+  // private PreesmScenario preesmScenario;
 
   /**
    * @param inputGraph
    *          IBSDF graph
-   * @param scenario
-   *          contains actors duration
    * @return throughput of the graph
    */
-  public double evaluate(SDFGraph inputGraph, PreesmScenario scenario) {
-    this.preesmScenario = scenario;
+  public double evaluate(SDFGraph inputGraph) {
+    // this.preesmScenario = scenario;
 
     // add the name property for each edge of the graph
     for (SDFEdge e : inputGraph.edgeSet()) {
@@ -45,9 +42,9 @@ public class HPeriodicSchedule {
         // set the duration of the hierarchical actor
         Double duration = this.setHierarchicalActorsDuration((SDFGraph) actor.getGraphDescription());
         actor.setPropertyValue("duration", duration);
-        if (this.preesmScenario != null) {
-          this.preesmScenario.getTimingManager().setTiming(actor.getId(), "x86", duration.longValue());
-        }
+        // if (this.preesmScenario != null) {
+        // this.preesmScenario.getTimingManager().setTiming(actor.getId(), "x86", duration.longValue());
+        // }
         // add the self loop
         GraphStructureHelper.addEdge(inputGraph, actor.getName(), null, actor.getName(), null, 1, 1, 1, null);
       }
@@ -83,7 +80,7 @@ public class HPeriodicSchedule {
         // set the duration of the hierarchical actor
         Double duration = this.setHierarchicalActorsDuration((SDFGraph) actor.getGraphDescription());
         actor.setPropertyValue("duration", duration);
-        this.preesmScenario.getTimingManager().setTiming(actor.getId(), "x86", duration.longValue());
+        // this.preesmScenario.getTimingManager().setTiming(actor.getId(), "x86", duration.longValue());
         // add the self loop
         GraphStructureHelper.addEdge(subgraph, actor.getName(), null, actor.getName(), null, 1, 1, 1, null);
       }

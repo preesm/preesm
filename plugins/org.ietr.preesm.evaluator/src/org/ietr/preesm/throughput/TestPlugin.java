@@ -559,7 +559,7 @@ public class TestPlugin {
 
     // schedule the DAG by an ASAP to get the throughput constraint
     ASAPScheduler_DAG asap = new ASAPScheduler_DAG();
-    double ThConstraint = asap.schedule(dag, null);
+    double ThConstraint = asap.schedule(dag);
 
     asap.simulator.resetExecutionCounter();
 

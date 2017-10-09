@@ -7,7 +7,6 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
-import org.ietr.preesm.core.scenario.PreesmScenario;
 
 /**
  * @author hderoui
@@ -16,8 +15,8 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
  */
 public class GraphSimulationHelper {
   // SDF graph and scenario
-  public SDFGraph       graph;
-  public PreesmScenario scenario;
+  public SDFGraph graph;
+  // public PreesmScenario scenario;
 
   // list of the initial marking to restore the graph
   public Hashtable<SDFEdge, AbstractEdgePropertyType<?>> initialMarking;
@@ -28,9 +27,9 @@ public class GraphSimulationHelper {
    * @param scenario
    *          contains actors duration
    */
-  public GraphSimulationHelper(SDFGraph graph, PreesmScenario scenario) {
+  public GraphSimulationHelper(SDFGraph graph) {
     this.graph = graph;
-    this.scenario = scenario;
+    // this.scenario = scenario;
 
     // save the initial marking of the graph
     this.saveInitialMarking();

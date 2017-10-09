@@ -21,7 +21,7 @@ public class ASAPScheduler_DAGTest {
 
     // schedule the DAG
     ASAPScheduler_DAG scheduler = new ASAPScheduler_DAG();
-    double durationOf1Iteration = scheduler.schedule(dag, null);
+    double durationOf1Iteration = scheduler.schedule(dag);
 
     // check the value of the duration
     Assert.assertEquals(3.0, durationOf1Iteration, 0);

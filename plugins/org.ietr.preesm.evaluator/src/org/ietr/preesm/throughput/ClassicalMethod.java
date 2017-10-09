@@ -2,7 +2,6 @@ package org.ietr.preesm.throughput;
 
 import org.apache.commons.lang3.math.Fraction;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
 import org.ietr.preesm.throughput.helpers.Stopwatch;
 import org.ietr.preesm.throughput.transformers.IBSDFTransformer;
@@ -20,11 +19,9 @@ public class ClassicalMethod {
    * 
    * @param inputGraph
    *          srSDF graph
-   * @param scenario
-   *          contains actors duration
    * @return throughput of the graph
    */
-  public double evaluate(SDFGraph inputGraph, PreesmScenario scenario, boolean withExecRulres) {
+  public double evaluate(SDFGraph inputGraph, boolean withExecRulres) {
     System.out.println("Computing the throughput of the graph using classical method ...");
     this.timer = new Stopwatch();
     timer.start();

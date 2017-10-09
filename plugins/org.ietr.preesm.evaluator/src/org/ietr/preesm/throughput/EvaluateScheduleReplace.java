@@ -10,7 +10,6 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.schedule.ALAPScheduler_DAG;
 import org.ietr.preesm.schedule.ASAPScheduler_DAG;
 import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
@@ -26,8 +25,8 @@ import org.ietr.preesm.throughput.transformers.SrSDFTransformer;
  */
 public class EvaluateScheduleReplace {
 
-  public Stopwatch       timer;
-  private PreesmScenario preesmScenario;
+  public Stopwatch timer;
+  // private PreesmScenario preesmScenario;
   /*
    * Evaluate-Schedule-Replace technique : Evaluate the throughput of a relaxed execution of an ibsdf graph. It consists of three main process, Evaluate,
    * Schedule and Replace. The technique analyze the subgraph in terms of time dependencies and replace it with a small graph that represents its execution
@@ -42,13 +41,11 @@ public class EvaluateScheduleReplace {
    * Compute the throughput of an IBSDF graph using the Evaluate-Schedule-Replace method
    * 
    * @param inputGraph
-   *          IBSDF graph
-   * @param scenario
-   *          contains actors duration
+   *          IBSDF graph contains actors duration
    * @return the throughput of the graph
    */
-  public double evaluate(SDFGraph inputGraph, PreesmScenario scenario) {
-    this.preesmScenario = scenario;
+  public double evaluate(SDFGraph inputGraph) {
+    // this.preesmScenario = scenario;
 
     System.out.println("Computing the throughput of the graph using Evaluate-Schedule-Replace (ESR) method ...");
     this.timer = new Stopwatch();
@@ -193,7 +190,7 @@ public class EvaluateScheduleReplace {
   private void schedule(SDFGraph graph) {
     // ASAP schedule to determine the start/finish date for each actor and the latency constraint
     ASAPScheduler_DAG ASAP_DAG = new ASAPScheduler_DAG();
-    ASAP_DAG.schedule(graph, this.preesmScenario);
+    ASAP_DAG.schedule(graph);
 
     // reset the execution counter of each actor
     ASAP_DAG.simulator.resetExecutionCounter();

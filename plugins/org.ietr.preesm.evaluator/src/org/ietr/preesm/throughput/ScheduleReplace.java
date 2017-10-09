@@ -3,7 +3,6 @@ package org.ietr.preesm.throughput;
 import org.apache.commons.lang3.math.Fraction;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.schedule.ASAPScheduler_SDF;
 import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
@@ -16,18 +15,16 @@ import org.ietr.preesm.throughput.transformers.SDFTransformer;
  */
 public class ScheduleReplace {
 
-  public Stopwatch       timer;
-  private PreesmScenario preesmScenario;
+  public Stopwatch timer;
+  // private PreesmScenario preesmScenario;
 
   /**
    * @param inputGraph
-   *          IBSDF graph
-   * @param scenario
-   *          contains actors duration
+   *          IBSDF graph contains actors duration
    * @return throughput of the graph
    */
-  public double evaluate(SDFGraph inputGraph, PreesmScenario scenario) {
-    this.preesmScenario = scenario;
+  public double evaluate(SDFGraph inputGraph) {
+    // this.preesmScenario = scenario;
     System.out.println("Computing the throughput of the graph using Schedule-Replace technique ...");
     this.timer = new Stopwatch();
     timer.start();
@@ -39,9 +36,9 @@ public class ScheduleReplace {
         // set the duration of the hierarchical actor
         Double duration = this.setHierarchicalActorsDuration((SDFGraph) actor.getGraphDescription());
         actor.setPropertyValue("duration", duration);
-        if (preesmScenario != null) {
-          this.preesmScenario.getTimingManager().setTiming(actor.getId(), "x86", duration.longValue());
-        }
+        // if (preesmScenario != null) {
+        // this.preesmScenario.getTimingManager().setTiming(actor.getId(), "x86", duration.longValue());
+        // }
       }
     }
 
@@ -87,13 +84,13 @@ public class ScheduleReplace {
         // set the duration of the hierarchical actor
         Double duration = this.setHierarchicalActorsDuration((SDFGraph) actor.getGraphDescription());
         actor.setPropertyValue("duration", duration);
-        this.preesmScenario.getTimingManager().setTiming(actor.getId(), "x86", duration.longValue());
+        // this.preesmScenario.getTimingManager().setTiming(actor.getId(), "x86", duration.longValue());
       }
     }
 
     // compute the subgraph duration using an ASAP schedule
     ASAPScheduler_SDF asap = new ASAPScheduler_SDF();
-    return asap.schedule(subgraph, this.preesmScenario);
+    return asap.schedule(subgraph);
   }
 
 }

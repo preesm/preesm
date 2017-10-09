@@ -22,7 +22,7 @@ public class ALAPScheduler_DAGTest {
 
     // schedule the DAG by an ASAP to get the throughput constraint
     ASAPScheduler_DAG asap = new ASAPScheduler_DAG();
-    double ThConstraint = asap.schedule(dag, null);
+    double ThConstraint = asap.schedule(dag);
     // check the throughput constraint
     Assert.assertEquals(12.0, ThConstraint, 0);
     // check the start date of each actor

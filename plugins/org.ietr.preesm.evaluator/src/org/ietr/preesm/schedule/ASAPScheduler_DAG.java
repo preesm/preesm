@@ -5,7 +5,6 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
-import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.throughput.helpers.GraphSimulationHelper;
 import org.ietr.preesm.throughput.helpers.Stopwatch;
 
@@ -23,16 +22,14 @@ public class ASAPScheduler_DAG {
    * 
    * @param graph
    *          SDF graph
-   * @param scenario
-   *          contains actors duration
    * @return the duration of a graph iteration
    */
-  public double schedule(SDFGraph graph, PreesmScenario scenario) {
+  public double schedule(SDFGraph graph) {
     Stopwatch timer = new Stopwatch();
     timer.start();
 
     // initialize the simulator and the list of actor to execute
-    this.simulator = new GraphSimulationHelper(graph, scenario);
+    this.simulator = new GraphSimulationHelper(graph);
     actorsToExecute = new ArrayList<SDFAbstractVertex>();
     this.initialzeList(graph);
     this.dur1Iter = 0.;

@@ -80,42 +80,42 @@ public class ThroughputPlugin extends AbstractTaskImplementation {
       throws WorkflowException {
 
     // get the input graph, the scenario for actors duration, and the method to use
-    SDFGraph inputGraph = (SDFGraph) inputs.get("SDF");
-    PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
-    ThroughputMethod method = ThroughputMethod.valueOf(parameters.get("method"));
+    SDFGraph inputGraph = ((SDFGraph) inputs.get("SDF")).clone();
+    PreesmScenario inputScenario = (PreesmScenario) inputs.get("scenario");
+    ThroughputMethod inputMethod = ThroughputMethod.valueOf(parameters.get("method"));
 
     // init & test
-    boolean deadlockFree = this.init(inputGraph, scenario);
+    boolean deadlockFree = this.init(inputGraph, inputScenario);
     double throughput = 0;
 
     if (deadlockFree) {
       // Compute the throughput of the graph
-      switch (method) {
+      switch (inputMethod) {
         case SR:
           // Schedule-Replace technique
           ScheduleReplace sr = new ScheduleReplace();
-          throughput = sr.evaluate(inputGraph, scenario);
+          throughput = sr.evaluate(inputGraph);
           this.timer = sr.timer;
           break;
 
         case ESR:
           // Evaluate-Schedule-Replace method
           EvaluateScheduleReplace esr = new EvaluateScheduleReplace();
-          throughput = esr.evaluate(inputGraph, scenario);
+          throughput = esr.evaluate(inputGraph);
           this.timer = esr.timer;
           break;
 
         case HPeriodic:
           // Hierarchical Periodic Schedule method
           HPeriodicSchedule HPeriodic = new HPeriodicSchedule();
-          throughput = HPeriodic.evaluate(inputGraph, scenario);
+          throughput = HPeriodic.evaluate(inputGraph);
           this.timer = HPeriodic.timer;
           break;
 
         case Classical:
           // Based on flattening the hierarchy into a Flat srSDF graph
           ClassicalMethod classicalMethod = new ClassicalMethod();
-          throughput = classicalMethod.evaluate(inputGraph, scenario, false);
+          throughput = classicalMethod.evaluate(inputGraph, false);
           this.timer = classicalMethod.timer;
           break;
 
@@ -135,7 +135,7 @@ public class ThroughputPlugin extends AbstractTaskImplementation {
     // set the outputs
     Map<String, Object> outputs = new HashMap<String, Object>();
     outputs.put("SDF", inputGraph);
-    outputs.put("scenario", scenario);
+    outputs.put("scenario", inputScenario);
     outputs.put("throughput", throughput);
 
     return outputs;
@@ -184,12 +184,12 @@ public class ThroughputPlugin extends AbstractTaskImplementation {
             // if hierarchical actor then as default the duration is 1
             // the real duration of the hierarchical actor will be defined later by scheduling its subgraph
             actor.setPropertyValue("duration", 1.);
-            scenario.getTimingManager().setTiming(actor.getId(), "x86", 1); // to remove
+            // scenario.getTimingManager().setTiming(actor.getId(), "x86", 1); // to remove
           }
         } else {
           // the duration of interfaces in neglected by setting their duration to 0
           actor.setPropertyValue("duration", 0.);
-          scenario.getTimingManager().setTiming(actor.getId(), "x86", 0); // to remove
+          // scenario.getTimingManager().setTiming(actor.getId(), "x86", 0); // to remove
         }
       }
 

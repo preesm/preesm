@@ -21,7 +21,7 @@ public class ASAPScheduler_SDFTest {
 
     // schedule the SDF graph
     ASAPScheduler_SDF scheduler = new ASAPScheduler_SDF();
-    double durationOf1Iteration = scheduler.schedule(sdf, null);
+    double durationOf1Iteration = scheduler.schedule(sdf);
 
     // check the value of the duration
     Assert.assertEquals(3.0, durationOf1Iteration, 0);

@@ -22,7 +22,7 @@ public class HPeriodicScheduleTest {
 
     // compute its throughput by classical method
     HPeriodicSchedule method = new HPeriodicSchedule();
-    double th = method.evaluate(ibsdf, null);
+    double th = method.evaluate(ibsdf);
 
     // check the throughput value
     Assert.assertEquals(1 / 54., th, 0);

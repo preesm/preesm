@@ -23,7 +23,7 @@ public class EvaluateScheduleReplaceTest {
 
     // compute its throughput by classical method
     EvaluateScheduleReplace method = new EvaluateScheduleReplace();
-    double th = method.evaluate(ibsdf, null);
+    double th = method.evaluate(ibsdf);
 
     // check the throughput value
     Assert.assertEquals(1 / 7., th, 0);

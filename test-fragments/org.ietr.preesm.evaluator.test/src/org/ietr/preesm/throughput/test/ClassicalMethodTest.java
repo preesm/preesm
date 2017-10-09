@@ -23,7 +23,7 @@ public class ClassicalMethodTest {
 
     // compute its throughput by classical method
     ClassicalMethod method = new ClassicalMethod();
-    double th = method.evaluate(ibsdf, null, false);
+    double th = method.evaluate(ibsdf, false);
 
     // check the throughput value
     Assert.assertEquals(1 / 7., th, 0);
@@ -38,7 +38,7 @@ public class ClassicalMethodTest {
 
     // compute its throughput by classical method
     ClassicalMethod method = new ClassicalMethod();
-    double th = method.evaluate(ibsdf, null, true);
+    double th = method.evaluate(ibsdf, true);
 
     // check the throughput value
     Assert.assertEquals(1 / 8., th, 0);
