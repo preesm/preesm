@@ -37,7 +37,7 @@ public class PeriodicScheduler_SDF {
   }
 
   /**
-   * tests if a periodic schedule exists for an SDF graph using the same sufficient condition of Alix Munier for the liveness of SDF graphs.
+   * tests if a periodic schedule exists for an SDF graph using the same sufficient condition of liveness of SDF graphs.
    * 
    * @param graph
    *          SDF graph

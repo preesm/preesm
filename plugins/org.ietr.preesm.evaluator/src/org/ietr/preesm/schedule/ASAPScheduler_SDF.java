@@ -18,6 +18,7 @@ public class ASAPScheduler_SDF {
   private GraphSimulationHelper                                    simulator;  // simulator helper
   private Double                                                   dur1Iter;   // duration of one iteration of a graph
   private Hashtable<Double, Hashtable<SDFAbstractVertex, Integer>> executions; // list of ready executions to finish
+  public boolean                                                   live;
 
   /**
    * Schedule the graph using an ASAP schedule and return the duration of the graph iteration
@@ -99,8 +100,10 @@ public class ASAPScheduler_SDF {
 
     // check if the simulation is completed
     if (this.simulator.isIterationCompleted()) {
+      live = true;
       System.out.println("Iteration complete !!");
     } else {
+      live = false;
       System.err.println("Iteration not complete !!");
     }
 
@@ -111,12 +114,12 @@ public class ASAPScheduler_SDF {
   /**
    * Initialize the list of ready executions
    * 
-   * @param g
+   * @param graph
    *          SDF graph
    */
-  private void initialzeList(SDFGraph g) {
+  private void initialzeList(SDFGraph graph) {
     // loop actors
-    for (SDFAbstractVertex actor : g.vertexSet()) {
+    for (SDFAbstractVertex actor : graph.vertexSet()) {
       // get the max n
       int n = this.simulator.maxExecToCompleteAnIteration(actor);
       // if ready

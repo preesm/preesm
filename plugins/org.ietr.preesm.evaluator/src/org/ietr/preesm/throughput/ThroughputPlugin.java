@@ -48,6 +48,7 @@ import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.deadlock.IBSDFConsistency;
+import org.ietr.preesm.deadlock.IBSDFLiveness;
 
 /**
  * @author hderoui
@@ -65,7 +66,7 @@ public class ThroughputPlugin extends AbstractTaskImplementation {
     SR, // Schedule-Replace technique
     ESR, // Evaluate-Schedule-Replace method
     HPeriodic, // Hierarchical Periodic Schedule method
-    Classic, // Based on Flattening the hierarchy
+    Classical, // Based on Flattening the hierarchy
   }
 
   // Plug-in parameters
@@ -82,42 +83,48 @@ public class ThroughputPlugin extends AbstractTaskImplementation {
     ThroughputMethod method = ThroughputMethod.valueOf(parameters.get("method"));
 
     // init & test
-    this.init(inputGraph, scenario);
-
-    // Compute the throughput of the graph
+    boolean deadlockFree = this.init(inputGraph, scenario);
     double throughput = 0;
-    switch (method) {
-      case SR:
-        // Schedule-Replace technique
-        ScheduleReplace sr = new ScheduleReplace();
-        throughput = sr.evaluate(inputGraph, scenario);
-        break;
 
-      case ESR:
-        // Evaluate-Schedule-Replace method
-        EvaluateScheduleReplace esr = new EvaluateScheduleReplace();
-        throughput = esr.evaluate(inputGraph, scenario);
-        break;
+    if (deadlockFree) {
+      // Compute the throughput of the graph
+      switch (method) {
+        case SR:
+          // Schedule-Replace technique
+          ScheduleReplace sr = new ScheduleReplace();
+          throughput = sr.evaluate(inputGraph, scenario);
+          break;
 
-      case HPeriodic:
-        // Hierarchical Periodic Schedule method
-        HPeriodicSchedule HPeriodic = new HPeriodicSchedule();
-        throughput = HPeriodic.evaluate(inputGraph, scenario);
-        break;
+        case ESR:
+          // Evaluate-Schedule-Replace method
+          EvaluateScheduleReplace esr = new EvaluateScheduleReplace();
+          throughput = esr.evaluate(inputGraph, scenario);
+          break;
 
-      case Classic:
-        // Based on flattening the hierarchy into a Flat srSDF graph
-        ClassicalMethod classicalMethod = new ClassicalMethod();
-        throughput = classicalMethod.evaluate(inputGraph, scenario, false);
-        break;
+        case HPeriodic:
+          // Hierarchical Periodic Schedule method
+          HPeriodicSchedule HPeriodic = new HPeriodicSchedule();
+          throughput = HPeriodic.evaluate(inputGraph, scenario);
+          break;
 
-      default:
-        WorkflowLogger.getLogger().log(Level.WARNING, "Method not yet suported !");
-        break;
+        case Classical:
+          // Based on flattening the hierarchy into a Flat srSDF graph
+          ClassicalMethod classicalMethod = new ClassicalMethod();
+          throughput = classicalMethod.evaluate(inputGraph, scenario, false);
+          break;
+
+        default:
+          WorkflowLogger.getLogger().log(Level.WARNING, "Method not yet suported !");
+          break;
+      }
+
+      // print the computed throughput
+      WorkflowLogger.getLogger().log(Level.INFO, "Throughput value = " + throughput + " nbIter/clockCycle, Computed in :");
+
+    } else {
+      // print an error message
+      WorkflowLogger.getLogger().log(Level.WARNING, "ERROR : The graph is deadlock !! Throughput value = 0 nbIter/clockCycle");
     }
-
-    // print the computed throughput
-    WorkflowLogger.getLogger().log(Level.INFO, "Throughput value = " + throughput);
 
     // set the outputs
     Map<String, Object> outputs = new HashMap<String, Object>();
@@ -141,38 +148,51 @@ public class ThroughputPlugin extends AbstractTaskImplementation {
   }
 
   /**
-   * initialize the graph before computing the throughput
+   * Check the deadlock freeness of the graph and initialize it before computing the throughput
    * 
    * @param inputGraph
    *          SDF/IBSDF graph
    * @param scenario
    *          contains actors duration
+   * 
+   * @return true if deadlock free, false if not
    */
-  private void init(SDFGraph inputGraph, PreesmScenario scenario) {
+  private boolean init(SDFGraph inputGraph, PreesmScenario scenario) {
     // test the inputs
     // TestPlugin.start(null, null);
 
     // check the consistency by computing the RV of the graph
-    IBSDFConsistency.computeRV(inputGraph);
+    boolean deadlockFree = IBSDFConsistency.computeRV(inputGraph);
 
-    // Copy actors duration from the scenario to actors properties
-    for (SDFAbstractVertex actor : inputGraph.getAllVertices()) {
-      if (actor.getKind() == "vertex") {
-        if (actor.getGraphDescription() == null) {
-          // if atomic actor then copy the duration indicated in the scenario
-          double duration = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
-          actor.setPropertyValue("duration", duration);
+    // check the liveness of the graph if consistent
+    if (deadlockFree) {
+
+      // Copy actors duration from the scenario to actors properties
+      for (SDFAbstractVertex actor : inputGraph.getAllVertices()) {
+        if (actor.getKind() == "vertex") {
+          if (actor.getGraphDescription() == null) {
+            // if atomic actor then copy the duration indicated in the scenario
+            double duration = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
+            actor.setPropertyValue("duration", duration);
+          } else {
+            // if hierarchical actor then as default the duration is 1
+            // the real duration of the hierarchical actor will be defined later by scheduling its subgraph
+            actor.setPropertyValue("duration", 1.);
+            scenario.getTimingManager().setTiming(actor.getId(), "x86", 1); // to remove
+          }
         } else {
-          // if hierarchical actor then as default the duration is 1 (the hierarchical actor will be replaced by its subgraph)
-          actor.setPropertyValue("duration", 1.);
-          scenario.getTimingManager().setTiming(actor.getId(), "x86", 1);
+          // the duration of interfaces in neglected by setting their duration to 0
+          actor.setPropertyValue("duration", 0.);
+          scenario.getTimingManager().setTiming(actor.getId(), "x86", 0); // to remove
         }
-      } else {
-        // As default, the duration interfaces in neglected (duration = 0)
-        actor.setPropertyValue("duration", 0.);
-        scenario.getTimingManager().setTiming(actor.getId(), "x86", 0);
       }
+
+      // check the liveness of the graph
+      deadlockFree = IBSDFLiveness.evaluate(inputGraph);
+
     }
+
+    return deadlockFree;
   }
 
 }

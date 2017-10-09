@@ -69,6 +69,7 @@ public class TestPlugin {
    * @param graph
    *          SDF input graph
    */
+
   private static void testSDFGraph(SDFGraph graph, PreesmScenario scenario) {
     System.out.println("------ Test SDFGraph ------");
 
@@ -124,6 +125,7 @@ public class TestPlugin {
     System.out.println("---------------------------");
   }
 
+  @SuppressWarnings("unused")
   private static void testScenario(SDFGraph graph, PreesmScenario scenario) {
     System.out.println("------ Test Scenario ------");
 
@@ -185,6 +187,7 @@ public class TestPlugin {
    * @param scenario
    *          scenario that contains the time manager
    */
+
   private static void testHierarchy(SDFGraph graph, PreesmScenario scenario) {
     System.out.println("------ Test Hierarchy ------");
     // list of hierarchical actors
@@ -242,6 +245,7 @@ public class TestPlugin {
    * create an SDF graph ABC
    * 
    */
+
   private static SDFGraph testSDFGraphCreation(PreesmScenario scenario) {
     System.out.println("------ Test SDF graph generation ------");
 
@@ -373,6 +377,7 @@ public class TestPlugin {
    * @param scenario
    *          contains actors duration
    */
+  @SuppressWarnings("unused")
   private static void testSrSDFConversion(SDFGraph graph, PreesmScenario scenario) {
     System.out.println("------ Test srSDF convertion ------");
     // convert the SDF graph to a srSDF graph
@@ -388,6 +393,7 @@ public class TestPlugin {
     System.out.println("----------------------------");
   }
 
+  @SuppressWarnings("unused")
   private static void testIBSDFGraphCreation(PreesmScenario scenario) {
     System.out.println("------ Test IBSDF creation ------");
     // create the subgraph
@@ -434,6 +440,7 @@ public class TestPlugin {
     System.out.println("----------------------------");
   }
 
+  @SuppressWarnings("unused")
   private static void testStructure(SDFGraph graph, PreesmScenario scenario) {
     System.out.println("------ Test structure ------");
 
@@ -518,6 +525,7 @@ public class TestPlugin {
    * @param scenario
    *          contains actors duration
    */
+  @SuppressWarnings("unused")
   private static void testPeriodicSchedule(SDFGraph graph, PreesmScenario scenario) {
     System.out.println("------ Test Periodic ------");
 
@@ -544,6 +552,7 @@ public class TestPlugin {
   /**
    * 
    */
+  @SuppressWarnings("unused")
   private static void testIterationDurationShouldBeComputed() {
     // generate a DAG
     SDFGraph dag = generateDAGOfGraphABC();
@@ -566,6 +575,7 @@ public class TestPlugin {
   /**
    * @return SDF Graph
    */
+
   private static SDFGraph generateDAGOfGraphABC() {
     // Actors: A B C
     // Edges: AC=(1,1); BC=(1,1);
@@ -592,6 +602,7 @@ public class TestPlugin {
   /**
    * 
    */
+  @SuppressWarnings("unused")
   private static void testIBSDFGraphShouldBeTranformedToFlatSrSDFGraph() {
 
     // generate an IBSDF graph
