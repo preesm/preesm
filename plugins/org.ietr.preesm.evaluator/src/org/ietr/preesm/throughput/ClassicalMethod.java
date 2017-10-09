@@ -4,6 +4,7 @@ import org.apache.commons.lang3.math.Fraction;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
+import org.ietr.preesm.throughput.helpers.Stopwatch;
 import org.ietr.preesm.throughput.transformers.IBSDFTransformer;
 import org.ietr.preesm.throughput.transformers.SDFTransformer;
 
@@ -12,6 +13,7 @@ import org.ietr.preesm.throughput.transformers.SDFTransformer;
  *
  */
 public class ClassicalMethod {
+  public Stopwatch timer;
 
   /**
    * Compute the throughput of the graph using the classical method base on flattening the hierarchy into a srSDF graph
@@ -24,6 +26,8 @@ public class ClassicalMethod {
    */
   public double evaluate(SDFGraph inputGraph, PreesmScenario scenario, boolean withExecRulres) {
     System.out.println("Computing the throughput of the graph using classical method ...");
+    this.timer = new Stopwatch();
+    timer.start();
 
     // Phase 1: convert the IBSDF graph to a flat srSDF graph
     System.out.println("Phase 1: convert the IBSDF graph to a flat srSDF graph");
@@ -40,7 +44,8 @@ public class ClassicalMethod {
 
     // -> Step 3: compute the throughput as 1/k
     double throughput = 1 / k.doubleValue();
-    System.out.println("Throughput of the graph = " + throughput);
+    timer.stop();
+    System.out.println("Throughput of the graph = " + throughput + " computed in " + timer.toString());
 
     return throughput;
   }

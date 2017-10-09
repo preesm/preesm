@@ -11,6 +11,7 @@ import org.ietr.preesm.mathematicalModels.PeriodicScheduleModel_GLPK;
 import org.ietr.preesm.mathematicalModels.SolverMethod;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.helpers.MathFunctionsHelper;
+import org.ietr.preesm.throughput.helpers.Stopwatch;
 import org.ietr.preesm.throughput.transformers.SDFTransformer;
 
 /**
@@ -127,6 +128,9 @@ public class PeriodicScheduler_SDF {
    */
 
   public double schedule(SDFGraph graph, Method method, boolean selfLoopEdge) {
+    Stopwatch timer = new Stopwatch();
+    timer.start();
+
     System.out.println("Scheduling the graph ...");
     double throughput = -1.;
 
@@ -135,7 +139,7 @@ public class PeriodicScheduler_SDF {
 
     // if a periodic schedule exists for the graph
     if (isPeriodic(graph)) {
-      System.out.println("This graph admit a periodic schedule !");
+      // System.out.println("This graph admit a periodic schedule !");
 
       // add a self loop edge for each actor if selfLoopEdge = true
       ArrayList<SDFEdge> selfLoopEdgesList = null;
@@ -166,7 +170,12 @@ public class PeriodicScheduler_SDF {
       // Step 4: compute the start date of the first execution of each actor
       this.computeActorsStartingTime(graph);
 
+      timer.stop();
+      System.out.println("Schedule completed in " + timer.toString());
+
     } else {
+
+      timer.stop();
       System.err.println("A Periodic Schedule does not exist for this graph");
       // return -1 as an error
     }
@@ -235,6 +244,10 @@ public class PeriodicScheduler_SDF {
    */
   public Fraction computeNormalizedPeriod(SDFGraph graph, Method method) {
     System.out.println("Computing the normalized period of the graph ...");
+    Stopwatch timer = new Stopwatch();
+    timer.start();
+
+    Fraction period = null;
 
     // Set Gurobi as the default solver
     if (method == null) {
@@ -243,7 +256,7 @@ public class PeriodicScheduler_SDF {
 
     if (Activator.solverMethodRegistry.containsKey(method)) {
       SolverMethod solverMethod = Activator.solverMethodRegistry.get(method);
-      return solverMethod.computeNormalizedPeriod(graph);
+      period = solverMethod.computeNormalizedPeriod(graph);
     } else {
       // use the default method : GLPK
       System.err.println(method.toString() + " method is not available ! \nTrying to use " + Method.LinearProgram_GLPK.toString() + " ...");
@@ -252,8 +265,12 @@ public class PeriodicScheduler_SDF {
       if (solverMethod == null) {
         solverMethod = new PeriodicScheduleModel_GLPK();
       }
-      return solverMethod.computeNormalizedPeriod(graph);
+      period = solverMethod.computeNormalizedPeriod(graph);
     }
+
+    timer.stop();
+    System.out.println("Normalized period K= " + period + " computed in " + timer.toString());
+    return period;
   }
 
   /**

@@ -10,6 +10,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 import org.ietr.preesm.throughput.helpers.MathFunctionsHelper;
+import org.ietr.preesm.throughput.helpers.Stopwatch;
 
 /**
  * @author hderoui
@@ -27,6 +28,9 @@ public abstract class SDFConsistency {
    * @return true if the graph is consistent, false if not
    */
   public static boolean computeRV(SDFGraph graph) {
+    Stopwatch timer = new Stopwatch();
+    timer.start();
+
     reps = new Hashtable<String, Fraction>();
     for (SDFAbstractVertex actor : graph.vertexSet()) {
       reps.put(actor.getName(), Fraction.getFraction(0));
@@ -47,7 +51,8 @@ public abstract class SDFConsistency {
     // edge verification
     for (SDFEdge e : graph.edgeSet()) {
       if (e.getSource().getNbRepeatAsInteger() * e.getProd().intValue() != e.getTarget().getNbRepeatAsInteger() * e.getCons().intValue()) {
-        System.err.println("Graph not consistent !!");
+        timer.stop();
+        System.err.println("Graph not consistent !! evaluated in " + timer.toString());
         return false;
       }
     }
@@ -70,7 +75,8 @@ public abstract class SDFConsistency {
       }
     }
 
-    System.out.println("Graph consistent !!");
+    timer.stop();
+    System.out.println("Graph consistent !! evaluated in " + timer.toString());
     return true;
   }
 

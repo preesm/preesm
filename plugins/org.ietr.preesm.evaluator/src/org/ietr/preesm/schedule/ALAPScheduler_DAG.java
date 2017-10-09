@@ -7,6 +7,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.preesm.throughput.helpers.GraphSimulationHelper;
+import org.ietr.preesm.throughput.helpers.Stopwatch;
 
 /**
  * @author hderoui
@@ -29,6 +30,8 @@ public class ALAPScheduler_DAG {
    * @return the duration of a graph iteration
    */
   public double schedule(SDFGraph graph, GraphSimulationHelper simulator, double ThConstDate) {
+    Stopwatch timer = new Stopwatch();
+    timer.start();
 
     // initialize the simulator and the list of actor to execute
     this.simulator = simulator;
@@ -70,7 +73,8 @@ public class ALAPScheduler_DAG {
     // System.err.println("Iteration not complete !!");
     // }
 
-    System.out.println("SDF Graph Scheduled in ");// + timerASAPSche.toString());
+    timer.stop();
+    System.out.println("SDF Graph Scheduled in " + timer.toString());
     return maxDate;
   }
 

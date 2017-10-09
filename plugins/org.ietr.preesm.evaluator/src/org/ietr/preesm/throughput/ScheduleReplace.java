@@ -7,6 +7,7 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.schedule.ASAPScheduler_SDF;
 import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
+import org.ietr.preesm.throughput.helpers.Stopwatch;
 import org.ietr.preesm.throughput.transformers.SDFTransformer;
 
 /**
@@ -15,7 +16,8 @@ import org.ietr.preesm.throughput.transformers.SDFTransformer;
  */
 public class ScheduleReplace {
 
-  PreesmScenario preesmScenario;
+  public Stopwatch       timer;
+  private PreesmScenario preesmScenario;
 
   /**
    * @param inputGraph
@@ -27,6 +29,8 @@ public class ScheduleReplace {
   public double evaluate(SDFGraph inputGraph, PreesmScenario scenario) {
     this.preesmScenario = scenario;
     System.out.println("Computing the throughput of the graph using Schedule-Replace technique ...");
+    this.timer = new Stopwatch();
+    timer.start();
 
     // Step 1: define the execution duration of each hierarchical actor
     System.out.println("Step 1: define the execution duration of each hierarchical actor");
@@ -63,7 +67,8 @@ public class ScheduleReplace {
     Fraction k = periodic.computeNormalizedPeriod(srSDF, PeriodicScheduler_SDF.Method.LinearProgram_Gurobi);
     // compute its throughput as 1/K
     double throughput = 1 / k.doubleValue();
-    System.out.println("Throughput of the graph = " + throughput);
+    timer.stop();
+    System.out.println("Throughput of the graph = " + throughput + " computed in " + timer.toString());
 
     return throughput;
   }

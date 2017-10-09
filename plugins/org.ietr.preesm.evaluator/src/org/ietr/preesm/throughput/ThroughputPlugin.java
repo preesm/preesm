@@ -49,6 +49,7 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.deadlock.IBSDFConsistency;
 import org.ietr.preesm.deadlock.IBSDFLiveness;
+import org.ietr.preesm.throughput.helpers.Stopwatch;
 
 /**
  * @author hderoui
@@ -72,6 +73,7 @@ public class ThroughputPlugin extends AbstractTaskImplementation {
   // Plug-in parameters
   public static final String PARAM_METHOD               = "method";
   public static final String PARAM_METHOD_DEFAULT_VALUE = "SR";
+  public Stopwatch           timer;
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters, IProgressMonitor monitor, String nodeName, Workflow workflow)
@@ -93,24 +95,28 @@ public class ThroughputPlugin extends AbstractTaskImplementation {
           // Schedule-Replace technique
           ScheduleReplace sr = new ScheduleReplace();
           throughput = sr.evaluate(inputGraph, scenario);
+          this.timer = sr.timer;
           break;
 
         case ESR:
           // Evaluate-Schedule-Replace method
           EvaluateScheduleReplace esr = new EvaluateScheduleReplace();
           throughput = esr.evaluate(inputGraph, scenario);
+          this.timer = esr.timer;
           break;
 
         case HPeriodic:
           // Hierarchical Periodic Schedule method
           HPeriodicSchedule HPeriodic = new HPeriodicSchedule();
           throughput = HPeriodic.evaluate(inputGraph, scenario);
+          this.timer = HPeriodic.timer;
           break;
 
         case Classical:
           // Based on flattening the hierarchy into a Flat srSDF graph
           ClassicalMethod classicalMethod = new ClassicalMethod();
           throughput = classicalMethod.evaluate(inputGraph, scenario, false);
+          this.timer = classicalMethod.timer;
           break;
 
         default:
@@ -119,7 +125,7 @@ public class ThroughputPlugin extends AbstractTaskImplementation {
       }
 
       // print the computed throughput
-      WorkflowLogger.getLogger().log(Level.INFO, "Throughput value = " + throughput + " nbIter/clockCycle, Computed in :");
+      WorkflowLogger.getLogger().log(Level.INFO, "Throughput value = " + throughput + " nbIter/clockCycle, Computed in : " + timer.toString());
 
     } else {
       // print an error message

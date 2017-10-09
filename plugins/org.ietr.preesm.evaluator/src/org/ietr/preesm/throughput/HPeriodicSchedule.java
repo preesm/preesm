@@ -6,6 +6,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
+import org.ietr.preesm.throughput.helpers.Stopwatch;
 import org.ietr.preesm.throughput.parsers.Identifier;
 import org.ietr.preesm.throughput.transformers.SDFTransformer;
 
@@ -15,7 +16,8 @@ import org.ietr.preesm.throughput.transformers.SDFTransformer;
  */
 public class HPeriodicSchedule {
 
-  PreesmScenario preesmScenario;
+  public Stopwatch       timer;
+  private PreesmScenario preesmScenario;
 
   /**
    * @param inputGraph
@@ -33,6 +35,8 @@ public class HPeriodicSchedule {
     }
 
     System.out.println("Computing the throughput of the graph using Hierarchical Periodic Schedule ...");
+    this.timer = new Stopwatch();
+    timer.start();
 
     // Step 1: define the execution duration of each hierarchical actor and add a self loop to it
     System.out.println("Step 1: define the execution duration of each hierarchical actor");
@@ -53,7 +57,8 @@ public class HPeriodicSchedule {
     System.out.println("Step 4: compute the throughput using the Periodic Schedule");
     PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
     double throughput = periodic.computeGraphThroughput(inputGraph, null, false);
-    System.out.println("Throughput of the graph = " + throughput);
+    timer.stop();
+    System.out.println("Throughput of the graph = " + throughput + " computed in " + timer.toString());
 
     return throughput;
   }

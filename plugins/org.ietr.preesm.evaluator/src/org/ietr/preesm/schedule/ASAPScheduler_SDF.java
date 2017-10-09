@@ -7,6 +7,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.throughput.helpers.GraphSimulationHelper;
+import org.ietr.preesm.throughput.helpers.Stopwatch;
 
 /**
  * @author hderoui
@@ -30,6 +31,8 @@ public class ASAPScheduler_SDF {
    * @return the duration of a graph iteration
    */
   public double schedule(SDFGraph graph, PreesmScenario scenario) {
+    Stopwatch timer = new Stopwatch();
+    timer.start();
 
     // initialize the simulator
     this.simulator = new GraphSimulationHelper(graph, scenario);
@@ -98,6 +101,8 @@ public class ASAPScheduler_SDF {
       }
     }
 
+    timer.stop();
+
     // check if the simulation is completed
     if (this.simulator.isIterationCompleted()) {
       live = true;
@@ -107,7 +112,7 @@ public class ASAPScheduler_SDF {
       System.err.println("Iteration not complete !!");
     }
 
-    System.out.println("SDF Graph Scheduled in ");// + timerASAPSche.toString());
+    System.out.println("SDF Graph Scheduled in " + timer.toString());
     return dur1Iter;
   }
 

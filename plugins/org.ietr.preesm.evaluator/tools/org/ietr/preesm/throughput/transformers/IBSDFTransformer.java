@@ -6,6 +6,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
+import org.ietr.preesm.throughput.helpers.Stopwatch;
 
 /**
  * @author hderoui
@@ -22,6 +23,9 @@ public abstract class IBSDFTransformer {
    * @return flat srSDF graph
    */
   public static SDFGraph convertToSrSDF(SDFGraph IBSDF, boolean withExecRulres) {
+    Stopwatch timer = new Stopwatch();
+    timer.start();
+
     // Step 1: Convert all the SDF subgraphs to a srSDF subgraphs
     Hashtable<String, SDFGraph> srSDFsubgraphList = convertAllSubgraphs(IBSDF, withExecRulres);
 
@@ -48,6 +52,8 @@ public abstract class IBSDFTransformer {
       actorsToReplcae.remove(h.getName());
     }
 
+    timer.stop();
+    System.out.println("IBSDF graph converted to SrSDF graph in " + timer.toString());
     return flatSrSDF;
   }
 

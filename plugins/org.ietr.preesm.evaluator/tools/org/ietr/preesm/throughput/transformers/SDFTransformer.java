@@ -5,6 +5,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.helpers.MathFunctionsHelper;
+import org.ietr.preesm.throughput.helpers.Stopwatch;
 
 /**
  * @author hderoui
@@ -21,6 +22,9 @@ public abstract class SDFTransformer {
    * @return HSDF graph
    */
   public static SDFGraph convertToHSDF(SDFGraph SDF) {
+    Stopwatch timer = new Stopwatch();
+    timer.start();
+
     // create the SRSDF
     SDFGraph hsdf_graph = new SDFGraph();
     hsdf_graph.setName(SDF.getName() + "_HSDF");
@@ -52,6 +56,8 @@ public abstract class SDFTransformer {
       }
     }
 
+    timer.stop();
+    System.out.println("SDF graph converted to HSDF graph in " + timer.toString());
     return hsdf_graph;
   }
 
@@ -63,6 +69,9 @@ public abstract class SDFTransformer {
    * @return srSDF graph
    */
   public static SDFGraph convertToSrSDF(SDFGraph SDF) {
+    Stopwatch timer = new Stopwatch();
+    timer.start();
+
     // System.out.println("====> converting the subgraph " + SDF.getName());
     // create the SRSDF
     SDFGraph singleRate = new SDFGraph();
@@ -102,6 +111,8 @@ public abstract class SDFTransformer {
       }
     }
 
+    timer.stop();
+    System.out.println("SDF graph converted to srSDF graph in " + timer.toString());
     return singleRate;
   }
 
@@ -113,10 +124,15 @@ public abstract class SDFTransformer {
    * @return HSDF graph with less number of edges
    */
   public static SDFGraph convertToReducedHSDF(SDFGraph SDF) {
+    Stopwatch timer = new Stopwatch();
+    timer.start();
+
     // convert the SDF graph to a srSDF graph first then convert the srSDF graph to an HSDF graph
     SDFGraph hsdf_graph = convertToSrSDF(SDF);
     hsdf_graph = SrSDFTransformer.convertToHSDF(hsdf_graph);
 
+    timer.stop();
+    System.out.println("SDF graph converted to reduced HSDF graph in " + timer.toString());
     return hsdf_graph;
   }
 
@@ -128,10 +144,15 @@ public abstract class SDFTransformer {
    * @return DAG
    */
   public static SDFGraph convertToDAG(SDFGraph SDF) {
+    Stopwatch timer = new Stopwatch();
+    timer.start();
+
     // convert the SDF graph to a srSDF graph first then convert the srSDF graph to a DAG
     SDFGraph dag = convertToSrSDF(SDF);
     dag = SrSDFTransformer.convertToDAG(dag);
 
+    timer.stop();
+    System.out.println("SDF graph converted to DAG in " + timer.toString());
     return dag;
   }
 
@@ -142,6 +163,8 @@ public abstract class SDFTransformer {
    *          graph
    */
   public static void normalize(SDFGraph SDF) {
+    Stopwatch timer = new Stopwatch();
+    timer.start();
 
     double K_RV = 1;
     for (SDFAbstractVertex actor : SDF.vertexSet()) {
@@ -153,6 +176,9 @@ public abstract class SDFTransformer {
       edge.getTarget().setPropertyValue("normalizedRate", K_RV / edge.getTarget().getNbRepeatAsInteger());
       edge.setPropertyValue("normalizationFactor", K_RV / (edge.getCons().intValue() * edge.getTarget().getNbRepeatAsInteger()));
     }
+
+    timer.stop();
+    System.out.println("SDF graph normalized in " + timer.toString());
   }
 
 }

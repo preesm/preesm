@@ -6,6 +6,8 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.schedule.ASAPScheduler_SDF;
 import org.ietr.preesm.throughput.helpers.MathFunctionsHelper;
+import org.ietr.preesm.throughput.helpers.Stopwatch;
+import org.ietr.preesm.throughput.parsers.Identifier;
 import org.ietr.preesm.throughput.transformers.SDFTransformer;
 
 /**
@@ -20,10 +22,12 @@ public abstract class SDFLiveness {
    * @return true if live, false if not
    */
   public static boolean evaluate(SDFGraph sdf) {
-    boolean live = true;
+    Stopwatch timer = new Stopwatch();
+    timer.start();
+
     // try first the Sufficient Condition of liveness
     System.out.println("Liveness evaluation : trying the sufficient condition ...");
-    live = sufficientCondition(sdf);
+    boolean live = sufficientCondition(sdf);
 
     // if SC fails we can not conclude until we try the symbolic execution
     if (!live) {
@@ -32,10 +36,11 @@ public abstract class SDFLiveness {
       live = symbolicExecution(sdf);
     }
 
+    timer.stop();
     if (live) {
-      System.out.println("SDF Graph " + sdf.getName() + " is live !!");
+      System.out.println("SDF Graph " + sdf.getName() + " is live !!  evaluated in " + timer.toString());
     } else {
-      System.err.println("SDF Graph " + sdf.getName() + " is deadlock !!");
+      System.err.println("SDF Graph " + sdf.getName() + " is deadlock !!  evaluated in " + timer.toString());
     }
 
     return live;
@@ -49,6 +54,11 @@ public abstract class SDFLiveness {
    * @return true if SC satisfied, false if not
    */
   public static boolean sufficientCondition(SDFGraph graph) {
+    // add the name property for each edge of the graph
+    for (SDFEdge e : graph.edgeSet()) {
+      e.setPropertyValue("edgeName", Identifier.generateEdgeId());
+    }
+
     // step 1: normalize the graph
     SDFTransformer.normalize(graph);
 

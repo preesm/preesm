@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
+import org.ietr.preesm.throughput.helpers.Stopwatch;
 
 /**
  * @author hderoui
@@ -20,6 +21,9 @@ public abstract class SrSDFTransformer {
    * @return HSDF graph
    */
   public static SDFGraph convertToHSDF(SDFGraph srSDF) {
+    Stopwatch timer = new Stopwatch();
+    timer.start();
+
     // clone the srSDF
     SDFGraph hsdf_graph = srSDF.clone();
     hsdf_graph.setName(srSDF.getName() + "_HSDF");
@@ -32,6 +36,8 @@ public abstract class SrSDFTransformer {
       edge.setDelay(new SDFIntEdgePropertyType(delay));
     }
 
+    timer.stop();
+    System.out.println("SrSDF graph converted to HSDF graph in " + timer.toString());
     return hsdf_graph;
   }
 
@@ -43,6 +49,9 @@ public abstract class SrSDFTransformer {
    * @return DAG
    */
   public static SDFGraph convertToDAG(SDFGraph srSDF) {
+    Stopwatch timer = new Stopwatch();
+    timer.start();
+
     // clone the srSDF
     SDFGraph dag = srSDF.clone();
     dag.setName(srSDF.getName() + "_DAG");
@@ -60,6 +69,8 @@ public abstract class SrSDFTransformer {
       }
     }
 
+    timer.stop();
+    System.out.println("SrSDF graph converted to DAG in " + timer.toString());
     return dag;
   }
 
