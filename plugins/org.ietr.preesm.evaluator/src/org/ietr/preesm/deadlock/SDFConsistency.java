@@ -1,6 +1,7 @@
 package org.ietr.preesm.deadlock;
 
 import java.util.Hashtable;
+import java.util.List;
 import org.apache.commons.lang3.math.Fraction;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
@@ -83,7 +84,10 @@ public abstract class SDFConsistency {
   private static int SetReps(SDFGraph g, SDFAbstractVertex a, Fraction n) {
     reps.put(a.getName(), n);
     // DFS forward
-    for (SDFInterfaceVertex output : a.getSinks()) {
+    List<SDFInterfaceVertex> Sinks = a.getSinks();
+    List<SDFInterfaceVertex> Sources = a.getSources();
+
+    for (SDFInterfaceVertex output : Sinks) {
       SDFEdge e = a.getAssociatedEdge(output);
       Fraction fa = reps.get(e.getTarget().getName());
       if (fa.getNumerator() == 0) {
@@ -93,7 +97,7 @@ public abstract class SDFConsistency {
     }
 
     // DFS backward
-    for (SDFInterfaceVertex input : a.getSources()) {
+    for (SDFInterfaceVertex input : Sources) {
       SDFEdge e = a.getAssociatedEdge(input);
       Fraction fa = reps.get(e.getSource().getName());
       if (fa.getNumerator() == 0) {

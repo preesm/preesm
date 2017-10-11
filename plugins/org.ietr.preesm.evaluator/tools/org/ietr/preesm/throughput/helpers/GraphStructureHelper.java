@@ -3,6 +3,8 @@ package org.ietr.preesm.throughput.helpers;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
+import org.ietr.dftools.algorithm.model.IInterface;
+import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -437,6 +439,90 @@ public abstract class GraphStructureHelper {
     // remove the old edge
     graph.removeEdge(edge);
     return nweEdge;
+  }
+
+  /**
+   * Clone an IBSDF graph
+   * 
+   * @param graph
+   *          input IBSDF graph
+   * @return IBSDF graph
+   */
+  public static SDFGraph cloneIBSDF(SDFGraph ibsdf) {
+    // list of hierarchical actor to be cloned
+    ArrayList<SDFAbstractVertex> hierarchicalActorsToBeCloned = new ArrayList<>();
+
+    // clone the tograph
+    SDFGraph clonedIBSDF = ibsdf.clone();
+
+    // add the hierarchical actors of the new top-graph to the list
+    Hashtable<String, SDFAbstractVertex> hActors = GraphStructureHelper.getHierarchicalActors(clonedIBSDF);
+    for (SDFAbstractVertex a : hActors.values()) {
+      hierarchicalActorsToBeCloned.add(a);
+    }
+
+    // for each hierarchical actor clone its subgraph and set the new graph as its original subgraph
+    while (!hierarchicalActorsToBeCloned.isEmpty()) {
+      // get a hierarchical actor
+      SDFAbstractVertex h = hierarchicalActorsToBeCloned.get(0);
+      // clone its subgraph
+      SDFGraph cloneSubgraph = ((SDFGraph) h.getGraphDescription()).clone();
+      // set the subgraph cloned
+      h.setGraphDescription(cloneSubgraph);
+
+      // add the hierarchical actors of the new subgraph to the list
+      hActors = GraphStructureHelper.getHierarchicalActors(cloneSubgraph);
+      for (SDFAbstractVertex a : hActors.values()) {
+        hierarchicalActorsToBeCloned.add(a);
+      }
+
+      // remove the hierarchical actor proceeded
+      hierarchicalActorsToBeCloned.remove(0);
+    }
+
+    return clonedIBSDF;
+  }
+
+  public static void printSDF(SDFGraph graph) {
+    System.out.println("=> Liste des vertex :");
+    for (SDFAbstractVertex actor : graph.vertexSet()) {
+      try {
+        System.out.println(actor.getKind() + "  " + actor.getName() + ", rv= " + (Integer) actor.getPropertyBean().getValue(SDFAbstractVertex.NB_REPEAT)
+            + ", dur=" + actor.getPropertyBean().getValue("duration"));
+
+        if (actor.getGraphDescription() != null) {
+          // System.out.println("Hierarchical duration = " + scenario.getTimingManager().generateVertexTimingFromHierarchy(actor, "x86"));
+        }
+
+      } catch (InvalidExpressionException e) {
+        e.printStackTrace();
+      }
+
+      System.out.println("\t interfaces : ");
+      for (IInterface inter : actor.getInterfaces()) {
+        SDFInterfaceVertex input = (SDFInterfaceVertex) inter;
+        System.out.println("\t\t input port name " + input.getName() + " : " + actor.getAssociatedEdge(input).toString());
+      }
+
+      System.out.println("\t inputs : ");
+      for (SDFInterfaceVertex input : actor.getSources()) {
+        System.out.println("\t\t input port name " + input.getName() + " : " + actor.getAssociatedEdge(input).toString());
+      }
+
+      System.out.println("\t outputs : ");
+      for (SDFInterfaceVertex output : actor.getSinks()) {
+        System.out.println("\t\t output port name " + output.getName() + " : " + actor.getAssociatedEdge(output).toString());
+      }
+    }
+
+    System.out.println("\n=> Liste des edges :");
+    for (SDFEdge edge : graph.edgeSet()) {
+      System.out.println("name: " + edge.toString());
+      System.out.println("e(" + edge.getSource().getName() + "," + edge.getTarget().getName() + "), p(" + edge.getSourceInterface().getName() + ","
+          + edge.getTargetInterface().getName() + "), prod=" + edge.getProd() + " cons= " + edge.getCons() + " M0= " + edge.getDelay());
+    }
+
+    System.out.println("---------------------------");
   }
 
 }

@@ -49,6 +49,7 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.deadlock.IBSDFConsistency;
 import org.ietr.preesm.deadlock.IBSDFLiveness;
+import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.helpers.Stopwatch;
 
 /**
@@ -80,7 +81,7 @@ public class ThroughputPlugin extends AbstractTaskImplementation {
       throws WorkflowException {
 
     // get the input graph, the scenario for actors duration, and the method to use
-    SDFGraph inputGraph = ((SDFGraph) inputs.get("SDF")).clone();
+    SDFGraph inputGraph = GraphStructureHelper.cloneIBSDF((SDFGraph) inputs.get("SDF"));
     PreesmScenario inputScenario = (PreesmScenario) inputs.get("scenario");
     ThroughputMethod inputMethod = ThroughputMethod.valueOf(parameters.get("method"));
 
