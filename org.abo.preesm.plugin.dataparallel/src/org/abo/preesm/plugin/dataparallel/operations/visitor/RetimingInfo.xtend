@@ -1,27 +1,21 @@
 package org.abo.preesm.plugin.dataparallel.operations.visitor
 
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import java.util.Map
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
+import java.util.List
+import org.abo.preesm.plugin.dataparallel.fifo.FifoActorGraph
+import org.eclipse.xtend.lib.annotations.Data
+import org.eclipse.xtend.lib.annotations.Accessors
 
 /**
- * Class that contains information required to perform retiming transformation
+ * Class that contains information required to perform re-timing transformation
+ * 
+ * Re-timing information is stored in a {@link List} of {@link FifoActorGraph}. Each
+ * {@link FifoActorGraph} can represent transient graph of a strongly connected component.
+ * If two strongly connected components share a transient graph, then the transient
+ * graphs are merged together.
  * 
  * @author Sudeep Kanur
  */
-@org.eclipse.xtend.lib.annotations.Data class RetimingInfo {
-	/**
-	 * Contains the retimed SrSDF graph. Used for reference
-	 */
-	SDFGraph graph
-	
-	/**
-	 * Lookup table consisting of edges to its original delay values for reference
-	 */
-	Map<SDFEdge, Integer> originalDelayValues
-	
-	/**
-	 * Lookup table of edge and its related vertices that transform its delay values
-	 */
-	Map<SDFEdge, Integer> transformingInstances
+@Data class RetimingInfo {
+	@Accessors(PUBLIC_GETTER, PUBLIC_SETTER)
+	List<FifoActorGraph> initializationGraphs
 }
