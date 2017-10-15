@@ -15,7 +15,7 @@ import org.jgrapht.traverse.BreadthFirstIterator
 /**
  * The iterator walks one graph w.r.t to nodes present in the another graph such that atleast the 
  * nodes of a given set from the source graph is visited.
- * 
+ * <p>
  * Eg. Let "source" graph be a DAG and "dest" graph be a SrSDF. 
  * Let visitable nodes be set of nodes of "source" graph that must be seen in "dest" graph
  * Let startInstance be the starting node in "dest" from which walking must be carried out.
@@ -23,14 +23,14 @@ import org.jgrapht.traverse.BreadthFirstIterator
  * This iterator walks the "dest" graph from the "startInstance" specified such that all the nodes of
  * "visitable nodes" are seen. Additional nodes of "dest" can be seen in order to reach all the nodes
  * of the "visitable nodes". 
- * 
+ * <p>
  * Note that "visitable nodes" is defined w.r.t to "source" graph and we need to
  * find explicit equivalent of these in the "dest" graph.
  * While "startInstance" is defined w.r.t to "dest" graph 
- * 
+ * <p>
  * The class is written explicitly to be used with a Single Rate Graph or HSDF as "dest" graph
  * and the custom DAG (obtained from {@link PureDAGConstructor} implementations).
- * 
+ * <p>
  * Construct the iterator through the builder {@link SrSDFDAGCoIteratorBuilder}
  * 
  * @author Sudeep Kanur 

@@ -1,4 +1,4 @@
-package org.abo.preesm.plugin.dataparallel.operations.visitor
+package org.abo.preesm.plugin.dataparallel.operations
 
 import java.util.List
 import java.util.Map
@@ -23,9 +23,9 @@ class MovableInstances implements DAGOperations {
 	
 	/**
 	 * The lookup table of instance and levels that are
-	 * obtained after rearranging
+	 * obtained after rearranging.
 	 * Apart from acyclic-like SDFGs, this map is not 
-	 * guaranteed to be parallel
+	 * guaranteed to be parallel.
 	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	val Map<SDFAbstractVertex, Integer> rearrangedLevels
@@ -59,13 +59,13 @@ class MovableInstances implements DAGOperations {
 	}
 	
 	/**
-	 * Top level helper function that rearranges a DAG according to algorithm 3
-	 * of the DASIP-2017 paper
+	 * Helper function that finds instances that are to be moved to the transient graph. The
+	 * detailed implementation algorithm is found in DASIP-2017 paper.
 	 * 
 	 * @param dagGen A {@link PureDAGConstructor} instance
 	 * @throws SDF4JException If the DAG is not instance independent
 	 */
-	private def void rearrange(PureDAGConstructor dagGen) throws SDF4JException {
+	private def void findMovableInstances(PureDAGConstructor dagGen) throws SDF4JException {
 		val parallelVisitor = new DependencyAnalysisOperations
 		dagGen.accept(parallelVisitor)
 		val isDAGInd = parallelVisitor.isIndependent
@@ -141,7 +141,7 @@ class MovableInstances implements DAGOperations {
 	/**
 	 * Helper function to completely sort acyclic-like DAGs and partially
 	 * sort cyclic-DAGs. The algorithm and its description is given in 
-	 * DASIP-2017 paper
+	 * DASIP-2017 paper.
 	 * 
 	 * @param dagGen A {@link PureDAGConstructor} instance
 	 * @param rootInstance Root instances that needs to be considered for sorting
@@ -248,25 +248,25 @@ class MovableInstances implements DAGOperations {
 	}
 	
 	/**
-	 * Visitor method that provides moveable instances of a {@link SDF2DAG}
-	 * instance
-	 * 
+	 * Visitor method that provides movable instances of a {@link SDF2DAG}
+	 * instance.
+	 * <p>
 	 * Use {@link MovableInstances#movableInstances} to get list of movable instances
-	 * @throws SDF4JException If the DAG is not instance independent
+	 * @throws SDF4JException If the DAG is not instance independent.
 	 */
 	override visit(SDF2DAG dagGen) {
-		rearrange(dagGen)
+		findMovableInstances(dagGen)
 	}
 	
 	/**
-	 * Visitor method that provides moveable instances of a {@link DAG2DAG}
-	 * instance
-	 * 
+	 * Visitor method that provides movable instances of a {@link DAG2DAG}
+	 * instance.
+	 * <p>
 	 * Use {@link MovableInstances#movableInstances} to get list of movable instances
-	 * @throws SDF4JException If the DAG is not instance independent
+	 * @throws SDF4JException If the DAG is not instance independent.
 	 */
 	override visit(DAG2DAG dagGen) {
-		rearrange(dagGen)
+		findMovableInstances(dagGen)
 	}
 	
 }

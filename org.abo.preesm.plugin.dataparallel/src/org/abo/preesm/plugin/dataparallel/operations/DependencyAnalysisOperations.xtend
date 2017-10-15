@@ -1,4 +1,4 @@
-package org.abo.preesm.plugin.dataparallel.operations.visitor
+package org.abo.preesm.plugin.dataparallel.operations
 
 import java.util.Set
 import org.abo.preesm.plugin.dataparallel.DAG2DAG
@@ -31,11 +31,11 @@ class DependencyAnalysisOperations implements DAGCommonOperations {
 	
 	/**
 	 * Helper function to analyse instance independence on {@link PureDAGConstructor} 
-	 * instance based on the instance independence of its subsets
-	 * 
+	 * instance based on the instance independence of its subsets.
+	 * <p>
 	 * Logic of implementation is that it checks if each of the subset DAG
 	 * is instance independent and accumulate instance dependent actors on
-	 * its way
+	 * its way.
 	 * 
 	 * @param dagGen A {@link PureDAGConstructor} instance
 	 */
@@ -66,12 +66,12 @@ class DependencyAnalysisOperations implements DAGCommonOperations {
 	/**
 	 * Visitor method that performs instance dependency analysis on
 	 * a {@link SDF2DAG} instance. 
-	 * 
+	 * <p>
 	 * Use {@link DependencyAnalysisOperations#isIndependent} to check if the
-	 * DAG is instance independent
-	 * 
+	 * DAG is instance independent.
+	 * <p>
 	 * Use {@link DependencyAnalysisOperations#instanceDependentActors} to give
-	 * instance dependent actors
+	 * instance dependent actors.
 	 * 
 	 * @param dagGen A {@link SDF2DAG} instance
 	 */
@@ -82,12 +82,12 @@ class DependencyAnalysisOperations implements DAGCommonOperations {
 	/**
 	 * Visitor method that performs instance dependency analysis on
 	 * a {@link DAG2DAG} instance. 
-	 * 
+	 * <p>
 	 * Use {@link DependencyAnalysisOperations#isIndependent} to check if the
-	 * DAG is instance independent
-	 * 
+	 * DAG is instance independent.
+	 * <p>
 	 * Use {@link DependencyAnalysisOperations#instanceDependentActors} to give
-	 * instance dependent actors
+	 * instance dependent actors.
 	 * 
 	 * @param dagGen A {@link DAG2DAG} instance
 	 */
@@ -98,18 +98,18 @@ class DependencyAnalysisOperations implements DAGCommonOperations {
 	/**
 	 * Visitor method that performs instance dependency analysis on
 	 * a {@link DAGSubset} instance. 
-	 * 
+	 * <p>
 	 * Use {@link DependencyAnalysisOperations#isIndependent} to check if the
-	 * DAG is instance independent
-	 * 
+	 * DAG is instance independent.
+	 * <p>
 	 * Use {@link DependencyAnalysisOperations#instanceDependentActors} to give
-	 * instance dependent actors
-	 * 
+	 * instance dependent actors.
+	 * <p>
 	 * Instance independence is calculated by getting actors at each level
 	 * As we are operating on a subset of a DAG, all the instances of actors
 	 * of the SDF must occur at a unique level. If an actor occurs at two different
 	 * level, then that actor is not instance independent. We record that actor
-	 * in a special variable (nonParallelActors) and report it
+	 * in a special variable (nonParallelActors) and report it.
 	 * 
 	 * @param dagGen A {@link DAGSubset} instance
 	 */

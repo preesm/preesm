@@ -12,17 +12,17 @@ import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 
 /**
- * Class that represents a FIFO initialization refinement. Firing this actor represents 
- * initialization of a FIFO. Representing FIFO initialization refinement as a FIFO actor allows
- * non-trivial actor initializations, which is necessary for re-timing transformations. 
- * 
+ * Class that represents a FIFO initialisation refinement. Firing this actor represents 
+ * initialisation of a FIFO. Representing FIFO initialisation refinement as a FIFO actor allows
+ * non-trivial actor initialisations, which is necessary for re-timing transformations. 
+ * <p>
  * {@link FifoActor} has a (optional) production and (optional) consumption rate of 1. The 
- * repetition vector signifies the number of delay tokens that needs to be initialized. As edges
+ * repetition vector signifies the number of delay tokens that needs to be initialised. As edges
  * are split during SDF to SrSDF & DAG transformation, precedence of edges are maintained using
  * startIndex attribute.
- * 
- * If the {@link FifoActor} has no production or consumption, then the actor does not have a 
- * non-trivial initialization.
+ * <p>
+ * If the FifoActor has no production or consumption, then the actor does not have a 
+ * non-trivial initialisation.
  * 
  * @author Sudeep Kanur
  */

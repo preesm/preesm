@@ -14,18 +14,19 @@ import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.traverse.TopologicalOrderIterator
 import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
+import org.abo.preesm.plugin.dataparallel.pojo.NodeChain
 
 /**
  * Apart from the poor choice of name for this class ;) , this class groups the vertices of
  * a single rate graph along with its associated implodes and explodes. This way, it is clear to 
  * distinguish which nodes are instances of actors of its original SDF graph and which nodes are
  * added during creation of single rate graph.
- * 
+ * <p>
  * The delegation info is used to appropriately set/get delays. Input delays are placed at the 
  * begining of an implode instance, if present and at the exit of the explode instance, if present.
  * The class handles this information.
- * 
- * Warning! The association of implodes/explodes with a vertex is found out using regular expression.
+ * <p>
+ * <b>Warning!</b> The association of implodes/explodes with a vertex is found out using regular expression.
  * It assumes that the way implode/explodes are named is according to {@link ToHSDFVisitor} class.
  * 
  * @author Sudeep Kanur
@@ -73,9 +74,9 @@ class NodeChainGraph {
 	
 	/**
 	 * Constructor. 
-	 * 
+	 * <p>
 	 * Pass a single rate graph. Pure SDF graphs can also be passed, but it is useless.
-	 * 
+	 * <p>
 	 * @param graph The single rate graph
 	 */
 	new(SDFGraph graph) {
@@ -226,7 +227,7 @@ class NodeChainGraph {
 	 * Helper function used when it is known that a vertex in an SrSDF graph whose previous node
 	 * is being found has an implode vertex connected to it. Thus, the previous node-chain of the 
 	 * vertex is in actuality the previous node-chain of the implode node. 
-	 * 
+	 * <p>
 	 * Further, the vertex behind this implode node can be an user inserted explode node or an
 	 * associated explode node. This function checks this and populates the previous node-chain
 	 * 

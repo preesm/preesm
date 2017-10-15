@@ -1,4 +1,4 @@
-package org.abo.preesm.plugin.dataparallel.operations.visitor
+package org.abo.preesm.plugin.dataparallel.operations
 
 import java.util.List
 import java.util.Map
@@ -14,9 +14,9 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 
 /**
- * DAG Operation to obtain the level set of a DAG
+ * DAG Operation to obtain the level set of a DAG.
  * Use {@link OperationsUtils} to obtain level sets and other information
- * that can be gleamed from levels
+ * that can be gleamed from levels.
  * 
  * @author Sudeep Kanur
  */
@@ -44,7 +44,7 @@ class LevelsOperations implements DAGCommonOperations {
 	 * Helper function to compute all the levels. 
 	 * The computation leverages the fact that only those instances
 	 * seen in a DAG is considered. Hence, the implementation is safe
-	 * for a pure DAG as well as a subset of a DAG
+	 * for a pure DAG as well as a subset of a DAG.
 	 */
 	protected def void computeAllLevels() {
 		dag.vertexSet
@@ -73,9 +73,9 @@ class LevelsOperations implements DAGCommonOperations {
 	}
 	
 	/**
-	 * Visitor method to compute levels of a {@link SDF2DAG} instance
-	 * 
-	 * Use {@link LevelsOperations#levels} to get the levels computed
+	 * Visitor method to compute levels of a {@link SDF2DAG} instance.
+	 * <p>
+	 * Use {@link LevelsOperations#levels} to get the levels computed.
 	 * 
 	 * @param dagGen A {@link SDF2DAG} instance
 	 */
@@ -89,10 +89,10 @@ class LevelsOperations implements DAGCommonOperations {
 	}
 	
 	/**
-	 * Visitor method to compute levels of a {@link DAGSubset} instance
-	 * 
-	 * Use {@link LevelsOperations#levels} to get the levels computed
-	 * 
+	 * Visitor method to compute levels of a {@link DAGSubset} instance.
+	 * <p> 
+	 * Use {@link LevelsOperations#levels} to get the levels computed.
+	 * <p>
 	 * @param dagGen A {@link DAGSubset} instance
 	 */
 	override visit(DAGSubset dagGen) {
@@ -117,9 +117,9 @@ class LevelsOperations implements DAGCommonOperations {
 	}
 	
 	/**
-	 * Visitor method to compute levels of a {@link DAG2DAG} instance
-	 * 
-	 * Use {@link LevelsOperations#levels} to get the levels computed
+	 * Visitor method to compute levels of a {@link DAG2DAG} instance.
+	 * <p>
+	 * Use {@link LevelsOperations#levels} to get the levels computed.
 	 * 
 	 * @param dagGen A {@link DAG2DAG} instance
 	 */

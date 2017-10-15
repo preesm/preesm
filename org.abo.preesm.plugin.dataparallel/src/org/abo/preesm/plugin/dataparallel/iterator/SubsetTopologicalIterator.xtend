@@ -85,9 +85,9 @@ class SubsetTopologicalIterator extends BreadthFirstIterator<SDFAbstractVertex, 
 	}
 	
 	/**
-	 * Overrides {@link BreadthFirstIterator#encounterVertex}
+	 * Overrides {@link BreadthFirstIterator#encounterVertex}.
 	 * Run encounterVertex only when all of the source nodes (that is seen in the 
-	 * subset of the DAG) is encountered before
+	 * subset of the DAG) is encountered before.
 	 */
 	protected override encounterVertex(SDFAbstractVertex node, SDFEdge edge) {
 		val sources = instanceSources.get(node)

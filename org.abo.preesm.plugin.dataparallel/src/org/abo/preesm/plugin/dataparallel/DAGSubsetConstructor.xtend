@@ -4,7 +4,7 @@ import org.abo.preesm.plugin.dataparallel.DAGConstructor
 import java.util.List
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.abo.preesm.plugin.dataparallel.iterator.SubsetTopologicalIterator
-import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGCommonOperations
+import org.abo.preesm.plugin.dataparallel.operations.DAGCommonOperations
 
 /**
  * Interface for constructing a subset of a DAG constructor
@@ -13,9 +13,9 @@ import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGCommonOperations
  * traversing a given root instance from the root instance set of the
  * original {@link PureDAGConstructor}. {@link SubsetTopologicalIterator} is
  * commonly used to construct the subset.
- * 
+ * <p>
  * The implementations do not return the constructed DAG, but only
- * update the associated data-structures
+ * update the associated data-structures.
  * 
  * @author Sudeep Kanur
  */

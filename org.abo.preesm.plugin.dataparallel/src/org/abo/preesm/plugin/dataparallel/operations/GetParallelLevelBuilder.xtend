@@ -1,4 +1,4 @@
-package org.abo.preesm.plugin.dataparallel.operations.visitor
+package org.abo.preesm.plugin.dataparallel.operations
 
 import java.util.Map
 import org.abo.preesm.plugin.dataparallel.PureDAGConstructor
@@ -6,9 +6,9 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 
 /**
- * Helper class to properly initialize and use {@link OperationsUtils#getParallelLevel}
- * 
- * In order to properly assign appropriate levels, we use builder pattern
+ * Helper class to properly initialize and use {@link OperationsUtils#getParallelLevel}.
+ * <p>
+ * In order to properly assign appropriate levels, we use builder pattern.
  * 
  * @author Sudeep Kanur
  */

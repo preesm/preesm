@@ -1,4 +1,4 @@
-package org.abo.preesm.plugin.dataparallel.operations.visitor
+package org.abo.preesm.plugin.dataparallel.operations
 
 import org.abo.preesm.plugin.dataparallel.DAGSubset
 import org.abo.preesm.plugin.dataparallel.DAGConstructor

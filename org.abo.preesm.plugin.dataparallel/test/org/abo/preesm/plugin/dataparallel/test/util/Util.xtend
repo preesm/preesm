@@ -1,4 +1,4 @@
-package org.abo.preesm.plugin.dataparallel.test
+package org.abo.preesm.plugin.dataparallel.test.util
 
 import java.util.List
 import java.util.NoSuchElementException

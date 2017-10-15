@@ -11,24 +11,40 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
+import org.abo.preesm.plugin.dataparallel.test.util.Util
 
+/**
+ * Parametric test for {@link SrSDFToSDF}
+ * 
+ * @author Sudeep Kanur
+ */
 @RunWith(Parameterized)
 class SrSDFToSDFTest {
 	protected val SDFGraph sdf
 	
 	protected val SDFGraph srsdf
 	
+	/**
+	 * Has the following parameters from {@link Util#provideAllGraphsContext}:
+	 * <ol>
+	 * 	<li> A {@link SDFGraph} instance
+	 * 	<li> Its SrSDF generated from {@link ToHSDFVisitor}
+	 * </ol>
+	 */
 	new(SDFGraph sdf, SDFGraph srsdf) {
 		this.sdf = sdf
 		this.srsdf = srsdf
 	}	
 	
+	/**
+	 * Generate following parameters from {@link Util#provideAllGraphsContext}:
+	 * <ol>
+	 * 	<li> A {@link SDFGraph} instance
+	 * 	<li> Its SrSDF generated from {@link ToHSDFVisitor}
+	 * </ol>
+	 */
 	@Parameters
 	public static def Collection<Object[]> instancesToTest() {
-		// Contains the following parameters
-		// 1. SDF graph
-		// 2. SRSDF graph
-		
 		val parameters = newArrayList
 		Util.provideAllGraphsContext.forEach[sdfContext |
 			val sdf = sdfContext.graph
@@ -42,6 +58,8 @@ class SrSDFToSDFTest {
 	
 	/**
 	 * Get total delays present in the graph
+	 * 
+	 * @param graph The SDFGraph
 	 * @return Total delays in this {@link SDFGraph} instance
 	 */
 	private def int getTotalDelays(SDFGraph graph) {
@@ -72,16 +90,18 @@ class SrSDFToSDFTest {
 	}
 	
 	/**
-	 * Test that after retiming SrSDF graph and transforming it back to SDF graph, the total
+	 * After re-timing SrSDF graph and transforming it back to SDF graph, the total
 	 * delays in each of the graph is same.
-	 * 
-	 * First set all delays in the graph to 0, 
-	 * then all nodes to some negative value, 
-	 * later all nodes to some positive value.
-	 * 
-	 * Finally, check if original SDF graph can be retrieved.
-	 * 
-	 * Strong test
+	 * <p>
+	 * Following operations are carried out one after the other:
+	 * <ol>
+	 * 	<li> Set all delays in the graph to 0, 
+	 * 	<li> Set all nodes to some negative value, 
+	 * 	<li> Set all nodes to some positive value.
+	 * 	<li> Revert to original delays
+	 * </ol>
+	 * <p>
+	 * <i>Strong test</i>
 	 */
 	@Test
 	public def void testSDFRetiming() {

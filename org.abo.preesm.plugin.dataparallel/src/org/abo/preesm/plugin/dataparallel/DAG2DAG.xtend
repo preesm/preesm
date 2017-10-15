@@ -3,7 +3,7 @@ package org.abo.preesm.plugin.dataparallel
 import java.util.ArrayList
 import java.util.List
 import java.util.logging.Logger
-import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
+import org.abo.preesm.plugin.dataparallel.operations.DAGOperations
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge

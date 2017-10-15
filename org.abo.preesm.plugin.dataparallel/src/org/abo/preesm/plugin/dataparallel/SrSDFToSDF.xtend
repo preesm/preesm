@@ -12,8 +12,8 @@ import org.ietr.dftools.algorithm.model.visitors.SDF4JException
  * The primary purpose of this class is to check whether re-timing transformation works correctly.
  * After re-timing, the SDF graph must be acyclic-like. SrSDF graph cannot be checked for acyclic-like
  * property directly, hence we represent the delays of SrSDF graph back in SDF graph and then check
- * the SDF graph for acyclic-like property
- * 
+ * the SDF graph for acyclic-like property.
+ * <p>
  * The class takes in original SDF graph, original SrSDF graph (before re-timing) and DAG constructor.
  * All properties of original SDF graph, except the delay at their edges is preserved. Original
  * SrSDF graph is used to construct a {@link NodeChainGraph}, which groups implode/explodes together
@@ -82,6 +82,7 @@ class SrSDFToSDF {
 	
 	/**
 	 * Get the SDF graph that was re-timed according to the SrSDF graph passed
+	 * 
 	 * @return SDF graph that was re-timed 
 	 */
 	def SDFGraph getRetimedSDF(SDFGraph srsdf) {
@@ -163,6 +164,7 @@ class SrSDFToSDF {
 	
 	/**
 	 * Get the SDF graph that was sent before it was re-timed
+	 * 
 	 * @return Original SDF graph, before retiming was performed
 	 */
 	def SDFGraph getOriginalSDF() {

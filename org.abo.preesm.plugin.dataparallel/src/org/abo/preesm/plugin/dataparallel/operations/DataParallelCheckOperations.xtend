@@ -1,4 +1,4 @@
-package org.abo.preesm.plugin.dataparallel.operations.visitor
+package org.abo.preesm.plugin.dataparallel.operations
 
 import java.util.List
 import java.util.logging.Level
@@ -15,6 +15,7 @@ import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.alg.CycleDetector
 import org.jgrapht.graph.DirectedSubgraph
 import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
+import org.abo.preesm.plugin.dataparallel.pojo.RetimingInfo
 
 /**
  * Isolate strongly connected components of the original
@@ -34,27 +35,26 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 	/**
 	 * Output single rate graph. 
 	 * If the graph is instance independent, then this graph is guaranteed to be data-parallel, as
-	 * it is rearranged according to DASIP 2017 paper "Detection of Data-Parallelism in SDFG"
+	 * it is rearranged according to DASIP 2017 paper "Detection of Data-Parallelism in SDFG".
 	 * Otherwise, it contains original input graph.
 	 */
 	@Accessors(PUBLIC_GETTER, PROTECTED_SETTER)
 	var SDFGraph cyclicGraph
 	
 	/**
-	 * Retiming info. Information required for scheduling and code generation stages.
-	 * WARNING! This is not stable yet
+	 * {@link RetimingInfo} instance. Information required for scheduling and code generation stages.
 	 */
 	@Accessors(PUBLIC_GETTER, PROTECTED_SETTER)
 	var RetimingInfo info
 	
 	/**
-	 * True if the @{link SDFGraph} is data-parallel as well
+	 * <code>true</code> if the @{link SDFGraph} is data-parallel as well
 	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	var Boolean isDataParallel
 	
 	/**
-	 * True if @{link SDFGraph} is instance independent
+	 * <code>true</code> if @{link SDFGraph} is instance independent
 	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	var Boolean isInstanceIndependent
@@ -91,6 +91,10 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 		}
 	}
 	
+	/**
+	 * Perform data-parallel check and re-timing transformation on the {@link SDFGraph} given by the
+	 * user. 
+	 */
 	override visit(SDFGraph sdf) throws SDF4JException {
 		if(!sdf.isSchedulable) {
 			throw new SDF4JException("Graph " + sdf + " not schedulable")
@@ -134,7 +138,7 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 			val subgraphDepActors = newArrayList
 			
 			// WIP
-//			val info = new RetimingInfo(srsdf, newHashMap, newHashMap)
+//			val info = new RetimingInfo(newArrayList)
 			
 			// Process each unconnected SDF subgraphs at a time
 			acyclicLikeVisitor.SDFSubgraphs.forEach[sdfSubgraph |

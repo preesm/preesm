@@ -1,4 +1,4 @@
-package org.abo.preesm.plugin.dataparallel.operations.visitor
+package org.abo.preesm.plugin.dataparallel.operations
 
 import java.util.logging.Logger
 import org.eclipse.xtend.lib.annotations.Accessors
@@ -11,13 +11,14 @@ import org.jgrapht.alg.CycleDetector
 import java.util.List
 
 /**
- * Class that detects Acyclic-like patterns from a given subgraph
+ * Class that detects Acyclic-like patterns from a given subgraph.
+ * <p>
  * An SDFG is acylic-like when removing the edges containing delay elements equal to 
  * production rate times repetition rate of its source (or consumption rate times repetition rate 
  * of its target) makes the SDFG completely acyclic.
- * 
+ * <p>
  * This class operates on DirectedSubgraph only!
- * 
+ * <p>
  * @author Sudeep Kanur
  */
 class AcyclicLikeSubgraphDetector implements IGraphVisitor<SDFGraph, SDFAbstractVertex, SDFEdge> {
@@ -51,6 +52,11 @@ class AcyclicLikeSubgraphDetector implements IGraphVisitor<SDFGraph, SDFAbstract
 		throw new UnsupportedOperationException("TODO: auto-generated method stub")
 	}
 	
+	/**
+	 * Process {@link SDFGraph} to check whether it is acyclic-like or not.
+	 * 
+	 * @param sdf A {@link SDFGraph} instance that has to be checked
+	 */
 	override visit(SDFGraph sdf) throws SDF4JException {
 		processedSDF = sdf.clone
 		val removableEdges = newArrayList

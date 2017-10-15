@@ -12,7 +12,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.alg.CycleDetector
-import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGCommonOperations
+import org.abo.preesm.plugin.dataparallel.operations.DAGCommonOperations
 
 /**
  * A subset of DAG is the set of all the instances that has a reachable path 
@@ -115,8 +115,8 @@ final class DAGSubset extends AbstractDAGConstructor implements DAGSubsetConstru
 	}
 	
 	/**
-	 * Filter the relevant instances and actors from the original map
-	 * Returns a filtered copy of original look up table
+	 * Filter the relevant instances and actors from the original map. 
+	 * Returns a filtered copy of original look up table.
 	 * 
 	 * @return Look up table consisting of relevant actors and its instances 
 	 */
@@ -134,8 +134,8 @@ final class DAGSubset extends AbstractDAGConstructor implements DAGSubsetConstru
 	}
 	
 	/**
-	 * Filter the relevant instances and actors from the original map
-	 * Returns a copy of filtered instances
+	 * Filter the relevant instances and actors from the original map. 
+	 * Returns a copy of filtered instances.
 	 * 
 	 * @return Lookup table consisting of instances and its relevant actors
 	 */
@@ -144,8 +144,8 @@ final class DAGSubset extends AbstractDAGConstructor implements DAGSubsetConstru
 	}
 	
 	/**
-	 * Filter the relevant instances and implode/explode from the original map
-	 * Returns a copy of filtered implode/explode and its instances
+	 * Filter the relevant instances and implode/explode from the original map.
+	 * Returns a copy of filtered implode/explode and its instances.
 	 * 
 	 * @return Lookup table consisting of implode/explode instances belonging to the DAG and its instances
 	 */
@@ -154,8 +154,8 @@ final class DAGSubset extends AbstractDAGConstructor implements DAGSubsetConstru
 	}
 	
 	/**
-	 * Check whether the input is valid. Following checks are made
-	 * Cycles, delays and repetition vector, root node exist and is valid root node
+	 * Check whether the input is valid. Following checks are made.
+	 * Cycles, delays and repetition vector, root node exist and is valid root node.
 	 * 
 	 * @return true if input is valid, or exception is thrown (false is never returned)
 	 * @throws SDF4JException if the input graph is not a valid DAG or if root node does not exist

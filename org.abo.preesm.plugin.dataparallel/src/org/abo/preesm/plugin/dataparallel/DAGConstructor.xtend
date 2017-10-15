@@ -49,8 +49,8 @@ interface DAGConstructor {
 	public def Map<SDFAbstractVertex, SDFAbstractVertex> getExplodeImplodeOrigInstances()
 	
 	/**
-	 * Get Source actors
-	 * Source actors are defined as those actors in the original SDF
+	 * Get Source actors. 
+	 * Source actors are defined as those actors in the original SDF 
 	 * that have no inputs
 	 * 
 	 * @return List of source actors
@@ -58,7 +58,7 @@ interface DAGConstructor {
 	public def List<SDFAbstractVertex> getSourceActors()
 	
 	/**
-	 * Get Sink actors
+	 * Get Sink actors. 
 	 * Sink actors are defined as those actors in the original SDFG that have
 	 * no outputs
 	 * 

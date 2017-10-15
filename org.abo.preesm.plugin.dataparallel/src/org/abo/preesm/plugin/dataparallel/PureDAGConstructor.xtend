@@ -2,7 +2,7 @@ package org.abo.preesm.plugin.dataparallel
 
 import java.util.List
 import java.util.Map
-import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
+import org.abo.preesm.plugin.dataparallel.operations.DAGOperations
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph

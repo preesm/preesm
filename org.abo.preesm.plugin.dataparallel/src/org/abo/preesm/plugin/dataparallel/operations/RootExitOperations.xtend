@@ -1,4 +1,4 @@
-package org.abo.preesm.plugin.dataparallel.operations.visitor
+package org.abo.preesm.plugin.dataparallel.operations
 
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
 import org.abo.preesm.plugin.dataparallel.DAGSubset
@@ -9,14 +9,28 @@ import java.util.List
 import org.abo.preesm.plugin.dataparallel.PureDAGConstructor
 import org.abo.preesm.plugin.dataparallel.DAGConstructor
 
+/**
+ * Calculate root (entry) and exit nodes of a DAG
+ * 
+ * @author Sudeep Kanur
+ */
 class RootExitOperations implements DAGCommonOperations {
 	
+	/**
+	 * Root (entry) nodes of the DAG
+	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	val List<SDFAbstractVertex> rootInstances
 	
+	/**
+	 * Actors corresponding to root (entry) nodes of the DAG
+	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	val List<SDFAbstractVertex> rootActors
 	
+	/**
+	 * Exit nodes of the DAG
+	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	val List<SDFAbstractVertex> exitInstances
 	
@@ -54,6 +68,11 @@ class RootExitOperations implements DAGCommonOperations {
 			].toSet.toList)
 	}
 	
+	/**
+	 * Compute root and exit nodes of the DAG
+	 * 
+	 * @pure {@link SDF2DAG} instance
+	 */
 	override visit(SDF2DAG dagGen) {
 		compute(dagGen)
 	}
@@ -89,6 +108,11 @@ class RootExitOperations implements DAGCommonOperations {
 		)
 	}
 	
+	/**
+	 * Compute root (entry) and exit nodes of the DAG
+	 * 
+	 * @param A {@link DAG2DAG} instance
+	 */
 	override visit(DAG2DAG dag) {
 		compute(dag)
 	}

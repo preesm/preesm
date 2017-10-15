@@ -1,18 +1,18 @@
-package org.abo.preesm.plugin.dataparallel.operations.visitor.test
+package org.abo.preesm.plugin.dataparallel.operations
 
 import org.junit.runners.Parameterized
 import org.junit.runner.RunWith
 import java.util.Collection
-import org.abo.preesm.plugin.dataparallel.test.Util
+import org.abo.preesm.plugin.dataparallel.test.util.Util
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.junit.Assert
-import org.abo.preesm.plugin.dataparallel.operations.visitor.DataParallelCheckOperations
+import org.abo.preesm.plugin.dataparallel.operations.DataParallelCheckOperations
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
-import org.abo.preesm.plugin.dataparallel.test.ExampleGraphs
+import org.abo.preesm.plugin.dataparallel.test.util.ExampleGraphs
 import org.abo.preesm.plugin.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
 
 /**
- * Check {@link DataParallelCheckOperations} works as expected
+ * Property based test to verify {@link DataParallelCheckOperations} works as expected
  * 
  * @author Sudeep Kanur
  */
@@ -21,10 +21,22 @@ class DataParallelCheckOperationsTest {
 	
 	protected val SDFGraph sdf
 	
+	/**
+	 * Has the following parameters from {@link Util#provideAllGraphs}:
+	 * <ol>
+	 * 	<li> {@link SDFGraph} instance
+	 * </ol>
+	 */
 	new(SDFGraph sdf) {
 		this.sdf = sdf
 	}
 	
+	/**
+	 * Generates following parameters from {@link Util#provideAllGraphs}:
+	 * <ol>
+	 * 	<li> {@link SDFGraph} instance
+	 * </ol>
+	 */
 	@Parameterized.Parameters
 	public static def Collection<Object[]> instancesToTest() {
 		val parameters = newArrayList
@@ -37,8 +49,9 @@ class DataParallelCheckOperationsTest {
 	}
 	
 	/**
-	 * Should throw an exception if a hierarchical SDF
-	 * is being passed
+	 * Should throw an exception if a hierarchical SDF is being passed
+	 * <p>
+	 * <i>Strong Test</i>
 	 */
 	@org.junit.Test(expected = SDF4JException)
 	public def void exceptionHierGraph() {
@@ -47,9 +60,10 @@ class DataParallelCheckOperationsTest {
 	}
 	
 	/**
-	 * Assert that each isolated subgraph is indeed a
-	 * strongly connected component. The method isStronglyConnected is never
-	 * used to isolate them, so it is a good candidate to test.
+	 * Assert that each isolated subgraph is indeed a strongly connected component. 
+	 * The method isStronglyConnected is never used to isolate them, so it is a good candidate to test.
+	 * <p>
+	 * <i>Strong Test</i>
 	 */
 	@org.junit.Test
 	public def void isolatedSubgraphsAreStronglyConnected() {
@@ -65,6 +79,8 @@ class DataParallelCheckOperationsTest {
 	/**
 	 * Assert that there are no dangling port interfaces for any vertex
 	 * of isolated subgraph
+	 * <p>
+	 * <i>Strong Test</i>
 	 */
 	@org.junit.Test
 	public def void isolatedSubgraphsAreComplete() {

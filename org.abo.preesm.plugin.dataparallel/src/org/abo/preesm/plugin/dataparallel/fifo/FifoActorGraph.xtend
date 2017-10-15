@@ -15,8 +15,8 @@ import java.util.logging.Level
 /**
  * A special case of {@link SDFGraph} used to denote non-trivial initialization of FIFOs
  * and that store normal {@link SDFAbstractVertex}s and {@link FifoActor}s.
- * 
- * Properties of this graph is that, the entry and exit nodes are always {@link FifoActor}s and 
+ * <p>
+ * Properties of this graph is that, the entry and exit nodes are always FifoActors and 
  * the graph contains no delays. 
  * @author Sudeep Kanur
  */
@@ -42,9 +42,9 @@ class FifoActorGraph extends SDFGraph {
 	 * In addition to adding edge, it verifies that the edge contains no delays
 	 * 
 	 * @param source Source {@link SDFAbstractVertex}
-	 * @param sourcePort Output port of the source {@link SDFAbstractVertex}
-	 * @param sink Sink/Target {@link SDFAbstractVertex}
-	 * @param sinkPort Input port of the sink {@link SDFAbstractVertex}
+	 * @param sourcePort Output port of the source SDFAbstractVertex
+	 * @param sink Sink/Target SDFAbstractVertex
+	 * @param sinkPort Input port of the sink SDFAbstractVertex
 	 * @param prod Production rate of the edge
 	 * @param cons Consumption rate of the edge
 	 * @param delay Delay must always be 0.
@@ -66,7 +66,7 @@ class FifoActorGraph extends SDFGraph {
 	 * In addition to adding edge, it verifies that the edge contains no delays
 	 * 
 	 * @param source Source {@link SDFAbstractVertex}
-	 * @param sink Sink/Target {@link SDFAbstractVertex}
+	 * @param sink Sink/Target SDFAbstractVertex
 	 * @param prod Production rate of the edge
 	 * @param cons Consumption rate of the edge
 	 * @param delay Delay must always be 0.

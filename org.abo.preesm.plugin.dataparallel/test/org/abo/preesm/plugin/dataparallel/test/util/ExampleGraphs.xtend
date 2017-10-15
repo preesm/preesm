@@ -1,7 +1,7 @@
-package org.abo.preesm.plugin.dataparallel.test
+package org.abo.preesm.plugin.dataparallel.test.util
 
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
-import org.abo.preesm.plugin.dataparallel.operations.visitor.DependencyAnalysisOperations
+import org.abo.preesm.plugin.dataparallel.operations.DependencyAnalysisOperations
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex
@@ -16,7 +16,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
 
 /**
- * Construct example graphs. 
+ * Manually construct example graphs for testing purposes 
  * 
  * @author Sudeep Kanur
  */
@@ -32,6 +32,12 @@ class ExampleGraphs {
 			outputGraph = new SDFGraph()
 		}
 		
+		/**
+		 * Create a vertex based on the type passed as a String
+		 * 
+		 * @param type Type of the vertex as defined in the classes of each special vertices
+		 * @return SDF vertex of appropriate type
+		 */
 		private def SDFAbstractVertex createVertex(String type) {			
 			switch(type) {
 				case SDFRoundBufferVertex.ROUND_BUFFER: {
@@ -52,6 +58,25 @@ class ExampleGraphs {
 			}
 		}
 		
+		/**
+		 * Add an edge given source name, type, interface name and corresponding
+		 * values for target with production, consumption and delay.
+		 * <p>
+		 * Function checks if a vertex with same name exists and creates one if there isn't. It
+		 * adds the vertex to graph, creates interfaces and adds the edge.
+		 * 
+		 * @param sourceName Name of the source
+		 * @param sourceType Type of vertex (broadcast, implode/explode, etc.)
+		 * @param sourceOutName Output port name for the source
+		 * @param targetName Name of the target
+		 * @param targetType Type of vertex (broadcast, implode/explode, etc.)
+		 * @param targetInName Input port name for the target
+		 * @param prod Production rate for this edge
+		 * @param cons Consumption rate of this edge
+		 * @param delay Delay tokens on this edge
+		 * 
+		 * @return Builder instance to continue building
+		 */
 		public def SDFBuilder addEdge(String sourceName, String sourceType, String sourceOutName,
 			String targetName, String targetType, String targetInName,
 			int prod, int cons, int delay) {
@@ -87,6 +112,24 @@ class ExampleGraphs {
 			return this
 		}
 		
+		/**
+		 * Add an edge given source name, type and corresponding
+		 * values for target with production, consumption and delay. Assumes type of the vertex
+		 * to be {@link SDFVertex} type.
+		 * <p>
+		 * Function checks if a vertex with same name exists and creates one if there isn't. It
+		 * adds the vertex to graph, creates interfaces and adds the edge.
+		 * 
+		 * @param sourceName Name of the source
+		 * @param sourceOutName Output port name for the source
+		 * @param targetName Name of the target
+		 * @param targetOutName Output port name for the target
+		 * @param prod Production rate for this edge
+		 * @param cons Consumption rate of this edge
+		 * @param delay Delay tokens on this edge
+		 * 
+		 * @return Builder instance to continue building
+		 */
 		public def SDFBuilder addEdge(String sourceName, String sourceOutName, 
 			String targetName, String targetInName, int prod, int cons, int delay) {
 			return addEdge(sourceName, SDFVertex.VERTEX, sourceOutName,
@@ -94,11 +137,32 @@ class ExampleGraphs {
 						   prod, cons, delay)
 		}
 		
+		/**
+		 * Add an edge given source name, type and corresponding
+		 * values for target with production, consumption and delay. Assigns input and output port
+		 * names as <code>input</code> and <code>output</code> respectively. Also assumes 
+		 * <p>
+		 * Function checks if a vertex with same name exists and creates one if there isn't. It
+		 * adds the vertex to graph, creates interfaces and adds the edge.
+		 * 
+		 * @param sourceName Name of the source
+		 * @param targetName Name of the target
+		 * @param prod Production rate for this edge
+		 * @param cons Consumption rate of this edge
+		 * @param delay Delay tokens on this edge
+		 * 
+		 * @return Builder instance to continue building
+		 */
 		public def SDFBuilder addEdge(String sourceName, String targetName, 
 			int prod, int cons, int delay) {
 			return addEdge(sourceName, "output", targetName, "input", prod, cons, delay)
 		}
 		
+		/**
+		 * Return the built {@link SDFGraph}
+		 * 
+		 * @return The SDFGraph built
+		 */
 		public def SDFGraph getOutputGraph() {
 			return outputGraph
 		}
@@ -195,8 +259,11 @@ class ExampleGraphs {
 	
 	/**
 	 * Create a strongly connected graph. The graph is instance-independent, but not data-parallel.
+	 * <p>
 	 * Z (1) -(1)-> (1) A (2) -(3)-> (3) B (3) --> (2) C (1) --> (1) D
+	 * <p>
 	 * B (3) -(6)-> (2) A
+	 * <p>
 	 * C (1) -(3)-> (1) A
 	 * 
 	 * @return SDF graph 
@@ -213,9 +280,16 @@ class ExampleGraphs {
 	}
 	
 	/**
-	 * Create a network with an acylic and cyclic graph The graph is schedulable but not data-parallel The acyclic graph has 4 actors with following config Z(3)
-	 * -(7)-> (6)C(2) --> (3)D(3) --> (2)E The cyclic graph has 3 actors with following config (3)A(2) -(4)-> (3)B(3) --> (2)C(1) C(1) -(1)-> (1)C The actor C is
-	 * shared
+	 * Create a network with an acylic and cyclic graph The graph is schedulable but not data-parallel 
+	 * The acyclic graph has 4 actors with following config:
+	 * <p>
+	 * Z(3)-(7)-> (6)C(2) --> (3)D(3) --> (2)E 
+	 * <p>
+	 * The cyclic graph has 3 actors with following config:
+	 * <p>
+	 * (3)A(2) -(4)-> (3)B(3) --> (2)C(1) C(1) -(1)-> (1)C
+	 * <p> 
+	 * The actor C is shared
 	 * 
 	 * @return SDF graph
 	 */
@@ -233,7 +307,11 @@ class ExampleGraphs {
 	
 	/**
 	 * Create a network with an acylic and cyclic graph The acyclic graph has 4 actors with following config Z(3) -(7)-> (6)C(2) --> (3)D(3) --> (2)E The cyclic
-	 * graph has 3 actors with following config (3)A(2) -(4)-> (3)B(3) --> (2)C(1) The actor C is shared
+	 * graph has 3 actors with following config 
+	 * <p>
+	 * (3)A(2) -(4)-> (3)B(3) --> (2)C(1) 
+	 * <p>
+	 * The actor C is shared
 	 * 
 	 * @return SDF graph
 	 */
@@ -250,8 +328,10 @@ class ExampleGraphs {
 	
 	/**
 	 * Create two strictly cyclic SDFG, each containing 4 actors. None of the
-	 * actors have enough tokesn that all the instance can fire. Further, each
+	 * actors have enough tokens that all the instance can fire. Further, each
 	 * cycle is connected through two actors
+	 * 
+	 * @return SDF Graph
 	 */
 	public static def SDFGraph strictlyCyclic2() {
 		return new SDFBuilder()
@@ -272,8 +352,11 @@ class ExampleGraphs {
 	/**
 	 * Create another configuration of strictly cyclic SDF containing 4 actors. None
 	 * of the actor has enough tokens that all the instances can fire
-	 * This is just the dual of the strictlyCyclic graph
+	 * This is just the dual of the {@link ExampleGraphs#strictlyCyclic} graph
+	 * <p>
 	 * A(2) -(4)-> (3)B(3) -(1)-> (2)C(2) -(4)-> (2)D(2) -(1)-> (2)A
+	 * 
+	 * @return SDF Graph
 	 */
 	public static def SDFGraph strictlyCyclicDual() {
 		return new SDFBuilder()
@@ -287,7 +370,10 @@ class ExampleGraphs {
 	/**
 	 * Create strictly cyclic SDF containing 4 actors. None of the actor
 	 * has enough tokens that all the instances can fire
+	 * <p>
 	 * A(2) -(2)-> (3)B(3) -(3)-> (2)C(2) -(1)-> (2)D(2) -(2)-> (2)A
+	 * 
+	 * @return SDF Graph
 	 */
 	public static def SDFGraph strictlyCyclic() {
 		return new SDFBuilder()
@@ -301,7 +387,10 @@ class ExampleGraphs {
 	/**
 	 * Create strictly cyclic SDF containing 4 actors. The DAG behaves as though
 	 * it has no cycles
+	 * <p>
 	 * A(2) -> (3)B(3) -(6)-> (2)C(2) -(4)-> (3)D(3) -> (2)A
+	 * 
+	 * @return SDF Graph
 	 */
 	public static def SDFGraph semanticallyAcyclicCycle() {
 		return new SDFBuilder()
@@ -314,7 +403,10 @@ class ExampleGraphs {
 	
 	/**
 	 * Create cyclic graph with two actors forming a loop
+	 * <p>
 	 * A(3) --> (5) B (5) -(7)-> (3)A 
+	 * 
+	 * @return SDF Graph
 	 */
 	public static def SDFGraph twoActorLoop() {
 		return new SDFBuilder()
@@ -336,7 +428,9 @@ class ExampleGraphs {
 	}
 	
     /**
-	 * Create hierarchical graph containing two actors P where P contains A(3) -(7)-> (5)B
+	 * Create hierarchical graph containing two actors P where P contains 
+	 * <p>
+	 * A(3) -(7)-> (5)B
 	 * 
 	 * @return SDF graph
 	 */
@@ -352,7 +446,9 @@ class ExampleGraphs {
 	}
 	
     /**
-     * Create Acyclic graph containing two actors A (3) -(6)-> (5) B
+     * Create Acyclic graph containing two actors:
+     * <p>
+     * A (3) -(6)-> (5) B
      * 
      * @return sdf graph
      */

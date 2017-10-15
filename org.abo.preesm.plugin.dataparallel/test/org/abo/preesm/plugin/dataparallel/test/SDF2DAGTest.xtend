@@ -15,10 +15,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.abo.preesm.plugin.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
+import org.abo.preesm.plugin.dataparallel.test.util.ExampleGraphs
 
 /**
- * Test construction of DAG from SDF. Both manual and automatic methods are
- * used to test the construction
+ * Manual test for {@link SDF2DAG}
  * 
  * @author Sudeep Kanur
  */
@@ -38,6 +38,16 @@ class SDF2DAGTest {
 	
 	val boolean isSDF
 	
+	/**
+	 * Generate following manually defined parameters:
+	 * <ol>
+	 * 	<li> A {@link SDFGraph} instance
+	 * 	<li> Count of explode vertices in the graph
+	 * 	<li> Count of implode vertices in the graph
+	 * 	<li> Total count of vertices in the graph
+	 * 	<li> <code>true</code> if graph is instance independent, <code>false</code> otherwise
+	 * </ol>
+	 */
 	new(AbstractGraph<SDFAbstractVertex, SDFEdge> sdf, int explodeInstanceCount, 
 		int implodeInstanceCount, int totalInstanceCount, boolean isSDF, boolean checkCounts
 	){
@@ -55,8 +65,14 @@ class SDF2DAGTest {
 	}
 	
 	/**
-	 * Provide the original sdf, and the count of various instances seen and is
-	 * required by the tests
+	 * Generate following manually defined parameters:
+	 * <ol>
+	 * 	<li> A {@link SDFGraph} instance
+	 * 	<li> Count of explode vertices in the graph
+	 * 	<li> Count of implode vertices in the graph
+	 * 	<li> Total count of vertices in the graph
+	 * 	<li> <code>true</code> if graph is instance independent, <code>false</code> otherwise
+	 * </ol>
 	 */
 	@Parameterized.Parameters
 	public static def Collection<Object[]> instancesToTest() {
@@ -111,7 +127,7 @@ class SDF2DAGTest {
 	}
 	
 	/**
-	 * Check the count of explode instances
+	 * Verify count of explode instances
 	 */
 	@Test
 	public def void checkExplodeInstanceCount() {
@@ -124,7 +140,7 @@ class SDF2DAGTest {
 	}
 	
 	/**
-	 * Check the count of implode instances
+	 * Verify count of implode instances
 	 */
 	@Test
 	public def void checkImplodeInstanceCount() {
@@ -137,7 +153,7 @@ class SDF2DAGTest {
 	}
 	
 	/**
-	 * Check the count of number of instances
+	 * Verify count of number of instances
 	 */
 	@Test
 	public def void checkTotalInstanceCount() {
@@ -147,8 +163,7 @@ class SDF2DAGTest {
 	}
 	
 	/**
-	 * Make sure that the instances of each actor sums up to total instances seen
-	 * in the DAG
+	 * Verify instances of each actor sums up to total instances seen in the DAG
 	 */
 	@Test
 	public def void actor2InstancesHasAllVertices() {
@@ -159,8 +174,8 @@ class SDF2DAGTest {
 	}
 	
 	/**
-	 * Make sure that DAG has no cycles. As the base graph representation is SDFGraph
-	 * this is not automatically gauranteed and hence the test
+	 * Verify DAG has no cycles. As the base graph representation is SDFGraph
+	 * this is not automatically guaranteed and hence the test
 	 */
 	@Test
 	public def void dagHasNoCycles() {

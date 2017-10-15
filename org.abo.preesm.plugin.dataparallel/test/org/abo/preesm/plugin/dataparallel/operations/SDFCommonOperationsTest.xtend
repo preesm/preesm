@@ -1,13 +1,13 @@
-package org.abo.preesm.plugin.dataparallel.operations.visitor.test
+package org.abo.preesm.plugin.dataparallel.operations
 
 import java.util.Collection
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
 import org.abo.preesm.plugin.dataparallel.SrSDFToSDF
 import org.abo.preesm.plugin.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
-import org.abo.preesm.plugin.dataparallel.operations.visitor.AcyclicLikeSubgraphDetector
-import org.abo.preesm.plugin.dataparallel.operations.visitor.RearrangeOperations
-import org.abo.preesm.plugin.dataparallel.operations.visitor.RetimingInfo
-import org.abo.preesm.plugin.dataparallel.test.Util
+import org.abo.preesm.plugin.dataparallel.operations.AcyclicLikeSubgraphDetector
+import org.abo.preesm.plugin.dataparallel.operations.RearrangeOperations
+import org.abo.preesm.plugin.dataparallel.pojo.RetimingInfo
+import org.abo.preesm.plugin.dataparallel.test.util.Util
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
@@ -21,11 +21,11 @@ import org.junit.runners.Parameterized
 import org.abo.preesm.plugin.dataparallel.fifo.FifoActorGraph
 import org.abo.preesm.plugin.dataparallel.fifo.FifoActor
 import org.abo.preesm.plugin.dataparallel.fifo.FifoActorBeanKey
-import org.abo.preesm.plugin.dataparallel.operations.visitor.MovableInstances
+import org.abo.preesm.plugin.dataparallel.operations.MovableInstances
 import org.abo.preesm.plugin.dataparallel.NodeChainGraph
 
 /**
- * Class to test operations on SDF graphs
+ * Property based test for {@link RearrangeOperations} on {@link SDFGraph}s
  * 
  * @author Sudeep Kanur
  */
@@ -37,6 +37,14 @@ class SDFCommonOperationsTest {
 	
 	protected val Boolean isInstanceIndependent
 	
+	/**
+	 * Generates the following parameters from {@link Util#provideAllGraphsContext}:
+	 * <ol>
+	 * 	<li> {@link SDFGraph} instance
+	 * 	<li> <code>true</code> if the SDFG is acyclic, <code>false</code> otherwise
+	 *  <li> <code>true</code> if the SDFG is instance independent, <code>false</code> otherwise
+	 * </ol>
+	 */
 	new(SDFGraph sdf
 	   , Boolean isAcyclic
 	   , Boolean isInstanceIndependent
@@ -46,6 +54,14 @@ class SDFCommonOperationsTest {
 		this.isInstanceIndependent = isInstanceIndependent		
 	}
 	
+	/**
+	 * Generates the following parameters from {@link Util#provideAllGraphsContext}:
+	 * <ol>
+	 * 	<li> {@link SDFGraph} instance
+	 * 	<li> <code>true</code> if the SDFG is acyclic, <code>false</code> otherwise
+	 *  <li> <code>true</code> if the SDFG is instance independent, <code>false</code> otherwise
+	 * </ol>
+	 */
 	@Parameterized.Parameters
 	public static def Collection<Object[]> instancesToTest() {
 		/*
@@ -64,12 +80,11 @@ class SDFCommonOperationsTest {
 	}
 	
 	/**
-	 * Check whether Acyclic graphs are indeed detected as so by {@link AcyclicLikeSubgraphDetector}
-	 * class
-	 * 
-	 * Warning! Not a generic test. Test depends on manually defined parameters
-	 * 
-	 * Strong test. Manually defined
+	 * Verify output of {@link AcyclicLikeSubgraphDetector} against manually defined parameter 
+	 * <p>
+	 * <b>Warning!</b> Not a generic test. Test depends on manually defined parameters
+	 * <p>
+	 * <i>Strong test</i>
 	 */
 	@Test
 	public def void sdfIsAcyclic() {
@@ -82,21 +97,20 @@ class SDFCommonOperationsTest {
 	}
 	
 	/**
-	 * Check correctness of re-timing transformation
-	 * 
-	 * Re-timing transformation is correct if:
-	 * 1. The graph that is instance independent and non-acyclic like becomes acyclic like
-	 * 2. Transient graphs are schedulable
-	 * 3. The transient graphs have no delays
-	 * 4. Transient graphs are always acyclic
-	 * 5. The transient graphs have only {@link FifoActor} in their output 
-	 * 6. {@link FifoActor}s of {@link FifoActorGraph} does not have duplicate {@link FifoActor}s in 
-	 * SrSDF edges with delays. Meaning, SrSDF edges with delays have one unique {@link FifoActor}
+	 * Correctness of {@link RearrangeOperations}. Following tests are carried out:
+	 * <ol>
+	 * 	<li> The graph that is instance independent and non-acyclic like becomes acyclic like
+	 * 	<li> Transient graphs are schedulable
+	 * 	<li> The transient graphs have no delays
+	 * 	<li> Transient graphs are always acyclic
+	 * 	<li> The transient graphs have only {@link FifoActor} in their output 
+	 * 	<li> FifoActors of {@link FifoActorGraph} does not have duplicate FifoActors in 
+	 * 	<li> SrSDF edges with delays. Meaning, SrSDF edges with delays have one unique FifoActor
 	 * present either in the SrSDF graph edge or in a transient graph.
-	 * 7. All movable instances are seen in the transient graph
-	 * 8. All delays are positive
-	 * 
-	 * Strong test
+	 * 	<li> All movable instances are seen in the transient graph
+	 * 	<li> All delays are positive
+	 * <p>
+	 * <i>Strong test</i>
 	 */
 	@Test
 	public def void retimeTest() {

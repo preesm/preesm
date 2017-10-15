@@ -1,4 +1,4 @@
-package org.abo.preesm.plugin.dataparallel.operations.visitor
+package org.abo.preesm.plugin.dataparallel.operations
 
 import java.util.Map
 import java.util.logging.Level
@@ -22,6 +22,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
 import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
 import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsIndexer
+import org.abo.preesm.plugin.dataparallel.pojo.RetimingInfo
 
 /**
  * Perform re-timing operation for an instance independent strongly connected component.
@@ -72,6 +73,7 @@ class RearrangeOperations implements DAGOperations {
 	
 	/**
 	 * Conditional logging
+	 * 
 	 * @param level Level of the message
 	 * @param message String message
 	 */

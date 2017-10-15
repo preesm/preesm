@@ -4,8 +4,8 @@ import java.util.Collection
 import java.util.HashMap
 import org.abo.preesm.plugin.dataparallel.DAG2DAG
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
-import org.abo.preesm.plugin.dataparallel.operations.visitor.LevelsOperations
-import org.abo.preesm.plugin.dataparallel.operations.visitor.OperationsUtils
+import org.abo.preesm.plugin.dataparallel.operations.LevelsOperations
+import org.abo.preesm.plugin.dataparallel.operations.OperationsUtils
 import org.jgrapht.alg.CycleDetector
 import org.junit.Assert
 import org.junit.Test
@@ -15,9 +15,11 @@ import org.abo.preesm.plugin.dataparallel.operations.graph.KosarajuStrongConnect
 import org.jgrapht.graph.DirectedSubgraph
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import org.abo.preesm.plugin.dataparallel.test.util.Util
 
 /**
- * Property based test to check construction of DAG from another DAG
+ * Property based test to check {@link DAG2DAG} construction
  * 
  * @author Sudeep Kanur
  */
@@ -26,10 +28,22 @@ class DAG2DAGTest {
 	
 	protected val SDF2DAG dagGen
 	
+	/**
+	 * Has the following parameters from {@link Util#provideAllGraphs}:
+	 * <ol>
+	 * 	<li> {@link SDF2DAG} instance derived from a {@link SDFGraph}
+	 * </ol>
+	 */
 	new(SDF2DAG dagGen) {
 		this.dagGen = dagGen
 	}
 	
+	/**
+	 * Generates following parameters from {@link Util#provideAllGraphs}:
+	 * <ol>
+	 * 	<li> {@link SDF2DAG} instance derived from a {@link SDFGraph}
+	 * </ol>
+	 */
 	@Parameterized.Parameters
 	public static def Collection<Object[]> instancesToTest() {
 		val parameters = newArrayList
@@ -64,9 +78,9 @@ class DAG2DAGTest {
 	}
 	
 	/**
-	 * The test checks that the actor obtained from instance2Actor
-	 * for a {@link DAG2DAG} instance gives same actor from instance2Actor
-	 * map of a {@link SDF2DAG} instance
+	 * Actor of {@link DAG2DAG#instance2Actor} gives the same actor from {@link SDF2DAG#instance2Actor} map
+	 * <p>
+	 * <i>Strong Test</i>
 	 */
 	@Test
 	public def void bothInstancesLeadToSameActor() {
@@ -82,8 +96,9 @@ class DAG2DAGTest {
 	}
 	
 	/**
-	 * Check that changing levels of one SDF does not modify the levels of
-	 * another SDF. 
+	 * Changing levels of one {@link SDF2DAG} does not modify the levels of {@link DAG2DAG}
+	 * <p>
+	 * <i>Strong Test</i> 
 	 */
 	@Test
 	public def void graphsAreOperationInvariant() {

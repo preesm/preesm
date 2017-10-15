@@ -10,7 +10,7 @@ import java.util.Collections
 import org.abo.preesm.plugin.dataparallel.PureDAGConstructor
 
 /**
- * A topological order iterator specialized to traverse a SDFGraph
+ * A topological order iterator specialised to traverse a SDFGraph
  * In addition, also provides a lookup table of instances and its
  * sources.
  * 

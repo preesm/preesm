@@ -1,17 +1,17 @@
-package org.abo.preesm.plugin.dataparallel.test
+package org.abo.preesm.plugin.dataparallel.iterator
 
 import java.util.Collection
 import java.util.NoSuchElementException
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
+import org.abo.preesm.plugin.dataparallel.operations.RootExitOperations
+import org.abo.preesm.plugin.dataparallel.test.util.Util
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import org.abo.preesm.plugin.dataparallel.iterator.SubsetTopologicalIterator
-import org.abo.preesm.plugin.dataparallel.operations.visitor.RootExitOperations
 
 /**
- * Test setup for {@link SubsetTopologicalIterator} class
+ * Parameteric test for {@link SubsetTopologicalIterator}
  * 
  * @author Sudeep Kanur
  */
@@ -20,12 +20,21 @@ class SubsetTopologicalIteratorTest {
 	
 	val SDF2DAG dagGen
 	
+	/**
+	 * Has the following parameters using {@link Util#provideAllGraphs}:
+	 * <ol>
+	 * 	<li> {@link SDF2DAG} of example graphs
+	 * </ol>
+	 */
 	new(SDF2DAG dagGen) {
 		this.dagGen = dagGen
 	}
 	
 	/**
-	 * Provide all the DAGs for manually constructed SDFs
+	 * Generate following parameters using {@link Util#provideAllGraphs}:
+	 * <ol>
+	 * 	<li> {@link SDF2DAG} of example SDF graphs
+	 * </ol>
 	 */
 	@Parameterized.Parameters
 	public static def Collection<Object[]> instancesToTest() {
@@ -37,8 +46,7 @@ class SubsetTopologicalIteratorTest {
 	}
 	
 	/**
-	 * Actual test is carried out by this
-	 * Checks that if a node has occurs `n' times after going through
+	 * Verify if a node has occurs `n' times after going through
 	 * all the root node based DAG subset, its targets/successors should also
 	 * occur `n' times
 	 */
@@ -69,8 +77,7 @@ class SubsetTopologicalIteratorTest {
 		].size == 0)
 	}
 	
-	/** If a non-root node is passed, the iterator should
-	 * create an exception
+	/** If a non-root node is passed, the iterator should create an exception
 	 */ 
 	@Test(expected = NoSuchElementException)
 	public def void nonRootInstanceRaiseException() {

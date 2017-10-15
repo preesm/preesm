@@ -8,7 +8,7 @@ import java.util.Map
 
 /**
  * Interface that iterates through a DAG in topological 
- * order only. Specialization of GraphIterator for SDFGraphs
+ * order only. Specialisation of GraphIterator for SDFGraphs
  * 
  * @author Sudeep Kanur
  */

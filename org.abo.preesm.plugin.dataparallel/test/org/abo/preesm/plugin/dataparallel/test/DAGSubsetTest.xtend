@@ -9,11 +9,13 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.abo.preesm.plugin.dataparallel.iterator.SubsetTopologicalIterator
-import org.abo.preesm.plugin.dataparallel.operations.visitor.RootExitOperations
+import org.abo.preesm.plugin.dataparallel.operations.RootExitOperations
 import org.jgrapht.alg.CycleDetector
 import org.abo.preesm.plugin.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
 import org.jgrapht.graph.DirectedSubgraph
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import org.abo.preesm.plugin.dataparallel.test.util.Util
 
 /**
  * Property based test for {@link DAGSubset} instance
@@ -26,13 +28,24 @@ class DAGSubsetTest {
 	
 	val SDFAbstractVertex rootNode
 	
+	/**
+	 * Has the following parameters from {@link Util#provideAllGraphs}:
+	 * <ol>
+	 * 	<li> {@link SDF2DAG} instance derived from {@link SDFGraph}
+	 * 	<li> Root node from which {@link DAGSubset} must be constructed
+	 * </ol>
+	 */
 	new(SDF2DAG dagGen, SDFAbstractVertex rootNode) {
 		this.dagGen = dagGen
 		this.rootNode = rootNode
 	}
 	
 	/**
-	 * Provide all manually constructed SDFs and its root nodes
+	 * Generates following parameters from {@link Util#provideAllGraphs}:
+	 * <ol>
+	 * 	<li> {@link SDF2DAG} instance derived from {@link SDFGraph}
+	 * 	<li> Root node from which {@link DAGSubset} must be constructed
+	 * </ol>
 	 */
 	@Parameterized.Parameters
 	public static def Collection<Object[]> instancesToTest() {
@@ -74,10 +87,12 @@ class DAGSubsetTest {
 		]
 		return parameters
 	}
+	
 	/**
-	 * Check that the actor2Instances have actors and instances
-	 * from the subset of DAG only. SubsetTopologicalIterator is 
-	 * used to verify this fact
+	 * {@link DAGSubset#actor2Instances} have actors and instances from the subset of DAG only. 
+	 * {@link SubsetTopologicalIterator} is  used to verify this fact
+	 * <p>
+	 * <i>Strong Test</i>
 	 */
 	@Test
 	public def void actorsHaveRightInstances() {
@@ -98,8 +113,10 @@ class DAGSubsetTest {
 	}
 	
 	/**
-	 * Check that instance2Actor has instances and actors from the subset of DAG only.
-	 * SubsetTopologicalIterator is used to verify 
+	 * {@link DAGSubset#instance2Actor} has instances and actors from the subset of DAG only.
+	 * {@link SubsetTopologicalIterator} is used to verify 
+	 * <p>
+	 * <i>Strong Test</i>
 	 */
 	@Test
 	public def void instancesHaveRightActors() {

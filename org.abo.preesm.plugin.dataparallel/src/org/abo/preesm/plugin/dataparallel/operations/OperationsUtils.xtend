@@ -1,4 +1,4 @@
-package org.abo.preesm.plugin.dataparallel.operations.visitor
+package org.abo.preesm.plugin.dataparallel.operations
 
 import java.util.Collection
 import java.util.List
@@ -44,8 +44,9 @@ class OperationsUtils {
 	}
 	
 	/**
-	 * Pick an element from a collection
-	 * This implementation picks the first element
+	 * Pick an element from a collection.
+	 * <p>
+	 * This implementation picks the first element.
 	 * 
 	 * @param set Any {@link Collection} containing {@link SDFAbstractVertex} instances
 	 * @return An element from the collection passed 
@@ -99,10 +100,10 @@ class OperationsUtils {
 	}
 	
 	/**
-	 * Check if a given level set is instance parallel
+	 * Check if a given level set is instance parallel.
 	 * The {@link PureDAGConstructor} instance is used to get instance to actor mapping
-	 * and to check if it is instance independent
-	 * 
+	 * and to check if it is instance independent.
+	 * <p>
 	 * Logic of implementation is that if all the instances
 	 * of an actor is not seen in a given level set, then other
 	 * instances must be elsewhere and will be subsequently seen.
@@ -142,9 +143,9 @@ class OperationsUtils {
 	}
 	
 	/**
-	 * Check if a given level set is instance parallel
-	 * The {@link DAGSubsetConstructor} instance is used to check if it is instance independent
-	 * 
+	 * Check if a given level set is instance parallel.
+	 * The {@link DAGSubsetConstructor} instance is used to check if it is instance independent.
+	 * <p>
 	 * A subset DAG is always parallel
 	 * 
 	 * @param dagGen A {@link DAGSubsetConstructor} instance
@@ -165,7 +166,7 @@ class OperationsUtils {
 	}
 	
 	/**
-	 * Check if a given level is instance parallel
+	 * Check if a given level is instance parallel.
 	 * This function performs dispatch based on the {@link DAGConstructor} instance
 	 * 
 	 * @param dagGen A {@link DAGConstructor} instance
@@ -182,7 +183,7 @@ class OperationsUtils {
 	
 	/**
 	 * Get maximum depth/level at which all instances of an actor are contained
-	 * in the same level
+	 * in the same level.
 	 * 
 	 * @param dagGen The levels used to find parallel level is calculated from this {@link PureDAGConstructor} instance
 	 * @return If DAG has a parallel level, then it returns the maximum level. Otherwise it returns null
@@ -198,8 +199,8 @@ class OperationsUtils {
 	
 	/**
 	 * Use {@link GetParallelLevelBuilder} instead of this method
-	 * 
-	 * Get maximum depth/level at which all instances of an actor are contained for a given levels
+	 * <p>
+	 * Get maximum depth/level at which all instances of an actor are contained for a given levels.
 	 * Rest are same as {@link OperationsUtils#getParallelLevel}
 	 * 
 	 * @param dagGen A {@link PureDAGConstructor} used to get instance to actor mappings and vice-versa

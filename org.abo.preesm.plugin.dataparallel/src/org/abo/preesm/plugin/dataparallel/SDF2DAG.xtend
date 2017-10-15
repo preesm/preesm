@@ -6,7 +6,7 @@ import java.util.Map
 import java.util.Set
 import java.util.logging.Logger
 import java.util.regex.Pattern
-import org.abo.preesm.plugin.dataparallel.operations.visitor.DAGOperations
+import org.abo.preesm.plugin.dataparallel.operations.DAGOperations
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge

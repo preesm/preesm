@@ -12,16 +12,17 @@ import org.junit.Assert
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex
 import org.jgrapht.alg.DijkstraShortestPath
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
-import org.abo.preesm.plugin.dataparallel.operations.visitor.RootExitOperations
+import org.abo.preesm.plugin.dataparallel.operations.RootExitOperations
 import org.abo.preesm.plugin.dataparallel.DAGUtils
 import java.util.HashMap
 import java.util.List
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.abo.preesm.plugin.dataparallel.DAGComputationBug
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex
+import org.abo.preesm.plugin.dataparallel.test.util.Util
 
 /**
- * Test construction and operations of NodeChainGraphs
+ * Parameteric test for {@link NodeChainGraph}s 
  * 
  * @author Sudeep Kanur
  */
@@ -37,6 +38,16 @@ class NodeChainGraphTest {
 	
 	val boolean hasExplodes
 	
+	/**
+	 * Has the following parameters with {@link Util#provideAllGraphs}:
+	 * <ol>
+	 * 	<li> {@link SDFGraph} instance
+	 * 	<li> Its SrSDF from {@link ToHSDFVisitor}
+	 * 	<li> {@link NodeChainGraph} of SrSDFG
+	 * 	<li> <code>true</code> if SDFG has user specified implodes, <code>false</code> otherwise
+	 * 	<li> <code>true</code> if SDFG has user specified explodes, <code>false</code> otherwise
+	 * </ol>
+	 */
 	new(SDFGraph sdf, SDFGraph srsdf, NodeChainGraph nodechain, boolean hasImplodes, boolean hasExplodes) {
 		this.sdf = sdf
 		this.srsdf = srsdf
@@ -45,6 +56,16 @@ class NodeChainGraphTest {
 		this.hasExplodes = hasExplodes
 	}
 	
+	/**
+	 * Generates following parameters with {@link Util#provideAllGraphs}:
+	 * <ol>
+	 * 	<li> {@link SDFGraph} instance
+	 * 	<li> Its SrSDF from {@link ToHSDFVisitor}
+	 * 	<li> {@link NodeChainGraph} of SrSDFG
+	 * 	<li> <code>true</code> if SDFG has user specified implodes, <code>false</code> otherwise
+	 * 	<li> <code>true</code> if SDFG has user specified explodes, <code>false</code> otherwise
+	 * </ol>
+	 */
 	@Parameterized.Parameters
 	public static def Collection<Object[]> instancesToTest() {
 		val parameters = newArrayList
@@ -75,8 +96,8 @@ class NodeChainGraphTest {
 	/**
 	 * If the SDF graph has user defined implodes and explodes,
 	 * then test that nodechain also has them
-	 * 
-	 * Weak Test as it checks only existence of such nodes
+	 * <p>
+	 * <i>Weak Test</i> as it checks only existence of such nodes
 	 */
 	@org.junit.Test def void testNodechainHasUserImplodesExplodes() {
 		if(hasImplodes){
@@ -95,8 +116,8 @@ class NodeChainGraphTest {
 	/**
 	 * If the SDF graph has no user defined implodes and explodes, then
 	 * each node vertex is of type SDFVertex
-	 * 
-	 * Somewhat strong test. 
+	 * <p>
+	 * Somewhat <i>strong test</i> 
 	 */
 	@org.junit.Test def void testNodechainVertexIsProperType() {
 		if(!hasImplodes && !hasExplodes) {
@@ -107,22 +128,26 @@ class NodeChainGraphTest {
 	}
 	
 	/**
-	 * Check each implode of the node chain is actually the previous node
-	 * of the associated vertex. Also check each explode node is actually 
-	 * successive node of the associated vertex. This works on graphs that
-	 * have no user defined fork and join actors
-	 * 
-	 * Strong test
+	 * <ol>
+	 * 	<li> Each implode of the node chain is actually the previous node
+	 * of the associated vertex. 
+	 * 	<li> Each explode node is actually successive node of the associated vertex. 
+	 * This works on graphs that have no user defined fork and join actors
+	 * <p>
+	 * <i>Strong test</i>
 	 */
 	@org.junit.Test def void testImplodesExplodesAreProperlyAssociated() {
 		if(!hasImplodes && !hasExplodes) {
 			srsdf.vertexSet.forEach[vertex |
+				
+				//1. Each implode of the node chain is actually the previous node
 				if(vertex instanceof SDFJoinVertex) {
 					Assert.assertTrue(srsdf.outgoingEdgesOf(vertex).size == 1)
 					val outEdge = srsdf.outgoingEdgesOf(vertex).get(0)
 					Assert.assertTrue(outEdge !== null)
 					Assert.assertTrue(nodechain.nodechains.keySet.contains(outEdge.target))
 				} else if (vertex instanceof SDFForkVertex) {
+				//2. Each explode of the node chain is actually from the successive node
 					Assert.assertTrue(srsdf.incomingEdgesOf(vertex).size == 1)
 					val inEdge = srsdf.incomingEdgesOf(vertex).get(0)
 					Assert.assertTrue(inEdge !== null)
@@ -135,9 +160,10 @@ class NodeChainGraphTest {
 	}
 	
 	/**
-	 * Test that previous nodes has edge to the current node in an appropriate way.
-	 * 
-	 * Strong test
+	 * {@link NodeChainGraph#getPreviousNodes} creates previous nodes with edges to the current 
+	 * node in an appropriate way.
+	 * <p>
+	 * <i>Strong test</i>
 	 */
 	@org.junit.Test def void testAppropriateEdgeExistsBetweenNodes() {
 		nodechain.nodechains.forEach[vertex, chain |
@@ -159,7 +185,7 @@ class NodeChainGraphTest {
 	/**
 	 * Helper function to fetch root nodes from SrSDF graph that are not source nodes. Thus, it
 	 * is guaranteed that these instances will have delay behind them.
-	 * 
+	 * <p>
 	 * @return List of root instance from SrSDF graph whose actors are not source actors
 	 */
 	def List<SDFAbstractVertex> getNonSourceRootNodes() {
@@ -185,12 +211,12 @@ class NodeChainGraphTest {
 	}
 	
 	/**
-	 * Test fetching of input delays work well
-	 * 
+	 * Fetching of input delays using {@link NodeChainGraph#getEdgewiseInputDelays} work well
+	 * <p>
 	 * There must be delays behind non-source root instances of SrSDF graph. Further, the number
 	 * of delays must be greater than equal to its consumption rate
-	 * 
-	 * Strong
+	 * <p>
+	 * <i>Strong Test</i>
 	 */
 	@org.junit.Test def void testFetchingInputDelays() {
 		val srsdfRootNodes = nonSourceRootNodes
@@ -209,13 +235,13 @@ class NodeChainGraphTest {
 	}
 	
 	/**
-	 * Test fetching of output delays work well
-	 * 
-	 * This is similar to {@link testFetchingInputDelays()}. Once non-source root instances are found
+	 * Fetching of output delays using {@link NodeChainGraph#getEdgewiseOutputDelays} work well
+	 * <p>
+	 * This is similar to {@link #testFetchingInputDelays()}. Once non-source root instances are found
 	 * we first go to its previous nodes. Then we check its output has non-zero delay at the edges connecting
 	 * to this non-source root instances.
-	 * 
-	 * Somewhat Strong
+	 * <p>
+	 * <i>Somewhat Strong Test</i>
 	 */
 	@org.junit.Test def void testFetchingOutputDelays() {
 		val srsdfRootNodes = nonSourceRootNodes
@@ -241,13 +267,15 @@ class NodeChainGraphTest {
 	}
 	
 	/**
-	 * Test setting of delays at input of a node
-	 * 
+	 * Setting of delays at input of a node using {@link NodeChainGraph#setEdgewiseInputDelays}
+	 * <p>
 	 * The test modifies the values of SrSDF graph: first it sets all delays of non-source root nodes
 	 * to 0, then to a large negative value and finally back to the initial value
-	 * 
-	 * Warning! This tests changes the delay state of the SrSDF graph and hence it is crucial that
+	 * <p>
+	 * <b>Warning!<b> This tests changes the delay state of the SrSDF graph and hence it is crucial that
 	 * this test completes successfully. Failure of this test may lead to failure of other tests too.
+	 * <p>
+	 * <i>Strong Test</i>
 	 */
 	@org.junit.Test def void testSettingInputDelays() {
 		val srsdfRootNodes = nonSourceRootNodes
@@ -282,15 +310,17 @@ class NodeChainGraphTest {
 	}
 	
 	/**
-	 * Test setting of delays at output of a node
-	 * 
-	 * The test is similar to previous tests
-	 * 
+	 * Setting of delays at output of a node using {@link NodeChainGraph#setEdgewiseOutputDelays}
+	 * <p>
+	 * The test is similar to {@link #testSettingInputDelays}
+	 * <p>
 	 * The test modifies the values of SrSDF graph: first it sets all delays of preceding nodes of 
 	 * non-source root nodes to 0, then to a large negative value and finally back to the initial value
-	 * 
-	 * Warning! This tests changes the delay state of the SrSDF graph and hence it is crucial that
+	 * <p>
+	 * <b>Warning!</b> This tests changes the delay state of the SrSDF graph and hence it is crucial that
 	 * this test completes successfully. Failure of this test may lead to failure of other tests too.
+	 * <p>
+	 * <i>Strong Test</i>
 	 */
 	@org.junit.Test def void testSettingOutputDelays() {
 		val srsdfRootNodes = nonSourceRootNodes

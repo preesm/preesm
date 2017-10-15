@@ -10,18 +10,38 @@ import org.abo.preesm.plugin.dataparallel.DAGUtils
 import org.junit.Assert
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
+import org.abo.preesm.plugin.dataparallel.test.util.Util
 
+/**
+ * Property based test for {@link DAGUtils#findVertex}
+ * 
+ * @author Sudeep Kanur
+ */
 @RunWith(Parameterized)
 class DAGUtilsTest {
 	val SDFGraph hsdf
 	
 	val SDFGraph dag
 	
+	/**
+	 * Has the following parameters from {@link Util#provideAllGraphs}:
+	 * <ol>
+	 * 	<li> SrSDF generated from {@link ToHSDFVisitor}
+	 * 	<li> DAG generated from {@link SDF2DAG}
+	 * </ol>
+	 */
 	new(SDFGraph hsdf, SDFGraph dag) {
 		this.hsdf = hsdf
 		this.dag = dag
 	}
 	
+	/**
+	 * Generates the following parameters from {@link Util#provideAllGraphs}:
+	 * <ol>
+	 * 	<li> SrSDF generated from {@link ToHSDFVisitor}
+	 * 	<li> DAG generated from {@link SDF2DAG}
+	 * </ol>
+	 */
 	@Parameterized.Parameters
 	public static def Collection<Object[]> instancesToTest() {
 		val parameters = newArrayList
@@ -38,9 +58,10 @@ class DAGUtilsTest {
 	}
 	
 	/**
-	 * Test vertices in a graph have unique names
-	 * 
-	 * ASSUMPTION: This forms the basis for coiteration. The test ensures that is the case
+	 * Vertices in each graphs have unique names
+	 * <p>
+	 * This forms the basis for coiteration. The test ensures that is the case
+	 * <i>Strong Test</i>
 	 */
 	@org.junit.Test
 	public def void nameAreUnique() {
@@ -58,10 +79,9 @@ class DAGUtilsTest {
 	}
 	
 	/**
-	 * All vertices, except implode/explode of HSDF should also 
-	 * exist in DAG
-	 * 
-	 * Weak Test
+	 * All vertices, except implode/explode of SrSDF should also exist in DAG
+	 * <p>
+	 * <i>Weak Test</i>
 	 */
 	@org.junit.Test
 	public def void hsdfAndDAGareSame() {

@@ -12,6 +12,7 @@ import org.abo.preesm.plugin.dataparallel.DAGUtils
 /**
  * Helper builder class for {@link SrSDFDAGCoIterator}
  * 
+ * @see {@link SrSDFDAGCoIterator}
  * @author Sudeep Kanur
  */
 class SrSDFDAGCoIteratorBuilder {
@@ -56,26 +57,60 @@ class SrSDFDAGCoIteratorBuilder {
 		this(null)
 	}
 	
+	/**
+	 * Add DAG graph (not generator) produced from the output of a {@link PureDAGConstructor}
+	 * implementor
+	 * 
+	 * @param dag DAG obtained by {@link PureDAGConstructor#getOutputGraph}
+	 * @return Builder instance to continue building 
+	 */
 	public def SrSDFDAGCoIteratorBuilder addDAG(SDFGraph dag) {
 		this.dag = dag
 		return this
 	}
 	
+	/**
+	 * Add single rate graph obtained by {@link ToHSDFVisitor}
+	 * 
+	 * @param srsdf Single rate graph of the SDF
+	 * @return Builder instance to continue building
+	 */
 	public def SrSDFDAGCoIteratorBuilder addSrSDF(SDFGraph srsdf) {
 		this.srsdf = srsdf
 		return this
 	}
 	
+	/**
+	 * Add visitable nodes
+	 * <p>
+	 * Visitable nodes are those nodes of the DAG that <i>must</i> be seen in the SrSDF graph
+	 * 
+	 * @param visitableNodes List of visitable nodes of DAG
+	 * @return Builder instance to continue building
+	 */
 	public def SrSDFDAGCoIteratorBuilder addVisitableNodes(List<SDFAbstractVertex> visitableNodes){
 		this.visitableNodes = visitableNodes
 		return this
 	}
 	
+	/**
+	 * Add startVertex
+	 * <p>
+	 * StartVertex is the node in SrSDF graph from which traversing should begin
+	 * 
+	 * @param startVertex Starting node in SrSDF graph
+	 * @return Builder instance to continue building
+	 */
 	public def SrSDFDAGCoIteratorBuilder addStartVertex(SDFAbstractVertex startVertex) {
 		this.startVertex = startVertex
 		return this
 	}
 	
+	/**
+	 * Return the coiterator instance
+	 * 
+	 * @return {@link SrSDFDAGCoIterator} instance
+	 */
 	public def SrSDFDAGCoIterator build() throws SDF4JException {
 		if(!(dag.vertexSet.contains(startVertex))){
 			throw new SDF4JException("Starting node: " + startVertex.name + " does not exist " + 

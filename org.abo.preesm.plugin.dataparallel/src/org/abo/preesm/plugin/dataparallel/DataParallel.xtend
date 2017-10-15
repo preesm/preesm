@@ -11,7 +11,7 @@ import org.ietr.dftools.workflow.elements.Workflow
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation
 import org.ietr.dftools.workflow.tools.WorkflowLogger
-import org.abo.preesm.plugin.dataparallel.operations.visitor.DataParallelCheckOperations
+import org.abo.preesm.plugin.dataparallel.operations.DataParallelCheckOperations
 
 /**
  * Wrapper class that performs the data-parallel checks and transforms
@@ -27,10 +27,10 @@ class DataParallel extends AbstractTaskImplementation {
 	val KEY_CySDF = "CySDF"
 	
 	/**
-	 * Execute the plugin
-	 * Construct the DAG from SDF and pass it to the output
+	 * Execute the plugin.
+	 * Construct the DAG from SDF and pass it to the output.
 	 * Report if the SDF is data-parallel, if not, report the actors that are not
-	 * data-parallel
+	 * data-parallel.
 	 * 
 	 */
 	override execute(Map<String, Object> inputs, Map<String, String> parameters, IProgressMonitor monitor, String nodeName, Workflow workflow) throws WorkflowException {

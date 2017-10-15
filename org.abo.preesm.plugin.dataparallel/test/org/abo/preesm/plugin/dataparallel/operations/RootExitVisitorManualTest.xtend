@@ -1,15 +1,15 @@
-package org.abo.preesm.plugin.dataparallel.operations.visitor.test
+package org.abo.preesm.plugin.dataparallel.operations
 
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.abo.preesm.plugin.dataparallel.PureDAGConstructor
 import java.util.List
 import java.util.Collection
-import org.abo.preesm.plugin.dataparallel.test.ExampleGraphs
+import org.abo.preesm.plugin.dataparallel.test.util.ExampleGraphs
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.abo.preesm.plugin.dataparallel.DAG2DAG
-import org.abo.preesm.plugin.dataparallel.operations.visitor.RootExitOperations
+import org.abo.preesm.plugin.dataparallel.operations.RootExitOperations
 import org.junit.Assert
 import org.abo.preesm.plugin.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
 import org.jgrapht.alg.CycleDetector
@@ -18,7 +18,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 
 /**
- * Manual test for verifying root and exit instances and actors
+ * <b>Manual test</b> for verifying root and exit instances and actors of {@link RootExitOperations}
  * 
  * @author Sudeep Kanur
  */
@@ -35,6 +35,16 @@ class RootExitVisitorManualTest {
 	
 	protected val boolean checkCounts
 	
+	/**
+	 * Has the following <b>manually defined</b> parameters
+	 * <ol>
+	 * 	<li> A {@link PureDAGConstructor} instance
+	 *  <li> Names of the root instances
+	 *  <li> Names of the exit instances
+	 *  <li> Names of the root actors
+	 *  <li> <code>true</code> if the test must perform counting, <code>false</code> otherwise
+	 * </ol>
+	 */
 	new(PureDAGConstructor dagGen, 
 		List<String> rootNodeNames, 
 		List<String> exitNodeNames, 
@@ -48,16 +58,18 @@ class RootExitVisitorManualTest {
 		this.checkCounts = checkCounts
 	}
 	
+	/**
+	 * Generates following <b>manually defined</b> parameters
+	 * <ol>
+	 * 	<li> A {@link PureDAGConstructor} instance
+	 *  <li> Names of the root instances
+	 *  <li> Names of the exit instances
+	 *  <li> Names of the root actors
+	 *  <li> <code>true</code> if the test must perform counting, <code>false</code> otherwise
+	 * </ol>
+	 */
 	@Parameterized.Parameters
 	public static def Collection<Object[]> instancesToTest() {
-		/*
-		 * Following parameters are passed
-		 * 1. A PureDAGConstructor instance
-		 * 2. Names of root instances
-		 * 3. Names of exit instances
-		 * 4. Names of root actors
-		 * 5. Should count?
-		 */
 		val parameters = newArrayList
 		
 		val parameterArray = #[
@@ -159,7 +171,7 @@ class RootExitVisitorManualTest {
 	}
 	
 	/**
-	 * Check that the manually determined root instances match the computed ones
+	 * Manually determined root instances match the computed ones
 	 */
 	@org.junit.Test
 	public def void checkRootInstances() {
@@ -171,7 +183,7 @@ class RootExitVisitorManualTest {
 	}
 	
 	/**
-	 * Check that the manually determined exit instances match the computed ones
+	 * Manually determined exit instances match the computed ones
 	 */
 	@org.junit.Test
 	public def void checkExitInstances() {
@@ -183,7 +195,7 @@ class RootExitVisitorManualTest {
 	}
 	
 	/**
-	 * Check that the manually determined actors match the computed ones
+	 * Manually determined actors match the computed ones
 	 */
 	@org.junit.Test
 	public def void checkActors() {
