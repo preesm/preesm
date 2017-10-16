@@ -137,8 +137,7 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 			val subgraphInstInd = newArrayList
 			val subgraphDepActors = newArrayList
 			
-			// WIP
-//			val info = new RetimingInfo(newArrayList)
+			val info = new RetimingInfo(newArrayList)			
 			
 			// Process each unconnected SDF subgraphs at a time
 			acyclicLikeVisitor.SDFSubgraphs.forEach[sdfSubgraph |
@@ -158,35 +157,33 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 							DirectedSubgraph<SDFAbstractVertex, SDFEdge>
 						)
 					}
-				]	
-								
-				// Perform DAG instance check on each strongly connected subgraph
-				isolatedStronglyConnectedComponents.forEach[subgraph |
-					
-					val subgraphDAGGen = new SDF2DAG(subgraph)
-					val depOps = new DependencyAnalysisOperations
-					subgraphDAGGen.accept(depOps)
-					subgraphInstInd.add(depOps.isIndependent)
-					
-					if(depOps.isIndependent) {
-						// Rearrange the loops as the subgraph is instance independent
-						// WIP
-//						val movableInstanceVisitor = new MovableInstances
-//						subgraphDAGGen.accept(movableInstanceVisitor)
-//						val retimingVisitor = new RearrangeOperations(srsdf, info)
-//						subgraphDAGGen.accept(retimingVisitor)
-						
-					} else {					
-						if(!depOps.instanceDependentActors.empty) {
-							subgraphDepActors.addAll(depOps.instanceDependentActors.toList)
-						} else {
-							throw new DAGComputationBug("SDFG has instance dependence. But dependent " +
-								" actor set is empty!")
-						}
-					}
 				]
-			]			
-			
+			]	
+				
+			// Perform DAG instance check on each strongly connected subgraph
+			isolatedStronglyConnectedComponents.forEach[subgraph |
+				
+				val subgraphDAGGen = new SDF2DAG(subgraph)
+				val depOps = new DependencyAnalysisOperations
+				subgraphDAGGen.accept(depOps)
+				subgraphInstInd.add(depOps.isIndependent)
+				
+				if(depOps.isIndependent) {
+					// Rearrange the loops as the subgraph is instance independent
+
+					val retimingVisitor = new RearrangeOperations(srsdf, info)
+					subgraphDAGGen.accept(retimingVisitor)
+					
+				} else {					
+					if(!depOps.instanceDependentActors.empty) {
+						subgraphDepActors.addAll(depOps.instanceDependentActors.toList)
+					} else {
+						throw new DAGComputationBug("SDFG has instance dependence. But dependent " +
+							" actor set is empty!")
+					}
+				}
+			]
+		
 			this.isInstanceIndependent = subgraphInstInd.forall[value | value == true]
 			
 			if(isInstanceIndependent) {
@@ -195,9 +192,9 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 				log(Level.INFO, "SDF is not instance-independent, therefore not data-parallel.")
 				log(Level.INFO, "Actors with instance dependency are: " + subgraphDepActors)
 			}
+			this.info = info
 		}
 		this.cyclicGraph = srsdf
-//		this.info = info // WIP
 	}
 	
 	override visit(SDFEdge sdfEdge) {

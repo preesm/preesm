@@ -20,7 +20,7 @@
             </output>
             <output
                   id="Info"
-                  object="org.abo.preesm.plugin.dataparallel.operations.visitor.RetimingInfo">
+                  object="org.abo.preesm.plugin.dataparallel.pojo.RetimingInfo">
             </output>
          </outputs>
       </task>

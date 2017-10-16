@@ -34,13 +34,13 @@ import org.abo.preesm.plugin.dataparallel.NodeChainGraph
 	 * Constructor
 	 */
 	new(List<SDFForkVertex> explode, List<SDFJoinVertex> implode, SDFAbstractVertex vertex) {
-		if(explode.empty) {
+		if(explode === null || explode.empty) {
 			this.explode = null
 		} else {
 			this.explode = explode
 		}
 		
-		if(implode.empty) {
+		if(implode === null || implode.empty) {
 			this.implode = null
 		} else {
 			this.implode = implode

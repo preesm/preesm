@@ -2,6 +2,7 @@ package org.abo.preesm.plugin.dataparallel
 
 import java.util.Map
 import java.util.logging.Logger
+import org.abo.preesm.plugin.dataparallel.operations.DataParallelCheckOperations
 import org.eclipse.core.runtime.IProgressMonitor
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
@@ -11,7 +12,6 @@ import org.ietr.dftools.workflow.elements.Workflow
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation
 import org.ietr.dftools.workflow.tools.WorkflowLogger
-import org.abo.preesm.plugin.dataparallel.operations.DataParallelCheckOperations
 
 /**
  * Wrapper class that performs the data-parallel checks and transforms
@@ -27,11 +27,8 @@ class DataParallel extends AbstractTaskImplementation {
 	val KEY_CySDF = "CySDF"
 	
 	/**
-	 * Execute the plugin.
-	 * Construct the DAG from SDF and pass it to the output.
-	 * Report if the SDF is data-parallel, if not, report the actors that are not
-	 * data-parallel.
-	 * 
+	 * Execute data-parallel plugin and re-timing transformation. Actual work is carried out
+	 * by {@link DataParallelCheckOperations}
 	 */
 	override execute(Map<String, Object> inputs, Map<String, String> parameters, IProgressMonitor monitor, String nodeName, Workflow workflow) throws WorkflowException {
 		val sdf = inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH) as SDFGraph
@@ -45,7 +42,7 @@ class DataParallel extends AbstractTaskImplementation {
 		val checker = new DataParallelCheckOperations(logger as Logger)
 		sdf.accept(checker)
 		
-		return newHashMap(KEY_INFO -> null,
+		return newHashMap(KEY_INFO -> checker.info,
 						  KEY_CySDF -> checker.cyclicGraph
 		)
 	}

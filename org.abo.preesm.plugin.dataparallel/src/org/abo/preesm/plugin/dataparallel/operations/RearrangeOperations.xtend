@@ -216,9 +216,10 @@ class RearrangeOperations implements DAGOperations {
 		inEdgeDelayMap.forEach[edge, delay |
 			val cons = edge.cons.intValue
 			val rep = edge.target.nbRepeatAsInteger
+			println(node + ": " + edge)
 			if(delay < cons * rep) {
-				throw new DAGComputationBug("For the edge: " + edge + " not enough delays at " +
-					"the input.")
+				throw new DAGComputationBug("While processing " + node + ", for the edge: " + edge 
+					+ " not enough delays at the input.")
 			}
 			
 			val fifoActor = if(edgeFifoActors.keySet.contains(edge)) {
