@@ -5,15 +5,15 @@ import org.abo.preesm.plugin.dataparallel.operations.DependencyAnalysisOperation
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
 import org.junit.Assert
 import org.junit.Test
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
 
 /**
  * Manually construct example graphs for testing purposes 
@@ -84,14 +84,16 @@ class ExampleGraphs {
 			val SDFAbstractVertex source = if(outputGraph.vertexSet.exists[node | node.name == sourceName]) {
 				outputGraph.vertexSet.filter[node | node.name == sourceName].get(0)	
 			} else {
-				val SDFAbstractVertex src = createVertex(sourceType) => [name = sourceName]
+				val SDFAbstractVertex src = createVertex(sourceType)
+				src.name = sourceName
 				outputGraph.addVertex(src)
 				src
 			}
 			val SDFAbstractVertex target = if(outputGraph.vertexSet.exists[node | node.name == targetName]) {
 												outputGraph.vertexSet.filter[node | node.name == targetName].get(0)
 				} else {
-					val SDFAbstractVertex dst = createVertex(targetType) => [name = targetName]
+					val SDFAbstractVertex dst = createVertex(targetType)
+					dst.name = targetName
 					outputGraph.addVertex(dst)
 					dst
 				}
@@ -229,19 +231,20 @@ class ExampleGraphs {
 	 * Don't add this to Util as calculating branch sets using traditional method (as mentioned in
 	 * the paper) will take a long long time to complete.
 	 */
-	public static def SDFGraph costStrongComponent() {
+	 public static def SDFGraph costStrongComponent() {
 		val height = 380
 		val width = 434
 		val size = height * width
 		val rep = 19
 		val sdf = new SDFBuilder()
-				.addEdge("Broadcast5", SDFBroadcastVertex.BROADCAST, "back", 
+				.addEdge("In", "out", "CostConstruction", "out", rep*size, size, 0)
+				.addEdge("Broadcast5", SDFBroadcastVertex.BROADCAST, "back_0_0", 
 						 "CostConstruction", SDFVertex.VERTEX, "back", 1, 1, 8)
 				.addEdge("CostConstruction", "disparityError", "AggregateCost", "disparityError", 
 					size, size, 0)
 				.addEdge("AggregateCost", "aggregatedDisparity", "disparitySelect", "aggregatedDisparity", 
 					size, size, 0)
-				.addEdge("Broadcast5", SDFBroadcastVertex.BROADCAST, "out1", 
+				.addEdge("Broadcast5", SDFBroadcastVertex.BROADCAST, "out1_0_0", 
 						 "disparitySelect", SDFVertex.VERTEX, "currentResult", 
 						 size, size, size)
 				.addEdge("disparitySelect", "backBestCost", "disparitySelect", "bestCostFeed", 
@@ -249,11 +252,10 @@ class ExampleGraphs {
 				.addEdge("disparitySelect", SDFVertex.VERTEX, "result", 
 						 "Broadcast5", SDFBroadcastVertex.BROADCAST, "in", 
 						 size, size, 0)
-				.addEdge("Broadcast5", SDFBroadcastVertex.BROADCAST, "out0",
+				.addEdge("Broadcast5", SDFBroadcastVertex.BROADCAST, "out0_0_0",
 						 "Out", SDFVertex.VERTEX, "in", 
 						 size, rep * size, 0)
 				.outputGraph
-		sdf.vertexSet.filter[vertex | vertex.name != "Out"].forEach[vertex | vertex.nbRepeat = 19]
 		return sdf
 	}
 	

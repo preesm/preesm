@@ -21,17 +21,17 @@ class Util {
 	 */
 	public static def List<SDFGraph> provideAllGraphs() {
 		return newArrayList(
-			ExampleGraphs.acyclicTwoActors,
-			ExampleGraphs.twoActorSelfLoop,
-			ExampleGraphs.twoActorLoop,
-			ExampleGraphs.semanticallyAcyclicCycle,
-			ExampleGraphs.strictlyCyclic,
-			ExampleGraphs.strictlyCyclicDual,
-			ExampleGraphs.strictlyCyclic2,
-			ExampleGraphs.mixedNetwork1,
-			ExampleGraphs.mixedNetwork2,
-			ExampleGraphs.nestedStrongGraph,
-			ExampleGraphs.costStrongComponent
+			ExampleGraphs.acyclicTwoActors
+		,	ExampleGraphs.twoActorSelfLoop
+		,	ExampleGraphs.twoActorLoop
+		,	ExampleGraphs.semanticallyAcyclicCycle
+		,	ExampleGraphs.strictlyCyclic
+		,	ExampleGraphs.strictlyCyclicDual
+		,	ExampleGraphs.strictlyCyclic2
+		,	ExampleGraphs.mixedNetwork1
+		,	ExampleGraphs.mixedNetwork2
+		,	ExampleGraphs.nestedStrongGraph
+		,	ExampleGraphs.costStrongComponent
 		)
 	}
 	
@@ -45,17 +45,17 @@ class Util {
 	public static def List<ExampleGraphContext> provideAllGraphsContext() {
 		return newArrayList(
 			// SDFG, isBranchSetCompatible, isInstanceIndependent, isAcyclic
-			new ExampleGraphContext(ExampleGraphs.acyclicTwoActors, true, true, false),
-			new ExampleGraphContext(ExampleGraphs.twoActorSelfLoop, true, false, false),
-			new ExampleGraphContext(ExampleGraphs.twoActorLoop, true, false, false),
-			new ExampleGraphContext(ExampleGraphs.semanticallyAcyclicCycle, true, true, true),
-			new ExampleGraphContext(ExampleGraphs.strictlyCyclic, true, true, false),
-			new ExampleGraphContext(ExampleGraphs.strictlyCyclicDual, true, true, false),
-			new ExampleGraphContext(ExampleGraphs.strictlyCyclic2, true, true, false),
-			new ExampleGraphContext(ExampleGraphs.mixedNetwork1, true, true, false),
-			new ExampleGraphContext(ExampleGraphs.mixedNetwork2, true, false, false),
-			new ExampleGraphContext(ExampleGraphs.nestedStrongGraph, true, true, true),
-			new ExampleGraphContext(ExampleGraphs.costStrongComponent, false, false, false)
+			new ExampleGraphContext(ExampleGraphs.acyclicTwoActors, true, true, false)
+		,	new ExampleGraphContext(ExampleGraphs.twoActorSelfLoop, true, false, false)
+		,	new ExampleGraphContext(ExampleGraphs.twoActorLoop, true, false, false)
+		,	new ExampleGraphContext(ExampleGraphs.semanticallyAcyclicCycle, true, true, true)
+		,	new ExampleGraphContext(ExampleGraphs.strictlyCyclic, true, true, false)
+		,	new ExampleGraphContext(ExampleGraphs.strictlyCyclicDual, true, true, false)
+		,	new ExampleGraphContext(ExampleGraphs.strictlyCyclic2, true, true, false)
+		,	new ExampleGraphContext(ExampleGraphs.mixedNetwork1, true, true, false)
+		,	new ExampleGraphContext(ExampleGraphs.mixedNetwork2, true, false, false)
+		,	new ExampleGraphContext(ExampleGraphs.nestedStrongGraph, true, true, true)
+		,	new ExampleGraphContext(ExampleGraphs.costStrongComponent, false, false, false)
 		)
 	}
 	
