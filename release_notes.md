@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 2.5.1
+*2017.10.17*
 
 ### New Feature
 * Add feature dependency to TM Terminal to have easy terminal access;
@@ -11,6 +11,7 @@ PREESM Changelog
 ### Changes
 * Changes actor ports layout: add more gap for better readability;
 * Autolayout feature now relayout actor content (for better rendering of old PiSDF graph);
+* Update DFTools to 1.2.3 and Graphiti to 1.4.3;
 
 ### Bug fix
 
