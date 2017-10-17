@@ -3,6 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Daniel Madroñal <daniel.madronal@upm.es> (2017)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2017)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
