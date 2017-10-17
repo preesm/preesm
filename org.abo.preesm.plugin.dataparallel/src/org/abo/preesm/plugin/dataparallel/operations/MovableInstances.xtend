@@ -68,6 +68,7 @@ class MovableInstances implements DAGOperations {
 	private def void findMovableInstances(PureDAGConstructor dagGen) throws SDF4JException {
 		val parallelVisitor = new DependencyAnalysisOperations
 		dagGen.accept(parallelVisitor)
+		
 		val isDAGInd = parallelVisitor.isIndependent
 		if(!isDAGInd) {
 			throw new SDF4JException("DAG is not instance independent. Getting movable instance" + 
@@ -79,7 +80,13 @@ class MovableInstances implements DAGOperations {
 		dagGen.accept(rootVisitor)
 		val rootInstances = rootVisitor.rootInstances
 		
-		val anchorActor = OperationsUtils.pickElement(rootVisitor.rootActors)
+		// We want pick anchor instance from an actor that is not a 
+		// source actor and is part of strongly connected component.
+		val nonSourceActors = rootVisitor.rootActors.filter[actor |
+			!actor.sources.empty
+		].toList
+		
+		val anchorActor = OperationsUtils.pickElement(nonSourceActors)
 		// Get all associated instances that belong to same actor
 		val anchorInstances = dagGen.actor2Instances.get(anchorActor).filter[instance |
 			rootInstances.contains(instance)

@@ -6,16 +6,16 @@ import java.util.logging.Logger
 import org.abo.preesm.plugin.dataparallel.DAGComputationBug
 import org.abo.preesm.plugin.dataparallel.SDF2DAG
 import org.abo.preesm.plugin.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
+import org.abo.preesm.plugin.dataparallel.pojo.RetimingInfo
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
 import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.alg.CycleDetector
 import org.jgrapht.graph.DirectedSubgraph
-import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
-import org.abo.preesm.plugin.dataparallel.pojo.RetimingInfo
 
 /**
  * Isolate strongly connected components of the original
@@ -153,9 +153,36 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 					if(cycleDetector.detectCycles) {
 						// ASSUMPTION: Strongly connected component of a directed graph contains atleast
 						// one loop
-						isolatedStronglyConnectedComponents.add(subgraph as 
-							DirectedSubgraph<SDFAbstractVertex, SDFEdge>
-						)
+						
+						// We need not only strongly connected components, but also vertices that 
+						// connect to the rest of the graph. This is because, calculation of root
+						// and exit vertices also depends if there are enough delay tokens at the
+						// interface edges.
+						val relevantVertices = newHashSet
+						val relevantEdges = newHashSet
+						
+						sdfSubgraph.vertexSet.forEach[vertex |
+							if(subgraph.vertexSet.contains(vertex)) {
+								sdfSubgraph.incomingEdgesOf(vertex).forEach[edge |
+									if(!subgraph.vertexSet.contains(edge.source)) {
+										relevantVertices.add(edge.source)
+										relevantEdges.add(edge)
+									}
+								]
+								
+								sdfSubgraph.outgoingEdgesOf(vertex).forEach[edge |
+									if(!subgraph.vertexSet.contains(edge.target)) {
+										relevantVertices.add(edge.target)
+										relevantEdges.add(edge)
+									}
+								]
+							}	
+						]
+						relevantVertices.addAll(subgraph.vertexSet)
+						relevantEdges.addAll(subgraph.edgeSet)
+						val subgraphInterfaceVertices = new DirectedSubgraph(sdfSubgraph, relevantVertices, relevantEdges)
+
+						isolatedStronglyConnectedComponents.add(subgraphInterfaceVertices)
 					}
 				]
 			]	

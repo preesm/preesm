@@ -1,15 +1,14 @@
 package org.abo.preesm.plugin.dataparallel.operations
 
-import org.junit.runners.Parameterized
-import org.junit.runner.RunWith
 import java.util.Collection
+import org.abo.preesm.plugin.dataparallel.test.util.ExampleGraphs
 import org.abo.preesm.plugin.dataparallel.test.util.Util
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.junit.Assert
-import org.abo.preesm.plugin.dataparallel.operations.DataParallelCheckOperations
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
-import org.abo.preesm.plugin.dataparallel.test.util.ExampleGraphs
-import org.abo.preesm.plugin.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
+import org.junit.Assert
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
 
 /**
  * Property based test to verify {@link DataParallelCheckOperations} works as expected
@@ -53,27 +52,10 @@ class DataParallelCheckOperationsTest {
 	 * <p>
 	 * <i>Strong Test</i>
 	 */
-	@org.junit.Test(expected = SDF4JException)
+	@Test(expected = SDF4JException)
 	public def void exceptionHierGraph() {
 		val isolatedSubgraphsVisitor = new DataParallelCheckOperations
 		ExampleGraphs.acyclicHierarchicalTwoActors.accept(isolatedSubgraphsVisitor)
-	}
-	
-	/**
-	 * Assert that each isolated subgraph is indeed a strongly connected component. 
-	 * The method isStronglyConnected is never used to isolate them, so it is a good candidate to test.
-	 * <p>
-	 * <i>Strong Test</i>
-	 */
-	@org.junit.Test
-	public def void isolatedSubgraphsAreStronglyConnected() {
-		val isolatedSubgraphsVisitor = new DataParallelCheckOperations
-		sdf.accept(isolatedSubgraphsVisitor)
-		
-		isolatedSubgraphsVisitor.isolatedStronglyConnectedComponents.forEach[ subgraph |
-			val strongCompDetector = new KosarajuStrongConnectivityInspector(subgraph)
-			Assert.assertTrue(strongCompDetector.isStronglyConnected)
-		]
 	}
 	
 	/**
@@ -82,7 +64,7 @@ class DataParallelCheckOperationsTest {
 	 * <p>
 	 * <i>Strong Test</i>
 	 */
-	@org.junit.Test
+	@Test
 	public def void isolatedSubgraphsAreComplete() {
 		val isolatedSubgraphsVisitor = new DataParallelCheckOperations
 		sdf.accept(isolatedSubgraphsVisitor)

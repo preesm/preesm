@@ -136,13 +136,44 @@ class SDFCommonOperationsTest {
 				// Collect strongly connected component that has loops in it
 				// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
 				strongCompDetector.getStronglyConnectedComponents.forEach[ subgraph |
-					val dirSubGraph = subgraph as DirectedSubgraph<SDFAbstractVertex, SDFEdge>
-					val cycleDetector = new CycleDetector(dirSubGraph) 
+					val cycleDetector = new CycleDetector(subgraph as 
+						DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+					) 
 					if(cycleDetector.detectCycles) {
 						// ASSUMPTION: Strongly connected component of a directed graph contains atleast
 						// one loop. Perform the tests now. As only instance independent graphs are
 						// added, no check is made
-						val subgraphDAGGen = new SDF2DAG(dirSubGraph)
+						
+						// We need not only strongly connected components, but also vertices that 
+						// connect to the rest of the graph. This is because, calculation of root
+						// and exit vertices also depends if there are enough delay tokens at the
+						// interface edges.
+						
+						val relevantVertices = newHashSet
+						val relevantEdges = newHashSet
+							sdfSubgraph.vertexSet.forEach[vertex |
+							if(subgraph.vertexSet.contains(vertex)) {
+								sdfSubgraph.incomingEdgesOf(vertex).forEach[edge |
+									if(!subgraph.vertexSet.contains(edge.source)) {
+										relevantVertices.add(edge.source)
+										relevantEdges.add(edge)
+									}
+								]
+								
+								sdfSubgraph.outgoingEdgesOf(vertex).forEach[edge |
+									if(!subgraph.vertexSet.contains(edge.target)) {
+										relevantVertices.add(edge.target)
+										relevantEdges.add(edge)
+									}
+								]
+							}	
+						]
+						relevantVertices.addAll(subgraph.vertexSet)
+						relevantEdges.addAll(subgraph.edgeSet)
+						
+						val subgraphInterfaceVertices = new DirectedSubgraph(sdfSubgraph, relevantVertices, relevantEdges)
+						
+						val subgraphDAGGen = new SDF2DAG(subgraphInterfaceVertices)
 						
 						val moveInstanceVisitor = new MovableInstances
 						subgraphDAGGen.accept(moveInstanceVisitor)
