@@ -313,6 +313,27 @@
 			
 			\textbf{See also:} Graph consistency~\cite{Lee_Synchronous_1987}.}
 	}
+
+    \subsection{Data-parallel Transformation}
+    \label{sec:data_parallel}
+    \tabBrief{Data-parallel Transform}{SDF}{SDF, INFO}{Detect wheter an \gls{sdf} graph is data-parallel and provide its data-parallel equivalent Single-Rate \gls{sdf} and its re-timing information.}{org.abo.preesm.plugin.dataparallel.DataParallel}
+
+	\tabParam{\multicolumn{3}{|c|}{None}}
+    \tabDesc{
+        An \gls{sdf} graph is data-parallel when for each actor of the \gls{sdf} graph, all of its instances can be executed at the same time. For instance, all strictly acyclic \gls{sdf} graphs are data-parallel. This task increases the scope of this analysis to generic \gls{sdf} graphs.
+        
+        The task analyses an input \gls{sdf} graph and reports if it is data-parallel by analysing each strongly connected component of the graph. If a strongly connected component requires a re-timing transformation for it to be data-parallel, then the transformation is carried out such that the corresponding strongly connected component in the output single-rate \gls{sdf} (see Section. \ref{sec:single-rate_transformation}) is data-parallel. The re-timing transformation modifies the delays in the original \gls{sdf} graph such that the final single-rate \gls{sdf} output is data-parallel.
+
+        However, if a strongly connected component of the \gls{sdf} is not data-parallel, then the plugin reports the actors of this strongly connected component. In this case, the strongly connected component at the output single-rate \gls{sdf} graph is same as that of the single-rate transformation on the original \gls{sdf}.
+
+        The data-structure INFO describes mapping of delays in original FIFO to delays in the transformed \gls{sdf}. This non-trivial initialization of delays in FIFOs is represented using \gls{sdf}-like graphs where FIFO initialization function is represented as an actor. The data-structure INFO is provided for sake of completion and is not being used by other plugins. The data-structure INFO can change in future based on the design of the initialization of the FIFOs.
+        
+        \textbf{See also:} Implementation details~\cite{skanur_tucs_2017}
+    }
+    \tabError{
+        \error{DAGComputationBug}{There is a bug in implementation due to incorrect assumption. Report the bug by opening an issue and attaching the graph that caused it.}
+    }
+
 	
 	\section{Graph Exporters}
 	\subsection{SDF Exporter}
