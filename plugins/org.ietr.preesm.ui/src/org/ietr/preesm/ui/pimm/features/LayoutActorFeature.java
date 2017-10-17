@@ -73,13 +73,25 @@ import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 
-// TODO: Auto-generated Javadoc
 /**
  * Layout Feature for Actors.
  *
  * @author kdesnos
  */
 public class LayoutActorFeature extends AbstractLayoutFeature {
+
+  /**
+   *
+   */
+  public static final int INITIAL_GAP = 5;
+  /**
+   *
+   */
+  public static final int BOTTOM_GAP  = 3;
+  /**
+   * Gap between ports in pixels
+   */
+  public static final int PORT_GAP    = 2;
 
   /**
    * Default Constructor of the {@link LayoutActorFeature}.
@@ -138,10 +150,9 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 
           // Retrieve the size of the text
           final IDimension size = GraphitiUi.getUiLayoutService().calculateTextSize(text, font);
-
           // Retrieve the space of the name
-          // (+5 to add space and lighten the actor representation)
-          nameHeight = size.getHeight() + 5;
+          // (+ port gap to add space and lighten the actor representation)
+          nameHeight = size.getHeight() + PORT_GAP;
         }
       }
     }
@@ -183,17 +194,17 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 
               switch (obj.eClass().getClassifierID()) {
                 case PiMMPackage.CONFIG_INPUT_PORT:
-                  cfgInputsHeight += size.getHeight();
+                  cfgInputsHeight += size.getHeight() + PORT_GAP;
                   break;
                 case PiMMPackage.CONFIG_OUTPUT_PORT:
-                  cfgOutputsHeight += size.getHeight();
+                  cfgOutputsHeight += size.getHeight() + PORT_GAP;
                   break;
 
                 case PiMMPackage.DATA_INPUT_PORT:
-                  inputsHeight += size.getHeight();
+                  inputsHeight += size.getHeight() + PORT_GAP;
                   break;
                 case PiMMPackage.DATA_OUTPUT_PORT:
-                  outputsHeight += size.getHeight();
+                  outputsHeight += size.getHeight() + PORT_GAP;
                   break;
                 default:
               }
@@ -205,7 +216,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
       anchorMaxHeight = Math.max(cfgInputsHeight, cfgOutputsHeight) + Math.max(inputsHeight, outputsHeight);
     }
 
-    return anchorMaxHeight + nameHeight;
+    return anchorMaxHeight + nameHeight + INITIAL_GAP + BOTTOM_GAP;
   }
 
   /**
@@ -295,8 +306,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
       anchorWidth += 8;
     }
 
-    final int maxWidth = Math.max(anchorWidth, nameWidth);
-    return maxWidth;
+    return Math.max(anchorWidth, nameWidth);
   }
 
   /*
@@ -366,8 +376,8 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
    *          the container ga
    */
   private void layoutSpecialActor(final ExecutableActor ea, final EList<Shape> childrenShapes, final GraphicsAlgorithm containerGa) {
-    IColorConstant backgroundColor = IColorConstant.WHITE;
-    IColorConstant foregroundColor = IColorConstant.BLACK;
+    final IColorConstant backgroundColor;
+    final IColorConstant foregroundColor;
     if (ea instanceof BroadcastActor) {
       backgroundColor = AddBroadcastActorFeature.BROADCAST_ACTOR_BACKGROUND;
       foregroundColor = AddBroadcastActorFeature.BROADCAST_ACTOR_FOREGROUND;
@@ -380,6 +390,9 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
     } else if (ea instanceof RoundBufferActor) {
       backgroundColor = AddRoundBufferActorFeature.ROUND_BUFFER_ACTOR_BACKGROUND;
       foregroundColor = AddRoundBufferActorFeature.ROUND_BUFFER_ACTOR_FOREGROUND;
+    } else {
+      backgroundColor = IColorConstant.WHITE;
+      foregroundColor = IColorConstant.BLACK;
     }
     for (final Shape shape : childrenShapes) {
       final GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
@@ -405,33 +418,22 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
    *          the container ga
    */
   private void layoutActor(final Actor actor, final EList<Shape> childrenShapes, final GraphicsAlgorithm containerGa) {
-    if ((actor.getRefinement().getFilePath() != null) && actor.getRefinement().getFilePath().getFileExtension().equals("pi")) {
-      // Special layout for actors with a refinement
-      for (final Shape shape : childrenShapes) {
-        final GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
-        final IGaService gaService = Graphiti.getGaService();
-        if (child instanceof Text) {
-          ((Text) child).setFont(gaService.manageDefaultFont(getDiagram(), true, true));
-        }
+    final boolean isHactor = (actor.getRefinement().getFilePath() != null) && actor.getRefinement().getFilePath().getFileExtension().equals("pi");
+
+    final IColorConstant bgColor = isHactor ? AddActorFeature.HIERARCHICAL_ACTOR_BACKGROUND : AddActorFeature.ACTOR_BACKGROUND;
+    final IColorConstant fgColor = isHactor ? AddActorFeature.HIERARCHICAL_ACTOR_FOREGROUND : AddActorFeature.ACTOR_FOREGROUND;
+
+    for (final Shape shape : childrenShapes) {
+      final GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
+      final IGaService gaService = Graphiti.getGaService();
+      if (child instanceof Text) {
+        ((Text) child).setFont(gaService.manageDefaultFont(getDiagram(), isHactor, true));
       }
-      final RoundedRectangle roundedRectangle = (RoundedRectangle) containerGa;
-      roundedRectangle.setBackground(manageColor(AddActorFeature.HIERARCHICAL_ACTOR_BACKGROUND));
-      roundedRectangle.setForeground(manageColor(AddActorFeature.HIERARCHICAL_ACTOR_FOREGROUND));
-      roundedRectangle.setLineWidth(2);
-    } else {
-      // Layout for actors without refinement
-      for (final Shape shape : childrenShapes) {
-        final GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
-        final IGaService gaService = Graphiti.getGaService();
-        if (child instanceof Text) {
-          ((Text) child).setFont(gaService.manageDefaultFont(getDiagram(), false, true));
-        }
-      }
-      final RoundedRectangle roundedRectangle = (RoundedRectangle) containerGa;
-      roundedRectangle.setBackground(manageColor(AddActorFeature.ACTOR_BACKGROUND));
-      roundedRectangle.setForeground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
-      roundedRectangle.setLineWidth(2);
     }
+    final RoundedRectangle roundedRectangle = (RoundedRectangle) containerGa;
+    roundedRectangle.setBackground(manageColor(bgColor));
+    roundedRectangle.setForeground(manageColor(fgColor));
+    roundedRectangle.setLineWidth(2);
   }
 
   /**
@@ -477,10 +479,10 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
     // Place the inputs
     final int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
     // The first port is placed below the name
-    int y = portFontHeight + 5; // font.height + a space of 5
+    int y = portFontHeight + PORT_GAP + INITIAL_GAP;
     for (int i = 0; i < inputs.size(); i++) {
       final int configSpace = (i < nbConfigInput) ? 0 : maxNbConfigPort - nbConfigInput;
-      final double relativeHeight = (y + ((i + configSpace) * portFontHeight)) / (double) newHeigt;
+      final double relativeHeight = (y + ((i + configSpace) * (portFontHeight + PORT_GAP))) / (double) newHeigt;
       if (inputs.get(i).getRelativeHeight() != relativeHeight) {
         anythingChanged = true;
         inputs.get(i).setRelativeHeight(relativeHeight);
@@ -489,10 +491,10 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
     }
 
     // Place the outputs
-    y = portFontHeight + 5; // font.height + a space of 5
+    y = portFontHeight + PORT_GAP + INITIAL_GAP;
     for (int i = 0; i < outputs.size(); i++) {
       final int configSpace = (i < nbConfigOutput) ? 0 : maxNbConfigPort - nbConfigOutput;
-      final double relativeHeight = (y + ((i + configSpace) * portFontHeight)) / (double) newHeigt;
+      final double relativeHeight = (y + ((i + configSpace) * (portFontHeight + PORT_GAP))) / (double) newHeigt;
       if (outputs.get(i).getRelativeHeight() != relativeHeight) {
         anythingChanged = true;
         outputs.get(i).setRelativeHeight(relativeHeight);

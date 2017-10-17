@@ -229,7 +229,7 @@ public class SubgraphConnector extends PiMMDefaultVisitor {
       }
       if (!found) {
         throw new RuntimeException(
-            "PiGraph" + pg.getName() + "does not have a corresponding ConfigInputPort for " + cip1.getName() + " of Actor " + a.getName());
+            "PiGraph" + pg.getName() + " does not have a corresponding ConfigInputPort for " + cip1.getName() + " of Actor " + a.getName());
       }
     }
     for (final ConfigOutputPort cop1 : a.getConfigOutputPorts()) {
