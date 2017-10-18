@@ -5,12 +5,11 @@ Bundle-SymbolicName: fi.abo.preesm.dataparallel;singleton:=true
 Bundle-Version: 2.5.1.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.xtend.lib,
  org.ietr.dftools.workflow,
  org.clojars.gilesc.jgrapht,
  org.ietr.dftools.algorithm,
- org.junit,
  jep,
  com.github.yannrichet.JMathArray,
- gov.nist.math.jama,
- org.eclipse.xtend.lib
-Export-Package: fi.abo.preesm.dataparallel
+ gov.nist.math.jama
+Bundle-Vendor: ABO.fi
