@@ -4,9 +4,9 @@
    <extension
          point="org.ietr.dftools.workflow.tasks">
       <task
-            id="org.abo.preesm.plugin.dataparallel.DataParallel"
+            id="fi.abo.preesm.dataparallel.DataParallel"
             name="Data-Parallel"
-            type="org.abo.preesm.plugin.dataparallel.DataParallel">
+            type="fi.abo.preesm.dataparallel.DataParallel">
          <inputs>
             <input
                   id="SDF"
@@ -20,7 +20,30 @@
             </output>
             <output
                   id="Info"
-                  object="org.abo.preesm.plugin.dataparallel.pojo.RetimingInfo">
+                  object="fi.abo.preesm.dataparallel.pojo.RetimingInfo">
+            </output>
+         </outputs>
+      </task>
+
+      <!-- Duplicate the task with old ID for compatibility -->
+      <task
+            id="org.abo.preesm.plugin.dataparallel.DataParallel"
+            name="Data-Parallel"
+            type="fi.abo.preesm.dataparallel.DataParallel">
+         <inputs>
+            <input
+                  id="SDF"
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="CySDF"
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+            </output>
+            <output
+                  id="Info"
+                  object="fi.abo.preesm.dataparallel.pojo.RetimingInfo">
             </output>
          </outputs>
       </task>
