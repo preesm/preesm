@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Dataparallel
-Bundle-SymbolicName: org.abo.preesm.plugin.dataparallel;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: fi.abo.preesm.dataparallel;singleton:=true
+Bundle-Version: 2.5.1.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime,
  org.ietr.dftools.workflow,
