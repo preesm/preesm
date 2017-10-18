@@ -42,13 +42,13 @@ abstract class AbstractStrongConnectivityInspector<V, E> implements StrongConnec
   protected List<Set<V>>                 stronglyConnectedSets;
   protected List<DirectedSubgraph<V, E>> stronglyConnectedSubgraphs;
 
-  public AbstractStrongConnectivityInspector(DirectedGraph<V, E> graph) {
+  public AbstractStrongConnectivityInspector(final DirectedGraph<V, E> graph) {
     this.graph = Objects.requireNonNull(graph, "Graph cannot be null");
   }
 
   @Override
   public Graph<V, E> getGraph() {
-    return graph;
+    return this.graph;
   }
 
   @Override
@@ -59,21 +59,21 @@ abstract class AbstractStrongConnectivityInspector<V, E> implements StrongConnec
   @Override
   @Deprecated
   public List<DirectedSubgraph<V, E>> stronglyConnectedSubgraphs() {
-    if (stronglyConnectedSubgraphs == null) {
-      List<Set<V>> sets = stronglyConnectedSets();
-      stronglyConnectedSubgraphs = new ArrayList<>(sets.size());
+    if (this.stronglyConnectedSubgraphs == null) {
+      final List<Set<V>> sets = stronglyConnectedSets();
+      this.stronglyConnectedSubgraphs = new ArrayList<>(sets.size());
 
-      for (Set<V> set : sets) {
-        stronglyConnectedSubgraphs.add(new DirectedSubgraph<>(graph, set, null));
+      for (final Set<V> set : sets) {
+        this.stronglyConnectedSubgraphs.add(new DirectedSubgraph<>(this.graph, set, null));
       }
     }
-    return stronglyConnectedSubgraphs;
+    return this.stronglyConnectedSubgraphs;
   }
 
   @Override
   public List<Graph<V, E>> getStronglyConnectedComponents() {
-    List<Graph<V, E>> result = new ArrayList<>();
-    for (DirectedSubgraph<V, E> dsg : stronglyConnectedSubgraphs()) {
+    final List<Graph<V, E>> result = new ArrayList<>();
+    for (final DirectedSubgraph<V, E> dsg : stronglyConnectedSubgraphs()) {
       result.add(dsg);
     }
     return result;

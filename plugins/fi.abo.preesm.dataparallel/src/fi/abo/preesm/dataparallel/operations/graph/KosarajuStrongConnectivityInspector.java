@@ -61,29 +61,29 @@ public class KosarajuStrongConnectivityInspector<V, E> extends AbstractStrongCon
    * @throws NullPointerException
    *           if the input graph is null
    */
-  public KosarajuStrongConnectivityInspector(DirectedGraph<V, E> graph) {
+  public KosarajuStrongConnectivityInspector(final DirectedGraph<V, E> graph) {
     super(graph);
   }
 
   @Override
   public List<Set<V>> stronglyConnectedSets() {
-    if (stronglyConnectedSets == null) {
-      orderedVertices = new LinkedList<VertexData<V>>();
-      stronglyConnectedSets = new Vector<Set<V>>();
+    if (this.stronglyConnectedSets == null) {
+      this.orderedVertices = new LinkedList<>();
+      this.stronglyConnectedSets = new Vector<>();
 
       // create VertexData objects for all vertices, store them
       createVertexData();
 
       // perform the first round of DFS, result is an ordering
       // of the vertices by decreasing finishing time
-      for (VertexData<V> data : vertexToVertexData.values()) {
+      for (final VertexData<V> data : this.vertexToVertexData.values()) {
         if (!data.isDiscovered()) {
-          dfsVisit(graph, data, null, false);
+          dfsVisit(this.graph, data, null, false);
         }
       }
 
       // 'create' inverse graph (i.e. every edge is reversed)
-      Graph<V, E> inverseGraph = new EdgeReversedGraph<V, E>(graph);
+      final Graph<V, E> inverseGraph = new EdgeReversedGraph<>(this.graph);
 
       // get ready for next dfs round
       resetVertexData();
@@ -91,31 +91,31 @@ public class KosarajuStrongConnectivityInspector<V, E> extends AbstractStrongCon
       // second dfs round: vertices are considered in decreasing
       // finishing time order; every tree found is a strongly
       // connected set
-      for (VertexData<V> data : orderedVertices) {
+      for (final VertexData<V> data : this.orderedVertices) {
         if (!data.isDiscovered()) {
           // new strongly connected set
-          Set<V> set = new HashSet<V>();
-          stronglyConnectedSets.add(set);
+          final Set<V> set = new HashSet<>();
+          this.stronglyConnectedSets.add(set);
           dfsVisit(inverseGraph, data, set, true);
         }
       }
 
       // clean up for garbage collection
-      orderedVertices = null;
-      vertexToVertexData = null;
+      this.orderedVertices = null;
+      this.vertexToVertexData = null;
     }
 
-    return stronglyConnectedSets;
+    return this.stronglyConnectedSets;
   }
 
   /*
    * Creates a VertexData object for every vertex in the graph and stores them in a HashMap.
    */
   private void createVertexData() {
-    vertexToVertexData = new HashMap<V, VertexData<V>>(graph.vertexSet().size());
+    this.vertexToVertexData = new HashMap<>(this.graph.vertexSet().size());
 
-    for (V vertex : graph.vertexSet()) {
-      vertexToVertexData.put(vertex, new VertexData2<V>(vertex, false, false));
+    for (final V vertex : this.graph.vertexSet()) {
+      this.vertexToVertexData.put(vertex, new VertexData2<>(vertex, false, false));
     }
   }
 
@@ -123,12 +123,12 @@ public class KosarajuStrongConnectivityInspector<V, E> extends AbstractStrongCon
    * The subroutine of DFS. NOTE: the set is used to distinguish between 1st and 2nd round of DFS. set == null: finished vertices are stored (1st round). set !=
    * null: all vertices found will be saved in the set (2nd round)
    */
-  private void dfsVisit(Graph<V, E> visitedGraph, VertexData<V> vertexData, Set<V> vertices, boolean isDirected) {
-    Deque<VertexData<V>> stack = new ArrayDeque<VertexData<V>>();
+  private void dfsVisit(final Graph<V, E> visitedGraph, final VertexData<V> vertexData, final Set<V> vertices, final boolean isDirected) {
+    final Deque<VertexData<V>> stack = new ArrayDeque<>();
     stack.add(vertexData);
 
     while (!stack.isEmpty()) {
-      VertexData<V> data = stack.removeLast();
+      final VertexData<V> data = stack.removeLast();
 
       if (!data.isDiscovered()) {
         data.setDiscovered(true);
@@ -137,11 +137,11 @@ public class KosarajuStrongConnectivityInspector<V, E> extends AbstractStrongCon
           vertices.add(data.getVertex());
         }
 
-        stack.add(new VertexData1<V>(data, true, true));
+        stack.add(new VertexData1<>(data, true, true));
 
         // follow all edges
-        for (E edge : ((DirectedGraph<V, E>) visitedGraph).outgoingEdgesOf(data.getVertex())) {
-          VertexData<V> targetData = vertexToVertexData.get(visitedGraph.getEdgeTarget(edge));
+        for (final E edge : ((DirectedGraph<V, E>) visitedGraph).outgoingEdgesOf(data.getVertex())) {
+          final VertexData<V> targetData = this.vertexToVertexData.get(visitedGraph.getEdgeTarget(edge));
 
           if (!targetData.isDiscovered()) {
             // the "recursion"
@@ -150,7 +150,7 @@ public class KosarajuStrongConnectivityInspector<V, E> extends AbstractStrongCon
         }
       } else if (data.isFinished()) {
         if (vertices == null) {
-          orderedVertices.addFirst(data.getFinishedData());
+          this.orderedVertices.addFirst(data.getFinishedData());
         }
       }
     }
@@ -160,7 +160,7 @@ public class KosarajuStrongConnectivityInspector<V, E> extends AbstractStrongCon
    * Resets all VertexData objects.
    */
   private void resetVertexData() {
-    for (VertexData<V> data : vertexToVertexData.values()) {
+    for (final VertexData<V> data : this.vertexToVertexData.values()) {
       data.setDiscovered(false);
       data.setFinished(false);
     }
@@ -168,40 +168,40 @@ public class KosarajuStrongConnectivityInspector<V, E> extends AbstractStrongCon
 
   /**
    * Lightweight class storing some data for every vertex.
-   * 
+   *
    * @param <V>
    *          Vertex
    */
   private abstract static class VertexData<V> {
     private byte bitfield;
 
-    private VertexData(boolean discovered, boolean finished) {
+    private VertexData(final boolean discovered, final boolean finished) {
       this.bitfield = 0;
       setDiscovered(discovered);
       setFinished(finished);
     }
 
     private boolean isDiscovered() {
-      return (bitfield & 1) == 1;
+      return (this.bitfield & 1) == 1;
     }
 
     private boolean isFinished() {
-      return (bitfield & 2) == 2;
+      return (this.bitfield & 2) == 2;
     }
 
-    private void setDiscovered(boolean discovered) {
+    private void setDiscovered(final boolean discovered) {
       if (discovered) {
-        bitfield |= 1;
+        this.bitfield |= 1;
       } else {
-        bitfield &= ~1;
+        this.bitfield &= ~1;
       }
     }
 
-    private void setFinished(boolean finished) {
+    private void setFinished(final boolean finished) {
       if (finished) {
-        bitfield |= 2;
+        this.bitfield |= 2;
       } else {
-        bitfield &= ~2;
+        this.bitfield &= ~2;
       }
     }
 
@@ -212,21 +212,21 @@ public class KosarajuStrongConnectivityInspector<V, E> extends AbstractStrongCon
 
   /**
    * Lightweight class storing some data for every vertex.
-   * 
+   *
    * @param <V>
    *          Vertex
    */
   private static final class VertexData1<V> extends VertexData<V> {
     private final VertexData<V> finishedData;
 
-    private VertexData1(VertexData<V> finishedData, boolean discovered, boolean finished) {
+    private VertexData1(final VertexData<V> finishedData, final boolean discovered, final boolean finished) {
       super(discovered, finished);
       this.finishedData = finishedData;
     }
 
     @Override
     VertexData<V> getFinishedData() {
-      return finishedData;
+      return this.finishedData;
     }
 
     @Override
@@ -237,14 +237,14 @@ public class KosarajuStrongConnectivityInspector<V, E> extends AbstractStrongCon
 
   /**
    * Lightweight class storing some data for every vertex.
-   * 
+   *
    * @param <V>
    *          Vertex
    */
   private static final class VertexData2<V> extends VertexData<V> {
     private final V vertex;
 
-    private VertexData2(V vertex, boolean discovered, boolean finished) {
+    private VertexData2(final V vertex, final boolean discovered, final boolean finished) {
       super(discovered, finished);
       this.vertex = vertex;
     }
@@ -256,7 +256,7 @@ public class KosarajuStrongConnectivityInspector<V, E> extends AbstractStrongCon
 
     @Override
     V getVertex() {
-      return vertex;
+      return this.vertex;
     }
   }
 }
