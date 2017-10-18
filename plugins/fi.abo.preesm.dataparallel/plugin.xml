@@ -63,27 +63,6 @@
       </task>
 
       <!-- Duplicate the task with old ID for compatibility -->
-      <task
-            id="org.abo.preesm.plugin.dataparallel.DataParallel"
-            name="Data-Parallel"
-            type="fi.abo.preesm.dataparallel.DataParallel">
-         <inputs>
-            <input
-                  id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
-            </input>
-         </inputs>
-         <outputs>
-            <output
-                  id="CySDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
-            </output>
-            <output
-                  id="Info"
-                  object="fi.abo.preesm.dataparallel.pojo.RetimingInfo">
-            </output>
-         </outputs>
-      </task>
    </extension>
 
 </plugin>
