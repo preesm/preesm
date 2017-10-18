@@ -13,4 +13,4 @@ Require-Bundle: org.eclipse.core.runtime,
  com.github.yannrichet.JMathArray,
  gov.nist.math.jama,
  org.eclipse.xtend.lib
-Export-Package: org.abo.preesm.plugin.dataparallel
+Export-Package: fi.abo.preesm.dataparallel
