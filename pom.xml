@@ -473,6 +473,8 @@
     <module>plugins/org.ietr.preesm.memory</module>
     <module>plugins/org.ietr.preesm.pimm.algorithm</module>
 
+    <module>plugins/fi.abo.preesm.dataparallel</module>
+
     <module>plugins/org.ietr.preesm.ui</module>
     <module>plugins/org.ietr.preesm.ui.pimm</module>
     <module>plugins/org.ietr.preesm.ui.scenario</module>

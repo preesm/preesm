@@ -77,6 +77,8 @@
     <module>org.ietr.preesm.pimm.algorithm.test</module>
     <module>org.ietr.preesm.ui.test</module>
     <module>org.ietr.preesm.utils.test</module>
+
+    <module>fi.abo.preesm.dataparallel.test</module>
   </modules>
 
 </project>
