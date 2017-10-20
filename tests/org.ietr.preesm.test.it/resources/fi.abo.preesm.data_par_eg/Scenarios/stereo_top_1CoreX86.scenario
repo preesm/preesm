@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/fi.abo.preesm.data_par_eg/Algo/stereo_top.pi"/>
+        <architecture url="/fi.abo.preesm.data_par_eg/Archi/1CoreX86.slam"/>
+        <codegenDirectory url=""/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="stereo_top/Read_PPM0"/>
+            <task name="stereo_top/Read_PPM1"/>
+            <task name="stereo_top/RGB2Gray_L"/>
+            <task name="stereo_top/Display_rgb0"/>
+            <task name="stereo_top/RGB2Gray_R"/>
+            <task name="stereo_top/Census_L"/>
+            <task name="stereo_top/Census_R"/>
+            <task name="stereo_top/Split"/>
+            <task name="stereo_top/Median_Filter"/>
+            <task name="stereo_top/lum2RGB"/>
+            <task name="stereo_top/Display_RGB1"/>
+            <task name="stereo_top/Broadcast0"/>
+            <task name="stereo_top/broadcast1"/>
+            <task name="stereo_top/broadcast2"/>
+            <task name="stereo_top/Write_PPM"/>
+            <task name="stereo_top/Cost_Parallel_Work"/>
+            <task name="stereo_top/Cost_Parallel_Work/grayL"/>
+            <task name="stereo_top/Cost_Parallel_Work/grayR"/>
+            <task name="stereo_top/Cost_Parallel_Work/cenL"/>
+            <task name="stereo_top/Cost_Parallel_Work/cenR"/>
+            <task name="stereo_top/Cost_Parallel_Work/rgbL"/>
+            <task name="stereo_top/Cost_Parallel_Work/rawDisparity"/>
+            <task name="stereo_top/Cost_Parallel_Work/CostConstruction"/>
+            <task name="stereo_top/Cost_Parallel_Work/disparitySelect"/>
+            <task name="stereo_top/Cost_Parallel_Work/AggregateCost"/>
+            <task name="stereo_top/Cost_Parallel_Work/ComputeHorWeights"/>
+            <task name="stereo_top/Cost_Parallel_Work/ComputeVertWeights"/>
+            <task name="stereo_top/Cost_Parallel_Work/OffsetGen"/>
+            <task name="stereo_top/Cost_Parallel_Work/Broadcast0"/>
+            <task name="stereo_top/Cost_Parallel_Work/Broadcast1"/>
+            <task name="stereo_top/Cost_Parallel_Work/Broadcast2"/>
+            <task name="stereo_top/Cost_Parallel_Work/Broadcast3"/>
+            <task name="stereo_top/Cost_Parallel_Work/DisparityGen"/>
+            <task name="stereo_top/Cost_Parallel_Work/Broadcast4"/>
+            <task name="stereo_top/Cost_Parallel_Work/Broadcast5"/>
+        </constraintGroup>
+    </constraints>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl="">
+        <timing opname="x86" time="10000" vertexname="stereo_top/Read_PPM0"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Read_PPM1"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/RGB2Gray_L"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Display_rgb0"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/RGB2Gray_R"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Census_L"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Census_R"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Split"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Median_Filter"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/lum2RGB"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Display_RGB1"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Broadcast0"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/broadcast1"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/broadcast2"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Write_PPM"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Cost_Parallel_Work"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Cost_Parallel_Work/grayL"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Cost_Parallel_Work/grayR"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Cost_Parallel_Work/cenL"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Cost_Parallel_Work/cenR"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Cost_Parallel_Work/rgbL"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Cost_Parallel_Work/rawDisparity"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Cost_Parallel_Work/CostConstruction"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Cost_Parallel_Work/disparitySelect"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Cost_Parallel_Work/AggregateCost"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Cost_Parallel_Work/ComputeHorWeights"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Cost_Parallel_Work/ComputeVertWeights"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Cost_Parallel_Work/OffsetGen"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Cost_Parallel_Work/Broadcast0"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Cost_Parallel_Work/Broadcast1"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Cost_Parallel_Work/Broadcast2"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Cost_Parallel_Work/Broadcast3"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Cost_Parallel_Work/DisparityGen"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Cost_Parallel_Work/Broadcast4"/>
+        <timing opname="x86" time="10000" vertexname="stereo_top/Cost_Parallel_Work/Broadcast5"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="uint" size="1"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+        <numberOfTopExecutions>1</numberOfTopExecutions>
+    </simuParams>
+    <variables excelUrl=""/>
+    <parameterValues/>
+</scenario>

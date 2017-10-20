@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">costStrongComponent</data>
+        <node expr="380" id="height" kind="param"/>
+        <node expr="434" id="width" kind="param"/>
+        <node expr="height*width" id="size" kind="param"/>
+        <node id="AggregateCost" kind="actor">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="disparityError"/>
+            <port annotation="NONE" expr="size" kind="output" name="aggregatedDisparity"/>
+        </node>
+        <node id="disparitySelect" kind="actor">
+            <port kind="cfg_input" name="height"/>
+            <port kind="cfg_input" name="width"/>
+            <port annotation="NONE" expr="width*height" kind="input" name="aggregatedDisparity"/>
+            <port annotation="NONE" expr="height*width" kind="input" name="currentResult"/>
+            <port annotation="NONE" expr="(height*width)+1" kind="input" name="bestCostFeed"/>
+            <port annotation="NONE" expr="height*width" kind="output" name="result"/>
+            <port annotation="NONE" expr="(height*width)+1"
+                kind="output" name="bestCost"/>
+        </node>
+        <node id="CostConstruction" kind="actor">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+            <port annotation="NONE" expr="1" kind="input" name="back"/>
+            <port annotation="NONE" expr="size" kind="output" name="disparityError"/>
+        </node>
+        <node id="In" kind="actor">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size*19" kind="output" name="out"/>
+        </node>
+        <node id="Out" kind="actor">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="19*size" kind="input" name="in"/>
+        </node>
+        <node id="Broadcast5" kind="broadcast">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+            <port annotation="NONE" expr="size" kind="output" name="out1"/>
+            <port annotation="NONE" expr="size" kind="output" name="out0"/>
+            <port annotation="NONE" expr="1" kind="output" name="back"/>
+        </node>
+        <edge kind="fifo" source="In" sourceport="out"
+            target="CostConstruction" targetport="in" type="void"/>
+        <edge kind="fifo" source="CostConstruction"
+            sourceport="disparityError" target="AggregateCost"
+            targetport="disparityError" type="char"/>
+        <edge kind="fifo" source="AggregateCost"
+            sourceport="aggregatedDisparity" target="disparitySelect"
+            targetport="aggregatedDisparity" type="char"/>
+        <edge kind="fifo" source="disparitySelect" sourceport="result"
+            target="Broadcast5" targetport="in" type="char"/>
+        <edge expr="size" kind="fifo" source="Broadcast5"
+            sourceport="out1" target="disparitySelect"
+            targetport="currentResult" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge kind="fifo" source="Broadcast5" sourceport="out0"
+            target="Out" targetport="in" type="char"/>
+        <edge expr="8" kind="fifo" source="Broadcast5" sourceport="back"
+            target="CostConstruction" targetport="back" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge expr="(height*width)+1" kind="fifo"
+            source="disparitySelect" sourceport="bestCost"
+            target="disparitySelect" targetport="bestCostFeed" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge kind="dependency" source="width" target="size"/>
+        <edge kind="dependency" source="height" target="size"/>
+        <edge kind="dependency" source="size" target="AggregateCost" targetport="size"/>
+        <edge kind="dependency" source="size" target="CostConstruction" targetport="size"/>
+        <edge kind="dependency" source="size" target="Broadcast5" targetport="size"/>
+        <edge kind="dependency" source="size" target="Out" targetport="size"/>
+        <edge kind="dependency" source="height" target="disparitySelect" targetport="height"/>
+        <edge kind="dependency" source="width" target="disparitySelect" targetport="width"/>
+        <edge kind="dependency" source="size" target="In" targetport="size"/>
+        <edge kind="dependency" source="width" target="disparitySelect.bestCost-disparitySelect.bestCostFeed"/>
+        <edge kind="dependency" source="height" target="disparitySelect.bestCost-disparitySelect.bestCostFeed"/>
+        <edge kind="dependency" source="size" target="Broadcast5.out1-disparitySelect.currentResult"/>
+    </graph>
+</graphml>

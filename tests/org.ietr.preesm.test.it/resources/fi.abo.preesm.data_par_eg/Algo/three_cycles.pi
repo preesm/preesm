@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">three_cycles</data>
+        <node expr="2" id="twos" kind="param"/>
+        <node expr="3" id="threes" kind="param"/>
+        <node id="T_A" kind="actor">
+            <port kind="cfg_input" name="twos"/>
+            <port annotation="NONE" expr="twos" kind="input" name="input"/>
+            <port annotation="NONE" expr="twos" kind="output" name="output"/>
+        </node>
+        <node id="T_B" kind="actor">
+            <port kind="cfg_input" name="threes"/>
+            <port annotation="NONE" expr="threes" kind="input" name="input"/>
+            <port annotation="NONE" expr="threes" kind="input" name="inputB"/>
+            <port annotation="NONE" expr="threes" kind="output" name="output"/>
+        </node>
+        <node id="T_C" kind="actor">
+            <port kind="cfg_input" name="twos"/>
+            <port annotation="NONE" expr="twos" kind="input" name="input"/>
+            <port annotation="NONE" expr="twos" kind="output" name="output"/>
+        </node>
+        <node id="T_D" kind="actor">
+            <port kind="cfg_input" name="threes"/>
+            <port annotation="NONE" expr="threes" kind="input" name="input"/>
+            <port annotation="NONE" expr="threes" kind="output" name="output"/>
+            <port annotation="NONE" expr="threes" kind="output" name="outputD"/>
+        </node>
+        <edge expr="3" kind="fifo" source="T_B" sourceport="output"
+            target="T_C" targetport="input" type="uchar">
+            <data key="delay"/>
+        </edge>
+        <edge expr="4" kind="fifo" source="T_C" sourceport="output"
+            target="T_D" targetport="input" type="uchar">
+            <data key="delay"/>
+        </edge>
+        <edge expr="3" kind="fifo" source="T_D" sourceport="output"
+            target="T_A" targetport="input" type="uchar">
+            <data key="delay"/>
+        </edge>
+        <edge expr="2" kind="fifo" source="T_A" sourceport="output"
+            target="T_B" targetport="input" type="uchar">
+            <data key="delay"/>
+        </edge>
+        <edge expr="4" kind="fifo" source="T_D" sourceport="outputD"
+            target="T_B" targetport="inputB" type="uchar">
+            <data key="delay"/>
+        </edge>
+        <edge kind="dependency" source="twos" target="T_A" targetport="twos"/>
+        <edge kind="dependency" source="twos" target="T_C" targetport="twos"/>
+        <edge kind="dependency" source="threes" target="T_B" targetport="threes"/>
+        <edge kind="dependency" source="threes" target="T_D" targetport="threes"/>
+    </graph>
+</graphml>
