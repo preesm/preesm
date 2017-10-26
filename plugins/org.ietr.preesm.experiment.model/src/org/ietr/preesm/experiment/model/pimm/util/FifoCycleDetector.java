@@ -304,8 +304,14 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
 
       final List<Fifo> outFifos = new ArrayList<>();
       srcActor.getDataOutputPorts().forEach(port -> {
-        if (port.getOutgoingFifo().getTargetPort().eContainer().equals(dstActor)) {
-          outFifos.add(port.getOutgoingFifo());
+        final Fifo outgoingFifo = port.getOutgoingFifo();
+        // a port that is not connected does not, obviously, contribute to any cycle
+        if (outgoingFifo != null) {
+          final DataInputPort fifoTargetPort = outgoingFifo.getTargetPort();
+          final boolean equals = dstActor.equals(fifoTargetPort.eContainer());
+          if (equals) {
+            outFifos.add(outgoingFifo);
+          }
         }
       });
       cyclesFifos.add(outFifos);
