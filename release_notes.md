@@ -5,8 +5,10 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* Add operation on PiMM Actors to access ports more easily;
 
 ### Changes
+* Refactoring, cleanup, code factorization, ...;
 
 ### Bug fix
 * Fix cycle detection: ignore non connected ports as they obviously don't contribute to any cycle;
