@@ -60,24 +60,29 @@ public class AddDataInputInterfaceFeature extends AbstractAddDataInterfacefeatur
   /** The Constant DATA_INPUT_BACKGROUND. */
   public static final IColorConstant DATA_INPUT_BACKGROUND = AddDataInputPortFeature.DATA_INPUT_PORT_BACKGROUND;
 
+  @Override
   protected IColorConstant getTextForegroundColor() {
-    return DATA_INPUT_TEXT_FOREGROUND;
+    return AddDataInputInterfaceFeature.DATA_INPUT_TEXT_FOREGROUND;
   }
 
+  @Override
   protected IColorConstant getBackgroundColor() {
-    return DATA_INPUT_BACKGROUND;
+    return AddDataInputInterfaceFeature.DATA_INPUT_BACKGROUND;
   }
 
+  @Override
   protected IColorConstant getForegroundColor() {
-    return DATA_INPUT_FOREGROUND;
+    return AddDataInputInterfaceFeature.DATA_INPUT_FOREGROUND;
   }
 
+  @Override
   protected double getRelativeWidth() {
     return 1.0;
   }
 
+  @Override
   protected int getX() {
-    return -WIDTH;
+    return -AbstractAddDataInterfacefeature.WIDTH;
   }
 
   /**
@@ -98,7 +103,7 @@ public class AddDataInputInterfaceFeature extends AbstractAddDataInterfacefeatur
   @Override
   public boolean canAdd(final IAddContext context) {
     // Check that the user wants to add an SourceInterface to the Diagram
-    return (context != null && context.getNewObject() instanceof DataInputInterface) && (context.getTargetContainer() instanceof Diagram);
+    return ((context != null) && (context.getNewObject() instanceof DataInputInterface)) && (context.getTargetContainer() instanceof Diagram);
   }
 
 }

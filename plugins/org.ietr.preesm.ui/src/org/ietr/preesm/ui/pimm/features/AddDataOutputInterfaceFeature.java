@@ -60,22 +60,27 @@ public class AddDataOutputInterfaceFeature extends AbstractAddDataInterfacefeatu
   /** The Constant DATA_OUTPUT_BACKGROUND. */
   public static final IColorConstant DATA_OUTPUT_BACKGROUND = AddDataOutputPortFeature.DATA_OUTPUT_PORT_BACKGROUND;
 
+  @Override
   protected IColorConstant getTextForegroundColor() {
     return AddDataOutputInterfaceFeature.DATA_OUTPUT_TEXT_FOREGROUND;
   }
 
+  @Override
   protected IColorConstant getBackgroundColor() {
     return AddDataOutputInterfaceFeature.DATA_OUTPUT_BACKGROUND;
   }
 
+  @Override
   protected IColorConstant getForegroundColor() {
     return AddDataOutputInterfaceFeature.DATA_OUTPUT_FOREGROUND;
   }
 
+  @Override
   protected double getRelativeWidth() {
     return 0.0;
   }
 
+  @Override
   protected int getX() {
     return 0;
   }
@@ -98,7 +103,7 @@ public class AddDataOutputInterfaceFeature extends AbstractAddDataInterfacefeatu
   @Override
   public boolean canAdd(final IAddContext context) {
     // Check that the user wants to add an SinkInterface to the Diagram
-    return (context != null && context.getNewObject() instanceof DataOutputInterface) && (context.getTargetContainer() instanceof Diagram);
+    return ((context != null) && (context.getNewObject() instanceof DataOutputInterface)) && (context.getTargetContainer() instanceof Diagram);
   }
 
 }

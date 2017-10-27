@@ -48,7 +48,7 @@ public abstract class AbstractAddDataInterfacefeature extends AbstractAddFeature
 
   protected abstract int getX();
 
-  public AbstractAddDataInterfacefeature(IFeatureProvider fp) {
+  public AbstractAddDataInterfacefeature(final IFeatureProvider fp) {
     super(fp);
   }
 
@@ -71,19 +71,21 @@ public abstract class AbstractAddDataInterfacefeature extends AbstractAddFeature
     final IGaService gaService = Graphiti.getGaService();
 
     final Rectangle invisibleRectangle = gaService.createInvisibleRectangle(containerShape);
-    gaService.setLocationAndSize(invisibleRectangle, context.getX(), context.getY(), 200, INVISIBLE_RECTANGLE_HEIGHT);
+    gaService.setLocationAndSize(invisibleRectangle, context.getX(), context.getY(), 200, AbstractAddDataInterfacefeature.INVISIBLE_RECTANGLE_HEIGHT);
 
     final BoxRelativeAnchor boxAnchor = peCreateService.createBoxRelativeAnchor(containerShape);
     boxAnchor.setRelativeWidth(getRelativeWidth());
-    boxAnchor.setRelativeHeight(((double) INVISIBLE_RECTANGLE_HEIGHT - (double) HEIGHT) / 2.0 / INVISIBLE_RECTANGLE_HEIGHT);
+    boxAnchor.setRelativeHeight(((double) AbstractAddDataInterfacefeature.INVISIBLE_RECTANGLE_HEIGHT - (double) AbstractAddDataInterfacefeature.HEIGHT) / 2.0
+        / AbstractAddDataInterfacefeature.INVISIBLE_RECTANGLE_HEIGHT);
     boxAnchor.setReferencedGraphicsAlgorithm(invisibleRectangle);
 
     // create and set graphics algorithm for the anchor
-    RoundedRectangle roundedRectangle = gaService.createRoundedRectangle(boxAnchor, 5, 5);
+    final RoundedRectangle roundedRectangle = gaService.createRoundedRectangle(boxAnchor, 5, 5);
     roundedRectangle.setForeground(manageColor(getForegroundColor()));
     roundedRectangle.setBackground(manageColor(getBackgroundColor()));
-    roundedRectangle.setLineWidth(LINE_WIDTH);
-    gaService.setLocationAndSize(roundedRectangle, getX(), Y, WIDTH, HEIGHT);
+    roundedRectangle.setLineWidth(AbstractAddDataInterfacefeature.LINE_WIDTH);
+    gaService.setLocationAndSize(roundedRectangle, getX(), AbstractAddDataInterfacefeature.Y, AbstractAddDataInterfacefeature.WIDTH,
+        AbstractAddDataInterfacefeature.HEIGHT);
 
     // if added interface has no resource we add it to the
     // resource of the graph

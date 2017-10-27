@@ -162,13 +162,13 @@ public class PasteFeature extends AbstractPasteFeature {
   }
 
   private Map<VertexCopy, Pair<Integer, Integer>> caluclatePositions(final IPasteContext context, final List<VertexCopy> copies) {
-    Map<VertexCopy, Pair<Integer, Integer>> positions = new LinkedHashMap<>();
+    final Map<VertexCopy, Pair<Integer, Integer>> positions = new LinkedHashMap<>();
     // determine the surrounding box
     int maxX = Integer.MIN_VALUE;
     int minX = Integer.MAX_VALUE;
     int maxY = Integer.MIN_VALUE;
     int minY = Integer.MAX_VALUE;
-    for (VertexCopy copy : copies) {
+    for (final VertexCopy copy : copies) {
       final int originalX = copy.originalX;
       final int originalY = copy.originalY;
       maxX = Math.max(maxX, originalX);
@@ -177,16 +177,16 @@ public class PasteFeature extends AbstractPasteFeature {
       minY = Math.min(minY, originalY);
     }
 
-    int avgX = (maxX + minX) / 2;
-    int avgY = (maxY + minY) / 2;
+    final int avgX = (maxX + minX) / 2;
+    final int avgY = (maxY + minY) / 2;
 
     final int pasteX = context.getX();
     final int pasteY = context.getY();
 
-    for (VertexCopy copy : copies) {
+    for (final VertexCopy copy : copies) {
       final int newX = pasteX + (copy.originalX - avgX);
       final int newY = pasteY + (copy.originalY - avgY);
-      positions.put(copy, new Pair<Integer, Integer>(newX, newY));
+      positions.put(copy, new Pair<>(newX, newY));
     }
     return positions;
   }
@@ -233,7 +233,8 @@ public class PasteFeature extends AbstractPasteFeature {
     // lookup copied setter
     ISetter copiedSetter = null;
     if (setter instanceof Parameter) {
-      copiedSetter = (Parameter) this.copiedObjects.get((Parameter) setter);
+      final Parameter param = (Parameter) setter;
+      copiedSetter = (Parameter) this.copiedObjects.get(param);
     } else if (setter instanceof ConfigOutputPort) {
       final AbstractActor originalActor = (AbstractActor) setter.eContainer();
       final ConfigOutputPort originalConfigPort = (ConfigOutputPort) setter;
@@ -253,7 +254,8 @@ public class PasteFeature extends AbstractPasteFeature {
   private boolean shouldConnectDep(final ISetter setter, final Parameterizable targetParameterizable) {
     final boolean sourceOk;
     if (setter instanceof Parameter) {
-      sourceOk = this.copiedObjects.containsKey((Parameter) setter);
+      final Parameter param = (Parameter) setter;
+      sourceOk = this.copiedObjects.containsKey(param);
     } else if (setter instanceof ConfigOutputPort) {
       sourceOk = this.copiedObjects.containsKey(setter.eContainer());
     } else {

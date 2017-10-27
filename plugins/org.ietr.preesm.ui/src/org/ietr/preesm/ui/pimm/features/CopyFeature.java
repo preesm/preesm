@@ -77,8 +77,7 @@ public class CopyFeature extends AbstractCopyFeature {
 
     final List<VertexCopy> copies = new LinkedList<>();
 
-    for (int i = 0; i < pes.length; i++) {
-      final PictogramElement pe = pes[i];
+    for (final PictogramElement pe : pes) {
       final Object bo = getBusinessObjectForPictogramElement(pe);
       if (bo instanceof AbstractVertex) {
         final VertexCopy vertexCopy = new VertexCopy();
