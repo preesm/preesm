@@ -17,7 +17,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
@@ -60,7 +60,7 @@ public abstract class AbstractAddDataInterfacefeature extends AbstractAddFeature
   @Override
   public PictogramElement add(final IAddContext context) {
     final InterfaceActor dataInterface = (InterfaceActor) context.getNewObject();
-    final DataOutputPort port = dataInterface.getDataOutputPorts().get(0);
+    final DataPort port = dataInterface.getDataPort();
 
     final Diagram targetDiagram = (Diagram) context.getTargetContainer();
 
