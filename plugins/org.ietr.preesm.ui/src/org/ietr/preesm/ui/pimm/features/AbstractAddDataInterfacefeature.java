@@ -1,44 +1,8 @@
-/**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
- *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
- *
- * This software is a computer program whose purpose is to help prototyping
- * parallel applications using dataflow formalism.
- *
- * This software is governed by the CeCILL  license under French law and
- * abiding by the rules of distribution of free software.  You can  use,
- * modify and/ or redistribute the software under the terms of the CeCILL
- * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info".
- *
- * As a counterpart to the access to the source code and  rights to copy,
- * modify and redistribute granted by the license, users are provided only
- * with a limited warranty  and the software's author,  the holder of the
- * economic rights,  and the successive licensors  have only  limited
- * liability.
- *
- * In this respect, the user's attention is drawn to the risks associated
- * with loading,  using,  modifying and/or developing or reproducing the
- * software by the user in light of its specific status of free software,
- * that may mean  that it is complicated to manipulate,  and  that  also
- * therefore means  that it is reserved for developers  and  experienced
- * professionals having in-depth computer knowledge. Users are therefore
- * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or
- * data to be ensured and,  more generally, to use and operate it in the
- * same conditions as regards security.
- *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL license and that you accept its terms.
- */
 package org.ietr.preesm.ui.pimm.features;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.impl.AbstractAddFeature;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
@@ -53,54 +17,38 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
-import org.ietr.preesm.experiment.model.pimm.DataPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 /**
- * Add feature to add a new {@link DataInputInterface} to the {@link PiGraph}.
  *
- * @author kdesnos
+ *
+ *
+ * @author anmorvan
+ *
  */
-public class AddDataInputInterfaceFeature extends AbstractAddDataInterfacefeature {
+public abstract class AbstractAddDataInterfacefeature extends AbstractAddFeature {
 
-  /** The Constant DATA_INPUT_TEXT_FOREGROUND. */
-  public static final IColorConstant DATA_INPUT_TEXT_FOREGROUND = IColorConstant.BLACK;
+  // define a default size for the shape
+  public static final int WIDTH                      = 16;
+  public static final int HEIGHT                     = 16;
+  public static final int INVISIBLE_RECTANGLE_HEIGHT = 20;
+  public static final int Y                          = 0;
+  public static final int LINE_WIDTH                 = 2;
 
-  /** The Constant DATA_INPUT_FOREGROUND. */
-  public static final IColorConstant DATA_INPUT_FOREGROUND = AddDataInputPortFeature.DATA_INPUT_PORT_FOREGROUND;
+  // sub type related variables
+  protected abstract IColorConstant getTextForegroundColor();
 
-  /** The Constant DATA_INPUT_BACKGROUND. */
-  public static final IColorConstant DATA_INPUT_BACKGROUND = AddDataInputPortFeature.DATA_INPUT_PORT_BACKGROUND;
+  protected abstract IColorConstant getForegroundColor();
 
-  protected IColorConstant getTextForegroundColor() {
-    return DATA_INPUT_TEXT_FOREGROUND;
-  }
+  protected abstract IColorConstant getBackgroundColor();
 
-  protected IColorConstant getBackgroundColor() {
-    return DATA_INPUT_BACKGROUND;
-  }
+  protected abstract double getRelativeWidth();
 
-  protected IColorConstant getForegroundColor() {
-    return DATA_INPUT_FOREGROUND;
-  }
+  protected abstract int getX();
 
-  protected double getRelativeWidth() {
-    return 1.0;
-  }
-
-  protected int getX() {
-    return -WIDTH;
-  }
-
-  /**
-   * The default constructor of {@link AddDataInputInterfaceFeature}.
-   *
-   * @param fp
-   *          the feature provider
-   */
-  public AddDataInputInterfaceFeature(final IFeatureProvider fp) {
+  public AbstractAddDataInterfacefeature(IFeatureProvider fp) {
     super(fp);
   }
 
@@ -112,7 +60,7 @@ public class AddDataInputInterfaceFeature extends AbstractAddDataInterfacefeatur
   @Override
   public PictogramElement add(final IAddContext context) {
     final InterfaceActor dataInterface = (InterfaceActor) context.getNewObject();
-    final DataPort port = dataInterface.getDataOutputPorts().get(0);
+    final DataOutputPort port = dataInterface.getDataOutputPorts().get(0);
 
     final Diagram targetDiagram = (Diagram) context.getTargetContainer();
 
@@ -168,17 +116,6 @@ public class AddDataInputInterfaceFeature extends AbstractAddDataInterfacefeatur
     layoutPictogramElement(containerShape);
 
     return containerShape;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.func.IAdd#canAdd(org.eclipse.graphiti.features.context.IAddContext)
-   */
-  @Override
-  public boolean canAdd(final IAddContext context) {
-    // Check that the user wants to add an SourceInterface to the Diagram
-    return (context != null && context.getNewObject() instanceof DataInputInterface) && (context.getTargetContainer() instanceof Diagram);
   }
 
 }
