@@ -152,7 +152,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
           final IDimension size = GraphitiUi.getUiLayoutService().calculateTextSize(text, font);
           // Retrieve the space of the name
           // (+ port gap to add space and lighten the actor representation)
-          nameHeight = size.getHeight() + PORT_GAP;
+          nameHeight = size.getHeight() + LayoutActorFeature.PORT_GAP;
         }
       }
     }
@@ -194,17 +194,17 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 
               switch (obj.eClass().getClassifierID()) {
                 case PiMMPackage.CONFIG_INPUT_PORT:
-                  cfgInputsHeight += size.getHeight() + PORT_GAP;
+                  cfgInputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
                   break;
                 case PiMMPackage.CONFIG_OUTPUT_PORT:
-                  cfgOutputsHeight += size.getHeight() + PORT_GAP;
+                  cfgOutputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
                   break;
 
                 case PiMMPackage.DATA_INPUT_PORT:
-                  inputsHeight += size.getHeight() + PORT_GAP;
+                  inputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
                   break;
                 case PiMMPackage.DATA_OUTPUT_PORT:
-                  outputsHeight += size.getHeight() + PORT_GAP;
+                  outputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
                   break;
                 default:
               }
@@ -216,7 +216,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
       anchorMaxHeight = Math.max(cfgInputsHeight, cfgOutputsHeight) + Math.max(inputsHeight, outputsHeight);
     }
 
-    return anchorMaxHeight + nameHeight + INITIAL_GAP + BOTTOM_GAP;
+    return anchorMaxHeight + nameHeight + LayoutActorFeature.INITIAL_GAP + LayoutActorFeature.BOTTOM_GAP;
   }
 
   /**
@@ -479,10 +479,10 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
     // Place the inputs
     final int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
     // The first port is placed below the name
-    int y = portFontHeight + PORT_GAP + INITIAL_GAP;
+    int y = portFontHeight + LayoutActorFeature.PORT_GAP + LayoutActorFeature.INITIAL_GAP;
     for (int i = 0; i < inputs.size(); i++) {
       final int configSpace = (i < nbConfigInput) ? 0 : maxNbConfigPort - nbConfigInput;
-      final double relativeHeight = (y + ((i + configSpace) * (portFontHeight + PORT_GAP))) / (double) newHeigt;
+      final double relativeHeight = (y + ((i + configSpace) * (portFontHeight + LayoutActorFeature.PORT_GAP))) / (double) newHeigt;
       if (inputs.get(i).getRelativeHeight() != relativeHeight) {
         anythingChanged = true;
         inputs.get(i).setRelativeHeight(relativeHeight);
@@ -491,10 +491,10 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
     }
 
     // Place the outputs
-    y = portFontHeight + PORT_GAP + INITIAL_GAP;
+    y = portFontHeight + LayoutActorFeature.PORT_GAP + LayoutActorFeature.INITIAL_GAP;
     for (int i = 0; i < outputs.size(); i++) {
       final int configSpace = (i < nbConfigOutput) ? 0 : maxNbConfigPort - nbConfigOutput;
-      final double relativeHeight = (y + ((i + configSpace) * (portFontHeight + PORT_GAP))) / (double) newHeigt;
+      final double relativeHeight = (y + ((i + configSpace) * (portFontHeight + LayoutActorFeature.PORT_GAP))) / (double) newHeigt;
       if (outputs.get(i).getRelativeHeight() != relativeHeight) {
         anythingChanged = true;
         outputs.get(i).setRelativeHeight(relativeHeight);

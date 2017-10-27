@@ -79,8 +79,8 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
   public void preDelete(final IDeleteContext context) {
     // Transform the two connections linked to the delay back into a single
     // one. before deleting the delay.
-    PictogramElement pictogramElement = context.getPictogramElement();
-    Object[] allBusinessObjectsForPictogramElement = getAllBusinessObjectsForPictogramElement(pictogramElement);
+    final PictogramElement pictogramElement = context.getPictogramElement();
+    final Object[] allBusinessObjectsForPictogramElement = getAllBusinessObjectsForPictogramElement(pictogramElement);
     if (allBusinessObjectsForPictogramElement.length > 0) {
       // only disconnect if business delay exists.
       // this delay could have been already deleted by the delete actor feature when selecting multiple elements

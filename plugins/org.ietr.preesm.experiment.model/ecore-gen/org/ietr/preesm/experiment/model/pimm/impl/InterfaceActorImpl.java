@@ -41,6 +41,7 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
@@ -229,6 +230,17 @@ public class InterfaceActorImpl extends AbstractActorImpl implements InterfaceAc
   @Override
   public String getKind() {
     return this.kind;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public DataPort getDataPort() {
+    // Data in/out interfaces have only one data port
+    return getAllDataPorts().get(0);
   }
 
   /**

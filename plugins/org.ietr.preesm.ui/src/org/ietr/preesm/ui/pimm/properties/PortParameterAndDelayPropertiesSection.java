@@ -59,8 +59,6 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
-import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
-import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
@@ -238,9 +236,12 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
   private void updateProperties() {
     final PictogramElement pe = getSelectedPictogramElement();
     if (pe != null) {
-      final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+      EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
       if (bo == null) {
         return;
+      }
+      if (bo instanceof InterfaceActor) {
+        bo = ((InterfaceActor) bo).getDataPort();
       }
 
       if (bo instanceof Parameter) {
@@ -256,9 +257,7 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
         updateDataPortProperties(port, this.txtExpression);
 
         getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators((PictogramElement) (pe.eContainer()));
-      } // end DataPort
 
-      if (bo instanceof DataPort) {
         this.comboAnnotation.setEnabled(false);
         this.comboAnnotation.select(((DataPort) bo).getAnnotation().getValue());
         this.comboAnnotation.setVisible(true);
@@ -314,8 +313,8 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 
         this.comboAnnotation.select(((DataPort) businessObject).getAnnotation().getValue());
 
-        if (iPort.eContainer() instanceof DataOutputInterface) {
-          elementName = ((DataOutputInterface) iPort.eContainer()).getName();
+        if (iPort.eContainer() instanceof InterfaceActor) {
+          elementName = ((InterfaceActor) iPort.eContainer()).getName();
         } else {
           elementName = iPort.getName();
         }
@@ -325,15 +324,7 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
       } else if (businessObject instanceof InterfaceActor) {
         final InterfaceActor iface = ((InterfaceActor) businessObject);
         elementName = iface.getName();
-
-        if (iface instanceof DataInputInterface) {
-          elementValueExpression = iface.getDataOutputPorts().get(0).getExpression();
-        } else if (iface instanceof DataOutputInterface) {
-          elementValueExpression = iface.getDataInputPorts().get(0).getExpression();
-        } else {
-          elementValueExpression = null;
-        }
-
+        elementValueExpression = iface.getDataPort().getExpression();
       } else if (businessObject instanceof Delay) {
         if (((Delay) businessObject).eContainer() instanceof Fifo) {
           final Fifo fifo = (Fifo) ((Delay) businessObject).eContainer();
@@ -346,9 +337,7 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 
       this.lblNameObj.setText(elementName == null ? " " : elementName);
       if (elementValueExpression != null) {
-        if (!(businessObject instanceof InterfaceActor)) {
-          this.txtExpression.setEnabled(true);
-        }
+        this.txtExpression.setEnabled(true);
 
         final String eltExprString = elementValueExpression.getString();
         if (this.txtExpression.getText().compareTo(eltExprString) != 0) {
