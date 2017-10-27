@@ -112,7 +112,7 @@ public class AddDataOutputInterfaceFeature extends AbstractAddDataInterfacefeatu
   @Override
   public PictogramElement add(final IAddContext context) {
     final InterfaceActor dataInterface = (InterfaceActor) context.getNewObject();
-    final DataPort port = dataInterface.getDataInputPorts().get(0);
+    final DataPort port = dataInterface.getDataPort();
 
     final Diagram targetDiagram = (Diagram) context.getTargetContainer();
 
