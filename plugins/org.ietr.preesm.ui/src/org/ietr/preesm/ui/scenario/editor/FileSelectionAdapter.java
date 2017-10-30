@@ -43,9 +43,9 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PlatformUI;
 import org.ietr.dftools.ui.util.FileUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class calls the file browser when a "browse" button is pushed.
  *
@@ -55,9 +55,6 @@ public class FileSelectionAdapter extends SelectionAdapter {
 
   /** The file path. */
   private final Text filePath;
-
-  /** The shell. */
-  private final Shell shell;
 
   /** The title. */
   private final String title;
@@ -70,17 +67,14 @@ public class FileSelectionAdapter extends SelectionAdapter {
    *
    * @param filePath
    *          the file path
-   * @param shell
-   *          the shell
    * @param title
    *          the title
    * @param fileExtension
    *          the file extension
    */
-  public FileSelectionAdapter(final Text filePath, final Shell shell, final String title, final String fileExtension) {
+  public FileSelectionAdapter(final Text filePath, final String title, final String fileExtension) {
     super();
     this.filePath = filePath;
-    this.shell = shell;
     this.title = title;
     this.fileExtensions = new LinkedHashSet<>();
     this.fileExtensions.add(fileExtension);
@@ -91,17 +85,14 @@ public class FileSelectionAdapter extends SelectionAdapter {
    *
    * @param filePath
    *          the file path
-   * @param shell
-   *          the shell
    * @param title
    *          the title
    * @param fileExtensions
    *          the file extensions
    */
-  public FileSelectionAdapter(final Text filePath, final Shell shell, final String title, final Set<String> fileExtensions) {
+  public FileSelectionAdapter(final Text filePath, final String title, final Set<String> fileExtensions) {
     super();
     this.filePath = filePath;
-    this.shell = shell;
     this.title = title;
     this.fileExtensions = fileExtensions;
   }
@@ -119,7 +110,6 @@ public class FileSelectionAdapter extends SelectionAdapter {
   public FileSelectionAdapter(final Text filePath, final Shell shell, final String title) {
     super();
     this.filePath = filePath;
-    this.shell = shell;
     this.title = title;
     this.fileExtensions = null;
   }
@@ -131,7 +121,8 @@ public class FileSelectionAdapter extends SelectionAdapter {
    */
   @Override
   public void widgetSelected(final SelectionEvent e) {
-    final IPath browseFiles = FileUtils.browseFiles(this.shell, this.title, this.fileExtensions);
+
+    final IPath browseFiles = FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), this.title, this.fileExtensions);
     this.filePath.setText(browseFiles.toOSString());
   }
 }

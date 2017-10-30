@@ -9,6 +9,9 @@ PREESM Changelog
 
 ### Changes
 * Refactoring, cleanup, code factorization, ...;
+* Remove Shell from file selection popup API;
+* Replace use of PiMMUtil.askFile with FileUtils.browseFile from DFTools;
+* Discourage use of PiMMUtil.askFile;
 
 ### Bug fix
 * Fix cycle detection: ignore non connected ports as they obviously don't contribute to any cycle;

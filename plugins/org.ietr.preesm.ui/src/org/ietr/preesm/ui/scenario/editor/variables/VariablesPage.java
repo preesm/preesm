@@ -437,7 +437,7 @@ public class VariablesPage extends FormPage implements IPropertyListener {
     });
 
     final Button browseButton = toolkit.createButton(client, Messages.getString("Overview.browse"), SWT.PUSH);
-    final SelectionAdapter browseAdapter = new FileSelectionAdapter(text, client.getShell(), browseTitle, fileExtension);
+    final SelectionAdapter browseAdapter = new FileSelectionAdapter(text, browseTitle, fileExtension);
     browseButton.addSelectionListener(browseAdapter);
 
     final Button exportButton = toolkit.createButton(client, Messages.getString("Variables.variablesExportExcel"), SWT.PUSH);

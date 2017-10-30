@@ -44,8 +44,9 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.ui.PlatformUI;
+import org.ietr.dftools.ui.util.FileUtils;
 import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -146,7 +147,7 @@ public class SetActorMemoryScriptFeature extends AbstractCustomFeature {
     // Ask user for memory script
     final Set<String> fileExtensions = new LinkedHashSet<>();
     fileExtensions.add("bsh");
-    final IPath newFilePath = PiMMUtil.askFile(dialogTitle, question, null, fileExtensions);
+    final IPath newFilePath = FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), dialogTitle, fileExtensions);
 
     if ((newFilePath != null) && (newFilePath != actor.getMemoryScriptPath())) {
       this.hasDoneChanges = true;
