@@ -58,6 +58,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
@@ -377,6 +378,12 @@ public class PiWriter {
     if (setter == null) {
       throw new NullPointerException("Setter of the dependency is null");
     }
+
+    final ConfigInputPort getter = dependency.getGetter();
+    if (getter == null) {
+      throw new NullPointerException("Getter of the dependency is null");
+    }
+
     AbstractVertex source = null;
     if (setter instanceof ConfigOutputPort) {
       source = (AbstractVertex) setter.eContainer();
@@ -394,13 +401,13 @@ public class PiWriter {
       dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_SOURCE_PORT, ((Port) setter).getName());
     }
 
-    final Parameterizable target = (Parameterizable) dependency.getGetter().eContainer();
+    final Parameterizable target = (Parameterizable) getter.eContainer();
     if (target instanceof AbstractVertex) {
 
       dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_TARGET, ((AbstractVertex) target).getName());
 
       if (target instanceof ExecutableActor) {
-        dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_TARGET_PORT, dependency.getGetter().getName());
+        dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_TARGET_PORT, getter.getName());
       }
     }
 

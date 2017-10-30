@@ -12,11 +12,16 @@ PREESM Changelog
 * Remove Shell from file selection popup API;
 * Replace use of PiMMUtil.askFile with FileUtils.browseFile from DFTools;
 * Discourage use of PiMMUtil.askFile;
+* Check that a dependency is connected to a target before saving;
+* When the setter class is unkown, assume the parameter is not locally static instead of throwing an error;
+
 
 ### Bug fix
 * Fix cycle detection: ignore non connected ports as they obviously don't contribute to any cycle;
+* Fix DependencyCycleDectector: Dependencies without a setter cannot obviously contribute to a cycle;
 * Fix issue #43;
 * Fix issue #44;
+* fix issue #46;
 
 ## Release version 2.5.1
 *2017.10.17*

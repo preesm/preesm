@@ -47,11 +47,13 @@ import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.MultiDeleteInfo;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
+import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 
 /**
  * Delete feature for {@link Parameterizable}s elements.
@@ -77,7 +79,7 @@ public class DeleteParameterizableFeature extends DefaultDeleteFeature {
    * @param cba
    *          the {@link ChopboxAnchor} of the deleted element
    */
-  protected void deleteConnectedConnection(final ChopboxAnchor cba) {
+  protected void deleteConnectedConnection(final Anchor cba) {
     // First, the list of connections is scanned in order to fill a map with
     // the deleteFeatures and their context.
     Map<IDeleteFeature, IDeleteContext> delFeatures;
@@ -116,10 +118,18 @@ public class DeleteParameterizableFeature extends DefaultDeleteFeature {
     // Delete all the dependencies linked to this parameterizable element
     final ContainerShape cs = (ContainerShape) context.getPictogramElement();
 
-    // Scan the anchors (There should be only one ChopBoxAnchor)
-    for (final Anchor anchor : cs.getAnchors()) {
+    // Scan the anchors
+    final EList<Anchor> anchors = cs.getAnchors();
+    for (final Anchor anchor : anchors) {
+      // hack ... should be the same behavior for all anchor type
       if (anchor instanceof ChopboxAnchor) {
-        deleteConnectedConnection((ChopboxAnchor) anchor);
+        // case Parameter or Actor
+        deleteConnectedConnection(anchor);
+      } else if (anchor instanceof BoxRelativeAnchor) {
+        // case ConfigInputInterface
+        deleteConnectedConnection(anchor);
+      } else {
+        throw new UnsupportedOperationException("Unsupported anchor type");
       }
     }
   }
