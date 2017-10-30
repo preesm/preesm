@@ -45,6 +45,34 @@
   <version>2.5.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <!-- More Project Information -->
+  <name>PREESM</name>
+  <description>PREESM is an open source rapid prototyping tool targetting heterogeneous multi/many-core embedded systems from and using dataflow language.</description>
+  <url>http://preesm.sourceforge.net/</url>
+
+  <licenses>
+    <license>
+      <name>CeCILL-C License, Version 1.0</name>
+      <url>http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt</url>
+      <distribution>repo</distribution>
+      <comments>CeCILL is a free software license adapted to both international and French legal matters, in the spirit of and retaining compatibility with the GNU General Public License.</comments>
+    </license>
+  </licenses>
+  <organization>
+    <name>IETR / INSA Rennes - VAADER</name>
+    <url>https://www.ietr.fr/spip.php?article1619&lang=en</url>
+  </organization>
+
+  <!-- Environment Settings -->
+  <issueManagement>
+    <url>https://github.com/preesm/preesm/issues</url>
+    <system>GitHub Issues</system>
+  </issueManagement>
+
+  <scm>
+    <url>https://github.com/preesm/preesm</url>
+  </scm>
+
   <properties>
     <jacoco-version>0.7.9</jacoco-version>
     <tycho-version>1.0.0</tycho-version>
