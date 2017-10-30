@@ -1,0 +1,52 @@
+#######################
+# General Configuration
+#######################
+language: java
+sudo: false
+jdk:
+  - openjdk8
+os:
+  - linux
+dist: trusty
+
+notifications:
+  email:
+    recipients:
+      - preesm-devs@lists.sourceforge.net
+    on_success: change
+    on_failure: always
+
+addons:
+  sonarcloud:
+    organization: "preesm-sonarcloud-org"
+    token:
+      secure: "7edfa331c5de80bf665aee04f0e9dbcbc3efa122"
+    branches: .*
+
+#enable Maven local repo caching
+cache:
+  directories:
+  - $HOME/.m2
+#######################
+# Actual build stages
+#######################
+
+jobs:
+  include:
+    - stage: Validate POM
+      script: mvn -U -e -C -B -V -P releng -Dtycho.mode=maven help:help -q
+    - stage : Fetch Maven Dependencies
+      script: mvn -U -e -C -B -V -P releng -Dtycho.mode=maven dependency:go-offline
+    - stage : Run Checkstyle (Offline)
+      script: mvn --offline -e -C -B -V -P releng -Dtycho.mode=maven checkstyle:check
+    - stage : Fetch P2 Dependencies
+      script: mvn -U -e -C -B -V -P releng help:help
+    - stage : Build & Package (Offline)
+      script: mvn --offline -e -C -B -V clean package -fae
+    - stage : Test & SonarCloud (Offline)
+      script: mvn --offline -e -C -B -V clean verify findbugs:findbugs sonar:sonar -fae
+    - stage : Package Site & Product (Offline)
+      script: mvn --offline -e -C -B -V -P releng clean package -fae
+
+#skip install step before each stage by running the /bin/true command
+install: true
