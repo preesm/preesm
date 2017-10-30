@@ -60,7 +60,7 @@
   </licenses>
   <organization>
     <name>IETR / INSA Rennes - VAADER</name>
-    <url>https://www.ietr.fr/spip.php?article1619&lang=en</url>
+    <url>https://www.ietr.fr/spip.php?article1619&amp;lang=en</url>
   </organization>
 
   <!-- Environment Settings -->
