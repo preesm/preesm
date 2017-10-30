@@ -21,6 +21,7 @@ PREESM Changelog
 * Fix DependencyCycleDectector: Dependencies without a setter cannot obviously contribute to a cycle;
 * Fix issue #43;
 * Fix issue #44;
+* fix issue #46;
 
 ## Release version 2.5.1
 *2017.10.17*
