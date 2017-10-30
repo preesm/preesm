@@ -13,6 +13,7 @@ PREESM Changelog
 ### Bug fix
 * Fix cycle detection: ignore non connected ports as they obviously don't contribute to any cycle;
 * Fix issue #43;
+* Fix issue #44;
 
 ## Release version 2.5.1
 *2017.10.17*
