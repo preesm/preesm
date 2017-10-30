@@ -6,6 +6,8 @@ PREESM Changelog
 
 ### New Feature
 * Add operation on PiMM Actors to access ports more easily;
+* Add dependency to Ecore Diagram Tools from the dev feature;
+* Enable Travis CI;
 
 ### Changes
 * Refactoring, cleanup, code factorization, ...;
@@ -13,6 +15,7 @@ PREESM Changelog
 * Replace use of PiMMUtil.askFile with FileUtils.browseFile from DFTools;
 * Discourage use of PiMMUtil.askFile;
 * Check that a dependency is connected to a target before saving;
+* Add project information in the POM file;
 * When the setter class is unkown, assume the parameter is not locally static instead of throwing an error;
 
 
