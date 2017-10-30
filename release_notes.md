@@ -12,6 +12,7 @@ PREESM Changelog
 * Remove Shell from file selection popup API;
 * Replace use of PiMMUtil.askFile with FileUtils.browseFile from DFTools;
 * Discourage use of PiMMUtil.askFile;
+* Check that a dependency is connected to a target before saving;
 
 ### Bug fix
 * Fix cycle detection: ignore non connected ports as they obviously don't contribute to any cycle;
