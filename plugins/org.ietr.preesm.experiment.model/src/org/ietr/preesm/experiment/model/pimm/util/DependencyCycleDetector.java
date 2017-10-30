@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Set;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
@@ -174,8 +175,12 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
 
       // Visit all parameters influencing the current one.
       for (final ConfigInputPort port : parameter.getConfigInputPorts()) {
-        if (port.getIncomingDependency() != null) {
-          doSwitch(port.getIncomingDependency().getSetter());
+        final Dependency incomingDependency = port.getIncomingDependency();
+        if (incomingDependency != null) {
+          final ISetter setter = incomingDependency.getSetter();
+          if (setter != null) {
+            doSwitch(setter);
+          }
         }
 
         // If fast detection is activated and a cycle was detected, get
