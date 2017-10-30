@@ -13,6 +13,7 @@ PREESM Changelog
 * Replace use of PiMMUtil.askFile with FileUtils.browseFile from DFTools;
 * Discourage use of PiMMUtil.askFile;
 * Check that a dependency is connected to a target before saving;
+* When the setter class is unkown, assume the parameter is not locally static instead of throwing an error;
 
 ### Bug fix
 * Fix cycle detection: ignore non connected ports as they obviously don't contribute to any cycle;
