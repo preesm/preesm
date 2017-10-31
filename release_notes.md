@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 2.5.2
+*2017.10.31*
 
 ### New Feature
 * Add operation on PiMM Actors to access ports more easily;
