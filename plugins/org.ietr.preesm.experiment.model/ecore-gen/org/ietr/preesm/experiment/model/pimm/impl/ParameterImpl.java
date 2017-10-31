@@ -192,7 +192,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
         }
 
         if (!(setter instanceof ConfigOutputPort) && !(setter instanceof Parameter)) {
-          throw new RuntimeException("Can not check if the parameter is locally static" + " because the setter class is unknown.");
+          return false;
         }
       }
     }

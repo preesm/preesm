@@ -1497,6 +1497,10 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
         !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES,
         !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
+    addEOperation(this.abstractActorEClass, getDataPort(), "getAllDataPorts", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
+    addEOperation(this.abstractActorEClass, getPort(), "getAllConfigPorts", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
     addEOperation(this.abstractActorEClass, getPort(), "getAllPorts", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     initEClass(this.piGraphEClass, PiGraph.class, "PiGraph", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
@@ -1585,6 +1589,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     initEAttribute(getInterfaceActor_Kind(), this.ecorePackage.getEString(), "kind", null, 1, 1, InterfaceActor.class, !EPackageImpl.IS_TRANSIENT,
         !EPackageImpl.IS_VOLATILE, !EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
         !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+
+    addEOperation(this.interfaceActorEClass, getDataPort(), "getDataPort", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     initEClass(this.dataInputInterfaceEClass, DataInputInterface.class, "DataInputInterface", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);

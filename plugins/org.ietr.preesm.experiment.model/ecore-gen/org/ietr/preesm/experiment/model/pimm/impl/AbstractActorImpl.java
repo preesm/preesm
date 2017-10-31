@@ -52,6 +52,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
@@ -291,12 +292,36 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements Ab
    * @generated
    */
   @Override
-  public EList<Port> getAllPorts() {
+  public EList<DataPort> getAllDataPorts() {
+    final BasicEList<DataPort> result = ECollections.newBasicEList();
+    result.addAll(getDataInputPorts());
+    result.addAll(getDataOutputPorts());
+    return ECollections.unmodifiableEList(result);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EList<Port> getAllConfigPorts() {
     final BasicEList<Port> result = ECollections.newBasicEList();
     result.addAll(getConfigOutputPorts());
     result.addAll(getConfigInputPorts());
-    result.addAll(getDataInputPorts());
-    result.addAll(getDataOutputPorts());
+    return ECollections.unmodifiableEList(result);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EList<Port> getAllPorts() {
+    final BasicEList<Port> result = ECollections.newBasicEList();
+    result.addAll(getAllConfigPorts());
+    result.addAll(getAllDataPorts());
     return ECollections.unmodifiableEList(result);
   }
 

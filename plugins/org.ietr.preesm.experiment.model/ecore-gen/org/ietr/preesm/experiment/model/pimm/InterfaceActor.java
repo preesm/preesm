@@ -90,4 +90,13 @@ public interface InterfaceActor extends AbstractActor {
    */
   String getKind();
 
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" required="true" annotation="http://www.eclipse.org/emf/2002/GenModel body='// Data in/out interfaces have only one data
+   *        port\nreturn getAllDataPorts().get(0);'"
+   * @generated
+   */
+  DataPort getDataPort();
+
 } // InterfaceVertex

@@ -46,7 +46,6 @@ import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class providing methods to retrieve the {@link IDecorator} of a {@link Delay}.<br>
  *
@@ -54,6 +53,9 @@ import org.ietr.preesm.experiment.model.pimm.Expression;
  *
  */
 public class DelayDecorators {
+
+  private DelayDecorators() {
+  }
 
   /**
    * Methods that returns all the {@link IDecorator} for a given {@link Delay}.
@@ -96,8 +98,8 @@ public class DelayDecorators {
     try {
       expression.evaluate();
     } catch (final ExpressionEvaluationException e) {
-      imageRenderingDecorator.setX((pe.getGraphicsAlgorithm().getWidth() / 2) - 8);
-      imageRenderingDecorator.setY(1);
+      imageRenderingDecorator.setX(-8);
+      imageRenderingDecorator.setY(8);
       imageRenderingDecorator.setMessage("Problems in parameter resolution: " + e.getMessage());
 
       return imageRenderingDecorator;

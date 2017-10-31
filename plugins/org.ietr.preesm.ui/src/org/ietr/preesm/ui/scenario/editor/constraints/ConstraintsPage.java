@@ -66,7 +66,6 @@ import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 import org.ietr.preesm.ui.scenario.editor.SDFTreeSection;
 
-// TODO: Auto-generated Javadoc
 /**
  * Constraint editor within the implementation editor.
  *
@@ -295,7 +294,7 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
     text.setLayoutData(gd);
 
     final Button button = toolkit.createButton(client, Messages.getString("Overview.browse"), SWT.PUSH);
-    final SelectionAdapter adapter = new FileSelectionAdapter(text, client.getShell(), browseTitle, fileExtension);
+    final SelectionAdapter adapter = new FileSelectionAdapter(text, browseTitle, fileExtension);
     button.addSelectionListener(adapter);
 
     toolkit.paintBordersFor(client);

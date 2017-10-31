@@ -55,9 +55,19 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="AbstractActor" abstract="true" eSuperTypes="#//AbstractVertex">
+    <eOperations name="getAllDataPorts" upperBound="-1" eType="#//DataPort">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="final BasicEList&lt;DataPort> result = ECollections.newBasicEList();&#xA;result.addAll(getDataInputPorts());&#xA;result.addAll(getDataOutputPorts());&#xA;return ECollections.unmodifiableEList(result);"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="getAllConfigPorts" upperBound="-1" eType="#//Port">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="final BasicEList&lt;Port> result = ECollections.newBasicEList();&#xA;result.addAll(getConfigOutputPorts());&#xA;result.addAll(getConfigInputPorts());&#xA;return ECollections.unmodifiableEList(result);"/>
+      </eAnnotations>
+    </eOperations>
     <eOperations name="getAllPorts" upperBound="-1" eType="#//Port">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="body" value="final BasicEList&lt;Port> result = ECollections.newBasicEList();&#xA;result.addAll(getConfigOutputPorts());&#xA;result.addAll(getConfigInputPorts());&#xA;result.addAll(getDataInputPorts());&#xA;result.addAll(getDataOutputPorts());&#xA;return ECollections.unmodifiableEList(result);"/>
+        <details key="body" value="final BasicEList&lt;Port> result = ECollections.newBasicEList();&#xA;result.addAll(getAllConfigPorts());&#xA;result.addAll(getAllDataPorts());&#xA;return ECollections.unmodifiableEList(result);"/>
       </eAnnotations>
     </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dataInputPorts" upperBound="-1"
@@ -136,6 +146,11 @@
         defaultValueLiteral="void"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="InterfaceActor" eSuperTypes="#//AbstractActor">
+    <eOperations name="getDataPort" lowerBound="1" eType="#//DataPort">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="// Data in/out interfaces have only one data port&#xA;return getAllDataPorts().get(0);"/>
+      </eAnnotations>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="graphPort" lowerBound="1"
         eType="#//Port"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"

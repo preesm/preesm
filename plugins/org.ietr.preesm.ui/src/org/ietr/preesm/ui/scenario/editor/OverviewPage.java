@@ -229,7 +229,7 @@ public class OverviewPage extends FormPage {
     text.setLayoutData(gd);
 
     final Button button = toolkit.createButton(client, Messages.getString("Overview.browse"), SWT.PUSH);
-    final SelectionAdapter adapter = new FileSelectionAdapter(text, client.getShell(), browseTitle, fileExtensions);
+    final SelectionAdapter adapter = new FileSelectionAdapter(text, browseTitle, fileExtensions);
     button.addSelectionListener(adapter);
 
     toolkit.paintBordersFor(client);

@@ -57,7 +57,7 @@ class Match {
 		this.forbiddenLocalRanges = newArrayList
 		this.originalMatch = new Match(this)
 	}
-	
+
   /**
    * Copy the {@link Match} following attributes:<ul>
    * <li>{@link #getLocalBuffer() localBuffer}</li>
@@ -74,7 +74,7 @@ class Match {
 		this.remoteBuffer = m.remoteBuffer
 		this.remoteIndex = m.remoteIndex
 		this.length = m.length
-		this.type = m.type 
+		this.type = m.type
 	}
 
 	@Accessors
@@ -119,9 +119,9 @@ class Match {
 	}
 
 	/**
-	 * This {@link List} contains {@link Range} of the {@link 
+	 * This {@link List} contains {@link Range} of the {@link
 	 * #getLocalBuffer()} that can be matched only if:<ul>
-	 * <li> The remote buffer has no token for this range (i.e. it is 
+	 * <li> The remote buffer has no token for this range (i.e. it is
 	 * out of the minIndex .. maxIndex range).</li></ul>
 	 * The list of a {@link Match} and the one of its {@link #getReciprocate()
 	 * reciprocate} are not equals.
@@ -130,12 +130,12 @@ class Match {
 	List<Range> forbiddenLocalRanges
 
 	/**
-	 * This {@link List} contains {@link Range} of the {@link 
+	 * This {@link List} contains {@link Range} of the {@link
 	 * #getLocalBuffer()} that can be matched only if:<ul>
-	 * <li> If the match is backward AND both the remote buffers are 
+	 * <li> If the match is backward AND both the remote buffers are
 	 * mergeable for this ranges.<br>
 	 * or</li>
-	 * <li> The remote buffer has no token for this range (i.e. it is 
+	 * <li> The remote buffer has no token for this range (i.e. it is
 	 * out of the minIndex .. maxIndex range).</li></ul>
 	 * Only {@link #getType() backward} matches can have mergeableLocalRanges.
 	 */
@@ -143,7 +143,7 @@ class Match {
 	List<Range> mergeableLocalRanges
 
 	/**
-	 * This {@link boolean} is set to <code>true</code> if the current {@link 
+	 * This {@link boolean} is set to <code>true</code> if the current {@link
 	 * Match} was applied.
 	 */
 	@Accessors
@@ -161,9 +161,9 @@ class Match {
 	}
 
 	/**
-	 * Returns a {@link Range} going from {@link Match#getLocalIndex() 
+	 * Returns a {@link Range} going from {@link Match#getLocalIndex()
 	 * localIndex} to the end of the matched tokens.
-	 * 
+	 *
 	 */
 	def Range getLocalRange() {
 		return new Range(getLocalIndex, getLocalIndex + getLength)
@@ -172,13 +172,13 @@ class Match {
 	/**
 	 * Get the indivisible {@link Range} in which the current {@link Match}
 	 * falls. This method has no side-effects.
-	 * 
-	 * @return the {@link Range} resulting from the {@link 
-	 * Range#lazyUnion(List,Range) lazyUnion} of the {@link 
-	 * Match#getLocalRange() localRange} and the {@link 
-	 * Buffer#getIndivisibleRanges() indivisibleRanges} of the {@link 
+	 *
+	 * @return the {@link Range} resulting from the {@link
+	 * Range#lazyUnion(List,Range) lazyUnion} of the {@link
+	 * Match#getLocalRange() localRange} and the {@link
+	 * Buffer#getIndivisibleRanges() indivisibleRanges} of the {@link
 	 * Match#getLocalBuffer() localBuffer}.
-	 * 
+	 *
 	 */
 	def Range getLocalIndivisibleRange() {
 
@@ -189,20 +189,20 @@ class Match {
 			it.hasOverlap(localIndivisiblerange)
 		].map[it.clone as Range].toList // toList to make sure the map function is applied only once
 
-		// Do the lazy union of the match and its overlapping indivisible 
+		// Do the lazy union of the match and its overlapping indivisible
 		// ranges
 		return overlappingIndivisibleRanges.lazyUnion(localIndivisiblerange)
 	}
 
 	/**
-	 * Returns the {@link Range} of the {@link Match#getLocalBuffer() 
-	 * localBuffer} that will be impacted if <code>this</code> {@link Match} 
+	 * Returns the {@link Range} of the {@link Match#getLocalBuffer()
+	 * localBuffer} that will be impacted if <code>this</code> {@link Match}
 	 * is applied. This {@link Range} corresponds to the largest {@link Range}
-	 * between the {@link #getLocalRange()} of the current {@link Match} and 
-	 * the {@link Match#getLocalIndivisibleRange() localIndivisibleRange} of 
-	 * the {@link #getReciprocate() reciprocate} {@link Match}. 
-	 * 
-	 * @return a {@link Range} of impacted tokens aligned with the {@link 
+	 * between the {@link #getLocalRange()} of the current {@link Match} and
+	 * the {@link Match#getLocalIndivisibleRange() localIndivisibleRange} of
+	 * the {@link #getReciprocate() reciprocate} {@link Match}.
+	 *
+	 * @return a {@link Range} of impacted tokens aligned with the {@link
 	 * Match#getLocalBuffer() localBuffer} indexes.
 	 */
 	def Range getLocalImpactedRange() {
@@ -229,11 +229,11 @@ class Match {
 		// But if the Match is already stored in a map, its original hashcode will have been used
 		throw new UnsupportedOperationException("HashCode is not supported for Match class. Do not use LinkedHashMap.")
 
-	//index.hashCode.bitwiseXor(length.hashCode).bitwiseXor(buffer.hashCode) 	
+	//index.hashCode.bitwiseXor(length.hashCode).bitwiseXor(buffer.hashCode)
 	}
 
 	/**
-	 * Reciprocate is not considered 
+	 * Reciprocate is not considered
  	*/
 	override equals(Object obj) {
 		if (this === obj)
@@ -261,7 +261,7 @@ class Match {
 		val impactedTokens = this.getLocalImpactedRange.intersection(
 			new Range(this.getLocalBuffer.minIndex, this.getLocalBuffer.maxIndex))
 		return this.getForbiddenLocalRanges.intersection(impactedTokens).size == 0 &&
-		// And match only localMergeableRange are in fact mergeable 
+		// And match only localMergeableRange are in fact mergeable
 		if (this.getType == MatchType::FORWARD) {
 			true
 		} else {
@@ -271,29 +271,28 @@ class Match {
 		}
 	}
 
-	/** 
-	 * Recursive method to find where the {@link #getLocalRange()} of the 
+	/**
+	 * Recursive method to find where the {@link #getLocalRange()} of the
 	 * current {@link #getLocalBuffer() localBuffer} is matched.
-	 * 
-	 * @return a {@link Map} that associates: a {@link Range subranges} of the 
-	 * {@link #getLocalRange() localRange} of the  {@link #getLocalBuffer() 
-	 * localBuffer} to a {@link Pair} composed of a {@link Buffer} and a 
+	 *
+	 * @return a {@link Map} that associates: a {@link Range subranges} of the
+	 * {@link #getLocalRange() localRange} of the  {@link #getLocalBuffer()
+	 * localBuffer} to a {@link Pair} composed of a {@link Buffer} and a
 	 * {@link Range} where the associated {@link Range subrange} is matched.
-	 * 
+	 *
 	 */
-	@SuppressWarnings("unchecked")
 	def Map<Range, Pair<Buffer, Range>> getRoot() {
 		val result = newLinkedHashMap
 		val remoteRange = this.getLocalIndivisibleRange.translate(this.getRemoteIndex - this.getLocalIndex)
 
-		// Termination case if the remote Buffer is not matched	
+		// Termination case if the remote Buffer is not matched
 		if (this.getRemoteBuffer.matched === null) {
 			result.put(
 				this.getLocalIndivisibleRange,
 				this.getRemoteBuffer -> remoteRange
 			)
 		}
-		// Else, recursive call 
+		// Else, recursive call
 		else {
 			for (match : this.getRemoteBuffer.matched.filter[it.getLocalIndivisibleRange.hasOverlap(remoteRange)]) {
 				val recursiveResult = match.getRoot
@@ -323,7 +322,7 @@ public enum MatchType {
 	 */
 	//INTER_SIBLINGS,
 	/**
-	 * The {@link Match} is internal to an actor and links an input {@link 
+	 * The {@link Match} is internal to an actor and links an input {@link
 	 * Buffer} to an output {@link Buffer}, <b>or</b> the {@link Match} is
 	 * external to an actor (i.e. correspond to an edge) and it links an output
 	 * {@link Buffer} of an actor to the input {@link Buffer} of the next.

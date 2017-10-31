@@ -510,7 +510,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
     toolkit.paintBordersFor(client);
 
     final Button browseButton = toolkit.createButton(client, Messages.getString("Overview.browse"), SWT.PUSH);
-    final SelectionAdapter browseAdapter = new FileSelectionAdapter(text, client.getShell(), browseTitle, fileExtension);
+    final SelectionAdapter browseAdapter = new FileSelectionAdapter(text, browseTitle, fileExtension);
     browseButton.addSelectionListener(browseAdapter);
 
     final Button exportButton = toolkit.createButton(client, Messages.getString("Timings.timingExportExcel"), SWT.PUSH);

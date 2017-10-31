@@ -141,7 +141,7 @@ public class AddDelayFeature extends AbstractCustomFeature {
     if (!canExecute(context)) {
       return;
     }
-    createdPEs = new LinkedList<>();
+    this.createdPEs = new LinkedList<>();
     // Get the Fifo
     final PictogramElement[] pes = context.getPictogramElements();
     final FreeFormConnection connection = (FreeFormConnection) pes[0];
@@ -172,12 +172,12 @@ public class AddDelayFeature extends AbstractCustomFeature {
           AddDelayFeature.DELAY_SIZE, AddDelayFeature.DELAY_SIZE);
     }
     link(containerShape, delay);
-    createdPEs.add(containerShape);
+    this.createdPEs.add(containerShape);
 
     // Add a ChopBoxAnchor for the Delay
     final ChopboxAnchor cba = peCreateService.createChopboxAnchor(containerShape);
     link(cba, delay);
-    createdPEs.add(cba);
+    this.createdPEs.add(cba);
 
     final int posX = context.getX();
     final int posY = context.getY();
@@ -277,6 +277,6 @@ public class AddDelayFeature extends AbstractCustomFeature {
   }
 
   public List<PictogramElement> getCreatedPEs() {
-    return createdPEs;
+    return this.createdPEs;
   }
 }

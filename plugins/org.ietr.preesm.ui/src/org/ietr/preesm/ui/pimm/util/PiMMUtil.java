@@ -66,6 +66,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.ietr.dftools.ui.util.FileUtils;
 import org.ietr.dftools.ui.util.FileUtils.FileContentProvider;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.ui.pimm.diagram.PiMMToolBehaviorProvider;
@@ -159,7 +160,10 @@ public class PiMMUtil {
    * @param fileExtensions
    *          the file extensions
    * @return the i path
+   *
+   * @deprecated use {@link FileUtils#browseFiles(Shell, String, java.util.Collection)}
    */
+  @Deprecated
   public static IPath askFile(final String dialogTitle, final String dialogMessage, final IInputValidator validator, final Set<String> fileExtensions) {
     final Shell shell = PiMMUtil.getShell();
 

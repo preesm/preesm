@@ -47,6 +47,8 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.ui.PlatformUI;
+import org.ietr.dftools.ui.util.FileUtils;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.HRefinement;
@@ -181,7 +183,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
     fileExtensions.add("pi");
     fileExtensions.add("idl");
     fileExtensions.add("h");
-    final IPath newFilePath = PiMMUtil.askFile(dialogTitle, question, null, fileExtensions);
+    final IPath newFilePath = FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), dialogTitle, fileExtensions);
 
     return newFilePath;
   }
