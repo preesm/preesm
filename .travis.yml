@@ -27,6 +27,7 @@ addons:
 cache:
   directories:
   - $HOME/.m2
+
 #######################
 # Actual build stages
 #######################
