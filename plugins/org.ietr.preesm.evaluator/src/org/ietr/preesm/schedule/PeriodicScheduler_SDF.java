@@ -9,10 +9,10 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.evaluator.Activator;
 import org.ietr.preesm.mathematicalModels.PeriodicScheduleModel_GLPK;
 import org.ietr.preesm.mathematicalModels.SolverMethod;
-import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
-import org.ietr.preesm.throughput.helpers.MathFunctionsHelper;
-import org.ietr.preesm.throughput.helpers.Stopwatch;
-import org.ietr.preesm.throughput.transformers.SDFTransformer;
+import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
+import org.ietr.preesm.throughput.tools.helpers.MathFunctionsHelper;
+import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
+import org.ietr.preesm.throughput.tools.transformers.SDFTransformer;
 
 /**
  * this class computes the periodic schedule for an SDF graph. It computes the execution period W and the start date of the first execution for each actor. It

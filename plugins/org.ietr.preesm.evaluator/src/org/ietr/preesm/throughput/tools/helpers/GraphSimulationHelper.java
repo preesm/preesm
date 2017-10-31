@@ -1,4 +1,4 @@
-package org.ietr.preesm.throughput.helpers;
+package org.ietr.preesm.throughput.tools.helpers;
 
 import java.util.Hashtable;
 import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
@@ -24,8 +24,6 @@ public class GraphSimulationHelper {
   /**
    * @param graph
    *          SDF graph
-   * @param scenario
-   *          contains actors duration
    */
   public GraphSimulationHelper(SDFGraph graph) {
     this.graph = graph;

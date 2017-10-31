@@ -3,7 +3,7 @@ package org.ietr.preesm.deadlock;
 import java.util.Hashtable;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
+import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 
 /**
  * @author hderoui

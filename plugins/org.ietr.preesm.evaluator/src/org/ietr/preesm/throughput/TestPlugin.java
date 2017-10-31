@@ -16,9 +16,9 @@ import org.ietr.preesm.deadlock.IBSDFConsistency;
 import org.ietr.preesm.schedule.ALAPScheduler_DAG;
 import org.ietr.preesm.schedule.ASAPScheduler_DAG;
 import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
-import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
-import org.ietr.preesm.throughput.transformers.IBSDFTransformer;
-import org.ietr.preesm.throughput.transformers.SDFTransformer;
+import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
+import org.ietr.preesm.throughput.tools.transformers.IBSDFTransformer;
+import org.ietr.preesm.throughput.tools.transformers.SDFTransformer;
 
 /**
  * @author hderoui

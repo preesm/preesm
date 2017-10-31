@@ -6,8 +6,8 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
-import org.ietr.preesm.throughput.helpers.GraphSimulationHelper;
-import org.ietr.preesm.throughput.helpers.Stopwatch;
+import org.ietr.preesm.throughput.tools.helpers.GraphSimulationHelper;
+import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 
 /**
  * @author hderoui

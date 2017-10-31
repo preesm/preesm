@@ -5,7 +5,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 import org.ietr.preesm.deadlock.IBSDFConsistency;
-import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
+import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.junit.Assert;
 import org.junit.Test;
 

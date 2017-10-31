@@ -16,12 +16,12 @@ import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 import org.ietr.preesm.schedule.ALAPScheduler_DAG;
 import org.ietr.preesm.schedule.ASAPScheduler_DAG;
 import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
-import org.ietr.preesm.throughput.helpers.GraphSimulationHelper;
-import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
-import org.ietr.preesm.throughput.helpers.Stopwatch;
-import org.ietr.preesm.throughput.parsers.Identifier;
-import org.ietr.preesm.throughput.transformers.SDFTransformer;
-import org.ietr.preesm.throughput.transformers.SrSDFTransformer;
+import org.ietr.preesm.throughput.tools.helpers.GraphSimulationHelper;
+import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
+import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
+import org.ietr.preesm.throughput.tools.parsers.Identifier;
+import org.ietr.preesm.throughput.tools.transformers.SDFTransformer;
+import org.ietr.preesm.throughput.tools.transformers.SrSDFTransformer;
 
 /**
  * @author hderoui

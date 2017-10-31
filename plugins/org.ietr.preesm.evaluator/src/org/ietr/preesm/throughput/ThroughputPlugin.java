@@ -49,8 +49,8 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.deadlock.IBSDFConsistency;
 import org.ietr.preesm.deadlock.IBSDFLiveness;
-import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
-import org.ietr.preesm.throughput.helpers.Stopwatch;
+import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
+import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 
 /**
  * @author hderoui

@@ -1,4 +1,4 @@
-package org.ietr.preesm.throughput.helpers;
+package org.ietr.preesm.throughput.tools.helpers;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -13,7 +13,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
-import org.ietr.preesm.throughput.parsers.Identifier;
+import org.ietr.preesm.throughput.tools.parsers.Identifier;
 
 /**
  * @author hderoui
@@ -444,7 +444,7 @@ public abstract class GraphStructureHelper {
   /**
    * Clone an IBSDF graph
    * 
-   * @param graph
+   * @param ibsdf
    *          input IBSDF graph
    * @return IBSDF graph
    */
@@ -483,6 +483,12 @@ public abstract class GraphStructureHelper {
     return clonedIBSDF;
   }
 
+  /**
+   * Print a IBSDF subgraph
+   * 
+   * @param graph
+   *          IBSDF subgraph
+   */
   public static void printSDF(SDFGraph graph) {
     System.out.println("=> Liste des vertex :");
     for (SDFAbstractVertex actor : graph.vertexSet()) {

@@ -3,9 +3,9 @@ package org.ietr.preesm.throughput;
 import org.apache.commons.lang3.math.Fraction;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
-import org.ietr.preesm.throughput.helpers.Stopwatch;
-import org.ietr.preesm.throughput.transformers.IBSDFTransformer;
-import org.ietr.preesm.throughput.transformers.SDFTransformer;
+import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
+import org.ietr.preesm.throughput.tools.transformers.IBSDFTransformer;
+import org.ietr.preesm.throughput.tools.transformers.SDFTransformer;
 
 /**
  * @author hderoui

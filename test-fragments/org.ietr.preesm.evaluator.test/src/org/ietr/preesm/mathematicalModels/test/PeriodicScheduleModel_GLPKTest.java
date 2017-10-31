@@ -2,8 +2,8 @@ package org.ietr.preesm.mathematicalModels.test;
 
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.mathematicalModels.PeriodicScheduleModel_GLPK;
-import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
-import org.ietr.preesm.throughput.transformers.SDFTransformer;
+import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
+import org.ietr.preesm.throughput.tools.transformers.SDFTransformer;
 import org.junit.Assert;
 import org.junit.Test;
 

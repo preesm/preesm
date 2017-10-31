@@ -4,7 +4,7 @@ import org.apache.commons.lang3.math.Fraction;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.deadlock.SDFConsistency;
 import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
-import org.ietr.preesm.throughput.helpers.GraphStructureHelper;
+import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.junit.Assert;
 import org.junit.Test;
 

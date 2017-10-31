@@ -12,7 +12,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
-import org.ietr.preesm.throughput.helpers.MathFunctionsHelper;
+import org.ietr.preesm.throughput.tools.helpers.MathFunctionsHelper;
 
 /**
  * @author hderoui

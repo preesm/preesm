@@ -2,7 +2,7 @@ package org.ietr.preesm.deadlock;
 
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.throughput.helpers.Stopwatch;
+import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 
 /**
  * @author hderoui

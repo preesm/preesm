@@ -10,8 +10,8 @@ import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
-import org.ietr.preesm.throughput.helpers.MathFunctionsHelper;
-import org.ietr.preesm.throughput.helpers.Stopwatch;
+import org.ietr.preesm.throughput.tools.helpers.MathFunctionsHelper;
+import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 
 /**
  * @author hderoui

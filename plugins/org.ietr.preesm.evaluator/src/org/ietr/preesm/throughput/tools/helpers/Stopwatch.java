@@ -1,4 +1,4 @@
-package org.ietr.preesm.throughput.helpers;
+package org.ietr.preesm.throughput.tools.helpers;
 
 /**
  * stopwatch class for time measurements used in benchmarks
