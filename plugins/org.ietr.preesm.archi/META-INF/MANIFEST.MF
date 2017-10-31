@@ -6,8 +6,7 @@ Bundle-Version: 2.5.1.qualifier
 Bundle-Activator: org.ietr.preesm.architecture.Activator
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.core.runtime,
- org.ietr.dftools.workflow;bundle-version="1.2.1",
- org.ietr.dftools.architecture;bundle-version="1.2.1"
+ org.ietr.preesm.experiment.model
 Bundle-ActivationPolicy: lazy
 Export-Package: org.ietr.preesm.architecture.slam,
  org.ietr.preesm.architecture.transforms
