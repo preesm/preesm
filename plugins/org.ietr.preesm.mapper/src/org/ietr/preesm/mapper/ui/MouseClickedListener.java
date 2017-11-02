@@ -43,7 +43,6 @@ import java.awt.event.MouseMotionListener;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
 
-// TODO: Auto-generated Javadoc
 /**
  * Listening for mouse events to refresh correctly the awt display when Gantt chart is changed.
  *
@@ -149,7 +148,6 @@ public class MouseClickedListener implements MouseMotionListener, ChartMouseList
   public void mouseReleased(final java.awt.event.MouseEvent e) {
     if (this.dragged) {
       final Dimension d = this.frame.getSize();
-      this.frame.setSize(new Dimension(1, 1));
       this.frame.setSize(d);
 
       this.dragged = false;

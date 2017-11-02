@@ -63,7 +63,7 @@
             class="org.ietr.preesm.mapper.ui.gantt.GanttEditor"
             default="true"
             icon="icons/preesm3mini.PNG"
-            id="org.ietr.preesm.plugin.mapper.plot.GanttEditor"
+            id="org.ietr.preesm.mapper.plot.GanttEditor"
             name="GanttEditor">
       </editor>
    </extension>

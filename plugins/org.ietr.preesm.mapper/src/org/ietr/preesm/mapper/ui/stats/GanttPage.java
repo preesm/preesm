@@ -43,7 +43,6 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.ui.GanttPlotter;
 
-// TODO: Auto-generated Javadoc
 /**
  * This page contains the gantt display.
  *

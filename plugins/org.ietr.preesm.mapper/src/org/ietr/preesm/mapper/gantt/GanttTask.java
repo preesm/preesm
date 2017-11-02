@@ -35,7 +35,6 @@
  */
 package org.ietr.preesm.mapper.gantt;
 
-// TODO: Auto-generated Javadoc
 /**
  * GanttTask carries information for a task displayed in a Gantt chart component.
  *
@@ -118,10 +117,7 @@ public class GanttTask {
    */
   @Override
   public boolean equals(final Object obj) {
-    if ((obj instanceof GanttTask) && (((GanttTask) obj).getId().equals(this.id))) {
-      return true;
-    }
-    return false;
+    return ((obj instanceof GanttTask) && (((GanttTask) obj).getId().equals(this.id)));
   }
 
   /*

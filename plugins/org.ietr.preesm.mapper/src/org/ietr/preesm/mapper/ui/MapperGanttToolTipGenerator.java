@@ -41,7 +41,6 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.gantt.Task;
 import org.jfree.data.gantt.TaskSeriesCollection;
 
-// TODO: Auto-generated Javadoc
 /**
  * Tooltip object.
  *
@@ -57,7 +56,7 @@ public class MapperGanttToolTipGenerator implements CategoryToolTipGenerator {
   @Override
   public String generateToolTip(final CategoryDataset set, final int row, final int column) {
 
-    String tooltip = new String();
+    final StringBuilder tooltip = new StringBuilder();
 
     final TaskSeriesCollection collection = (TaskSeriesCollection) set;
 
@@ -66,10 +65,10 @@ public class MapperGanttToolTipGenerator implements CategoryToolTipGenerator {
       final long startTime = currentTask.getDuration().getStart().getTime();
       final long endTime = currentTask.getDuration().getEnd().getTime();
 
-      tooltip = currentTask.getDescription() + "(" + startTime + "-" + endTime + "-" + (endTime - startTime) + ")";
+      tooltip.append(currentTask.getDescription() + "(" + startTime + "-" + endTime + "-" + (endTime - startTime) + ")");
     }
 
-    return tooltip;
+    return tooltip.toString();
   }
 
 }

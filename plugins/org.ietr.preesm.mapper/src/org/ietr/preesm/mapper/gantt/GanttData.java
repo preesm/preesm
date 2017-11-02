@@ -49,7 +49,6 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
 
-// TODO: Auto-generated Javadoc
 /**
  * GanttData carries information that can be displayed in a Gantt chart.
  *
@@ -124,7 +123,8 @@ public class GanttData {
           return false;
         }
       } else {
-        WorkflowLogger.getLogger().log(Level.SEVERE, "Gantt: task can not be displayed in Gantt because it has no component: " + currentVertex);
+        final String message = "Gantt: task can not be displayed in Gantt because it has no component: " + currentVertex;
+        WorkflowLogger.getLogger().log(Level.SEVERE, message);
       }
     }
     return true;

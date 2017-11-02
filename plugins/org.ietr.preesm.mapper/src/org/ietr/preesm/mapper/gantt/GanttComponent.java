@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.logging.Level;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
-// TODO: Auto-generated Javadoc
 /**
  * A Gantt component is the information for 1 line in a Gantt chart.
  *
@@ -80,7 +79,7 @@ public class GanttComponent {
    */
   public boolean insertTask(final GanttTask task) {
 
-    if (this.tasks.size() != 0) {
+    if (!this.tasks.isEmpty()) {
       int index = this.tasks.size();
       // Looking where to insert the new task element
       for (int i = 0; i < this.tasks.size(); i++) {
@@ -91,7 +90,8 @@ public class GanttComponent {
         }
         // Checking for multiple concurrent insertions
         if (t.equals(task)) {
-          WorkflowLogger.getLogger().log(Level.SEVERE, "Gantt: Trying to add to the Gantt chart several identical tasks: " + t + " and " + task);
+          final String message = "Gantt: Trying to add to the Gantt chart several identical tasks: " + t + " and " + task;
+          WorkflowLogger.getLogger().log(Level.SEVERE, message);
           return false;
         }
       }
@@ -107,7 +107,8 @@ public class GanttComponent {
         if (index > 0) {
           final GanttTask precedingTask = this.tasks.get(index - 1);
           if ((precedingTask.getStartTime() + precedingTask.getDuration()) > task.getStartTime()) {
-            WorkflowLogger.getLogger().log(Level.SEVERE, "Gantt: Two tasks are overlapping: " + precedingTask + " and " + task);
+            final String message = "Gantt: Two tasks are overlapping: " + precedingTask + " and " + task;
+            WorkflowLogger.getLogger().log(Level.SEVERE, message);
             return false;
           }
         }
@@ -140,10 +141,7 @@ public class GanttComponent {
    */
   @Override
   public boolean equals(final Object obj) {
-    if ((obj instanceof GanttComponent) && (((GanttComponent) obj).getId().equals(this.id))) {
-      return true;
-    }
-    return false;
+    return ((obj instanceof GanttComponent) && (((GanttComponent) obj).getId().equals(this.id)));
   }
 
   /*

@@ -55,7 +55,6 @@ import org.jfree.data.gantt.GanttCategoryDataset;
 import org.jfree.data.gantt.TaskSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 
-// TODO: Auto-generated Javadoc
 /**
  * This renderer plots rounded rectangles.
  *
@@ -67,7 +66,7 @@ public class MyGanttRenderer extends GanttRenderer {
   private static final long serialVersionUID = 1L;
 
   /** Map of the task colors. */
-  Map<String, Color> colorMap = new LinkedHashMap<>();
+  private Map<String, Color> colorMap = new LinkedHashMap<>();
 
   /**
    * Draws the tasks/subtasks for one item.
@@ -135,13 +134,10 @@ public class MyGanttRenderer extends GanttRenderer {
 
       /* Paint seriesPaint = */getItemPaint(row, column);
 
-      if (((TaskSeriesCollection) dataset).getSeriesCount() > 0) {
-        if (((TaskSeriesCollection) dataset).getSeries(0).getItemCount() > column) {
-          if (((TaskSeriesCollection) dataset).getSeries(0).get(column).getSubtaskCount() > subinterval) {
-            g2.setPaint(getRandomBrightColor(((TaskSeriesCollection) dataset).getSeries(0).get(column).getSubtask(subinterval).getDescription()));
+      if (((TaskSeriesCollection) dataset).getSeriesCount() > 0 && ((TaskSeriesCollection) dataset).getSeries(0).getItemCount() > column
+          && ((TaskSeriesCollection) dataset).getSeries(0).get(column).getSubtaskCount() > subinterval) {
+        g2.setPaint(getRandomBrightColor(((TaskSeriesCollection) dataset).getSeries(0).get(column).getSubtask(subinterval).getDescription()));
 
-          }
-        }
       }
       g2.fill(bar);
 
@@ -255,18 +251,16 @@ public class MyGanttRenderer extends GanttRenderer {
    *          the liberty
    * @return the random color
    */
-  private Color getRandomColor(Double r, Double g, Double b, final int liberty) {
+  private Color getRandomColor(final Double r, final Double g, final Double b, final int liberty) {
 
-    r = (Math.random() * liberty) + r;
-    g = (Math.random() * liberty) + g;
-    b = (Math.random() * liberty) + b;
+    final int newR = genNewRandomColorComponent(r, liberty);
+    final int newG = genNewRandomColorComponent(g, liberty);
+    final int newB = genNewRandomColorComponent(b, liberty);
 
-    r = Math.max(0, Math.min(r, 255));
-    g = Math.max(0, Math.min(g, 255));
-    b = Math.max(0, Math.min(b, 255));
+    return new Color(newR, newG, newB);
+  }
 
-    final Color c = new Color(r.intValue(), g.intValue(), b.intValue());
-
-    return c;
+  private int genNewRandomColorComponent(final Double r, final int liberty) {
+    return (int) Math.round(Math.max(0, Math.min(((Math.random() * liberty) + r), 255)));
   }
 }

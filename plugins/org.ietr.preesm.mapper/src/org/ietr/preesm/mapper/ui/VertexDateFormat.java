@@ -40,7 +40,6 @@ import java.text.FieldPosition;
 import java.util.Date;
 import org.jfree.chart.util.RelativeDateFormat;
 
-// TODO: Auto-generated Javadoc
 /**
  * Time display format for Gantt charts.
  *
