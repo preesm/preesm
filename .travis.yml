@@ -47,7 +47,7 @@ jobs:
     - stage : Test & SonarCloud (Offline)
       script: mvn --offline -e -C -B -V clean verify findbugs:findbugs sonar:sonar -fae
     - stage : Package Site & Product (Offline)
-      script: mvn --offline -e -C -B -V -P releng clean package -fae
+      script: mvn --offline -e -C -B -V -P releng clean package -fae -Dmaven.test.skip=true
 
 #skip install step before each stage by running the /bin/true command
 install: true
