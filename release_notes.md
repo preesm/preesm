@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Fix issue #48
 
 ### Bug fix
 
