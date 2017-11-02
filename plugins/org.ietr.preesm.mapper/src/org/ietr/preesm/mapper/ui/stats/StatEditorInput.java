@@ -47,7 +47,6 @@ import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.activator.Activator;
 
-// TODO: Auto-generated Javadoc
 /**
  * Input of the editor of implementation statistics.
  *
@@ -125,7 +124,6 @@ public class StatEditorInput implements IEditorInput {
    */
   @Override
   public boolean exists() {
-    // TODO Auto-generated method stub
     return false;
   }
 
@@ -136,8 +134,7 @@ public class StatEditorInput implements IEditorInput {
    */
   @Override
   public ImageDescriptor getImageDescriptor() {
-    final ImageDescriptor img = Activator.getImageDescriptor("icons/preesm1mini.PNG");
-    return img;
+    return Activator.getImageDescriptor("icons/preesm1mini.PNG");
   }
 
   /*
@@ -162,7 +159,6 @@ public class StatEditorInput implements IEditorInput {
    */
   @Override
   public IPersistableElement getPersistable() {
-    // TODO Auto-generated method stub
     return null;
   }
 

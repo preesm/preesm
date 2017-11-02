@@ -45,7 +45,6 @@ import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.forms.editor.SharedHeaderFormEditor;
 import org.ietr.preesm.mapper.ui.stats.overview.OverviewPage;
 
-// TODO: Auto-generated Javadoc
 /**
  * The statistic editor displays statistics on the generated implementation.
  *
@@ -84,10 +83,6 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
       final StatEditorInput statinput = (StatEditorInput) input;
       this.statGen = new StatGenerator(statinput.getAbc(), statinput.getScenario(), statinput.getParams());
     }
-    /*
-     * } catch (Exception e) { // Editor might not exist anymore if switching databases. So // just close it.
-     * PreesmLogger.getLogger().log(Level.SEVERE,e.getMessage()); this.getEditorSite().getPage().closeEditor(this, false); }
-     */
   }
 
   /**
@@ -95,7 +90,6 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
    */
   @Override
   protected void addPages() {
-    // this.activateSite();
     final IFormPage ganttPage = new GanttPage(this.statGen, this, "Gantt", "Gantt");
     final IFormPage overviewPage = new OverviewPage(this.statGen, this, "Loads", "Loads");
     overviewPage.addPropertyListener(this);
@@ -128,8 +122,7 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
    */
   @Override
   public void doSaveAs() {
-    // TODO Auto-generated method stub
-
+    // actually not meant to be edited, so no save action
   }
 
   /*
@@ -139,7 +132,6 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
    */
   @Override
   public boolean isSaveAsAllowed() {
-    // TODO Auto-generated method stub
     return false;
   }
 
@@ -150,8 +142,7 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
    */
   @Override
   public void doSave(final IProgressMonitor monitor) {
-    // TODO Auto-generated method stub
-
+    // actually not meant to be edited, so no save action
   }
 
   /*
@@ -161,7 +152,6 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
    */
   @Override
   public void propertyChanged(final Object source, final int propId) {
-    // TODO Auto-generated method stub
-
+    // actually not meant to be edited, so no save action
   }
 }

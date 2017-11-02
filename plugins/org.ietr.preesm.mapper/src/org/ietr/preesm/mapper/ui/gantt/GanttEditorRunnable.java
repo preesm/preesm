@@ -42,7 +42,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.mapper.gantt.GanttData;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class used by the editor displaying the gantt chart. Useful to run editor in display thread.
  *
@@ -93,7 +92,7 @@ public class GanttEditorRunnable implements Runnable {
       final IWorkbenchPage page = dwindow.getActivePage();
 
       try {
-        page.openEditor(this.input, "org.ietr.preesm.plugin.mapper.plot.GanttEditor", false);
+        page.openEditor(this.input, GanttEditor.ID, false);
 
       } catch (final PartInitException e) {
         e.printStackTrace();

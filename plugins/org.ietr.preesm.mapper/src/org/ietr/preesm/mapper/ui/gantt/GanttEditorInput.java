@@ -44,7 +44,6 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.activator.Activator;
 import org.ietr.preesm.mapper.gantt.GanttData;
 
-// TODO: Auto-generated Javadoc
 /**
  * Input of the simple editor of implementation gantt chart.
  *
@@ -108,8 +107,7 @@ public class GanttEditorInput implements IEditorInput {
    */
   @Override
   public ImageDescriptor getImageDescriptor() {
-    final ImageDescriptor img = Activator.getImageDescriptor("icons/preesm3mini.PNG");
-    return img;
+    return Activator.getImageDescriptor("icons/preesm3mini.PNG");
   }
 
   /*

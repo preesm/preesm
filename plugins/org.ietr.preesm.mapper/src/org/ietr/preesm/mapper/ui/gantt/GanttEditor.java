@@ -44,13 +44,14 @@ import org.eclipse.ui.part.EditorPart;
 import org.ietr.preesm.mapper.gantt.GanttData;
 import org.ietr.preesm.mapper.ui.GanttPlotter;
 
-// TODO: Auto-generated Javadoc
 /**
  * Editor displaying the gantt chart.
  *
  * @author mpelcat
  */
 public class GanttEditor extends EditorPart {
+
+  public static final String ID = "org.ietr.preesm.mapper.plot.GanttEditor";
 
   /** Data to be displayed. */
   private GanttData ganttData = null;
@@ -69,7 +70,7 @@ public class GanttEditor extends EditorPart {
    */
   @Override
   public void doSave(final IProgressMonitor monitor) {
-
+    // actually not meant to be edited, so no save action
   }
 
   /*
@@ -79,7 +80,7 @@ public class GanttEditor extends EditorPart {
    */
   @Override
   public void doSaveAs() {
-
+    // actually not meant to be edited, so no save action
   }
 
   /*
@@ -115,7 +116,6 @@ public class GanttEditor extends EditorPart {
    */
   @Override
   public boolean isDirty() {
-    // TODO Auto-generated method stub
     return false;
   }
 
@@ -126,7 +126,6 @@ public class GanttEditor extends EditorPart {
    */
   @Override
   public boolean isSaveAsAllowed() {
-    // TODO Auto-generated method stub
     return false;
   }
 
@@ -139,7 +138,7 @@ public class GanttEditor extends EditorPart {
   public void createPartControl(final Composite parent) {
 
     if (this.ganttData != null) {
-      GanttPlotter.plotDeployment(this.ganttData, parent);
+      GanttPlotter.plotDeployment(this.ganttData, null);
     }
 
   }
@@ -151,7 +150,6 @@ public class GanttEditor extends EditorPart {
    */
   @Override
   public void setFocus() {
-    // TODO Auto-generated method stub
-
+    // nothing special
   }
 }

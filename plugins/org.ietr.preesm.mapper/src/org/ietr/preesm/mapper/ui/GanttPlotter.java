@@ -69,7 +69,6 @@ import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RectangleInsets;
 import org.jfree.ui.RefineryUtilities;
 
-// TODO: Auto-generated Javadoc
 /**
  * Gantt plotter of a mapperdagvertex using JFreeChart.
  *
@@ -79,9 +78,6 @@ public class GanttPlotter extends ApplicationFrame {
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
-
-  /** The chart. */
-  JFreeChart chart = null;
 
   /** The chart panel. */
   ChartPanel chartPanel = null;
@@ -124,7 +120,6 @@ public class GanttPlotter extends ApplicationFrame {
 
     plot.setDrawingSupplier(d);
     final MyGanttRenderer ren = new MyGanttRenderer();
-    // ren.setRepaintedListener(new RefreshRepaintedListener(this));
 
     ren.setSeriesItemLabelsVisible(0, false);
     ren.setSeriesVisibleInLegend(0, false);
@@ -199,21 +194,19 @@ public class GanttPlotter extends ApplicationFrame {
   }
 
   /**
-   * Starting point for the demonstration application.
+   * Plot the Gantt chart in a standalone window.
    */
   public void plot() {
-
     pack();
     RefineryUtilities.centerFrameOnScreen(this);
     setVisible(true);
-
   }
 
   /**
-   * Gantt chart plotting function in a given composite.
+   * Gantt chart plotting function in a given composite (within Eclipse).
    *
    * @param parent
-   *          the parent
+   *          the parent Composite Eclipse UI element
    */
   public void plotInComposite(final Composite parent) {
 
@@ -239,10 +232,11 @@ public class GanttPlotter extends ApplicationFrame {
   public GanttPlotter(final String title, final GanttData ganttData) {
     super(title);
 
-    this.chart = createChart(GanttPlotter.createDataset(ganttData));
-    this.chartPanel = new ChartPanel(this.chart);
+    final JFreeChart chart = createChart(GanttPlotter.createDataset(ganttData));
+    this.chartPanel = new ChartPanel(chart);
     this.chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
     this.chartPanel.setMouseZoomable(true, true);
+
     setContentPane(this.chartPanel);
 
   }
@@ -254,6 +248,7 @@ public class GanttPlotter extends ApplicationFrame {
    */
   @Override
   public void windowClosing(final WindowEvent event) {
+    // skip exiting JVM
   }
 
   /**
@@ -266,7 +261,6 @@ public class GanttPlotter extends ApplicationFrame {
     final Point2D end = new Point2D.Float(500, 500);
     final float[] dist = { 0.0f, 0.8f };
     final Color[] colors = { new Color(170, 160, 190), Color.WHITE };
-    final LinearGradientPaint p = new LinearGradientPaint(start, end, dist, colors);
-    return p;
+    return new LinearGradientPaint(start, end, dist, colors);
   }
 }
