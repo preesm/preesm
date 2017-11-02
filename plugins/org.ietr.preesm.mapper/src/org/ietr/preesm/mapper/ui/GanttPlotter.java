@@ -38,17 +38,24 @@
  */
 package org.ietr.preesm.mapper.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Frame;
 import java.awt.LinearGradientPaint;
 import java.awt.Paint;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
+import javax.swing.JEditorPane;
+import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.mapper.gantt.GanttComponent;
 import org.ietr.preesm.mapper.gantt.GanttData;
 import org.ietr.preesm.mapper.gantt.GanttTask;
@@ -240,6 +247,22 @@ public class GanttPlotter extends ApplicationFrame {
     categoryPlot.setRangePannable(true);
     setContentPane(this.chartPanel);
 
+    final JMenuItem menuItem = new JMenuItem("Help ...");
+    this.chartPanel.getPopupMenu().add(menuItem);
+
+    final JFrame helpFrame = new JFrame("Gantt Help");
+    helpFrame.setSize(400, 250);
+    helpFrame.setLocationRelativeTo(chartPanel);
+    helpFrame.setDefaultCloseOperation(HIDE_ON_CLOSE);
+
+    try {
+      final URL resource = this.getClass().getResource("/resources/GanttHelp.html");
+      final JEditorPane comp = new JEditorPane(resource);
+      helpFrame.getContentPane().add(comp, BorderLayout.PAGE_START);
+    } catch (final IOException ex) {
+      throw new WorkflowException("Could not load Gantt Help file", ex);
+    }
+    menuItem.addActionListener(e -> helpFrame.setVisible(true));
   }
 
   /*
