@@ -101,11 +101,10 @@ public class GanttPlotter extends ApplicationFrame {
         false // generate URLs?
     );
 
-    final CategoryPlot plot = (CategoryPlot) chart.getPlot();
-
     final Paint p = GanttPlotter.getBackgroundColorGradient();
     chart.setBackgroundPaint(p);
 
+    final CategoryPlot plot = (CategoryPlot) chart.getPlot();
     plot.setBackgroundPaint(Color.white);
     plot.setDomainGridlinePaint(Color.white);
     plot.setRangeGridlinePaint(Color.black);
@@ -236,7 +235,9 @@ public class GanttPlotter extends ApplicationFrame {
     this.chartPanel = new ChartPanel(chart);
     this.chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
     this.chartPanel.setMouseZoomable(true, true);
-
+    this.chartPanel.setMouseWheelEnabled(true);
+    CategoryPlot categoryPlot = this.chartPanel.getChart().getCategoryPlot();
+    categoryPlot.setRangePannable(true);
     setContentPane(this.chartPanel);
 
   }
