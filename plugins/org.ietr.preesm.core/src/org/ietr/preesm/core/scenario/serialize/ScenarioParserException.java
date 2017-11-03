@@ -7,7 +7,7 @@ package org.ietr.preesm.core.scenario.serialize;
  */
 public class ScenarioParserException extends RuntimeException {
 
-  public ScenarioParserException(String string, Exception e) {
+  public ScenarioParserException(final String string, final Exception e) {
     super(string, e);
   }
 

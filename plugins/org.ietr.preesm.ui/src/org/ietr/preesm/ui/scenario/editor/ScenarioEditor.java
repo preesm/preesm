@@ -111,7 +111,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
         this.scenario = parser.parseXmlFile(this.scenarioFile);
       } catch (final Exception e) {
         ErrorWithExceptionDialog.errorDialogWithStackTrace("Could not open scenario", e);
-        this.close(false);
+        close(false);
       }
     }
   }
@@ -150,7 +150,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
       addPage(paramPage);
     } catch (final PartInitException e) {
       ErrorWithExceptionDialog.errorDialogWithStackTrace("Could not open scenario", e);
-      this.close(false);
+      close(false);
     }
   }
 

@@ -209,7 +209,7 @@ public class ScenarioParser {
     Node node = paramValuesElt.getFirstChild();
 
     final PiGraph graph = getPiGraph();
-    if (graph != null && this.scenario.isPISDFScenario()) {
+    if ((graph != null) && this.scenario.isPISDFScenario()) {
       final Set<Parameter> parameters = new LinkedHashSet<>();
       for (final Parameter p : graph.getAllParameters()) {
         if (!p.isConfigurationInterface()) {
@@ -544,14 +544,14 @@ public class ScenarioParser {
               } else if (url.endsWith(".pi")) {
                 this.algoPi = getPiGraph();
               }
-            } catch (Exception e) {
+            } catch (final Exception e) {
               throw new ScenarioParserException("Could not parse the algorithm", e);
             }
           } else if (type.equals("architecture")) {
             try {
               this.scenario.setArchitectureURL(url);
               initializeArchitectureInformation(url);
-            } catch (Exception e) {
+            } catch (final Exception e) {
               throw new ScenarioParserException("Could not parse the architecture", e);
             }
           } else if (type.equals("codegenDirectory")) {
