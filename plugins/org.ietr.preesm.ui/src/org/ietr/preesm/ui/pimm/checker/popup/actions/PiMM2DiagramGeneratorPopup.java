@@ -74,13 +74,13 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
-import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 import org.ietr.preesm.ui.Activator;
 import org.ietr.preesm.ui.pimm.diagram.PiMMDiagramEditor;
 import org.ietr.preesm.ui.pimm.features.PasteFeature;
@@ -116,7 +116,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
       if (!diagramAlreadyExists || userDecision == SWT.OK) {
         closeEditorIfOpen(diagramFilePath);
         // Get PiGraph, init empty Diagram, and link them together
-        PiGraph graph = ScenarioParser.getPiGraph(fullPath.toString());
+        PiGraph graph = PiParser.getPiGraph(fullPath.toString());
         Diagram diagram = Graphiti.getPeCreateService().createDiagram("PiMM", graph.getName(), true);
         linkPiGraphAndDiagram(graph, diagram);
 

@@ -44,12 +44,11 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
-import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 import org.ietr.preesm.pimm.algorithm.checker.PiMMAlgorithmChecker;
 import org.ietr.preesm.ui.Activator;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class to launch a PiGraph check through pop-up menu.
  *
@@ -80,7 +79,7 @@ public class PiMMAlgorithmCheckerPopup extends AbstractHandler {
       final IWorkbenchPage page = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
       final TreeSelection selection = (TreeSelection) page.getSelection();
       final IFile file = (IFile) selection.getFirstElement();
-      final PiGraph graph = ScenarioParser.getPiGraph(file.getFullPath().toString());
+      final PiGraph graph = PiParser.getPiGraph(file.getFullPath().toString());
 
       final StringBuffer message = new StringBuffer();
       if (checker.checkGraph(graph)) {
