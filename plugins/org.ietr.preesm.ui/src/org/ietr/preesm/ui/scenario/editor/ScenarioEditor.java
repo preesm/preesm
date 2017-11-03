@@ -36,12 +36,8 @@
  */
 package org.ietr.preesm.ui.scenario.editor;
 
-import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
@@ -50,7 +46,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.forms.editor.SharedHeaderFormEditor;
 import org.eclipse.ui.part.FileEditorInput;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.core.scenario.serialize.ScenarioWriter;
@@ -61,6 +56,7 @@ import org.ietr.preesm.ui.scenario.editor.relativeconstraints.RelativeConstraint
 import org.ietr.preesm.ui.scenario.editor.simulation.SimulationPage;
 import org.ietr.preesm.ui.scenario.editor.timings.TimingsPage;
 import org.ietr.preesm.ui.scenario.editor.variables.VariablesPage;
+import org.ietr.preesm.ui.utils.ErrorWithExceptionDialog;
 
 /**
  * The scenario editor allows to change all parameters in scenario; i.e. depending on both algorithm and architecture. It can be called by editing a .scenario
@@ -99,9 +95,6 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
   @Override
   public void init(final IEditorSite site, final IEditorInput input) throws PartInitException {
 
-    // Starting the console
-    WorkflowLogger.getLogger().log(Level.INFO, "");
-
     setSite(site);
     setInput(input);
     setPartName(input.getName());
@@ -117,8 +110,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
       try {
         this.scenario = parser.parseXmlFile(this.scenarioFile);
       } catch (final Exception e) {
-        ErrorDialog.openError(site.getShell(), "Could not open scenario", "An error occured while opening the scenario file",
-            new Status(IStatus.ERROR, "org.ietr.preesm.ui", e + ": " + e.getMessage(), e), IStatus.ERROR);
+        ErrorWithExceptionDialog.errorDialogWithStackTrace("Could not open scenario", e);
         this.close(false);
       }
     }
@@ -157,8 +149,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
       addPage(variablesPage);
       addPage(paramPage);
     } catch (final PartInitException e) {
-      ErrorDialog.openError(this.getSite().getShell(), "Could not open scenario", "An error occured while opening the scenario file",
-          new Status(IStatus.ERROR, "org.ietr.preesm.ui", e + ": " + e.getMessage(), e), IStatus.ERROR);
+      ErrorWithExceptionDialog.errorDialogWithStackTrace("Could not open scenario", e);
       this.close(false);
     }
   }
