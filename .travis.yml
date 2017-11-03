@@ -31,6 +31,15 @@ cache:
 #######################
 # Actual build stages
 #######################
+# The following job can be reproduced on any machine in a single line
+# with the following:
+#
+# mvn -U -e -C -V -P releng clean checkstyle:check package verify -fae
+#
+# Note that sonar and findbugs are disable since they not proper config.
+# The job is separated in several stages to detect quickly where the
+# issue is comming from.
+#######################
 
 jobs:
   include:
