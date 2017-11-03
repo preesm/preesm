@@ -56,6 +56,7 @@ import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -103,7 +104,7 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
         SpecialActorPortsIndexer.addIndexes(sdfAlgorithm);
         SpecialActorPortsIndexer.sortIndexedPorts(sdfAlgorithm);
       } else if (scenario.isPISDFScenario()) {
-        piAlgorithm = ScenarioParser.getPiGraph(url);
+        piAlgorithm = PiParser.getPiGraph(url);
       }
     } catch (FileNotFoundException | InvalidModelException | CoreException e) {
       throw new WorkflowException(e.getMessage());

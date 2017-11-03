@@ -58,6 +58,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -163,7 +164,7 @@ public class CsvTimingParser {
     if (this.scenario.isIBSDFScenario()) {
       throw new InvalidModelException();
     } else if (this.scenario.isPISDFScenario()) {
-      final PiGraph currentGraph = ScenarioParser.getPiGraph(this.scenario.getAlgorithmURL());
+      final PiGraph currentGraph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
       parseTimingsForPISDFGraph(timings, currentGraph, opDefIds);
     }
 

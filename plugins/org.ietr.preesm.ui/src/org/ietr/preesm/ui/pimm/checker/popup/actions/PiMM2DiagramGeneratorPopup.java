@@ -74,13 +74,13 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
-import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 import org.ietr.preesm.ui.Activator;
 import org.ietr.preesm.ui.pimm.diagram.PiMMDiagramEditor;
 import org.ietr.preesm.ui.pimm.features.PasteFeature;
@@ -92,10 +92,10 @@ import org.ietr.preesm.ui.pimm.layout.AutoLayoutFeature;
 public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
 
   private static final IWorkspace     WORKSPACE      = ResourcesPlugin.getWorkspace();
-  private static final IWorkspaceRoot WORKSPACE_ROOT = WORKSPACE.getRoot();
+  private static final IWorkspaceRoot WORKSPACE_ROOT = PiMM2DiagramGeneratorPopup.WORKSPACE.getRoot();
 
   @Override
-  public Object execute(ExecutionEvent event) throws ExecutionException {
+  public Object execute(final ExecutionEvent event) throws ExecutionException {
 
     final IWorkbench workbench = Activator.getDefault().getWorkbench();
     final Shell shell = workbench.getModalDialogShellProvider().getShell();
@@ -106,18 +106,18 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
       final IPath fullPath = file.getFullPath();
       final IPath diagramFilePath = fullPath.removeFileExtension().addFileExtension("diagram");
 
-      boolean diagramAlreadyExists = checkExists(diagramFilePath);
+      final boolean diagramAlreadyExists = checkExists(diagramFilePath);
 
       int userDecision = SWT.OK;
       if (diagramAlreadyExists) {
         userDecision = askUserConfirmation(shell, diagramFilePath);
 
       }
-      if (!diagramAlreadyExists || userDecision == SWT.OK) {
+      if (!diagramAlreadyExists || (userDecision == SWT.OK)) {
         closeEditorIfOpen(diagramFilePath);
         // Get PiGraph, init empty Diagram, and link them together
-        PiGraph graph = ScenarioParser.getPiGraph(fullPath.toString());
-        Diagram diagram = Graphiti.getPeCreateService().createDiagram("PiMM", graph.getName(), true);
+        final PiGraph graph = PiParser.getPiGraph(fullPath.toString());
+        final Diagram diagram = Graphiti.getPeCreateService().createDiagram("PiMM", graph.getName(), true);
         linkPiGraphAndDiagram(graph, diagram);
 
         // create the resource (safe because the wizard does not allow existing
@@ -126,7 +126,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
         openAndPopulateDiagram(diagramFile);
 
       }
-    } catch (Exception cause) {
+    } catch (final Exception cause) {
       final String message = "Could not generate diagram from PiMM model file";
       throw new ExecutionException(message, cause);
     }
@@ -139,7 +139,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
     final IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
     final IEditorPart activeEditor = page.getActiveEditor();
     if (activeEditor instanceof PiMMDiagramEditor) {
-      PiMMDiagramEditor diagEditor = (PiMMDiagramEditor) activeEditor;
+      final PiMMDiagramEditor diagEditor = (PiMMDiagramEditor) activeEditor;
       // check if current diagram editor targets the diagram file we want to overwrite
       final IDiagramEditorInput diagramEditorInput = diagEditor.getDiagramEditorInput();
       final URI uri = diagramEditorInput.getUri();
@@ -157,7 +157,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
   private int askUserConfirmation(final Shell shell, final IPath diagramFilePath) {
     int userDecision;
     // create a dialog with ok and cancel buttons and a question icon
-    MessageBox dialog = new MessageBox(shell, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
+    final MessageBox dialog = new MessageBox(shell, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
     dialog.setText("Confirmation required");
     dialog.setMessage("The file \n\n" + diagramFilePath.toString() + "\n\n already exists. Do you want to overwrite it ?");
 
@@ -171,10 +171,10 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
    */
   class PopulateDiagramCommand extends RecordingCommand {
 
-    private PiGraph           graph;
-    private PiMMDiagramEditor editor;
+    private final PiGraph           graph;
+    private final PiMMDiagramEditor editor;
 
-    PopulateDiagramCommand(PiMMDiagramEditor editor, TransactionalEditingDomain domain, PiGraph graph) {
+    PopulateDiagramCommand(final PiMMDiagramEditor editor, final TransactionalEditingDomain domain, final PiGraph graph) {
       super(domain);
       this.editor = editor;
       this.graph = graph;
@@ -183,18 +183,18 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
     @Override
     protected void doExecute() {
 
-      final IFeatureProvider featureProvider = editor.getDiagramTypeProvider().getFeatureProvider();
+      final IFeatureProvider featureProvider = this.editor.getDiagramTypeProvider().getFeatureProvider();
       final PasteContext pasteContext = new PasteContext(new PictogramElement[0]);
       pasteContext.setLocation(0, 0);
       final PasteFeature pasteFeature = new PasteFeature(featureProvider);
 
-      for (Parameter p : graph.getParameters()) {
+      for (final Parameter p : this.graph.getParameters()) {
         pasteFeature.addGraphicalRepresentationForVertex(p, 0, 0);
       }
-      for (AbstractVertex v : graph.getVertices()) {
+      for (final AbstractVertex v : this.graph.getVertices()) {
         pasteFeature.addGraphicalRepresentationForVertex(v, 0, 0);
       }
-      for (Fifo fifo : graph.getFifos()) {
+      for (final Fifo fifo : this.graph.getFifos()) {
         final FreeFormConnection pe = pasteFeature.addGraphicalRepresentationForFifo(fifo);
         final Delay delay = fifo.getDelay();
         if (delay != null) {
@@ -203,7 +203,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
       }
 
       // connect dependencies after fifos (for connecting the delays)
-      for (Dependency dep : graph.getDependencies()) {
+      for (final Dependency dep : this.graph.getDependencies()) {
         pasteFeature.addGraphicalRepresentationForDependency(dep);
       }
       pasteFeature.postProcess();
@@ -239,25 +239,26 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
     editor.doSave(null);
   }
 
-  private IFile initDiagramResource(final IPath diagramFilePath, final Diagram diagram, boolean deleteExistingFileFirst) throws IOException, CoreException {
-    final IFile file = WORKSPACE_ROOT.getFile(diagramFilePath);
+  private IFile initDiagramResource(final IPath diagramFilePath, final Diagram diagram, final boolean deleteExistingFileFirst)
+      throws IOException, CoreException {
+    final IFile file = PiMM2DiagramGeneratorPopup.WORKSPACE_ROOT.getFile(diagramFilePath);
     if (deleteExistingFileFirst) {
       file.delete(true, null);
       file.getParent().refreshLocal(IResource.DEPTH_INFINITE, null);
-      WORKSPACE.save(true, null);
+      PiMM2DiagramGeneratorPopup.WORKSPACE.save(true, null);
     }
     final ResourceSet set = new ResourceSetImpl();
     final URI uri = URI.createPlatformResourceURI(diagramFilePath.toString(), false);
     final Resource resource = set.createResource(uri);
     resource.getContents().add(diagram);
     resource.save(null);
-    WORKSPACE.save(true, null);
+    PiMM2DiagramGeneratorPopup.WORKSPACE.save(true, null);
     file.getParent().refreshLocal(IResource.DEPTH_INFINITE, null);
     return file;
   }
 
-  private boolean checkExists(IPath diagramFilePath) {
-    return WORKSPACE_ROOT.exists(diagramFilePath);
+  private boolean checkExists(final IPath diagramFilePath) {
+    return PiMM2DiagramGeneratorPopup.WORKSPACE_ROOT.exists(diagramFilePath);
   }
 
   private void linkPiGraphAndDiagram(final PiGraph graph, final Diagram diagram) {

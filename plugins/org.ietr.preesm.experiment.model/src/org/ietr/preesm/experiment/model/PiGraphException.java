@@ -32,68 +32,26 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.experiment.model.factory;
-
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
-import org.ietr.preesm.experiment.model.pimm.Delay;
-import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.ISetter;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
+package org.ietr.preesm.experiment.model;
 
 /**
+ * Generic exception for PiGraph issues
  *
  * @author anmorvan
  *
  */
-public final class PiMMUserFactory {
-
-  public static final PiMMUserFactory instance = new PiMMUserFactory();
-
-  private static final PiMMFactory factory = PiMMFactory.eINSTANCE;
-
-  private static final EcoreUtil.Copier copier = new EcoreUtil.Copier(false);
-
-  private PiMMUserFactory() {
-
-  }
-
-  /**
-   * Copy an existing Vertex
-   */
-  public final AbstractVertex copy(final AbstractVertex vertex) {
-    return (AbstractVertex) PiMMUserFactory.copier.copy(vertex);
-  }
-
-  /**
-   * Copy an existing Delay
-   */
-  public final Delay copy(final Delay delay) {
-    return (Delay) PiMMUserFactory.copier.copy(delay);
-  }
+public class PiGraphException extends RuntimeException {
 
   /**
    *
    */
-  public Dependency createDependency(final ISetter setter, final ConfigInputPort target) {
-    final Dependency dep = PiMMUserFactory.factory.createDependency();
-    dep.setGetter(target);
-    dep.setSetter(setter);
-    return dep;
+  private static final long serialVersionUID = 1L;
+
+  public PiGraphException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   *
-   */
-  public Fifo createFifo(final DataOutputPort sourcePortCopy, final DataInputPort targetPortCopy, final String type) {
-    final Fifo res = PiMMUserFactory.factory.createFifo();
-    res.setSourcePort(sourcePortCopy);
-    res.setTargetPort(targetPortCopy);
-    res.setType(type);
-    return res;
+  public PiGraphException(final String message) {
+    this(message, null);
   }
 }

@@ -144,8 +144,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     public int hashCode() {
       // see https://stackoverflow.com/questions/11742593/what-is-the-hashcode-for-a-custom-class-having-just-two-int-properties/11742634#11742634
       int hash = 17;
-      hash = hash * 31 + this.start;
-      hash = hash * 31 + this.end;
+      hash = (hash * 31) + this.start;
+      hash = (hash * 31) + this.end;
       return hash;
     }
 
@@ -263,7 +263,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     final List<AbstractActor> dataOutputInterfaces = new ArrayList<>();
 
     // Keep DataInputInterfaces for the first stage
-    Iterator<AbstractActor> iter = srcActors.iterator();
+    final Iterator<AbstractActor> iter = srcActors.iterator();
     while (iter.hasNext()) {
       final AbstractActor actor = iter.next();
       if (!(actor instanceof DataInputInterface)) {
@@ -308,8 +308,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     return stages;
   }
 
-  private void iterate(final List<Fifo> feedbackFifos, final List<AbstractActor> processedActors, Set<AbstractActor> nextStage,
-      List<AbstractActor> currentStage, final List<AbstractActor> dataOutputInterfaces) {
+  private void iterate(final List<Fifo> feedbackFifos, final List<AbstractActor> processedActors, final Set<AbstractActor> nextStage,
+      final List<AbstractActor> currentStage, final List<AbstractActor> dataOutputInterfaces) {
     // Find candidates for the next stage in successors of current one
     findCandidates(feedbackFifos, nextStage, currentStage);
 
@@ -318,7 +318,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     check(feedbackFifos, processedActors, nextStage, dataOutputInterfaces);
   }
 
-  private void findCandidates(final List<Fifo> feedbackFifos, Set<AbstractActor> nextStage, List<AbstractActor> currentStage) {
+  private void findCandidates(final List<Fifo> feedbackFifos, final Set<AbstractActor> nextStage, final List<AbstractActor> currentStage) {
     for (final AbstractActor actor : currentStage) {
       for (final DataOutputPort port : actor.getDataOutputPorts()) {
         final Fifo outgoingFifo = port.getOutgoingFifo();
@@ -331,7 +331,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     }
   }
 
-  private void check(final List<Fifo> feedbackFifos, final List<AbstractActor> processedActors, Set<AbstractActor> nextStage,
+  private void check(final List<Fifo> feedbackFifos, final List<AbstractActor> processedActors, final Set<AbstractActor> nextStage,
       final List<AbstractActor> dataOutputInterfaces) {
     Iterator<AbstractActor> iter;
     iter = nextStage.iterator();
@@ -340,7 +340,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       boolean hasUnstagedPredecessor = false;
       for (final DataInputPort port : actor.getDataInputPorts()) {
         final Fifo incomingFifo = port.getIncomingFifo();
-        hasUnstagedPredecessor |= !feedbackFifos.contains(incomingFifo) && incomingFifo != null
+        hasUnstagedPredecessor |= !feedbackFifos.contains(incomingFifo) && (incomingFifo != null)
             && !processedActors.contains(incomingFifo.getSourcePort().eContainer());
       }
       if (hasUnstagedPredecessor) {
@@ -793,8 +793,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     }
   }
 
-  private boolean processDependency(final Diagram diagram, final List<List<Parameter>> stagedParameters, int currentY, int currentX, boolean currentYUsed,
-      final Parameter param, final Dependency dependency) {
+  private boolean processDependency(final Diagram diagram, final List<List<Parameter>> stagedParameters, final int currentY, final int currentX,
+      final boolean currentYUsed, final Parameter param, final Dependency dependency) {
     // Get the polyline
     final FreeFormConnection ffc = DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, dependency);
 
@@ -839,7 +839,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     ffc.getBendpoints().add(bPoint);
   }
 
-  private void layoutDependencyToDelay(final Diagram diagram, int currentY, int currentX, final FreeFormConnection ffc, final EObject getter) {
+  private void layoutDependencyToDelay(final Diagram diagram, final int currentY, final int currentX, final FreeFormConnection ffc, final EObject getter) {
     // Get the gap end of the delay
     // (or the gap just before if the delay is a feedback
     // delay
@@ -872,7 +872,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     ffc.getBendpoints().add(Graphiti.getGaCreateService().createPoint(xPos, yPos));
   }
 
-  private void layoutDependencyToActor(int currentY, int currentX, final FreeFormConnection ffc) {
+  private void layoutDependencyToActor(final int currentY, final int currentX, final FreeFormConnection ffc) {
     // Retrieve the last bendpoint of the ffc (added when
     // the
     // actor was moved.)
@@ -883,7 +883,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     ffc.getBendpoints().add(ffc.getBendpoints().size() - 1, Graphiti.getGaCreateService().createPoint(lastBp.getX(), currentY));
   }
 
-  private void layoutDependencyToInterface(final Diagram diagram, int currentY, int currentX, final FreeFormConnection ffc, final EObject getter) {
+  private void layoutDependencyToInterface(final Diagram diagram, final int currentY, final int currentX, final FreeFormConnection ffc, final EObject getter) {
     // Get position of target
     final PictogramElement getterPE = DiagramPiGraphLinkHelper.getActorPE(diagram, (AbstractActor) getter);
 
@@ -1015,7 +1015,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
       // Remove all FIFOs ending at next stage from the interstage Fifo
       // list
-      interStageFifos.removeIf(f -> f == null || stageDst.contains(f.getTargetPort().eContainer()));
+      interStageFifos.removeIf(f -> (f == null) || stageDst.contains(f.getTargetPort().eContainer()));
 
       // Layout Fifos to reach the next stage without going over an actor
       layoutInterStageFifos(diagram, interStageFifos, this.stageWidth.get(i + 1), this.stagesGaps.get(i + 1));

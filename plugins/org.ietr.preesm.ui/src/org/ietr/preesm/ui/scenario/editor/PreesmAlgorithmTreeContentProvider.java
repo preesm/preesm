@@ -55,6 +55,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -201,7 +202,7 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
         table[0] = this.currentIBSDFGraph;
       } else if (this.scenario.isPISDFScenario()) {
         try {
-          this.currentPISDFGraph = ScenarioParser.getPiGraph(this.scenario.getAlgorithmURL());
+          this.currentPISDFGraph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
         } catch (final Exception e) {
           e.printStackTrace();
         }

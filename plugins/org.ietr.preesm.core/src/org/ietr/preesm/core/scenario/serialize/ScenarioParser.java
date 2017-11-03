@@ -204,17 +204,12 @@ public class ScenarioParser {
    * @param paramValuesElt
    *          the param values elt
    */
-  private void parseParameterValues(final Element paramValuesElt) {
+  private void parseParameterValues(final Element paramValuesElt) throws InvalidModelException, CoreException {
 
     Node node = paramValuesElt.getFirstChild();
 
-    PiGraph graph = null;
-    try {
-      graph = ScenarioParser.getPiGraph(this.scenario.getAlgorithmURL());
-    } catch (InvalidModelException | CoreException e) {
-      e.printStackTrace();
-    }
-    if (this.scenario.isPISDFScenario() && (graph != null)) {
+    final PiGraph graph = getPiGraph();
+    if ((graph != null) && this.scenario.isPISDFScenario()) {
       final Set<Parameter> parameters = new LinkedHashSet<>();
       for (final Parameter p : graph.getAllParameters()) {
         if (!p.isConfigurationInterface()) {
@@ -243,19 +238,19 @@ public class ScenarioParser {
     }
   }
 
-  /**
-   * Gets the pi graph.
-   *
-   * @param algorithmURL
-   *          URL of the Algorithm.
-   * @return the {@link PiGraph} algorithm.
-   * @throws InvalidModelException
-   *           the invalid model exception
-   * @throws CoreException
-   *           the core exception
-   */
-  public static PiGraph getPiGraph(String algorithmURL) throws InvalidModelException, CoreException {
-    return PiParser.getPiGraph(algorithmURL);
+  private PiGraph getPiGraph() throws InvalidModelException, CoreException {
+    final PiGraph piGraph;
+    if (this.algoPi != null) {
+      piGraph = this.algoPi;
+    } else {
+      if (this.scenario == null) {
+        piGraph = null;
+      } else {
+        final String algorithmURL = this.scenario.getAlgorithmURL();
+        piGraph = PiParser.getPiGraph(algorithmURL);
+      }
+    }
+    return piGraph;
   }
 
   /**
@@ -541,16 +536,24 @@ public class ScenarioParser {
         if (url.length() > 0) {
           if (type.equals("algorithm")) {
             this.scenario.setAlgorithmURL(url);
-            if (url.endsWith(".graphml")) {
-              this.algoSDF = ScenarioParser.getSDFGraph(url);
-              this.algoPi = null;
-            } else if (url.endsWith(".pi")) {
-              this.algoPi = ScenarioParser.getPiGraph(url);
-              this.algoSDF = null;
+            this.algoSDF = null;
+            this.algoPi = null;
+            try {
+              if (url.endsWith(".graphml")) {
+                this.algoSDF = ScenarioParser.getSDFGraph(url);
+              } else if (url.endsWith(".pi")) {
+                this.algoPi = getPiGraph();
+              }
+            } catch (final Exception e) {
+              throw new ScenarioParserException("Could not parse the algorithm", e);
             }
           } else if (type.equals("architecture")) {
-            this.scenario.setArchitectureURL(url);
-            initializeArchitectureInformation(url);
+            try {
+              this.scenario.setArchitectureURL(url);
+              initializeArchitectureInformation(url);
+            } catch (final Exception e) {
+              throw new ScenarioParserException("Could not parse the architecture", e);
+            }
           } else if (type.equals("codegenDirectory")) {
             this.scenario.getCodegenManager().setCodegenDirectory(url);
           }

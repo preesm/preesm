@@ -7,9 +7,11 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
-* Fix issue #48
+* Fix issue #48: Imporve Gantt chart viewer;
+* Refactor & cleanup;
 
 ### Bug fix
+* Fix issue #47: Make the PiGraph parser more robust;
 
 ## Release version 2.5.2
 *2017.10.31*

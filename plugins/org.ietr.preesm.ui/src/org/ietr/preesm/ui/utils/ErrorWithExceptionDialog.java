@@ -32,68 +32,53 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.experiment.model.factory;
+package org.ietr.preesm.ui.utils;
 
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
-import org.ietr.preesm.experiment.model.pimm.Delay;
-import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.ISetter;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
+import org.ietr.preesm.ui.Activator;
 
 /**
  *
  * @author anmorvan
  *
  */
-public final class PiMMUserFactory {
+public class ErrorWithExceptionDialog {
 
-  public static final PiMMUserFactory instance = new PiMMUserFactory();
+  private ErrorWithExceptionDialog() {
 
-  private static final PiMMFactory factory = PiMMFactory.eINSTANCE;
-
-  private static final EcoreUtil.Copier copier = new EcoreUtil.Copier(false);
-
-  private PiMMUserFactory() {
-
-  }
-
-  /**
-   * Copy an existing Vertex
-   */
-  public final AbstractVertex copy(final AbstractVertex vertex) {
-    return (AbstractVertex) PiMMUserFactory.copier.copy(vertex);
-  }
-
-  /**
-   * Copy an existing Delay
-   */
-  public final Delay copy(final Delay delay) {
-    return (Delay) PiMMUserFactory.copier.copy(delay);
   }
 
   /**
    *
    */
-  public Dependency createDependency(final ISetter setter, final ConfigInputPort target) {
-    final Dependency dep = PiMMUserFactory.factory.createDependency();
-    dep.setGetter(target);
-    dep.setSetter(setter);
-    return dep;
-  }
+  public static void errorDialogWithStackTrace(final String msg, final Throwable t) {
 
-  /**
-   *
-   */
-  public Fifo createFifo(final DataOutputPort sourcePortCopy, final DataInputPort targetPortCopy, final String type) {
-    final Fifo res = PiMMUserFactory.factory.createFifo();
-    res.setSourcePort(sourcePortCopy);
-    res.setTargetPort(targetPortCopy);
-    res.setType(type);
-    return res;
+    final StringWriter sw = new StringWriter();
+    final PrintWriter pw = new PrintWriter(sw);
+    t.printStackTrace(pw);
+    t.printStackTrace();
+
+    final String trace = sw.toString(); // stack trace as a string
+
+    // Temp holder of child statuses
+    final List<Status> childStatuses = new ArrayList<>();
+
+    // Split output by OS-independend new-line
+    for (final String line : trace.split(System.getProperty("line.separator"))) {
+      // build & add status
+      childStatuses.add(new Status(IStatus.ERROR, Activator.PLUGIN_ID, line));
+    }
+
+    final MultiStatus ms = new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR, childStatuses.toArray(new Status[] {}), // convert to array of statuses
+        t.getLocalizedMessage(), t);
+
+    ErrorDialog.openError(null, "Title", msg, ms);
   }
 }

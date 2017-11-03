@@ -278,7 +278,7 @@ public class SpiderCodegen {
   }
 
   public String generateMainCode(final PiGraph pg) {
-    return SpiderMainFilePrinter.print(pg, coreIds.size());
+    return SpiderMainFilePrinter.print(pg, this.coreIds.size());
   }
 
   /**
