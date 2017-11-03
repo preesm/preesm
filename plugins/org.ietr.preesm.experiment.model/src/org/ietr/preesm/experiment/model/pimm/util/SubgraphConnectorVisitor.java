@@ -79,7 +79,7 @@ import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
  * @author cguy
  * @author kdesnos
  */
-public class SubgraphConnector extends PiMMDefaultVisitor {
+public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
 
   /** The current actor. */
   // Actor in the outer graph corresponding to the currently visited graph
@@ -111,7 +111,7 @@ public class SubgraphConnector extends PiMMDefaultVisitor {
     // Replace Actors with refinement by PiGraphs in pg and all its
     // subgraphs
     for (final PiGraph key : this.graphReplacements.keySet()) {
-      for (final SubgraphConnector.ActorByGraphReplacement r : this.graphReplacements.get(key)) {
+      for (final SubgraphConnectorVisitor.ActorByGraphReplacement r : this.graphReplacements.get(key)) {
         key.getVertices().remove(r.toBeRemoved);
         key.getVertices().add(r.toBeAdded);
       }
