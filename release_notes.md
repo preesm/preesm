@@ -9,6 +9,7 @@ PREESM Changelog
 ### Changes
 * Fix issue #48: Imporve Gantt chart viewer;
 * Refactor & cleanup;
+* Update scenario editor to color text field in red when algo/archi is not found;
 
 ### Bug fix
 * Fix issue #47: Make the PiGraph parser more robust;
