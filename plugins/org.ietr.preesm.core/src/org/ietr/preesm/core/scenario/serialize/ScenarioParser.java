@@ -603,27 +603,25 @@ public class ScenarioParser {
    * @return the design
    */
   public static Design parseSlamDesign(final String url) {
-    // Demand load the resource into the resource set.
+
+    final Design slamDesign;
     final ResourceSet resourceSet = new ResourceSetImpl();
 
-    final Path relativePath = new Path(url);
-    final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
-    final String completePath = file.getLocation().toString();
-
-    // resourceSet.
-    Resource resource = null;
-    Design design = null;
-
+    final URI uri = URI.createPlatformResourceURI(url, true);
+    if ((uri.fileExtension() == null) || !uri.fileExtension().contentEquals("slam")) {
+      WorkflowLogger.getLogger().log(Level.SEVERE, "Expecting .slam file");
+      return null;
+    }
+    final Resource ressource;
     try {
-      resource = resourceSet.getResource(URI.createFileURI(completePath), true);
-
-      // Extract the root object from the resource.
-      design = (Design) resource.getContents().get(0);
+      ressource = resourceSet.getResource(uri, true);
+      slamDesign = (Design) (ressource.getContents().get(0));
     } catch (final WrappedException e) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "The architecture file \"" + completePath + "\" specified by the scenario does not exist any more.");
+      WorkflowLogger.getLogger().log(Level.SEVERE, "The architecture file \"" + uri + "\" specified by the scenario does not exist any more.");
+      return null;
     }
 
-    return design;
+    return slamDesign;
   }
 
   /**
