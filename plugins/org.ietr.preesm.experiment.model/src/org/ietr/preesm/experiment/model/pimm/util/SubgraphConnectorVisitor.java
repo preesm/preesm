@@ -147,22 +147,25 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
   public void visitActor(final Actor a) {
     // If the refinement of the Actor a points to the description of
     // PiGraph, visit it to connect the subgraph to its supergraph
-    final AbstractActor aa = a.getRefinement().getAbstractActor();
-    if ((aa != null) && (aa instanceof PiGraph)) {
-      final PiGraph innerGraph = (PiGraph) aa;
-      // Connect all Fifos and Dependencies incoming into a and outgoing
-      // from a in order to make them incoming into innerGraph and
-      // outgoing from innerGraph instead
-      SubgraphReconnector.reconnectPiGraph(a, innerGraph);
+    final Refinement refinement = a.getRefinement();
+    if (refinement != null) {
+      final AbstractActor aa = refinement.getAbstractActor();
+      if ((aa != null) && (aa instanceof PiGraph)) {
+        final PiGraph innerGraph = (PiGraph) aa;
+        // Connect all Fifos and Dependencies incoming into a and outgoing
+        // from a in order to make them incoming into innerGraph and
+        // outgoing from innerGraph instead
+        SubgraphReconnector.reconnectPiGraph(a, innerGraph);
 
-      this.currentActor = innerGraph;
-      innerGraph.accept(this);
+        this.currentActor = innerGraph;
+        innerGraph.accept(this);
 
-      final ActorByGraphReplacement replacement = new ActorByGraphReplacement(a, innerGraph);
-      if (!this.graphReplacements.containsKey(this.currentGraph)) {
-        this.graphReplacements.put(this.currentGraph, new ArrayList<ActorByGraphReplacement>());
+        final ActorByGraphReplacement replacement = new ActorByGraphReplacement(a, innerGraph);
+        if (!this.graphReplacements.containsKey(this.currentGraph)) {
+          this.graphReplacements.put(this.currentGraph, new ArrayList<ActorByGraphReplacement>());
+        }
+        this.graphReplacements.get(this.currentGraph).add(replacement);
       }
-      this.graphReplacements.get(this.currentGraph).add(replacement);
     }
   }
 
