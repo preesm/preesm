@@ -635,7 +635,7 @@ public class ScenarioParser {
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  public static SDFGraph getSDFGraph(final String path) throws InvalidModelException, FileNotFoundException {
+  public static SDFGraph getSDFGraph(final String path) throws InvalidModelException {
     SDFGraph algorithm = null;
     final GMLSDFImporter importer = new GMLSDFImporter();
 
@@ -649,7 +649,7 @@ public class ScenarioParser {
     } catch (final InvalidModelException e) {
       e.printStackTrace();
     } catch (final FileNotFoundException e) {
-      throw e;
+      throw new ScenarioParserException("Could not locate " + path, e);
     }
 
     return algorithm;

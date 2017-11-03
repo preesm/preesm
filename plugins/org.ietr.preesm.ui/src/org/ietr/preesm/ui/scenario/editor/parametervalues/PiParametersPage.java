@@ -36,7 +36,6 @@
  */
 package org.ietr.preesm.ui.scenario.editor.parametervalues;
 
-import java.io.FileNotFoundException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
@@ -174,7 +173,7 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
       this.section.addPaintListener(e -> {
         try {
           PiParametersPage.this.scenario.update(false, false);
-        } catch (InvalidModelException | CoreException | FileNotFoundException ex) {
+        } catch (InvalidModelException | CoreException ex) {
           ex.printStackTrace();
         }
         PiParametersPage.this.tableViewer.refresh();

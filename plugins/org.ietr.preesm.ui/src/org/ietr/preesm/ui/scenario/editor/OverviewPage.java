@@ -37,7 +37,6 @@
  */
 package org.ietr.preesm.ui.scenario.editor;
 
-import java.io.FileNotFoundException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
@@ -62,7 +61,6 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
-// TODO: Auto-generated Javadoc
 /**
  * This page contains general informations of the scenario including current algorithm and current architecture.
  *
@@ -101,7 +99,6 @@ public class OverviewPage extends FormPage {
   protected void createFormContent(final IManagedForm managedForm) {
 
     final ScrolledForm form = managedForm.getForm();
-    // FormToolkit toolkit = managedForm.getToolkit();
     form.setText(Messages.getString("Overview.title"));
     final ColumnLayout layout = new ColumnLayout();
     layout.topMargin = 0;
@@ -209,14 +206,14 @@ public class OverviewPage extends FormPage {
         OverviewPage.this.scenario.setAlgorithmURL(text1.getText());
         try {
           OverviewPage.this.scenario.update(true, false);
-        } catch (InvalidModelException | CoreException | FileNotFoundException ex) {
+        } catch (InvalidModelException | CoreException ex) {
           ex.printStackTrace();
         }
       } else if (type.equals(Messages.getString("Overview.architectureFile"))) {
         OverviewPage.this.scenario.setArchitectureURL(text1.getText());
         try {
           OverviewPage.this.scenario.update(false, true);
-        } catch (InvalidModelException | CoreException | FileNotFoundException ex) {
+        } catch (InvalidModelException | CoreException ex) {
           ex.printStackTrace();
         }
       }
