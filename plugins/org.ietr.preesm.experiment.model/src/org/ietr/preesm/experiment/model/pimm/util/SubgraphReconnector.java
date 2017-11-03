@@ -61,10 +61,12 @@ public class SubgraphReconnector {
       found = false;
       for (final ConfigInputPort cip2 : pg.getConfigInputPorts()) {
         if (cip1.getName().equals(cip2.getName())) {
-          final Dependency dep = cip1.getIncomingDependency();
-          cip2.setIncomingDependency(dep);
-          dep.setGetter(cip2);
           found = true;
+          final Dependency dep = cip1.getIncomingDependency();
+          if (dep != null) {
+            cip2.setIncomingDependency(dep);
+            dep.setGetter(cip2);
+          }
           break;
         }
       }
@@ -82,12 +84,13 @@ public class SubgraphReconnector {
       for (final DataOutputPort dop2 : pg.getDataOutputPorts()) {
         if (dop1.getName().equals(dop2.getName())) {
           final Fifo fifo = dop1.getOutgoingFifo();
-          dop2.setOutgoingFifo(fifo);
-          fifo.setSourcePort(dop2);
+          if (fifo != null) {
+            dop2.setOutgoingFifo(fifo);
+            fifo.setSourcePort(dop2);
 
-          dop2.setExpression(dop1.getExpression());
-          dop2.setAnnotation(dop1.getAnnotation());
-
+            dop2.setExpression(dop1.getExpression());
+            dop2.setAnnotation(dop1.getAnnotation());
+          }
           found = true;
           break;
         }
@@ -106,12 +109,13 @@ public class SubgraphReconnector {
       for (final DataInputPort dip2 : pg.getDataInputPorts()) {
         if (dip1.getName().equals(dip2.getName())) {
           final Fifo fifo = dip1.getIncomingFifo();
-          dip2.setIncomingFifo(fifo);
-          fifo.setTargetPort(dip2);
+          if (fifo != null) {
+            dip2.setIncomingFifo(fifo);
+            fifo.setTargetPort(dip2);
 
-          dip2.setExpression(dip1.getExpression());
-          dip2.setAnnotation(dip1.getAnnotation());
-
+            dip2.setExpression(dip1.getExpression());
+            dip2.setAnnotation(dip1.getAnnotation());
+          }
           found = true;
           break;
         }
