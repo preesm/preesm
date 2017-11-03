@@ -39,6 +39,9 @@ package org.ietr.preesm.ui.scenario.editor;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
@@ -59,7 +62,6 @@ import org.ietr.preesm.ui.scenario.editor.simulation.SimulationPage;
 import org.ietr.preesm.ui.scenario.editor.timings.TimingsPage;
 import org.ietr.preesm.ui.scenario.editor.variables.VariablesPage;
 
-// TODO: Auto-generated Javadoc
 /**
  * The scenario editor allows to change all parameters in scenario; i.e. depending on both algorithm and architecture. It can be called by editing a .scenario
  * file or by creating a new file through File/New/Other/Preesm/Preesm Scenario
@@ -115,9 +117,10 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
       try {
         this.scenario = parser.parseXmlFile(this.scenarioFile);
       } catch (final Exception e) {
-        e.printStackTrace();
+        ErrorDialog.openError(site.getShell(), "Could not open scenario", "An error occured while opening the scenario file",
+            new Status(IStatus.ERROR, "org.ietr.preesm.ui", e + ": " + e.getMessage(), e), IStatus.ERROR);
+        this.close(false);
       }
-
     }
   }
 
@@ -126,7 +129,6 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
    */
   @Override
   protected void addPages() {
-    // this.activateSite();
     final IFormPage overviewPage = new OverviewPage(this.scenario, this, "Overview", "Overview");
     overviewPage.addPropertyListener(this);
     final IFormPage constraintsPage = new ConstraintsPage(this.scenario, this, "Constraints", "Constraints");
@@ -155,7 +157,9 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
       addPage(variablesPage);
       addPage(paramPage);
     } catch (final PartInitException e) {
-      e.printStackTrace();
+      ErrorDialog.openError(this.getSite().getShell(), "Could not open scenario", "An error occured while opening the scenario file",
+          new Status(IStatus.ERROR, "org.ietr.preesm.ui", e + ": " + e.getMessage(), e), IStatus.ERROR);
+      this.close(false);
     }
   }
 
@@ -193,8 +197,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
    */
   @Override
   public void doSaveAs() {
-    // TODO Auto-generated method stub
-
+    // can only save as scenario
   }
 
   /*
