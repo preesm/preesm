@@ -1,5 +1,6 @@
 package org.ietr.preesm.experiment.model.pimm.util;
 
+import org.ietr.preesm.experiment.model.PiGraphException;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
@@ -8,6 +9,7 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
  * This class provides a single method to connect a hierarchical actor to its underlying subgraph. Synthetically, it takes edges from the super graph (the graph
@@ -51,8 +53,7 @@ public class SubgraphReconnector {
         }
       }
       if (!found) {
-        throw new RuntimeException("PiGraph " + subGraph.getName() + " does not have a corresponding ConfigOutputPort for " + cop1.getName() + " of Actor "
-            + hierarchicalActor.getName());
+        SubgraphReconnector.error(hierarchicalActor, subGraph, cop1);
       }
     }
   }
@@ -73,8 +74,7 @@ public class SubgraphReconnector {
         }
       }
       if (!found) {
-        throw new RuntimeException("PiGraph" + subGraph.getName() + " does not have a corresponding ConfigInputPort for " + cip1.getName() + " of Actor "
-            + hierarchicalActor.getName());
+        SubgraphReconnector.error(hierarchicalActor, subGraph, cip1);
       }
     }
   }
@@ -98,8 +98,7 @@ public class SubgraphReconnector {
         }
       }
       if (!found) {
-        throw new RuntimeException(
-            "PiGraph" + subGraph.getName() + "does not have a corresponding DataOutputPort for " + dop1.getName() + " of Actor " + hierarchicalActor.getName());
+        SubgraphReconnector.error(hierarchicalActor, subGraph, dop1);
       }
     }
   }
@@ -123,10 +122,14 @@ public class SubgraphReconnector {
         }
       }
       if (!found) {
-        throw new RuntimeException(
-            "PiGraph" + subGraph.getName() + "does not have a corresponding DataInputPort for " + dip1.getName() + " of Actor " + hierarchicalActor.getName());
+        SubgraphReconnector.error(hierarchicalActor, subGraph, dip1);
       }
     }
+  }
+
+  private static void error(final Actor hierarchicalActor, final PiGraph subGraph, final Port port) {
+    throw new PiGraphException("PiGraph '" + subGraph.getName() + "' does not have a corresponding " + port.getClass().getSimpleName() + " named '"
+        + port.getName() + "' for Actor " + hierarchicalActor.getName());
   }
 
 }
