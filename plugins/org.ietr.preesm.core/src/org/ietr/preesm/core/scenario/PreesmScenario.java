@@ -37,7 +37,6 @@
  */
 package org.ietr.preesm.core.scenario;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -60,7 +59,6 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 
-// TODO: Auto-generated Javadoc
 /**
  * Storing all information of a scenario.
  *
@@ -421,8 +419,6 @@ public class PreesmScenario {
    *           the invalid model exception
    * @throws CoreException
    *           the core exception
-   * @throws FileNotFoundException
-   *           the file not found exception
    */
 
   public void update(final boolean algorithmChange, final boolean architectureChange) throws InvalidModelException, CoreException {

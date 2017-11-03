@@ -632,8 +632,6 @@ public class ScenarioParser {
    * @return the SDF graph
    * @throws InvalidModelException
    *           the invalid model exception
-   * @throws FileNotFoundException
-   *           the file not found exception
    */
   public static SDFGraph getSDFGraph(final String path) throws InvalidModelException {
     SDFGraph algorithm = null;
