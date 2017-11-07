@@ -49,14 +49,13 @@ import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
 
 /**
  * This printer currently papify C code for X86 cores..
- * 
+ *
  * @author dmadronal
  */
- 
+
 class PapifiedCPrinter extends CPrinter {
 
 	new() {
-		// do not generate a main file
 		super(true)
 	}
 
@@ -72,36 +71,36 @@ class PapifiedCPrinter extends CPrinter {
 		String PAPI_eventSet = "PAPI_eventSet_";
 
 	/**
-	 * Add a required library for PAPI utilization 
-	 * 
+	 * Add a required library for PAPI utilization
+	 *
 	 * @param blocks
 	 * 			List of the Coreblocks printed by the printer
 	 */
 	override printCoreBlockHeader(CoreBlock block) '''
 		«super.printCoreBlockHeader(block)»
 		#include "eventLib.h"
-		
-		
+
+
 	'''
-	
+
 	/**
 	 * Add PAPI instrumentation code to the {@link Block blocks}.<br>
 	 * In the current version, the instrumentation consists of:<br>
 	 * - Measuring execution time for each actor.<br>
 	 * - Calls to PAPI library to monitor the total amount of instructions.<br>
 	 * - Calls to PAPI library to monitor the total amount of L1 cache misses.<br>
-	 * - Writing the results into a .csv file.<br> 
-	 * 
+	 * - Writing the results into a .csv file.<br>
+	 *
 	 * @param blocks
-	 * 			List of the blocks printed by the printer. (will be 
+	 * 			List of the blocks printed by the printer. (will be
 	 * 			modified)
 	 */
 	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {
 		for (Block block : printerBlocks){
 			for(CodeElt elts : (block as CoreBlock).loopBlock.codeElts){
 				//For all the FunctionCalls within the main code loop
-				if(elts.eClass.name.equals("FunctionCall")){	
-					//Add PAPI action variable 
+				if(elts.eClass.name.equals("FunctionCall")){
+					//Add PAPI action variable
 					block.definitions.add({
 						var const = CodegenFactory.eINSTANCE.createBuffer
 						const.name = PAPI_actions.concat((elts as FunctionCall).actorName)
@@ -110,7 +109,7 @@ class PapifiedCPrinter extends CPrinter {
 						const.comment = const.name.concat("_buffer_definition")
 						const
 					})
-					//Add FILE variable to store PAPI data 
+					//Add FILE variable to store PAPI data
 					block.definitions.add({
 						var const = CodegenFactory.eINSTANCE.createBuffer
 						const.name = PAPI_output.concat((elts as FunctionCall).actorName)
@@ -118,14 +117,14 @@ class PapifiedCPrinter extends CPrinter {
 						const.type = "FILE *"
 						const.comment = const.name.concat("_output_file")
 						const
-					})	
+					})
 					//Create a constant string with the actor name
 					block.definitions.add({
 						var const = CodegenFactory.eINSTANCE.createConstantString
 						const.name = actor_name.concat((elts as FunctionCall).actorName)
 						const.value = (elts as FunctionCall).actorName
 						const
-					})	
+					})
 					//Create a constant for the Code_set_size
 					block.definitions.add({
 						var const = CodegenFactory.eINSTANCE.createConstant
@@ -149,7 +148,7 @@ class PapifiedCPrinter extends CPrinter {
 						func.addParameter(block.definitions.get(block.definitions.length-2), PortDirection.INPUT)
 						func.actorName = "PAPI Init_papi_actions_".concat((elts as FunctionCall).actorName)
 						func
-					})	
+					})
 					//Create a function to initialize output file
 					(block as CoreBlock).initBlock.codeElts.add({
 						var func = CodegenFactory.eINSTANCE.createFunctionCall()
@@ -158,7 +157,7 @@ class PapifiedCPrinter extends CPrinter {
 						func.addParameter(block.definitions.get(block.definitions.length-3), PortDirection.INPUT)
 						func.actorName = "PAPI Init_output_file_".concat((elts as FunctionCall).actorName)
 						func
-					})	
+					})
 					//Create a variable to store the start of the actor execution
 					block.definitions.add({
 						var const = CodegenFactory.eINSTANCE.createBuffer
@@ -167,7 +166,7 @@ class PapifiedCPrinter extends CPrinter {
 						const.type = "unsigned long long"
 						const.comment = const.name.concat("_start_time_measure")
 						const
-					})	
+					})
 					//Create a variable to store the end of the actor execution
 					block.definitions.add({
 						var const = CodegenFactory.eINSTANCE.createBuffer
@@ -176,7 +175,7 @@ class PapifiedCPrinter extends CPrinter {
 						const.type = "unsigned long long"
 						const.comment = const.name.concat("_end_time_measure")
 						const
-					})	
+					})
 					//Create a variable to store the event code set
 					block.definitions.add({
 						var const = CodegenFactory.eINSTANCE.createBuffer
@@ -185,7 +184,7 @@ class PapifiedCPrinter extends CPrinter {
 						const.type = "int"
 						const.comment = const.name.concat("_code_set")
 						const
-					})	
+					})
 					//Create a function to initialize the event code set
 					(block as CoreBlock).initBlock.codeElts.add({
 						var func = CodegenFactory.eINSTANCE.createFunctionCall()
@@ -193,8 +192,8 @@ class PapifiedCPrinter extends CPrinter {
 						func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
 						func.actorName = "PAPI Init_code_set_".concat((elts as FunctionCall).actorName)
 						func
-					})		
-					//Create a variable to store the event set					
+					})
+					//Create a variable to store the event set
 					block.definitions.add({
 						var const = CodegenFactory.eINSTANCE.createBuffer
 						const.name = PAPI_eventSet.concat((elts as FunctionCall).actorName)
@@ -202,8 +201,8 @@ class PapifiedCPrinter extends CPrinter {
 						const.type = "unsigned long"
 						const.comment = const.name.concat("_event_set")
 						const
-					})	
-					//Create a function to initialize the event set	
+					})
+					//Create a function to initialize the event set
 					(block as CoreBlock).initBlock.codeElts.add({
 						var func = CodegenFactory.eINSTANCE.createFunctionCall()
 						func.name = "event_init_event_set"
@@ -211,7 +210,7 @@ class PapifiedCPrinter extends CPrinter {
 						func.actorName = "PAPI Init_event_set_".concat((elts as FunctionCall).actorName)
 						func
 					})
-					//Create a function to initialize the event list	
+					//Create a function to initialize the event list
 					(block as CoreBlock).initBlock.codeElts.add({
 						var func = CodegenFactory.eINSTANCE.createFunctionCall()
 						func.name = "event_create_eventList"
@@ -221,105 +220,109 @@ class PapifiedCPrinter extends CPrinter {
 						func.addParameter(block.definitions.get(block.definitions.length-5), PortDirection.INPUT)
 						func.actorName = "PAPI create_eventlist_".concat((elts as FunctionCall).actorName)
 						func
-					})	
-					//Create a function to initialize the event monitor multiplexing	
+					})
+					//Create a function to initialize the event monitor multiplexing
 					(block as CoreBlock).initBlock.codeElts.add({
 						var func = CodegenFactory.eINSTANCE.createFunctionCall()
 						func.name = "eventList_set_multiplex"
 						func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
 						func.actorName = "PAPI eventList_set_multiplex_".concat((elts as FunctionCall).actorName)
 						func
-					})	
-				}			
+					})
+				}
 			}
 		}
 		super.preProcessing(printerBlocks, allBlocks)
 	}
-	
+
 	/**
 	 * Add PAPI instrumentation code to the funtions.<br>
 	 * In the current version, the monitoring consists of:<br>
 	 * - Measuring execution time for each actor.<br>
 	 * - Calls to PAPI library to monitor the total amount of instructions.<br>
 	 * - Calls to PAPI library to monitor the total amount of L1 cache misses.<br>
-	 * - Writing the results into a .csv file.<br> 
-	 * 
+	 * - Writing the results into a .csv file.<br>
+	 *
 	 * @param blocks
-	 * 			List of the blocks printed by the printer. (will be 
+	 * 			List of the blocks printed by the printer. (will be
 	 * 			modified)
-	 */	
+	 */
 	override printFunctionCall(FunctionCall functionCall) '''
 		«IF state == PrinterState::PRINTING_LOOP_BLOCK»
-			 
+
 			// Papi Start for «functionCall.actorName»
 			PAPI_start_usec_«functionCall.actorName»[0] = PAPI_get_real_usec();
 			event_start(&(PAPI_eventSet_«functionCall.actorName»[0]), 0);
-						
+
 			«super.printFunctionCall(functionCall)»
-			
+
 			// Papi Stop for «functionCall.actorName»
 			event_stop(&(PAPI_eventSet_«functionCall.actorName»[0]), 2, PAPI_actions_«functionCall.actorName»[0].counterValues, 0);
 			PAPI_end_usec_«functionCall.actorName»[0] = PAPI_get_real_usec();
-			PAPI_output_«functionCall.actorName»[0] = fopen("papi-output/papi_output_«functionCall.actorName».csv","a+");	
+			PAPI_output_«functionCall.actorName»[0] = fopen("papi-output/papi_output_«functionCall.actorName».csv","a+");
 			fprintf(PAPI_output_«functionCall.actorName»[0], "%s,%s,%llu,%llu,%lu,%lu\n", "Sobel", PAPI_actions_«functionCall.actorName»[0].action_id, PAPI_start_usec_«functionCall.actorName»[0], PAPI_end_usec_«functionCall.actorName»[0], PAPI_actions_«functionCall.actorName»[0].counterValues[0], PAPI_actions_«functionCall.actorName»[0].counterValues[1]);
 			fclose(PAPI_output_«functionCall.actorName»[0]);
-			 
+
 		«ELSE»
 			«super.printFunctionCall(functionCall)»
 		«ENDIF»
 	'''
-	
+
+	/**
+	 * Almost the same main as the default CPrinter one.
+	 * The only difference is the program beginning where we add Papi specific initialization (mkdir + event init).
+	 */
 	override String printMain(List<Block> printerBlocks) '''
 		/**
 		 * @file main.c
 		 * @generated by «this.class.simpleName»
 		 * @date «new Date»
-		 *  
+		 *
 		 */
-		
-		
+
+
 		#include "x86.h"
 		#include "eventLib.h"
-					
+
 		// Declare computation thread functions
 		«FOR coreBlock : printerBlocks»
 		void *computationThread_Core«(coreBlock as CoreBlock).coreID»(void *arg);
 		«ENDFOR»
-		
+
 		pthread_barrier_t iter_barrier;
 		int stopThreads;
-		
-		
+
+
 		int main(void)
 		{
 		  mkdir("papi-output", 0777);
-				
+
 		 «IF printerBlocks.length == 1 »
 		 event_init();
 		 «ELSE»
-		 event_init_multiplex();		 			 	
+		 event_init_multiplex();
 		 «ENDIF»
-		  
+
 		  // Declaring thread pointers
 		  «FOR coreBlock : printerBlocks »
 		    pthread_t threadCore«(coreBlock as CoreBlock).coreID»;
 		  «ENDFOR»
-		
+
 		  #ifdef VERBOSE
 		  printf("Launched main\n");
 		  #endif
-		
+
 		  // Creating a synchronization barrier
 		  stopThreads = 0;
 		  pthread_barrier_init(&iter_barrier, NULL, «printerBlocks.size»);
-		
+
 		  communicationInit();
-		
+
 		  // Creating threads
 		  «FOR coreBlock : printerBlocks»
 		    pthread_create(&threadCore«(coreBlock as CoreBlock).coreID», NULL, computationThread_Core«(coreBlock as CoreBlock).coreID», NULL);
 		  «ENDFOR»
-		
+
 		  // Waiting for thread terminations
 		  «FOR coreBlock : printerBlocks»
 		    pthread_join(threadCore«(coreBlock as CoreBlock).coreID»,NULL);
@@ -328,12 +331,12 @@ class PapifiedCPrinter extends CPrinter {
 		  #ifdef VERBOSE
 		    printf("Press any key to stop application\n");
 		  #endif
-		
+
 		  // Waiting for the user to end the procedure
 		  getchar();
 		  exit(0);
 		}
 
 	'''
-	
+
 }
