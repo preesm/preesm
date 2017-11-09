@@ -56,6 +56,11 @@
       <layout>p2</layout>
       <url>http://eclipse-cs.sf.net/update/</url>
     </repository>
+    <repository>
+      <id>Sonarlint</id>
+      <layout>p2</layout>
+      <url>http://eclipse.sonarlint.org/</url>
+    </repository>
 
     <repository>
       <id>Tycho M2E extension</id>

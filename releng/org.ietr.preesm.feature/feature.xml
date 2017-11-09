@@ -585,10 +585,16 @@ Version 1.0 dated 2006-09-05.]]>
    </url>
 
    <requires>
+      <!-- Modeling runtime (from Eclipse repos)  -->
       <import feature="org.eclipse.xtend.sdk" version="2.11" match="greaterOrEqual"/>
       <import feature="org.eclipse.xtext.xbase.lib" version="2.11" match="greaterOrEqual"/>
-      <!-- TM Terminal -->
+
+      <!-- TM Terminal (from Eclipse repos) -->
       <import feature="org.eclipse.tm.terminal.feature"/>
+
+      <!-- C Editor within Eclipse (from Eclipse repos)  -->
+      <import plugin="org.eclipse.cdt"/>
+
    </requires>
 
    <plugin
