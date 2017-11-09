@@ -11,6 +11,7 @@ PREESM Changelog
 * Refactor & cleanup;
 * Update scenario editor to color text field in red when algo/archi is not found;
 * Update Papi code generator: enable and tune generation of the main C file;
+* Change button label in actor properties from Edit to Browse;
 
 ### Bug fix
 * Fix issue #47: Make the PiGraph parser more robust;
