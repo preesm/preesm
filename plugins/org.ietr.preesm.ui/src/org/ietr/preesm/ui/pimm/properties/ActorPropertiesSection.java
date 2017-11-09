@@ -101,7 +101,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
   private Button butRefinementClear;
 
   /** The but refinement edit. */
-  private Button butRefinementEdit;
+  private Button butRefinementBrowse;
 
   /** The but refinement open. */
   private Button butRefinementOpen;
@@ -116,7 +116,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
   private Button butMemoryScriptClear;
 
   /** The but memory script edit. */
-  private Button butMemoryScriptEdit;
+  private Button butMemoryScriptBrowse;
 
   /** The but memory script open. */
   private Button butMemoryScriptOpen;
@@ -157,7 +157,6 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
     /**
      * Refinement
      */
-
     createRefinementControl(factory, this.composite);
 
     /**
@@ -186,13 +185,13 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
     this.butRefinementClear.setEnabled(true);
 
     /*** Edit Button ***/
-    this.butRefinementEdit = factory.createButton(composite, "Edit", SWT.PUSH);
+    this.butRefinementBrowse = factory.createButton(composite, "Browse", SWT.PUSH);
     data = new FormData();
     data.left = new FormAttachment(100, -205);
     data.right = new FormAttachment(100, -105);
     data.top = new FormAttachment(this.txtNameObj);
-    this.butRefinementEdit.setLayoutData(data);
-    this.butRefinementEdit.setEnabled(true);
+    this.butRefinementBrowse.setLayoutData(data);
+    this.butRefinementBrowse.setEnabled(true);
 
     /*** Open Button ***/
     this.butRefinementOpen = factory.createButton(composite, "Open", SWT.PUSH);
@@ -207,7 +206,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
     this.lblRefinementObj = factory.createCLabel(composite, "");
     data = new FormData();
     data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
-    data.right = new FormAttachment(this.butRefinementEdit, 0);
+    data.right = new FormAttachment(this.butRefinementBrowse, 0);
     data.top = new FormAttachment(this.txtNameObj);
     this.lblRefinementObj.setLayoutData(data);
     this.lblRefinementObj.setEnabled(true);
@@ -258,7 +257,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
     });
 
     /*** Edit Button Listener ***/
-    this.butRefinementEdit.addSelectionListener(new SelectionListener() {
+    this.butRefinementBrowse.addSelectionListener(new SelectionListener() {
       @Override
       public void widgetSelected(final SelectionEvent e) {
         final PictogramElement[] pes = new PictogramElement[1];
@@ -354,13 +353,13 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
     this.butMemoryScriptClear.setEnabled(true);
 
     /*** Edit Button ***/
-    this.butMemoryScriptEdit = factory.createButton(composite, "Edit", SWT.PUSH);
+    this.butMemoryScriptBrowse = factory.createButton(composite, "Browse", SWT.PUSH);
     data = new FormData();
     data.left = new FormAttachment(100, -205);
     data.right = new FormAttachment(100, -105);
     data.top = new FormAttachment(this.lblRefinementView);
-    this.butMemoryScriptEdit.setLayoutData(data);
-    this.butMemoryScriptEdit.setEnabled(true);
+    this.butMemoryScriptBrowse.setLayoutData(data);
+    this.butMemoryScriptBrowse.setEnabled(true);
 
     /*** Open Button ***/
     this.butMemoryScriptOpen = factory.createButton(composite, "Open", SWT.PUSH);
@@ -375,7 +374,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
     this.lblMemoryScriptObj = factory.createCLabel(composite, "");
     data = new FormData();
     data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
-    data.right = new FormAttachment(this.butMemoryScriptEdit, 0);
+    data.right = new FormAttachment(this.butMemoryScriptBrowse, 0);
     data.top = new FormAttachment(this.lblRefinementView);
     this.lblMemoryScriptObj.setLayoutData(data);
     this.lblMemoryScriptObj.setEnabled(true);
@@ -416,7 +415,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
     });
 
     /*** Edit Button Listener ***/
-    this.butMemoryScriptEdit.addSelectionListener(new SelectionListener() {
+    this.butMemoryScriptBrowse.addSelectionListener(new SelectionListener() {
       @Override
       public void widgetSelected(final SelectionEvent e) {
         final PictogramElement[] pes = new PictogramElement[1];
@@ -524,7 +523,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
             this.lblRefinementObj.setText("(none)");
             this.lblRefinementView.setText("(none)");
             this.butRefinementClear.setEnabled(false);
-            this.butRefinementEdit.setEnabled(true);
+            this.butRefinementBrowse.setEnabled(true);
             this.butRefinementOpen.setEnabled(false);
           } else {
             final IPath path = refinement.getFilePath();
@@ -553,14 +552,14 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
             }
             this.lblRefinementView.setText(view);
             this.butRefinementClear.setEnabled(true);
-            this.butRefinementEdit.setEnabled(true);
+            this.butRefinementBrowse.setEnabled(true);
             this.butRefinementOpen.setEnabled(true);
           }
 
           if (actor.getMemoryScriptPath() == null) {
             this.lblMemoryScriptObj.setText("(none)");
             this.butMemoryScriptClear.setEnabled(false);
-            this.butMemoryScriptEdit.setEnabled(true);
+            this.butMemoryScriptBrowse.setEnabled(true);
             this.butMemoryScriptOpen.setEnabled(false);
           } else {
             final IPath path = actor.getMemoryScriptPath();
@@ -568,31 +567,31 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
             this.lblMemoryScriptObj.setText(text);
             this.butMemoryScriptClear.setEnabled(true);
-            this.butMemoryScriptEdit.setEnabled(true);
+            this.butMemoryScriptBrowse.setEnabled(true);
             this.butMemoryScriptOpen.setEnabled(true);
           }
           this.lblRefinement.setVisible(true);
           this.lblRefinementObj.setVisible(true);
           this.lblRefinementView.setVisible(true);
           this.butRefinementClear.setVisible(true);
-          this.butRefinementEdit.setVisible(true);
+          this.butRefinementBrowse.setVisible(true);
           this.butRefinementOpen.setVisible(true);
           this.lblMemoryScript.setVisible(true);
           this.lblMemoryScriptObj.setVisible(true);
           this.butMemoryScriptClear.setVisible(true);
-          this.butMemoryScriptEdit.setVisible(true);
+          this.butMemoryScriptBrowse.setVisible(true);
           this.butMemoryScriptOpen.setVisible(true);
         } else {
           this.lblRefinement.setVisible(false);
           this.lblRefinementObj.setVisible(false);
           this.lblRefinementView.setVisible(false);
           this.butRefinementClear.setVisible(false);
-          this.butRefinementEdit.setVisible(false);
+          this.butRefinementBrowse.setVisible(false);
           this.butRefinementOpen.setVisible(false);
           this.lblMemoryScript.setVisible(false);
           this.lblMemoryScriptObj.setVisible(false);
           this.butMemoryScriptClear.setVisible(false);
-          this.butMemoryScriptEdit.setVisible(false);
+          this.butMemoryScriptBrowse.setVisible(false);
           this.butMemoryScriptOpen.setVisible(false);
         }
 
