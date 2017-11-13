@@ -621,7 +621,7 @@ Version 1.0 dated 2006-09-05.]]>
       <import feature="org.eclipse.tm.terminal.feature"/>
 
       <!-- C Editor within Eclipse -->
-      <import plugin="org.eclipse.cdt"/>
+      <import feature="org.eclipse.cdt"/>
 
       <!-- IETR dependencies -->
       <import feature="org.ietr.externaldeps.aio.deps"/>

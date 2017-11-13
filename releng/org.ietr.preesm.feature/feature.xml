@@ -592,7 +592,7 @@ Version 1.0 dated 2006-09-05.]]>
       <import feature="org.eclipse.tm.terminal.feature"/>
 
       <!-- C Editor within Eclipse (from Eclipse repos)  -->
-      <import plugin="org.eclipse.cdt"/>
+      <import feature="org.eclipse.cdt"/>
 
    </requires>
 
