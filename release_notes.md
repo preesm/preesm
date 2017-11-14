@@ -13,6 +13,7 @@ PREESM Changelog
 * Update Papi code generator: enable and tune generation of the main C file;
 * Change button label in actor properties from Edit to Browse;
 * Add dependencies to Xcore and Sonarlint (dev feature), and CDT (dev + normal feature);
+* Force external deps to 1.3.0+
 
 ### Bug fix
 * Fix issue #47: Make the PiGraph parser more robust;
