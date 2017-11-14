@@ -15,7 +15,7 @@ LCANS=`echo "${ANS}" | tr '[:upper:]' '[:lower:]'`
 
 NEW_VERSION=$1
 
-CURRENT_BRANCH=`git branch`
+CURRENT_BRANCH=$(cd `dirname $0` && echo `git branch`)
 ORIG_DIR=`pwd`
 DIR=$(cd `dirname $0` && echo `git rev-parse --show-toplevel`)
 TODAY_DATE=`date +%Y.%m.%d`
@@ -40,7 +40,7 @@ git checkout $MAIN_BRANCH
 git merge --no-ff $DEV_BRANCH -m "merge branch '$DEV_BRANCH' for new version $NEW_VERSION"
 git tag v$NEW_VERSION
 
-#move to snapshot version in develop
+#move to snapshot version in develop and push
 git checkout $DEV_BRANCH
 ./releng/update-version.sh $NEW_VERSION-SNAPSHOT
 cat release_notes.md | tail -n +3 > tmp
@@ -60,18 +60,19 @@ PREESM Changelog
 EOF
 cat tmp >> release_notes.md
 rm tmp
-
 git add -A
 git commit -m "[RELENG] Move to snapshot version"
 git push
 
+#deploy and push master (that is new version)
 git checkout master
-./releng/build_and_deploy.sh
+./releng/deploy.sh
 git push
 git push --tags
 
+#get back to original branch and restore work
 git checkout $CURRENT_BRANCH
-git stash pop
-
+STASH_COUNT=`git stash list | wc -l`
+[ "$STASH_COUNT" != "0" ] && git stash pop
 #get back to original dir
 cd $ORIG_DIR
