@@ -37,12 +37,17 @@
  */
 package org.ietr.preesm.ui.scenario.editor;
 
-import java.io.FileNotFoundException;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -62,7 +67,6 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
-// TODO: Auto-generated Javadoc
 /**
  * This page contains general informations of the scenario including current algorithm and current architecture.
  *
@@ -101,7 +105,6 @@ public class OverviewPage extends FormPage {
   protected void createFormContent(final IManagedForm managedForm) {
 
     final ScrolledForm form = managedForm.getForm();
-    // FormToolkit toolkit = managedForm.getToolkit();
     form.setText(Messages.getString("Overview.title"));
     final ColumnLayout layout = new ColumnLayout();
     layout.topMargin = 0;
@@ -201,22 +204,25 @@ public class OverviewPage extends FormPage {
 
     final Text text = toolkit.createText(client, initValue, SWT.SINGLE);
     text.setData(title);
+    colorRedIfFileAbsent(text);
+
     text.addModifyListener(e -> {
-      final Text text1 = (Text) e.getSource();
-      final String type = ((String) text1.getData());
+      final String type = ((String) text.getData());
+
+      colorRedIfFileAbsent(text);
 
       if (type.equals(Messages.getString("Overview.algorithmFile"))) {
-        OverviewPage.this.scenario.setAlgorithmURL(text1.getText());
+        OverviewPage.this.scenario.setAlgorithmURL(text.getText());
         try {
           OverviewPage.this.scenario.update(true, false);
-        } catch (InvalidModelException | CoreException | FileNotFoundException ex) {
+        } catch (InvalidModelException | CoreException ex) {
           ex.printStackTrace();
         }
       } else if (type.equals(Messages.getString("Overview.architectureFile"))) {
-        OverviewPage.this.scenario.setArchitectureURL(text1.getText());
+        OverviewPage.this.scenario.setArchitectureURL(text.getText());
         try {
           OverviewPage.this.scenario.update(false, true);
-        } catch (InvalidModelException | CoreException | FileNotFoundException ex) {
+        } catch (InvalidModelException | CoreException ex) {
           ex.printStackTrace();
         }
       }
@@ -233,6 +239,18 @@ public class OverviewPage extends FormPage {
     button.addSelectionListener(adapter);
 
     toolkit.paintBordersFor(client);
+  }
+
+  private void colorRedIfFileAbsent(final Text text) {
+    final String textFieldContent = text.getText();
+    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    final IWorkspaceRoot root = workspace.getRoot();
+    final IResource findMember = root.findMember(Path.fromPortableString(textFieldContent));
+    if (findMember == null) {
+      text.setBackground(new Color(null, 240, 150, 150));
+    } else {
+      text.setBackground(new Color(null, 255, 255, 255));
+    }
   }
 
 }

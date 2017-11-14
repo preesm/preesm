@@ -41,6 +41,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import org.ietr.dftools.architecture.slam.ComponentHolder;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.architecture.slam.attributes.Parameter;
@@ -89,13 +90,13 @@ public class DesignTools {
    */
   public static Set<String> getOperatorInstanceIds(final Design design) {
     final Set<String> operatorInstanceIds = new LinkedHashSet<>();
-
-    for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
-      if (cmpInstance.getComponent() instanceof Operator) {
-        operatorInstanceIds.add(cmpInstance.getInstanceName());
+    if (design != null) {
+      for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
+        if (cmpInstance.getComponent() instanceof Operator) {
+          operatorInstanceIds.add(cmpInstance.getInstanceName());
+        }
       }
     }
-
     return operatorInstanceIds;
   }
 
@@ -109,9 +110,11 @@ public class DesignTools {
   public static Set<String> getComNodeInstanceIds(final Design design) {
     final Set<String> operatorInstanceIds = new LinkedHashSet<>();
 
-    for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
-      if (cmpInstance.getComponent() instanceof ComNodeImpl) {
-        operatorInstanceIds.add(cmpInstance.getInstanceName());
+    if (design != null) {
+      for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
+        if (cmpInstance.getComponent() instanceof ComNodeImpl) {
+          operatorInstanceIds.add(cmpInstance.getInstanceName());
+        }
       }
     }
 
@@ -147,9 +150,14 @@ public class DesignTools {
   public static Set<String> getOperatorComponentIds(final Design design) {
     final Set<String> operatorIds = new LinkedHashSet<>();
 
-    for (final org.ietr.dftools.architecture.slam.component.Component component : design.getComponentHolder().getComponents()) {
-      if (component instanceof Operator) {
-        operatorIds.add(component.getVlnv().getName());
+    if (design != null) {
+      final ComponentHolder componentHolder = design.getComponentHolder();
+      if (componentHolder != null) {
+        for (final org.ietr.dftools.architecture.slam.component.Component component : componentHolder.getComponents()) {
+          if (component instanceof Operator) {
+            operatorIds.add(component.getVlnv().getName());
+          }
+        }
       }
     }
 

@@ -43,14 +43,12 @@ import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
-import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.IAbc;
 
-// TODO: Auto-generated Javadoc
 /**
  * Transform class that can be called in workflow. The transform method displays the gantt chart of the given mapped dag
  *
@@ -66,7 +64,7 @@ public class StatEditorTransform extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
+      final String nodeName, final Workflow workflow) {
 
     final IAbc abc = (IAbc) inputs.get("ABC");
     final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");

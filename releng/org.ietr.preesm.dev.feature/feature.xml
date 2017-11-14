@@ -38,7 +38,7 @@
 <feature
       id="org.ietr.preesm.dev.feature"
       label="PREESM Developper Requirements (Meta Feature)"
-      version="2.5.2">
+      version="2.5.3">
 
    <description url="http://preesm.sourceforge.net/website/">
       This feature embeds all required Eclipse plugins for developping PREESM. That includes XTend, GEF, EMF, Graphiti (Eclipse) Plus SDKs, along with Checkstyle integration for Eclipse, Maven integration for Eclipse (and appropriate extension), and other IETR dependencies (third party libraries, DFTools and Graphiti).
@@ -580,8 +580,10 @@ Version 1.0 dated 2006-09-05.]]>
       <discovery label="M2E Tycho" url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST/"/>
       <discovery label="M2E Code Quality Connectors" url="http://m2e-code-quality.github.io/m2e-code-quality/site/latest/"/>
       <discovery label="M2E Settings Connectors" url="https://antoine-morvan.github.io/m2e-settings/site/"/>
-      <!-- Eclipse main repos -->
+      <!-- Checkstyle main repos -->
       <discovery label="Checkstyle" url="http://eclipse-cs.sf.net/update/"/>
+      <!-- Sonarlint main repos -->
+      <discovery label="Sonarlint" url="http://eclipse.sonarlint.org/"/>
 
       <!-- Preesm Repo -->
       <discovery label="Preesm" url="http://preesm.sourceforge.net/gensite/update-site/complete/"/>
@@ -600,6 +602,7 @@ Version 1.0 dated 2006-09-05.]]>
       <import feature="org.eclipse.emf.ecoretools.sdk"/>
       <import feature="org.eclipse.graphiti.sdk.plus.feature"/>
       <import feature="org.eclipse.graphiti.sdk.plus.feature.source"/>
+      <import feature="org.eclipse.emf.ecore.xcore.sdk"/>
 
       <!-- Git & Checkstyle -->
       <import feature="org.eclipse.egit"/>
@@ -611,11 +614,17 @@ Version 1.0 dated 2006-09-05.]]>
       <import feature="org.sonatype.tycho.m2e.feature"/>
       <import feature="nl.topicus.m2e.settings.feature"/>
 
+      <!-- Sonarlint for more code lints -->
+      <import feature="org.sonarlint.eclipse.feature"/>
+
       <!-- TM Terminal -->
       <import feature="org.eclipse.tm.terminal.feature"/>
 
+      <!-- C Editor within Eclipse -->
+      <import feature="org.eclipse.cdt"/>
+
       <!-- IETR dependencies -->
-      <import feature="org.ietr.externaldeps.aio.deps"/>
+      <import feature="org.ietr.externaldeps.aio.deps" version="1.3.0" match="greaterOrEqual"/>
       <import feature="org.ietr.graphiti.feature"/>
       <import feature="org.ietr.dftools.feature"/>
       <!--

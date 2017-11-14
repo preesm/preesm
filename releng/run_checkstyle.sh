@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -eu
 
 DIR=$(cd `dirname $0` && echo `git rev-parse --show-toplevel`)
 

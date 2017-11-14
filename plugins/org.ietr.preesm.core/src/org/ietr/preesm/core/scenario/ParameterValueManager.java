@@ -207,9 +207,11 @@ public class ParameterValueManager {
    */
   public void updateWith(final PiGraph graph) {
     getParameterValues().clear();
-    for (final Parameter p : graph.getAllParameters()) {
-      if (!p.isConfigurationInterface()) {
-        addParameterValue(p);
+    if (graph != null) {
+      for (final Parameter p : graph.getAllParameters()) {
+        if (!p.isConfigurationInterface()) {
+          addParameterValue(p);
+        }
       }
     }
   }

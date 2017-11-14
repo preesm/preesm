@@ -41,7 +41,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class used by mapper editors. Useful to run editor in display thread.
  *

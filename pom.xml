@@ -42,7 +42,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ietr.preesm</groupId>
   <artifactId>org.ietr.preesm.parent</artifactId>
-  <version>2.5.2</version>
+  <version>2.5.3</version>
   <packaging>pom</packaging>
 
   <!-- More Project Information -->
@@ -297,6 +297,7 @@
           <configLocation>/VAADER_checkstyle.xml</configLocation>
           <failsOnError>true</failsOnError>
           <includes>**/*.java</includes>
+          <consoleOutput>true</consoleOutput>
         </configuration>
         <dependencies>
           <!-- get settings -->

@@ -60,6 +60,7 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -110,7 +111,7 @@ public class ExcelConstraintsParser {
     if (this.scenario.isIBSDFScenario()) {
       currentIBSDFGraph = ScenarioParser.getSDFGraph(this.scenario.getAlgorithmURL());
     } else if (this.scenario.isPISDFScenario()) {
-      currentPiGraph = ScenarioParser.getPiGraph(this.scenario.getAlgorithmURL());
+      currentPiGraph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
     }
 
     final Path path = new Path(url);

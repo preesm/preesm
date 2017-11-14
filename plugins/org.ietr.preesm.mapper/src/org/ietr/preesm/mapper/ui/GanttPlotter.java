@@ -38,17 +38,24 @@
  */
 package org.ietr.preesm.mapper.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Frame;
 import java.awt.LinearGradientPaint;
 import java.awt.Paint;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
+import javax.swing.JEditorPane;
+import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.mapper.gantt.GanttComponent;
 import org.ietr.preesm.mapper.gantt.GanttData;
 import org.ietr.preesm.mapper.gantt.GanttTask;
@@ -69,7 +76,6 @@ import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RectangleInsets;
 import org.jfree.ui.RefineryUtilities;
 
-// TODO: Auto-generated Javadoc
 /**
  * Gantt plotter of a mapperdagvertex using JFreeChart.
  *
@@ -79,9 +85,6 @@ public class GanttPlotter extends ApplicationFrame {
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
-
-  /** The chart. */
-  JFreeChart chart = null;
 
   /** The chart panel. */
   ChartPanel chartPanel = null;
@@ -105,11 +108,10 @@ public class GanttPlotter extends ApplicationFrame {
         false // generate URLs?
     );
 
-    final CategoryPlot plot = (CategoryPlot) chart.getPlot();
-
     final Paint p = GanttPlotter.getBackgroundColorGradient();
     chart.setBackgroundPaint(p);
 
+    final CategoryPlot plot = (CategoryPlot) chart.getPlot();
     plot.setBackgroundPaint(Color.white);
     plot.setDomainGridlinePaint(Color.white);
     plot.setRangeGridlinePaint(Color.black);
@@ -124,7 +126,6 @@ public class GanttPlotter extends ApplicationFrame {
 
     plot.setDrawingSupplier(d);
     final MyGanttRenderer ren = new MyGanttRenderer();
-    // ren.setRepaintedListener(new RefreshRepaintedListener(this));
 
     ren.setSeriesItemLabelsVisible(0, false);
     ren.setSeriesVisibleInLegend(0, false);
@@ -199,21 +200,19 @@ public class GanttPlotter extends ApplicationFrame {
   }
 
   /**
-   * Starting point for the demonstration application.
+   * Plot the Gantt chart in a standalone window.
    */
   public void plot() {
-
     pack();
     RefineryUtilities.centerFrameOnScreen(this);
     setVisible(true);
-
   }
 
   /**
-   * Gantt chart plotting function in a given composite.
+   * Gantt chart plotting function in a given composite (within Eclipse).
    *
    * @param parent
-   *          the parent
+   *          the parent Composite Eclipse UI element
    */
   public void plotInComposite(final Composite parent) {
 
@@ -239,12 +238,31 @@ public class GanttPlotter extends ApplicationFrame {
   public GanttPlotter(final String title, final GanttData ganttData) {
     super(title);
 
-    this.chart = createChart(GanttPlotter.createDataset(ganttData));
-    this.chartPanel = new ChartPanel(this.chart);
+    final JFreeChart chart = createChart(GanttPlotter.createDataset(ganttData));
+    this.chartPanel = new ChartPanel(chart);
     this.chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
     this.chartPanel.setMouseZoomable(true, true);
+    this.chartPanel.setMouseWheelEnabled(true);
+    CategoryPlot categoryPlot = this.chartPanel.getChart().getCategoryPlot();
+    categoryPlot.setRangePannable(true);
     setContentPane(this.chartPanel);
 
+    final JMenuItem menuItem = new JMenuItem("Help ...");
+    this.chartPanel.getPopupMenu().add(menuItem);
+
+    final JFrame helpFrame = new JFrame("Gantt Help");
+    helpFrame.setSize(400, 250);
+    helpFrame.setLocationRelativeTo(chartPanel);
+    helpFrame.setDefaultCloseOperation(HIDE_ON_CLOSE);
+
+    try {
+      final URL resource = this.getClass().getResource("/resources/GanttHelp.html");
+      final JEditorPane comp = new JEditorPane(resource);
+      helpFrame.getContentPane().add(comp, BorderLayout.PAGE_START);
+    } catch (final IOException ex) {
+      throw new WorkflowException("Could not load Gantt Help file", ex);
+    }
+    menuItem.addActionListener(e -> helpFrame.setVisible(true));
   }
 
   /*
@@ -254,6 +272,7 @@ public class GanttPlotter extends ApplicationFrame {
    */
   @Override
   public void windowClosing(final WindowEvent event) {
+    // skip exiting JVM
   }
 
   /**
@@ -266,7 +285,6 @@ public class GanttPlotter extends ApplicationFrame {
     final Point2D end = new Point2D.Float(500, 500);
     final float[] dist = { 0.0f, 0.8f };
     final Color[] colors = { new Color(170, 160, 190), Color.WHITE };
-    final LinearGradientPaint p = new LinearGradientPaint(start, end, dist, colors);
-    return p;
+    return new LinearGradientPaint(start, end, dist, colors);
   }
 }

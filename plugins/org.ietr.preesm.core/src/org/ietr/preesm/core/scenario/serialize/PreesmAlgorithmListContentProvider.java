@@ -53,6 +53,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 import org.ietr.preesm.utils.sdf.NameComparator;
 
 // TODO: Auto-generated Javadoc
@@ -101,7 +102,7 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
    *           the core exception
    */
   public Set<AbstractActor> getSortedPISDFVertices(final PreesmScenario inputScenario) throws InvalidModelException, CoreException {
-    final PiGraph currentGraph = ScenarioParser.getPiGraph(inputScenario.getAlgorithmURL());
+    final PiGraph currentGraph = PiParser.getPiGraph(inputScenario.getAlgorithmURL());
     return filterVertices(currentGraph.getAllVertices());
   }
 

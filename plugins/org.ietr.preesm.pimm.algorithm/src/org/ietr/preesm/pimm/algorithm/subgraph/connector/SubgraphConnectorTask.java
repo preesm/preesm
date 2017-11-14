@@ -44,7 +44,7 @@ import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.util.SubgraphConnector;
+import org.ietr.preesm.experiment.model.pimm.util.SubgraphConnectorVisitor;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -66,7 +66,7 @@ public class SubgraphConnectorTask extends AbstractTaskImplementation {
     final PiGraph pg = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
     // Visit it with the subgraph connector
-    final SubgraphConnector connector = new SubgraphConnector();
+    final SubgraphConnectorVisitor connector = new SubgraphConnectorVisitor();
     connector.connectSubgraphs(pg);
 
     // Return pg

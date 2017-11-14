@@ -63,6 +63,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -152,7 +153,7 @@ public class ExcelTimingParser {
       final SDFGraph currentGraph = ScenarioParser.getSDFGraph(this.scenario.getAlgorithmURL());
       parseTimingsForIBSDFGraph(w, currentGraph, opDefIds, missingVertices, missingOperatorTypes);
     } else if (this.scenario.isPISDFScenario()) {
-      final PiGraph currentGraph = ScenarioParser.getPiGraph(this.scenario.getAlgorithmURL());
+      final PiGraph currentGraph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
       parseTimingsForPISDFGraph(w, currentGraph, opDefIds, missingVertices, missingOperatorTypes);
     }
 

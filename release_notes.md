@@ -1,6 +1,26 @@
 PREESM Changelog
 ================
 
+## Release version 2.5.3
+*2017.11.14*
+
+### New Feature
+
+### Changes
+* Fix issue #48: Imporve Gantt chart viewer;
+* Refactor & cleanup;
+* Update scenario editor to color text field in red when algo/archi is not found;
+* Update Papi code generator: enable and tune generation of the main C file;
+* Change button label in actor properties from Edit to Browse;
+* Add dependencies to Xcore and Sonarlint (dev feature), and CDT (dev + normal feature);
+* Force external deps to 1.3.0+
+* Force DFTools to 1.2.6+
+* Add release scripts
+* Remove unused script auto_convert_encoding_and_lineendings.sh
+
+### Bug fix
+* Fix issue #47: Make the PiGraph parser more robust;
+
 ## Release version 2.5.2
 *2017.10.31*
 

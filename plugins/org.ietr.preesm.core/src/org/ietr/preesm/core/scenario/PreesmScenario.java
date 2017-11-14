@@ -37,7 +37,6 @@
  */
 package org.ietr.preesm.core.scenario;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -58,8 +57,8 @@ import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 
-// TODO: Auto-generated Javadoc
 /**
  * Storing all information of a scenario.
  *
@@ -177,7 +176,7 @@ public class PreesmScenario {
       for (final SDFAbstractVertex vertex : graph.vertexSet()) {
         result.add(vertex.getName());
       }
-    } catch (FileNotFoundException | InvalidModelException e) {
+    } catch (InvalidModelException e) {
       e.printStackTrace();
     }
     return result;
@@ -191,7 +190,7 @@ public class PreesmScenario {
   private Set<String> getPiActorNames() {
     final Set<String> result = new LinkedHashSet<>();
     try {
-      final PiGraph graph = ScenarioParser.getPiGraph(this.algorithmURL);
+      final PiGraph graph = PiParser.getPiGraph(this.algorithmURL);
       for (final AbstractActor vertex : graph.getVertices()) {
         result.add(vertex.getName());
       }
@@ -420,11 +419,9 @@ public class PreesmScenario {
    *           the invalid model exception
    * @throws CoreException
    *           the core exception
-   * @throws FileNotFoundException
-   *           the file not found exception
    */
 
-  public void update(final boolean algorithmChange, final boolean architectureChange) throws InvalidModelException, CoreException, FileNotFoundException {
+  public void update(final boolean algorithmChange, final boolean architectureChange) throws InvalidModelException, CoreException {
     // If the architecture changes, operator ids, operator defintion ids and
     // com node ids are no more valid (they are extracted from the
     // architecture)
@@ -457,7 +454,7 @@ public class PreesmScenario {
     // (they are set in the algorithm)
     if (algorithmChange) {
       if (isPISDFScenario()) {
-        this.parameterValueManager.updateWith(ScenarioParser.getPiGraph(this.algorithmURL));
+        this.parameterValueManager.updateWith(PiParser.getPiGraph(this.algorithmURL));
       } else if (isIBSDFScenario()) {
         this.variablesManager.updateWith(ScenarioParser.getSDFGraph(this.algorithmURL));
       }

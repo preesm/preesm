@@ -65,6 +65,7 @@ import org.ietr.preesm.core.scenario.serialize.ScenarioWriter;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -255,7 +256,7 @@ public class ScenariosGenerator {
    *           the core exception
    */
   private void fillPiScenario(final PreesmScenario scenario, final Design archi, final String algoURL) throws InvalidModelException, CoreException {
-    final PiGraph algo = ScenarioParser.getPiGraph(algoURL);
+    final PiGraph algo = PiParser.getPiGraph(algoURL);
     scenario.setAlgorithmURL(algoURL);
     // Get com nodes and cores names
     final List<String> coreIds = new ArrayList<>(DesignTools.getOperatorInstanceIds(archi));

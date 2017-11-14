@@ -204,17 +204,12 @@ public class ScenarioParser {
    * @param paramValuesElt
    *          the param values elt
    */
-  private void parseParameterValues(final Element paramValuesElt) {
+  private void parseParameterValues(final Element paramValuesElt) throws InvalidModelException, CoreException {
 
     Node node = paramValuesElt.getFirstChild();
 
-    PiGraph graph = null;
-    try {
-      graph = ScenarioParser.getPiGraph(this.scenario.getAlgorithmURL());
-    } catch (InvalidModelException | CoreException e) {
-      e.printStackTrace();
-    }
-    if (this.scenario.isPISDFScenario() && (graph != null)) {
+    final PiGraph graph = getPiGraph();
+    if ((graph != null) && this.scenario.isPISDFScenario()) {
       final Set<Parameter> parameters = new LinkedHashSet<>();
       for (final Parameter p : graph.getAllParameters()) {
         if (!p.isConfigurationInterface()) {
@@ -243,19 +238,19 @@ public class ScenarioParser {
     }
   }
 
-  /**
-   * Gets the pi graph.
-   *
-   * @param algorithmURL
-   *          URL of the Algorithm.
-   * @return the {@link PiGraph} algorithm.
-   * @throws InvalidModelException
-   *           the invalid model exception
-   * @throws CoreException
-   *           the core exception
-   */
-  public static PiGraph getPiGraph(String algorithmURL) throws InvalidModelException, CoreException {
-    return PiParser.getPiGraph(algorithmURL);
+  private PiGraph getPiGraph() throws InvalidModelException, CoreException {
+    final PiGraph piGraph;
+    if (this.algoPi != null) {
+      piGraph = this.algoPi;
+    } else {
+      if (this.scenario == null) {
+        piGraph = null;
+      } else {
+        final String algorithmURL = this.scenario.getAlgorithmURL();
+        piGraph = PiParser.getPiGraph(algorithmURL);
+      }
+    }
+    return piGraph;
   }
 
   /**
@@ -541,16 +536,24 @@ public class ScenarioParser {
         if (url.length() > 0) {
           if (type.equals("algorithm")) {
             this.scenario.setAlgorithmURL(url);
-            if (url.endsWith(".graphml")) {
-              this.algoSDF = ScenarioParser.getSDFGraph(url);
-              this.algoPi = null;
-            } else if (url.endsWith(".pi")) {
-              this.algoPi = ScenarioParser.getPiGraph(url);
-              this.algoSDF = null;
+            this.algoSDF = null;
+            this.algoPi = null;
+            try {
+              if (url.endsWith(".graphml")) {
+                this.algoSDF = ScenarioParser.getSDFGraph(url);
+              } else if (url.endsWith(".pi")) {
+                this.algoPi = getPiGraph();
+              }
+            } catch (final Exception e) {
+              throw new ScenarioParserException("Could not parse the algorithm", e);
             }
           } else if (type.equals("architecture")) {
-            this.scenario.setArchitectureURL(url);
-            initializeArchitectureInformation(url);
+            try {
+              this.scenario.setArchitectureURL(url);
+              initializeArchitectureInformation(url);
+            } catch (final Exception e) {
+              throw new ScenarioParserException("Could not parse the architecture", e);
+            }
           } else if (type.equals("codegenDirectory")) {
             this.scenario.getCodegenManager().setCodegenDirectory(url);
           }
@@ -600,27 +603,25 @@ public class ScenarioParser {
    * @return the design
    */
   public static Design parseSlamDesign(final String url) {
-    // Demand load the resource into the resource set.
+
+    final Design slamDesign;
     final ResourceSet resourceSet = new ResourceSetImpl();
 
-    final Path relativePath = new Path(url);
-    final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
-    final String completePath = file.getLocation().toString();
-
-    // resourceSet.
-    Resource resource = null;
-    Design design = null;
-
+    final URI uri = URI.createPlatformResourceURI(url, true);
+    if ((uri.fileExtension() == null) || !uri.fileExtension().contentEquals("slam")) {
+      WorkflowLogger.getLogger().log(Level.SEVERE, "Expecting .slam file");
+      return null;
+    }
+    final Resource ressource;
     try {
-      resource = resourceSet.getResource(URI.createFileURI(completePath), true);
-
-      // Extract the root object from the resource.
-      design = (Design) resource.getContents().get(0);
+      ressource = resourceSet.getResource(uri, true);
+      slamDesign = (Design) (ressource.getContents().get(0));
     } catch (final WrappedException e) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "The architecture file \"" + completePath + "\" specified by the scenario does not exist any more.");
+      WorkflowLogger.getLogger().log(Level.SEVERE, "The architecture file \"" + uri + "\" specified by the scenario does not exist any more.");
+      return null;
     }
 
-    return design;
+    return slamDesign;
   }
 
   /**
@@ -631,10 +632,8 @@ public class ScenarioParser {
    * @return the SDF graph
    * @throws InvalidModelException
    *           the invalid model exception
-   * @throws FileNotFoundException
-   *           the file not found exception
    */
-  public static SDFGraph getSDFGraph(final String path) throws InvalidModelException, FileNotFoundException {
+  public static SDFGraph getSDFGraph(final String path) throws InvalidModelException {
     SDFGraph algorithm = null;
     final GMLSDFImporter importer = new GMLSDFImporter();
 
@@ -648,7 +647,7 @@ public class ScenarioParser {
     } catch (final InvalidModelException e) {
       e.printStackTrace();
     } catch (final FileNotFoundException e) {
-      throw e;
+      throw new ScenarioParserException("Could not locate " + path, e);
     }
 
     return algorithm;

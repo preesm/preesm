@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm graph transformation Test
 Bundle-SymbolicName: org.ietr.preesm.algorithm.test
-Bundle-Version: 2.5.2
+Bundle-Version: 2.5.3
 Bundle-Vendor: IETR/INSA Rennes
 Fragment-Host: org.ietr.preesm.algorithm
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

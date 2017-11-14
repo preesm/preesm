@@ -66,21 +66,21 @@ public final class PiMMUserFactory {
    * Copy an existing Vertex
    */
   public final AbstractVertex copy(final AbstractVertex vertex) {
-    return (AbstractVertex) copier.copy(vertex);
+    return (AbstractVertex) PiMMUserFactory.copier.copy(vertex);
   }
 
   /**
    * Copy an existing Delay
    */
   public final Delay copy(final Delay delay) {
-    return (Delay) copier.copy(delay);
+    return (Delay) PiMMUserFactory.copier.copy(delay);
   }
 
   /**
    *
    */
-  public Dependency createDependency(ISetter setter, ConfigInputPort target) {
-    final Dependency dep = factory.createDependency();
+  public Dependency createDependency(final ISetter setter, final ConfigInputPort target) {
+    final Dependency dep = PiMMUserFactory.factory.createDependency();
     dep.setGetter(target);
     dep.setSetter(setter);
     return dep;
@@ -89,8 +89,8 @@ public final class PiMMUserFactory {
   /**
    *
    */
-  public Fifo createFifo(DataOutputPort sourcePortCopy, DataInputPort targetPortCopy, String type) {
-    final Fifo res = factory.createFifo();
+  public Fifo createFifo(final DataOutputPort sourcePortCopy, final DataInputPort targetPortCopy, final String type) {
+    final Fifo res = PiMMUserFactory.factory.createFifo();
     res.setSourcePort(sourcePortCopy);
     res.setTargetPort(targetPortCopy);
     res.setType(type);

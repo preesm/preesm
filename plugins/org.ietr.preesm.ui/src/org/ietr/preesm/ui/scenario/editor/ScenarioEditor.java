@@ -36,7 +36,6 @@
  */
 package org.ietr.preesm.ui.scenario.editor;
 
-import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
@@ -47,7 +46,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.forms.editor.SharedHeaderFormEditor;
 import org.eclipse.ui.part.FileEditorInput;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.core.scenario.serialize.ScenarioWriter;
@@ -58,8 +56,8 @@ import org.ietr.preesm.ui.scenario.editor.relativeconstraints.RelativeConstraint
 import org.ietr.preesm.ui.scenario.editor.simulation.SimulationPage;
 import org.ietr.preesm.ui.scenario.editor.timings.TimingsPage;
 import org.ietr.preesm.ui.scenario.editor.variables.VariablesPage;
+import org.ietr.preesm.ui.utils.ErrorWithExceptionDialog;
 
-// TODO: Auto-generated Javadoc
 /**
  * The scenario editor allows to change all parameters in scenario; i.e. depending on both algorithm and architecture. It can be called by editing a .scenario
  * file or by creating a new file through File/New/Other/Preesm/Preesm Scenario
@@ -97,9 +95,6 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
   @Override
   public void init(final IEditorSite site, final IEditorInput input) throws PartInitException {
 
-    // Starting the console
-    WorkflowLogger.getLogger().log(Level.INFO, "");
-
     setSite(site);
     setInput(input);
     setPartName(input.getName());
@@ -115,9 +110,9 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
       try {
         this.scenario = parser.parseXmlFile(this.scenarioFile);
       } catch (final Exception e) {
-        e.printStackTrace();
+        ErrorWithExceptionDialog.errorDialogWithStackTrace("Could not open scenario", e);
+        close(false);
       }
-
     }
   }
 
@@ -126,7 +121,6 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
    */
   @Override
   protected void addPages() {
-    // this.activateSite();
     final IFormPage overviewPage = new OverviewPage(this.scenario, this, "Overview", "Overview");
     overviewPage.addPropertyListener(this);
     final IFormPage constraintsPage = new ConstraintsPage(this.scenario, this, "Constraints", "Constraints");
@@ -155,7 +149,8 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
       addPage(variablesPage);
       addPage(paramPage);
     } catch (final PartInitException e) {
-      e.printStackTrace();
+      ErrorWithExceptionDialog.errorDialogWithStackTrace("Could not open scenario", e);
+      close(false);
     }
   }
 
@@ -193,8 +188,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
    */
   @Override
   public void doSaveAs() {
-    // TODO Auto-generated method stub
-
+    // can only save as scenario
   }
 
   /*

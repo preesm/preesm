@@ -80,7 +80,7 @@ import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
-import org.ietr.preesm.experiment.model.pimm.util.SubgraphConnector;
+import org.ietr.preesm.experiment.model.pimm.util.SubgraphConnectorVisitor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -119,7 +119,7 @@ public class PiParser {
       ressource = resourceSet.getResource(uri, true);
       pigraph = (PiGraph) (ressource.getContents().get(0));
 
-      final SubgraphConnector connector = new SubgraphConnector();
+      final SubgraphConnectorVisitor connector = new SubgraphConnectorVisitor();
       connector.connectSubgraphs(pigraph);
     } catch (final WrappedException e) {
       WorkflowLogger.getLogger().log(Level.SEVERE, "The algorithm file \"" + uri + "\" specified by the scenario does not exist any more.");
