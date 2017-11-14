@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash -eu
 
 [ "$#" -ne "1" ] && echo "usage: $0 <new version>" && exit 1
 

@@ -15,6 +15,8 @@ PREESM Changelog
 * Add dependencies to Xcore and Sonarlint (dev feature), and CDT (dev + normal feature);
 * Force external deps to 1.3.0+
 * Force DFTools to 1.2.6+
+* Add release scripts
+* Remove unused script auto_convert_encoding_and_lineendings.sh
 
 ### Bug fix
 * Fix issue #47: Make the PiGraph parser more robust;

@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash -eu
 
 ### Config
 DEV_BRANCH=develop
@@ -8,7 +8,7 @@ MAIN_BRANCH=master
 [ "$#" -ne "1" ] && echo "usage: $0 <new version>" && exit 1
 
 #warning
-echo "Warning: this script will delete new files and remove all changes in $DEV_BRANCH and $MAIN_BRANCH"
+echo "Warning: this script will delete ignored files and remove all changes in $DEV_BRANCH and $MAIN_BRANCH"
 read -p "Do you want to conitnue ? [NO/yes] " ANS
 LCANS=`echo "${ANS}" | tr '[:upper:]' '[:lower:]'`
 [ "${LCANS}" != "yes" ] && echo "Aborting." && exit 1
@@ -23,7 +23,7 @@ TODAY_DATE=`date +%Y.%m.%d`
 cd $DIR
 
 #move to dev branch and clean repo
-git stash
+git stash -u
 git checkout $DEV_BRANCH
 git reset --hard
 git clean -xdf
@@ -63,6 +63,15 @@ rm tmp
 
 git add -A
 git commit -m "[RELENG] Move to snapshot version"
+git push
+
+git checkout master
+./releng/build_and_deploy.sh
+git push
+git push --tags
+
+git checkout $CURRENT_BRANCH
+git stash pop
 
 #get back to original dir
 cd $ORIG_DIR
