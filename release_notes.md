@@ -14,7 +14,7 @@ PREESM Changelog
 * Change button label in actor properties from Edit to Browse;
 * Add dependencies to Xcore and Sonarlint (dev feature), and CDT (dev + normal feature);
 * Force external deps to 1.3.0+
-* Force DFTools to 1.2.5+
+* Force DFTools to 1.2.6+
 
 ### Bug fix
 * Fix issue #47: Make the PiGraph parser more robust;
