@@ -74,13 +74,4 @@ public interface ISetter extends EObject {
    * @generated
    */
   EList<Dependency> getOutgoingDependencies();
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the value
-   * @model kind="operation"
-   * @generated
-   */
-  int getValue();
 } // ISetter

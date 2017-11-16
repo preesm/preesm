@@ -273,19 +273,6 @@ public class ConfigOutputPortImpl extends DataOutputPortImpl implements ConfigOu
     return this.outgoingDependencies;
   }
 
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the value
-   * @generated
-   */
-  @Override
-  public int getValue() {
-    // TODO: implement this method
-    // Ensure that you remove @generated or mark it @generated NOT
-    throw new UnsupportedOperationException();
-  }
-
   /*
    * (non-Javadoc)
    *

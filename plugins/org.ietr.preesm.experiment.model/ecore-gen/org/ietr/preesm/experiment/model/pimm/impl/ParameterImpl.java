@@ -350,16 +350,6 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
-   * @return the value
-   */
-  @Override
-  public int getValue() {
-    throw new UnsupportedOperationException();
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
    * @param otherEnd
    *          the other end
    * @param featureID
