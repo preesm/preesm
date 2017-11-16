@@ -46,6 +46,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
@@ -63,7 +64,6 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
@@ -493,14 +493,14 @@ public class PiMMSwitch<T> extends Switch<T> {
         }
         return result;
       }
-      case PiMMPackage.HREFINEMENT: {
-        final HRefinement hRefinement = (HRefinement) theEObject;
-        T result = caseHRefinement(hRefinement);
+      case PiMMPackage.CHEADER_REFINEMENT: {
+        final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) theEObject;
+        T result = caseCHeaderRefinement(cHeaderRefinement);
         if (result == null) {
-          result = caseRefinement(hRefinement);
+          result = caseRefinement(cHeaderRefinement);
         }
         if (result == null) {
-          result = casePiMMVisitable(hRefinement);
+          result = casePiMMVisitable(cHeaderRefinement);
         }
         if (result == null) {
           result = defaultCase(theEObject);
@@ -955,16 +955,16 @@ public class PiMMSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>HRefinement</em>'. <!-- begin-user-doc --> This implementation returns null; returning
-   * a non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>CHeader Refinement</em>'. <!-- begin-user-doc --> This implementation returns null;
+   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
    *
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>HRefinement</em>'.
+   * @return the result of interpreting the object as an instance of '<em>CHeader Refinement</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
-  public T caseHRefinement(final HRefinement object) {
+  public T caseCHeaderRefinement(final CHeaderRefinement object) {
     return null;
   }
 

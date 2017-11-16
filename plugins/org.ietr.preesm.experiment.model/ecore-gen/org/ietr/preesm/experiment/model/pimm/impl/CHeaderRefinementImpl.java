@@ -43,6 +43,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
@@ -50,7 +51,6 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Direction;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
@@ -62,13 +62,13 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  * The following features are implemented:
  * </p>
  * <ul>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl#getLoopPrototype <em>Loop Prototype</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl#getInitPrototype <em>Init Prototype</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.CHeaderRefinementImpl#getLoopPrototype <em>Loop Prototype</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.CHeaderRefinementImpl#getInitPrototype <em>Init Prototype</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class HRefinementImpl extends RefinementImpl implements HRefinement {
+public class CHeaderRefinementImpl extends RefinementImpl implements CHeaderRefinement {
   /**
    * The cached value of the '{@link #getLoopPrototype() <em>Loop Prototype</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -91,7 +91,7 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
    *
    * @generated
    */
-  protected HRefinementImpl() {
+  protected CHeaderRefinementImpl() {
     super();
   }
 
@@ -103,7 +103,7 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
    */
   @Override
   protected EClass eStaticClass() {
-    return PiMMPackage.Literals.HREFINEMENT;
+    return PiMMPackage.Literals.CHEADER_REFINEMENT;
   }
 
   /**
@@ -126,7 +126,7 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
     final FunctionPrototype oldLoopPrototype = this.loopPrototype;
     this.loopPrototype = newLoopPrototype;
     if (eNotificationRequired()) {
-      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE, oldLoopPrototype,
+      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE, oldLoopPrototype,
           newLoopPrototype);
       if (msgs == null) {
         msgs = notification;
@@ -149,19 +149,19 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
     if (newLoopPrototype != this.loopPrototype) {
       NotificationChain msgs = null;
       if (this.loopPrototype != null) {
-        msgs = ((InternalEObject) this.loopPrototype).eInverseRemove(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE,
-            null, msgs);
+        msgs = ((InternalEObject) this.loopPrototype).eInverseRemove(this,
+            InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE, null, msgs);
       }
       if (newLoopPrototype != null) {
-        msgs = ((InternalEObject) newLoopPrototype).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE, null,
-            msgs);
+        msgs = ((InternalEObject) newLoopPrototype).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE,
+            null, msgs);
       }
       msgs = basicSetLoopPrototype(newLoopPrototype, msgs);
       if (msgs != null) {
         msgs.dispatch();
       }
     } else if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE, newLoopPrototype, newLoopPrototype));
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE, newLoopPrototype, newLoopPrototype));
     }
   }
 
@@ -237,7 +237,7 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
     final FunctionPrototype oldInitPrototype = this.initPrototype;
     this.initPrototype = newInitPrototype;
     if (eNotificationRequired()) {
-      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.HREFINEMENT__INIT_PROTOTYPE, oldInitPrototype,
+      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE, oldInitPrototype,
           newInitPrototype);
       if (msgs == null) {
         msgs = notification;
@@ -260,19 +260,19 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
     if (newInitPrototype != this.initPrototype) {
       NotificationChain msgs = null;
       if (this.initPrototype != null) {
-        msgs = ((InternalEObject) this.initPrototype).eInverseRemove(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.HREFINEMENT__INIT_PROTOTYPE,
-            null, msgs);
+        msgs = ((InternalEObject) this.initPrototype).eInverseRemove(this,
+            InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE, null, msgs);
       }
       if (newInitPrototype != null) {
-        msgs = ((InternalEObject) newInitPrototype).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.HREFINEMENT__INIT_PROTOTYPE, null,
-            msgs);
+        msgs = ((InternalEObject) newInitPrototype).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE,
+            null, msgs);
       }
       msgs = basicSetInitPrototype(newInitPrototype, msgs);
       if (msgs != null) {
         msgs.dispatch();
       }
     } else if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.HREFINEMENT__INIT_PROTOTYPE, newInitPrototype, newInitPrototype));
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE, newInitPrototype, newInitPrototype));
     }
   }
 
@@ -284,9 +284,9 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
   @Override
   public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
     switch (featureID) {
-      case PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE:
+      case PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE:
         return basicSetLoopPrototype(null, msgs);
-      case PiMMPackage.HREFINEMENT__INIT_PROTOTYPE:
+      case PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE:
         return basicSetInitPrototype(null, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
@@ -307,9 +307,9 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
   @Override
   public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
     switch (featureID) {
-      case PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE:
+      case PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE:
         return getLoopPrototype();
-      case PiMMPackage.HREFINEMENT__INIT_PROTOTYPE:
+      case PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE:
         return getInitPrototype();
     }
     return super.eGet(featureID, resolve, coreType);
@@ -327,10 +327,10 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
   @Override
   public void eSet(final int featureID, final Object newValue) {
     switch (featureID) {
-      case PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE:
+      case PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE:
         setLoopPrototype((FunctionPrototype) newValue);
         return;
-      case PiMMPackage.HREFINEMENT__INIT_PROTOTYPE:
+      case PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE:
         setInitPrototype((FunctionPrototype) newValue);
         return;
     }
@@ -347,10 +347,10 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
   @Override
   public void eUnset(final int featureID) {
     switch (featureID) {
-      case PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE:
+      case PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE:
         setLoopPrototype((FunctionPrototype) null);
         return;
-      case PiMMPackage.HREFINEMENT__INIT_PROTOTYPE:
+      case PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE:
         setInitPrototype((FunctionPrototype) null);
         return;
     }
@@ -368,9 +368,9 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
   @Override
   public boolean eIsSet(final int featureID) {
     switch (featureID) {
-      case PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE:
+      case PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE:
         return this.loopPrototype != null;
-      case PiMMPackage.HREFINEMENT__INIT_PROTOTYPE:
+      case PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE:
         return this.initPrototype != null;
     }
     return super.eIsSet(featureID);

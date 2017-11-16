@@ -186,12 +186,12 @@ public interface PiMMFactory extends EFactory {
   Expression createExpression();
 
   /**
-   * Returns a new object of class '<em>HRefinement</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * Returns a new object of class '<em>CHeader Refinement</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return a new object of class '<em>HRefinement</em>'.
+   * @return a new object of class '<em>CHeader Refinement</em>'.
    * @generated
    */
-  HRefinement createHRefinement();
+  CHeaderRefinement createCHeaderRefinement();
 
   /**
    * Returns a new object of class '<em>Function Prototype</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->

@@ -48,6 +48,7 @@ import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
@@ -64,7 +65,6 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
@@ -154,8 +154,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
         return createDelay();
       case PiMMPackage.EXPRESSION:
         return createExpression();
-      case PiMMPackage.HREFINEMENT:
-        return createHRefinement();
+      case PiMMPackage.CHEADER_REFINEMENT:
+        return createCHeaderRefinement();
       case PiMMPackage.FUNCTION_PROTOTYPE:
         return createFunctionPrototype();
       case PiMMPackage.FUNCTION_PARAMETER:
@@ -414,15 +414,14 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the h refinement
    * @generated
    */
   @Override
-  public HRefinement createHRefinement() {
-    final HRefinementImpl hRefinement = new HRefinementImpl();
-    return hRefinement;
+  public CHeaderRefinement createCHeaderRefinement() {
+    final CHeaderRefinementImpl cHeaderRefinement = new CHeaderRefinementImpl();
+    return cHeaderRefinement;
   }
 
   /**

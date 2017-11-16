@@ -54,9 +54,9 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -345,7 +345,7 @@ public class SpiderCodegen {
     final Set<String> includeList = new LinkedHashSet<>();
     for (final AbstractActor aa : this.functionMap.keySet()) {
       final Actor a = (Actor) aa;
-      if (a.getRefinement() instanceof HRefinement) {
+      if (a.getRefinement() instanceof CHeaderRefinement) {
         if (!includeList.contains(a.getRefinement().getFileName())) {
           includeList.add(a.getRefinement().getFileName());
         }
@@ -439,8 +439,8 @@ public class SpiderCodegen {
     append("(void* inputFIFOs[], void* outputFIFOs[], Param inParams[], Param outParams[]){\n");
 
     final Actor a = (Actor) aa;
-    if ((a.getRefinement() != null) && (a.getRefinement() instanceof HRefinement)) {
-      final HRefinement href = (HRefinement) a.getRefinement();
+    if ((a.getRefinement() != null) && (a.getRefinement() instanceof CHeaderRefinement)) {
+      final CHeaderRefinement href = (CHeaderRefinement) a.getRefinement();
       final FunctionPrototype proto = href.getLoopPrototype();
 
       append("\t" + proto.getName() + "(\n");

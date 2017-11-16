@@ -58,6 +58,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
@@ -70,7 +71,6 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
@@ -623,8 +623,8 @@ public class PiWriter {
       // The makeRelative() call ensures that the path is relative to the
       // project.
       writeDataElt(vertexElt, PiIdentifiers.REFINEMENT, refinementPath.makeRelative().toPortableString());
-      if (refinement instanceof HRefinement) {
-        final HRefinement hrefinement = (HRefinement) refinement;
+      if (refinement instanceof CHeaderRefinement) {
+        final CHeaderRefinement hrefinement = (CHeaderRefinement) refinement;
         writeFunctionPrototype(vertexElt, hrefinement.getLoopPrototype(), PiIdentifiers.REFINEMENT_LOOP);
         if (hrefinement.getInitPrototype() != null) {
           writeFunctionPrototype(vertexElt, hrefinement.getInitPrototype(), PiIdentifiers.REFINEMENT_INIT);

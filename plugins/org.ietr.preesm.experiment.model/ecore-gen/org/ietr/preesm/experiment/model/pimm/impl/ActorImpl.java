@@ -46,9 +46,9 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -398,7 +398,7 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
    */
   @Override
   public boolean isHierarchical() {
-    return !((getRefinement().getFilePath() == null) || getRefinement().getFilePath().isEmpty()) && !(getRefinement() instanceof HRefinement);
+    return !((getRefinement().getFilePath() == null) || getRefinement().getFilePath().isEmpty()) && !(getRefinement() instanceof CHeaderRefinement);
   }
 
   /**

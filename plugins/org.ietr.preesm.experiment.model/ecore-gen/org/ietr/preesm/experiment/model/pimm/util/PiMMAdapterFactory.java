@@ -49,6 +49,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
@@ -66,7 +67,6 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
@@ -241,8 +241,8 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
     }
 
     @Override
-    public Adapter caseHRefinement(final HRefinement object) {
-      return createHRefinementAdapter();
+    public Adapter caseCHeaderRefinement(final CHeaderRefinement object) {
+      return createCHeaderRefinementAdapter();
     }
 
     @Override
@@ -583,15 +583,15 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.HRefinement <em>HRefinement</em>}'. <!-- begin-user-doc --> This
-   * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
-   * end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.CHeaderRefinement <em>CHeader Refinement</em>}'. <!--
+   * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
+   * all the cases anyway. <!-- end-user-doc -->
    *
    * @return the new adapter.
-   * @see org.ietr.preesm.experiment.model.pimm.HRefinement
+   * @see org.ietr.preesm.experiment.model.pimm.CHeaderRefinement
    * @generated
    */
-  public Adapter createHRefinementAdapter() {
+  public Adapter createCHeaderRefinementAdapter() {
     return null;
   }
 

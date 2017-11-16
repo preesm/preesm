@@ -63,8 +63,8 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.ui.pimm.features.ClearActorMemoryScriptFeature;
 import org.ietr.preesm.ui.pimm.features.ClearActorRefinementFeature;
@@ -533,18 +533,18 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
             String view = "";
 
-            if (refinement instanceof HRefinement) {
+            if (refinement instanceof CHeaderRefinement) {
               String tooltip = "";
               // Max length
               int maxLength = (int) ((this.composite.getBounds().width - this.FIRST_COLUMN_WIDTH) * 0.17);
               maxLength = Math.max(maxLength, 40);
-              if (((HRefinement) refinement).getLoopPrototype() != null) {
-                final String loop = "loop: " + ((HRefinement) refinement).getLoopPrototype().format();
+              if (((CHeaderRefinement) refinement).getLoopPrototype() != null) {
+                final String loop = "loop: " + ((CHeaderRefinement) refinement).getLoopPrototype().format();
                 view += (loop.length() <= maxLength) ? loop : loop.substring(0, maxLength) + "...";
                 tooltip = loop;
               }
-              if (((HRefinement) refinement).getInitPrototype() != null) {
-                final String init = "\ninit: " + ((HRefinement) refinement).getInitPrototype().format();
+              if (((CHeaderRefinement) refinement).getInitPrototype() != null) {
+                final String init = "\ninit: " + ((CHeaderRefinement) refinement).getInitPrototype().format();
                 view += (init.length() <= maxLength) ? init : init.substring(0, maxLength) + "...";
                 ;
                 tooltip += init;

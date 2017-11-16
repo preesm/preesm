@@ -43,15 +43,15 @@ package org.ietr.preesm.experiment.model.pimm;
  * The following features are supported:
  * </p>
  * <ul>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.HRefinement#getLoopPrototype <em>Loop Prototype</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.HRefinement#getInitPrototype <em>Init Prototype</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.CHeaderRefinement#getLoopPrototype <em>Loop Prototype</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.CHeaderRefinement#getInitPrototype <em>Init Prototype</em>}</li>
  * </ul>
  *
- * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getHRefinement()
+ * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getCHeaderRefinement()
  * @model
  * @generated
  */
-public interface HRefinement extends Refinement {
+public interface CHeaderRefinement extends Refinement {
 
   /**
    * Returns the value of the '<em><b>Loop Prototype</b></em>' containment reference. <!-- begin-user-doc -->
@@ -62,15 +62,15 @@ public interface HRefinement extends Refinement {
    *
    * @return the value of the '<em>Loop Prototype</em>' containment reference.
    * @see #setLoopPrototype(FunctionPrototype)
-   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getHRefinement_LoopPrototype()
+   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getCHeaderRefinement_LoopPrototype()
    * @model containment="true" required="true"
    * @generated
    */
   FunctionPrototype getLoopPrototype();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.HRefinement#getLoopPrototype <em>Loop Prototype</em>}' containment reference. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.CHeaderRefinement#getLoopPrototype <em>Loop Prototype</em>}' containment reference.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @param value
    *          the new value of the '<em>Loop Prototype</em>' containment reference.
@@ -88,15 +88,15 @@ public interface HRefinement extends Refinement {
    *
    * @return the value of the '<em>Init Prototype</em>' containment reference.
    * @see #setInitPrototype(FunctionPrototype)
-   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getHRefinement_InitPrototype()
+   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getCHeaderRefinement_InitPrototype()
    * @model containment="true"
    * @generated
    */
   FunctionPrototype getInitPrototype();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.HRefinement#getInitPrototype <em>Init Prototype</em>}' containment reference. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.CHeaderRefinement#getInitPrototype <em>Init Prototype</em>}' containment reference.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @param value
    *          the new value of the '<em>Init Prototype</em>' containment reference.

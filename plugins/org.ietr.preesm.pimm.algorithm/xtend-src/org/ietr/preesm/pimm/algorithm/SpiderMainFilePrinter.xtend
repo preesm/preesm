@@ -37,10 +37,10 @@ package org.ietr.preesm.pimm.algorithm
 
 import org.ietr.preesm.experiment.model.pimm.PiGraph
 import java.util.Date
-import org.ietr.preesm.experiment.model.pimm.HRefinement
 import org.ietr.preesm.experiment.model.pimm.Actor
 import org.ietr.preesm.experiment.model.pimm.Parameter
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement
 
 class SpiderMainFilePrinter {
 	
@@ -59,7 +59,7 @@ class SpiderMainFilePrinter {
 	
 	/* Include your files here */
 	«FOR actor : pg.actors»
-	  «IF actor.refinement instanceof HRefinement && (actor.refinement as HRefinement).initPrototype !== null»
+	  «IF actor.refinement instanceof CHeaderRefinement && (actor.refinement as CHeaderRefinement).getInitPrototype !== null»
 	    #include <«actor.refinement.fileName»>
 	  «ENDIF»
 	«ENDFOR»
@@ -181,7 +181,7 @@ class SpiderMainFilePrinter {
 	
 		/* Actor initialisation here if needed */
 		«FOR actor : pg.actors»
-		  «IF actor.refinement instanceof HRefinement && (actor.refinement as HRefinement).initPrototype !== null»
+		  «IF actor.refinement instanceof CHeaderRefinement && (actor.refinement as CHeaderRefinement).getInitPrototype !== null»
 		    «printInitCall(actor)»
 		  «ENDIF»
 		«ENDFOR»
@@ -225,7 +225,7 @@ class SpiderMainFilePrinter {
 	'''
 	
 	def static String printInitCall(Actor actor) '''
-	  «val proto = (actor.refinement as HRefinement).initPrototype»
+	  «val proto = (actor.refinement as CHeaderRefinement).getInitPrototype»
 	  «proto.name»(«FOR param : proto.parameters SEPARATOR ", "»«
 	   Double.parseDouble(((actor.getPortNamed(param.name) as ConfigInputPort).incomingDependency.setter as Parameter).valueExpression.evaluate) as int»«ENDFOR»);
 	'''

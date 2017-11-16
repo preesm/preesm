@@ -51,6 +51,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
@@ -69,7 +70,6 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
@@ -241,11 +241,11 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   private EClass expressionEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
-  private EClass hRefinementEClass = null;
+  private EClass cHeaderRefinementEClass = null;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
@@ -1003,36 +1003,33 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the h refinement
    * @generated
    */
   @Override
-  public EClass getHRefinement() {
-    return this.hRefinementEClass;
+  public EClass getCHeaderRefinement() {
+    return this.cHeaderRefinementEClass;
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the h refinement loop prototype
    * @generated
    */
   @Override
-  public EReference getHRefinement_LoopPrototype() {
-    return (EReference) this.hRefinementEClass.getEStructuralFeatures().get(0);
+  public EReference getCHeaderRefinement_LoopPrototype() {
+    return (EReference) this.cHeaderRefinementEClass.getEStructuralFeatures().get(0);
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the h refinement init prototype
    * @generated
    */
   @Override
-  public EReference getHRefinement_InitPrototype() {
-    return (EReference) this.hRefinementEClass.getEStructuralFeatures().get(1);
+  public EReference getCHeaderRefinement_InitPrototype() {
+    return (EReference) this.cHeaderRefinementEClass.getEStructuralFeatures().get(1);
   }
 
   /**
@@ -1363,9 +1360,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     this.expressionEClass = createEClass(PiMMPackage.EXPRESSION);
     createEAttribute(this.expressionEClass, PiMMPackage.EXPRESSION__EXPRESSION_STRING);
 
-    this.hRefinementEClass = createEClass(PiMMPackage.HREFINEMENT);
-    createEReference(this.hRefinementEClass, PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE);
-    createEReference(this.hRefinementEClass, PiMMPackage.HREFINEMENT__INIT_PROTOTYPE);
+    this.cHeaderRefinementEClass = createEClass(PiMMPackage.CHEADER_REFINEMENT);
+    createEReference(this.cHeaderRefinementEClass, PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE);
+    createEReference(this.cHeaderRefinementEClass, PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE);
 
     this.functionPrototypeEClass = createEClass(PiMMPackage.FUNCTION_PROTOTYPE);
     createEAttribute(this.functionPrototypeEClass, PiMMPackage.FUNCTION_PROTOTYPE__NAME);
@@ -1457,7 +1454,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     this.dependencyEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.delayEClass.getESuperTypes().add(getParameterizable());
     this.expressionEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
-    this.hRefinementEClass.getESuperTypes().add(getRefinement());
+    this.cHeaderRefinementEClass.getESuperTypes().add(getRefinement());
     this.functionPrototypeEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.functionParameterEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.dataPortEClass.getESuperTypes().add(getPort());
@@ -1655,14 +1652,14 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     addEOperation(this.expressionEClass, this.ecorePackage.getEString(), "evaluate", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
-    initEClass(this.hRefinementEClass, HRefinement.class, "HRefinement", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
+    initEClass(this.cHeaderRefinementEClass, CHeaderRefinement.class, "CHeaderRefinement", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getHRefinement_LoopPrototype(), getFunctionPrototype(), null, "loopPrototype", null, 1, 1, HRefinement.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getHRefinement_InitPrototype(), getFunctionPrototype(), null, "initPrototype", null, 0, 1, HRefinement.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getCHeaderRefinement_LoopPrototype(), getFunctionPrototype(), null, "loopPrototype", null, 1, 1, CHeaderRefinement.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES,
+        !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getCHeaderRefinement_InitPrototype(), getFunctionPrototype(), null, "initPrototype", null, 0, 1, CHeaderRefinement.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES,
+        !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
     initEClass(this.functionPrototypeEClass, FunctionPrototype.class, "FunctionPrototype", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);

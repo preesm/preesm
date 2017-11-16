@@ -154,7 +154,7 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="expressionString" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral="0"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="HRefinement" eSuperTypes="#//Refinement">
+  <eClassifiers xsi:type="ecore:EClass" name="CHeaderRefinement" eSuperTypes="#//Refinement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="loopPrototype" lowerBound="1"
         eType="#//FunctionPrototype" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="initPrototype" eType="#//FunctionPrototype"
@@ -280,7 +280,7 @@
         <eParameters name="subject" lowerBound="1" eType="#//FunctionPrototype"/>
       </eOperations>
       <eOperations name="visitHRefinement" lowerBound="1">
-        <eParameters name="subject" lowerBound="1" eType="#//HRefinement"/>
+        <eParameters name="subject" lowerBound="1" eType="#//CHeaderRefinement"/>
       </eOperations>
       <eOperations name="visitDataPort" lowerBound="1">
         <eParameters name="subject" lowerBound="1" eType="#//DataPort"/>

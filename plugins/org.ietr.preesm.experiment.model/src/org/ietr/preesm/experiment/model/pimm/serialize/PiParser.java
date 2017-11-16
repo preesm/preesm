@@ -57,6 +57,7 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
@@ -70,7 +71,6 @@ import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
@@ -241,7 +241,7 @@ public class PiParser {
       // If the refinement is a .h file, then we need to create a
       // HRefinement
       if (path.getFileExtension().equals("h")) {
-        final HRefinement hrefinement = PiMMFactory.eINSTANCE.createHRefinement();
+        final CHeaderRefinement hrefinement = PiMMFactory.eINSTANCE.createCHeaderRefinement();
         // The nodeElt should have a loop element, and may have an init
         // element
         final NodeList childList = nodeElt.getChildNodes();

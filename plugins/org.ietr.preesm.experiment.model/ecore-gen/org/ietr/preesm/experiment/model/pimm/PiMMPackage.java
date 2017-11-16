@@ -1385,14 +1385,14 @@ public interface PiMMPackage extends EPackage {
   int EXPRESSION_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 1;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl <em>HRefinement</em>}' class. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.CHeaderRefinementImpl <em>CHeader Refinement</em>}' class. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
    *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getHRefinement()
+   * @see org.ietr.preesm.experiment.model.pimm.impl.CHeaderRefinementImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getCHeaderRefinement()
    * @generated
    */
-  int HREFINEMENT = 22;
+  int CHEADER_REFINEMENT = 22;
 
   /**
    * The feature id for the '<em><b>File Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1400,7 +1400,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int HREFINEMENT__FILE_NAME = PiMMPackage.REFINEMENT__FILE_NAME;
+  int CHEADER_REFINEMENT__FILE_NAME = PiMMPackage.REFINEMENT__FILE_NAME;
 
   /**
    * The feature id for the '<em><b>File Path</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1408,7 +1408,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int HREFINEMENT__FILE_PATH = PiMMPackage.REFINEMENT__FILE_PATH;
+  int CHEADER_REFINEMENT__FILE_PATH = PiMMPackage.REFINEMENT__FILE_PATH;
 
   /**
    * The feature id for the '<em><b>Loop Prototype</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1416,7 +1416,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int HREFINEMENT__LOOP_PROTOTYPE = PiMMPackage.REFINEMENT_FEATURE_COUNT + 0;
+  int CHEADER_REFINEMENT__LOOP_PROTOTYPE = PiMMPackage.REFINEMENT_FEATURE_COUNT + 0;
 
   /**
    * The feature id for the '<em><b>Init Prototype</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1424,15 +1424,15 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int HREFINEMENT__INIT_PROTOTYPE = PiMMPackage.REFINEMENT_FEATURE_COUNT + 1;
+  int CHEADER_REFINEMENT__INIT_PROTOTYPE = PiMMPackage.REFINEMENT_FEATURE_COUNT + 1;
 
   /**
-   * The number of structural features of the '<em>HRefinement</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The number of structural features of the '<em>CHeader Refinement</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int HREFINEMENT_FEATURE_COUNT = PiMMPackage.REFINEMENT_FEATURE_COUNT + 2;
+  int CHEADER_REFINEMENT_FEATURE_COUNT = PiMMPackage.REFINEMENT_FEATURE_COUNT + 2;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl <em>Function Prototype</em>}' class. <!--
@@ -2357,36 +2357,36 @@ public interface PiMMPackage extends EPackage {
   EAttribute getExpression_ExpressionString();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.HRefinement <em>HRefinement</em>}'. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
+   * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.CHeaderRefinement <em>CHeader Refinement</em>}'. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
    *
-   * @return the meta object for class '<em>HRefinement</em>'.
-   * @see org.ietr.preesm.experiment.model.pimm.HRefinement
+   * @return the meta object for class '<em>CHeader Refinement</em>'.
+   * @see org.ietr.preesm.experiment.model.pimm.CHeaderRefinement
    * @generated
    */
-  EClass getHRefinement();
+  EClass getCHeaderRefinement();
 
   /**
-   * Returns the meta object for the reference '{@link org.ietr.preesm.experiment.model.pimm.HRefinement#getLoopPrototype <em>Loop Prototype</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the containment reference '{@link org.ietr.preesm.experiment.model.pimm.CHeaderRefinement#getLoopPrototype <em>Loop
+   * Prototype</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the meta object for the reference '<em>Loop Prototype</em>'.
-   * @see org.ietr.preesm.experiment.model.pimm.HRefinement#getLoopPrototype()
-   * @see #getHRefinement()
+   * @return the meta object for the containment reference '<em>Loop Prototype</em>'.
+   * @see org.ietr.preesm.experiment.model.pimm.CHeaderRefinement#getLoopPrototype()
+   * @see #getCHeaderRefinement()
    * @generated
    */
-  EReference getHRefinement_LoopPrototype();
+  EReference getCHeaderRefinement_LoopPrototype();
 
   /**
-   * Returns the meta object for the reference '{@link org.ietr.preesm.experiment.model.pimm.HRefinement#getInitPrototype <em>Init Prototype</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the containment reference '{@link org.ietr.preesm.experiment.model.pimm.CHeaderRefinement#getInitPrototype <em>Init
+   * Prototype</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the meta object for the reference '<em>Init Prototype</em>'.
-   * @see org.ietr.preesm.experiment.model.pimm.HRefinement#getInitPrototype()
-   * @see #getHRefinement()
+   * @return the meta object for the containment reference '<em>Init Prototype</em>'.
+   * @see org.ietr.preesm.experiment.model.pimm.CHeaderRefinement#getInitPrototype()
+   * @see #getCHeaderRefinement()
    * @generated
    */
-  EReference getHRefinement_InitPrototype();
+  EReference getCHeaderRefinement_InitPrototype();
 
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.FunctionPrototype <em>Function Prototype</em>}'. <!-- begin-user-doc -->
@@ -3066,28 +3066,28 @@ public interface PiMMPackage extends EPackage {
     EAttribute EXPRESSION__EXPRESSION_STRING = PiMMPackage.eINSTANCE.getExpression_ExpressionString();
 
     /**
-     * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl <em>HRefinement</em>}' class. <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.CHeaderRefinementImpl <em>CHeader Refinement</em>}' class. <!--
+     * begin-user-doc --> <!-- end-user-doc -->
      *
-     * @see org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl
-     * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getHRefinement()
+     * @see org.ietr.preesm.experiment.model.pimm.impl.CHeaderRefinementImpl
+     * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getCHeaderRefinement()
      * @generated
      */
-    EClass HREFINEMENT = PiMMPackage.eINSTANCE.getHRefinement();
+    EClass CHEADER_REFINEMENT = PiMMPackage.eINSTANCE.getCHeaderRefinement();
 
     /**
      * The meta object literal for the '<em><b>Loop Prototype</b></em>' containment reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
      * @generated
      */
-    EReference HREFINEMENT__LOOP_PROTOTYPE = PiMMPackage.eINSTANCE.getHRefinement_LoopPrototype();
+    EReference CHEADER_REFINEMENT__LOOP_PROTOTYPE = PiMMPackage.eINSTANCE.getCHeaderRefinement_LoopPrototype();
 
     /**
      * The meta object literal for the '<em><b>Init Prototype</b></em>' containment reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
      * @generated
      */
-    EReference HREFINEMENT__INIT_PROTOTYPE = PiMMPackage.eINSTANCE.getHRefinement_InitPrototype();
+    EReference CHEADER_REFINEMENT__INIT_PROTOTYPE = PiMMPackage.eINSTANCE.getCHeaderRefinement_InitPrototype();
 
     /**
      * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl <em>Function Prototype</em>}' class. <!--

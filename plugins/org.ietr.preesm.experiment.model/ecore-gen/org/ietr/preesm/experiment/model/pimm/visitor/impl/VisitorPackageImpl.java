@@ -275,7 +275,7 @@ public class VisitorPackageImpl extends EPackageImpl implements VisitorPackage {
     addEParameter(op, thePiMMPackage.getFunctionPrototype(), "subject", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     op = addEOperation(this.piMMVisitorEClass, null, "visitHRefinement", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
-    addEParameter(op, thePiMMPackage.getHRefinement(), "subject", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+    addEParameter(op, thePiMMPackage.getCHeaderRefinement(), "subject", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     op = addEOperation(this.piMMVisitorEClass, null, "visitDataPort", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
     addEParameter(op, thePiMMPackage.getDataPort(), "subject", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);

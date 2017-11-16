@@ -50,8 +50,8 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.ui.PlatformUI;
 import org.ietr.dftools.ui.util.FileUtils;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
@@ -248,7 +248,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
           }
           if ((loopProto != null) || (initProto != null)) {
             this.hasDoneChanges = true;
-            final HRefinement newRefinement = PiMMFactory.eINSTANCE.createHRefinement();
+            final CHeaderRefinement newRefinement = PiMMFactory.eINSTANCE.createCHeaderRefinement();
             newRefinement.setLoopPrototype(loopProto);
             newRefinement.setInitPrototype(initProto);
             newRefinement.setFilePath(newFilePath);
