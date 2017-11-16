@@ -490,7 +490,7 @@ public class PiParser {
       // TODO replace with a parse Delay if delay have their own element
       // in the future
       final Delay delay = PiMMFactory.eINSTANCE.createDelay();
-      delay.getExpression().setString(edgeElt.getAttribute(PiIdentifiers.DELAY_EXPRESSION));
+      delay.getExpression().setExpressionString(edgeElt.getAttribute(PiIdentifiers.DELAY_EXPRESSION));
       fifo.setDelay(delay);
     }
 
@@ -631,7 +631,7 @@ public class PiParser {
   protected AbstractVertex parseParameter(final Element nodeElt, final PiGraph graph) {
     // Instantiate the new Parameter
     final Parameter param = PiMMFactory.eINSTANCE.createParameter();
-    param.getValueExpression().setString(nodeElt.getAttribute(PiIdentifiers.PARAMETER_EXPRESSION));
+    param.getValueExpression().setExpressionString(nodeElt.getAttribute(PiIdentifiers.PARAMETER_EXPRESSION));
     param.setConfigurationInterface(false);
     // param.setLocallyStatic(true);
     param.setGraphPort(null); // No port of the graph corresponds to this
@@ -692,7 +692,7 @@ public class PiParser {
         } else {
           iPort = ((AbstractActor) vertex).getDataInputPorts().get(0);
         }
-        iPort.getPortRateExpression().setString(elt.getAttribute(PiIdentifiers.PORT_EXPRESSION));
+        iPort.getPortRateExpression().setExpressionString(elt.getAttribute(PiIdentifiers.PORT_EXPRESSION));
         iPort.setAnnotation(PortMemoryAnnotation.get(elt.getAttribute(PiIdentifiers.PORT_MEMORY_ANNOTATION)));
         break;
       case PiIdentifiers.DATA_OUTPUT_PORT:
@@ -712,7 +712,7 @@ public class PiParser {
         } else {
           oPort = ((AbstractActor) vertex).getDataOutputPorts().get(0);
         }
-        oPort.getPortRateExpression().setString(elt.getAttribute(PiIdentifiers.PORT_EXPRESSION));
+        oPort.getPortRateExpression().setExpressionString(elt.getAttribute(PiIdentifiers.PORT_EXPRESSION));
         oPort.setAnnotation(PortMemoryAnnotation.get(elt.getAttribute(PiIdentifiers.PORT_MEMORY_ANNOTATION)));
         break;
       case PiIdentifiers.CONFIGURATION_INPUT_PORT:

@@ -17,7 +17,7 @@ public class ParameterTest {
     final Parameter p = PiMMFactory.eINSTANCE.createParameter();
     final Expression valueExpression = p.getValueExpression();
     assertNotNull("Parameter value expression cannot be null", valueExpression);
-    final String string = valueExpression.getString();
+    final String string = valueExpression.getExpressionString();
     assertNotNull("Expression value cannot be null", string);
     final String expectedDefaultalue = "0";
     assertTrue("Expression default value should be " + expectedDefaultalue, expectedDefaultalue.equals(string));

@@ -148,7 +148,7 @@ public class ScenarioWriter {
     switch (value.getType()) {
       case INDEPENDENT:
         valueToPrint = "" + value.getValue();
-        if (!value.getParameter().getValueExpression().getString().equals(valueToPrint)) {
+        if (!value.getParameter().getValueExpression().getExpressionString().equals(valueToPrint)) {
           needToBeSerialized = true;
         }
         break;
@@ -158,7 +158,7 @@ public class ScenarioWriter {
         break;
       case PARAMETER_DEPENDENT:
         valueToPrint = value.getExpression();
-        if (!value.getParameter().getValueExpression().getString().equals(valueToPrint)) {
+        if (!value.getParameter().getValueExpression().getExpressionString().equals(valueToPrint)) {
           needToBeSerialized = true;
         }
         break;

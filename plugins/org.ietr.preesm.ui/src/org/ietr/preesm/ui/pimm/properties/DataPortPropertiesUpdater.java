@@ -61,20 +61,20 @@ public class DataPortPropertiesUpdater extends GFPropertySection {
    *          the text to update
    */
   protected void updateDataPortProperties(final DataPort port, final Text textToUpdate) {
-    if (!port.getPortRateExpression().getString().equals(textToUpdate.getText())) {
+    if (!port.getPortRateExpression().getExpressionString().equals(textToUpdate.getText())) {
       setNewExpression(port.getPortRateExpression(), textToUpdate.getText());
       // If port is contained by an DataInterface, we should
       // also update the graph port of the DataInterface
       if (port.eContainer() instanceof DataOutputInterface) {
         final DataOutputInterface doi = (DataOutputInterface) port.eContainer();
         final DataOutputPort oPort = (DataOutputPort) doi.getGraphPort();
-        if (!oPort.getPortRateExpression().getString().equals(textToUpdate.getText())) {
+        if (!oPort.getPortRateExpression().getExpressionString().equals(textToUpdate.getText())) {
           setNewExpression(oPort.getPortRateExpression(), textToUpdate.getText());
         }
       } else if (port.eContainer() instanceof DataInputInterface) {
         final DataInputInterface dii = (DataInputInterface) port.eContainer();
         final DataInputPort iPort = (DataInputPort) dii.getGraphPort();
-        if (!iPort.getPortRateExpression().getString().equals(textToUpdate.getText())) {
+        if (!iPort.getPortRateExpression().getExpressionString().equals(textToUpdate.getText())) {
           setNewExpression(iPort.getPortRateExpression(), textToUpdate.getText());
         }
       }
@@ -94,7 +94,7 @@ public class DataPortPropertiesUpdater extends GFPropertySection {
     editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
       @Override
       protected void doExecute() {
-        e.setString(value);
+        e.setExpressionString(value);
       }
     });
   }

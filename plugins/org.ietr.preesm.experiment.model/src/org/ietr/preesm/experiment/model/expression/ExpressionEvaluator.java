@@ -64,7 +64,7 @@ public class ExpressionEvaluator {
   public static final long evaluate(final Expression expression) {
     final Parameterizable parameterizableObj = ExpressionEvaluator.lookUpParameters(expression);
     final Map<String, Number> addInputParameterValues = ExpressionEvaluator.addInputParameterValues(parameterizableObj);
-    return ExpressionEvaluator.evaluate(expression.getString(), addInputParameterValues);
+    return ExpressionEvaluator.evaluate(expression.getExpressionString(), addInputParameterValues);
   }
 
   public static final long evaluate(final String expression) {

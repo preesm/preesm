@@ -55,7 +55,7 @@ import org.nfunk.jep.ParseException;
  * The following features are implemented:
  * </p>
  * <ul>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl#getString <em>String</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl#getExpressionString <em>Expression String</em>}</li>
  * </ul>
  *
  * @generated
@@ -63,21 +63,21 @@ import org.nfunk.jep.ParseException;
 public class ExpressionImpl extends EObjectImpl implements Expression {
 
   /**
-   * The default value of the '{@link #getString() <em>String</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The default value of the '{@link #getExpressionString() <em>Expression String</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @see #getString()
+   * @see #getExpressionString()
    * @generated
    * @ordered
    */
-  protected static final String STRING_EDEFAULT = "0";
+  protected static final String EXPRESSION_STRING_EDEFAULT = "0";
   /**
-   * The cached value of the '{@link #getString() <em>String</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getExpressionString() <em>Expression String</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @see #getString()
+   * @see #getExpressionString()
    * @generated
    * @ordered
    */
-  protected String              string          = ExpressionImpl.STRING_EDEFAULT;
+  protected String              expressionString           = ExpressionImpl.EXPRESSION_STRING_EDEFAULT;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
@@ -106,8 +106,8 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
    * @generated
    */
   @Override
-  public String getString() {
-    return this.string;
+  public String getExpressionString() {
+    return this.expressionString;
   }
 
   /**
@@ -118,11 +118,11 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
    * @generated
    */
   @Override
-  public void setString(final String newString) {
-    final String oldString = this.string;
-    this.string = newString;
+  public void setExpressionString(final String newExpressionString) {
+    final String oldExpressionString = this.expressionString;
+    this.expressionString = newExpressionString;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.EXPRESSION__STRING, oldString, this.string));
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.EXPRESSION__EXPRESSION_STRING, oldExpressionString, this.expressionString));
     }
   }
 
@@ -154,8 +154,8 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
   @Override
   public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
     switch (featureID) {
-      case PiMMPackage.EXPRESSION__STRING:
-        return getString();
+      case PiMMPackage.EXPRESSION__EXPRESSION_STRING:
+        return getExpressionString();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -172,8 +172,8 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
   @Override
   public void eSet(final int featureID, final Object newValue) {
     switch (featureID) {
-      case PiMMPackage.EXPRESSION__STRING:
-        setString((String) newValue);
+      case PiMMPackage.EXPRESSION__EXPRESSION_STRING:
+        setExpressionString((String) newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -189,8 +189,8 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
   @Override
   public void eUnset(final int featureID) {
     switch (featureID) {
-      case PiMMPackage.EXPRESSION__STRING:
-        setString(ExpressionImpl.STRING_EDEFAULT);
+      case PiMMPackage.EXPRESSION__EXPRESSION_STRING:
+        setExpressionString(ExpressionImpl.EXPRESSION_STRING_EDEFAULT);
         return;
     }
     super.eUnset(featureID);
@@ -207,8 +207,9 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
   @Override
   public boolean eIsSet(final int featureID) {
     switch (featureID) {
-      case PiMMPackage.EXPRESSION__STRING:
-        return ExpressionImpl.STRING_EDEFAULT == null ? this.string != null : !ExpressionImpl.STRING_EDEFAULT.equals(this.string);
+      case PiMMPackage.EXPRESSION__EXPRESSION_STRING:
+        return ExpressionImpl.EXPRESSION_STRING_EDEFAULT == null ? this.expressionString != null
+            : !ExpressionImpl.EXPRESSION_STRING_EDEFAULT.equals(this.expressionString);
     }
     return super.eIsSet(featureID);
   }
@@ -226,8 +227,8 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
     }
 
     final StringBuffer result = new StringBuffer(super.toString());
-    result.append(" (string: ");
-    result.append(this.string);
+    result.append(" (expressionString: ");
+    result.append(this.expressionString);
     result.append(')');
     return result.toString();
   }

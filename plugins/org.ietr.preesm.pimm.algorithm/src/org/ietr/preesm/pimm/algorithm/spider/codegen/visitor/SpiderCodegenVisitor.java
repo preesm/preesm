@@ -572,8 +572,8 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
     final AbstractVertex srcActor = (AbstractVertex) srcPort.eContainer();
     final AbstractVertex snkActor = (AbstractVertex) snkPort.eContainer();
 
-    String srcProd = srcPort.getPortRateExpression().getString();
-    String snkProd = snkPort.getPortRateExpression().getString();
+    String srcProd = srcPort.getPortRateExpression().getExpressionString();
+    String snkProd = snkPort.getPortRateExpression().getExpressionString();
 
     /* Change port name in prod/cons/delay */
     for (final ConfigInputPort cfgPort : srcActor.getConfigInputPorts()) {
@@ -588,7 +588,7 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
 
     String delay = "0";
     if (f.getDelay() != null) {
-      delay = f.getDelay().getExpression().getString();
+      delay = f.getDelay().getExpression().getExpressionString();
 
       for (final ConfigInputPort cfgPort : f.getDelay().getConfigInputPorts()) {
         final String paramName = ((Parameter) cfgPort.getIncomingDependency().getSetter()).getName();
@@ -623,8 +623,8 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
         append("\tPiSDFParam *" + paramName + " = Spider::addDynamicParam(graph, " + "\"" + p.getName() + "\"" + ");\n");
       } else {
         /* DYNAMIC DEPENDANT */
-        append("\tPiSDFParam *" + paramName + " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName() + "\", \"" + p.getValueExpression().getString()
-            + "\");\n");
+        append("\tPiSDFParam *" + paramName + " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName() + "\", \""
+            + p.getValueExpression().getExpressionString() + "\");\n");
       }
     } else if (p.getGraphPort() instanceof ConfigInputPort) {
       /* HERITED */
@@ -634,8 +634,8 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
       append("\tPiSDFParam *" + paramName + " = Spider::addStaticParam(graph, " + "\"" + p.getName() + "\", " + p.getName() + ");\n");
     } else {
       /* STATIC DEPENDANT */
-      append("\tPiSDFParam *" + paramName + " = Spider::addStaticDependentParam(graph, " + "\"" + p.getName() + "\", \"" + p.getValueExpression().getString()
-          + "\");\n");
+      append("\tPiSDFParam *" + paramName + " = Spider::addStaticDependentParam(graph, " + "\"" + p.getName() + "\", \""
+          + p.getValueExpression().getExpressionString() + "\");\n");
     }
   }
 

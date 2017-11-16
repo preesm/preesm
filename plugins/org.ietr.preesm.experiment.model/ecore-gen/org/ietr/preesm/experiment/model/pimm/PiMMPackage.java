@@ -1369,12 +1369,12 @@ public interface PiMMPackage extends EPackage {
   int DELAY_FEATURE_COUNT = PiMMPackage.PARAMETERIZABLE_FEATURE_COUNT + 1;
 
   /**
-   * The feature id for the '<em><b>String</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The feature id for the '<em><b>Expression String</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int EXPRESSION__STRING = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 0;
+  int EXPRESSION__EXPRESSION_STRING = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 0;
 
   /**
    * The number of structural features of the '<em>Expression</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2346,15 +2346,15 @@ public interface PiMMPackage extends EPackage {
   EClass getExpression();
 
   /**
-   * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Expression#getString <em>String</em>}'. <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Expression#getExpressionString <em>Expression String</em>}'. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the meta object for the attribute '<em>String</em>'.
-   * @see org.ietr.preesm.experiment.model.pimm.Expression#getString()
+   * @return the meta object for the attribute '<em>Expression String</em>'.
+   * @see org.ietr.preesm.experiment.model.pimm.Expression#getExpressionString()
    * @see #getExpression()
    * @generated
    */
-  EAttribute getExpression_String();
+  EAttribute getExpression_ExpressionString();
 
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.HRefinement <em>HRefinement</em>}'. <!-- begin-user-doc --> <!--
@@ -3059,11 +3059,11 @@ public interface PiMMPackage extends EPackage {
     EClass EXPRESSION = PiMMPackage.eINSTANCE.getExpression();
 
     /**
-     * The meta object literal for the '<em><b>String</b></em>' attribute feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * The meta object literal for the '<em><b>Expression String</b></em>' attribute feature. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
      * @generated
      */
-    EAttribute EXPRESSION__STRING = PiMMPackage.eINSTANCE.getExpression_String();
+    EAttribute EXPRESSION__EXPRESSION_STRING = PiMMPackage.eINSTANCE.getExpression_ExpressionString();
 
     /**
      * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl <em>HRefinement</em>}' class. <!-- begin-user-doc -->

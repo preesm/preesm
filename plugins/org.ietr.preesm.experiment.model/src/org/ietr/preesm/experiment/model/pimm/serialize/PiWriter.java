@@ -353,7 +353,7 @@ public class PiWriter {
    */
   protected void writeDelay(final Element fifoElt, final Delay delay) {
     writeDataElt(fifoElt, PiIdentifiers.DELAY, null);
-    fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, delay.getExpression().getString());
+    fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, delay.getExpression().getExpressionString());
     // TODO when delay class will be updated, modify the writer/parser.
     // Maybe a specific element will be needed to store the Expression
     // associated to a delay as well as it .h file storing the default value
@@ -536,7 +536,7 @@ public class PiWriter {
     // Set the kind of the node
     if (!param.isConfigurationInterface()) {
       paramElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.PARAMETER);
-      paramElt.setAttribute(PiIdentifiers.PARAMETER_EXPRESSION, param.getValueExpression().getString());
+      paramElt.setAttribute(PiIdentifiers.PARAMETER_EXPRESSION, param.getValueExpression().getExpressionString());
     } else {
       paramElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.CONFIGURATION_INPUT_INTERFACE);
     }
@@ -586,10 +586,10 @@ public class PiWriter {
 
       switch (port.getKind()) {
         case PiIdentifiers.DATA_INPUT_PORT:
-          portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION, ((DataInputPort) port).getPortRateExpression().getString());
+          portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION, ((DataInputPort) port).getPortRateExpression().getExpressionString());
           break;
         case PiIdentifiers.DATA_OUTPUT_PORT:
-          portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION, ((DataOutputPort) port).getPortRateExpression().getString());
+          portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION, ((DataOutputPort) port).getPortRateExpression().getExpressionString());
           break;
         case PiIdentifiers.CONFIGURATION_INPUT_PORT:
           break;

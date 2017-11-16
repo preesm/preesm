@@ -993,13 +993,12 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the expression string
    * @generated
    */
   @Override
-  public EAttribute getExpression_String() {
+  public EAttribute getExpression_ExpressionString() {
     return (EAttribute) this.expressionEClass.getEStructuralFeatures().get(0);
   }
 
@@ -1362,7 +1361,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     createEReference(this.delayEClass, PiMMPackage.DELAY__EXPRESSION);
 
     this.expressionEClass = createEClass(PiMMPackage.EXPRESSION);
-    createEAttribute(this.expressionEClass, PiMMPackage.EXPRESSION__STRING);
+    createEAttribute(this.expressionEClass, PiMMPackage.EXPRESSION__EXPRESSION_STRING);
 
     this.hRefinementEClass = createEClass(PiMMPackage.HREFINEMENT);
     createEReference(this.hRefinementEClass, PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE);
@@ -1650,9 +1649,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     initEClass(this.expressionEClass, Expression.class, "Expression", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getExpression_String(), this.ecorePackage.getEString(), "string", "0", 1, 1, Expression.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEAttribute(getExpression_ExpressionString(), this.ecorePackage.getEString(), "expressionString", "0", 1, 1, Expression.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID,
+        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
     addEOperation(this.expressionEClass, this.ecorePackage.getEString(), "evaluate", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 

@@ -199,7 +199,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
       // be a parameter
       if (setter instanceof Parameter) {
         final Expression pExp = this.piFactory.createExpression();
-        pExp.setString(((Parameter) setter).getValueExpression().getString());
+        pExp.setExpressionString(((Parameter) setter).getValueExpression().getExpressionString());
         p.setValueExpression(pExp);
       }
     } else {
@@ -208,7 +208,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
       final Integer value = this.execution.getUniqueValue(p);
       if (value != null) {
         final Expression pExp = this.piFactory.createExpression();
-        pExp.setString(value.toString());
+        pExp.setExpressionString(value.toString());
         p.setValueExpression(pExp);
       }
     }
@@ -226,7 +226,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
     // a parameter
     if (setter instanceof Parameter) {
       final Expression pExp = this.piFactory.createExpression();
-      pExp.setString(((Parameter) setter).getValueExpression().getString());
+      pExp.setExpressionString(((Parameter) setter).getValueExpression().getExpressionString());
       cii.setValueExpression(pExp);
     }
   }
@@ -250,7 +250,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
         // parameters and set the result as new expression
         final Expression pExp = this.piFactory.createExpression();
         final String value = p.getValueExpression().evaluate();
-        pExp.setString(value);
+        pExp.setExpressionString(value);
         p.setValueExpression(pExp);
       }
     }

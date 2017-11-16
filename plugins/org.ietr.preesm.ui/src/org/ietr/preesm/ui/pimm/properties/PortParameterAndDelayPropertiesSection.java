@@ -246,7 +246,7 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 
       if (bo instanceof Parameter) {
         final Parameter param = (Parameter) bo;
-        if (param.getValueExpression().getString().compareTo(this.txtExpression.getText()) != 0) {
+        if (param.getValueExpression().getExpressionString().compareTo(this.txtExpression.getText()) != 0) {
           setNewExpression(param.getValueExpression(), this.txtExpression.getText());
           getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
         }
@@ -276,7 +276,7 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 
       if (bo instanceof Delay) {
         final Delay delay = (Delay) bo;
-        if (delay.getExpression().getString().compareTo(this.txtExpression.getText()) != 0) {
+        if (delay.getExpression().getExpressionString().compareTo(this.txtExpression.getText()) != 0) {
           setNewExpression(delay.getExpression(), this.txtExpression.getText());
           getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
         }
@@ -339,7 +339,7 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
       if (elementValueExpression != null) {
         this.txtExpression.setEnabled(true);
 
-        final String eltExprString = elementValueExpression.getString();
+        final String eltExprString = elementValueExpression.getExpressionString();
         if (this.txtExpression.getText().compareTo(eltExprString) != 0) {
           this.txtExpression.setText(eltExprString);
         }
