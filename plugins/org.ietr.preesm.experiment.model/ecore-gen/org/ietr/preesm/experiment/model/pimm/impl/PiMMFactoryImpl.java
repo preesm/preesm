@@ -369,14 +369,11 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @return the parameter
-   * @generated NOT
+   * @generated
    */
   @Override
   public Parameter createParameter() {
     final ParameterImpl parameter = new ParameterImpl();
-    // Set the expression to 1 to prevent from errors with division with
-    // default expression value (0)
-    parameter.getValueExpression().setString("1");
     return parameter;
   }
 

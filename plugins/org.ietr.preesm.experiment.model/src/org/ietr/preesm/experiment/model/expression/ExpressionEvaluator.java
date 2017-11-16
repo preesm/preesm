@@ -53,6 +53,10 @@ import org.nfunk.jep.ParseException;
  */
 public class ExpressionEvaluator {
 
+  private ExpressionEvaluator() {
+    // use static methods only
+  }
+
   /**
    * Take an {@link Expression}, use its eContainers to lookup parameters and finally evaluates the expression to a long value representing the result
    *
@@ -84,9 +88,7 @@ public class ExpressionEvaluator {
     final JEP jep = new JEP();
 
     if (addInputParameterValues != null) {
-      addInputParameterValues.forEach((name, value) -> {
-        jep.addVariable(name, value);
-      });
+      addInputParameterValues.forEach(jep::addVariable);
     }
     jep.addStandardConstants();
     jep.addStandardFunctions();
@@ -95,6 +97,7 @@ public class ExpressionEvaluator {
     jep.addFunction("ceil", new CeilFunction());
 
     return jep;
+
   }
 
   private static long parse(final String allExpression, final JEP jep) throws ParseException {
@@ -104,8 +107,10 @@ public class ExpressionEvaluator {
       throw new UnsupportedOperationException("Unsupported result type " + result.getClass().getSimpleName());
     }
     final Double dResult = (Double) result;
-    final long round = Math.round(dResult);
-    return round;
+    if (Double.isInfinite(dResult)) {
+      throw new ExpressionEvaluationException("Expression " + allExpression + " evaluated to infinity.");
+    }
+    return Math.round(dResult);
   }
 
   private static Parameterizable lookUpParameters(final Expression expression) {
@@ -115,7 +120,7 @@ public class ExpressionEvaluator {
     } else if (expression.eContainer().eContainer() instanceof Parameterizable) {
       parameterizableObj = (Parameterizable) expression.eContainer().eContainer();
     } else {
-      throw new RuntimeException("Neither a child of Parameterizable nor a child of a child of Parameterizable");
+      throw new ExpressionEvaluationException("Neither a child of Parameterizable nor a child of a child of Parameterizable");
     }
     return parameterizableObj;
   }
