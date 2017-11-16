@@ -68,7 +68,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  *
  * @generated
  */
-public class CHeaderRefinementImpl extends RefinementImpl implements CHeaderRefinement {
+public class CHeaderRefinementImpl extends PiSDFRefinementImpl implements CHeaderRefinement {
   /**
    * The cached value of the '{@link #getLoopPrototype() <em>Loop Prototype</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *

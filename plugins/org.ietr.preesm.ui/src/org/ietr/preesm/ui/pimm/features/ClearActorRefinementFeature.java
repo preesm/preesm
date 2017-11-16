@@ -42,11 +42,11 @@ import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 
 // TODO: Auto-generated Javadoc
 /**
- * Custom Feature to clear the {@link Refinement} of an {@link Actor}.
+ * Custom Feature to clear the {@link PiSDFRefinement} of an {@link Actor}.
  *
  * @author jheulot
  */
@@ -119,7 +119,7 @@ public class ClearActorRefinementFeature extends AbstractCustomFeature {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
       if (bo instanceof Actor) {
         final Actor actor = (Actor) bo;
-        final Refinement refinement = actor.getRefinement();
+        final PiSDFRefinement refinement = actor.getRefinement();
 
         refinement.setFilePath(null);
 

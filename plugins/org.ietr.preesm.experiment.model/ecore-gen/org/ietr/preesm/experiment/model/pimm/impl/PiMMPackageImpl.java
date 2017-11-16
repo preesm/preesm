@@ -78,9 +78,9 @@ import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.visitor.VisitorPackage;
 import org.ietr.preesm.experiment.model.pimm.visitor.impl.VisitorPackageImpl;
@@ -199,11 +199,11 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   private EClass configOutputInterfaceEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
-  private EClass refinementEClass = null;
+  private EClass piSDFRefinementEClass = null;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
@@ -829,36 +829,33 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the refinement
    * @generated
    */
   @Override
-  public EClass getRefinement() {
-    return this.refinementEClass;
+  public EClass getPiSDFRefinement() {
+    return this.piSDFRefinementEClass;
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the refinement file name
    * @generated
    */
   @Override
-  public EAttribute getRefinement_FileName() {
-    return (EAttribute) this.refinementEClass.getEStructuralFeatures().get(0);
+  public EAttribute getPiSDFRefinement_FileName() {
+    return (EAttribute) this.piSDFRefinementEClass.getEStructuralFeatures().get(0);
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the refinement file path
    * @generated
    */
   @Override
-  public EAttribute getRefinement_FilePath() {
-    return (EAttribute) this.refinementEClass.getEStructuralFeatures().get(1);
+  public EAttribute getPiSDFRefinement_FilePath() {
+    return (EAttribute) this.piSDFRefinementEClass.getEStructuralFeatures().get(1);
   }
 
   /**
@@ -1338,9 +1335,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     this.configOutputInterfaceEClass = createEClass(PiMMPackage.CONFIG_OUTPUT_INTERFACE);
 
-    this.refinementEClass = createEClass(PiMMPackage.REFINEMENT);
-    createEAttribute(this.refinementEClass, PiMMPackage.REFINEMENT__FILE_NAME);
-    createEAttribute(this.refinementEClass, PiMMPackage.REFINEMENT__FILE_PATH);
+    this.piSDFRefinementEClass = createEClass(PiMMPackage.PI_SDF_REFINEMENT);
+    createEAttribute(this.piSDFRefinementEClass, PiMMPackage.PI_SDF_REFINEMENT__FILE_NAME);
+    createEAttribute(this.piSDFRefinementEClass, PiMMPackage.PI_SDF_REFINEMENT__FILE_PATH);
 
     this.parameterEClass = createEClass(PiMMPackage.PARAMETER);
     createEAttribute(this.parameterEClass, PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE);
@@ -1448,13 +1445,13 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     this.dataOutputInterfaceEClass.getESuperTypes().add(getInterfaceActor());
     this.configInputInterfaceEClass.getESuperTypes().add(getParameter());
     this.configOutputInterfaceEClass.getESuperTypes().add(getInterfaceActor());
-    this.refinementEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
+    this.piSDFRefinementEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.parameterEClass.getESuperTypes().add(getAbstractVertex());
     this.parameterEClass.getESuperTypes().add(getISetter());
     this.dependencyEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.delayEClass.getESuperTypes().add(getParameterizable());
     this.expressionEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
-    this.cHeaderRefinementEClass.getESuperTypes().add(getRefinement());
+    this.cHeaderRefinementEClass.getESuperTypes().add(getPiSDFRefinement());
     this.functionPrototypeEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.functionParameterEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.dataPortEClass.getESuperTypes().add(getPort());
@@ -1520,9 +1517,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     addEOperation(this.piGraphEClass, getParameter(), "getAllParameters", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     initEClass(this.actorEClass, Actor.class, "Actor", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getActor_Refinement(), getRefinement(), null, "refinement", null, 1, 1, Actor.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-        EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getActor_Refinement(), getPiSDFRefinement(), null, "refinement", null, 1, 1, Actor.class, !EPackageImpl.IS_TRANSIENT,
+        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
+        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
     initEAttribute(getActor_ConfigurationActor(), this.ecorePackage.getEBoolean(), "configurationActor", null, 1, 1, Actor.class, !EPackageImpl.IS_TRANSIENT,
         EPackageImpl.IS_VOLATILE, !EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
         !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
@@ -1598,16 +1595,16 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     initEClass(this.configOutputInterfaceEClass, ConfigOutputInterface.class, "ConfigOutputInterface", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
 
-    initEClass(this.refinementEClass, Refinement.class, "Refinement", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
+    initEClass(this.piSDFRefinementEClass, PiSDFRefinement.class, "PiSDFRefinement", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getRefinement_FileName(), this.ecorePackage.getEString(), "fileName", "\"\"", 0, 1, Refinement.class, !EPackageImpl.IS_TRANSIENT,
+    initEAttribute(getPiSDFRefinement_FileName(), this.ecorePackage.getEString(), "fileName", "\"\"", 0, 1, PiSDFRefinement.class, !EPackageImpl.IS_TRANSIENT,
         !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
         !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEAttribute(getRefinement_FilePath(), getIPath(), "filePath", null, 0, 1, Refinement.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-        EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
-        EPackageImpl.IS_ORDERED);
+    initEAttribute(getPiSDFRefinement_FilePath(), getIPath(), "filePath", null, 0, 1, PiSDFRefinement.class, !EPackageImpl.IS_TRANSIENT,
+        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
+        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
-    addEOperation(this.refinementEClass, getAbstractActor(), "getAbstractActor", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+    addEOperation(this.piSDFRefinementEClass, getAbstractActor(), "getAbstractActor", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     initEClass(this.parameterEClass, Parameter.class, "Parameter", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);

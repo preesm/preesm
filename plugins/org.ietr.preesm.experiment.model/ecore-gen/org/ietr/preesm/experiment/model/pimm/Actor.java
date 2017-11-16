@@ -66,12 +66,12 @@ public interface Actor extends ExecutableActor {
    * <!-- end-user-doc -->
    *
    * @return the value of the '<em>Refinement</em>' containment reference.
-   * @see #setRefinement(Refinement)
+   * @see #setRefinement(PiSDFRefinement)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getActor_Refinement()
    * @model containment="true" required="true"
    * @generated
    */
-  Refinement getRefinement();
+  PiSDFRefinement getRefinement();
 
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Actor#getRefinement <em>Refinement</em>}' containment reference. <!-- begin-user-doc
@@ -82,7 +82,7 @@ public interface Actor extends ExecutableActor {
    * @see #getRefinement()
    * @generated
    */
-  void setRefinement(Refinement value);
+  void setRefinement(PiSDFRefinement value);
 
   /**
    * Returns the value of the '<em><b>Configuration Actor</b></em>' attribute. <!-- begin-user-doc -->

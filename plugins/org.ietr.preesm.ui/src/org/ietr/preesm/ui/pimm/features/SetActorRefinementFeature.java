@@ -53,13 +53,13 @@ import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 import org.ietr.preesm.utils.pimm.header.parser.HeaderParser;
 
 // TODO: Auto-generated Javadoc
 /**
- * Custom Feature to set a new {@link Refinement} of an {@link Actor}.
+ * Custom Feature to set a new {@link PiSDFRefinement} of an {@link Actor}.
  *
  * @author kdesnos
  */
@@ -198,7 +198,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
    */
   protected void setActorRefinement(final Actor actor, IPath newFilePath) {
     final String dialogTitle = "Select a refinement file";
-    final Refinement refinement = actor.getRefinement();
+    final PiSDFRefinement refinement = actor.getRefinement();
 
     boolean validRefinement = false;
     do {

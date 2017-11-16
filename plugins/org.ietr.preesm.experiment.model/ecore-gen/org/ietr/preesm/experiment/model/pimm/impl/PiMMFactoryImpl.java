@@ -71,8 +71,8 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 
 // TODO: Auto-generated Javadoc
@@ -144,8 +144,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
         return createConfigInputInterface();
       case PiMMPackage.CONFIG_OUTPUT_INTERFACE:
         return createConfigOutputInterface();
-      case PiMMPackage.REFINEMENT:
-        return createRefinement();
+      case PiMMPackage.PI_SDF_REFINEMENT:
+        return createPiSDFRefinement();
       case PiMMPackage.PARAMETER:
         return createParameter();
       case PiMMPackage.DEPENDENCY:
@@ -354,15 +354,14 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the refinement
    * @generated
    */
   @Override
-  public Refinement createRefinement() {
-    final RefinementImpl refinement = new RefinementImpl();
-    return refinement;
+  public PiSDFRefinement createPiSDFRefinement() {
+    final PiSDFRefinementImpl piSDFRefinement = new PiSDFRefinementImpl();
+    return piSDFRefinement;
   }
 
   /**

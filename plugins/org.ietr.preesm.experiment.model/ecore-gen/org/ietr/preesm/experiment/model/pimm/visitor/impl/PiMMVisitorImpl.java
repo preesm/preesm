@@ -32,8 +32,8 @@ import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
@@ -332,7 +332,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
    * @generated
    */
   @Override
-  public void visitRefinement(final Refinement subject) {
+  public void visitRefinement(final PiSDFRefinement subject) {
     // TODO: implement this method
     // Ensure that you remove @generated or mark it @generated NOT
     throw new UnsupportedOperationException();

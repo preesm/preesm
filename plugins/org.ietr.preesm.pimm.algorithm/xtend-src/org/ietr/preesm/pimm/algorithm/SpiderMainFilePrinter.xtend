@@ -60,7 +60,7 @@ class SpiderMainFilePrinter {
 	/* Include your files here */
 	«FOR actor : pg.actors»
 	  «IF actor.refinement instanceof CHeaderRefinement && (actor.refinement as CHeaderRefinement).getInitPrototype !== null»
-	    #include <«actor.refinement.fileName»>
+	    #include <«actor.refinement.getFileName»>
 	  «ENDIF»
 	«ENDFOR»
 	

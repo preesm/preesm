@@ -1036,16 +1036,6 @@ public interface PiMMPackage extends EPackage {
   int CONFIG_OUTPUT_INTERFACE = 15;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.RefinementImpl <em>Refinement</em>}' class. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.RefinementImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getRefinement()
-   * @generated
-   */
-  int REFINEMENT = 16;
-
-  /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl <em>Parameter</em>}' class. <!-- begin-user-doc --> <!--
    * end-user-doc -->
    *
@@ -1281,12 +1271,22 @@ public interface PiMMPackage extends EPackage {
   int CONFIG_OUTPUT_INTERFACE_FEATURE_COUNT = PiMMPackage.INTERFACE_ACTOR_FEATURE_COUNT + 0;
 
   /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.PiSDFRefinementImpl <em>Pi SDF Refinement</em>}' class. <!-- begin-user-doc
+   * --> <!-- end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiSDFRefinementImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getPiSDFRefinement()
+   * @generated
+   */
+  int PI_SDF_REFINEMENT = 16;
+
+  /**
    * The feature id for the '<em><b>File Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int REFINEMENT__FILE_NAME = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 0;
+  int PI_SDF_REFINEMENT__FILE_NAME = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 0;
 
   /**
    * The feature id for the '<em><b>File Path</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1294,15 +1294,15 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int REFINEMENT__FILE_PATH = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 1;
+  int PI_SDF_REFINEMENT__FILE_PATH = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 1;
 
   /**
-   * The number of structural features of the '<em>Refinement</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The number of structural features of the '<em>Pi SDF Refinement</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int REFINEMENT_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 2;
+  int PI_SDF_REFINEMENT_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 2;
 
   /**
    * The feature id for the '<em><b>Setter</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1400,7 +1400,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int CHEADER_REFINEMENT__FILE_NAME = PiMMPackage.REFINEMENT__FILE_NAME;
+  int CHEADER_REFINEMENT__FILE_NAME = PiMMPackage.PI_SDF_REFINEMENT__FILE_NAME;
 
   /**
    * The feature id for the '<em><b>File Path</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1408,7 +1408,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int CHEADER_REFINEMENT__FILE_PATH = PiMMPackage.REFINEMENT__FILE_PATH;
+  int CHEADER_REFINEMENT__FILE_PATH = PiMMPackage.PI_SDF_REFINEMENT__FILE_PATH;
 
   /**
    * The feature id for the '<em><b>Loop Prototype</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1416,7 +1416,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int CHEADER_REFINEMENT__LOOP_PROTOTYPE = PiMMPackage.REFINEMENT_FEATURE_COUNT + 0;
+  int CHEADER_REFINEMENT__LOOP_PROTOTYPE = PiMMPackage.PI_SDF_REFINEMENT_FEATURE_COUNT + 0;
 
   /**
    * The feature id for the '<em><b>Init Prototype</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1424,7 +1424,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int CHEADER_REFINEMENT__INIT_PROTOTYPE = PiMMPackage.REFINEMENT_FEATURE_COUNT + 1;
+  int CHEADER_REFINEMENT__INIT_PROTOTYPE = PiMMPackage.PI_SDF_REFINEMENT_FEATURE_COUNT + 1;
 
   /**
    * The number of structural features of the '<em>CHeader Refinement</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1432,7 +1432,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int CHEADER_REFINEMENT_FEATURE_COUNT = PiMMPackage.REFINEMENT_FEATURE_COUNT + 2;
+  int CHEADER_REFINEMENT_FEATURE_COUNT = PiMMPackage.PI_SDF_REFINEMENT_FEATURE_COUNT + 2;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl <em>Function Prototype</em>}' class. <!--
@@ -2189,36 +2189,36 @@ public interface PiMMPackage extends EPackage {
   EClass getConfigOutputInterface();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Refinement <em>Refinement</em>}'. <!-- begin-user-doc --> <!-- end-user-doc
-   * -->
+   * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.PiSDFRefinement <em>Pi SDF Refinement</em>}'. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    *
-   * @return the meta object for class '<em>Refinement</em>'.
-   * @see org.ietr.preesm.experiment.model.pimm.Refinement
+   * @return the meta object for class '<em>Pi SDF Refinement</em>'.
+   * @see org.ietr.preesm.experiment.model.pimm.PiSDFRefinement
    * @generated
    */
-  EClass getRefinement();
+  EClass getPiSDFRefinement();
 
   /**
-   * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Refinement#getFileName <em>File Name</em>}'. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.PiSDFRefinement#getFileName <em>File Name</em>}'. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the attribute '<em>File Name</em>'.
-   * @see org.ietr.preesm.experiment.model.pimm.Refinement#getFileName()
-   * @see #getRefinement()
+   * @see org.ietr.preesm.experiment.model.pimm.PiSDFRefinement#getFileName()
+   * @see #getPiSDFRefinement()
    * @generated
    */
-  EAttribute getRefinement_FileName();
+  EAttribute getPiSDFRefinement_FileName();
 
   /**
-   * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Refinement#getFilePath <em>File Path</em>}'. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.PiSDFRefinement#getFilePath <em>File Path</em>}'. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the attribute '<em>File Path</em>'.
-   * @see org.ietr.preesm.experiment.model.pimm.Refinement#getFilePath()
-   * @see #getRefinement()
+   * @see org.ietr.preesm.experiment.model.pimm.PiSDFRefinement#getFilePath()
+   * @see #getPiSDFRefinement()
    * @generated
    */
-  EAttribute getRefinement_FilePath();
+  EAttribute getPiSDFRefinement_FilePath();
 
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Parameter <em>Parameter</em>}'. <!-- begin-user-doc --> <!-- end-user-doc
@@ -2936,28 +2936,28 @@ public interface PiMMPackage extends EPackage {
     EClass CONFIG_OUTPUT_INTERFACE = PiMMPackage.eINSTANCE.getConfigOutputInterface();
 
     /**
-     * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.RefinementImpl <em>Refinement</em>}' class. <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.PiSDFRefinementImpl <em>Pi SDF Refinement</em>}' class. <!--
+     * begin-user-doc --> <!-- end-user-doc -->
      *
-     * @see org.ietr.preesm.experiment.model.pimm.impl.RefinementImpl
-     * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getRefinement()
+     * @see org.ietr.preesm.experiment.model.pimm.impl.PiSDFRefinementImpl
+     * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getPiSDFRefinement()
      * @generated
      */
-    EClass REFINEMENT = PiMMPackage.eINSTANCE.getRefinement();
+    EClass PI_SDF_REFINEMENT = PiMMPackage.eINSTANCE.getPiSDFRefinement();
 
     /**
      * The meta object literal for the '<em><b>File Name</b></em>' attribute feature. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
      * @generated
      */
-    EAttribute REFINEMENT__FILE_NAME = PiMMPackage.eINSTANCE.getRefinement_FileName();
+    EAttribute PI_SDF_REFINEMENT__FILE_NAME = PiMMPackage.eINSTANCE.getPiSDFRefinement_FileName();
 
     /**
      * The meta object literal for the '<em><b>File Path</b></em>' attribute feature. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
      * @generated
      */
-    EAttribute REFINEMENT__FILE_PATH = PiMMPackage.eINSTANCE.getRefinement_FilePath();
+    EAttribute PI_SDF_REFINEMENT__FILE_PATH = PiMMPackage.eINSTANCE.getPiSDFRefinement_FilePath();
 
     /**
      * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl <em>Parameter</em>}' class. <!-- begin-user-doc --> <!--

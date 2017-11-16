@@ -31,8 +31,8 @@ import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 
 /**
@@ -226,7 +226,7 @@ public interface PiMMVisitor extends EObject {
    * @model subjectRequired="true"
    * @generated
    */
-  void visitRefinement(Refinement subject);
+  void visitRefinement(PiSDFRefinement subject);
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->

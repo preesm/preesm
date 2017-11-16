@@ -52,7 +52,7 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 import org.ietr.preesm.utils.sdf.NameComparator;
 
@@ -117,7 +117,7 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
     final Set<AbstractActor> result = new ConcurrentSkipListSet<>((o1, o2) -> o1.getName().compareTo(o2.getName()));
     for (final AbstractActor vertex : vertices) {
       if (vertex instanceof Actor) {
-        final Refinement refinement = ((Actor) vertex).getRefinement();
+        final PiSDFRefinement refinement = ((Actor) vertex).getRefinement();
         if (refinement == null) {
           result.add(vertex);
         } else {

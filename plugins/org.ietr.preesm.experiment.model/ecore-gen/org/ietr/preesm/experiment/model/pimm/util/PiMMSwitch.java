@@ -71,8 +71,8 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
 
@@ -418,11 +418,11 @@ public class PiMMSwitch<T> extends Switch<T> {
         }
         return result;
       }
-      case PiMMPackage.REFINEMENT: {
-        final Refinement refinement = (Refinement) theEObject;
-        T result = caseRefinement(refinement);
+      case PiMMPackage.PI_SDF_REFINEMENT: {
+        final PiSDFRefinement piSDFRefinement = (PiSDFRefinement) theEObject;
+        T result = casePiSDFRefinement(piSDFRefinement);
         if (result == null) {
-          result = casePiMMVisitable(refinement);
+          result = casePiMMVisitable(piSDFRefinement);
         }
         if (result == null) {
           result = defaultCase(theEObject);
@@ -497,7 +497,7 @@ public class PiMMSwitch<T> extends Switch<T> {
         final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) theEObject;
         T result = caseCHeaderRefinement(cHeaderRefinement);
         if (result == null) {
-          result = caseRefinement(cHeaderRefinement);
+          result = casePiSDFRefinement(cHeaderRefinement);
         }
         if (result == null) {
           result = casePiMMVisitable(cHeaderRefinement);
@@ -871,16 +871,16 @@ public class PiMMSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Refinement</em>'. <!-- begin-user-doc --> This implementation returns null; returning
-   * a non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Pi SDF Refinement</em>'. <!-- begin-user-doc --> This implementation returns null;
+   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
    *
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Refinement</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Pi SDF Refinement</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
-  public T caseRefinement(final Refinement object) {
+  public T casePiSDFRefinement(final PiSDFRefinement object) {
     return null;
   }
 

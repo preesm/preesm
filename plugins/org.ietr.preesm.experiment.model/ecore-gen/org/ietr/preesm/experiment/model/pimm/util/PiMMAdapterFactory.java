@@ -74,8 +74,8 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
 
@@ -211,8 +211,8 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
     }
 
     @Override
-    public Adapter caseRefinement(final Refinement object) {
-      return createRefinementAdapter();
+    public Adapter casePiSDFRefinement(final PiSDFRefinement object) {
+      return createPiSDFRefinementAdapter();
     }
 
     @Override
@@ -505,15 +505,15 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.Refinement <em>Refinement</em>}'. <!-- begin-user-doc --> This
-   * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
-   * end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.PiSDFRefinement <em>Pi SDF Refinement</em>}'. <!--
+   * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
+   * all the cases anyway. <!-- end-user-doc -->
    *
    * @return the new adapter.
-   * @see org.ietr.preesm.experiment.model.pimm.Refinement
+   * @see org.ietr.preesm.experiment.model.pimm.PiSDFRefinement
    * @generated
    */
-  public Adapter createRefinementAdapter() {
+  public Adapter createPiSDFRefinementAdapter() {
     return null;
   }
 

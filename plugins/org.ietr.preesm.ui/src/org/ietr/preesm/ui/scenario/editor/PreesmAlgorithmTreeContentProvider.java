@@ -54,7 +54,7 @@ import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 
 // TODO: Auto-generated Javadoc
@@ -121,7 +121,7 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
         table = filterPISDFChildren(graph.getVertices()).toArray();
       } else if (parentElement instanceof Actor) {
         final Actor actor = (Actor) parentElement;
-        final Refinement refinement = actor.getRefinement();
+        final PiSDFRefinement refinement = actor.getRefinement();
 
         if (refinement != null) {
           final AbstractActor subgraph = refinement.getAbstractActor();

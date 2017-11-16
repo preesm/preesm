@@ -48,15 +48,15 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
  * The following features are supported:
  * </p>
  * <ul>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.Refinement#getFileName <em>File Name</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.Refinement#getFilePath <em>File Path</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.PiSDFRefinement#getFileName <em>File Name</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.PiSDFRefinement#getFilePath <em>File Path</em>}</li>
  * </ul>
  *
- * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getRefinement()
+ * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiSDFRefinement()
  * @model
  * @generated
  */
-public interface Refinement extends PiMMVisitable {
+public interface PiSDFRefinement extends PiMMVisitable {
   /**
    * Returns the value of the '<em><b>File Name</b></em>' attribute. The default value is <code>"\"\""</code>. <!-- begin-user-doc -->
    * <p>
@@ -66,14 +66,14 @@ public interface Refinement extends PiMMVisitable {
    *
    * @return the value of the '<em>File Name</em>' attribute.
    * @see #setFileName(String)
-   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getRefinement_FileName()
+   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiSDFRefinement_FileName()
    * @model default="\"\""
    * @generated
    */
   String getFileName();
 
   /**
-   * Return the URI of the file associated to the {@link Refinement}.
+   * Return the URI of the file associated to the {@link PiSDFRefinement}.
    *
    * @return the URI of the file associated to the Refinement or <code>null</code> if the file does not exists.
    */
@@ -88,8 +88,8 @@ public interface Refinement extends PiMMVisitable {
   void setFilePath(IPath path);
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Refinement#getFileName <em>File Name</em>}' attribute. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.PiSDFRefinement#getFileName <em>File Name</em>}' attribute. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
    *
    * @param value
    *          the new value of the '<em>File Name</em>' attribute.

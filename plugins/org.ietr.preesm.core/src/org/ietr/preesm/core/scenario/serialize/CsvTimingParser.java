@@ -57,7 +57,7 @@ import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 
 // TODO: Auto-generated Javadoc
@@ -193,7 +193,7 @@ public class CsvTimingParser {
         final Actor actor = (Actor) vertex;
 
         // Handle unconnected graphs from hierarchical vertices
-        final Refinement refinement = actor.getRefinement();
+        final PiSDFRefinement refinement = actor.getRefinement();
         AbstractActor subgraph = null;
         if (refinement != null) {
           subgraph = refinement.getAbstractActor();

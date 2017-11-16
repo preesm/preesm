@@ -68,8 +68,8 @@ import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMDefaultVisitor;
 
@@ -439,7 +439,7 @@ public class SpiderPreProcessVisitor extends PiMMDefaultVisitor {
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitRefinement(org.ietr.preesm.experiment.model.pimm.Refinement)
    */
   @Override
-  public void visitRefinement(final Refinement r) {
+  public void visitRefinement(final PiSDFRefinement r) {
     throw new UnsupportedOperationException();
   }
 

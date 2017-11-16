@@ -146,12 +146,12 @@ public interface PiMMFactory extends EFactory {
   ConfigOutputInterface createConfigOutputInterface();
 
   /**
-   * Returns a new object of class '<em>Refinement</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * Returns a new object of class '<em>Pi SDF Refinement</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return a new object of class '<em>Refinement</em>'.
+   * @return a new object of class '<em>Pi SDF Refinement</em>'.
    * @generated
    */
-  Refinement createRefinement();
+  PiSDFRefinement createPiSDFRefinement();
 
   /**
    * Returns a new object of class '<em>Parameter</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->

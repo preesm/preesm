@@ -50,8 +50,8 @@ import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.ui.pimm.diagram.PiMMImageProvider;
 import org.ietr.preesm.ui.pimm.util.PortEqualityHelper;
 
@@ -117,7 +117,7 @@ public class ActorDecorators {
   }
 
   /**
-   * Get the {@link IDecorator}s indicating that the {@link Port}s of the {@link Actor} and those of its {@link Refinement} are not coherent.
+   * Get the {@link IDecorator}s indicating that the {@link Port}s of the {@link Actor} and those of its {@link PiSDFRefinement} are not coherent.
    *
    * @param actor
    *          the {@link Actor} to test.
@@ -138,7 +138,7 @@ public class ActorDecorators {
   }
 
   /**
-   * This method will check whether the {@link Port}s of the {@link Actor} {@link Refinement} are different from the current.
+   * This method will check whether the {@link Port}s of the {@link Actor} {@link PiSDFRefinement} are different from the current.
    *
    * @param actor
    *          the tested {@link Actor}

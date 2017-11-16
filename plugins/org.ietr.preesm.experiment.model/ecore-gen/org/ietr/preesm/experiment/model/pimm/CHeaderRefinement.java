@@ -51,7 +51,7 @@ package org.ietr.preesm.experiment.model.pimm;
  * @model
  * @generated
  */
-public interface CHeaderRefinement extends Refinement {
+public interface CHeaderRefinement extends PiSDFRefinement {
 
   /**
    * Returns the value of the '<em><b>Loop Prototype</b></em>' containment reference. <!-- begin-user-doc -->
