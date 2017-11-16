@@ -70,7 +70,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#getOutgoingDependencies <em>Outgoing Dependencies</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#isConfigurationInterface <em>Configuration Interface</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#getGraphPort <em>Graph Port</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#getExpression <em>Expression</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#getValueExpression <em>Value Expression</em>}</li>
  * </ul>
  *
  * @generated
@@ -116,20 +116,20 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
   protected ConfigInputPort graphPort;
 
   /**
-   * The cached value of the '{@link #getExpression() <em>Expression</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getValueExpression() <em>Value Expression</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @see #getExpression()
+   * @see #getValueExpression()
    * @generated
    * @ordered
    */
-  protected Expression expression;
+  protected Expression valueExpression;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    */
   protected ParameterImpl() {
     super();
-    setExpression(PiMMFactory.eINSTANCE.createExpression());
+    setValueExpression(PiMMFactory.eINSTANCE.createExpression());
   }
 
   /**
@@ -293,25 +293,21 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
    * @generated
    */
   @Override
-  public Expression getExpression() {
-    return this.expression;
+  public Expression getValueExpression() {
+    return this.valueExpression;
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param newExpression
-   *          the new expression
-   * @param msgs
-   *          the msgs
-   * @return the notification chain
    * @generated
    */
-  public NotificationChain basicSetExpression(final Expression newExpression, NotificationChain msgs) {
-    final Expression oldExpression = this.expression;
-    this.expression = newExpression;
+  public NotificationChain basicSetValueExpression(final Expression newValueExpression, NotificationChain msgs) {
+    final Expression oldValueExpression = this.valueExpression;
+    this.valueExpression = newValueExpression;
     if (eNotificationRequired()) {
-      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.PARAMETER__EXPRESSION, oldExpression, newExpression);
+      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.PARAMETER__VALUE_EXPRESSION, oldValueExpression,
+          newValueExpression);
       if (msgs == null) {
         msgs = notification;
       } else {
@@ -329,21 +325,23 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
    * @generated
    */
   @Override
-  public void setExpression(final Expression newExpression) {
-    if (newExpression != this.expression) {
+  public void setValueExpression(final Expression newValueExpression) {
+    if (newValueExpression != this.valueExpression) {
       NotificationChain msgs = null;
-      if (this.expression != null) {
-        msgs = ((InternalEObject) this.expression).eInverseRemove(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.PARAMETER__EXPRESSION, null, msgs);
+      if (this.valueExpression != null) {
+        msgs = ((InternalEObject) this.valueExpression).eInverseRemove(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.PARAMETER__VALUE_EXPRESSION,
+            null, msgs);
       }
-      if (newExpression != null) {
-        msgs = ((InternalEObject) newExpression).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.PARAMETER__EXPRESSION, null, msgs);
+      if (newValueExpression != null) {
+        msgs = ((InternalEObject) newValueExpression).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.PARAMETER__VALUE_EXPRESSION, null,
+            msgs);
       }
-      msgs = basicSetExpression(newExpression, msgs);
+      msgs = basicSetValueExpression(newValueExpression, msgs);
       if (msgs != null) {
         msgs.dispatch();
       }
     } else if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.PARAMETER__EXPRESSION, newExpression, newExpression));
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.PARAMETER__VALUE_EXPRESSION, newValueExpression, newValueExpression));
     }
   }
 
@@ -386,8 +384,8 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
     switch (featureID) {
       case PiMMPackage.PARAMETER__OUTGOING_DEPENDENCIES:
         return ((InternalEList<?>) getOutgoingDependencies()).basicRemove(otherEnd, msgs);
-      case PiMMPackage.PARAMETER__EXPRESSION:
-        return basicSetExpression(null, msgs);
+      case PiMMPackage.PARAMETER__VALUE_EXPRESSION:
+        return basicSetValueExpression(null, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
   }
@@ -416,8 +414,8 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
           return getGraphPort();
         }
         return basicGetGraphPort();
-      case PiMMPackage.PARAMETER__EXPRESSION:
-        return getExpression();
+      case PiMMPackage.PARAMETER__VALUE_EXPRESSION:
+        return getValueExpression();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -445,8 +443,8 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
       case PiMMPackage.PARAMETER__GRAPH_PORT:
         setGraphPort((ConfigInputPort) newValue);
         return;
-      case PiMMPackage.PARAMETER__EXPRESSION:
-        setExpression((Expression) newValue);
+      case PiMMPackage.PARAMETER__VALUE_EXPRESSION:
+        setValueExpression((Expression) newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -471,8 +469,8 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
       case PiMMPackage.PARAMETER__GRAPH_PORT:
         setGraphPort((ConfigInputPort) null);
         return;
-      case PiMMPackage.PARAMETER__EXPRESSION:
-        setExpression((Expression) null);
+      case PiMMPackage.PARAMETER__VALUE_EXPRESSION:
+        setValueExpression((Expression) null);
         return;
     }
     super.eUnset(featureID);
@@ -495,8 +493,8 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
         return this.configurationInterface != ParameterImpl.CONFIGURATION_INTERFACE_EDEFAULT;
       case PiMMPackage.PARAMETER__GRAPH_PORT:
         return this.graphPort != null;
-      case PiMMPackage.PARAMETER__EXPRESSION:
-        return this.expression != null;
+      case PiMMPackage.PARAMETER__VALUE_EXPRESSION:
+        return this.valueExpression != null;
     }
     return super.eIsSet(featureID);
   }

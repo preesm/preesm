@@ -246,8 +246,8 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 
       if (bo instanceof Parameter) {
         final Parameter param = (Parameter) bo;
-        if (param.getExpression().getString().compareTo(this.txtExpression.getText()) != 0) {
-          setNewExpression(param.getExpression(), this.txtExpression.getText());
+        if (param.getValueExpression().getString().compareTo(this.txtExpression.getText()) != 0) {
+          setNewExpression(param.getValueExpression(), this.txtExpression.getText());
           getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
         }
       } // end Parameter
@@ -307,7 +307,7 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 
       if (businessObject instanceof Parameter) {
         elementName = ((Parameter) businessObject).getName();
-        elementValueExpression = ((Parameter) businessObject).getExpression();
+        elementValueExpression = ((Parameter) businessObject).getValueExpression();
       } else if (businessObject instanceof DataPort) {
         final DataPort iPort = ((DataPort) businessObject);
 

@@ -179,7 +179,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
    */
   protected void parameters2GraphVariables(final PiGraph pg, final SDFGraph sdf) {
     for (final Parameter p : pg.getParameters()) {
-      final Variable var = new Variable(p.getName(), p.getExpression().evaluate());
+      final Variable var = new Variable(p.getName(), p.getValueExpression().evaluate());
       sdf.addVariable(var);
     }
   }
@@ -199,8 +199,8 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
       // be a parameter
       if (setter instanceof Parameter) {
         final Expression pExp = this.piFactory.createExpression();
-        pExp.setString(((Parameter) setter).getExpression().getString());
-        p.setExpression(pExp);
+        pExp.setString(((Parameter) setter).getValueExpression().getString());
+        p.setValueExpression(pExp);
       }
     } else {
       // If there is only one value available for Parameter p, we can set
@@ -209,7 +209,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
       if (value != null) {
         final Expression pExp = this.piFactory.createExpression();
         pExp.setString(value.toString());
-        p.setExpression(pExp);
+        p.setValueExpression(pExp);
       }
     }
   }
@@ -226,8 +226,8 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
     // a parameter
     if (setter instanceof Parameter) {
       final Expression pExp = this.piFactory.createExpression();
-      pExp.setString(((Parameter) setter).getExpression().getString());
-      cii.setExpression(pExp);
+      pExp.setString(((Parameter) setter).getValueExpression().getString());
+      cii.setValueExpression(pExp);
     }
   }
 
@@ -249,9 +249,9 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
         // Evaluate the expression wrt. the current values of the
         // parameters and set the result as new expression
         final Expression pExp = this.piFactory.createExpression();
-        final String value = p.getExpression().evaluate();
+        final String value = p.getValueExpression().evaluate();
         pExp.setString(value);
-        p.setExpression(pExp);
+        p.setValueExpression(pExp);
       }
     }
   }

@@ -133,7 +133,7 @@ public class ExpressionEvaluator {
           parameterName = port.getName();
         }
 
-        final String evaluatedParam = p.getExpression().evaluate();
+        final String evaluatedParam = p.getValueExpression().evaluate();
         final double parseDouble = Double.parseDouble(evaluatedParam);
         result.put(parameterName, parseDouble);
       }

@@ -631,7 +631,7 @@ public class PiParser {
   protected AbstractVertex parseParameter(final Element nodeElt, final PiGraph graph) {
     // Instantiate the new Parameter
     final Parameter param = PiMMFactory.eINSTANCE.createParameter();
-    param.getExpression().setString(nodeElt.getAttribute(PiIdentifiers.PARAMETER_EXPRESSION));
+    param.getValueExpression().setString(nodeElt.getAttribute(PiIdentifiers.PARAMETER_EXPRESSION));
     param.setConfigurationInterface(false);
     // param.setLocallyStatic(true);
     param.setGraphPort(null); // No port of the graph corresponds to this

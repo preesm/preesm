@@ -895,13 +895,12 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the parameter expression
    * @generated
    */
   @Override
-  public EReference getParameter_Expression() {
+  public EReference getParameter_ValueExpression() {
     return (EReference) this.parameterEClass.getEStructuralFeatures().get(2);
   }
 
@@ -1350,7 +1349,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     this.parameterEClass = createEClass(PiMMPackage.PARAMETER);
     createEAttribute(this.parameterEClass, PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE);
     createEReference(this.parameterEClass, PiMMPackage.PARAMETER__GRAPH_PORT);
-    createEReference(this.parameterEClass, PiMMPackage.PARAMETER__EXPRESSION);
+    createEReference(this.parameterEClass, PiMMPackage.PARAMETER__VALUE_EXPRESSION);
 
     this.dependencyEClass = createEClass(PiMMPackage.DEPENDENCY);
     createEReference(this.dependencyEClass, PiMMPackage.DEPENDENCY__SETTER);
@@ -1622,7 +1621,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     initEReference(getParameter_GraphPort(), getConfigInputPort(), null, "graphPort", null, 1, 1, Parameter.class, !EPackageImpl.IS_TRANSIENT,
         !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getParameter_Expression(), getExpression(), null, "expression", null, 1, 1, Parameter.class, !EPackageImpl.IS_TRANSIENT,
+    initEReference(getParameter_ValueExpression(), getExpression(), null, "valueExpression", null, 1, 1, Parameter.class, !EPackageImpl.IS_TRANSIENT,
         !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 

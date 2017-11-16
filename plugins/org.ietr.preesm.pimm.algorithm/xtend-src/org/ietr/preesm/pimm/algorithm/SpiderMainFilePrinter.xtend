@@ -227,7 +227,7 @@ class SpiderMainFilePrinter {
 	def static String printInitCall(Actor actor) '''
 	  «val proto = (actor.refinement as HRefinement).initPrototype»
 	  «proto.name»(«FOR param : proto.parameters SEPARATOR ", "»«
-	   Double.parseDouble(((actor.getPortNamed(param.name) as ConfigInputPort).incomingDependency.setter as Parameter).expression.evaluate) as int»«ENDFOR»);
+	   Double.parseDouble(((actor.getPortNamed(param.name) as ConfigInputPort).incomingDependency.setter as Parameter).valueExpression.evaluate) as int»«ENDFOR»);
 	'''
 	
 }

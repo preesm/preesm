@@ -276,7 +276,7 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
           parameters_proto.append(", ");
           parameters_def.append(", ");
         }
-        parameters_proto.append("Param " + p.getName() + " = " + ((int) Double.parseDouble(p.getExpression().evaluate())));
+        parameters_proto.append("Param " + p.getName() + " = " + ((int) Double.parseDouble(p.getValueExpression().evaluate())));
         parameters_def.append("Param " + p.getName());
       }
     }
@@ -623,7 +623,7 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
         append("\tPiSDFParam *" + paramName + " = Spider::addDynamicParam(graph, " + "\"" + p.getName() + "\"" + ");\n");
       } else {
         /* DYNAMIC DEPENDANT */
-        append("\tPiSDFParam *" + paramName + " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName() + "\", \"" + p.getExpression().getString()
+        append("\tPiSDFParam *" + paramName + " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName() + "\", \"" + p.getValueExpression().getString()
             + "\");\n");
       }
     } else if (p.getGraphPort() instanceof ConfigInputPort) {
@@ -634,7 +634,7 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
       append("\tPiSDFParam *" + paramName + " = Spider::addStaticParam(graph, " + "\"" + p.getName() + "\", " + p.getName() + ");\n");
     } else {
       /* STATIC DEPENDANT */
-      append("\tPiSDFParam *" + paramName + " = Spider::addStaticDependentParam(graph, " + "\"" + p.getName() + "\", \"" + p.getExpression().getString()
+      append("\tPiSDFParam *" + paramName + " = Spider::addStaticDependentParam(graph, " + "\"" + p.getName() + "\", \"" + p.getValueExpression().getString()
           + "\");\n");
     }
   }

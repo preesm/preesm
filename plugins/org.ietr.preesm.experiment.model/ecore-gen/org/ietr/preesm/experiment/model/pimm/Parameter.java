@@ -48,7 +48,7 @@ package org.ietr.preesm.experiment.model.pimm;
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.Parameter#isConfigurationInterface <em>Configuration Interface</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.Parameter#getGraphPort <em>Graph Port</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.Parameter#getExpression <em>Expression</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.Parameter#getValueExpression <em>Value Expression</em>}</li>
  * </ul>
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameter()
@@ -131,19 +131,19 @@ public interface Parameter extends AbstractVertex, ISetter {
   void setGraphPort(ConfigInputPort value);
 
   /**
-   * Returns the value of the '<em><b>Expression</b></em>' containment reference. <!-- begin-user-doc -->
+   * Returns the value of the '<em><b>Value Expression</b></em>' containment reference. <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Expression</em>' containment reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
    *
-   * @return the value of the '<em>Expression</em>' containment reference.
-   * @see #setExpression(Expression)
-   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameter_Expression()
+   * @return the value of the '<em>Value Expression</em>' containment reference.
+   * @see #setValueExpression(Expression)
+   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameter_ValueExpression()
    * @model containment="true" required="true"
    * @generated
    */
-  Expression getExpression();
+  Expression getValueExpression();
 
   /**
    * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Parameter#getExpression <em>Expression</em>}' containment reference. <!--
@@ -151,9 +151,9 @@ public interface Parameter extends AbstractVertex, ISetter {
    *
    * @param value
    *          the new value of the '<em>Expression</em>' containment reference.
-   * @see #getExpression()
+   * @see #getValueExpression()
    * @generated
    */
-  void setExpression(Expression value);
+  void setValueExpression(Expression value);
 
 } // Parameter

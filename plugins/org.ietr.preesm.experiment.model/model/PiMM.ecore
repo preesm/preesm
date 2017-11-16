@@ -132,7 +132,7 @@
         lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="graphPort" lowerBound="1"
         eType="#//ConfigInputPort"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="valueExpression" lowerBound="1"
         eType="#//Expression" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Dependency" eSuperTypes="#//visitor/PiMMVisitable">

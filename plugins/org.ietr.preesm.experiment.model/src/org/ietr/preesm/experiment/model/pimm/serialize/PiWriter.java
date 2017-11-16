@@ -536,7 +536,7 @@ public class PiWriter {
     // Set the kind of the node
     if (!param.isConfigurationInterface()) {
       paramElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.PARAMETER);
-      paramElt.setAttribute(PiIdentifiers.PARAMETER_EXPRESSION, param.getExpression().getString());
+      paramElt.setAttribute(PiIdentifiers.PARAMETER_EXPRESSION, param.getValueExpression().getString());
     } else {
       paramElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.CONFIGURATION_INPUT_INTERFACE);
     }

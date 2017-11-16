@@ -113,7 +113,7 @@ public class CreateParameterFeature extends AbstractCreateFeature {
     // create Parameter
     final Parameter newParameter = PiMMFactory.eINSTANCE.createParameter();
     final Expression expr = PiMMFactory.eINSTANCE.createExpression();
-    newParameter.setExpression(expr);
+    newParameter.setValueExpression(expr);
     newParameter.setName(newParameterName);
     newParameter.setConfigurationInterface(false);
     // newParameter.setLocallyStatic(true);

@@ -1096,12 +1096,12 @@ public interface PiMMPackage extends EPackage {
   int PARAMETER__GRAPH_PORT = PiMMPackage.ABSTRACT_VERTEX_FEATURE_COUNT + 2;
 
   /**
-   * The feature id for the '<em><b>Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The feature id for the '<em><b>Value Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int PARAMETER__EXPRESSION = PiMMPackage.ABSTRACT_VERTEX_FEATURE_COUNT + 3;
+  int PARAMETER__VALUE_EXPRESSION = PiMMPackage.ABSTRACT_VERTEX_FEATURE_COUNT + 3;
 
   /**
    * The number of structural features of the '<em>Parameter</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1201,12 +1201,12 @@ public interface PiMMPackage extends EPackage {
   int CONFIG_INPUT_INTERFACE__GRAPH_PORT = PiMMPackage.PARAMETER__GRAPH_PORT;
 
   /**
-   * The feature id for the '<em><b>Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The feature id for the '<em><b>Value Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int CONFIG_INPUT_INTERFACE__EXPRESSION = PiMMPackage.PARAMETER__EXPRESSION;
+  int CONFIG_INPUT_INTERFACE__VALUE_EXPRESSION = PiMMPackage.PARAMETER__VALUE_EXPRESSION;
 
   /**
    * The number of structural features of the '<em>Config Input Interface</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2253,15 +2253,15 @@ public interface PiMMPackage extends EPackage {
   EReference getParameter_GraphPort();
 
   /**
-   * Returns the meta object for the containment reference '{@link org.ietr.preesm.experiment.model.pimm.Parameter#getExpression <em>Expression</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the containment reference '{@link org.ietr.preesm.experiment.model.pimm.Parameter#getValueExpression <em>Value
+   * Expression</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the meta object for the containment reference '<em>Expression</em>'.
-   * @see org.ietr.preesm.experiment.model.pimm.Parameter#getExpression()
+   * @return the meta object for the containment reference '<em>Value Expression</em>'.
+   * @see org.ietr.preesm.experiment.model.pimm.Parameter#getValueExpression()
    * @see #getParameter()
    * @generated
    */
-  EReference getParameter_Expression();
+  EReference getParameter_ValueExpression();
 
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Dependency <em>Dependency</em>}'. <!-- begin-user-doc --> <!-- end-user-doc
@@ -2984,11 +2984,11 @@ public interface PiMMPackage extends EPackage {
     EReference PARAMETER__GRAPH_PORT = PiMMPackage.eINSTANCE.getParameter_GraphPort();
 
     /**
-     * The meta object literal for the '<em><b>Expression</b></em>' containment reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * The meta object literal for the '<em><b>Value Expression</b></em>' containment reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
      * @generated
      */
-    EReference PARAMETER__EXPRESSION = PiMMPackage.eINSTANCE.getParameter_Expression();
+    EReference PARAMETER__VALUE_EXPRESSION = PiMMPackage.eINSTANCE.getParameter_ValueExpression();
 
     /**
      * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DependencyImpl <em>Dependency</em>}' class. <!-- begin-user-doc -->

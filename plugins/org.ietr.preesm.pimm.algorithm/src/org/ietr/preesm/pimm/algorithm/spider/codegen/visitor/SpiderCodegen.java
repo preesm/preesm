@@ -234,7 +234,7 @@ public class SpiderCodegen {
         if (parameters_proto.length() > 0) {
           parameters_proto.append(", ");
         }
-        parameters_proto.append("Param " + p.getName() + " = " + ((int) Double.parseDouble(p.getExpression().evaluate())));
+        parameters_proto.append("Param " + p.getName() + " = " + ((int) Double.parseDouble(p.getValueExpression().evaluate())));
       }
     }
     append(parameters_proto);

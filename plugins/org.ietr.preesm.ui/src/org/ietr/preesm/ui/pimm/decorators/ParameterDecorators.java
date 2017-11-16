@@ -174,7 +174,7 @@ public class ParameterDecorators {
    * @return the {@link IDecorator} for the {@link Parameter} or <code>null</code> if the {@link Parameter} have a valid expression.
    */
   protected static IDecorator getExpressionDecorator(final Parameter param, final PictogramElement pe) {
-    final Expression expression = param.getExpression();
+    final Expression expression = param.getValueExpression();
     try {
       expression.evaluate();
     } catch (final ExpressionEvaluationException e) {
