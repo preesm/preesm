@@ -54,7 +54,7 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
+import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.adapter.GraphInterfaceObserver;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
@@ -351,7 +351,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
       if (aa instanceof PiGraph) {
         result.addAll(((PiGraph) aa).getAllParameters());
       } else if (aa instanceof Actor) {
-        final PiSDFRefinement refinement = ((Actor) aa).getRefinement();
+        final Refinement refinement = ((Actor) aa).getRefinement();
         if (refinement != null) {
           final AbstractActor subGraph = refinement.getAbstractActor();
           if ((subGraph != null) && (subGraph instanceof PiGraph)) {
@@ -471,7 +471,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
         } else if (a instanceof PiGraph) {
           return ((PiGraph) a).getHierarchicalActorFromPath(currentPath);
         } else if (a instanceof Actor) {
-          final PiSDFRefinement refinement = ((Actor) a).getRefinement();
+          final Refinement refinement = ((Actor) a).getRefinement();
           if (refinement != null) {
             final AbstractActor subGraph = refinement.getAbstractActor();
             if ((subGraph != null) && (subGraph instanceof PiGraph)) {
@@ -501,7 +501,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
     }
     for (final AbstractActor aa : this.vertices) {
       if ((aa instanceof Actor) && aa.getName().equals(parent)) {
-        final PiSDFRefinement refinement = ((Actor) aa).getRefinement();
+        final Refinement refinement = ((Actor) aa).getRefinement();
         if (refinement != null) {
           final AbstractActor subGraph = refinement.getAbstractActor();
           if ((subGraph != null) && (subGraph instanceof PiGraph)) {
@@ -534,7 +534,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
       if (aa instanceof PiGraph) {
         result.addAll(((PiGraph) aa).getAllVertices());
       } else if (aa instanceof Actor) {
-        final PiSDFRefinement refinement = ((Actor) aa).getRefinement();
+        final Refinement refinement = ((Actor) aa).getRefinement();
         if (refinement != null) {
           final AbstractActor subGraph = refinement.getAbstractActor();
           if ((subGraph != null) && (subGraph instanceof PiGraph)) {

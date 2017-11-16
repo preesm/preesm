@@ -95,6 +95,7 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMDefaultVisitor;
 import org.ietr.preesm.pimm.algorithm.pimm2sdf.PiGraphExecution;
@@ -334,7 +335,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
     v.setId(a.getName());
     // Handle vertex's refinement (description of the vertex's behavior:
     // function prototypes or subgraphs)
-    final PiSDFRefinement piRef = a.getRefinement();
+    final Refinement piRef = a.getRefinement();
     piRef.accept(this);
     v.setRefinement(this.currentSDFRefinement);
     // Handle path to memory script of the vertex

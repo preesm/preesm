@@ -79,6 +79,7 @@ import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.w3c.dom.Document;
@@ -308,7 +309,7 @@ public class PiWriter {
     // TODO change this method when several kinds will exist
     // Set the kind of the Actor
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.ACTOR);
-    final PiSDFRefinement refinement = actor.getRefinement();
+    final Refinement refinement = actor.getRefinement();
     if (refinement != null) {
       writeRefinement(vertexElt, refinement);
     }
@@ -615,7 +616,7 @@ public class PiWriter {
    * @param refinement
    *          The {@link PiSDFRefinement} to serialize
    */
-  protected void writeRefinement(final Element vertexElt, final PiSDFRefinement refinement) {
+  protected void writeRefinement(final Element vertexElt, final Refinement refinement) {
     if (refinement.getFilePath() != null) {
 
       final IPath refinementPath = getProjectRelativePathFrom(refinement.getFilePath());

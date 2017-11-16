@@ -62,7 +62,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
+import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.ui.scenario.editor.HierarchicalSDFVertex;
 import org.ietr.preesm.ui.scenario.editor.ISDFCheckStateListener;
 import org.ietr.preesm.ui.scenario.editor.Messages;
@@ -254,7 +254,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 
     // Checks the children of the current vertex
     if (actor instanceof Actor) {
-      final PiSDFRefinement refinement = ((Actor) actor).getRefinement();
+      final Refinement refinement = ((Actor) actor).getRefinement();
       if (refinement != null) {
         final AbstractActor subGraph = refinement.getAbstractActor();
         if (subGraph instanceof PiGraph) {

@@ -73,6 +73,7 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
 
@@ -418,11 +419,39 @@ public class PiMMSwitch<T> extends Switch<T> {
         }
         return result;
       }
+      case PiMMPackage.REFINEMENT: {
+        final Refinement refinement = (Refinement) theEObject;
+        T result = caseRefinement(refinement);
+        if (result == null) {
+          result = casePiMMVisitable(refinement);
+        }
+        if (result == null) {
+          result = defaultCase(theEObject);
+        }
+        return result;
+      }
       case PiMMPackage.PI_SDF_REFINEMENT: {
         final PiSDFRefinement piSDFRefinement = (PiSDFRefinement) theEObject;
         T result = casePiSDFRefinement(piSDFRefinement);
         if (result == null) {
+          result = caseRefinement(piSDFRefinement);
+        }
+        if (result == null) {
           result = casePiMMVisitable(piSDFRefinement);
+        }
+        if (result == null) {
+          result = defaultCase(theEObject);
+        }
+        return result;
+      }
+      case PiMMPackage.CHEADER_REFINEMENT: {
+        final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) theEObject;
+        T result = caseCHeaderRefinement(cHeaderRefinement);
+        if (result == null) {
+          result = caseRefinement(cHeaderRefinement);
+        }
+        if (result == null) {
+          result = casePiMMVisitable(cHeaderRefinement);
         }
         if (result == null) {
           result = defaultCase(theEObject);
@@ -487,20 +516,6 @@ public class PiMMSwitch<T> extends Switch<T> {
         T result = caseExpression(expression);
         if (result == null) {
           result = casePiMMVisitable(expression);
-        }
-        if (result == null) {
-          result = defaultCase(theEObject);
-        }
-        return result;
-      }
-      case PiMMPackage.CHEADER_REFINEMENT: {
-        final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) theEObject;
-        T result = caseCHeaderRefinement(cHeaderRefinement);
-        if (result == null) {
-          result = casePiSDFRefinement(cHeaderRefinement);
-        }
-        if (result == null) {
-          result = casePiMMVisitable(cHeaderRefinement);
         }
         if (result == null) {
           result = defaultCase(theEObject);
@@ -867,6 +882,20 @@ public class PiMMSwitch<T> extends Switch<T> {
    * @generated
    */
   public T caseConfigOutputInterface(final ConfigOutputInterface object) {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Refinement</em>'. <!-- begin-user-doc --> This implementation returns null; returning
+   * a non-null result will terminate the switch. <!-- end-user-doc -->
+   *
+   * @param object
+   *          the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Refinement</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseRefinement(final Refinement object) {
     return null;
   }
 

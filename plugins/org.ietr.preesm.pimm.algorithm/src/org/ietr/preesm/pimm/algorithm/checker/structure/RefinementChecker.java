@@ -44,7 +44,7 @@ import org.eclipse.core.runtime.IPath;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
+import org.ietr.preesm.experiment.model.pimm.Refinement;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -108,7 +108,7 @@ public class RefinementChecker {
    * @return true if the refinement is valid, false otherwise
    */
   private boolean checkRefinement(final Actor a) {
-    final PiSDFRefinement refinement = a.getRefinement();
+    final Refinement refinement = a.getRefinement();
     if ((refinement != null) && (refinement.getFilePath() != null) && !refinement.getFilePath().isEmpty()) {
       return checkRefinementExtension(a) && checkRefinementValidity(a);
     } else {

@@ -65,7 +65,7 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
-import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
+import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.ui.pimm.features.ClearActorMemoryScriptFeature;
 import org.ietr.preesm.ui.pimm.features.ClearActorRefinementFeature;
 import org.ietr.preesm.ui.pimm.features.OpenMemoryScriptFeature;
@@ -519,7 +519,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
         if (bo instanceof Actor) {
           final Actor actor = (Actor) bo;
-          final PiSDFRefinement refinement = actor.getRefinement();
+          final Refinement refinement = actor.getRefinement();
           if (refinement.getFilePath() == null) {
             this.lblRefinementObj.setText("(none)");
             this.lblRefinementView.setText("(none)");

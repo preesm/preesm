@@ -57,7 +57,7 @@ import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
+import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 
 // TODO: Auto-generated Javadoc
@@ -181,8 +181,7 @@ public class CsvTimingParser {
    *          the op def ids
    */
   private void parseTimingsForPISDFGraph(final Map<String, Map<String, String>> timings, final PiGraph currentGraph, final Set<String> opDefIds) {
-    // Each of the vertices of the graph is either itself a graph
-    // (hierarchical vertex), in which case we call recursively this method;
+    // Each of the vertices of the graph is either itself a graph (hierarchical vertex), in which case we call recursively this method
     // a standard actor, in which case we parser its timing; or a special
     // vertex, in which case we do nothing
     for (final AbstractActor vertex : currentGraph.getVertices()) {
@@ -193,7 +192,7 @@ public class CsvTimingParser {
         final Actor actor = (Actor) vertex;
 
         // Handle unconnected graphs from hierarchical vertices
-        final PiSDFRefinement refinement = actor.getRefinement();
+        final Refinement refinement = actor.getRefinement();
         AbstractActor subgraph = null;
         if (refinement != null) {
           subgraph = refinement.getAbstractActor();

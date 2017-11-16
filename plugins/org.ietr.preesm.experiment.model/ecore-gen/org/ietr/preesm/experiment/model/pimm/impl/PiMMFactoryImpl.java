@@ -146,6 +146,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
         return createConfigOutputInterface();
       case PiMMPackage.PI_SDF_REFINEMENT:
         return createPiSDFRefinement();
+      case PiMMPackage.CHEADER_REFINEMENT:
+        return createCHeaderRefinement();
       case PiMMPackage.PARAMETER:
         return createParameter();
       case PiMMPackage.DEPENDENCY:
@@ -154,8 +156,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
         return createDelay();
       case PiMMPackage.EXPRESSION:
         return createExpression();
-      case PiMMPackage.CHEADER_REFINEMENT:
-        return createCHeaderRefinement();
       case PiMMPackage.FUNCTION_PROTOTYPE:
         return createFunctionPrototype();
       case PiMMPackage.FUNCTION_PARAMETER:

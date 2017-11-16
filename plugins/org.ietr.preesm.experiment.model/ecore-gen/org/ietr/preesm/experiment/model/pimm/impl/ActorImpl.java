@@ -54,7 +54,7 @@ import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
+import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
@@ -79,7 +79,7 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
    * @generated
    * @ordered
    */
-  protected PiSDFRefinement refinement;
+  protected Refinement refinement;
 
   /**
    * The default value of the '{@link #isConfigurationActor() <em>Configuration Actor</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -134,22 +134,17 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
    * @generated
    */
   @Override
-  public PiSDFRefinement getRefinement() {
+  public Refinement getRefinement() {
     return this.refinement;
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param newRefinement
-   *          the new refinement
-   * @param msgs
-   *          the msgs
-   * @return the notification chain
    * @generated
    */
-  public NotificationChain basicSetRefinement(final PiSDFRefinement newRefinement, NotificationChain msgs) {
-    final PiSDFRefinement oldRefinement = this.refinement;
+  public NotificationChain basicSetRefinement(final Refinement newRefinement, NotificationChain msgs) {
+    final Refinement oldRefinement = this.refinement;
     this.refinement = newRefinement;
     if (eNotificationRequired()) {
       final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.ACTOR__REFINEMENT, oldRefinement, newRefinement);
@@ -163,14 +158,12 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param newRefinement
-   *          the new refinement
    * @generated
    */
   @Override
-  public void setRefinement(final PiSDFRefinement newRefinement) {
+  public void setRefinement(final Refinement newRefinement) {
     if (newRefinement != this.refinement) {
       NotificationChain msgs = null;
       if (this.refinement != null) {
@@ -321,7 +314,7 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
   public void eSet(final int featureID, final Object newValue) {
     switch (featureID) {
       case PiMMPackage.ACTOR__REFINEMENT:
-        setRefinement((PiSDFRefinement) newValue);
+        setRefinement((Refinement) newValue);
         return;
       case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
         setMemoryScriptPath((IPath) newValue);
@@ -341,7 +334,7 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
   public void eUnset(final int featureID) {
     switch (featureID) {
       case PiMMPackage.ACTOR__REFINEMENT:
-        setRefinement((PiSDFRefinement) null);
+        setRefinement((Refinement) null);
         return;
       case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
         setMemoryScriptPath(ActorImpl.MEMORY_SCRIPT_PATH_EDEFAULT);

@@ -37,11 +37,13 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import java.util.List;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
@@ -62,13 +64,30 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  * The following features are implemented:
  * </p>
  * <ul>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.CHeaderRefinementImpl#getFilePath <em>File Path</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.CHeaderRefinementImpl#getLoopPrototype <em>Loop Prototype</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.CHeaderRefinementImpl#getInitPrototype <em>Init Prototype</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class CHeaderRefinementImpl extends PiSDFRefinementImpl implements CHeaderRefinement {
+public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinement {
+  /**
+   * The default value of the '{@link #getFilePath() <em>File Path</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getFilePath()
+   * @generated
+   * @ordered
+   */
+  protected static final IPath FILE_PATH_EDEFAULT = null;
+  /**
+   * The cached value of the '{@link #getFilePath() <em>File Path</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getFilePath()
+   * @generated
+   * @ordered
+   */
+  protected IPath              filePath           = CHeaderRefinementImpl.FILE_PATH_EDEFAULT;
   /**
    * The cached value of the '{@link #getLoopPrototype() <em>Loop Prototype</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -76,7 +95,7 @@ public class CHeaderRefinementImpl extends PiSDFRefinementImpl implements CHeade
    * @generated
    * @ordered
    */
-  protected FunctionPrototype loopPrototype;
+  protected FunctionPrototype  loopPrototype;
   /**
    * The cached value of the '{@link #getInitPrototype() <em>Init Prototype</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -84,7 +103,7 @@ public class CHeaderRefinementImpl extends PiSDFRefinementImpl implements CHeade
    * @generated
    * @ordered
    */
-  protected FunctionPrototype initPrototype;
+  protected FunctionPrototype  initPrototype;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
@@ -104,6 +123,30 @@ public class CHeaderRefinementImpl extends PiSDFRefinementImpl implements CHeade
   @Override
   protected EClass eStaticClass() {
     return PiMMPackage.Literals.CHEADER_REFINEMENT;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public IPath getFilePath() {
+    return this.filePath;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public void setFilePath(final IPath newFilePath) {
+    final IPath oldFilePath = this.filePath;
+    this.filePath = newFilePath;
+    if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.CHEADER_REFINEMENT__FILE_PATH, oldFilePath, this.filePath));
+    }
   }
 
   /**
@@ -218,6 +261,16 @@ public class CHeaderRefinementImpl extends PiSDFRefinementImpl implements CHeade
   }
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public String getFileName() {
+    return (getFilePath() == null) ? null : getFilePath().lastSegment();
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @return the inits the prototype
@@ -307,6 +360,8 @@ public class CHeaderRefinementImpl extends PiSDFRefinementImpl implements CHeade
   @Override
   public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
     switch (featureID) {
+      case PiMMPackage.CHEADER_REFINEMENT__FILE_PATH:
+        return getFilePath();
       case PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE:
         return getLoopPrototype();
       case PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE:
@@ -327,6 +382,9 @@ public class CHeaderRefinementImpl extends PiSDFRefinementImpl implements CHeade
   @Override
   public void eSet(final int featureID, final Object newValue) {
     switch (featureID) {
+      case PiMMPackage.CHEADER_REFINEMENT__FILE_PATH:
+        setFilePath((IPath) newValue);
+        return;
       case PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE:
         setLoopPrototype((FunctionPrototype) newValue);
         return;
@@ -347,6 +405,9 @@ public class CHeaderRefinementImpl extends PiSDFRefinementImpl implements CHeade
   @Override
   public void eUnset(final int featureID) {
     switch (featureID) {
+      case PiMMPackage.CHEADER_REFINEMENT__FILE_PATH:
+        setFilePath(CHeaderRefinementImpl.FILE_PATH_EDEFAULT);
+        return;
       case PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE:
         setLoopPrototype((FunctionPrototype) null);
         return;
@@ -368,12 +429,32 @@ public class CHeaderRefinementImpl extends PiSDFRefinementImpl implements CHeade
   @Override
   public boolean eIsSet(final int featureID) {
     switch (featureID) {
+      case PiMMPackage.CHEADER_REFINEMENT__FILE_PATH:
+        return CHeaderRefinementImpl.FILE_PATH_EDEFAULT == null ? this.filePath != null : !CHeaderRefinementImpl.FILE_PATH_EDEFAULT.equals(this.filePath);
       case PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE:
         return this.loopPrototype != null;
       case PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE:
         return this.initPrototype != null;
     }
     return super.eIsSet(featureID);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public String toString() {
+    if (eIsProxy()) {
+      return super.toString();
+    }
+
+    final StringBuffer result = new StringBuffer(super.toString());
+    result.append(" (filePath: ");
+    result.append(this.filePath);
+    result.append(')');
+    return result.toString();
   }
 
   /*

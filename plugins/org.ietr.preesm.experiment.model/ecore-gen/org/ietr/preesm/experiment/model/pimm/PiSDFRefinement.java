@@ -37,74 +37,15 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
-import org.eclipse.core.runtime.IPath;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
-
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> A representation of the model object ' <em><b>Refinement</b></em>'. <!-- end-user-doc -->
  *
- * <p>
- * The following features are supported:
- * </p>
- * <ul>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.PiSDFRefinement#getFileName <em>File Name</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.PiSDFRefinement#getFilePath <em>File Path</em>}</li>
- * </ul>
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiSDFRefinement()
  * @model
  * @generated
  */
-public interface PiSDFRefinement extends PiMMVisitable {
-  /**
-   * Returns the value of the '<em><b>File Name</b></em>' attribute. The default value is <code>"\"\""</code>. <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>File Name</em>' attribute isn't clear, there really should be more of a description here...
-   * </p>
-   * <!-- end-user-doc -->
-   *
-   * @return the value of the '<em>File Name</em>' attribute.
-   * @see #setFileName(String)
-   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiSDFRefinement_FileName()
-   * @model default="\"\""
-   * @generated
-   */
-  String getFileName();
-
-  /**
-   * Return the URI of the file associated to the {@link PiSDFRefinement}.
-   *
-   * @return the URI of the file associated to the Refinement or <code>null</code> if the file does not exists.
-   */
-  IPath getFilePath();
-
-  /**
-   * Sets the file path.
-   *
-   * @param path
-   *          the new file path
-   */
-  void setFilePath(IPath path);
-
-  /**
-   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.PiSDFRefinement#getFileName <em>File Name</em>}' attribute. <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   *
-   * @param value
-   *          the new value of the '<em>File Name</em>' attribute.
-   * @see #getFileName()
-   * @generated
-   */
-  void setFileName(String value);
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the abstract actor
-   * @model kind="operation"
-   * @generated
-   */
-  AbstractActor getAbstractActor();
+public interface PiSDFRefinement extends Refinement {
 
 } // Refinement

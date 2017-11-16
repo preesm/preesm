@@ -71,6 +71,7 @@ import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 
 /**
@@ -147,7 +148,7 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
   public void visitActor(final Actor a) {
     // If the refinement of the Actor a points to the description of
     // PiGraph, visit it to connect the subgraph to its supergraph
-    final PiSDFRefinement refinement = a.getRefinement();
+    final Refinement refinement = a.getRefinement();
     if (refinement != null) {
       final AbstractActor aa = refinement.getAbstractActor();
       if ((aa != null) && (aa instanceof PiGraph)) {

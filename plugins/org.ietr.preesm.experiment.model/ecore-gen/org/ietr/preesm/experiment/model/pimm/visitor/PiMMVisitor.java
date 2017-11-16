@@ -47,7 +47,7 @@ public interface PiMMVisitor extends EObject {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @model subjectRequired="true" annotation="http://www.eclipse.org/emf/2002/GenModel body='subject.accept(this);'"
+   * @model subjectRequired="true"
    * @generated
    */
   void visit(PiMMVisitable subject);
