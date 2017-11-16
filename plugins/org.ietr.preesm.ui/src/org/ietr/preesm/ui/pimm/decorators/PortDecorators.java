@@ -106,7 +106,7 @@ public class PortDecorators {
     final BoxRelativeAnchor a = (BoxRelativeAnchor) pe;
 
     if (port instanceof DataInputPort) {
-      final Expression expression = ((DataInputPort) port).getExpression();
+      final Expression expression = ((DataInputPort) port).getPortRateExpression();
 
       try {
         expression.evaluate();
@@ -119,7 +119,7 @@ public class PortDecorators {
       }
     }
     if ((port instanceof DataOutputPort) && !(port instanceof ConfigOutputPort)) {
-      final Expression expression = ((DataOutputPort) port).getExpression();
+      final Expression expression = ((DataOutputPort) port).getPortRateExpression();
 
       try {
         expression.evaluate();

@@ -572,8 +572,8 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
     final AbstractVertex srcActor = (AbstractVertex) srcPort.eContainer();
     final AbstractVertex snkActor = (AbstractVertex) snkPort.eContainer();
 
-    String srcProd = srcPort.getExpression().getString();
-    String snkProd = snkPort.getExpression().getString();
+    String srcProd = srcPort.getPortRateExpression().getString();
+    String snkProd = snkPort.getPortRateExpression().getString();
 
     /* Change port name in prod/cons/delay */
     for (final ConfigInputPort cfgPort : srcActor.getConfigInputPorts()) {

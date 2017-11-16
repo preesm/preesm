@@ -124,7 +124,7 @@ public class SubgraphReconnector {
             dop2.setOutgoingFifo(fifo);
             fifo.setSourcePort(dop2);
 
-            dop2.setExpression(dop1.getExpression());
+            dop2.setPortRateExpression(dop1.getPortRateExpression());
             dop2.setAnnotation(dop1.getAnnotation());
           }
           found = true;
@@ -148,7 +148,7 @@ public class SubgraphReconnector {
             dip2.setIncomingFifo(fifo);
             fifo.setTargetPort(dip2);
 
-            dip2.setExpression(dip1.getExpression());
+            dip2.setPortRateExpression(dip1.getPortRateExpression());
             dip2.setAnnotation(dip1.getAnnotation());
           }
           found = true;

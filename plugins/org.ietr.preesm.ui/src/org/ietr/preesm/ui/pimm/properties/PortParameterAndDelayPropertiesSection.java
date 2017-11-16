@@ -319,12 +319,12 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
           elementName = iPort.getName();
         }
 
-        elementValueExpression = iPort.getExpression();
+        elementValueExpression = iPort.getPortRateExpression();
 
       } else if (businessObject instanceof InterfaceActor) {
         final InterfaceActor iface = ((InterfaceActor) businessObject);
         elementName = iface.getName();
-        elementValueExpression = iface.getDataPort().getExpression();
+        elementValueExpression = iface.getDataPort().getPortRateExpression();
       } else if (businessObject instanceof Delay) {
         if (((Delay) businessObject).eContainer() instanceof Fifo) {
           final Fifo fifo = (Fifo) ((Delay) businessObject).eContainer();

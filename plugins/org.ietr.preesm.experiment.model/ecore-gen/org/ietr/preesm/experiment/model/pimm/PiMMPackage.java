@@ -499,12 +499,12 @@ public interface PiMMPackage extends EPackage {
   int DATA_PORT__KIND = PiMMPackage.PORT__KIND;
 
   /**
-   * The feature id for the '<em><b>Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The feature id for the '<em><b>Port Rate Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int DATA_PORT__EXPRESSION = PiMMPackage.PORT_FEATURE_COUNT + 0;
+  int DATA_PORT__PORT_RATE_EXPRESSION = PiMMPackage.PORT_FEATURE_COUNT + 0;
 
   /**
    * The feature id for the '<em><b>Annotation</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -549,12 +549,12 @@ public interface PiMMPackage extends EPackage {
   int DATA_INPUT_PORT__KIND = PiMMPackage.DATA_PORT__KIND;
 
   /**
-   * The feature id for the '<em><b>Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The feature id for the '<em><b>Port Rate Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int DATA_INPUT_PORT__EXPRESSION = PiMMPackage.DATA_PORT__EXPRESSION;
+  int DATA_INPUT_PORT__PORT_RATE_EXPRESSION = PiMMPackage.DATA_PORT__PORT_RATE_EXPRESSION;
 
   /**
    * The feature id for the '<em><b>Annotation</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -607,12 +607,12 @@ public interface PiMMPackage extends EPackage {
   int DATA_OUTPUT_PORT__KIND = PiMMPackage.DATA_PORT__KIND;
 
   /**
-   * The feature id for the '<em><b>Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The feature id for the '<em><b>Port Rate Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int DATA_OUTPUT_PORT__EXPRESSION = PiMMPackage.DATA_PORT__EXPRESSION;
+  int DATA_OUTPUT_PORT__PORT_RATE_EXPRESSION = PiMMPackage.DATA_PORT__PORT_RATE_EXPRESSION;
 
   /**
    * The feature id for the '<em><b>Annotation</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -707,12 +707,12 @@ public interface PiMMPackage extends EPackage {
   int CONFIG_OUTPUT_PORT__KIND = PiMMPackage.DATA_OUTPUT_PORT__KIND;
 
   /**
-   * The feature id for the '<em><b>Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The feature id for the '<em><b>Port Rate Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int CONFIG_OUTPUT_PORT__EXPRESSION = PiMMPackage.DATA_OUTPUT_PORT__EXPRESSION;
+  int CONFIG_OUTPUT_PORT__PORT_RATE_EXPRESSION = PiMMPackage.DATA_OUTPUT_PORT__PORT_RATE_EXPRESSION;
 
   /**
    * The feature id for the '<em><b>Annotation</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2485,15 +2485,15 @@ public interface PiMMPackage extends EPackage {
   EClass getDataPort();
 
   /**
-   * Returns the meta object for the containment reference '{@link org.ietr.preesm.experiment.model.pimm.DataPort#getExpression <em>Expression</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the containment reference '{@link org.ietr.preesm.experiment.model.pimm.DataPort#getPortRateExpression <em>Port Rate
+   * Expression</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the meta object for the containment reference '<em>Expression</em>'.
-   * @see org.ietr.preesm.experiment.model.pimm.DataPort#getExpression()
+   * @return the meta object for the containment reference '<em>Port Rate Expression</em>'.
+   * @see org.ietr.preesm.experiment.model.pimm.DataPort#getPortRateExpression()
    * @see #getDataPort()
    * @generated
    */
-  EReference getDataPort_Expression();
+  EReference getDataPort_PortRateExpression();
 
   /**
    * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.DataPort#getAnnotation <em>Annotation</em>}'. <!-- begin-user-doc
@@ -3162,11 +3162,11 @@ public interface PiMMPackage extends EPackage {
     EClass DATA_PORT = PiMMPackage.eINSTANCE.getDataPort();
 
     /**
-     * The meta object literal for the '<em><b>Expression</b></em>' containment reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * The meta object literal for the '<em><b>Port Rate Expression</b></em>' containment reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
      * @generated
      */
-    EReference DATA_PORT__EXPRESSION = PiMMPackage.eINSTANCE.getDataPort_Expression();
+    EReference DATA_PORT__PORT_RATE_EXPRESSION = PiMMPackage.eINSTANCE.getDataPort_PortRateExpression();
 
     /**
      * The meta object literal for the '<em><b>Annotation</b></em>' attribute feature. <!-- begin-user-doc --> <!-- end-user-doc -->

@@ -692,7 +692,7 @@ public class PiParser {
         } else {
           iPort = ((AbstractActor) vertex).getDataInputPorts().get(0);
         }
-        iPort.getExpression().setString(elt.getAttribute(PiIdentifiers.PORT_EXPRESSION));
+        iPort.getPortRateExpression().setString(elt.getAttribute(PiIdentifiers.PORT_EXPRESSION));
         iPort.setAnnotation(PortMemoryAnnotation.get(elt.getAttribute(PiIdentifiers.PORT_MEMORY_ANNOTATION)));
         break;
       case PiIdentifiers.DATA_OUTPUT_PORT:
@@ -712,7 +712,7 @@ public class PiParser {
         } else {
           oPort = ((AbstractActor) vertex).getDataOutputPorts().get(0);
         }
-        oPort.getExpression().setString(elt.getAttribute(PiIdentifiers.PORT_EXPRESSION));
+        oPort.getPortRateExpression().setString(elt.getAttribute(PiIdentifiers.PORT_EXPRESSION));
         oPort.setAnnotation(PortMemoryAnnotation.get(elt.getAttribute(PiIdentifiers.PORT_MEMORY_ANNOTATION)));
         break;
       case PiIdentifiers.CONFIGURATION_INPUT_PORT:

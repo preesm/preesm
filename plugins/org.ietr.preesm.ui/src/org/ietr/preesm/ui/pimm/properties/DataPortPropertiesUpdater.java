@@ -61,21 +61,21 @@ public class DataPortPropertiesUpdater extends GFPropertySection {
    *          the text to update
    */
   protected void updateDataPortProperties(final DataPort port, final Text textToUpdate) {
-    if (!port.getExpression().getString().equals(textToUpdate.getText())) {
-      setNewExpression(port.getExpression(), textToUpdate.getText());
+    if (!port.getPortRateExpression().getString().equals(textToUpdate.getText())) {
+      setNewExpression(port.getPortRateExpression(), textToUpdate.getText());
       // If port is contained by an DataInterface, we should
       // also update the graph port of the DataInterface
       if (port.eContainer() instanceof DataOutputInterface) {
         final DataOutputInterface doi = (DataOutputInterface) port.eContainer();
         final DataOutputPort oPort = (DataOutputPort) doi.getGraphPort();
-        if (!oPort.getExpression().getString().equals(textToUpdate.getText())) {
-          setNewExpression(oPort.getExpression(), textToUpdate.getText());
+        if (!oPort.getPortRateExpression().getString().equals(textToUpdate.getText())) {
+          setNewExpression(oPort.getPortRateExpression(), textToUpdate.getText());
         }
       } else if (port.eContainer() instanceof DataInputInterface) {
         final DataInputInterface dii = (DataInputInterface) port.eContainer();
         final DataInputPort iPort = (DataInputPort) dii.getGraphPort();
-        if (!iPort.getExpression().getString().equals(textToUpdate.getText())) {
-          setNewExpression(iPort.getExpression(), textToUpdate.getText());
+        if (!iPort.getPortRateExpression().getString().equals(textToUpdate.getText())) {
+          setNewExpression(iPort.getPortRateExpression(), textToUpdate.getText());
         }
       }
     }

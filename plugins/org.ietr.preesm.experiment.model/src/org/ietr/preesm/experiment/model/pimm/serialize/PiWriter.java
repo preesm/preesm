@@ -586,10 +586,10 @@ public class PiWriter {
 
       switch (port.getKind()) {
         case PiIdentifiers.DATA_INPUT_PORT:
-          portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION, ((DataInputPort) port).getExpression().getString());
+          portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION, ((DataInputPort) port).getPortRateExpression().getString());
           break;
         case PiIdentifiers.DATA_OUTPUT_PORT:
-          portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION, ((DataOutputPort) port).getExpression().getString());
+          portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION, ((DataOutputPort) port).getPortRateExpression().getString());
           break;
         case PiIdentifiers.CONFIGURATION_INPUT_PORT:
           break;

@@ -1137,13 +1137,12 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the data port expression
    * @generated
    */
   @Override
-  public EReference getDataPort_Expression() {
+  public EReference getDataPort_PortRateExpression() {
     return (EReference) this.dataPortEClass.getEStructuralFeatures().get(0);
   }
 
@@ -1381,7 +1380,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     createEAttribute(this.functionParameterEClass, PiMMPackage.FUNCTION_PARAMETER__IS_CONFIGURATION_PARAMETER);
 
     this.dataPortEClass = createEClass(PiMMPackage.DATA_PORT);
-    createEReference(this.dataPortEClass, PiMMPackage.DATA_PORT__EXPRESSION);
+    createEReference(this.dataPortEClass, PiMMPackage.DATA_PORT__PORT_RATE_EXPRESSION);
     createEAttribute(this.dataPortEClass, PiMMPackage.DATA_PORT__ANNOTATION);
 
     this.broadcastActorEClass = createEClass(PiMMPackage.BROADCAST_ACTOR);
@@ -1692,7 +1691,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
         !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
     initEClass(this.dataPortEClass, DataPort.class, "DataPort", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getDataPort_Expression(), getExpression(), null, "expression", null, 1, 1, DataPort.class, !EPackageImpl.IS_TRANSIENT,
+    initEReference(getDataPort_PortRateExpression(), getExpression(), null, "portRateExpression", null, 1, 1, DataPort.class, !EPackageImpl.IS_TRANSIENT,
         !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
     initEAttribute(getDataPort_Annotation(), getPortMemoryAnnotation(), "annotation", null, 0, 1, DataPort.class, !EPackageImpl.IS_TRANSIENT,

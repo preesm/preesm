@@ -78,7 +78,7 @@ public class DataOutputPortImpl extends DataPortImpl implements DataOutputPort {
     super();
     this.kind = PiIdentifiers.DATA_OUTPUT_PORT;
 
-    setExpression(PiMMFactory.eINSTANCE.createExpression());
+    setPortRateExpression(PiMMFactory.eINSTANCE.createExpression());
   }
 
   /**

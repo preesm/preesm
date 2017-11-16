@@ -392,11 +392,11 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
         delay = new SDFExpressionEdgePropertyType(new ConstantValue(0));
       }
       // Evaluate the expression wrt. the current values of the parameters
-      final String piCons = piInputPort.getExpression().evaluate();
+      final String piCons = piInputPort.getPortRateExpression().evaluate();
       final SDFExpressionEdgePropertyType cons = new SDFExpressionEdgePropertyType(createValue(piCons));
 
       // Evaluate the expression wrt. the current values of the parameters
-      final String piProd = piOutputPort.getExpression().evaluate();
+      final String piProd = piOutputPort.getPortRateExpression().evaluate();
       final SDFExpressionEdgePropertyType prod = new SDFExpressionEdgePropertyType(createValue(piProd));
 
       final SDFEdge edge = this.result.addEdge(sdfSource, sdfOutputPort, sdfTarget, sdfInputPort, prod, cons, delay);
