@@ -71,9 +71,7 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
    */
   @Override
   public void visit(final PiMMVisitable subject) {
-    // TODO: implement this method
-    // Ensure that you remove @generated or mark it @generated NOT
-    throw new UnsupportedOperationException();
+    subject.accept(this);
   }
 
   /**
