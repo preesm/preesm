@@ -268,7 +268,6 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
   @Override
   public IAddFeature getAddFeature(final IAddContext context) {
 
-    // is object for add request an Actor?
     final Object newObject = context.getNewObject();
     final IAddFeature addFeature;
     if (newObject instanceof EObject) {
@@ -386,6 +385,63 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
   }
 
+  /**
+   *
+   * @author anmorvan
+   *
+   */
+  private class PiMMDeleteFeatureSelectionSwitch extends PiMMSwitch<IDeleteFeature> {
+
+    @Override
+    public IDeleteFeature casePort(Port object) {
+
+      if (object.eContainer() instanceof ExecutableActor) {
+        return new DeleteActorPortFeature(PiMMFeatureProvider.this);
+      } else if (object.eContainer() instanceof InterfaceActor) {
+        // We do not allow deletion of the port of an InterfaceVertex
+        // through the GUI
+        return new DefaultDeleteFeature(PiMMFeatureProvider.this) {
+          @Override
+          public boolean canDelete(IDeleteContext context) {
+            return false;
+          }
+        };
+      } else {
+        return new DefaultDeleteFeature(PiMMFeatureProvider.this);
+      }
+    }
+
+    @Override
+    public IDeleteFeature caseAbstractActor(AbstractActor object) {
+      return new DeleteAbstractActorFeature(PiMMFeatureProvider.this);
+    }
+
+    @Override
+    public IDeleteFeature caseParameter(Parameter object) {
+      return new DeleteParameterizableFeature(PiMMFeatureProvider.this);
+    }
+
+    @Override
+    public IDeleteFeature caseFifo(Fifo object) {
+      return new DeleteFifoFeature(PiMMFeatureProvider.this);
+    }
+
+    @Override
+    public IDeleteFeature caseDependency(Dependency object) {
+      return new DeleteDependencyFeature(PiMMFeatureProvider.this);
+    }
+
+    @Override
+    public IDeleteFeature caseDelay(Delay object) {
+      return new DeleteDelayFeature(PiMMFeatureProvider.this);
+    }
+
+    @Override
+    public IDeleteFeature defaultCase(EObject object) {
+      return new DefaultDeleteFeature(PiMMFeatureProvider.this);
+    }
+  }
+
   /*
    * (non-Javadoc)
    *
@@ -395,39 +451,15 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
   public IDeleteFeature getDeleteFeature(final IDeleteContext context) {
     final PictogramElement pe = context.getPictogramElement();
     final Object bo = getBusinessObjectForPictogramElement(pe);
-
-    if (bo instanceof Port) {
-      if (((Port) bo).eContainer() instanceof ExecutableActor) {
-        return new DeleteActorPortFeature(this);
-      }
-      if (((Port) bo).eContainer() instanceof InterfaceActor) {
-        // We do not allow deletion of the port of an InterfaceVertex
-        // through the GUI
-        return null;
-      }
+    final IDeleteFeature delFeature;
+    if (bo instanceof EObject) {
+      final PiMMDeleteFeatureSelectionSwitch piMMDeleteFeatureSelectionSwitch = new PiMMDeleteFeatureSelectionSwitch();
+      delFeature = piMMDeleteFeatureSelectionSwitch.doSwitch((EObject) bo);
+    } else {
+      delFeature = new DefaultDeleteFeature(this);
     }
 
-    if (bo instanceof AbstractActor) {
-      return new DeleteAbstractActorFeature(this);
-    }
-
-    if (bo instanceof Parameter) {
-      return new DeleteParameterizableFeature(this);
-    }
-
-    if (bo instanceof Fifo) {
-      return new DeleteFifoFeature(this);
-    }
-
-    if (bo instanceof Dependency) {
-      return new DeleteDependencyFeature(this);
-    }
-
-    if (bo instanceof Delay) {
-      return new DeleteDelayFeature(this);
-    }
-
-    return new DefaultDeleteFeature(this);
+    return delFeature;
   }
 
   /*
@@ -510,12 +542,18 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     final Connection connection = context.getConnection();
     final Object obj = getBusinessObjectForPictogramElement(connection);
 
-    if (obj instanceof Fifo) {
-      return new ReconnectionFifoFeature(this);
-    }
+    if (obj instanceof EObject) {
+      return new PiMMSwitch<IReconnectionFeature>() {
+        @Override
+        public IReconnectionFeature caseFifo(Fifo object) {
+          return new ReconnectionFifoFeature(PiMMFeatureProvider.this);
+        }
 
-    if (obj instanceof Dependency) {
-      return new ReconnectionDependencyFeature(this);
+        @Override
+        public IReconnectionFeature caseDependency(Dependency object) {
+          return new ReconnectionDependencyFeature(PiMMFeatureProvider.this);
+        }
+      }.doSwitch((EObject) obj);
     }
 
     return null;
