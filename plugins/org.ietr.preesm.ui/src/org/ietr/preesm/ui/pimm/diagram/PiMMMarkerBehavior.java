@@ -264,7 +264,8 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
       }
 
       if (PiMMMarkerBehavior.this.updateProblemIndication) {
-        Display.getDefault().asyncExec(() -> refreshProblemIndication());
+        // Display.getDefault().asyncExec(() -> refreshProblemIndication())
+        Display.getDefault().asyncExec(PiMMMarkerBehavior.this::refreshProblemIndication);
       }
     }
 

@@ -40,7 +40,6 @@ import org.eclipse.graphiti.ui.editor.DefaultMarkerBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramBehavior;
 import org.eclipse.graphiti.ui.editor.IDiagramContainerUI;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class inheriting from the {@link DiagramBehavior}. This class was created to define a custom {@link DefaultMarkerBehavior} that does not reset problems
  * related to graphs on startup of the editor.
@@ -67,7 +66,6 @@ public class PiMMDiagramBehavior extends DiagramBehavior {
    */
   @Override
   protected DefaultMarkerBehavior createMarkerBehavior() {
-    // TODO Auto-generated method stub
     return new PiMMMarkerBehavior(this);
   }
 

@@ -46,7 +46,6 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.ide.IGotoMarker;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class inheriting from the {@link DiagramEditor}. This class was created to define a custom {@link DefaultMarkerBehavior} that does not reset problems related
  * to graphs on startup of the editor.
