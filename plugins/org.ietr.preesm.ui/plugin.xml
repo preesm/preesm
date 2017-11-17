@@ -42,6 +42,7 @@
 <?eclipse version="3.4"?>
 
 <plugin>
+   <!-- The PREESM perspective definition -->
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
@@ -52,6 +53,8 @@
             name="Preesm">
       </perspective>
    </extension>
+
+   <!-- Editors defined by this plugin -->
    <extension
          point="org.eclipse.ui.editors">
       <editor
@@ -63,6 +66,7 @@
             id="org.ietr.preesm.ui.editor.graph"
             name="Preesm Network Editor">
       </editor>
+      <!-- TOMOVE -->
       <editor
             class="org.ietr.preesm.ui.scenario.editor.ScenarioEditor"
             default="true"
@@ -79,6 +83,7 @@
             id="org.ietr.preesm.experiment.ui.pimm.editor"
             name="PiMM Editor">
       </editor>
+      <!-- TOMOVE -->
       <editor
             class="org.ietr.preesm.ui.pimm.diagram.PiMMDiagramEditor"
             contributorClass="org.eclipse.graphiti.ui.editor.DiagramEditorActionBarContributor"
@@ -90,6 +95,7 @@
             name="PiMM Diagram Editor">
       </editor>
    </extension>
+   <!-- GramphML Algos property tabs -->
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
       <propertyTabs
@@ -111,6 +117,7 @@
          </propertyTab>
       </propertyTabs>
    </extension>
+   <!-- GramphML Algos property tab sections -->
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertySections">
       <propertySections
@@ -135,6 +142,7 @@
          </propertySection>
       </propertySections>
    </extension>
+   <!-- Workflow Run As... shortcut (deprecated) -->
    <extension
          point="org.eclipse.debug.ui.launchShortcuts">
       <shortcut
@@ -163,8 +171,15 @@
          </contextualLaunch>
       </shortcut>
    </extension>
+   <!-- Wizards -->
    <extension
          point="org.eclipse.ui.newWizards">
+      <!-- the Preesm category -->
+      <category
+            id="org.ietr.preesm.category"
+            name="Preesm">
+      </category>
+      <!-- new GraphML -->
       <wizard
             canFinishEarly="false"
             category="org.ietr.preesm.category"
@@ -178,10 +193,7 @@
             Create a new IBSDF algorithm.
          </description>
       </wizard>
-      <category
-            id="org.ietr.preesm.category"
-            name="Preesm">
-      </category>
+      <!-- new Preesm Project -->
       <wizard
             category="org.ietr.preesm.category"
             class="org.ietr.preesm.ui.wizards.NewPreesmProjectWizard"
@@ -194,6 +206,7 @@
             Create a new Preesm project
          </description>
       </wizard>
+      <!-- new Scenario TOMOVE -->
       <wizard
             category="org.ietr.preesm.category"
             class="org.ietr.preesm.ui.wizards.NewScenarioFileWizard"
@@ -206,6 +219,7 @@
             Create a new scenario file
          </description>
       </wizard>
+      <!-- new PiSDF Algo TOMOVE -->
       <wizard
             canFinishEarly="false"
             category="org.ietr.preesm.category"
@@ -220,6 +234,7 @@
          </description>
       </wizard>
    </extension>
+   <!-- Preesm project nature definition -->
    <extension
          point="org.eclipse.ui.ide.projectNatureImages">
       <image
@@ -231,14 +246,17 @@
          </description>
       </image>
    </extension>
+   <!-- Preesm console -->
    <extension
          point="org.eclipse.ui.console.consoleFactories">
       <consoleFactory
             class="org.ietr.preesm.ui.console.CoreConsoleFactory"
             icon="icons/preesm2mini.PNG"
-            label="Preesm Core Console">
+            label="Preesm Log">
       </consoleFactory>
    </extension>
+   <!-- resource filter to hide .layout files -->
+   <!-- TODO: rename -->
    <extension
          id="albert"
          name="albert"
@@ -251,8 +269,10 @@
          </description>
       </filter>
    </extension>
+   <!-- Navigator content -->
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">
+      <!-- *.layout filter -->
       <commonFilter
             activeByDefault="true"
             class="org.ietr.preesm.ui.ProjectExplorerFilter"
@@ -260,7 +280,10 @@
             id="org.ietr.preesm.core.layoutfilefilter"
             name="LayoutFileFilter"
             visibleInUI="true">
-      </commonFilter>
+     </commonFilter>
+
+     <!-- PiSDF Wizard ref -->
+     <!-- Scenario Wizard ref TOMOVE -->
 	 <commonWizard type="new"
 	   wizardId="org.ietr.preesm.experiment.ui.pimm.wizards.NewPiMMWizard">
 	     <enablement>
@@ -271,6 +294,8 @@
 	     </enablement>
 	 </commonWizard>
 
+     <!-- Workflow Wizard ref -->
+     <!-- TODO: id comes from dftools.... -->
 	 <commonWizard type="new"
 	   wizardId="org.ietr.preesm.ui.wizards.workflow">
 	     <enablement>
@@ -281,6 +306,8 @@
 	     </enablement>
 	 </commonWizard>
 
+     <!-- Slam Wizard ref -->
+     <!-- TODO: id comes from dftools.... -->
 	 <commonWizard type="new"
 	   wizardId="net.sf.dftools.ui.slam.NewSlamFileWizard">
 	     <enablement>
@@ -291,6 +318,7 @@
 	     </enablement>
 	 </commonWizard>
 
+     <!-- Scenario Wizard ref TOMOVE -->
 	 <commonWizard type="new"
 	   wizardId="org.ietr.preesm.core.ui.wizards.NewScenarioFileWizard">
 	     <enablement>
@@ -301,6 +329,7 @@
 	     </enablement>
 	 </commonWizard>
 
+     <!-- Preesm project Wizard ref -->
 	 <commonWizard type="new"
 	   wizardId="org.ietr.preesm.core.wizards.NewPreesmProjectWizard">
 	     <enablement>
@@ -312,40 +341,9 @@
 			</or>
 	     </enablement>
 	 </commonWizard>
-
-
    </extension>
-   <extension
-         id="org.ietr.preesm.ui.projectexplorerviewer"
-         name="org.ietr.preesm.ui.projectexplorerviewer"
-         point="org.eclipse.ui.navigator.viewer">
-      <viewerContentBinding
-            viewerId="org.eclipse.ui.navigator.ProjectExplorer">
-         <includes>
-            <contentExtension
-                  isRoot="true"
-                  pattern="org.ietr.preesm.core.layoutfilefilter">
-            </contentExtension>
-            <contentExtension
-                  isRoot="true"
-                  pattern="org.eclipse.ui.navigator.resourceContent">
-            </contentExtension>
-         </includes>
-      </viewerContentBinding>
-      <viewerContentBinding
-            viewerId="org.eclipse.ui.navigator.ProjectExplorer">
-         <includes>
-            <contentExtension
-                  isRoot="true"
-                  pattern="org.ietr.preesm.experiment.pifilefilter">
-            </contentExtension>
-            <contentExtension
-                  isRoot="true"
-                  pattern="org.eclipse.ui.navigator.resourceContent">
-            </contentExtension>
-         </includes>
-      </viewerContentBinding>
-   </extension>
+
+   <!-- Preesm wizard nature -->
    <extension
          id="org.ietr.preesm.core.ui.wizards.nature"
          name="Preesm Project"
@@ -356,6 +354,7 @@
          </run>
       </runtime>
    </extension>
+
    <extension
          point="graphiti.definition">
       <configuration
@@ -1521,5 +1520,38 @@
             class="org.ietr.preesm.ui.pimm.checker.popup.actions.WorkflowRunnerPopup"
             commandId="org.ietr.preesm.ui.command.RunWorkflow">
       </handler>
+   </extension>
+
+   <!-- ?? -->
+   <extension
+         id="org.ietr.preesm.ui.projectexplorerviewer"
+         name="org.ietr.preesm.ui.projectexplorerviewer"
+         point="org.eclipse.ui.navigator.viewer">
+      <viewerContentBinding
+            viewerId="org.eclipse.ui.navigator.ProjectExplorer">
+         <includes>
+            <contentExtension
+                  isRoot="true"
+                  pattern="org.ietr.preesm.core.layoutfilefilter">
+            </contentExtension>
+            <contentExtension
+                  isRoot="true"
+                  pattern="org.eclipse.ui.navigator.resourceContent">
+            </contentExtension>
+         </includes>
+      </viewerContentBinding>
+      <viewerContentBinding
+            viewerId="org.eclipse.ui.navigator.ProjectExplorer">
+         <includes>
+            <contentExtension
+                  isRoot="true"
+                  pattern="org.ietr.preesm.experiment.pifilefilter">
+            </contentExtension>
+            <contentExtension
+                  isRoot="true"
+                  pattern="org.eclipse.ui.navigator.resourceContent">
+            </contentExtension>
+         </includes>
+      </viewerContentBinding>
    </extension>
 </plugin>
