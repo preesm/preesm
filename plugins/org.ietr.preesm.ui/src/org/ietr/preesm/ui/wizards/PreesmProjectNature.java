@@ -41,7 +41,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class PreesmProjectNature.
  *
@@ -59,6 +58,7 @@ public class PreesmProjectNature implements IProjectNature {
    * Creates a new Preesm project nature.
    */
   public PreesmProjectNature() {
+    // nothing specific to do
   }
 
   /*
@@ -68,6 +68,7 @@ public class PreesmProjectNature implements IProjectNature {
    */
   @Override
   public void configure() throws CoreException {
+    // nothing specific to do
   }
 
   /*
@@ -77,6 +78,7 @@ public class PreesmProjectNature implements IProjectNature {
    */
   @Override
   public void deconfigure() throws CoreException {
+    // nothing specific to do
   }
 
   /*
