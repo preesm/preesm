@@ -8,6 +8,8 @@ PREESM Changelog
 
 ### Changes
 * Update releng scripts;
+* Refactor UI: use PiMMSwitches instead of instanceof ifs;
+* Upadte product: now starts up the Preesm perspective by default and show Preesm in the title;
 
 ### Bug fix
 
