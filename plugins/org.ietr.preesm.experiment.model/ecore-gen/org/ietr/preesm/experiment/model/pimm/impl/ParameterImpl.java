@@ -39,7 +39,7 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Objects;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
@@ -48,16 +48,13 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.util.DependencyCycleDetector;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
@@ -156,49 +153,6 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
           PiMMPackage.DEPENDENCY__SETTER);
     }
     return this.outgoingDependencies;
-  }
-
-  /**
-   * <!-- begin-user-doc --> Check whether the {@link Parameter} is a locally static {@link Parameter} or a dynamically configurable {@link Parameter}.<br>
-   * <br>
-   * A {@link Parameter} is locally static if its value only depends on locally static {@link Parameter}s. If the value of a {@link Parameter} depends on a
-   * {@link Actor#isConfigurationActor() configuration actor} or a configurable {@link Parameter}, the {@link Parameter} becomes a configurable
-   * {@link Parameter}. <br>
-   * <br>
-   * <b>This method should only be called on an acyclic {@link Dependency} tree otherwise the call will result in an infinite loop. Use
-   * {@link DependencyCycleDetector} to check that the {@link Dependency} tree is acyclic.</b>
-   *
-   * @return <code>true</code> if the {@link Parameter} is locally static, <code>false</code> if the {@link Parameter} is configurable. <!-- end-user-doc -->
-   *
-   */
-  @Override
-  public boolean isLocallyStatic() {
-
-    // Retrieve all incoming dependencies
-    final List<ConfigInputPort> ports = getConfigInputPorts();
-    for (final ConfigInputPort port : ports) {
-      if (port.getIncomingDependency() != null) {
-        // For each dependency, check if the setter is configurable or
-        // an actor
-        final ISetter setter = port.getIncomingDependency().getSetter();
-        if (setter instanceof ConfigOutputPort) {
-          // The setter is an actor, the parameter is configurable
-          return false;
-        }
-
-        if ((setter instanceof Parameter) && !((Parameter) setter).isLocallyStatic()) {
-          // The setter is a configurable parameter
-          return false;
-        }
-
-        if (!(setter instanceof ConfigOutputPort) && !(setter instanceof Parameter)) {
-          return false;
-        }
-      }
-    }
-
-    // If this code is reached, the parameter is locally static
-    return true;
   }
 
   /**
@@ -343,6 +297,18 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
     } else if (eNotificationRequired()) {
       eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.PARAMETER__VALUE_EXPRESSION, newValueExpression, newValueExpression));
     }
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public boolean isLocallyStatic() {
+    // a parameter is static if all its setters are static (or it has no setter)
+    return getConfigInputPorts().stream().filter(Objects::nonNull).map(ConfigInputPort::getIncomingDependency).filter(Objects::nonNull)
+        .map(Dependency::getSetter).filter(Objects::nonNull).noneMatch(ISetter::isLocallyStatic);
   }
 
   /**

@@ -273,6 +273,17 @@ public class ConfigOutputPortImpl extends DataOutputPortImpl implements ConfigOu
     return this.outgoingDependencies;
   }
 
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public boolean isLocallyStatic() {
+    // config output ports are never considered static
+    return false;
+  }
+
   /*
    * (non-Javadoc)
    *
