@@ -575,23 +575,12 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
-   * @return the actor configuration actor
-   * @generated
-   */
-  @Override
-  public EAttribute getActor_ConfigurationActor() {
-    return (EAttribute) this.actorEClass.getEStructuralFeatures().get(1);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
    * @return the actor memory script path
    * @generated
    */
   @Override
   public EAttribute getActor_MemoryScriptPath() {
-    return (EAttribute) this.actorEClass.getEStructuralFeatures().get(2);
+    return (EAttribute) this.actorEClass.getEStructuralFeatures().get(1);
   }
 
   /**
@@ -1306,7 +1295,6 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     this.actorEClass = createEClass(PiMMPackage.ACTOR);
     createEReference(this.actorEClass, PiMMPackage.ACTOR__REFINEMENT);
-    createEAttribute(this.actorEClass, PiMMPackage.ACTOR__CONFIGURATION_ACTOR);
     createEAttribute(this.actorEClass, PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH);
 
     this.portEClass = createEClass(PiMMPackage.PORT);
@@ -1530,12 +1518,11 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     initEReference(getActor_Refinement(), getRefinement(), null, "refinement", null, 1, 1, Actor.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
         EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
         !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEAttribute(getActor_ConfigurationActor(), this.ecorePackage.getEBoolean(), "configurationActor", null, 1, 1, Actor.class, !EPackageImpl.IS_TRANSIENT,
-        EPackageImpl.IS_VOLATILE, !EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
     initEAttribute(getActor_MemoryScriptPath(), getIPath(), "memoryScriptPath", null, 0, 1, Actor.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
         EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
         EPackageImpl.IS_ORDERED);
+
+    addEOperation(this.actorEClass, this.ecorePackage.getEBoolean(), "isConfigurationActor", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     initEClass(this.portEClass, Port.class, "Port", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getPort_Name(), this.ecorePackage.getEString(), "name", null, 0, 1, Port.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,

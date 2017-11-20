@@ -65,7 +65,6 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#getRefinement <em>Refinement</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#isConfigurationActor <em>Configuration Actor</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#getMemoryScriptPath <em>Memory Script Path</em>}</li>
  * </ul>
  *
@@ -80,15 +79,6 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
    * @ordered
    */
   protected Refinement refinement;
-
-  /**
-   * The default value of the '{@link #isConfigurationActor() <em>Configuration Actor</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see #isConfigurationActor()
-   * @generated
-   * @ordered
-   */
-  protected static final boolean CONFIGURATION_ACTOR_EDEFAULT = false;
 
   /**
    * The default value of the '{@link #getMemoryScriptPath() <em>Memory Script Path</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -218,19 +208,6 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
-   * @return true, if is sets the configuration actor
-   * @generated
-   */
-  @Override
-  public boolean isSetConfigurationActor() {
-    // TODO: implement this method to return whether the 'Configuration Actor' attribute is set
-    // Ensure that you remove @generated or mark it @generated NOT
-    throw new UnsupportedOperationException();
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
    * @return the memory script path
    * @generated
    */
@@ -293,8 +270,6 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
     switch (featureID) {
       case PiMMPackage.ACTOR__REFINEMENT:
         return getRefinement();
-      case PiMMPackage.ACTOR__CONFIGURATION_ACTOR:
-        return isConfigurationActor();
       case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
         return getMemoryScriptPath();
     }
@@ -356,8 +331,6 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
     switch (featureID) {
       case PiMMPackage.ACTOR__REFINEMENT:
         return this.refinement != null;
-      case PiMMPackage.ACTOR__CONFIGURATION_ACTOR:
-        return isSetConfigurationActor();
       case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
         return ActorImpl.MEMORY_SCRIPT_PATH_EDEFAULT == null ? this.memoryScriptPath != null
             : !ActorImpl.MEMORY_SCRIPT_PATH_EDEFAULT.equals(this.memoryScriptPath);

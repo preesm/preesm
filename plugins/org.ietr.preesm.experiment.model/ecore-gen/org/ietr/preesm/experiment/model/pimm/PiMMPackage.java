@@ -416,20 +416,12 @@ public interface PiMMPackage extends EPackage {
   int ACTOR__REFINEMENT = PiMMPackage.EXECUTABLE_ACTOR_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Configuration Actor</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int ACTOR__CONFIGURATION_ACTOR = PiMMPackage.EXECUTABLE_ACTOR_FEATURE_COUNT + 1;
-
-  /**
    * The feature id for the '<em><b>Memory Script Path</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int ACTOR__MEMORY_SCRIPT_PATH = PiMMPackage.EXECUTABLE_ACTOR_FEATURE_COUNT + 2;
+  int ACTOR__MEMORY_SCRIPT_PATH = PiMMPackage.EXECUTABLE_ACTOR_FEATURE_COUNT + 1;
 
   /**
    * The number of structural features of the '<em>Actor</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -437,7 +429,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int ACTOR_FEATURE_COUNT = PiMMPackage.EXECUTABLE_ACTOR_FEATURE_COUNT + 3;
+  int ACTOR_FEATURE_COUNT = PiMMPackage.EXECUTABLE_ACTOR_FEATURE_COUNT + 2;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.PortImpl <em>Port</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1947,17 +1939,6 @@ public interface PiMMPackage extends EPackage {
   EReference getActor_Refinement();
 
   /**
-   * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Actor#isConfigurationActor <em>Configuration Actor</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @return the meta object for the attribute '<em>Configuration Actor</em>'.
-   * @see org.ietr.preesm.experiment.model.pimm.Actor#isConfigurationActor()
-   * @see #getActor()
-   * @generated
-   */
-  EAttribute getActor_ConfigurationActor();
-
-  /**
    * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Actor#getMemoryScriptPath <em>Memory Script Path</em>}'. <!--
    * begin-user-doc --> <!-- end-user-doc -->
    *
@@ -2745,13 +2726,6 @@ public interface PiMMPackage extends EPackage {
      * @generated
      */
     EReference ACTOR__REFINEMENT = PiMMPackage.eINSTANCE.getActor_Refinement();
-
-    /**
-     * The meta object literal for the '<em><b>Configuration Actor</b></em>' attribute feature. <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    EAttribute ACTOR__CONFIGURATION_ACTOR = PiMMPackage.eINSTANCE.getActor_ConfigurationActor();
 
     /**
      * The meta object literal for the '<em><b>Memory Script Path</b></em>' attribute feature. <!-- begin-user-doc --> <!-- end-user-doc -->
