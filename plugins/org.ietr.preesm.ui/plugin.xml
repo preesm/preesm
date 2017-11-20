@@ -357,6 +357,7 @@
 
    <extension
          point="graphiti.definition">
+      <!-- GraphML Algo Editor specs -->
       <configuration
             extension="graphml"
             name="GraphML"
@@ -660,6 +661,7 @@
             </shape>
          </vertexType>
       </configuration>
+      <!-- IP-XACT Design Editor specs -->
       <configuration
             extension="design"
             name="IP-XACT Design"
@@ -1003,6 +1005,7 @@
             </xslt>
          </export>
       </configuration>
+      <!-- IP-XACT Component Editor specs -->
       <configuration
             extension="component"
             name="IP-XACT Component"
@@ -1124,6 +1127,8 @@
          </vertexType>
       </configuration>
    </extension>
+
+   <!-- ??? -->
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
       <propertyContributor
@@ -1154,6 +1159,8 @@
          </propertyTab>
       </propertyTabs>
    </extension>
+
+   <!-- Graphiti Diagram Type for PiMM -->
    <extension
          point="org.eclipse.graphiti.ui.diagramTypes">
       <diagramType
@@ -1162,6 +1169,8 @@
             id="org.ietr.preesm.experiment.ui.pimm.pimmDiagramType">
       </diagramType>
    </extension>
+
+   <!-- Graphiti Diagram Type Provider for PiMM -->
    <extension
          point="org.eclipse.graphiti.ui.diagramTypeProviders">
       <diagramTypeProvider
@@ -1177,6 +1186,8 @@
          </imageProvider>
       </diagramTypeProvider>
    </extension>
+
+   <!-- Graphiti Image Provider for PiMM -->
    <extension
          point="org.eclipse.graphiti.ui.imageProviders">
       <imageProvider
@@ -1184,6 +1195,8 @@
             id="org.ietr.preesm.experiment.ui.pimm.util.PiMMImageProvider">
       </imageProvider>
    </extension>
+
+   <!-- Override rename of PiMM files (.pi and .diagram) -->
    <extension
          point="org.eclipse.ltk.core.refactoring.renameParticipants">
       <renameParticipant
@@ -1219,30 +1232,8 @@
          </enablement>
       </renameParticipant>
    </extension>
-   <extension
-         point="org.eclipse.ui.views.properties.tabbed.propertySections">
-      <propertySections
-            contributorId="PiMM.PropertyContributor">
-         <propertySection
-               class="org.ietr.preesm.ui.pimm.properties.PortParameterAndDelayPropertiesSection"
-               filter="org.ietr.preesm.ui.pimm.properties.PiMMFilter"
-               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basic"
-               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basic">
-         </propertySection>
-         <propertySection
-               class="org.ietr.preesm.ui.pimm.properties.ActorPropertiesSection"
-               filter="org.ietr.preesm.ui.pimm.properties.PiMMActorFilter"
-               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicActor"
-               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor">
-         </propertySection>
-         <propertySection
-               class="org.ietr.preesm.ui.pimm.properties.FifoPropertiesSection"
-               filter="org.ietr.preesm.ui.pimm.properties.PiMMFifoFilter"
-               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicFifo"
-               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicFifo">
-         </propertySection>
-      </propertySections>
-   </extension>
+
+   <!-- Override copy of PiMM files (.pi and .diagram) -->
    <extension
          point="org.eclipse.ltk.core.refactoring.copyParticipants">
       <copyParticipant
@@ -1277,8 +1268,37 @@
             </and></enablement>
       </copyParticipant>
    </extension>
+
+   <!-- ?? Port Parameters and Delay; Actor; Fifo property tabs -->
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertySections">
+      <propertySections
+            contributorId="PiMM.PropertyContributor">
+         <propertySection
+               class="org.ietr.preesm.ui.pimm.properties.PortParameterAndDelayPropertiesSection"
+               filter="org.ietr.preesm.ui.pimm.properties.PiMMFilter"
+               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basic"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basic">
+         </propertySection>
+         <propertySection
+               class="org.ietr.preesm.ui.pimm.properties.ActorPropertiesSection"
+               filter="org.ietr.preesm.ui.pimm.properties.PiMMActorFilter"
+               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicActor"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor">
+         </propertySection>
+         <propertySection
+               class="org.ietr.preesm.ui.pimm.properties.FifoPropertiesSection"
+               filter="org.ietr.preesm.ui.pimm.properties.PiMMFifoFilter"
+               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicFifo"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicFifo">
+         </propertySection>
+      </propertySections>
+   </extension>
+
+   <!-- keyboard shortcuts -->
    <extension
          point="org.eclipse.ui.bindings">
+      <!-- ?? -->
       <key
             commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
             contextId="org.ietr.preesm.experiment.ui.pimm"
@@ -1289,6 +1309,7 @@
                value="up">
          </parameter>
       </key>
+      <!-- ?? -->
       <key
             commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
             contextId="org.ietr.preesm.experiment.ui.pimm"
@@ -1299,6 +1320,7 @@
                value="down">
          </parameter>
       </key>
+      <!-- CTRL + SHIFT + F => auto layout -->
       <key
             commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
             contextId="org.ietr.preesm.experiment.ui.pimm"
@@ -1309,6 +1331,7 @@
                value="layout">
          </parameter>
       </key>
+      <!-- F2 => rename -->
       <key
             commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
             contextId="org.ietr.preesm.experiment.ui.pimm"
@@ -1319,7 +1342,11 @@
                value="rename">
          </parameter>
       </key>
+      <!-- F3 => show properties -->
+      <!-- TODO -->
    </extension>
+
+   <!-- PiMM Editor context (extend all Graphiti Diagram Editors) -->
    <extension
          point="org.eclipse.ui.contexts">
       <context
@@ -1329,9 +1356,10 @@
       </context>
    </extension>
 
-
+   <!-- Preesm Menus -->
    <extension
          point="org.eclipse.ui.menus">
+      <!-- show properties view from any selected element in the PiMM Editor -->
       <menuContribution
             allPopups="false"
             locationURI="popup:org.eclipse.ui.popup.any?after=additions">
@@ -1353,6 +1381,7 @@
 				</visibleWhen>
         </command>
       </menuContribution>
+      <!-- actions available in the project navigator (not PiMM specific) -->
       <menuContribution
             allPopups="false"
             locationURI="popup:org.eclipse.ui.popup.any?before=additions">
@@ -1360,6 +1389,7 @@
                icon="icons/preesmProject.png"
                id="org.ietr.preesm.ui.menu1"
                label="Preesm">
+            <!-- Check the selected pimm file -->
             <command
                   commandId="org.ietr.preesm.ui.command.PimmChecker"
                   icon="icons/pi.gif"
@@ -1387,6 +1417,7 @@
                   </with>
                </visibleWhen>
             </command>
+            <!-- generation .diagram from the selected .pi file -->
             <command
                   commandId="org.ietr.preesm.ui.command.PiMM2Diagram"
                   icon="icons/pi.gif"
@@ -1410,6 +1441,7 @@
                   </with>
                </visibleWhen>
             </command>
+            <!-- generate a default empty scenario in the selected project -->
             <command
                   commandId="org.ietr.preesm.ui.command.ScenarioGenerator"
                   icon="icons/preesm4mini.PNG"
@@ -1433,6 +1465,7 @@
                   </with>
                </visibleWhen>
             </command>
+            <!-- run the selected workflow -->
             <command
                   commandId="org.ietr.preesm.ui.command.RunWorkflow"
                   icon="icons/workflow.png"
@@ -1464,9 +1497,11 @@
             </command>
          </menu>
       </menuContribution>
+      <!-- actions available in the WorkflowEditor popup -->
       <menuContribution
             allPopups="false"
             locationURI="popup:net.sf.graphiti.GraphitiContextMenu?before=additions">
+         <!-- Run the workflow from the editor -->
          <command
                commandId="org.ietr.preesm.ui.command.RunWorkflow"
                icon="icons/workflow.png"
@@ -1482,6 +1517,7 @@
       </menuContribution>
    </extension>
 
+   <!-- Preesm commands (for menus) -->
    <extension
          point="org.eclipse.ui.commands">
       <command
@@ -1502,6 +1538,7 @@
       </command>
    </extension>
 
+   <!-- Preesm command handlers (for menus) -->
    <extension
          point="org.eclipse.ui.handlers">
       <handler
