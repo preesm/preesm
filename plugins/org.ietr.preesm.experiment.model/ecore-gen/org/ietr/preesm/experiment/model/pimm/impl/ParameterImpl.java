@@ -158,17 +158,6 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
-   * @return true, if is dependent
-   * @generated NOT
-   */
-  @Override
-  public boolean isDependent() {
-    return !getConfigInputPorts().isEmpty();
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
    * @return true, if is configuration interface
    * @generated
    */
@@ -309,6 +298,16 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
     // a parameter is static if all its setters are static (or it has no setter)
     return getConfigInputPorts().stream().filter(Objects::nonNull).map(ConfigInputPort::getIncomingDependency).filter(Objects::nonNull)
         .map(Dependency::getSetter).filter(Objects::nonNull).noneMatch(ISetter::isLocallyStatic);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public boolean isDependent() {
+    return !getConfigInputPorts().isEmpty();
   }
 
   /**
