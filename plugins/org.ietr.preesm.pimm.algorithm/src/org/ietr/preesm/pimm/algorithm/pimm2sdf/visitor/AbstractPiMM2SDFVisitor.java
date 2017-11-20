@@ -195,7 +195,12 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
   @Override
   public void visitParameter(final Parameter p) {
     if (p.isConfigurationInterface()) {
-      final ISetter setter = p.getGraphPort().getIncomingDependency().getSetter();
+      final ConfigInputPort graphPort = p.getGraphPort();
+      final Dependency incomingDependency = graphPort.getIncomingDependency();
+      if (incomingDependency == null) {
+        System.out.println("oh shit");
+      }
+      final ISetter setter = incomingDependency.getSetter();
       // Setter of an incoming dependency into a ConfigInputInterface must
       // be a parameter
       if (setter instanceof Parameter) {
@@ -205,9 +210,9 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
       }
     } else {
       // If there is only one value available for Parameter p, we can set
-      // it
-      final Integer value = this.execution.getUniqueValue(p);
-      if (value != null) {
+      // its
+      if (this.execution.hasValue(p)) {
+        final Integer value = this.execution.getValue(p);
         final Expression pExp = this.piFactory.createExpression();
         pExp.setExpressionString(value.toString());
         p.setValueExpression(pExp);
