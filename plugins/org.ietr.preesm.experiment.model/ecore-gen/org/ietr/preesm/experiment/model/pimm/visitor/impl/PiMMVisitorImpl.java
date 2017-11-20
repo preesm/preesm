@@ -35,7 +35,6 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 import org.ietr.preesm.experiment.model.pimm.visitor.VisitorPackage;
 
@@ -62,16 +61,6 @@ public abstract class PiMMVisitorImpl extends EObjectImpl implements PiMMVisitor
   @Override
   protected EClass eStaticClass() {
     return VisitorPackage.Literals.PI_MM_VISITOR;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   */
-  @Override
-  public void visit(final PiMMVisitable subject) {
-    subject.accept(this);
   }
 
   /**

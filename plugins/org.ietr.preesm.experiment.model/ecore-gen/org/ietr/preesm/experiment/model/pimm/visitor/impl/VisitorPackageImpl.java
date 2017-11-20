@@ -199,9 +199,6 @@ public class VisitorPackageImpl extends EPackageImpl implements VisitorPackage {
     initEClass(this.piMMVisitorEClass, PiMMVisitor.class, "PiMMVisitor", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
 
-    op = addEOperation(this.piMMVisitorEClass, null, "visit", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
-    addEParameter(op, getPiMMVisitable(), "subject", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
-
     op = addEOperation(this.piMMVisitorEClass, null, "visitAbstractActor", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
     addEParameter(op, thePiMMPackage.getAbstractActor(), "subject", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 

@@ -205,7 +205,7 @@ public class DynamicPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
         final PiGraphExecution innerExecution = execution.extractInnerExecution(subgraph, selector);
         // Visit subgraph with the PiGraphExecution
         final DynamicPiMM2SDFVisitor innerVisitor = new DynamicPiMM2SDFVisitor(innerExecution);
-        innerVisitor.visit(subgraph);
+        subgraph.accept(innerVisitor);
         // Set the obtained SDFGraph as refinement for duplicate
         final SDFGraph sdf = innerVisitor.getResult();
         sdf.setName(sdf.getName() + innerExecution.getExecutionLabel());

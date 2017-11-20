@@ -223,12 +223,6 @@
       </eOperations>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="PiMMVisitor" abstract="true">
-      <eOperations name="visit" lowerBound="1">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="body" value="subject.accept(this);"/>
-        </eAnnotations>
-        <eParameters name="subject" lowerBound="1" eType="#//visitor/PiMMVisitable"/>
-      </eOperations>
       <eOperations name="visitAbstractActor" lowerBound="1">
         <eParameters name="subject" lowerBound="1" eType="#//AbstractActor"/>
       </eOperations>

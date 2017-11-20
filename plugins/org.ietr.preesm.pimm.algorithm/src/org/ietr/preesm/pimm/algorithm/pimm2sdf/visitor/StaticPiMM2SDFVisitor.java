@@ -116,7 +116,7 @@ public class StaticPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
 
       // Visit the subgraph
       final StaticPiMM2SDFVisitor innerVisitor = new StaticPiMM2SDFVisitor(this.execution);
-      innerVisitor.visit(pg);
+      pg.accept(innerVisitor);
       // Set the obtained SDFGraph as refinement for v
       final SDFGraph sdf = innerVisitor.getResult();
       sdf.setName(sdf.getName() + this.execution.getExecutionLabel());
