@@ -37,7 +37,7 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm.impl;
 
-import java.util.List;
+import java.util.Objects;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -49,8 +49,6 @@ import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
@@ -172,40 +170,6 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
   }
 
   /**
-   * <!-- begin-user-doc --> Check whether the {@link Actor} is a configuration {@link Actor}.<br>
-   * <br>
-   * An {@link Actor} is a configuration {@link Actor} if it sets a {@link Parameter} value through a {@link ConfigOutputPort}.
-   *
-   * @return <code>true</code> if the {@link Actor} is a configuration {@link Actor} <code>false</code> else.<!-- end-user-doc -->
-   *
-   */
-  @Override
-  public boolean isConfigurationActor() {
-    boolean result = false;
-
-    final List<ConfigOutputPort> ports = getConfigOutputPorts();
-    for (final ConfigOutputPort port : ports) {
-      // If the port has an outgoing dependency
-      if (!port.getOutgoingDependencies().isEmpty()) {
-        // As soon as there is one dependency, the actor is a
-        // configuration actor
-        final Dependency dependency = port.getOutgoingDependencies().get(0);
-        final Parameterizable parameterizable = (Parameterizable) dependency.getGetter().eContainer();
-
-        // Should always be the case
-        if (parameterizable instanceof Parameter) {
-          result = true;
-        } else {
-          throw new RuntimeException(
-              "Actor configuration output ports can" + " only set the value of a Parameter. " + parameterizable.eClass() + " cannot be set directly.");
-        }
-      }
-    }
-
-    return result;
-  }
-
-  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @return the memory script path
@@ -230,6 +194,18 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
     if (eNotificationRequired()) {
       eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH, oldMemoryScriptPath, this.memoryScriptPath));
     }
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public boolean isConfigurationActor() {
+    // an Actor is considered as a Configuration Actor iff it has at least a ConfigOutputPort that is connected to a getter
+    return getConfigOutputPorts().stream().filter(Objects::nonNull).map(ConfigOutputPort::getOutgoingDependencies).filter(l -> !l.isEmpty()).map(l -> l.get(0))
+        .map(Dependency::getGetter).filter(Objects::nonNull).anyMatch(x -> true);
   }
 
   /**

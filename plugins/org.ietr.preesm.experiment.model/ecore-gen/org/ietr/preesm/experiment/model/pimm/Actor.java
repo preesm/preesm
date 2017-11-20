@@ -90,7 +90,10 @@ public interface Actor extends ExecutableActor {
    * </p>
    * <!-- end-user-doc -->
    *
-   * @model kind="operation"
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='// an Actor is considered as a Configuration Actor iff it has at least a
+   *        ConfigOutputPort that is connected to a getter\nreturn
+   *        getConfigOutputPorts().stream().filter(Objects::nonNull).map(ConfigOutputPort::getOutgoingDependencies).filter(l -&gt; !l.isEmpty()).map(l -&gt;
+   *        l.get(0))\n .map(Dependency::getGetter).filter(Objects::nonNull).anyMatch(x -&gt; true);'"
    * @generated
    */
   boolean isConfigurationActor();
