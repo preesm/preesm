@@ -545,7 +545,7 @@ public class ScenarioParser {
                 this.algoPi = getPiGraph();
               }
             } catch (final Exception e) {
-              throw new ScenarioParserException("Could not parse the algorithm", e);
+              throw new ScenarioParserException("Could not parse the algorithm: " + e.getMessage(), e);
             }
           } else if (type.equals("architecture")) {
             try {
