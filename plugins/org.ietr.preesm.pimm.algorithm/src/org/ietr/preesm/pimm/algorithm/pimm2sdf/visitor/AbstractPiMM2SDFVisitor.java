@@ -197,15 +197,13 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
     if (p.isConfigurationInterface()) {
       final ConfigInputPort graphPort = p.getGraphPort();
       final Dependency incomingDependency = graphPort.getIncomingDependency();
-      if (incomingDependency == null) {
-        System.out.println("oh shit");
-      }
       final ISetter setter = incomingDependency.getSetter();
       // Setter of an incoming dependency into a ConfigInputInterface must
       // be a parameter
       if (setter instanceof Parameter) {
+        final Expression setterParam = ((Parameter) setter).getValueExpression();
         final Expression pExp = this.piFactory.createExpression();
-        pExp.setExpressionString(((Parameter) setter).getValueExpression().getExpressionString());
+        pExp.setExpressionString(setterParam.getExpressionString());
         p.setValueExpression(pExp);
       }
     } else {
