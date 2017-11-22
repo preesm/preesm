@@ -2,7 +2,7 @@
 <dftools:workflow xmlns:dftools="http://net.sf.dftools">
     <dftools:scenario pluginId="org.ietr.preesm.scenario.task"/>
     <dftools:task
-        pluginId="org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask" taskId="PiMM2SDF">
+        pluginId="org.ietr.preesm.experiment.pimm2sdf.StaticPiMM2SDFTask" taskId="PiMM2SDF">
         <dftools:data key="variables"/>
     </dftools:task>
     <dftools:task
@@ -26,6 +26,7 @@
     <dftools:task
         pluginId="org.ietr.preesm.experiment.pimm.mapper.MultiSDFListSchedulingMapping" taskId="MultiListScheduling">
         <dftools:data key="variables">
+            <dftools:variable name="Check" value="True"/>
             <dftools:variable name="balanceLoads" value="true"/>
             <dftools:variable name="edgeSchedType" value="Simple"/>
             <dftools:variable name="simulatorType" value="LooselyTimed"/>
@@ -54,6 +55,7 @@
             <dftools:variable name="Allocator(s)" value="BestFit"/>
             <dftools:variable name="Best/First Fit order" value="LargestFirst"/>
             <dftools:variable name="Data alignment" value="None"/>
+            <dftools:variable name="Distribution" value="? C {SharedOnly, Mixed, DistributedOnly, MixedMerged}"/>
             <dftools:variable name="Merge broadcasts" value="False"/>
             <dftools:variable name="Nb of Shuffling Tested" value="10"/>
             <dftools:variable name="Verbose" value="True"/>
