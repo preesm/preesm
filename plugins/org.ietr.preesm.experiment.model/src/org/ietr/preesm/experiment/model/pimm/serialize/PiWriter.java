@@ -617,9 +617,10 @@ public class PiWriter {
    *          The {@link PiSDFRefinement} to serialize
    */
   protected void writeRefinement(final Element vertexElt, final Refinement refinement) {
-    if (refinement.getFilePath() != null) {
+    final IPath refinementFilePath = refinement.getFilePath();
+    if (refinementFilePath != null) {
 
-      final IPath refinementPath = getProjectRelativePathFrom(refinement.getFilePath());
+      final IPath refinementPath = getProjectRelativePathFrom(refinementFilePath);
 
       // The makeRelative() call ensures that the path is relative to the
       // project.
