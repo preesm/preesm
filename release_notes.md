@@ -31,6 +31,8 @@ PREESM Changelog
 * Refactor code generation;
 * Make scenario, architecture and algorithm visible from the codegen printers;
 * Fix autolayout;
+* Refactor the PiMM Model
+* Remove Multi* Tasks
 
 ### Bug fix
 * Force DFTools to version 1.2.7+ (fix issue #50);
