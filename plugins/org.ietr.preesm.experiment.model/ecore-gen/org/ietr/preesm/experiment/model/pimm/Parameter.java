@@ -66,7 +66,7 @@ public interface Parameter extends AbstractVertex, ISetter {
    *
    * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='// a parameter is static if all its setters are static (or it has no
    *        setter)\nreturn getConfigInputPorts().stream().filter(Objects::nonNull).map(ConfigInputPort::getIncomingDependency).filter(Objects::nonNull)\n
-   *        .map(Dependency::getSetter).filter(Objects::nonNull).noneMatch(ISetter::isLocallyStatic);'"
+   *        .map(Dependency::getSetter).filter(Objects::nonNull).allMatch(ISetter::isLocallyStatic);'"
    * @generated
    */
   @Override
