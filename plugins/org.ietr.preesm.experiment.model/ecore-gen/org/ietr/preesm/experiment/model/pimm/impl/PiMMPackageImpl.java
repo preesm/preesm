@@ -1524,6 +1524,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     addEOperation(this.actorEClass, this.ecorePackage.getEBoolean(), "isConfigurationActor", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
+    addEOperation(this.actorEClass, this.ecorePackage.getEBoolean(), "isHierarchical", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
     initEClass(this.portEClass, Port.class, "Port", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getPort_Name(), this.ecorePackage.getEString(), "name", null, 0, 1, Port.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
         EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
@@ -1604,8 +1606,12 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     addEOperation(this.refinementEClass, this.ecorePackage.getEString(), "getFileName", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
+    addEOperation(this.refinementEClass, this.ecorePackage.getEBoolean(), "isHierarchical", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
     initEClass(this.piSDFRefinementEClass, PiSDFRefinement.class, "PiSDFRefinement", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+
+    addEOperation(this.piSDFRefinementEClass, this.ecorePackage.getEBoolean(), "isHierarchical", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     initEClass(this.cHeaderRefinementEClass, CHeaderRefinement.class, "CHeaderRefinement", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
@@ -1615,6 +1621,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     initEReference(getCHeaderRefinement_InitPrototype(), getFunctionPrototype(), null, "initPrototype", null, 0, 1, CHeaderRefinement.class,
         !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES,
         !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+
+    addEOperation(this.cHeaderRefinementEClass, this.ecorePackage.getEBoolean(), "isHierarchical", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     initEClass(this.parameterEClass, Parameter.class, "Parameter", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);

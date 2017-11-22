@@ -70,4 +70,14 @@ public interface CHeaderRefinement extends Refinement {
    */
   void setInitPrototype(FunctionPrototype value);
 
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='//C Header Refinement means it is obviously not a subgraph\nreturn
+   *        false;'"
+   * @generated
+   */
+  @Override
+  boolean isHierarchical();
+
 } // CHeaderRefinement

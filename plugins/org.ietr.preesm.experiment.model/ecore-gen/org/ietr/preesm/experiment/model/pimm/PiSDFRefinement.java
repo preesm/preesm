@@ -48,4 +48,13 @@ package org.ietr.preesm.experiment.model.pimm;
  */
 public interface PiSDFRefinement extends Refinement {
 
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return (getFilePath() != null) &amp;&amp; !getFilePath().isEmpty();'"
+   * @generated
+   */
+  @Override
+  boolean isHierarchical();
+
 } // Refinement

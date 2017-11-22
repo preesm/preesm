@@ -254,6 +254,16 @@ public class PiSDFRefinementImpl extends EObjectImpl implements PiSDFRefinement 
   }
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public boolean isHierarchical() {
+    return (getFilePath() != null) && !getFilePath().isEmpty();
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @return the string

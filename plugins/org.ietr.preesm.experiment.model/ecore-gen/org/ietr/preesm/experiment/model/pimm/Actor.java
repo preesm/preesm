@@ -99,6 +99,14 @@ public interface Actor extends ExecutableActor {
   boolean isConfigurationActor();
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return getRefinement().isHierarchical();'"
+   * @generated
+   */
+  boolean isHierarchical();
+
+  /**
    * Returns the value of the '<em><b>Memory Script Path</b></em>' attribute. <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Memory Script Path</em>' attribute isn't clear, there really should be more of a description here...
@@ -123,13 +131,6 @@ public interface Actor extends ExecutableActor {
    * @generated
    */
   void setMemoryScriptPath(IPath value);
-
-  /**
-   * Test if the actor is a hierarchical one.
-   *
-   * @return true, if it is.
-   */
-  public boolean isHierarchical();
 
   /**
    * Get the graph from hierarchy.

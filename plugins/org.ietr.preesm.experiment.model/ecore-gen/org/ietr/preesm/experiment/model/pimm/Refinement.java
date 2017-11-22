@@ -63,4 +63,12 @@ public interface Refinement extends PiMMVisitable {
    */
   String getFileName();
 
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation"
+   * @generated
+   */
+  boolean isHierarchical();
+
 } // Refinement

@@ -271,6 +271,17 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
   }
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public boolean isHierarchical() {
+    // C Header Refinement means it is obviously not a subgraph
+    return false;
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @return the inits the prototype
