@@ -46,4 +46,14 @@ package org.ietr.preesm.experiment.model.pimm;
  * @generated
  */
 public interface ConfigInputInterface extends Parameter {
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='// a ConfigInputInterface gets its value from the parent graph once per
+   *        execution\n// during one iteration, its value does not change, thus is locally static\nreturn true;'"
+   * @generated
+   */
+  @Override
+  boolean isLocallyStatic();
 } // ConfigInputInterface

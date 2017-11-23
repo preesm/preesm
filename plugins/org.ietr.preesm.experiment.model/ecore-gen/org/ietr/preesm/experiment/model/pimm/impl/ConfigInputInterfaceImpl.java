@@ -70,6 +70,18 @@ public class ConfigInputInterfaceImpl extends ParameterImpl implements ConfigInp
     return PiMMPackage.Literals.CONFIG_INPUT_INTERFACE;
   }
 
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public boolean isLocallyStatic() {
+    // a ConfigInputInterface gets its value from the parent graph once per execution
+    // during one iteration, its value does not change, thus is locally static
+    return true;
+  }
+
   /*
    * (non-Javadoc)
    *

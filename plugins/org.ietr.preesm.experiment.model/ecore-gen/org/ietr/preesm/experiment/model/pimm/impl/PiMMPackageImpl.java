@@ -1608,6 +1608,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     initEClass(this.configInputInterfaceEClass, ConfigInputInterface.class, "ConfigInputInterface", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
 
+    addEOperation(this.configInputInterfaceEClass, this.ecorePackage.getEBoolean(), "isLocallyStatic", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
     initEClass(this.configOutputInterfaceEClass, ConfigOutputInterface.class, "ConfigOutputInterface", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
 
