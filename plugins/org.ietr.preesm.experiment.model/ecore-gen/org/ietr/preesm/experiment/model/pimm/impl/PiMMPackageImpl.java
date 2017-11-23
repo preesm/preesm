@@ -1293,9 +1293,19 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     createEReference(this.piGraphEClass, PiMMPackage.PI_GRAPH__PARAMETERS);
     createEReference(this.piGraphEClass, PiMMPackage.PI_GRAPH__DEPENDENCIES);
 
+    this.executableActorEClass = createEClass(PiMMPackage.EXECUTABLE_ACTOR);
+
     this.actorEClass = createEClass(PiMMPackage.ACTOR);
     createEReference(this.actorEClass, PiMMPackage.ACTOR__REFINEMENT);
     createEAttribute(this.actorEClass, PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH);
+
+    this.broadcastActorEClass = createEClass(PiMMPackage.BROADCAST_ACTOR);
+
+    this.joinActorEClass = createEClass(PiMMPackage.JOIN_ACTOR);
+
+    this.forkActorEClass = createEClass(PiMMPackage.FORK_ACTOR);
+
+    this.roundBufferActorEClass = createEClass(PiMMPackage.ROUND_BUFFER_ACTOR);
 
     this.portEClass = createEClass(PiMMPackage.PORT);
     createEAttribute(this.portEClass, PiMMPackage.PORT__NAME);
@@ -1372,16 +1382,6 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     createEReference(this.dataPortEClass, PiMMPackage.DATA_PORT__PORT_RATE_EXPRESSION);
     createEAttribute(this.dataPortEClass, PiMMPackage.DATA_PORT__ANNOTATION);
 
-    this.broadcastActorEClass = createEClass(PiMMPackage.BROADCAST_ACTOR);
-
-    this.joinActorEClass = createEClass(PiMMPackage.JOIN_ACTOR);
-
-    this.forkActorEClass = createEClass(PiMMPackage.FORK_ACTOR);
-
-    this.roundBufferActorEClass = createEClass(PiMMPackage.ROUND_BUFFER_ACTOR);
-
-    this.executableActorEClass = createEClass(PiMMPackage.EXECUTABLE_ACTOR);
-
     // Create enums
     this.directionEEnum = createEEnum(PiMMPackage.DIRECTION);
     this.portMemoryAnnotationEEnum = createEEnum(PiMMPackage.PORT_MEMORY_ANNOTATION);
@@ -1429,7 +1429,12 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     this.abstractVertexEClass.getESuperTypes().add(getParameterizable());
     this.abstractActorEClass.getESuperTypes().add(getAbstractVertex());
     this.piGraphEClass.getESuperTypes().add(getAbstractActor());
+    this.executableActorEClass.getESuperTypes().add(getAbstractActor());
     this.actorEClass.getESuperTypes().add(getExecutableActor());
+    this.broadcastActorEClass.getESuperTypes().add(getExecutableActor());
+    this.joinActorEClass.getESuperTypes().add(getExecutableActor());
+    this.forkActorEClass.getESuperTypes().add(getExecutableActor());
+    this.roundBufferActorEClass.getESuperTypes().add(getExecutableActor());
     this.portEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.dataInputPortEClass.getESuperTypes().add(getDataPort());
     this.dataOutputPortEClass.getESuperTypes().add(getDataPort());
@@ -1453,11 +1458,6 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     this.functionPrototypeEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.functionParameterEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.dataPortEClass.getESuperTypes().add(getPort());
-    this.broadcastActorEClass.getESuperTypes().add(getExecutableActor());
-    this.joinActorEClass.getESuperTypes().add(getExecutableActor());
-    this.forkActorEClass.getESuperTypes().add(getExecutableActor());
-    this.roundBufferActorEClass.getESuperTypes().add(getExecutableActor());
-    this.executableActorEClass.getESuperTypes().add(getAbstractActor());
 
     // Initialize classes and features; add operations and parameters
     initEClass(this.parameterizableEClass, Parameterizable.class, "Parameterizable", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
@@ -1514,6 +1514,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     addEOperation(this.piGraphEClass, getParameter(), "getAllParameters", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
+    initEClass(this.executableActorEClass, ExecutableActor.class, "ExecutableActor", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
+        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+
     initEClass(this.actorEClass, Actor.class, "Actor", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
     initEReference(getActor_Refinement(), getRefinement(), null, "refinement", null, 1, 1, Actor.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
         EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
@@ -1525,6 +1528,18 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     addEOperation(this.actorEClass, this.ecorePackage.getEBoolean(), "isConfigurationActor", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     addEOperation(this.actorEClass, this.ecorePackage.getEBoolean(), "isHierarchical", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
+    initEClass(this.broadcastActorEClass, BroadcastActor.class, "BroadcastActor", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
+        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+
+    initEClass(this.joinActorEClass, JoinActor.class, "JoinActor", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
+        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+
+    initEClass(this.forkActorEClass, ForkActor.class, "ForkActor", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
+        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+
+    initEClass(this.roundBufferActorEClass, RoundBufferActor.class, "RoundBufferActor", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
+        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
 
     initEClass(this.portEClass, Port.class, "Port", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getPort_Name(), this.ecorePackage.getEString(), "name", null, 0, 1, Port.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
@@ -1700,21 +1715,6 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     initEAttribute(getDataPort_Annotation(), getPortMemoryAnnotation(), "annotation", null, 0, 1, DataPort.class, !EPackageImpl.IS_TRANSIENT,
         !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
         !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-
-    initEClass(this.broadcastActorEClass, BroadcastActor.class, "BroadcastActor", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-
-    initEClass(this.joinActorEClass, JoinActor.class, "JoinActor", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-
-    initEClass(this.forkActorEClass, ForkActor.class, "ForkActor", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-
-    initEClass(this.roundBufferActorEClass, RoundBufferActor.class, "RoundBufferActor", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-
-    initEClass(this.executableActorEClass, ExecutableActor.class, "ExecutableActor", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
 
     // Initialize enums and add enum literals
     initEEnum(this.directionEEnum, Direction.class, "Direction");

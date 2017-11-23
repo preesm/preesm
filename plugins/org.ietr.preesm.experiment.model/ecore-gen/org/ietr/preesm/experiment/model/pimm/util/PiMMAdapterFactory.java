@@ -152,8 +152,33 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
     }
 
     @Override
+    public Adapter caseExecutableActor(final ExecutableActor object) {
+      return createExecutableActorAdapter();
+    }
+
+    @Override
     public Adapter caseActor(final Actor object) {
       return createActorAdapter();
+    }
+
+    @Override
+    public Adapter caseBroadcastActor(final BroadcastActor object) {
+      return createBroadcastActorAdapter();
+    }
+
+    @Override
+    public Adapter caseJoinActor(final JoinActor object) {
+      return createJoinActorAdapter();
+    }
+
+    @Override
+    public Adapter caseForkActor(final ForkActor object) {
+      return createForkActorAdapter();
+    }
+
+    @Override
+    public Adapter caseRoundBufferActor(final RoundBufferActor object) {
+      return createRoundBufferActorAdapter();
     }
 
     @Override
@@ -264,31 +289,6 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
     @Override
     public Adapter caseDataPort(final DataPort object) {
       return createDataPortAdapter();
-    }
-
-    @Override
-    public Adapter caseBroadcastActor(final BroadcastActor object) {
-      return createBroadcastActorAdapter();
-    }
-
-    @Override
-    public Adapter caseJoinActor(final JoinActor object) {
-      return createJoinActorAdapter();
-    }
-
-    @Override
-    public Adapter caseForkActor(final ForkActor object) {
-      return createForkActorAdapter();
-    }
-
-    @Override
-    public Adapter caseRoundBufferActor(final RoundBufferActor object) {
-      return createRoundBufferActorAdapter();
-    }
-
-    @Override
-    public Adapter caseExecutableActor(final ExecutableActor object) {
-      return createExecutableActorAdapter();
     }
 
     @Override

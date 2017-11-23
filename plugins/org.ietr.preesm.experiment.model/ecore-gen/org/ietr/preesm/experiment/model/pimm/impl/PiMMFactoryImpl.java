@@ -124,6 +124,14 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
         return createPiGraph();
       case PiMMPackage.ACTOR:
         return createActor();
+      case PiMMPackage.BROADCAST_ACTOR:
+        return createBroadcastActor();
+      case PiMMPackage.JOIN_ACTOR:
+        return createJoinActor();
+      case PiMMPackage.FORK_ACTOR:
+        return createForkActor();
+      case PiMMPackage.ROUND_BUFFER_ACTOR:
+        return createRoundBufferActor();
       case PiMMPackage.DATA_INPUT_PORT:
         return createDataInputPort();
       case PiMMPackage.DATA_OUTPUT_PORT:
@@ -160,14 +168,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
         return createFunctionPrototype();
       case PiMMPackage.FUNCTION_PARAMETER:
         return createFunctionParameter();
-      case PiMMPackage.BROADCAST_ACTOR:
-        return createBroadcastActor();
-      case PiMMPackage.JOIN_ACTOR:
-        return createJoinActor();
-      case PiMMPackage.FORK_ACTOR:
-        return createForkActor();
-      case PiMMPackage.ROUND_BUFFER_ACTOR:
-        return createRoundBufferActor();
       default:
         throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
     }

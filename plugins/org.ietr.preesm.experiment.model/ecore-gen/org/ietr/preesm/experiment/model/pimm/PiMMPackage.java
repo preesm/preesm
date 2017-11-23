@@ -307,7 +307,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getExecutableActor()
    * @generated
    */
-  int EXECUTABLE_ACTOR = 31;
+  int EXECUTABLE_ACTOR = 4;
 
   /**
    * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -365,7 +365,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getActor()
    * @generated
    */
-  int ACTOR = 4;
+  int ACTOR = 5;
 
   /**
    * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -438,7 +438,447 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getPort()
    * @generated
    */
-  int PORT = 5;
+  int PORT = 10;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataPortImpl <em>Data Port</em>}' class. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.DataPortImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDataPort()
+   * @generated
+   */
+  int DATA_PORT = 31;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataInputPortImpl <em>Data Input Port</em>}' class. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.DataInputPortImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDataInputPort()
+   * @generated
+   */
+  int DATA_INPUT_PORT = 11;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataOutputPortImpl <em>Data Output Port</em>}' class. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.DataOutputPortImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDataOutputPort()
+   * @generated
+   */
+  int DATA_OUTPUT_PORT = 12;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigInputPortImpl <em>Config Input Port</em>}' class. <!-- begin-user-doc
+   * --> <!-- end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.ConfigInputPortImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getConfigInputPort()
+   * @generated
+   */
+  int CONFIG_INPUT_PORT = 13;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigOutputPortImpl <em>Config Output Port</em>}' class. <!-- begin-user-doc
+   * --> <!-- end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.ConfigOutputPortImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getConfigOutputPort()
+   * @generated
+   */
+  int CONFIG_OUTPUT_PORT = 14;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl <em>Fifo</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.FifoImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getFifo()
+   * @generated
+   */
+  int FIFO = 15;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl <em>Interface Actor</em>}' class. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getInterfaceActor()
+   * @generated
+   */
+  int INTERFACE_ACTOR = 16;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataInputInterfaceImpl <em>Data Input Interface</em>}' class. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.DataInputInterfaceImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDataInputInterface()
+   * @generated
+   */
+  int DATA_INPUT_INTERFACE = 17;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataOutputInterfaceImpl <em>Data Output Interface</em>}' class. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.DataOutputInterfaceImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDataOutputInterface()
+   * @generated
+   */
+  int DATA_OUTPUT_INTERFACE = 18;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigOutputInterfaceImpl <em>Config Output Interface</em>}' class. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.ConfigOutputInterfaceImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getConfigOutputInterface()
+   * @generated
+   */
+  int CONFIG_OUTPUT_INTERFACE = 20;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl <em>Parameter</em>}' class. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getParameter()
+   * @generated
+   */
+  int PARAMETER = 24;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DependencyImpl <em>Dependency</em>}' class. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.DependencyImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDependency()
+   * @generated
+   */
+  int DEPENDENCY = 25;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.ISetter <em>ISetter</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.ISetter
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getISetter()
+   * @generated
+   */
+  int ISETTER = 26;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DelayImpl <em>Delay</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.DelayImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDelay()
+   * @generated
+   */
+  int DELAY = 27;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl <em>Expression</em>}' class. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getExpression()
+   * @generated
+   */
+  int EXPRESSION = 28;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigInputInterfaceImpl <em>Config Input Interface</em>}' class. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.ConfigInputInterfaceImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getConfigInputInterface()
+   * @generated
+   */
+  int CONFIG_INPUT_INTERFACE = 19;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.Refinement <em>Refinement</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.Refinement
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getRefinement()
+   * @generated
+   */
+  int REFINEMENT = 21;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.PiSDFRefinementImpl <em>Pi SDF Refinement</em>}' class. <!-- begin-user-doc
+   * --> <!-- end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiSDFRefinementImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getPiSDFRefinement()
+   * @generated
+   */
+  int PI_SDF_REFINEMENT = 22;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.CHeaderRefinementImpl <em>CHeader Refinement</em>}' class. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.CHeaderRefinementImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getCHeaderRefinement()
+   * @generated
+   */
+  int CHEADER_REFINEMENT = 23;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl <em>Function Prototype</em>}' class. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getFunctionPrototype()
+   * @generated
+   */
+  int FUNCTION_PROTOTYPE = 29;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl <em>Function Parameter</em>}' class. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getFunctionParameter()
+   * @generated
+   */
+  int FUNCTION_PARAMETER = 30;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.BroadcastActorImpl <em>Broadcast Actor</em>}' class. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.BroadcastActorImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getBroadcastActor()
+   * @generated
+   */
+  int BROADCAST_ACTOR = 6;
+
+  /**
+   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int BROADCAST_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int BROADCAST_ACTOR__NAME = PiMMPackage.EXECUTABLE_ACTOR__NAME;
+
+  /**
+   * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int BROADCAST_ACTOR__DATA_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__DATA_INPUT_PORTS;
+
+  /**
+   * The feature id for the '<em><b>Data Output Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int BROADCAST_ACTOR__DATA_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__DATA_OUTPUT_PORTS;
+
+  /**
+   * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int BROADCAST_ACTOR__CONFIG_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_OUTPUT_PORTS;
+
+  /**
+   * The number of structural features of the '<em>Broadcast Actor</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int BROADCAST_ACTOR_FEATURE_COUNT = PiMMPackage.EXECUTABLE_ACTOR_FEATURE_COUNT + 0;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.JoinActorImpl <em>Join Actor</em>}' class. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.JoinActorImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getJoinActor()
+   * @generated
+   */
+  int JOIN_ACTOR = 7;
+
+  /**
+   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int JOIN_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int JOIN_ACTOR__NAME = PiMMPackage.EXECUTABLE_ACTOR__NAME;
+
+  /**
+   * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int JOIN_ACTOR__DATA_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__DATA_INPUT_PORTS;
+
+  /**
+   * The feature id for the '<em><b>Data Output Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int JOIN_ACTOR__DATA_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__DATA_OUTPUT_PORTS;
+
+  /**
+   * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int JOIN_ACTOR__CONFIG_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_OUTPUT_PORTS;
+
+  /**
+   * The number of structural features of the '<em>Join Actor</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int JOIN_ACTOR_FEATURE_COUNT = PiMMPackage.EXECUTABLE_ACTOR_FEATURE_COUNT + 0;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ForkActorImpl <em>Fork Actor</em>}' class. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.ForkActorImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getForkActor()
+   * @generated
+   */
+  int FORK_ACTOR = 8;
+
+  /**
+   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int FORK_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int FORK_ACTOR__NAME = PiMMPackage.EXECUTABLE_ACTOR__NAME;
+
+  /**
+   * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int FORK_ACTOR__DATA_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__DATA_INPUT_PORTS;
+
+  /**
+   * The feature id for the '<em><b>Data Output Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int FORK_ACTOR__DATA_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__DATA_OUTPUT_PORTS;
+
+  /**
+   * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int FORK_ACTOR__CONFIG_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_OUTPUT_PORTS;
+
+  /**
+   * The number of structural features of the '<em>Fork Actor</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int FORK_ACTOR_FEATURE_COUNT = PiMMPackage.EXECUTABLE_ACTOR_FEATURE_COUNT + 0;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.RoundBufferActorImpl <em>Round Buffer Actor</em>}' class. <!-- begin-user-doc
+   * --> <!-- end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.RoundBufferActorImpl
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getRoundBufferActor()
+   * @generated
+   */
+  int ROUND_BUFFER_ACTOR = 9;
+
+  /**
+   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int ROUND_BUFFER_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int ROUND_BUFFER_ACTOR__NAME = PiMMPackage.EXECUTABLE_ACTOR__NAME;
+
+  /**
+   * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int ROUND_BUFFER_ACTOR__DATA_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__DATA_INPUT_PORTS;
+
+  /**
+   * The feature id for the '<em><b>Data Output Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int ROUND_BUFFER_ACTOR__DATA_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__DATA_OUTPUT_PORTS;
+
+  /**
+   * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int ROUND_BUFFER_ACTOR__CONFIG_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_OUTPUT_PORTS;
+
+  /**
+   * The number of structural features of the '<em>Round Buffer Actor</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int ROUND_BUFFER_ACTOR_FEATURE_COUNT = PiMMPackage.EXECUTABLE_ACTOR_FEATURE_COUNT + 0;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -463,16 +903,6 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int PORT_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 2;
-
-  /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataPortImpl <em>Data Port</em>}' class. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.DataPortImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDataPort()
-   * @generated
-   */
-  int DATA_PORT = 26;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -513,16 +943,6 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int DATA_PORT_FEATURE_COUNT = PiMMPackage.PORT_FEATURE_COUNT + 2;
-
-  /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataInputPortImpl <em>Data Input Port</em>}' class. <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.DataInputPortImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDataInputPort()
-   * @generated
-   */
-  int DATA_INPUT_PORT = 6;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -573,16 +993,6 @@ public interface PiMMPackage extends EPackage {
   int DATA_INPUT_PORT_FEATURE_COUNT = PiMMPackage.DATA_PORT_FEATURE_COUNT + 1;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataOutputPortImpl <em>Data Output Port</em>}' class. <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.DataOutputPortImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDataOutputPort()
-   * @generated
-   */
-  int DATA_OUTPUT_PORT = 7;
-
-  /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
@@ -631,16 +1041,6 @@ public interface PiMMPackage extends EPackage {
   int DATA_OUTPUT_PORT_FEATURE_COUNT = PiMMPackage.DATA_PORT_FEATURE_COUNT + 1;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigInputPortImpl <em>Config Input Port</em>}' class. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.ConfigInputPortImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getConfigInputPort()
-   * @generated
-   */
-  int CONFIG_INPUT_PORT = 8;
-
-  /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
@@ -671,16 +1071,6 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int CONFIG_INPUT_PORT_FEATURE_COUNT = PiMMPackage.PORT_FEATURE_COUNT + 1;
-
-  /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigOutputPortImpl <em>Config Output Port</em>}' class. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.ConfigOutputPortImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getConfigOutputPort()
-   * @generated
-   */
-  int CONFIG_OUTPUT_PORT = 9;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -739,15 +1129,6 @@ public interface PiMMPackage extends EPackage {
   int CONFIG_OUTPUT_PORT_FEATURE_COUNT = PiMMPackage.DATA_OUTPUT_PORT_FEATURE_COUNT + 1;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl <em>Fifo</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.FifoImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getFifo()
-   * @generated
-   */
-  int FIFO = 10;
-
-  /**
    * The feature id for the '<em><b>Source Port</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
@@ -794,16 +1175,6 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int FIFO_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 5;
-
-  /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl <em>Interface Actor</em>}' class. <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getInterfaceActor()
-   * @generated
-   */
-  int INTERFACE_ACTOR = 11;
 
   /**
    * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -870,16 +1241,6 @@ public interface PiMMPackage extends EPackage {
   int INTERFACE_ACTOR_FEATURE_COUNT = PiMMPackage.ABSTRACT_ACTOR_FEATURE_COUNT + 2;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataInputInterfaceImpl <em>Data Input Interface</em>}' class. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.DataInputInterfaceImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDataInputInterface()
-   * @generated
-   */
-  int DATA_INPUT_INTERFACE = 12;
-
-  /**
    * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
@@ -942,16 +1303,6 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int DATA_INPUT_INTERFACE_FEATURE_COUNT = PiMMPackage.INTERFACE_ACTOR_FEATURE_COUNT + 0;
-
-  /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataOutputInterfaceImpl <em>Data Output Interface</em>}' class. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.DataOutputInterfaceImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDataOutputInterface()
-   * @generated
-   */
-  int DATA_OUTPUT_INTERFACE = 13;
 
   /**
    * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1018,26 +1369,6 @@ public interface PiMMPackage extends EPackage {
   int DATA_OUTPUT_INTERFACE_FEATURE_COUNT = PiMMPackage.INTERFACE_ACTOR_FEATURE_COUNT + 0;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigOutputInterfaceImpl <em>Config Output Interface</em>}' class. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.ConfigOutputInterfaceImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getConfigOutputInterface()
-   * @generated
-   */
-  int CONFIG_OUTPUT_INTERFACE = 15;
-
-  /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl <em>Parameter</em>}' class. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getParameter()
-   * @generated
-   */
-  int PARAMETER = 19;
-
-  /**
    * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
@@ -1092,55 +1423,6 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int PARAMETER_FEATURE_COUNT = PiMMPackage.ABSTRACT_VERTEX_FEATURE_COUNT + 4;
-
-  /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DependencyImpl <em>Dependency</em>}' class. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.DependencyImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDependency()
-   * @generated
-   */
-  int DEPENDENCY = 20;
-
-  /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.ISetter <em>ISetter</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.ISetter
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getISetter()
-   * @generated
-   */
-  int ISETTER = 21;
-
-  /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DelayImpl <em>Delay</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc
-   * -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.DelayImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDelay()
-   * @generated
-   */
-  int DELAY = 22;
-
-  /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl <em>Expression</em>}' class. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getExpression()
-   * @generated
-   */
-  int EXPRESSION = 23;
-
-  /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigInputInterfaceImpl <em>Config Input Interface</em>}' class. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.ConfigInputInterfaceImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getConfigInputInterface()
-   * @generated
-   */
-  int CONFIG_INPUT_INTERFACE = 14;
 
   /**
    * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1263,16 +1545,6 @@ public interface PiMMPackage extends EPackage {
   int CONFIG_OUTPUT_INTERFACE_FEATURE_COUNT = PiMMPackage.INTERFACE_ACTOR_FEATURE_COUNT + 0;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.Refinement <em>Refinement</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc
-   * -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.Refinement
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getRefinement()
-   * @generated
-   */
-  int REFINEMENT = 16;
-
-  /**
    * The feature id for the '<em><b>File Path</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
@@ -1289,16 +1561,6 @@ public interface PiMMPackage extends EPackage {
   int REFINEMENT_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 1;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.PiSDFRefinementImpl <em>Pi SDF Refinement</em>}' class. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiSDFRefinementImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getPiSDFRefinement()
-   * @generated
-   */
-  int PI_SDF_REFINEMENT = 17;
-
-  /**
    * The feature id for the '<em><b>File Path</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
@@ -1313,16 +1575,6 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int PI_SDF_REFINEMENT_FEATURE_COUNT = PiMMPackage.REFINEMENT_FEATURE_COUNT + 0;
-
-  /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.CHeaderRefinementImpl <em>CHeader Refinement</em>}' class. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.CHeaderRefinementImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getCHeaderRefinement()
-   * @generated
-   */
-  int CHEADER_REFINEMENT = 18;
 
   /**
    * The feature id for the '<em><b>File Path</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1437,16 +1689,6 @@ public interface PiMMPackage extends EPackage {
   int EXPRESSION_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 1;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl <em>Function Prototype</em>}' class. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getFunctionPrototype()
-   * @generated
-   */
-  int FUNCTION_PROTOTYPE = 24;
-
-  /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
@@ -1469,16 +1711,6 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int FUNCTION_PROTOTYPE_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 2;
-
-  /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl <em>Function Parameter</em>}' class. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getFunctionParameter()
-   * @generated
-   */
-  int FUNCTION_PARAMETER = 25;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1519,238 +1751,6 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int FUNCTION_PARAMETER_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 4;
-
-  /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.BroadcastActorImpl <em>Broadcast Actor</em>}' class. <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.BroadcastActorImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getBroadcastActor()
-   * @generated
-   */
-  int BROADCAST_ACTOR = 27;
-
-  /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int BROADCAST_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
-
-  /**
-   * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int BROADCAST_ACTOR__NAME = PiMMPackage.EXECUTABLE_ACTOR__NAME;
-
-  /**
-   * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int BROADCAST_ACTOR__DATA_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__DATA_INPUT_PORTS;
-
-  /**
-   * The feature id for the '<em><b>Data Output Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int BROADCAST_ACTOR__DATA_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__DATA_OUTPUT_PORTS;
-
-  /**
-   * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int BROADCAST_ACTOR__CONFIG_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_OUTPUT_PORTS;
-
-  /**
-   * The number of structural features of the '<em>Broadcast Actor</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int BROADCAST_ACTOR_FEATURE_COUNT = PiMMPackage.EXECUTABLE_ACTOR_FEATURE_COUNT + 0;
-
-  /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.JoinActorImpl <em>Join Actor</em>}' class. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.JoinActorImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getJoinActor()
-   * @generated
-   */
-  int JOIN_ACTOR = 28;
-
-  /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int JOIN_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
-
-  /**
-   * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int JOIN_ACTOR__NAME = PiMMPackage.EXECUTABLE_ACTOR__NAME;
-
-  /**
-   * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int JOIN_ACTOR__DATA_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__DATA_INPUT_PORTS;
-
-  /**
-   * The feature id for the '<em><b>Data Output Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int JOIN_ACTOR__DATA_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__DATA_OUTPUT_PORTS;
-
-  /**
-   * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int JOIN_ACTOR__CONFIG_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_OUTPUT_PORTS;
-
-  /**
-   * The number of structural features of the '<em>Join Actor</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int JOIN_ACTOR_FEATURE_COUNT = PiMMPackage.EXECUTABLE_ACTOR_FEATURE_COUNT + 0;
-
-  /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ForkActorImpl <em>Fork Actor</em>}' class. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.ForkActorImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getForkActor()
-   * @generated
-   */
-  int FORK_ACTOR = 29;
-
-  /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int FORK_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
-
-  /**
-   * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int FORK_ACTOR__NAME = PiMMPackage.EXECUTABLE_ACTOR__NAME;
-
-  /**
-   * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int FORK_ACTOR__DATA_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__DATA_INPUT_PORTS;
-
-  /**
-   * The feature id for the '<em><b>Data Output Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int FORK_ACTOR__DATA_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__DATA_OUTPUT_PORTS;
-
-  /**
-   * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int FORK_ACTOR__CONFIG_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_OUTPUT_PORTS;
-
-  /**
-   * The number of structural features of the '<em>Fork Actor</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int FORK_ACTOR_FEATURE_COUNT = PiMMPackage.EXECUTABLE_ACTOR_FEATURE_COUNT + 0;
-
-  /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.RoundBufferActorImpl <em>Round Buffer Actor</em>}' class. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.RoundBufferActorImpl
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getRoundBufferActor()
-   * @generated
-   */
-  int ROUND_BUFFER_ACTOR = 30;
-
-  /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int ROUND_BUFFER_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
-
-  /**
-   * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int ROUND_BUFFER_ACTOR__NAME = PiMMPackage.EXECUTABLE_ACTOR__NAME;
-
-  /**
-   * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int ROUND_BUFFER_ACTOR__DATA_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__DATA_INPUT_PORTS;
-
-  /**
-   * The feature id for the '<em><b>Data Output Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int ROUND_BUFFER_ACTOR__DATA_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__DATA_OUTPUT_PORTS;
-
-  /**
-   * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int ROUND_BUFFER_ACTOR__CONFIG_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_OUTPUT_PORTS;
-
-  /**
-   * The number of structural features of the '<em>Round Buffer Actor</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int ROUND_BUFFER_ACTOR_FEATURE_COUNT = PiMMPackage.EXECUTABLE_ACTOR_FEATURE_COUNT + 0;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.Direction <em>Direction</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc -->

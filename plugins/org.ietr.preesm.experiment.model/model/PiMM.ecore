@@ -66,6 +66,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="dependencies" upperBound="-1"
         eType="#//Dependency" containment="true"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ExecutableActor" abstract="true" eSuperTypes="#//AbstractActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="Actor" eSuperTypes="#//ExecutableActor">
     <eOperations name="isConfigurationActor" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -81,6 +82,10 @@
         eType="#//Refinement" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="memoryScriptPath" eType="#//IPath"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BroadcastActor" eSuperTypes="#//ExecutableActor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="JoinActor" eSuperTypes="#//ExecutableActor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ForkActor" eSuperTypes="#//ExecutableActor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="RoundBufferActor" eSuperTypes="#//ExecutableActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="Port" abstract="true" eSuperTypes="#//visitor/PiMMVisitable">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
@@ -227,11 +232,6 @@
     <eLiterals name="UNUSED" value="3" literal="UNUSED"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EDataType" name="IPath" instanceClassName="org.eclipse.core.runtime.IPath"/>
-  <eClassifiers xsi:type="ecore:EClass" name="BroadcastActor" eSuperTypes="#//ExecutableActor"/>
-  <eClassifiers xsi:type="ecore:EClass" name="JoinActor" eSuperTypes="#//ExecutableActor"/>
-  <eClassifiers xsi:type="ecore:EClass" name="ForkActor" eSuperTypes="#//ExecutableActor"/>
-  <eClassifiers xsi:type="ecore:EClass" name="RoundBufferActor" eSuperTypes="#//ExecutableActor"/>
-  <eClassifiers xsi:type="ecore:EClass" name="ExecutableActor" abstract="true" eSuperTypes="#//AbstractActor"/>
   <eSubpackages name="visitor" nsURI="http://org.ietr.preesm/experiment/model/pimm/visitor"
       nsPrefix="org.ietr.preesm.experiment.pimm.visitor">
     <eClassifiers xsi:type="ecore:EClass" name="PiMMVisitable" abstract="true" interface="true">
