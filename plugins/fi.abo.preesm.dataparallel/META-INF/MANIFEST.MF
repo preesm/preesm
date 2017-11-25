@@ -8,7 +8,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtend.lib,
  org.ietr.dftools.workflow,
  org.ietr.dftools.algorithm,
- org.clojars.gilesc.jgrapht;bundle-version="0.8.2"
+ org.clojars.gilesc.jgrapht;bundle-version="0.8.2",
+ org.ietr.preesm.algorithm;bundle-version="2.5.1"
 Bundle-Vendor: ABO.fi
 Export-Package: fi.abo.preesm.dataparallel,
  fi.abo.preesm.dataparallel.fifo,

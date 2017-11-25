@@ -57,6 +57,7 @@ import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import fi.abo.preesm.dataparallel.NodeChainGraph
 
 /**
  * Parameteric test for {@link SrSDFDAGCoIterator} and {@link SrSDFDAGCoIteratorBuilder}. 
@@ -120,6 +121,8 @@ class SrSDFDAGCoIteratorTest {
 		sdf.accept(hsdfVisitor)
 		val srsdf = hsdfVisitor.output
 		
+		val ncg = new NodeChainGraph(srsdf)
+		
 		val acyclicLikeVisitor = new AcyclicLikeSubgraphDetector
 		sdf.accept(acyclicLikeVisitor)
 		
@@ -141,24 +144,31 @@ class SrSDFDAGCoIteratorTest {
 						// added, no check is made
 						val subgraphDAGGen = new SDF2DAG(dirSubGraph)
 						val dag = subgraphDAGGen.outputGraph
-						val moveInstanceVisitor = new MovableInstances
+						val sc = new KosarajuStrongConnectivityInspector(dirSubGraph)
+						val sourceActors = sc.stronglyConnectedComponents.filter[sg |
+							val cd = new CycleDetector(sg as 
+								DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+							)
+							!cd.detectCycles
+						].map[sg |
+							sg.vertexSet
+						].flatten
+						.toList
+						val moveInstanceVisitor = new MovableInstances(sourceActors)
 						subgraphDAGGen.accept(moveInstanceVisitor)
 						
 						val movableInstances = moveInstanceVisitor.movableInstances
 						
 						val srsdfInstancesSeen = newArrayList
 		
-						moveInstanceVisitor.movableRootInstances.forEach[root |
-							val sit = (new SrSDFDAGCoIteratorBuilder)
-										.addDAG(dag)
-										.addSrSDF(srsdf)
-										.addVisitableNodes(movableInstances)
-										.addStartVertex(root)
-										.build()
-							while(sit.hasNext) {
-								srsdfInstancesSeen.add(sit.next)
-							}
-						]
+						val sit = (new SrSDFDAGCoIteratorBuilder)
+									.addDAG(dag)
+									.addNodeChainGraph(ncg)
+									.addVisitableNodes(movableInstances)
+									.build()
+						while(sit.hasNext) {
+							srsdfInstancesSeen.add(sit.next)
+						}
 				
 						movableInstances.forEach[instance |
 							if( (instance instanceof SDFJoinVertex) || (instance instanceof SDFForkVertex)) {

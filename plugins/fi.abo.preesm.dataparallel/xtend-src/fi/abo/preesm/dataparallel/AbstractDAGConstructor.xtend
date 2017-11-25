@@ -108,8 +108,8 @@ public abstract class AbstractDAGConstructor implements DAGConstructor {
 	/**
 	 * {@link DAGConstructor#log}
 	 */
-	public override void log(String message) {
-		logger?.log(Level.INFO, message)
+	public override void log(Level level, String message) {
+		logger?.log(level, message)
 	}
 
 	/**

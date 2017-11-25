@@ -39,6 +39,7 @@ import java.util.List
 import java.util.Map
 import java.util.logging.Logger
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import java.util.logging.Level
 
 /**
  * Construct DAG from SDF or from another DAG
@@ -59,7 +60,7 @@ interface DAGConstructor {
 	 * 
 	 * @param message Message to log
 	 */
-	public def void log(String message)
+	public def void log(Level level, String message)
 	
 	/**
 	 * Returns the instances associated with the actor. Includes implodes and explodes

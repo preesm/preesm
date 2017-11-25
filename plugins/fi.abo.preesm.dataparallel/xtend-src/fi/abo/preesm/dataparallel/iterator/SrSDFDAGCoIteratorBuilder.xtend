@@ -35,14 +35,14 @@
  */
 package fi.abo.preesm.dataparallel.iterator
 
-import java.util.logging.Logger
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import java.util.List
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
+import fi.abo.preesm.dataparallel.NodeChainGraph
 import fi.abo.preesm.dataparallel.PureDAGConstructor
+import java.util.List
+import java.util.logging.Logger
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
-import fi.abo.preesm.dataparallel.DAGUtils
+import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 
 /**
  * Helper builder class for {@link SrSDFDAGCoIterator}
@@ -61,12 +61,11 @@ class SrSDFDAGCoIteratorBuilder {
 	 * of {@link PureDAGConstructor}
 	 */
 	var SDFGraph dag
-	
+
 	/**
-	 * A single rate transform or HSDF as {@link SDFGraph} instance obtained
-	 * from {@link ToHSDFVisitor}
+	 * Node chain graph of the original SrSDF
 	 */
-	var SDFGraph srsdf
+	var NodeChainGraph ncg
 	
 	/**
 	 * List of visitable nodes that are defined in the 
@@ -75,17 +74,15 @@ class SrSDFDAGCoIteratorBuilder {
 	var List<SDFAbstractVertex> visitableNodes
 	
 	/**
-	 * Starting vertex that are defined in the {@link SrSDFDAGCoIteratorBuilder#dag}
-	 */
-	var SDFAbstractVertex startVertex
-	
-	/**
 	 * Constructor
 	 * 
 	 * @param logger A Workflow logger
 	 */
 	new(Logger logger) {
 		this.logger = logger
+		this.dag = null
+		this.ncg = null
+		this.visitableNodes = null
 	}
 	
 	new() {
@@ -105,13 +102,13 @@ class SrSDFDAGCoIteratorBuilder {
 	}
 	
 	/**
-	 * Add single rate graph obtained by {@link ToHSDFVisitor}
+	 * Add {@link NodeChainGraph} of single rate graph obtained by {@link ToHSDFVisitor}
 	 * 
-	 * @param srsdf Single rate graph of the SDF
+	 * @param ncg A {@link NodeChainGraph} of Single rate graph of the SDF
 	 * @return Builder instance to continue building
 	 */
-	public def SrSDFDAGCoIteratorBuilder addSrSDF(SDFGraph srsdf) {
-		this.srsdf = srsdf
+	public def SrSDFDAGCoIteratorBuilder addNodeChainGraph(NodeChainGraph ncg) {
+		this.ncg = ncg
 		return this
 	}
 	
@@ -129,43 +126,35 @@ class SrSDFDAGCoIteratorBuilder {
 	}
 	
 	/**
-	 * Add startVertex
-	 * <p>
-	 * StartVertex is the node in SrSDF graph from which traversing should begin
-	 * 
-	 * @param startVertex Starting node in SrSDF graph
-	 * @return Builder instance to continue building
-	 */
-	public def SrSDFDAGCoIteratorBuilder addStartVertex(SDFAbstractVertex startVertex) {
-		this.startVertex = startVertex
-		return this
-	}
-	
-	/**
 	 * Return the coiterator instance
 	 * 
 	 * @return {@link SrSDFDAGCoIterator} instance
 	 */
 	public def SrSDFDAGCoIterator build() throws SDF4JException {
-		if(!(dag.vertexSet.contains(startVertex))){
-			throw new SDF4JException("Starting node: " + startVertex.name + " does not exist " + 
-			"in source graph.")
+		if(dag === null) {
+			throw new SDF4JException("Co-iterator builder needs a DAG. Use addDAG method.")
 		}
+		
+		if(visitableNodes === null) {
+			throw new SDF4JException("Co-iterator builder needs visitable nodes. 
+									Use addVisitableNodes method.")
+		}
+		
+		if(ncg === null) {
+			throw new SDF4JException("Co-iterator builder needs node chain graphs.
+									Use addNodeChainGraphs method.")
+		}
+		
 		visitableNodes.forEach[node |
 			if(!(dag.vertexSet.contains(node))) {
 				throw new SDF4JException("Node: " + node.name + " does not exist in source graph")
 			}
 		]
 		
-		val srsdfStart = DAGUtils.findVertex(startVertex, dag, srsdf)
-		if(srsdfStart === null) {
-			throw new SDF4JException("Starting vertex: " + startVertex + " has no equivalent in SrSDF")
-		}
-		
 		if(logger === null) {
-			return new SrSDFDAGCoIterator(dag, srsdf, visitableNodes, srsdfStart)	
+			return new SrSDFDAGCoIterator(dag, ncg, visitableNodes)	
 		} else {
-			return new SrSDFDAGCoIterator(dag, srsdf, visitableNodes, srsdfStart, logger)
+			return new SrSDFDAGCoIterator(dag, ncg, visitableNodes, logger)
 		}
 	}
 }

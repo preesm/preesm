@@ -58,6 +58,8 @@ import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
 import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsIndexer
 import fi.abo.preesm.dataparallel.pojo.RetimingInfo
+import java.util.List
+import fi.abo.preesm.dataparallel.CannotRearrange
 
 /**
  * Perform re-timing operation for an instance independent strongly connected component.
@@ -106,6 +108,18 @@ class RearrangeOperations implements DAGOperations {
 	@Accessors(PRIVATE_GETTER, PRIVATE_SETTER)
 	val FifoActorGraph transientGraph 
 	
+	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	val List<SDFAbstractVertex> interfaceActors
+	
+	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	var PureDAGConstructor dagGen 
+	
+	/**
+	 * Keep a list of instances that have been fired so far
+	 */
+	@Accessors(PRIVATE_GETTER, PRIVATE_SETTER)
+	val List<SDFAbstractVertex> firedInstances
+		
 	/**
 	 * Conditional logging
 	 * 
@@ -123,15 +137,18 @@ class RearrangeOperations implements DAGOperations {
 	 * 
 	 * @param srsdf The original untransformed single rate SDF graph (SrSDF)
 	 * @param info The {@link RetimingInfo} instance that is common among all strongly connected components
-	 * @param logger Logger for loggin
+	 * @param logger Logger for logging
 	 */
-	new(SDFGraph srsdf, RetimingInfo info, Logger logger) {
+	new(SDFGraph srsdf, RetimingInfo info, List<SDFAbstractVertex> interfaceActors, Logger logger) {
 		this.srsdf = srsdf
 		this.info = info
 		this.logger = logger
 		this.edgeFifoActors = newHashMap
 		this.originalEdgeFifoActors = newHashMap
 		this.transientGraph = new FifoActorGraph
+		this.interfaceActors = interfaceActors
+		this.dagGen = null
+		this.firedInstances = newArrayList
 	}
 	
 	/**
@@ -140,8 +157,8 @@ class RearrangeOperations implements DAGOperations {
 	 * @param srsdf The original untransformed single rate SDF graph (SrSDF)
 	 * @param info The {@link RetimingInfo} instance that is common among all strongly connected components
 	 */
-	new(SDFGraph srsdf, RetimingInfo info) {
-		this(srsdf, info, null)
+	new(SDFGraph srsdf, RetimingInfo info, List<SDFAbstractVertex> interfaceActors) {
+		this(srsdf, info, interfaceActors, null)
 	}
 	
 	/**
@@ -149,73 +166,73 @@ class RearrangeOperations implements DAGOperations {
 	 * 
 	 * @param dagGen A DAG from which re-timing information can be derived
 	 */
-	def protected void rearrange(PureDAGConstructor dagGen) {		
-		val moveInstanceVisitor = new MovableInstances
-		dagGen.accept(moveInstanceVisitor)
+	def protected void rearrange(PureDAGConstructor dagGen) throws CannotRearrange {
+		this.dagGen = dagGen		
+		val moveInstanceVisitor = new MovableInstances(this.interfaceActors, this.logger)
+		dagGen.accept(moveInstanceVisitor)	
+
 		if(moveInstanceVisitor.movableInstances.empty) {
 			// Nothing to move
 			return
 		}
+
 		// We need to rearrange
-		
 		val nodechains = new NodeChainGraph(srsdf)
 		
-		moveInstanceVisitor.movableRootInstances.forEach[root |
-			var srsit = (new SrSDFDAGCoIteratorBuilder)
-							.addDAG(dagGen.outputGraph)
-							.addSrSDF(srsdf)
-							.addVisitableNodes(moveInstanceVisitor.movableInstances)
-							.addStartVertex(root)
-							.build
+		var srsit = (new SrSDFDAGCoIteratorBuilder)
+						.addDAG(dagGen.outputGraph)
+						.addNodeChainGraph(nodechains)
+						.addVisitableNodes(moveInstanceVisitor.movableInstances)
+						.build
 						
-			while(srsit.hasNext) {
-				val node = srsit.next
+		while(srsit.hasNext) {
+			val node = srsit.next
+			firedInstances.add(node)
+			
+			if(nodechains.nodechains.keySet.contains(node)) {
+				// This is not an associated implode/explode and hence can be modified
 				
-				if(nodechains.nodechains.keySet.contains(node)) {
-					// This is not an associated implode/explode and hence can be modified
-					
-					// Add the delays to the FifoActor graph
-					addInputEdgesToFifoActorGraph(node, nodechains)
-					
-					val setEdgeDelayMap = newHashMap
-					
-					// Reduce delay tokens at all its input edges
-					val inEdgeDelayMap = nodechains.getEdgewiseInputDelays(node)
-					srsdf.incomingEdgesOf(node).forEach[edge |
-						// edge of this node
-						val delay = inEdgeDelayMap.get(edge)
-						if(delay === null) {
-							throw new DAGComputationBug("Could not find edge: " + edge +
-								" in the input edge-delay map")
-						}
-						val newDelay = delay.intValue - edge.cons.intValue
-						setEdgeDelayMap.put(edge, newDelay)
-					]
-					nodechains.setEdgewiseInputDelays(node, setEdgeDelayMap)
-					
-					processOriginalOutputDelayEdges(node, nodechains)
-					
-					// Increase delay tokens at all its output edges
-					setEdgeDelayMap.clear
-					val outEdgeDelayMap = nodechains.getEdgewiseOutputDelays(node)
-					srsdf.outgoingEdgesOf(node).forEach[edge |
-						// edge of this node
-						val delay = outEdgeDelayMap.get(edge)
-						if(delay === null) {
-							throw new DAGComputationBug("Could not find edge: " + edge +
-								" in the output edge-delay map")
-						}
-						val newDelay = delay.intValue + edge.prod.intValue
-						setEdgeDelayMap.put(edge, newDelay)
-					]
-					nodechains.setEdgewiseOutputDelays(node, setEdgeDelayMap)
-					
-					// Add delays to the FifoActor graph
-					addOutputEdgesToFifoActorGraph(node, nodechains)
-				}
+				// Add the delays to the FifoActor graph
+				addInputEdgesToFifoActorGraph(node, nodechains)
+				
+				val setEdgeDelayMap = newHashMap
+				
+				// Reduce delay tokens at all its input edges
+				val inEdgeDelayMap = nodechains.getEdgewiseInputDelays(node)
+				srsdf.incomingEdgesOf(node).forEach[edge |
+					// edge of this node
+					val delay = inEdgeDelayMap.get(edge)
+					if(delay === null) {
+						throw new DAGComputationBug("Could not find edge: " + edge +
+							" in the input edge-delay map")
+					}
+					val newDelay = delay.intValue - edge.cons.intValue
+					setEdgeDelayMap.put(edge, newDelay)
+				]
+				nodechains.setEdgewiseInputDelays(node, setEdgeDelayMap)
+				
+				processOriginalOutputDelayEdges(node, nodechains)
+				
+				// Increase delay tokens at all its output edges
+				setEdgeDelayMap.clear
+				val outEdgeDelayMap = nodechains.getEdgewiseOutputDelays(node)
+				srsdf.outgoingEdgesOf(node).forEach[edge |
+					// edge of this node
+					val delay = outEdgeDelayMap.get(edge)
+					if(delay === null) {
+						throw new DAGComputationBug("Could not find edge: " + edge +
+							" in the output edge-delay map")
+					}
+					val newDelay = delay.intValue + edge.prod.intValue
+					setEdgeDelayMap.put(edge, newDelay)
+				]
+				nodechains.setEdgewiseOutputDelays(node, setEdgeDelayMap)
+				
+				// Add delays to the FifoActor graph
+				addOutputEdgesToFifoActorGraph(node, nodechains)
 			}
-		]
-		
+		}
+	
 		// Make sure all the ports are in order
 		if(!SpecialActorPortsIndexer.checkIndexes(transientGraph)) {
 			throw new DAGComputationBug("There are still special actors with non-indexed ports " +
@@ -240,7 +257,7 @@ class RearrangeOperations implements DAGOperations {
 	 * @param nodechains The {@link NodeChainGraph} that contains information about user-added
 	 * vertices and vertices added by the compiler
 	 */
-	private def void addInputEdgesToFifoActorGraph(SDFAbstractVertex node, NodeChainGraph nodechains) {
+	private def void addInputEdgesToFifoActorGraph(SDFAbstractVertex node, NodeChainGraph nodechains) throws CannotRearrange {
 		if(transientGraph.vertexSet.contains(node)) {
 			throw new DAGComputationBug("The node: " + node + " cannot be already added to " +
 				"the transient graph")
@@ -253,8 +270,10 @@ class RearrangeOperations implements DAGOperations {
 			val rep = edge.target.nbRepeatAsInteger
 
 			if(delay < cons * rep) {
-				throw new DAGComputationBug("While processing " + node + ", for the edge: " + edge 
-					+ " not enough delays at the input.")
+				val message = "Some of the instances that are to be rearranged are " + 
+				"connected to neighbours of interface instances. "
+				log(Level.WARNING, message)
+				throw new CannotRearrange()
 			}
 			
 			val fifoActor = if(edgeFifoActors.keySet.contains(edge)) {
@@ -286,14 +305,25 @@ class RearrangeOperations implements DAGOperations {
 	
 	/**
 	 * Helper function called before output edges of the user added single rate vertex is processed.
-	 * The function finds {@link FifoActor}s for edges that have delay in the untransformed SrSDFG
+	 * The function finds {@link FifoActor}s for edges that have delay in the untransformed SrSDFG.
+	 * Self loops are not considered.
+	 * 
+	 * Note: Self loops are not considered. Note that they are always acyclic-like at this stage
+	 * of rearranging (otherwise DAG will not be instance independent) and edges do not appear in
+	 * DAG. Pre-processing step is used to add implode edges between original FIFO actor and the
+	 * one that is obtained after firing associated actor. However, with self loops, there is no need
+	 * of implode edges (the contents are completely replaced) but we still need to consider these
+	 * edges as new edges (state info can be changed). So we filter out self loops here so that they
+	 * are added as new edges in FifoActorGraphs.
 	 * 
 	 * @param node The node that has to be added to the transient graph
 	 * @param nodechains The {@link NodeChainGraph} that contains information about user-added
 	 * vertices and vertices added by the compiler 
 	 */
 	private def void processOriginalOutputDelayEdges(SDFAbstractVertex node, NodeChainGraph nodechains) {
-		val outEdgeDelayMap = nodechains.getEdgewiseOutputDelays(node)
+		val outEdgeDelayMap = nodechains.getEdgewiseOutputDelays(node).filter[edge, delay |
+			edge.source != edge.target
+		]
 		outEdgeDelayMap.forEach[edge, delay |
 			val fifoActor = getFifoActor(edge)
 			fifoActor.name = fifoActor.name + "_original"
@@ -327,8 +357,14 @@ class RearrangeOperations implements DAGOperations {
 				throw new DAGComputationBug("For the edge: " + edge + " not enough delays produced")
 			}
 			
-			val fifoActor = if(edgeFifoActors.keySet.contains(edge)) {
-				throw new DAGComputationBug("FifoActor found before traversing the edge: !" + edge)
+			// See the note on processOriginalOutputDelayEdges to see why self loops are avoided
+			val fifoActor = if(edgeFifoActors.keySet.contains(edge) && edge.source != edge.target) {
+				// The fifo actor was probably added before as input to some other actor
+				val actor = edgeFifoActors.get(edge)
+				if(!actor.sources.empty) {
+					throw new DAGComputationBug("FifoActor (" + actor + ") already has source interface!")
+				}
+				actor
 			} else {
 				val actor = getFifoActor(edge)
 				transientGraph.addVertex(actor)
@@ -464,7 +500,7 @@ class RearrangeOperations implements DAGOperations {
 	 * 
 	 * @param dagGen The DAG from which re-timing information can be extracted
 	 */
-	override visit(SDF2DAG dagGen) {
+	override visit(SDF2DAG dagGen) throws CannotRearrange {
 		rearrange(dagGen)
 	}
 	
@@ -473,7 +509,7 @@ class RearrangeOperations implements DAGOperations {
 	 * 
 	 * @param dagGen The DAG from which re-timing information can be extracted
 	 */
-	override visit(DAG2DAG dagGen) {
+	override visit(DAG2DAG dagGen) throws CannotRearrange {
 		rearrange(dagGen)
 	}
 	

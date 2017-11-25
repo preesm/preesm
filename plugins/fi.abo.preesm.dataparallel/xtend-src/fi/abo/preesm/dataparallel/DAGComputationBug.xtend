@@ -35,6 +35,8 @@
  */
 package fi.abo.preesm.dataparallel
 
+import java.io.File
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 
 /**
@@ -46,23 +48,58 @@ import org.ietr.dftools.algorithm.model.visitors.SDF4JException
  */
 class DAGComputationBug extends SDF4JException {
 	
-	static val bugMessage = "Open an issue, or contact Sudeep Kanur (skanur@abo.fi, skanur@protonmail.com) with the graph that caused the exception."
+	static val message = "Open an issue, or contact Sudeep Kanur (skanur@abo.fi, skanur@protonmail.com) with the graph that caused the exception."
 	
-  /**
-   * Creates a new Bug exception with custom message
-   *
-   * @param message
-   *          The error message
-   */
-  new(String message) {
-    super("BUG!\n" + message + "\n" + bugMessage, null);
-  }
-
-  new(String message, Throwable t) {
-    super("BUG!\n" + message + "\n" + bugMessage, t);
-  }
-  
-  new() {
-  	super("BUG!\n" + bugMessage, null)
-  }
+	static val sdf_message = message + "\nExporting the associated SrSDF/SDF graph to "
+	
+	static val dag_message = message + "\nExporting the associated DAG to "
+	
+	static val sdf_dag_message = message + "\nExporting the associated SrSDF/SDF graph and DAG to "
+	
+	static val bug_graph_path = "./failed_sdf"
+	
+	static val bug_dag_path = "./failed_dag"
+		
+	static val bug_graph_file = new File(bug_graph_path)
+		
+	static val bug_dag_file = new File(bug_dag_path)
+		
+	static val bug_graph_abs_path = bug_graph_file.absolutePath
+		
+	static val bug_dag_abs_path = bug_dag_file.absolutePath
+	
+	new() {
+		super("BUG!\n" + message, null)
+	}
+		
+	/**
+	 * Creates a new Bug exception with custom message
+	 *
+	 * @param message
+	 *          The error message
+	 */
+	new(String mes) {
+		super("BUG!\n" + mes + "\n" + message, null);
+	}
+	
+	new(SDFGraph graph, String mes) {
+		super("BUG!\n" + mes + "\n" + sdf_message  + bug_graph_abs_path + " .\n")
+		
+		val SDFExporter exporter = new SDFExporter()
+		exporter.export(graph, bug_graph_abs_path)
+	}
+	
+	new(PureDAGConstructor dag, String mes) {
+		super("BUG!\n" + mes + "\n" + dag_message + bug_dag_abs_path + " .\n")
+		val SDFExporter exporter = new SDFExporter()
+		exporter.export(dag.outputGraph, bug_dag_abs_path)
+	}
+	
+	new(PureDAGConstructor dag, SDFGraph graph, String mes) {
+		super("BUG!\n" + mes + "\n" + sdf_dag_message + bug_dag_abs_path + " and " + 
+			bug_graph_abs_path + " .\n")
+		var SDFExporter exporter = new SDFExporter()
+		exporter.export(dag.outputGraph, bug_dag_abs_path)
+		exporter.export(graph, bug_graph_abs_path)
+	}
 }

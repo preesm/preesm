@@ -35,18 +35,22 @@
  */
 package fi.abo.preesm.dataparallel.operations
 
-import java.util.List
-import java.util.Map
 import fi.abo.preesm.dataparallel.DAG2DAG
 import fi.abo.preesm.dataparallel.DAGComputationBug
 import fi.abo.preesm.dataparallel.PureDAGConstructor
 import fi.abo.preesm.dataparallel.SDF2DAG
 import fi.abo.preesm.dataparallel.iterator.SubsetTopologicalIterator
+import java.util.List
+import java.util.Map
+import java.util.logging.Level
+import java.util.logging.Logger
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
+import org.ietr.dftools.algorithm.model.visitors.SDF4JException
+import fi.abo.preesm.dataparallel.CannotRearrange
+import java.util.ArrayList
 
 /**
  * DAG operation that finds the instances that needs to be moved in the
@@ -86,11 +90,32 @@ class MovableInstances implements DAGOperations {
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	val List<SDFAbstractVertex> movableExitInstances
 	
-	new() {
+	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	val List<SDFAbstractVertex> interfaceActors
+	
+	/**
+	 * Logger
+	 */
+	@Accessors(PRIVATE_GETTER, PRIVATE_GETTER)
+	val Logger logger
+		
+	new(List<SDFAbstractVertex> interfaceActors, Logger logger) {
 		rearrangedLevels = newHashMap
 		movableInstances = newArrayList
 		movableRootInstances = newArrayList
 		movableExitInstances = newArrayList
+		this.interfaceActors = interfaceActors
+		this.logger = logger
+	}
+	
+	new(List<SDFAbstractVertex> interfaceActors) {
+		this(interfaceActors, null)
+	}
+	
+	private def log(Level level, String message) {
+		if(this.logger !== null) {
+			this.logger.log(level, message)
+		}
 	}
 	
 	/**
@@ -100,7 +125,7 @@ class MovableInstances implements DAGOperations {
 	 * @param dagGen A {@link PureDAGConstructor} instance
 	 * @throws SDF4JException If the DAG is not instance independent
 	 */
-	private def void findMovableInstances(PureDAGConstructor dagGen) throws SDF4JException {
+	private def void findMovableInstances(PureDAGConstructor dagGen) throws SDF4JException , CannotRearrange {
 		val parallelVisitor = new DependencyAnalysisOperations
 		dagGen.accept(parallelVisitor)
 		
@@ -117,64 +142,99 @@ class MovableInstances implements DAGOperations {
 		
 		// We want pick anchor instance from an actor that is not a 
 		// source actor and is part of strongly connected component.
+		val interfaceActorNames = interfaceActors.map[actor | actor.name]
 		val nonSourceActors = rootVisitor.rootActors.filter[actor |
-			!actor.sources.empty
+			!interfaceActorNames.contains(actor.name)
 		].toList
 		
-		val anchorActor = OperationsUtils.pickElement(nonSourceActors)
-		// Get all associated instances that belong to same actor
-		val anchorInstances = dagGen.actor2Instances.get(anchorActor).filter[instance |
-			rootInstances.contains(instance)
-		].toList
+		if(nonSourceActors.empty) {
+			log(Level.WARNING, "No unconnected root instances found.")
+			throw new CannotRearrange()
+		}
 		
-		val relevantRootInstances = rootInstances.filter[instance |
-			!anchorInstances.contains(instance)
-		].toList
-		
-		// Get levels
+		var List<SDFAbstractVertex> anchorInstances = newArrayList
+		val localNonSourceActors = new ArrayList(nonSourceActors)
+		var Integer parLevel = null
 		val levelVisitor = new LevelsOperations
 		dagGen.accept(levelVisitor)
-		rearrangedLevels.putAll(levelVisitor.levels)
 		
-		rearrangeAcyclic(dagGen, relevantRootInstances)
+		// Iterate through all available root actors (except neighbours of interfaces)
+		// and check if we get a parallel level
+		while(!localNonSourceActors.empty && parLevel === null) {
+			val anchorActor = localNonSourceActors.remove(0)
+			// Get all associated instances that belong to same actor
+			anchorInstances.clear
+			anchorInstances = dagGen.actor2Instances.get(anchorActor).filter[instance |
+				rootInstances.contains(instance)
+			].toList
+			val relevantRootActors = rootVisitor.rootActors.filter[actor |
+				actor != anchorActor && !interfaceActors.contains(actor)
+			]
+			if(!relevantRootActors.empty) {
+				val relevantRootActor = relevantRootActors.get(0)
+				val relevantRootInstances = rootInstances.filter[instance |
+					val actor = dagGen.instance2Actor.get(instance)
+					actor == relevantRootActor
+				].toList
+				// Get levels
+				rearrangedLevels.clear
+				rearrangedLevels.putAll(levelVisitor.levels)
+				
+				rearrangeAcyclic(dagGen, relevantRootInstances)
+				
+				val subsetLevels = rearrangedLevels.filter[node, level |
+					val actor = dagGen.instance2Actor.get(node)
+					!interfaceActors.contains(actor)
+				]
+			
+				// Maximum level starting from 0, where the instances need to be moved.
+				// Make sure the instances from source actors are ignored, otherwise, lbar
+				// will always result to 0. This can be done by removing all edges that has delays
+				// greater than or equal to production rate (or consumption rate)
+				parLevel = (new GetParallelLevelBuilder)
+							.addDagGen(dagGen)
+							.addOrigLevels(rearrangedLevels)
+							.addSubsetLevels(subsetLevels)
+							.build()
+			}
+		}
+		if(parLevel === null) {
+			log(Level.WARNING, "Not enough anchors or relevant instances.")
+			throw new CannotRearrange()
+		}
 		
-		// Maximum level starting from 0, where the instances need to be moved.
-		// Make sure the instances from source actors are ignored, otherwise, lbar
-		// will always result to 0. This can be done by removing all edges that has delays
-		// greater than or equal to production rate (or consumption rate)
-		val lbar = (new GetParallelLevelBuilder)
-					.addDagGen(dagGen)
-					.addOrigLevels(rearrangedLevels)
-					.addSubsetLevels(rearrangedLevels)
-					.build()
-		
+		val lbar = parLevel
 		anchorInstances.forEach[anchor |
 			val sit = new SubsetTopologicalIterator(dagGen, anchor)
 			while(sit.hasNext) {
 				val instance = sit.next
-				val instanceLevel = rearrangedLevels.get(instance)
-				if(instanceLevel < lbar) {
-					movableInstances.add(instance)
-					
-					if(instanceLevel == 0 && !(instance instanceof SDFForkVertex)) {
-						movableRootInstances.add(instance)
-					} else if(instanceLevel == (lbar -1)) {
-						// Check if there is an explode instance of this instance
-						if(!(instance instanceof SDFForkVertex) && !(instance instanceof SDFJoinVertex)) {
-							val expImpInstances = dagGen.explodeImplodeOrigInstances.filter[expImp, origInstance |
-								(origInstance == instance) && (expImp instanceof SDFForkVertex)
-							]
-							if(expImpInstances.empty) {
-								// No explode instance associated with this
-								movableExitInstances.add(instance)
-							} 
-							// else wait until its explode instance is seen and then add it
-						} else {
-							if(instance instanceof SDFForkVertex) {
-								movableExitInstances.add(instance)
+				val actor = dagGen.instance2Actor.get(instance)
+				// Consider only non-interface actors
+				if(!interfaceActors.contains(actor)) {
+					val instanceLevel = rearrangedLevels.get(instance)
+					if(instanceLevel < lbar) {
+						movableInstances.add(instance)
+						
+						if(instanceLevel == 0 && !(instance instanceof SDFForkVertex)) {
+							movableRootInstances.add(instance)
+						} else if(instanceLevel == (lbar -1)) {
+							// Check if there is an explode instance of this instance
+							if(!(instance instanceof SDFForkVertex) && !(instance instanceof SDFJoinVertex)) {
+								val expImpInstances = dagGen.explodeImplodeOrigInstances.filter[expImp, origInstance |
+									(origInstance == instance) && (expImp instanceof SDFForkVertex)
+								]
+								if(expImpInstances.empty) {
+									// No explode instance associated with this
+									movableExitInstances.add(instance)
+								} 
+								// else wait until its explode instance is seen and then add it
+							} else {
+								if(instance instanceof SDFForkVertex) {
+									movableExitInstances.add(instance)
+								}
 							}
 						}
-					}
+					}	
 				}
 			}
 		]
@@ -296,7 +356,7 @@ class MovableInstances implements DAGOperations {
 	 * Use {@link MovableInstances#movableInstances} to get list of movable instances
 	 * @throws SDF4JException If the DAG is not instance independent.
 	 */
-	override visit(SDF2DAG dagGen) {
+	override visit(SDF2DAG dagGen) throws CannotRearrange {
 		findMovableInstances(dagGen)
 	}
 	
@@ -307,7 +367,7 @@ class MovableInstances implements DAGOperations {
 	 * Use {@link MovableInstances#movableInstances} to get list of movable instances
 	 * @throws SDF4JException If the DAG is not instance independent.
 	 */
-	override visit(DAG2DAG dagGen) {
+	override visit(DAG2DAG dagGen) throws CannotRearrange {
 		findMovableInstances(dagGen)
 	}
 	

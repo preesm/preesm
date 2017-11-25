@@ -210,11 +210,22 @@ class SDFCommonOperationsTest {
 						
 						val subgraphDAGGen = new SDF2DAG(subgraphInterfaceVertices)
 						
-						val moveInstanceVisitor = new MovableInstances
+						val sc = new KosarajuStrongConnectivityInspector(sdfSubgraph)
+						val sourceActors = sc.stronglyConnectedComponents.filter[sg |
+							val cd = new CycleDetector(sg as 
+								DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+							)
+							!cd.detectCycles
+						].map[sg |
+							sg.vertexSet
+						].flatten
+						.toList
+						
+						val moveInstanceVisitor = new MovableInstances(sourceActors)
 						subgraphDAGGen.accept(moveInstanceVisitor)
 						allMovableInstances.addAll(moveInstanceVisitor.movableInstances)
 						
-						val retimingVisitor = new RearrangeOperations(srsdf, info)
+						val retimingVisitor = new RearrangeOperations(srsdf, info, sourceActors)
 						subgraphDAGGen.accept(retimingVisitor)
 					}
 				]

@@ -191,6 +191,10 @@ class DependencyAnalysisOperations implements DAGCommonOperations {
 			].size > 0) realNonParallelActors.add(actor) // Size is zero if it is a DAGind
 		]
 		
+		if(realNonParallelActors.empty) {
+			isIndependent = Boolean.TRUE
+		}
+		
 		instanceDependentActors.clear()
 		instanceDependentActors.addAll(realNonParallelActors)
 	}

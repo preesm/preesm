@@ -38,6 +38,7 @@ package fi.abo.preesm.dataparallel.operations
 import fi.abo.preesm.dataparallel.DAG2DAG
 import fi.abo.preesm.dataparallel.SDF2DAG
 import fi.abo.preesm.dataparallel.PureDAGConstructor
+import fi.abo.preesm.dataparallel.CannotRearrange
 
 /**
  * Visitor interface for operations carried out only on
@@ -52,12 +53,12 @@ interface DAGOperations {
 	 * 
 	 * @param dag A {@link SDF2DAG} instance
 	 */
-	def void visit(SDF2DAG dagGen)
+	def void visit(SDF2DAG dagGen) throws CannotRearrange
 	
 	/**
 	 * Visitor method for DAGs constructed from other DAGs
 	 * 
 	 * @param dag A {@link DAG2DAG} instance
 	 */
-	def void visit(DAG2DAG dagGen)
+	def void visit(DAG2DAG dagGen) throws CannotRearrange
 }

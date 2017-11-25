@@ -58,6 +58,7 @@ import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.alg.CycleDetector
 import org.jgrapht.graph.AbstractGraph
 import org.jgrapht.graph.DirectedSubgraph
+import java.util.logging.Level
 
 /**
  * Construct DAG from a SDF Graph
@@ -234,7 +235,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	 protected def void createInstances() {
 	 	// Create instances repetition vector times
 	 	for(actor: inputGraph.vertexSet) {
-	 		log("Actor " + actor + " has " + actor.nbRepeatAsInteger + " instances.")
+	 		log(Level.FINE, "Actor " + actor + " has " + actor.nbRepeatAsInteger + " instances.")
 	 		val instances = newArrayList
 	 		 
 	 		for(var ii = 0; ii < actor.nbRepeatAsInteger; ii++) {
@@ -544,7 +545,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 			}
 			
 			for(var ii = 0; ii < targetInstances.size(); ii++) {
-				if((targetInstances.get(ii) instanceof SDFJoinVertex) && !originalTargetInstances.get(ii).equals(sourceInstances.get(ii))) {
+				if((targetInstances.get(ii) instanceof SDFJoinVertex) && !originalTargetInstances.get(ii).equals(targetInstances.get(ii))) {
 					var SDFAbstractVertex trueTarget = null
 					// TODO Again, this code does not make sense. The size of incomingEdges will always be one!
 					if (outputGraph.outgoingEdgesOf(targetInstances.get(ii)).size > 1) {

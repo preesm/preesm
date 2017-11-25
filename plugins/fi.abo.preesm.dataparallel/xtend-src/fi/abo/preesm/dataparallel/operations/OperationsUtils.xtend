@@ -251,23 +251,18 @@ class OperationsUtils {
 		
 		// Populate only those actors that are relevant to the given level set
 		for(level: getLevelSets(levels)) {
-			val currentLevel = levels.get(level.get(0))			
+			val currentLevel = levels.get(level.get(0))
+			val origLevel = origLevelSets.filter[l | l.contains(level.get(0))].get(0)			
 			val actors = newHashSet
-			val allInstances = newArrayList		
 			// Get all actors in the current level
 			level.forEach[instance | actors.add(dagGen.instance2Actor.get(instance))]
 			
-			// Get all instances of the actors seen in current level
-			actors.forEach[actor | 
+			// Check if all instances of actors in the current level are seen
+			for(actor: actors) {
 				val instances = dagGen.actor2Instances.get(actor)
-				allInstances.addAll(instances)
-			]
-			
-			val origLevel = origLevelSets.filter[l | l.contains(level.get(0))].get(0)
-
-			// A level set is parallel, if the original level set contains all instances of all actors
-			if(allInstances.filter[instance | !origLevel.contains(instance)].empty) {
-				return currentLevel
+				if(instances.forall[instance | origLevel.contains(instance)]) {
+					return currentLevel
+				}
 			}
 		}
 		// No parallel level exists in the graph

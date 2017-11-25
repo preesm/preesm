@@ -140,7 +140,17 @@ class MovableInstancesTest {
 						// one loop. Perform the tests now. As only instance independent graphs are
 						// added, no check is made
 						val subgraphDAGGen = new SDF2DAG(dirSubGraph)
-						val moveInstanceVisitor = new MovableInstances
+						val sc = new KosarajuStrongConnectivityInspector(dirSubGraph)
+						val sourceActors = sc.stronglyConnectedComponents.filter[sg |
+							val cd = new CycleDetector(sg as 
+								DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+							)
+							!cd.detectCycles
+						].map[sg |
+							sg.vertexSet
+						].flatten
+						.toList
+						val moveInstanceVisitor = new MovableInstances(sourceActors)
 						subgraphDAGGen.accept(moveInstanceVisitor)
 						
 						val rearrangedLevels = moveInstanceVisitor.rearrangedLevels
@@ -212,7 +222,17 @@ class MovableInstancesTest {
 						// added, no check is made
 						
 						val subgraphDAGGen = new SDF2DAG(dirSubGraph)
-						val moveInstanceVisitor = new MovableInstances
+						val sc = new KosarajuStrongConnectivityInspector(dirSubGraph)
+						val sourceActors = sc.stronglyConnectedComponents.filter[sg |
+							val cd = new CycleDetector(sg as 
+								DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+							)
+							!cd.detectCycles
+						].map[sg |
+							sg.vertexSet
+						].flatten
+						.toList
+						val moveInstanceVisitor = new MovableInstances(sourceActors)
 						subgraphDAGGen.accept(moveInstanceVisitor)
 						
 						val movableRootInstances = moveInstanceVisitor.movableRootInstances
