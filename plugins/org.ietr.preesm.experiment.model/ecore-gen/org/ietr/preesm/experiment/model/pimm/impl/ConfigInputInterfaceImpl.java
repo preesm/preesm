@@ -82,6 +82,11 @@ public class ConfigInputInterfaceImpl extends ParameterImpl implements ConfigInp
     return true;
   }
 
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
   @Override
   public boolean isConfigurationInterface() {
     return true;

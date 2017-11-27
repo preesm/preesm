@@ -71,8 +71,6 @@ public interface Parameter extends Configurable, ISetter {
   @Override
   boolean isLocallyStatic();
 
-  boolean isConfigurationInterface();
-
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
@@ -81,6 +79,14 @@ public interface Parameter extends Configurable, ISetter {
    * @generated
    */
   boolean isDependent();
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return false;'"
+   * @generated
+   */
+  boolean isConfigurationInterface();
 
   /**
    * Returns the value of the '<em><b>Graph Port</b></em>' reference. <!-- begin-user-doc -->

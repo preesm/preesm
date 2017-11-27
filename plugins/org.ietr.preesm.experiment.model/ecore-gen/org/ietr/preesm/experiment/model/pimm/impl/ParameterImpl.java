@@ -253,11 +253,6 @@ public class ParameterImpl extends ConfigurableImpl implements Parameter {
         .map(Dependency::getSetter).filter(Objects::nonNull).allMatch(ISetter::isLocallyStatic);
   }
 
-  @Override
-  public boolean isConfigurationInterface() {
-    return false;
-  }
-
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -266,6 +261,16 @@ public class ParameterImpl extends ConfigurableImpl implements Parameter {
   @Override
   public boolean isDependent() {
     return !getConfigInputPorts().isEmpty();
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public boolean isConfigurationInterface() {
+    return false;
   }
 
   /**
