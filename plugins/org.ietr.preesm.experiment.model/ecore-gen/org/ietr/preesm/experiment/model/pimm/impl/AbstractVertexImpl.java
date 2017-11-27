@@ -239,7 +239,7 @@ public abstract class AbstractVertexImpl extends EObjectImpl implements Abstract
    * @see org.ietr.preesm.experiment.model.pimm.AbstractVertex#getPortNamed(java.lang.String)
    */
   @Override
-  public Port getPortNamed(final String portName) {
+  public Port lookupPort(final String portName) {
     final List<Port> ports = new ArrayList<>(getAllPorts());
 
     for (final Object port : ports) {

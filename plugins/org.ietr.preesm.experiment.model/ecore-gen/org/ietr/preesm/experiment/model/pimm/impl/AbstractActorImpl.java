@@ -331,9 +331,9 @@ public abstract class AbstractActorImpl extends ConfigurableImpl implements Abst
    * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#getPortNamed(java.lang.String)
    */
   @Override
-  public Port getPortNamed(final String portName) {
+  public Port lookupPort(final String portName) {
     // If the super method return a port, return it
-    final Port p = super.getPortNamed(portName);
+    final Port p = super.lookupPort(portName);
     if (p != null) {
       return p;
     }

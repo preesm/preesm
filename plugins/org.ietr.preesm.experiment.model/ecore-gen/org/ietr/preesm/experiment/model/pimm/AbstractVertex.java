@@ -98,6 +98,6 @@ public interface AbstractVertex extends PiMMVisitable {
    *          the name of the desired {@link Port}
    * @return the requested port, or <code>null</code> if no such port exists.s
    */
-  public Port getPortNamed(String portName);
+  public Port lookupPort(String portName);
 
 } // AbstractVertex

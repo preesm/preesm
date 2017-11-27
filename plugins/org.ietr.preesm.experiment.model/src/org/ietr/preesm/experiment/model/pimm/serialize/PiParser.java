@@ -379,7 +379,7 @@ public class PiParser {
 
       String sourcePortName = edgeElt.getAttribute(PiIdentifiers.DEPENDENCY_SOURCE_PORT);
       sourcePortName = (sourcePortName.isEmpty()) ? null : sourcePortName;
-      final ConfigOutputPort oPort = (ConfigOutputPort) ((ExecutableActor) source).getPortNamed(sourcePortName);
+      final ConfigOutputPort oPort = (ConfigOutputPort) ((ExecutableActor) source).lookupPort(sourcePortName);
       if (oPort == null) {
         throw new RuntimeException("Edge source port " + sourcePortName + " does not exist for vertex " + setterName);
       }
@@ -392,7 +392,7 @@ public class PiParser {
     if (target instanceof ExecutableActor) {
       String targetPortName = edgeElt.getAttribute(PiIdentifiers.DEPENDENCY_TARGET_PORT);
       targetPortName = (targetPortName.isEmpty()) ? null : targetPortName;
-      final ConfigInputPort iPort = (ConfigInputPort) ((AbstractVertex) target).getPortNamed(targetPortName);
+      final ConfigInputPort iPort = (ConfigInputPort) ((AbstractVertex) target).lookupPort(targetPortName);
       if (iPort == null) {
         throw new RuntimeException("Dependency target port " + targetPortName + " does not exist for vertex " + getterName);
       }
@@ -472,8 +472,8 @@ public class PiParser {
     sourcePortName = (sourcePortName.isEmpty()) ? null : sourcePortName;
     String targetPortName = edgeElt.getAttribute(PiIdentifiers.FIFO_TARGET_PORT);
     targetPortName = (targetPortName.isEmpty()) ? null : targetPortName;
-    final DataOutputPort oPort = (DataOutputPort) source.getPortNamed(sourcePortName);
-    final DataInputPort iPort = (DataInputPort) target.getPortNamed(targetPortName);
+    final DataOutputPort oPort = (DataOutputPort) source.lookupPort(sourcePortName);
+    final DataInputPort iPort = (DataInputPort) target.lookupPort(targetPortName);
 
     if (iPort == null) {
       throw new RuntimeException("Edge target port " + targetPortName + " does not exist for vertex " + targetName);
