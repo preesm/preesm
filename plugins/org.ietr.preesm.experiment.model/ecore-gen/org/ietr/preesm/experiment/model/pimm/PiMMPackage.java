@@ -1419,20 +1419,12 @@ public interface PiMMPackage extends EPackage {
   int PARAMETER__OUTGOING_DEPENDENCIES = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Configuration Interface</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int PARAMETER__CONFIGURATION_INTERFACE = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 1;
-
-  /**
    * The feature id for the '<em><b>Graph Port</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int PARAMETER__GRAPH_PORT = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 2;
+  int PARAMETER__GRAPH_PORT = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 1;
 
   /**
    * The feature id for the '<em><b>Value Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1440,7 +1432,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int PARAMETER__VALUE_EXPRESSION = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 3;
+  int PARAMETER__VALUE_EXPRESSION = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 2;
 
   /**
    * The number of structural features of the '<em>Parameter</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1448,7 +1440,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int PARAMETER_FEATURE_COUNT = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 4;
+  int PARAMETER_FEATURE_COUNT = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 3;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1473,14 +1465,6 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int CONFIG_INPUT_INTERFACE__OUTGOING_DEPENDENCIES = PiMMPackage.PARAMETER__OUTGOING_DEPENDENCIES;
-
-  /**
-   * The feature id for the '<em><b>Configuration Interface</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int CONFIG_INPUT_INTERFACE__CONFIGURATION_INTERFACE = PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE;
 
   /**
    * The feature id for the '<em><b>Graph Port</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2276,17 +2260,6 @@ public interface PiMMPackage extends EPackage {
   EClass getParameter();
 
   /**
-   * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Parameter#isConfigurationInterface <em>Configuration
-   * Interface</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @return the meta object for the attribute '<em>Configuration Interface</em>'.
-   * @see org.ietr.preesm.experiment.model.pimm.Parameter#isConfigurationInterface()
-   * @see #getParameter()
-   * @generated
-   */
-  EAttribute getParameter_ConfigurationInterface();
-
-  /**
    * Returns the meta object for the reference '{@link org.ietr.preesm.experiment.model.pimm.Parameter#getGraphPort <em>Graph Port</em>}'. <!-- begin-user-doc
    * --> <!-- end-user-doc -->
    *
@@ -3026,13 +2999,6 @@ public interface PiMMPackage extends EPackage {
      * @generated
      */
     EClass PARAMETER = PiMMPackage.eINSTANCE.getParameter();
-
-    /**
-     * The meta object literal for the '<em><b>Configuration Interface</b></em>' attribute feature. <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    EAttribute PARAMETER__CONFIGURATION_INTERFACE = PiMMPackage.eINSTANCE.getParameter_ConfigurationInterface();
 
     /**
      * The meta object literal for the '<em><b>Graph Port</b></em>' reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->

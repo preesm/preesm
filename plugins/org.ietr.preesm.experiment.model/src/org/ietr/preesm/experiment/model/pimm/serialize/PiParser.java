@@ -58,6 +58,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
@@ -324,11 +325,9 @@ public class PiParser {
    *          the deserialized {@link PiGraph}.
    * @return the {@link AbstractVertex} of the {@link Parameter}.
    */
-  protected Parameter parseConfigInputInterface(final Element nodeElt, final PiGraph graph) {
+  protected ConfigInputInterface parseConfigInputInterface(final Element nodeElt, final PiGraph graph) {
     // Instantiate the new Config Input Interface
-    final Parameter param = PiMMFactory.eINSTANCE.createParameter();
-    param.setConfigurationInterface(true);
-    // param.setLocallyStatic(true);
+    final ConfigInputInterface param = PiMMFactory.eINSTANCE.createConfigInputInterface();
 
     // Get the actor properties
     param.setName(nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME));
@@ -392,7 +391,7 @@ public class PiParser {
     if (target instanceof ExecutableActor) {
       String targetPortName = edgeElt.getAttribute(PiIdentifiers.DEPENDENCY_TARGET_PORT);
       targetPortName = (targetPortName.isEmpty()) ? null : targetPortName;
-      final ConfigInputPort iPort = (ConfigInputPort) ((AbstractVertex) target).lookupPort(targetPortName);
+      final ConfigInputPort iPort = (ConfigInputPort) target.lookupPort(targetPortName);
       if (iPort == null) {
         throw new RuntimeException("Dependency target port " + targetPortName + " does not exist for vertex " + getterName);
       }
@@ -632,8 +631,7 @@ public class PiParser {
     // Instantiate the new Parameter
     final Parameter param = PiMMFactory.eINSTANCE.createParameter();
     param.getValueExpression().setExpressionString(nodeElt.getAttribute(PiIdentifiers.PARAMETER_EXPRESSION));
-    param.setConfigurationInterface(false);
-    // param.setLocallyStatic(true);
+
     param.setGraphPort(null); // No port of the graph corresponds to this
     // parameter
 

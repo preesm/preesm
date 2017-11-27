@@ -221,8 +221,6 @@
         <details key="body" value="return !getConfigInputPorts().isEmpty();"/>
       </eAnnotations>
     </eOperations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="configurationInterface"
-        lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="graphPort" lowerBound="1"
         eType="#//ConfigInputPort"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="valueExpression" lowerBound="1"

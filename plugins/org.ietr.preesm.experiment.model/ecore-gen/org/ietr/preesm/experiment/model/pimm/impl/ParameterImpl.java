@@ -65,7 +65,6 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#getOutgoingDependencies <em>Outgoing Dependencies</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#isConfigurationInterface <em>Configuration Interface</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#getGraphPort <em>Graph Port</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#getValueExpression <em>Value Expression</em>}</li>
  * </ul>
@@ -84,24 +83,6 @@ public class ParameterImpl extends ConfigurableImpl implements Parameter {
 
   /** The Constant LOCALLY_STATIC_EDEFAULT. */
   protected static final boolean LOCALLY_STATIC_EDEFAULT = false;
-
-  /**
-   * The default value of the '{@link #isConfigurationInterface() <em>Configuration Interface</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see #isConfigurationInterface()
-   * @generated
-   * @ordered
-   */
-  protected static final boolean CONFIGURATION_INTERFACE_EDEFAULT = false;
-
-  /**
-   * The cached value of the '{@link #isConfigurationInterface() <em>Configuration Interface</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see #isConfigurationInterface()
-   * @generated
-   * @ordered
-   */
-  protected boolean configurationInterface = ParameterImpl.CONFIGURATION_INTERFACE_EDEFAULT;
 
   /**
    * The cached value of the '{@link #getGraphPort() <em>Graph Port</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -153,34 +134,6 @@ public class ParameterImpl extends ConfigurableImpl implements Parameter {
           PiMMPackage.DEPENDENCY__SETTER);
     }
     return this.outgoingDependencies;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return true, if is configuration interface
-   * @generated
-   */
-  @Override
-  public boolean isConfigurationInterface() {
-    return this.configurationInterface;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @param newConfigurationInterface
-   *          the new configuration interface
-   * @generated
-   */
-  @Override
-  public void setConfigurationInterface(final boolean newConfigurationInterface) {
-    final boolean oldConfigurationInterface = this.configurationInterface;
-    this.configurationInterface = newConfigurationInterface;
-    if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE, oldConfigurationInterface,
-          this.configurationInterface));
-    }
   }
 
   /**
@@ -300,6 +253,11 @@ public class ParameterImpl extends ConfigurableImpl implements Parameter {
         .map(Dependency::getSetter).filter(Objects::nonNull).allMatch(ISetter::isLocallyStatic);
   }
 
+  @Override
+  public boolean isConfigurationInterface() {
+    return false;
+  }
+
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -372,8 +330,6 @@ public class ParameterImpl extends ConfigurableImpl implements Parameter {
     switch (featureID) {
       case PiMMPackage.PARAMETER__OUTGOING_DEPENDENCIES:
         return getOutgoingDependencies();
-      case PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE:
-        return isConfigurationInterface();
       case PiMMPackage.PARAMETER__GRAPH_PORT:
         if (resolve) {
           return getGraphPort();
@@ -402,9 +358,6 @@ public class ParameterImpl extends ConfigurableImpl implements Parameter {
         getOutgoingDependencies().clear();
         getOutgoingDependencies().addAll((Collection<? extends Dependency>) newValue);
         return;
-      case PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE:
-        setConfigurationInterface((Boolean) newValue);
-        return;
       case PiMMPackage.PARAMETER__GRAPH_PORT:
         setGraphPort((ConfigInputPort) newValue);
         return;
@@ -427,9 +380,6 @@ public class ParameterImpl extends ConfigurableImpl implements Parameter {
     switch (featureID) {
       case PiMMPackage.PARAMETER__OUTGOING_DEPENDENCIES:
         getOutgoingDependencies().clear();
-        return;
-      case PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE:
-        setConfigurationInterface(ParameterImpl.CONFIGURATION_INTERFACE_EDEFAULT);
         return;
       case PiMMPackage.PARAMETER__GRAPH_PORT:
         setGraphPort((ConfigInputPort) null);
@@ -454,8 +404,6 @@ public class ParameterImpl extends ConfigurableImpl implements Parameter {
     switch (featureID) {
       case PiMMPackage.PARAMETER__OUTGOING_DEPENDENCIES:
         return (this.outgoingDependencies != null) && !this.outgoingDependencies.isEmpty();
-      case PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE:
-        return this.configurationInterface != ParameterImpl.CONFIGURATION_INTERFACE_EDEFAULT;
       case PiMMPackage.PARAMETER__GRAPH_PORT:
         return this.graphPort != null;
       case PiMMPackage.PARAMETER__VALUE_EXPRESSION:
@@ -521,25 +469,6 @@ public class ParameterImpl extends ConfigurableImpl implements Parameter {
       }
     }
     return super.eDerivedStructuralFeatureID(baseFeatureID, baseClass);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the string
-   * @generated
-   */
-  @Override
-  public String toString() {
-    if (eIsProxy()) {
-      return super.toString();
-    }
-
-    final StringBuffer result = new StringBuffer(super.toString());
-    result.append(" (configurationInterface: ");
-    result.append(this.configurationInterface);
-    result.append(')');
-    return result.toString();
   }
 
   /*

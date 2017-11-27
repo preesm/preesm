@@ -82,6 +82,11 @@ public class ConfigInputInterfaceImpl extends ParameterImpl implements ConfigInp
     return true;
   }
 
+  @Override
+  public boolean isConfigurationInterface() {
+    return true;
+  }
+
   /*
    * (non-Javadoc)
    *

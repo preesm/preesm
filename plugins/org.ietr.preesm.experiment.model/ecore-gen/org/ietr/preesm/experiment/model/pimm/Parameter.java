@@ -46,7 +46,6 @@ package org.ietr.preesm.experiment.model.pimm;
  * The following features are supported:
  * </p>
  * <ul>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.Parameter#isConfigurationInterface <em>Configuration Interface</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.Parameter#getGraphPort <em>Graph Port</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.Parameter#getValueExpression <em>Value Expression</em>}</li>
  * </ul>
@@ -72,6 +71,8 @@ public interface Parameter extends Configurable, ISetter {
   @Override
   boolean isLocallyStatic();
 
+  boolean isConfigurationInterface();
+
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
@@ -80,32 +81,6 @@ public interface Parameter extends Configurable, ISetter {
    * @generated
    */
   boolean isDependent();
-
-  /**
-   * Returns the value of the '<em><b>Configuration Interface</b></em>' attribute. <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Configuration Interface</em>' attribute isn't clear, there really should be more of a description here...
-   * </p>
-   * <!-- end-user-doc -->
-   *
-   * @return the value of the '<em>Configuration Interface</em>' attribute.
-   * @see #setConfigurationInterface(boolean)
-   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameter_ConfigurationInterface()
-   * @model required="true"
-   * @generated
-   */
-  boolean isConfigurationInterface();
-
-  /**
-   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Parameter#isConfigurationInterface <em>Configuration Interface</em>}' attribute. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @param value
-   *          the new value of the '<em>Configuration Interface</em>' attribute.
-   * @see #isConfigurationInterface()
-   * @generated
-   */
-  void setConfigurationInterface(boolean value);
 
   /**
    * Returns the value of the '<em><b>Graph Port</b></em>' reference. <!-- begin-user-doc -->

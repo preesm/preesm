@@ -897,23 +897,12 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
-   * @return the parameter configuration interface
-   * @generated
-   */
-  @Override
-  public EAttribute getParameter_ConfigurationInterface() {
-    return (EAttribute) this.parameterEClass.getEStructuralFeatures().get(0);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
    * @return the parameter graph port
    * @generated
    */
   @Override
   public EReference getParameter_GraphPort() {
-    return (EReference) this.parameterEClass.getEStructuralFeatures().get(1);
+    return (EReference) this.parameterEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -923,7 +912,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
    */
   @Override
   public EReference getParameter_ValueExpression() {
-    return (EReference) this.parameterEClass.getEStructuralFeatures().get(2);
+    return (EReference) this.parameterEClass.getEStructuralFeatures().get(1);
   }
 
   /**
@@ -1381,7 +1370,6 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     createEReference(this.cHeaderRefinementEClass, PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE);
 
     this.parameterEClass = createEClass(PiMMPackage.PARAMETER);
-    createEAttribute(this.parameterEClass, PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE);
     createEReference(this.parameterEClass, PiMMPackage.PARAMETER__GRAPH_PORT);
     createEReference(this.parameterEClass, PiMMPackage.PARAMETER__VALUE_EXPRESSION);
 
@@ -1697,9 +1685,6 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     initEClass(this.parameterEClass, Parameter.class, "Parameter", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getParameter_ConfigurationInterface(), this.ecorePackage.getEBoolean(), "configurationInterface", null, 1, 1, Parameter.class,
-        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
     initEReference(getParameter_GraphPort(), getConfigInputPort(), null, "graphPort", null, 1, 1, Parameter.class, !EPackageImpl.IS_TRANSIENT,
         !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);

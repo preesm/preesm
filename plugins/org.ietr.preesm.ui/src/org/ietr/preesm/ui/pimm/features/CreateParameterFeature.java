@@ -115,8 +115,6 @@ public class CreateParameterFeature extends AbstractCreateFeature {
     final Expression expr = PiMMFactory.eINSTANCE.createExpression();
     newParameter.setValueExpression(expr);
     newParameter.setName(newParameterName);
-    newParameter.setConfigurationInterface(false);
-    // newParameter.setLocallyStatic(true);
     newParameter.setGraphPort(null); // No port of the graph corresponds to
     // this parameter
 
