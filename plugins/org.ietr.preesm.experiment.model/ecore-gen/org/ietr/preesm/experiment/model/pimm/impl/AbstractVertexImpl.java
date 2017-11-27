@@ -38,23 +38,15 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.notify.NotificationChain;
+import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
-import org.eclipse.emf.ecore.util.InternalEList;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.ISetter;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
@@ -66,23 +58,12 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  * The following features are implemented:
  * </p>
  * <ul>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#getConfigInputPorts <em>Config Input Ports</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#getName <em>Name</em>}</li>
  * </ul>
  *
  * @generated
  */
 public abstract class AbstractVertexImpl extends EObjectImpl implements AbstractVertex {
-  /**
-   * The cached value of the '{@link #getConfigInputPorts() <em>Config Input Ports</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc
-   * -->
-   *
-   * @see #getConfigInputPorts()
-   * @generated
-   * @ordered
-   */
-  protected EList<ConfigInputPort> configInputPorts;
-
   /**
    * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -122,20 +103,6 @@ public abstract class AbstractVertexImpl extends EObjectImpl implements Abstract
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   */
-  @Override
-  public EList<ConfigInputPort> getConfigInputPorts() {
-    if (this.configInputPorts == null) {
-      this.configInputPorts = new EObjectContainmentWithInverseEList<>(ConfigInputPort.class, this, PiMMPackage.ABSTRACT_VERTEX__CONFIG_INPUT_PORTS,
-          PiMMPackage.CONFIG_INPUT_PORT__CONFIGURABLE);
-    }
-    return this.configInputPorts;
-  }
-
-  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @return the name
@@ -168,26 +135,9 @@ public abstract class AbstractVertexImpl extends EObjectImpl implements Abstract
    * @generated
    */
   @Override
-  public EList<Parameter> getInputParameters() {
-    final EList<Parameter> result = ECollections.newBasicEList();
-    for (final ConfigInputPort in : getConfigInputPorts()) {
-      final ISetter setter = in.getIncomingDependency().getSetter();
-      if (setter instanceof Parameter) {
-        result.add((Parameter) setter);
-      }
-    }
-    return result;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   */
-  @Override
-  public boolean isLocallyStatic() {
-    // a Parameterizable is static if all its parameters are static (or it has no parameter)
-    return getInputParameters().stream().filter(Objects::nonNull).allMatch(Parameter::isLocallyStatic);
+  public EList<Port> getAllPorts() {
+    final BasicEList<Port> result = ECollections.newBasicEList();
+    return ECollections.unmodifiableEList(result);
   }
 
   /**
@@ -205,8 +155,6 @@ public abstract class AbstractVertexImpl extends EObjectImpl implements Abstract
   @Override
   public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
     switch (featureID) {
-      case PiMMPackage.ABSTRACT_VERTEX__CONFIG_INPUT_PORTS:
-        return getConfigInputPorts();
       case PiMMPackage.ABSTRACT_VERTEX__NAME:
         return getName();
     }
@@ -222,14 +170,9 @@ public abstract class AbstractVertexImpl extends EObjectImpl implements Abstract
    *          the new value
    * @generated
    */
-  @SuppressWarnings("unchecked")
   @Override
   public void eSet(final int featureID, final Object newValue) {
     switch (featureID) {
-      case PiMMPackage.ABSTRACT_VERTEX__CONFIG_INPUT_PORTS:
-        getConfigInputPorts().clear();
-        getConfigInputPorts().addAll((Collection<? extends ConfigInputPort>) newValue);
-        return;
       case PiMMPackage.ABSTRACT_VERTEX__NAME:
         setName((String) newValue);
         return;
@@ -247,9 +190,6 @@ public abstract class AbstractVertexImpl extends EObjectImpl implements Abstract
   @Override
   public void eUnset(final int featureID) {
     switch (featureID) {
-      case PiMMPackage.ABSTRACT_VERTEX__CONFIG_INPUT_PORTS:
-        getConfigInputPorts().clear();
-        return;
       case PiMMPackage.ABSTRACT_VERTEX__NAME:
         setName(AbstractVertexImpl.NAME_EDEFAULT);
         return;
@@ -268,8 +208,6 @@ public abstract class AbstractVertexImpl extends EObjectImpl implements Abstract
   @Override
   public boolean eIsSet(final int featureID) {
     switch (featureID) {
-      case PiMMPackage.ABSTRACT_VERTEX__CONFIG_INPUT_PORTS:
-        return (this.configInputPorts != null) && !this.configInputPorts.isEmpty();
       case PiMMPackage.ABSTRACT_VERTEX__NAME:
         return AbstractVertexImpl.NAME_EDEFAULT == null ? this.name != null : !AbstractVertexImpl.NAME_EDEFAULT.equals(this.name);
     }
@@ -302,7 +240,7 @@ public abstract class AbstractVertexImpl extends EObjectImpl implements Abstract
    */
   @Override
   public Port getPortNamed(final String portName) {
-    final List<Port> ports = new ArrayList<>(getConfigInputPorts());
+    final List<Port> ports = new ArrayList<>(getAllPorts());
 
     for (final Object port : ports) {
       final String name = ((Port) port).getName();
@@ -324,35 +262,6 @@ public abstract class AbstractVertexImpl extends EObjectImpl implements Abstract
   @Override
   public void accept(final PiMMVisitor v) {
     v.visitAbstractVertex(this);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   */
-  @SuppressWarnings("unchecked")
-  @Override
-  public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
-    switch (featureID) {
-      case PiMMPackage.ABSTRACT_VERTEX__CONFIG_INPUT_PORTS:
-        return ((InternalEList<InternalEObject>) (InternalEList<?>) getConfigInputPorts()).basicAdd(otherEnd, msgs);
-    }
-    return super.eInverseAdd(otherEnd, featureID, msgs);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   */
-  @Override
-  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
-    switch (featureID) {
-      case PiMMPackage.ABSTRACT_VERTEX__CONFIG_INPUT_PORTS:
-        return ((InternalEList<?>) getConfigInputPorts()).basicRemove(otherEnd, msgs);
-    }
-    return super.eInverseRemove(otherEnd, featureID, msgs);
   }
 
 } // AbstractVertexImpl

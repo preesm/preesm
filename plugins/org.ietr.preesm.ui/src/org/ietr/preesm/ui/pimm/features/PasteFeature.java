@@ -136,9 +136,9 @@ public class PasteFeature extends AbstractPasteFeature {
     final Map<VertexCopy, Pair<Integer, Integer>> caluclatePositions = caluclatePositions(context, copies);
 
     for (final VertexCopy vertexCopy : copies) {
-      final AbstractVertex vertex = vertexCopy.originalVertex;
+      final Configurable vertex = vertexCopy.originalVertex;
 
-      final AbstractVertex copy = PiMMUserFactory.instance.copy(vertex);
+      final Configurable copy = PiMMUserFactory.instance.copy(vertex);
       final String name = computeUniqueNameForCopy(vertex);
       copy.setName(name);
       final Pair<Integer, Integer> pair = caluclatePositions.get(vertexCopy);

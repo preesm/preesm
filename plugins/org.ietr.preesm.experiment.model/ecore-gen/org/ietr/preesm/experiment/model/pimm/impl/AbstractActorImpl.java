@@ -71,7 +71,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  *
  * @generated
  */
-public abstract class AbstractActorImpl extends AbstractVertexImpl implements AbstractActor {
+public abstract class AbstractActorImpl extends ConfigurableImpl implements AbstractActor {
   /**
    * The cached value of the '{@link #getDataInputPorts() <em>Data Input Ports</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -307,8 +307,8 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements Ab
   @Override
   public EList<Port> getAllConfigPorts() {
     final BasicEList<Port> result = ECollections.newBasicEList();
+    result.addAll(super.getAllConfigPorts());
     result.addAll(getConfigOutputPorts());
-    result.addAll(getConfigInputPorts());
     return ECollections.unmodifiableEList(result);
   }
 

@@ -91,7 +91,6 @@ import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
@@ -309,17 +308,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
     for (final ConfigOutputPort cop : aa.getConfigOutputPorts()) {
       this.piPort2Vx.put(cop, aa);
     }
-    visitAbstractVertex(aa);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitAbstractVertex(org.ietr.preesm.experiment.model.pimm.AbstractVertex)
-   */
-  @Override
-  public void visitAbstractVertex(final AbstractVertex av) {
-    visitConfigurable(av);
+    visitConfigurable(aa);
   }
 
   /*
@@ -372,8 +361,8 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
     final DataOutputPort piOutputPort = f.getSourcePort();
     final DataInputPort piInputPort = f.getTargetPort();
 
-    final Parameterizable source = this.piPort2Vx.get(piOutputPort);
-    final Parameterizable target = this.piPort2Vx.get(piInputPort);
+    final Configurable source = this.piPort2Vx.get(piOutputPort);
+    final Configurable target = this.piPort2Vx.get(piInputPort);
 
     if ((source instanceof AbstractVertex) && (target instanceof AbstractVertex)) {
       // Get SDFAbstractVertices corresponding to source and target

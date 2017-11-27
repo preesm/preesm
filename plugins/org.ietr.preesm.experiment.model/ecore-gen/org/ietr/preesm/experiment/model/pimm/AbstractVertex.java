@@ -37,6 +37,9 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
+import org.eclipse.emf.common.util.EList;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
+
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Abstract Vertex</b></em>'. <!-- end-user-doc -->
@@ -52,7 +55,7 @@ package org.ietr.preesm.experiment.model.pimm;
  * @model abstract="true"
  * @generated
  */
-public interface AbstractVertex extends Configurable {
+public interface AbstractVertex extends PiMMVisitable {
   /**
    * Returns the value of the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc -->
    * <p>
@@ -78,6 +81,15 @@ public interface AbstractVertex extends Configurable {
    * @generated
    */
   void setName(String value);
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='final BasicEList&lt;Port&gt; result =
+   *        ECollections.newBasicEList();\nreturn ECollections.unmodifiableEList(result);'"
+   * @generated
+   */
+  EList<Port> getAllPorts();
 
   /**
    * Get the {@link Port} with a given name from the {@link AbstractActor} ports lists.

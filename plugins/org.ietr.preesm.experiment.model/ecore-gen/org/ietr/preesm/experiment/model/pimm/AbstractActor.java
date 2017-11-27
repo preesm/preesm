@@ -56,7 +56,7 @@ import org.eclipse.emf.common.util.EList;
  * @model abstract="true"
  * @generated
  */
-public interface AbstractActor extends AbstractVertex {
+public interface AbstractActor extends Configurable {
   /**
    * Returns the value of the '<em><b>Data Input Ports</b></em>' containment reference list. The list contents are of type
    * {@link org.ietr.preesm.experiment.model.pimm.DataInputPort}. <!-- begin-user-doc -->
@@ -116,10 +116,11 @@ public interface AbstractActor extends AbstractVertex {
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='final BasicEList&lt;Port&gt; result =
-   *        ECollections.newBasicEList();\nresult.addAll(getConfigOutputPorts());\nresult.addAll(getConfigInputPorts());\nreturn
+   *        ECollections.newBasicEList();\nresult.addAll(super.getAllConfigPorts());\nresult.addAll(getConfigOutputPorts());\nreturn
    *        ECollections.unmodifiableEList(result);'"
    * @generated
    */
+  @Override
   EList<Port> getAllConfigPorts();
 
   /**
@@ -130,6 +131,7 @@ public interface AbstractActor extends AbstractVertex {
    *        ECollections.unmodifiableEList(result);'"
    * @generated
    */
+  @Override
   EList<Port> getAllPorts();
 
   /**

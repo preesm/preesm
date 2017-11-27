@@ -1305,11 +1305,11 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     // Create classes and their features
     this.parameterizableEClass = createEClass(PiMMPackage.PARAMETERIZABLE);
 
-    this.configurableEClass = createEClass(PiMMPackage.CONFIGURABLE);
-    createEReference(this.configurableEClass, PiMMPackage.CONFIGURABLE__CONFIG_INPUT_PORTS);
-
     this.abstractVertexEClass = createEClass(PiMMPackage.ABSTRACT_VERTEX);
     createEAttribute(this.abstractVertexEClass, PiMMPackage.ABSTRACT_VERTEX__NAME);
+
+    this.configurableEClass = createEClass(PiMMPackage.CONFIGURABLE);
+    createEReference(this.configurableEClass, PiMMPackage.CONFIGURABLE__CONFIG_INPUT_PORTS);
 
     this.abstractActorEClass = createEClass(PiMMPackage.ABSTRACT_ACTOR);
     createEReference(this.abstractActorEClass, PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS);
@@ -1456,9 +1456,10 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     // Add supertypes to classes
     this.parameterizableEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
+    this.abstractVertexEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
+    this.configurableEClass.getESuperTypes().add(getAbstractVertex());
     this.configurableEClass.getESuperTypes().add(getParameterizable());
-    this.abstractVertexEClass.getESuperTypes().add(getConfigurable());
-    this.abstractActorEClass.getESuperTypes().add(getAbstractVertex());
+    this.abstractActorEClass.getESuperTypes().add(getConfigurable());
     this.piGraphEClass.getESuperTypes().add(getAbstractActor());
     this.executableActorEClass.getESuperTypes().add(getAbstractActor());
     this.actorEClass.getESuperTypes().add(getExecutableActor());
@@ -1481,7 +1482,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     this.refinementEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.piSDFRefinementEClass.getESuperTypes().add(getRefinement());
     this.cHeaderRefinementEClass.getESuperTypes().add(getRefinement());
-    this.parameterEClass.getESuperTypes().add(getAbstractVertex());
+    this.parameterEClass.getESuperTypes().add(getConfigurable());
     this.parameterEClass.getESuperTypes().add(getISetter());
     this.dependencyEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.delayEClass.getESuperTypes().add(getConfigurable());
@@ -1498,7 +1499,15 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     addEOperation(this.parameterizableEClass, this.ecorePackage.getEBoolean(), "isLocallyStatic", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
-    initEClass(this.configurableEClass, Configurable.class, "Configurable", EPackageImpl.IS_ABSTRACT, EPackageImpl.IS_INTERFACE,
+    initEClass(this.abstractVertexEClass, AbstractVertex.class, "AbstractVertex", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
+        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getAbstractVertex_Name(), this.ecorePackage.getEString(), "name", null, 1, 1, AbstractVertex.class, !EPackageImpl.IS_TRANSIENT,
+        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
+        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+
+    addEOperation(this.abstractVertexEClass, getPort(), "getAllPorts", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
+    initEClass(this.configurableEClass, Configurable.class, "Configurable", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
     initEReference(getConfigurable_ConfigInputPorts(), getConfigInputPort(), getConfigInputPort_Configurable(), "configInputPorts", null, 0, -1,
         Configurable.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE,
@@ -1506,11 +1515,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     addEOperation(this.configurableEClass, getParameter(), "getInputParameters", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
-    initEClass(this.abstractVertexEClass, AbstractVertex.class, "AbstractVertex", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getAbstractVertex_Name(), this.ecorePackage.getEString(), "name", null, 1, 1, AbstractVertex.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    addEOperation(this.configurableEClass, getPort(), "getAllConfigPorts", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
+    addEOperation(this.configurableEClass, getPort(), "getAllPorts", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     initEClass(this.abstractActorEClass, AbstractActor.class, "AbstractActor", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);

@@ -41,7 +41,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
@@ -49,6 +48,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
@@ -174,7 +174,7 @@ public class SpiderPreProcessVisitor extends PiMMDefaultVisitor {
     this.cfgOutPortIndices.put(aa, 0);
 
     // Visit configuration input ports to fill cfgInPortMap
-    visitAbstractVertex(aa);
+    visitConfigurable(aa);
     // Visit data ports to fill the dataPortMap
     for (final DataInputPort p : aa.getDataInputPorts()) {
       p.accept(this);
@@ -194,7 +194,7 @@ public class SpiderPreProcessVisitor extends PiMMDefaultVisitor {
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitAbstractVertex(org.ietr.preesm.experiment.model.pimm.AbstractVertex)
    */
   @Override
-  public void visitAbstractVertex(final AbstractVertex av) {
+  public void visitConfigurable(final Configurable av) {
     // Visit configuration input ports to fill cfgInPortMap
     for (final ConfigInputPort p : av.getConfigInputPorts()) {
       p.accept(this);
@@ -298,7 +298,7 @@ public class SpiderPreProcessVisitor extends PiMMDefaultVisitor {
     // Fix currentAbstractVertexName
     this.currentAbstractVertexName = "param_" + p.getName();
     // Visit configuration input ports to fill cfgInPortMap
-    visitAbstractVertex(p);
+    visitConfigurable(p);
     // Fill the setterMap
     this.setterMap.put(p, this.currentAbstractVertexName);
   }

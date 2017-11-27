@@ -324,7 +324,7 @@ public class PiParser {
    *          the deserialized {@link PiGraph}.
    * @return the {@link AbstractVertex} of the {@link Parameter}.
    */
-  protected AbstractVertex parseConfigInputInterface(final Element nodeElt, final PiGraph graph) {
+  protected Parameter parseConfigInputInterface(final Element nodeElt, final PiGraph graph) {
     // Instantiate the new Config Input Interface
     final Parameter param = PiMMFactory.eINSTANCE.createParameter();
     param.setConfigurationInterface(true);
@@ -355,7 +355,7 @@ public class PiParser {
     final String setterName = edgeElt.getAttribute(PiIdentifiers.DEPENDENCY_SOURCE);
     final String getterName = edgeElt.getAttribute(PiIdentifiers.DEPENDENCY_TARGET);
     final AbstractVertex source = graph.getVertexNamed(setterName);
-    Configurable target = graph.getVertexNamed(getterName);
+    AbstractVertex target = graph.getVertexNamed(getterName);
     if (source == null) {
       throw new RuntimeException("Dependency source vertex " + setterName + " does not exist.");
     }
@@ -401,7 +401,7 @@ public class PiParser {
 
     if ((target instanceof Parameter) || (target instanceof InterfaceActor) || (target instanceof Delay)) {
       final ConfigInputPort iCfgPort = PiMMFactory.eINSTANCE.createConfigInputPort();
-      target.getConfigInputPorts().add(iCfgPort);
+      ((Configurable) target).getConfigInputPorts().add(iCfgPort);
       dependency.setGetter(iCfgPort);
     }
 
@@ -564,7 +564,7 @@ public class PiParser {
   protected void parseNode(final Element nodeElt, final PiGraph graph) {
     // Identify if the node is an actor or a parameter
     final String nodeKind = nodeElt.getAttribute(PiIdentifiers.NODE_KIND);
-    AbstractVertex vertex;
+    Configurable vertex;
 
     switch (nodeKind) {
       case PiIdentifiers.ACTOR:
@@ -628,7 +628,7 @@ public class PiParser {
    *          the deserialized {@link PiGraph}.
    * @return the {@link AbstractVertex} of the {@link Parameter}.
    */
-  protected AbstractVertex parseParameter(final Element nodeElt, final PiGraph graph) {
+  protected Parameter parseParameter(final Element nodeElt, final PiGraph graph) {
     // Instantiate the new Parameter
     final Parameter param = PiMMFactory.eINSTANCE.createParameter();
     param.getValueExpression().setExpressionString(nodeElt.getAttribute(PiIdentifiers.PARAMETER_EXPRESSION));
@@ -670,7 +670,7 @@ public class PiParser {
    * @param vertex
    *          the {@link AbstractVertex} owning this {@link Port}
    */
-  protected void parsePort(final Element elt, final AbstractVertex vertex) {
+  protected void parsePort(final Element elt, final Configurable vertex) {
     final String portName = elt.getAttribute(PiIdentifiers.PORT_NAME);
     final String portKind = elt.getAttribute(PiIdentifiers.PORT_KIND);
 

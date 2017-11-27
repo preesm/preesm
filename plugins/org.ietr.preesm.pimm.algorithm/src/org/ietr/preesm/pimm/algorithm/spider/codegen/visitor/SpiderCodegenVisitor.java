@@ -569,8 +569,8 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
       typeSize = 1;
     }
 
-    final AbstractVertex srcActor = (AbstractVertex) srcPort.eContainer();
-    final AbstractVertex snkActor = (AbstractVertex) snkPort.eContainer();
+    final AbstractActor srcActor = (AbstractActor) srcPort.eContainer();
+    final AbstractActor snkActor = (AbstractActor) snkPort.eContainer();
 
     String srcProd = srcPort.getPortRateExpression().getExpressionString();
     String snkProd = snkPort.getPortRateExpression().getExpressionString();

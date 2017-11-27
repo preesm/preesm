@@ -141,9 +141,23 @@ public class PiMMSwitch<T> extends Switch<T> {
         }
         return result;
       }
+      case PiMMPackage.ABSTRACT_VERTEX: {
+        final AbstractVertex abstractVertex = (AbstractVertex) theEObject;
+        T result = caseAbstractVertex(abstractVertex);
+        if (result == null) {
+          result = casePiMMVisitable(abstractVertex);
+        }
+        if (result == null) {
+          result = defaultCase(theEObject);
+        }
+        return result;
+      }
       case PiMMPackage.CONFIGURABLE: {
         final Configurable configurable = (Configurable) theEObject;
         T result = caseConfigurable(configurable);
+        if (result == null) {
+          result = caseAbstractVertex(configurable);
+        }
         if (result == null) {
           result = caseParameterizable(configurable);
         }
@@ -155,31 +169,14 @@ public class PiMMSwitch<T> extends Switch<T> {
         }
         return result;
       }
-      case PiMMPackage.ABSTRACT_VERTEX: {
-        final AbstractVertex abstractVertex = (AbstractVertex) theEObject;
-        T result = caseAbstractVertex(abstractVertex);
-        if (result == null) {
-          result = caseConfigurable(abstractVertex);
-        }
-        if (result == null) {
-          result = caseParameterizable(abstractVertex);
-        }
-        if (result == null) {
-          result = casePiMMVisitable(abstractVertex);
-        }
-        if (result == null) {
-          result = defaultCase(theEObject);
-        }
-        return result;
-      }
       case PiMMPackage.ABSTRACT_ACTOR: {
         final AbstractActor abstractActor = (AbstractActor) theEObject;
         T result = caseAbstractActor(abstractActor);
         if (result == null) {
-          result = caseAbstractVertex(abstractActor);
+          result = caseConfigurable(abstractActor);
         }
         if (result == null) {
-          result = caseConfigurable(abstractActor);
+          result = caseAbstractVertex(abstractActor);
         }
         if (result == null) {
           result = caseParameterizable(abstractActor);
@@ -199,10 +196,10 @@ public class PiMMSwitch<T> extends Switch<T> {
           result = caseAbstractActor(piGraph);
         }
         if (result == null) {
-          result = caseAbstractVertex(piGraph);
+          result = caseConfigurable(piGraph);
         }
         if (result == null) {
-          result = caseConfigurable(piGraph);
+          result = caseAbstractVertex(piGraph);
         }
         if (result == null) {
           result = caseParameterizable(piGraph);
@@ -222,10 +219,10 @@ public class PiMMSwitch<T> extends Switch<T> {
           result = caseAbstractActor(executableActor);
         }
         if (result == null) {
-          result = caseAbstractVertex(executableActor);
+          result = caseConfigurable(executableActor);
         }
         if (result == null) {
-          result = caseConfigurable(executableActor);
+          result = caseAbstractVertex(executableActor);
         }
         if (result == null) {
           result = caseParameterizable(executableActor);
@@ -248,10 +245,10 @@ public class PiMMSwitch<T> extends Switch<T> {
           result = caseAbstractActor(actor);
         }
         if (result == null) {
-          result = caseAbstractVertex(actor);
+          result = caseConfigurable(actor);
         }
         if (result == null) {
-          result = caseConfigurable(actor);
+          result = caseAbstractVertex(actor);
         }
         if (result == null) {
           result = caseParameterizable(actor);
@@ -274,10 +271,10 @@ public class PiMMSwitch<T> extends Switch<T> {
           result = caseAbstractActor(broadcastActor);
         }
         if (result == null) {
-          result = caseAbstractVertex(broadcastActor);
+          result = caseConfigurable(broadcastActor);
         }
         if (result == null) {
-          result = caseConfigurable(broadcastActor);
+          result = caseAbstractVertex(broadcastActor);
         }
         if (result == null) {
           result = caseParameterizable(broadcastActor);
@@ -300,10 +297,10 @@ public class PiMMSwitch<T> extends Switch<T> {
           result = caseAbstractActor(joinActor);
         }
         if (result == null) {
-          result = caseAbstractVertex(joinActor);
+          result = caseConfigurable(joinActor);
         }
         if (result == null) {
-          result = caseConfigurable(joinActor);
+          result = caseAbstractVertex(joinActor);
         }
         if (result == null) {
           result = caseParameterizable(joinActor);
@@ -326,10 +323,10 @@ public class PiMMSwitch<T> extends Switch<T> {
           result = caseAbstractActor(forkActor);
         }
         if (result == null) {
-          result = caseAbstractVertex(forkActor);
+          result = caseConfigurable(forkActor);
         }
         if (result == null) {
-          result = caseConfigurable(forkActor);
+          result = caseAbstractVertex(forkActor);
         }
         if (result == null) {
           result = caseParameterizable(forkActor);
@@ -352,10 +349,10 @@ public class PiMMSwitch<T> extends Switch<T> {
           result = caseAbstractActor(roundBufferActor);
         }
         if (result == null) {
-          result = caseAbstractVertex(roundBufferActor);
+          result = caseConfigurable(roundBufferActor);
         }
         if (result == null) {
-          result = caseConfigurable(roundBufferActor);
+          result = caseAbstractVertex(roundBufferActor);
         }
         if (result == null) {
           result = caseParameterizable(roundBufferActor);
@@ -468,10 +465,10 @@ public class PiMMSwitch<T> extends Switch<T> {
           result = caseAbstractActor(interfaceActor);
         }
         if (result == null) {
-          result = caseAbstractVertex(interfaceActor);
+          result = caseConfigurable(interfaceActor);
         }
         if (result == null) {
-          result = caseConfigurable(interfaceActor);
+          result = caseAbstractVertex(interfaceActor);
         }
         if (result == null) {
           result = caseParameterizable(interfaceActor);
@@ -494,10 +491,10 @@ public class PiMMSwitch<T> extends Switch<T> {
           result = caseAbstractActor(dataInputInterface);
         }
         if (result == null) {
-          result = caseAbstractVertex(dataInputInterface);
+          result = caseConfigurable(dataInputInterface);
         }
         if (result == null) {
-          result = caseConfigurable(dataInputInterface);
+          result = caseAbstractVertex(dataInputInterface);
         }
         if (result == null) {
           result = caseParameterizable(dataInputInterface);
@@ -520,10 +517,10 @@ public class PiMMSwitch<T> extends Switch<T> {
           result = caseAbstractActor(dataOutputInterface);
         }
         if (result == null) {
-          result = caseAbstractVertex(dataOutputInterface);
+          result = caseConfigurable(dataOutputInterface);
         }
         if (result == null) {
-          result = caseConfigurable(dataOutputInterface);
+          result = caseAbstractVertex(dataOutputInterface);
         }
         if (result == null) {
           result = caseParameterizable(dataOutputInterface);
@@ -543,13 +540,13 @@ public class PiMMSwitch<T> extends Switch<T> {
           result = caseParameter(configInputInterface);
         }
         if (result == null) {
-          result = caseAbstractVertex(configInputInterface);
+          result = caseConfigurable(configInputInterface);
         }
         if (result == null) {
           result = caseISetter(configInputInterface);
         }
         if (result == null) {
-          result = caseConfigurable(configInputInterface);
+          result = caseAbstractVertex(configInputInterface);
         }
         if (result == null) {
           result = caseParameterizable(configInputInterface);
@@ -572,10 +569,10 @@ public class PiMMSwitch<T> extends Switch<T> {
           result = caseAbstractActor(configOutputInterface);
         }
         if (result == null) {
-          result = caseAbstractVertex(configOutputInterface);
+          result = caseConfigurable(configOutputInterface);
         }
         if (result == null) {
-          result = caseConfigurable(configOutputInterface);
+          result = caseAbstractVertex(configOutputInterface);
         }
         if (result == null) {
           result = caseParameterizable(configOutputInterface);
@@ -631,13 +628,13 @@ public class PiMMSwitch<T> extends Switch<T> {
         final Parameter parameter = (Parameter) theEObject;
         T result = caseParameter(parameter);
         if (result == null) {
-          result = caseAbstractVertex(parameter);
+          result = caseConfigurable(parameter);
         }
         if (result == null) {
           result = caseISetter(parameter);
         }
         if (result == null) {
-          result = caseConfigurable(parameter);
+          result = caseAbstractVertex(parameter);
         }
         if (result == null) {
           result = caseParameterizable(parameter);
@@ -674,6 +671,9 @@ public class PiMMSwitch<T> extends Switch<T> {
         T result = caseDelay(delay);
         if (result == null) {
           result = caseConfigurable(delay);
+        }
+        if (result == null) {
+          result = caseAbstractVertex(delay);
         }
         if (result == null) {
           result = caseParameterizable(delay);

@@ -72,7 +72,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  *
  * @generated
  */
-public class ParameterImpl extends AbstractVertexImpl implements Parameter {
+public class ParameterImpl extends ConfigurableImpl implements Parameter {
   /**
    * The cached value of the '{@link #getOutgoingDependencies() <em>Outgoing Dependencies</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
    *

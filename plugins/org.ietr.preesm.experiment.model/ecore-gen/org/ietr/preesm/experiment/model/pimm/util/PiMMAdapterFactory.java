@@ -138,13 +138,13 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
     }
 
     @Override
-    public Adapter caseConfigurable(final Configurable object) {
-      return createConfigurableAdapter();
+    public Adapter caseAbstractVertex(final AbstractVertex object) {
+      return createAbstractVertexAdapter();
     }
 
     @Override
-    public Adapter caseAbstractVertex(final AbstractVertex object) {
-      return createAbstractVertexAdapter();
+    public Adapter caseConfigurable(final Configurable object) {
+      return createConfigurableAdapter();
     }
 
     @Override

@@ -55,7 +55,7 @@ package org.ietr.preesm.experiment.model.pimm;
  * @model
  * @generated
  */
-public interface Parameter extends AbstractVertex, ISetter {
+public interface Parameter extends Configurable, ISetter {
 
   /**
    * <!-- begin-user-doc -->

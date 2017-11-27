@@ -110,30 +110,14 @@ public interface PiMMPackage extends EPackage {
   int PARAMETERIZABLE_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 0;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.Configurable <em>Configurable</em>}' class. <!-- begin-user-doc --> <!--
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigurableImpl <em>Configurable</em>}' class. <!-- begin-user-doc --> <!--
    * end-user-doc -->
    *
-   * @see org.ietr.preesm.experiment.model.pimm.Configurable
+   * @see org.ietr.preesm.experiment.model.pimm.impl.ConfigurableImpl
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getConfigurable()
    * @generated
    */
-  int CONFIGURABLE = 1;
-
-  /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int CONFIGURABLE__CONFIG_INPUT_PORTS = PiMMPackage.PARAMETERIZABLE_FEATURE_COUNT + 0;
-
-  /**
-   * The number of structural features of the '<em>Configurable</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int CONFIGURABLE_FEATURE_COUNT = PiMMPackage.PARAMETERIZABLE_FEATURE_COUNT + 1;
+  int CONFIGURABLE = 2;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl <em>Abstract Vertex</em>}' class. <!-- begin-user-doc -->
@@ -143,15 +127,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getAbstractVertex()
    * @generated
    */
-  int ABSTRACT_VERTEX = 2;
-
-  /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int ABSTRACT_VERTEX__CONFIG_INPUT_PORTS = PiMMPackage.CONFIGURABLE__CONFIG_INPUT_PORTS;
+  int ABSTRACT_VERTEX = 1;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -159,7 +135,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int ABSTRACT_VERTEX__NAME = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 0;
+  int ABSTRACT_VERTEX__NAME = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 0;
 
   /**
    * The number of structural features of the '<em>Abstract Vertex</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -167,7 +143,31 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int ABSTRACT_VERTEX_FEATURE_COUNT = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 1;
+  int ABSTRACT_VERTEX_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 1;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int CONFIGURABLE__NAME = PiMMPackage.ABSTRACT_VERTEX__NAME;
+
+  /**
+   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int CONFIGURABLE__CONFIG_INPUT_PORTS = PiMMPackage.ABSTRACT_VERTEX_FEATURE_COUNT + 0;
+
+  /**
+   * The number of structural features of the '<em>Configurable</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int CONFIGURABLE_FEATURE_COUNT = PiMMPackage.ABSTRACT_VERTEX_FEATURE_COUNT + 1;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl <em>Abstract Actor</em>}' class. <!-- begin-user-doc -->
@@ -180,20 +180,20 @@ public interface PiMMPackage extends EPackage {
   int ABSTRACT_ACTOR = 3;
 
   /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int ABSTRACT_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.ABSTRACT_VERTEX__CONFIG_INPUT_PORTS;
-
-  /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int ABSTRACT_ACTOR__NAME = PiMMPackage.ABSTRACT_VERTEX__NAME;
+  int ABSTRACT_ACTOR__NAME = PiMMPackage.CONFIGURABLE__NAME;
+
+  /**
+   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int ABSTRACT_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.CONFIGURABLE__CONFIG_INPUT_PORTS;
 
   /**
    * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -201,7 +201,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int ABSTRACT_ACTOR__DATA_INPUT_PORTS = PiMMPackage.ABSTRACT_VERTEX_FEATURE_COUNT + 0;
+  int ABSTRACT_ACTOR__DATA_INPUT_PORTS = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 0;
 
   /**
    * The feature id for the '<em><b>Data Output Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -209,7 +209,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int ABSTRACT_ACTOR__DATA_OUTPUT_PORTS = PiMMPackage.ABSTRACT_VERTEX_FEATURE_COUNT + 1;
+  int ABSTRACT_ACTOR__DATA_OUTPUT_PORTS = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 1;
 
   /**
    * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -217,7 +217,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS = PiMMPackage.ABSTRACT_VERTEX_FEATURE_COUNT + 2;
+  int ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 2;
 
   /**
    * The number of structural features of the '<em>Abstract Actor</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -225,7 +225,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int ABSTRACT_ACTOR_FEATURE_COUNT = PiMMPackage.ABSTRACT_VERTEX_FEATURE_COUNT + 3;
+  int ABSTRACT_ACTOR_FEATURE_COUNT = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 3;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl <em>Pi Graph</em>}' class. <!-- begin-user-doc --> <!--
@@ -238,20 +238,20 @@ public interface PiMMPackage extends EPackage {
   int PI_GRAPH = 4;
 
   /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int PI_GRAPH__CONFIG_INPUT_PORTS = PiMMPackage.ABSTRACT_ACTOR__CONFIG_INPUT_PORTS;
-
-  /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
   int PI_GRAPH__NAME = PiMMPackage.ABSTRACT_ACTOR__NAME;
+
+  /**
+   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int PI_GRAPH__CONFIG_INPUT_PORTS = PiMMPackage.ABSTRACT_ACTOR__CONFIG_INPUT_PORTS;
 
   /**
    * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -328,20 +328,20 @@ public interface PiMMPackage extends EPackage {
   int EXECUTABLE_ACTOR = 5;
 
   /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.ABSTRACT_ACTOR__CONFIG_INPUT_PORTS;
-
-  /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
   int EXECUTABLE_ACTOR__NAME = PiMMPackage.ABSTRACT_ACTOR__NAME;
+
+  /**
+   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.ABSTRACT_ACTOR__CONFIG_INPUT_PORTS;
 
   /**
    * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -386,20 +386,20 @@ public interface PiMMPackage extends EPackage {
   int ACTOR = 6;
 
   /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
-
-  /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
   int ACTOR__NAME = PiMMPackage.EXECUTABLE_ACTOR__NAME;
+
+  /**
+   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
 
   /**
    * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -677,20 +677,20 @@ public interface PiMMPackage extends EPackage {
   int BROADCAST_ACTOR = 7;
 
   /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int BROADCAST_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
-
-  /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
   int BROADCAST_ACTOR__NAME = PiMMPackage.EXECUTABLE_ACTOR__NAME;
+
+  /**
+   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int BROADCAST_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
 
   /**
    * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -735,20 +735,20 @@ public interface PiMMPackage extends EPackage {
   int JOIN_ACTOR = 8;
 
   /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int JOIN_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
-
-  /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
   int JOIN_ACTOR__NAME = PiMMPackage.EXECUTABLE_ACTOR__NAME;
+
+  /**
+   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int JOIN_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
 
   /**
    * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -793,20 +793,20 @@ public interface PiMMPackage extends EPackage {
   int FORK_ACTOR = 9;
 
   /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int FORK_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
-
-  /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
   int FORK_ACTOR__NAME = PiMMPackage.EXECUTABLE_ACTOR__NAME;
+
+  /**
+   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int FORK_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
 
   /**
    * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -851,20 +851,20 @@ public interface PiMMPackage extends EPackage {
   int ROUND_BUFFER_ACTOR = 10;
 
   /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int ROUND_BUFFER_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
-
-  /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
   int ROUND_BUFFER_ACTOR__NAME = PiMMPackage.EXECUTABLE_ACTOR__NAME;
+
+  /**
+   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int ROUND_BUFFER_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
 
   /**
    * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1203,20 +1203,20 @@ public interface PiMMPackage extends EPackage {
   int FIFO_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 5;
 
   /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int INTERFACE_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.ABSTRACT_ACTOR__CONFIG_INPUT_PORTS;
-
-  /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
   int INTERFACE_ACTOR__NAME = PiMMPackage.ABSTRACT_ACTOR__NAME;
+
+  /**
+   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int INTERFACE_ACTOR__CONFIG_INPUT_PORTS = PiMMPackage.ABSTRACT_ACTOR__CONFIG_INPUT_PORTS;
 
   /**
    * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1267,20 +1267,20 @@ public interface PiMMPackage extends EPackage {
   int INTERFACE_ACTOR_FEATURE_COUNT = PiMMPackage.ABSTRACT_ACTOR_FEATURE_COUNT + 2;
 
   /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int DATA_INPUT_INTERFACE__CONFIG_INPUT_PORTS = PiMMPackage.INTERFACE_ACTOR__CONFIG_INPUT_PORTS;
-
-  /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
   int DATA_INPUT_INTERFACE__NAME = PiMMPackage.INTERFACE_ACTOR__NAME;
+
+  /**
+   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int DATA_INPUT_INTERFACE__CONFIG_INPUT_PORTS = PiMMPackage.INTERFACE_ACTOR__CONFIG_INPUT_PORTS;
 
   /**
    * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1331,20 +1331,20 @@ public interface PiMMPackage extends EPackage {
   int DATA_INPUT_INTERFACE_FEATURE_COUNT = PiMMPackage.INTERFACE_ACTOR_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int DATA_OUTPUT_INTERFACE__CONFIG_INPUT_PORTS = PiMMPackage.INTERFACE_ACTOR__CONFIG_INPUT_PORTS;
-
-  /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
   int DATA_OUTPUT_INTERFACE__NAME = PiMMPackage.INTERFACE_ACTOR__NAME;
+
+  /**
+   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int DATA_OUTPUT_INTERFACE__CONFIG_INPUT_PORTS = PiMMPackage.INTERFACE_ACTOR__CONFIG_INPUT_PORTS;
 
   /**
    * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1395,20 +1395,20 @@ public interface PiMMPackage extends EPackage {
   int DATA_OUTPUT_INTERFACE_FEATURE_COUNT = PiMMPackage.INTERFACE_ACTOR_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int PARAMETER__CONFIG_INPUT_PORTS = PiMMPackage.ABSTRACT_VERTEX__CONFIG_INPUT_PORTS;
-
-  /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int PARAMETER__NAME = PiMMPackage.ABSTRACT_VERTEX__NAME;
+  int PARAMETER__NAME = PiMMPackage.CONFIGURABLE__NAME;
+
+  /**
+   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int PARAMETER__CONFIG_INPUT_PORTS = PiMMPackage.CONFIGURABLE__CONFIG_INPUT_PORTS;
 
   /**
    * The feature id for the '<em><b>Outgoing Dependencies</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1416,7 +1416,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int PARAMETER__OUTGOING_DEPENDENCIES = PiMMPackage.ABSTRACT_VERTEX_FEATURE_COUNT + 0;
+  int PARAMETER__OUTGOING_DEPENDENCIES = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 0;
 
   /**
    * The feature id for the '<em><b>Configuration Interface</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1424,7 +1424,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int PARAMETER__CONFIGURATION_INTERFACE = PiMMPackage.ABSTRACT_VERTEX_FEATURE_COUNT + 1;
+  int PARAMETER__CONFIGURATION_INTERFACE = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 1;
 
   /**
    * The feature id for the '<em><b>Graph Port</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1432,7 +1432,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int PARAMETER__GRAPH_PORT = PiMMPackage.ABSTRACT_VERTEX_FEATURE_COUNT + 2;
+  int PARAMETER__GRAPH_PORT = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 2;
 
   /**
    * The feature id for the '<em><b>Value Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1440,7 +1440,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int PARAMETER__VALUE_EXPRESSION = PiMMPackage.ABSTRACT_VERTEX_FEATURE_COUNT + 3;
+  int PARAMETER__VALUE_EXPRESSION = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 3;
 
   /**
    * The number of structural features of the '<em>Parameter</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1448,15 +1448,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int PARAMETER_FEATURE_COUNT = PiMMPackage.ABSTRACT_VERTEX_FEATURE_COUNT + 4;
-
-  /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int CONFIG_INPUT_INTERFACE__CONFIG_INPUT_PORTS = PiMMPackage.PARAMETER__CONFIG_INPUT_PORTS;
+  int PARAMETER_FEATURE_COUNT = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 4;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1465,6 +1457,14 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int CONFIG_INPUT_INTERFACE__NAME = PiMMPackage.PARAMETER__NAME;
+
+  /**
+   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int CONFIG_INPUT_INTERFACE__CONFIG_INPUT_PORTS = PiMMPackage.PARAMETER__CONFIG_INPUT_PORTS;
 
   /**
    * The feature id for the '<em><b>Outgoing Dependencies</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1507,20 +1507,20 @@ public interface PiMMPackage extends EPackage {
   int CONFIG_INPUT_INTERFACE_FEATURE_COUNT = PiMMPackage.PARAMETER_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int CONFIG_OUTPUT_INTERFACE__CONFIG_INPUT_PORTS = PiMMPackage.INTERFACE_ACTOR__CONFIG_INPUT_PORTS;
-
-  /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
   int CONFIG_OUTPUT_INTERFACE__NAME = PiMMPackage.INTERFACE_ACTOR__NAME;
+
+  /**
+   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int CONFIG_OUTPUT_INTERFACE__CONFIG_INPUT_PORTS = PiMMPackage.INTERFACE_ACTOR__CONFIG_INPUT_PORTS;
 
   /**
    * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1673,6 +1673,14 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int ISETTER_FEATURE_COUNT = 1;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int DELAY__NAME = PiMMPackage.CONFIGURABLE__NAME;
 
   /**
    * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2665,10 +2673,10 @@ public interface PiMMPackage extends EPackage {
     EClass PARAMETERIZABLE = PiMMPackage.eINSTANCE.getParameterizable();
 
     /**
-     * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.Configurable <em>Configurable</em>}' class. <!-- begin-user-doc --> <!--
-     * end-user-doc -->
+     * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigurableImpl <em>Configurable</em>}' class. <!-- begin-user-doc
+     * --> <!-- end-user-doc -->
      *
-     * @see org.ietr.preesm.experiment.model.pimm.Configurable
+     * @see org.ietr.preesm.experiment.model.pimm.impl.ConfigurableImpl
      * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getConfigurable()
      * @generated
      */

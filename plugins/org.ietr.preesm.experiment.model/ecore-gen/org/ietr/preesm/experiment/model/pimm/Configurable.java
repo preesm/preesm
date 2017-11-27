@@ -15,10 +15,10 @@ import org.eclipse.emf.common.util.EList;
  * </ul>
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getConfigurable()
- * @model interface="true" abstract="true"
+ * @model abstract="true"
  * @generated
  */
-public interface Configurable extends Parameterizable {
+public interface Configurable extends AbstractVertex, Parameterizable {
   /**
    * Returns the value of the '<em><b>Config Input Ports</b></em>' containment reference list. The list contents are of type
    * {@link org.ietr.preesm.experiment.model.pimm.ConfigInputPort}. It is bidirectional and its opposite is
@@ -46,5 +46,25 @@ public interface Configurable extends Parameterizable {
    */
   @Override
   EList<Parameter> getInputParameters();
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='final BasicEList&lt;Port&gt; result =
+   *        ECollections.newBasicEList();\nresult.addAll(getConfigInputPorts());\nreturn ECollections.unmodifiableEList(result);'"
+   * @generated
+   */
+  EList<Port> getAllConfigPorts();
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='final BasicEList&lt;Port&gt; result =
+   *        ECollections.newBasicEList();\nresult.addAll(super.getAllPorts());\nresult.addAll(getAllConfigPorts());\nreturn
+   *        ECollections.unmodifiableEList(result);'"
+   * @generated
+   */
+  @Override
+  EList<Port> getAllPorts();
 
 } // Configurable

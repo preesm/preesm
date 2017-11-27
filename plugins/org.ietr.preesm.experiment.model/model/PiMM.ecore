@@ -10,20 +10,34 @@
       </eAnnotations>
     </eOperations>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Configurable" abstract="true" interface="true"
-      eSuperTypes="#//Parameterizable">
+  <eClassifiers xsi:type="ecore:EClass" name="AbstractVertex" abstract="true" eSuperTypes="#//visitor/PiMMVisitable">
+    <eOperations name="getAllPorts" upperBound="-1" eType="#//Port">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="final BasicEList&lt;Port> result = ECollections.newBasicEList();&#xA;return ECollections.unmodifiableEList(result);"/>
+      </eAnnotations>
+    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Configurable" abstract="true" eSuperTypes="#//AbstractVertex #//Parameterizable">
     <eOperations name="getInputParameters" upperBound="-1" eType="#//Parameter">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
         <details key="body" value="final EList&lt;Parameter> result = ECollections.newBasicEList();&#xA;for (final ConfigInputPort in : getConfigInputPorts()) {&#xA;  final ISetter setter = in.getIncomingDependency().getSetter();&#xA;  if (setter instanceof Parameter) {&#xA;&#x9;result.add((Parameter) setter);&#xA;  }&#xA;}&#xA;return result;"/>
       </eAnnotations>
     </eOperations>
+    <eOperations name="getAllConfigPorts" upperBound="-1" eType="#//Port">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="final BasicEList&lt;Port> result = ECollections.newBasicEList();&#xA;result.addAll(getConfigInputPorts());&#xA;return ECollections.unmodifiableEList(result);"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="getAllPorts" upperBound="-1" eType="#//Port">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="final BasicEList&lt;Port> result = ECollections.newBasicEList();&#xA;result.addAll(super.getAllPorts());&#xA;result.addAll(getAllConfigPorts());&#xA;return ECollections.unmodifiableEList(result);"/>
+      </eAnnotations>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="configInputPorts" upperBound="-1"
         eType="#//ConfigInputPort" containment="true" eOpposite="#//ConfigInputPort/configurable"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="AbstractVertex" abstract="true" eSuperTypes="#//Configurable">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="AbstractActor" abstract="true" eSuperTypes="#//AbstractVertex">
+  <eClassifiers xsi:type="ecore:EClass" name="AbstractActor" abstract="true" eSuperTypes="#//Configurable">
     <eOperations name="getAllDataPorts" upperBound="-1" eType="#//DataPort">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
         <details key="body" value="final BasicEList&lt;DataPort> result = ECollections.newBasicEList();&#xA;result.addAll(getDataInputPorts());&#xA;result.addAll(getDataOutputPorts());&#xA;return ECollections.unmodifiableEList(result);"/>
@@ -31,7 +45,7 @@
     </eOperations>
     <eOperations name="getAllConfigPorts" upperBound="-1" eType="#//Port">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="body" value="final BasicEList&lt;Port> result = ECollections.newBasicEList();&#xA;result.addAll(getConfigOutputPorts());&#xA;result.addAll(getConfigInputPorts());&#xA;return ECollections.unmodifiableEList(result);"/>
+        <details key="body" value="final BasicEList&lt;Port> result = ECollections.newBasicEList();&#xA;result.addAll(super.getAllConfigPorts());&#xA;result.addAll(getConfigOutputPorts());&#xA;return ECollections.unmodifiableEList(result);"/>
       </eAnnotations>
     </eOperations>
     <eOperations name="getAllPorts" upperBound="-1" eType="#//Port">
@@ -184,7 +198,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="initPrototype" eType="#//FunctionPrototype"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Parameter" eSuperTypes="#//AbstractVertex #//ISetter">
+  <eClassifiers xsi:type="ecore:EClass" name="Parameter" eSuperTypes="#//Configurable #//ISetter">
     <eOperations name="isLocallyStatic" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
         <details key="body" value="// a parameter is static if all its setters are static (or it has no setter)&#xA;return getConfigInputPorts().stream().filter(Objects::nonNull).map(ConfigInputPort::getIncomingDependency).filter(Objects::nonNull)&#xA;        .map(Dependency::getSetter).filter(Objects::nonNull).allMatch(ISetter::isLocallyStatic);"/>

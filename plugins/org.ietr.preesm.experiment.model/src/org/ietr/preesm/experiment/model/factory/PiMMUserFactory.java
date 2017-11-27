@@ -37,6 +37,7 @@ package org.ietr.preesm.experiment.model.factory;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
@@ -65,8 +66,8 @@ public final class PiMMUserFactory {
   /**
    * Copy an existing Vertex
    */
-  public final AbstractVertex copy(final AbstractVertex vertex) {
-    return (AbstractVertex) PiMMUserFactory.copier.copy(vertex);
+  public final Configurable copy(final AbstractVertex vertex) {
+    return (Configurable) PiMMUserFactory.copier.copy(vertex);
   }
 
   /**
