@@ -37,9 +37,7 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
@@ -323,36 +321,6 @@ public abstract class AbstractActorImpl extends ConfigurableImpl implements Abst
     result.addAll(getAllConfigPorts());
     result.addAll(getAllDataPorts());
     return ECollections.unmodifiableEList(result);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#getPortNamed(java.lang.String)
-   */
-  @Override
-  public Port lookupPort(final String portName) {
-    // If the super method return a port, return it
-    final Port p = super.lookupPort(portName);
-    if (p != null) {
-      return p;
-    }
-
-    final List<Port> ports = new ArrayList<>(getDataInputPorts());
-
-    ports.addAll(getDataOutputPorts());
-    ports.addAll(getConfigOutputPorts());
-
-    for (final Object port : ports) {
-      final String name = ((Port) port).getName();
-      if ((name == null) && (portName == null)) {
-        return (Port) port;
-      }
-      if ((name != null) && name.equals(portName)) {
-        return (Port) port;
-      }
-    }
-    return null;
   }
 
   /*

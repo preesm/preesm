@@ -37,8 +37,7 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm.impl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
@@ -141,6 +140,17 @@ public abstract class AbstractVertexImpl extends EObjectImpl implements Abstract
   }
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public Port lookupPort(final String portName) {
+    return getAllPorts().stream().filter(Objects::nonNull)
+        .filter(p -> ((p.getName() == null) && (portName == null)) || ((p.getName() != null) && p.getName().equals(portName))).findFirst().orElse(null);
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @param featureID
@@ -231,27 +241,6 @@ public abstract class AbstractVertexImpl extends EObjectImpl implements Abstract
     result.append(this.name);
     result.append(')');
     return result.toString();
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.AbstractVertex#getPortNamed(java.lang.String)
-   */
-  @Override
-  public Port lookupPort(final String portName) {
-    final List<Port> ports = new ArrayList<>(getAllPorts());
-
-    for (final Object port : ports) {
-      final String name = ((Port) port).getName();
-      if ((name == null) && (portName == null)) {
-        return (Port) port;
-      }
-      if ((name != null) && name.equals(portName)) {
-        return (Port) port;
-      }
-    }
-    return null;
   }
 
   /*

@@ -50,6 +50,16 @@ public interface Configurable extends AbstractVertex, Parameterizable {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
+   * @model annotation="http://www.eclipse.org/emf/2002/GenModel body='return
+   *        getConfigInputPorts().stream().filter(Objects::nonNull).map(ConfigInputPort::getIncomingDependency).filter(Objects::nonNull).filter(it -&gt;
+   *        it.getSetter() == parameter).findFirst().map(Dependency::getGetter).orElse(null);'"
+   * @generated
+   */
+  Port lookupPortConnectedWithParameter(Parameter parameter);
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='final BasicEList&lt;Port&gt; result =
    *        ECollections.newBasicEList();\nresult.addAll(getConfigInputPorts());\nreturn ECollections.unmodifiableEList(result);'"
    * @generated
