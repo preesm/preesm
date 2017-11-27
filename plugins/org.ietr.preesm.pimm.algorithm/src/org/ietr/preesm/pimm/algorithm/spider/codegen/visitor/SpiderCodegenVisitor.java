@@ -626,9 +626,10 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
         append("\tPiSDFParam *" + paramName + " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName() + "\", \""
             + p.getValueExpression().getExpressionString() + "\");\n");
       }
-    } else if (p.getGraphPort() instanceof ConfigInputPort) {
+    } else if (p.isConfigurationInterface() && ((ConfigInputInterface) p).getGraphPort() instanceof ConfigInputPort) {
       /* HERITED */
-      append("\tPiSDFParam *" + paramName + " = Spider::addHeritedParam(graph, " + "\"" + p.getName() + "\", " + this.portMap.get(p.getGraphPort()) + ");\n");
+      append("\tPiSDFParam *" + paramName + " = Spider::addHeritedParam(graph, " + "\"" + p.getName() + "\", "
+          + this.portMap.get(((ConfigInputInterface) p).getGraphPort()) + ");\n");
     } else if (p.getConfigInputPorts().isEmpty()) {
       /* STATIC */
       append("\tPiSDFParam *" + paramName + " = Spider::addStaticParam(graph, " + "\"" + p.getName() + "\", " + p.getName() + ");\n");

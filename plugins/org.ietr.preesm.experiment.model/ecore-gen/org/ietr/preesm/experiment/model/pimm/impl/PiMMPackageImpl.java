@@ -895,24 +895,13 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the parameter graph port
-   * @generated
-   */
-  @Override
-  public EReference getParameter_GraphPort() {
-    return (EReference) this.parameterEClass.getEStructuralFeatures().get(0);
-  }
-
-  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   @Override
   public EReference getParameter_ValueExpression() {
-    return (EReference) this.parameterEClass.getEStructuralFeatures().get(1);
+    return (EReference) this.parameterEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -1262,6 +1251,16 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EReference getConfigInputInterface_GraphPort() {
+    return (EReference) this.configInputInterfaceEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @return the pi MM factory
@@ -1357,6 +1356,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     this.dataOutputInterfaceEClass = createEClass(PiMMPackage.DATA_OUTPUT_INTERFACE);
 
     this.configInputInterfaceEClass = createEClass(PiMMPackage.CONFIG_INPUT_INTERFACE);
+    createEReference(this.configInputInterfaceEClass, PiMMPackage.CONFIG_INPUT_INTERFACE__GRAPH_PORT);
 
     this.configOutputInterfaceEClass = createEClass(PiMMPackage.CONFIG_OUTPUT_INTERFACE);
 
@@ -1370,7 +1370,6 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     createEReference(this.cHeaderRefinementEClass, PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE);
 
     this.parameterEClass = createEClass(PiMMPackage.PARAMETER);
-    createEReference(this.parameterEClass, PiMMPackage.PARAMETER__GRAPH_PORT);
     createEReference(this.parameterEClass, PiMMPackage.PARAMETER__VALUE_EXPRESSION);
 
     this.dependencyEClass = createEClass(PiMMPackage.DEPENDENCY);
@@ -1649,6 +1648,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     initEClass(this.configInputInterfaceEClass, ConfigInputInterface.class, "ConfigInputInterface", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getConfigInputInterface_GraphPort(), getConfigInputPort(), null, "graphPort", null, 1, 1, ConfigInputInterface.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES,
+        !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
     addEOperation(this.configInputInterfaceEClass, this.ecorePackage.getEBoolean(), "isLocallyStatic", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
@@ -1688,9 +1690,6 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     initEClass(this.parameterEClass, Parameter.class, "Parameter", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getParameter_GraphPort(), getConfigInputPort(), null, "graphPort", null, 1, 1, Parameter.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
     initEReference(getParameter_ValueExpression(), getExpression(), null, "valueExpression", null, 1, 1, Parameter.class, !EPackageImpl.IS_TRANSIENT,
         !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);

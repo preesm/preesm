@@ -76,6 +76,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
@@ -524,7 +525,7 @@ public class ExportSVGFeature extends AbstractCustomFeature {
      */
     @Override
     public Integer caseParameter(final Parameter p) {
-      if (p.isLocallyStatic() && (p.getGraphPort() instanceof ConfigInputPort)) {
+      if (p.isLocallyStatic() && (p.isConfigurationInterface() && ((ConfigInputInterface) p).getGraphPort() instanceof ConfigInputPort)) {
         return caseConfigInputInterface(p);
       }
 

@@ -1419,20 +1419,12 @@ public interface PiMMPackage extends EPackage {
   int PARAMETER__OUTGOING_DEPENDENCIES = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Graph Port</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int PARAMETER__GRAPH_PORT = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 1;
-
-  /**
    * The feature id for the '<em><b>Value Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int PARAMETER__VALUE_EXPRESSION = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 2;
+  int PARAMETER__VALUE_EXPRESSION = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 1;
 
   /**
    * The number of structural features of the '<em>Parameter</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1440,7 +1432,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int PARAMETER_FEATURE_COUNT = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 3;
+  int PARAMETER_FEATURE_COUNT = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 2;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1467,14 +1459,6 @@ public interface PiMMPackage extends EPackage {
   int CONFIG_INPUT_INTERFACE__OUTGOING_DEPENDENCIES = PiMMPackage.PARAMETER__OUTGOING_DEPENDENCIES;
 
   /**
-   * The feature id for the '<em><b>Graph Port</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int CONFIG_INPUT_INTERFACE__GRAPH_PORT = PiMMPackage.PARAMETER__GRAPH_PORT;
-
-  /**
    * The feature id for the '<em><b>Value Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
@@ -1483,12 +1467,20 @@ public interface PiMMPackage extends EPackage {
   int CONFIG_INPUT_INTERFACE__VALUE_EXPRESSION = PiMMPackage.PARAMETER__VALUE_EXPRESSION;
 
   /**
+   * The feature id for the '<em><b>Graph Port</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int CONFIG_INPUT_INTERFACE__GRAPH_PORT = PiMMPackage.PARAMETER_FEATURE_COUNT + 0;
+
+  /**
    * The number of structural features of the '<em>Config Input Interface</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int CONFIG_INPUT_INTERFACE_FEATURE_COUNT = PiMMPackage.PARAMETER_FEATURE_COUNT + 0;
+  int CONFIG_INPUT_INTERFACE_FEATURE_COUNT = PiMMPackage.PARAMETER_FEATURE_COUNT + 1;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2260,17 +2252,6 @@ public interface PiMMPackage extends EPackage {
   EClass getParameter();
 
   /**
-   * Returns the meta object for the reference '{@link org.ietr.preesm.experiment.model.pimm.Parameter#getGraphPort <em>Graph Port</em>}'. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
-   *
-   * @return the meta object for the reference '<em>Graph Port</em>'.
-   * @see org.ietr.preesm.experiment.model.pimm.Parameter#getGraphPort()
-   * @see #getParameter()
-   * @generated
-   */
-  EReference getParameter_GraphPort();
-
-  /**
    * Returns the meta object for the containment reference '{@link org.ietr.preesm.experiment.model.pimm.Parameter#getValueExpression <em>Value
    * Expression</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -2613,6 +2594,17 @@ public interface PiMMPackage extends EPackage {
    * @generated
    */
   EClass getConfigInputInterface();
+
+  /**
+   * Returns the meta object for the reference '{@link org.ietr.preesm.experiment.model.pimm.ConfigInputInterface#getGraphPort <em>Graph Port</em>}'. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @return the meta object for the reference '<em>Graph Port</em>'.
+   * @see org.ietr.preesm.experiment.model.pimm.ConfigInputInterface#getGraphPort()
+   * @see #getConfigInputInterface()
+   * @generated
+   */
+  EReference getConfigInputInterface_GraphPort();
 
   /**
    * Returns the factory that creates the instances of the model. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -3001,13 +2993,6 @@ public interface PiMMPackage extends EPackage {
     EClass PARAMETER = PiMMPackage.eINSTANCE.getParameter();
 
     /**
-     * The meta object literal for the '<em><b>Graph Port</b></em>' reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    EReference PARAMETER__GRAPH_PORT = PiMMPackage.eINSTANCE.getParameter_GraphPort();
-
-    /**
      * The meta object literal for the '<em><b>Value Expression</b></em>' containment reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
      * @generated
@@ -3287,6 +3272,13 @@ public interface PiMMPackage extends EPackage {
      * @generated
      */
     EClass CONFIG_INPUT_INTERFACE = PiMMPackage.eINSTANCE.getConfigInputInterface();
+
+    /**
+     * The meta object literal for the '<em><b>Graph Port</b></em>' reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
+     * @generated
+     */
+    EReference CONFIG_INPUT_INTERFACE__GRAPH_PORT = PiMMPackage.eINSTANCE.getConfigInputInterface_GraphPort();
 
   }
 

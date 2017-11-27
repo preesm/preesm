@@ -632,9 +632,6 @@ public class PiParser {
     final Parameter param = PiMMFactory.eINSTANCE.createParameter();
     param.getValueExpression().setExpressionString(nodeElt.getAttribute(PiIdentifiers.PARAMETER_EXPRESSION));
 
-    param.setGraphPort(null); // No port of the graph corresponds to this
-    // parameter
-
     // Get the actor properties
     param.setName(nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME));
 

@@ -65,7 +65,6 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#getOutgoingDependencies <em>Outgoing Dependencies</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#getGraphPort <em>Graph Port</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#getValueExpression <em>Value Expression</em>}</li>
  * </ul>
  *
@@ -83,15 +82,6 @@ public class ParameterImpl extends ConfigurableImpl implements Parameter {
 
   /** The Constant LOCALLY_STATIC_EDEFAULT. */
   protected static final boolean LOCALLY_STATIC_EDEFAULT = false;
-
-  /**
-   * The cached value of the '{@link #getGraphPort() <em>Graph Port</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see #getGraphPort()
-   * @generated
-   * @ordered
-   */
-  protected ConfigInputPort graphPort;
 
   /**
    * The cached value of the '{@link #getValueExpression() <em>Value Expression</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -134,52 +124,6 @@ public class ParameterImpl extends ConfigurableImpl implements Parameter {
           PiMMPackage.DEPENDENCY__SETTER);
     }
     return this.outgoingDependencies;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the graph port
-   * @generated
-   */
-  @Override
-  public ConfigInputPort getGraphPort() {
-    if ((this.graphPort != null) && this.graphPort.eIsProxy()) {
-      final InternalEObject oldGraphPort = (InternalEObject) this.graphPort;
-      this.graphPort = (ConfigInputPort) eResolveProxy(oldGraphPort);
-      if (this.graphPort != oldGraphPort) {
-        if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.PARAMETER__GRAPH_PORT, oldGraphPort, this.graphPort));
-        }
-      }
-    }
-    return this.graphPort;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the config input port
-   * @generated
-   */
-  public ConfigInputPort basicGetGraphPort() {
-    return this.graphPort;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @param newGraphPort
-   *          the new graph port
-   * @generated
-   */
-  @Override
-  public void setGraphPort(final ConfigInputPort newGraphPort) {
-    final ConfigInputPort oldGraphPort = this.graphPort;
-    this.graphPort = newGraphPort;
-    if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.PARAMETER__GRAPH_PORT, oldGraphPort, this.graphPort));
-    }
   }
 
   /**
@@ -335,11 +279,6 @@ public class ParameterImpl extends ConfigurableImpl implements Parameter {
     switch (featureID) {
       case PiMMPackage.PARAMETER__OUTGOING_DEPENDENCIES:
         return getOutgoingDependencies();
-      case PiMMPackage.PARAMETER__GRAPH_PORT:
-        if (resolve) {
-          return getGraphPort();
-        }
-        return basicGetGraphPort();
       case PiMMPackage.PARAMETER__VALUE_EXPRESSION:
         return getValueExpression();
     }
@@ -363,9 +302,6 @@ public class ParameterImpl extends ConfigurableImpl implements Parameter {
         getOutgoingDependencies().clear();
         getOutgoingDependencies().addAll((Collection<? extends Dependency>) newValue);
         return;
-      case PiMMPackage.PARAMETER__GRAPH_PORT:
-        setGraphPort((ConfigInputPort) newValue);
-        return;
       case PiMMPackage.PARAMETER__VALUE_EXPRESSION:
         setValueExpression((Expression) newValue);
         return;
@@ -385,9 +321,6 @@ public class ParameterImpl extends ConfigurableImpl implements Parameter {
     switch (featureID) {
       case PiMMPackage.PARAMETER__OUTGOING_DEPENDENCIES:
         getOutgoingDependencies().clear();
-        return;
-      case PiMMPackage.PARAMETER__GRAPH_PORT:
-        setGraphPort((ConfigInputPort) null);
         return;
       case PiMMPackage.PARAMETER__VALUE_EXPRESSION:
         setValueExpression((Expression) null);
@@ -409,8 +342,6 @@ public class ParameterImpl extends ConfigurableImpl implements Parameter {
     switch (featureID) {
       case PiMMPackage.PARAMETER__OUTGOING_DEPENDENCIES:
         return (this.outgoingDependencies != null) && !this.outgoingDependencies.isEmpty();
-      case PiMMPackage.PARAMETER__GRAPH_PORT:
-        return this.graphPort != null;
       case PiMMPackage.PARAMETER__VALUE_EXPRESSION:
         return this.valueExpression != null;
     }
@@ -438,19 +369,6 @@ public class ParameterImpl extends ConfigurableImpl implements Parameter {
       }
     }
     return super.eBaseStructuralFeatureID(derivedFeatureID, baseClass);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#setName(java.lang.String)
-   */
-  @Override
-  public void setName(final String newName) {
-    super.setName(newName);
-    if (isConfigurationInterface() && (getGraphPort() != null)) {
-      getGraphPort().setName(newName);
-    }
   }
 
   /**

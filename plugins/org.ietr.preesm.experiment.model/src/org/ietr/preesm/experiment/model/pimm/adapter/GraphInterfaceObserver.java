@@ -42,6 +42,7 @@ import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
@@ -95,7 +96,7 @@ public class GraphInterfaceObserver extends AdapterImpl {
 
     // If the added vertex is an Parameter and an Interface of the graph
     if ((vertex instanceof Parameter) && ((Parameter) vertex).isConfigurationInterface()) {
-      addParamInterfaceActor((Parameter) vertex, graph);
+      addParamInterfaceActor((ConfigInputInterface) vertex, graph);
       return;
     }
   }
@@ -142,7 +143,7 @@ public class GraphInterfaceObserver extends AdapterImpl {
    * @param graph
    *          the observed {@link PiGraph}
    */
-  protected void addParamInterfaceActor(final Parameter param, final PiGraph graph) {
+  protected void addParamInterfaceActor(final ConfigInputInterface param, final PiGraph graph) {
     final ConfigInputPort port = PiMMFactory.eINSTANCE.createConfigInputPort();
     port.setName(param.getName());
     graph.getConfigInputPorts().add(port);
@@ -227,7 +228,7 @@ public class GraphInterfaceObserver extends AdapterImpl {
     }
 
     if ((vertex instanceof Parameter) && ((Parameter) vertex).isConfigurationInterface()) {
-      removeParamInterfaceActor((Parameter) vertex, graph);
+      removeParamInterfaceActor((ConfigInputInterface) vertex, graph);
       return;
     }
   }
@@ -256,7 +257,7 @@ public class GraphInterfaceObserver extends AdapterImpl {
    * @param graph
    *          the observed {@link PiGraph}
    */
-  protected void removeParamInterfaceActor(final Parameter param, final PiGraph graph) {
+  protected void removeParamInterfaceActor(final ConfigInputInterface param, final PiGraph graph) {
     graph.getConfigInputPorts().remove(param.getGraphPort());
   }
 }
