@@ -1691,12 +1691,12 @@ public interface PiMMPackage extends EPackage {
   int DELAY__CONFIG_INPUT_PORTS = PiMMPackage.CONFIGURABLE__CONFIG_INPUT_PORTS;
 
   /**
-   * The feature id for the '<em><b>Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The feature id for the '<em><b>Size Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int DELAY__EXPRESSION = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 0;
+  int DELAY__SIZE_EXPRESSION = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 0;
 
   /**
    * The number of structural features of the '<em>Delay</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2370,15 +2370,15 @@ public interface PiMMPackage extends EPackage {
   EClass getDelay();
 
   /**
-   * Returns the meta object for the containment reference '{@link org.ietr.preesm.experiment.model.pimm.Delay#getExpression <em>Expression</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the containment reference '{@link org.ietr.preesm.experiment.model.pimm.Delay#getSizeExpression <em>Size Expression</em>}'.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the meta object for the containment reference '<em>Expression</em>'.
-   * @see org.ietr.preesm.experiment.model.pimm.Delay#getExpression()
+   * @return the meta object for the containment reference '<em>Size Expression</em>'.
+   * @see org.ietr.preesm.experiment.model.pimm.Delay#getSizeExpression()
    * @see #getDelay()
    * @generated
    */
-  EReference getDelay_Expression();
+  EReference getDelay_SizeExpression();
 
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Expression <em>Expression</em>}'. <!-- begin-user-doc --> <!-- end-user-doc
@@ -3100,11 +3100,11 @@ public interface PiMMPackage extends EPackage {
     EClass DELAY = PiMMPackage.eINSTANCE.getDelay();
 
     /**
-     * The meta object literal for the '<em><b>Expression</b></em>' containment reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * The meta object literal for the '<em><b>Size Expression</b></em>' containment reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
      * @generated
      */
-    EReference DELAY__EXPRESSION = PiMMPackage.eINSTANCE.getDelay_Expression();
+    EReference DELAY__SIZE_EXPRESSION = PiMMPackage.eINSTANCE.getDelay_SizeExpression();
 
     /**
      * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl <em>Expression</em>}' class. <!-- begin-user-doc -->

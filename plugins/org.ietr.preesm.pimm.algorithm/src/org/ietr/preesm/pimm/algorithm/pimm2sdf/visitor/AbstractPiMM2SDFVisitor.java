@@ -380,7 +380,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
       if (f.getDelay() != null) {
         // Evaluate the expression wrt. the current values of the
         // parameters
-        final String piDelay = f.getDelay().getExpression().evaluate();
+        final String piDelay = f.getDelay().getSizeExpression().evaluate();
         delay = new SDFExpressionEdgePropertyType(createValue(piDelay));
       } else {
         delay = new SDFExpressionEdgePropertyType(new ConstantValue(0));

@@ -276,8 +276,8 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 
       if (bo instanceof Delay) {
         final Delay delay = (Delay) bo;
-        if (delay.getExpression().getExpressionString().compareTo(this.txtExpression.getText()) != 0) {
-          setNewExpression(delay.getExpression(), this.txtExpression.getText());
+        if (delay.getSizeExpression().getExpressionString().compareTo(this.txtExpression.getText()) != 0) {
+          setNewExpression(delay.getSizeExpression(), this.txtExpression.getText());
           getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
         }
       } // end Delay
@@ -329,7 +329,7 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
         if (((Delay) businessObject).eContainer() instanceof Fifo) {
           final Fifo fifo = (Fifo) ((Delay) businessObject).eContainer();
           elementName = fifo.getId();
-          elementValueExpression = fifo.getDelay().getExpression();
+          elementValueExpression = fifo.getDelay().getSizeExpression();
         }
       } else {
         throw new UnsupportedOperationException();

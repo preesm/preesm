@@ -94,7 +94,7 @@ public class DelayDecorators {
   protected static IDecorator getExpressionDecorator(final Delay delay, final PictogramElement pe) {
     final ImageDecorator imageRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
 
-    final Expression expression = delay.getExpression();
+    final Expression expression = delay.getSizeExpression();
     try {
       expression.evaluate();
     } catch (final ExpressionEvaluationException e) {

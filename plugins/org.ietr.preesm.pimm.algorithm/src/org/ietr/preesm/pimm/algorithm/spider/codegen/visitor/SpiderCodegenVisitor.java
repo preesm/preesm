@@ -588,7 +588,7 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
 
     String delay = "0";
     if (f.getDelay() != null) {
-      delay = f.getDelay().getExpression().getExpressionString();
+      delay = f.getDelay().getSizeExpression().getExpressionString();
 
       for (final ConfigInputPort cfgPort : f.getDelay().getConfigInputPorts()) {
         final String paramName = ((Parameter) cfgPort.getIncomingDependency().getSetter()).getName();

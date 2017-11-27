@@ -240,7 +240,7 @@
         eType="#//Dependency" eOpposite="#//Dependency/setter"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Delay" eSuperTypes="#//Configurable">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sizeExpression" lowerBound="1"
         eType="#//Expression" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Expression" eSuperTypes="#//visitor/PiMMVisitable">

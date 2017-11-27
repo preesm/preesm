@@ -993,13 +993,12 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the delay expression
    * @generated
    */
   @Override
-  public EReference getDelay_Expression() {
+  public EReference getDelay_SizeExpression() {
     return (EReference) this.delayEClass.getEStructuralFeatures().get(0);
   }
 
@@ -1394,7 +1393,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     createEReference(this.iSetterEClass, PiMMPackage.ISETTER__OUTGOING_DEPENDENCIES);
 
     this.delayEClass = createEClass(PiMMPackage.DELAY);
-    createEReference(this.delayEClass, PiMMPackage.DELAY__EXPRESSION);
+    createEReference(this.delayEClass, PiMMPackage.DELAY__SIZE_EXPRESSION);
 
     this.expressionEClass = createEClass(PiMMPackage.EXPRESSION);
     createEAttribute(this.expressionEClass, PiMMPackage.EXPRESSION__EXPRESSION_STRING);
@@ -1729,9 +1728,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     addEOperation(this.iSetterEClass, this.ecorePackage.getEBoolean(), "isLocallyStatic", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     initEClass(this.delayEClass, Delay.class, "Delay", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getDelay_Expression(), getExpression(), null, "expression", null, 1, 1, Delay.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-        EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getDelay_SizeExpression(), getExpression(), null, "sizeExpression", null, 1, 1, Delay.class, !EPackageImpl.IS_TRANSIENT,
+        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
+        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
     initEClass(this.expressionEClass, Expression.class, "Expression", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);

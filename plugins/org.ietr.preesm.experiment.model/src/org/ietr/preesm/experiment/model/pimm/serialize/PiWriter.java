@@ -354,7 +354,7 @@ public class PiWriter {
    */
   protected void writeDelay(final Element fifoElt, final Delay delay) {
     writeDataElt(fifoElt, PiIdentifiers.DELAY, null);
-    fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, delay.getExpression().getExpressionString());
+    fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, delay.getSizeExpression().getExpressionString());
     // TODO when delay class will be updated, modify the writer/parser.
     // Maybe a specific element will be needed to store the Expression
     // associated to a delay as well as it .h file storing the default value

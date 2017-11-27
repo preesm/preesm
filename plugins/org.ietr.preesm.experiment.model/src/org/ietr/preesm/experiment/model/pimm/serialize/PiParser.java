@@ -490,7 +490,7 @@ public class PiParser {
       // TODO replace with a parse Delay if delay have their own element
       // in the future
       final Delay delay = PiMMFactory.eINSTANCE.createDelay();
-      delay.getExpression().setExpressionString(edgeElt.getAttribute(PiIdentifiers.DELAY_EXPRESSION));
+      delay.getSizeExpression().setExpressionString(edgeElt.getAttribute(PiIdentifiers.DELAY_EXPRESSION));
       fifo.setDelay(delay);
     }
 
