@@ -38,6 +38,7 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import java.util.Collection;
+import java.util.Objects;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
@@ -125,6 +126,17 @@ public abstract class ParameterizableImpl extends EObjectImpl implements Paramet
       }
     }
     return result;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public boolean isLocallyStatic() {
+    // a Parameterizable is static if all its parameters are static (or it has no parameter)
+    return getInputParameters().stream().filter(Objects::nonNull).allMatch(Parameter::isLocallyStatic);
   }
 
   /**

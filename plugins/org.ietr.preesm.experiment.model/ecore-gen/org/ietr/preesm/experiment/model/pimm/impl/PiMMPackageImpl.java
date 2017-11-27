@@ -1468,6 +1468,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     addEOperation(this.parameterizableEClass, getParameter(), "getInputParameters", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
+    addEOperation(this.parameterizableEClass, this.ecorePackage.getEBoolean(), "isLocallyStatic", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
     initEClass(this.abstractVertexEClass, AbstractVertex.class, "AbstractVertex", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getAbstractVertex_Name(), this.ecorePackage.getEString(), "name", null, 1, 1, AbstractVertex.class, !EPackageImpl.IS_TRANSIENT,

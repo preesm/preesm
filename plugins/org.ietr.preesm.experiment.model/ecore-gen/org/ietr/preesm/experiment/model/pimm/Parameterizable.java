@@ -80,4 +80,13 @@ public interface Parameterizable extends PiMMVisitable {
    */
   EList<Parameter> getInputParameters();
 
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='// a Parameterizable is static if all its parameters are static (or it
+   *        has no parameter)\nreturn getInputParameters().stream().filter(Objects::nonNull).allMatch(Parameter::isLocallyStatic);'"
+   * @generated
+   */
+  boolean isLocallyStatic();
+
 } // Parameterizable
