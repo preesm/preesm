@@ -1460,7 +1460,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     this.dataPortEClass.getESuperTypes().add(getPort());
 
     // Initialize classes and features; add operations and parameters
-    initEClass(this.parameterizableEClass, Parameterizable.class, "Parameterizable", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
+    initEClass(this.parameterizableEClass, Parameterizable.class, "Parameterizable", EPackageImpl.IS_ABSTRACT, EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
     initEReference(getParameterizable_ConfigInputPorts(), getConfigInputPort(), null, "configInputPorts", null, 0, -1, Parameterizable.class,
         !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES,

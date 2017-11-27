@@ -92,10 +92,10 @@ public interface PiMMPackage extends EPackage {
   PiMMPackage eINSTANCE = org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl.init();
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterizableImpl <em>Parameterizable</em>}' class. <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.Parameterizable <em>Parameterizable</em>}' class. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.ParameterizableImpl
+   * @see org.ietr.preesm.experiment.model.pimm.Parameterizable
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getParameterizable()
    * @generated
    */

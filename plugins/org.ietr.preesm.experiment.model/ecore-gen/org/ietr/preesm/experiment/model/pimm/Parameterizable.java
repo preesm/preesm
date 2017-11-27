@@ -51,7 +51,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
  * </ul>
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameterizable()
- * @model abstract="true"
+ * @model interface="true" abstract="true"
  * @generated
  */
 public interface Parameterizable extends PiMMVisitable {

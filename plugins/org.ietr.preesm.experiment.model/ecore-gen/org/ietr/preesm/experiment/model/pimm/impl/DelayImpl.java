@@ -38,13 +38,23 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm.impl;
 
+import java.util.Collection;
+import java.util.Objects;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+import org.eclipse.emf.common.util.ECollections;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.emf.ecore.impl.EObjectImpl;
+import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.InternalEList;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
+import org.ietr.preesm.experiment.model.pimm.ISetter;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
@@ -56,13 +66,23 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  * The following features are implemented:
  * </p>
  * <ul>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DelayImpl#getConfigInputPorts <em>Config Input Ports</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DelayImpl#getExpression <em>Expression</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class DelayImpl extends ParameterizableImpl implements Delay {
+public class DelayImpl extends EObjectImpl implements Delay {
 
+  /**
+   * The cached value of the '{@link #getConfigInputPorts() <em>Config Input Ports</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
+   *
+   * @see #getConfigInputPorts()
+   * @generated
+   * @ordered
+   */
+  protected EList<ConfigInputPort> configInputPorts;
   /**
    * The cached value of the '{@link #getExpression() <em>Expression</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -70,7 +90,7 @@ public class DelayImpl extends ParameterizableImpl implements Delay {
    * @generated
    * @ordered
    */
-  protected Expression expression;
+  protected Expression             expression;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
@@ -90,6 +110,19 @@ public class DelayImpl extends ParameterizableImpl implements Delay {
   @Override
   protected EClass eStaticClass() {
     return PiMMPackage.Literals.DELAY;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EList<ConfigInputPort> getConfigInputPorts() {
+    if (this.configInputPorts == null) {
+      this.configInputPorts = new EObjectContainmentEList<>(ConfigInputPort.class, this, PiMMPackage.DELAY__CONFIG_INPUT_PORTS);
+    }
+    return this.configInputPorts;
   }
 
   /**
@@ -154,6 +187,34 @@ public class DelayImpl extends ParameterizableImpl implements Delay {
   }
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EList<Parameter> getInputParameters() {
+    final EList<Parameter> result = ECollections.newBasicEList();
+    for (final ConfigInputPort in : getConfigInputPorts()) {
+      final ISetter setter = in.getIncomingDependency().getSetter();
+      if (setter instanceof Parameter) {
+        result.add((Parameter) setter);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public boolean isLocallyStatic() {
+    // a Parameterizable is static if all its parameters are static (or it has no parameter)
+    return getInputParameters().stream().filter(Objects::nonNull).allMatch(Parameter::isLocallyStatic);
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @param otherEnd
@@ -168,6 +229,8 @@ public class DelayImpl extends ParameterizableImpl implements Delay {
   @Override
   public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
     switch (featureID) {
+      case PiMMPackage.DELAY__CONFIG_INPUT_PORTS:
+        return ((InternalEList<?>) getConfigInputPorts()).basicRemove(otherEnd, msgs);
       case PiMMPackage.DELAY__EXPRESSION:
         return basicSetExpression(null, msgs);
     }
@@ -189,6 +252,8 @@ public class DelayImpl extends ParameterizableImpl implements Delay {
   @Override
   public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
     switch (featureID) {
+      case PiMMPackage.DELAY__CONFIG_INPUT_PORTS:
+        return getConfigInputPorts();
       case PiMMPackage.DELAY__EXPRESSION:
         return getExpression();
     }
@@ -204,9 +269,14 @@ public class DelayImpl extends ParameterizableImpl implements Delay {
    *          the new value
    * @generated
    */
+  @SuppressWarnings("unchecked")
   @Override
   public void eSet(final int featureID, final Object newValue) {
     switch (featureID) {
+      case PiMMPackage.DELAY__CONFIG_INPUT_PORTS:
+        getConfigInputPorts().clear();
+        getConfigInputPorts().addAll((Collection<? extends ConfigInputPort>) newValue);
+        return;
       case PiMMPackage.DELAY__EXPRESSION:
         setExpression((Expression) newValue);
         return;
@@ -224,6 +294,9 @@ public class DelayImpl extends ParameterizableImpl implements Delay {
   @Override
   public void eUnset(final int featureID) {
     switch (featureID) {
+      case PiMMPackage.DELAY__CONFIG_INPUT_PORTS:
+        getConfigInputPorts().clear();
+        return;
       case PiMMPackage.DELAY__EXPRESSION:
         setExpression((Expression) null);
         return;
@@ -242,6 +315,8 @@ public class DelayImpl extends ParameterizableImpl implements Delay {
   @Override
   public boolean eIsSet(final int featureID) {
     switch (featureID) {
+      case PiMMPackage.DELAY__CONFIG_INPUT_PORTS:
+        return (this.configInputPorts != null) && !this.configInputPorts.isEmpty();
       case PiMMPackage.DELAY__EXPRESSION:
         return this.expression != null;
     }
