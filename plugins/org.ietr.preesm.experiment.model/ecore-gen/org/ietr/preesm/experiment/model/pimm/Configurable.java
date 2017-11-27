@@ -39,9 +39,9 @@ public interface Configurable extends AbstractVertex, Parameterizable {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='final EList&lt;Parameter&gt; result = ECollections.newBasicEList();\nfor
-   *        (final ConfigInputPort in : getConfigInputPorts()) {\n final ISetter setter = in.getIncomingDependency().getSetter();\n if (setter instanceof
-   *        Parameter) {\n\tresult.add((Parameter) setter);\n }\n}\nreturn result;'"
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='final List&lt;Parameter&gt; collect =
+   *        getConfigInputPorts().stream().filter(Objects::nonNull).map(ConfigInputPort::getIncomingDependency).filter(Objects::nonNull).map(Dependency::getSetter).filter(Objects::nonNull).filter(Parameter.class::isInstance).map(Parameter.class::cast).collect(Collectors.toList());\nreturn
+   *        ECollections.unmodifiableEList(collect);'"
    * @generated
    */
   @Override

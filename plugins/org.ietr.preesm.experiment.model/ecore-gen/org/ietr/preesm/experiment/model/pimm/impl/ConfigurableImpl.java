@@ -3,7 +3,9 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
@@ -15,7 +17,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -82,14 +83,9 @@ public abstract class ConfigurableImpl extends AbstractVertexImpl implements Con
    */
   @Override
   public EList<Parameter> getInputParameters() {
-    final EList<Parameter> result = ECollections.newBasicEList();
-    for (final ConfigInputPort in : getConfigInputPorts()) {
-      final ISetter setter = in.getIncomingDependency().getSetter();
-      if (setter instanceof Parameter) {
-        result.add((Parameter) setter);
-      }
-    }
-    return result;
+    final List<Parameter> collect = getConfigInputPorts().stream().filter(Objects::nonNull).map(ConfigInputPort::getIncomingDependency).filter(Objects::nonNull)
+        .map(Dependency::getSetter).filter(Objects::nonNull).filter(Parameter.class::isInstance).map(Parameter.class::cast).collect(Collectors.toList());
+    return ECollections.unmodifiableEList(collect);
   }
 
   /**
