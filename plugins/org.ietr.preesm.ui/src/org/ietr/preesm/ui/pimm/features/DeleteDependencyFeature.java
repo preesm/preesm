@@ -42,9 +42,9 @@ import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
-import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -77,7 +77,7 @@ public class DeleteDependencyFeature extends DefaultDeleteFeature {
     final PictogramElement pe = context.getPictogramElement();
     final Object obj = getBusinessObjectForPictogramElement(pe);
     final ConfigInputPort iCfgPort = ((Dependency) obj).getGetter();
-    final Parameterizable portOwner = (Parameterizable) iCfgPort.eContainer();
+    final Configurable portOwner = iCfgPort.getConfigurable();
     // If the getter is not an actor, delete the configInputPort
     if (!(portOwner instanceof ExecutableActor)) {
       portOwner.getConfigInputPorts().remove(iCfgPort);

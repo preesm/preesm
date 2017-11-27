@@ -48,7 +48,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
@@ -120,7 +120,8 @@ public class DelayImpl extends EObjectImpl implements Delay {
   @Override
   public EList<ConfigInputPort> getConfigInputPorts() {
     if (this.configInputPorts == null) {
-      this.configInputPorts = new EObjectContainmentEList<>(ConfigInputPort.class, this, PiMMPackage.DELAY__CONFIG_INPUT_PORTS);
+      this.configInputPorts = new EObjectContainmentWithInverseEList<>(ConfigInputPort.class, this, PiMMPackage.DELAY__CONFIG_INPUT_PORTS,
+          PiMMPackage.CONFIG_INPUT_PORT__CONFIGURABLE);
     }
     return this.configInputPorts;
   }
@@ -331,6 +332,21 @@ public class DelayImpl extends EObjectImpl implements Delay {
   @Override
   public void accept(final PiMMVisitor v) {
     v.visitDelay(this);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+    switch (featureID) {
+      case PiMMPackage.DELAY__CONFIG_INPUT_PORTS:
+        return ((InternalEList<InternalEObject>) (InternalEList<?>) getConfigInputPorts()).basicAdd(otherEnd, msgs);
+    }
+    return super.eInverseAdd(otherEnd, featureID, msgs);
   }
 
 } // DelayImpl

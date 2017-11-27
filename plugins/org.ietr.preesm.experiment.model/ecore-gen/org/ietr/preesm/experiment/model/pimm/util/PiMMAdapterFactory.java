@@ -54,6 +54,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
@@ -134,6 +135,11 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
     @Override
     public Adapter caseParameterizable(final Parameterizable object) {
       return createParameterizableAdapter();
+    }
+
+    @Override
+    public Adapter caseConfigurable(final Configurable object) {
+      return createConfigurableAdapter();
     }
 
     @Override
@@ -325,6 +331,19 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * @generated
    */
   public Adapter createParameterizableAdapter() {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.Configurable <em>Configurable</em>}'. <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   *
+   * @return the new adapter.
+   * @see org.ietr.preesm.experiment.model.pimm.Configurable
+   * @generated
+   */
+  public Adapter createConfigurableAdapter() {
     return null;
   }
 

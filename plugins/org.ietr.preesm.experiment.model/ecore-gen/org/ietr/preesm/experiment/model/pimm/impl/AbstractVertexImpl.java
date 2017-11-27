@@ -49,7 +49,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
@@ -129,7 +129,8 @@ public abstract class AbstractVertexImpl extends EObjectImpl implements Abstract
   @Override
   public EList<ConfigInputPort> getConfigInputPorts() {
     if (this.configInputPorts == null) {
-      this.configInputPorts = new EObjectContainmentEList<>(ConfigInputPort.class, this, PiMMPackage.ABSTRACT_VERTEX__CONFIG_INPUT_PORTS);
+      this.configInputPorts = new EObjectContainmentWithInverseEList<>(ConfigInputPort.class, this, PiMMPackage.ABSTRACT_VERTEX__CONFIG_INPUT_PORTS,
+          PiMMPackage.CONFIG_INPUT_PORT__CONFIGURABLE);
     }
     return this.configInputPorts;
   }
@@ -323,6 +324,21 @@ public abstract class AbstractVertexImpl extends EObjectImpl implements Abstract
   @Override
   public void accept(final PiMMVisitor v) {
     v.visitAbstractVertex(this);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+    switch (featureID) {
+      case PiMMPackage.ABSTRACT_VERTEX__CONFIG_INPUT_PORTS:
+        return ((InternalEList<InternalEObject>) (InternalEList<?>) getConfigInputPorts()).basicAdd(otherEnd, msgs);
+    }
+    return super.eInverseAdd(otherEnd, featureID, msgs);
   }
 
   /**

@@ -46,6 +46,7 @@ package org.ietr.preesm.experiment.model.pimm;
  * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.ConfigInputPort#getIncomingDependency <em>Incoming Dependency</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.ConfigInputPort#getConfigurable <em>Configurable</em>}</li>
  * </ul>
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getConfigInputPort()
@@ -81,4 +82,32 @@ public interface ConfigInputPort extends Port {
    * @generated
    */
   void setIncomingDependency(Dependency value);
+
+  /**
+   * Returns the value of the '<em><b>Configurable</b></em>' container reference. It is bidirectional and its opposite is
+   * '{@link org.ietr.preesm.experiment.model.pimm.Configurable#getConfigInputPorts <em>Config Input Ports</em>}'. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Configurable</em>' container reference isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Configurable</em>' container reference.
+   * @see #setConfigurable(Configurable)
+   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getConfigInputPort_Configurable()
+   * @see org.ietr.preesm.experiment.model.pimm.Configurable#getConfigInputPorts
+   * @model opposite="configInputPorts" transient="false"
+   * @generated
+   */
+  Configurable getConfigurable();
+
+  /**
+   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.ConfigInputPort#getConfigurable <em>Configurable</em>}' container reference. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @param value
+   *          the new value of the '<em>Configurable</em>' container reference.
+   * @see #getConfigurable()
+   * @generated
+   */
+  void setConfigurable(Configurable value);
 } // ConfigInputPort

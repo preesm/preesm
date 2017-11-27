@@ -52,7 +52,7 @@ package org.ietr.preesm.experiment.model.pimm;
  * @model abstract="true"
  * @generated
  */
-public interface AbstractVertex extends Parameterizable {
+public interface AbstractVertex extends Configurable {
   /**
    * Returns the value of the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc -->
    * <p>

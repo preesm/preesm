@@ -61,6 +61,7 @@ import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
@@ -74,7 +75,6 @@ import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -355,7 +355,7 @@ public class PiParser {
     final String setterName = edgeElt.getAttribute(PiIdentifiers.DEPENDENCY_SOURCE);
     final String getterName = edgeElt.getAttribute(PiIdentifiers.DEPENDENCY_TARGET);
     final AbstractVertex source = graph.getVertexNamed(setterName);
-    Parameterizable target = graph.getVertexNamed(getterName);
+    Configurable target = graph.getVertexNamed(getterName);
     if (source == null) {
       throw new RuntimeException("Dependency source vertex " + setterName + " does not exist.");
     }

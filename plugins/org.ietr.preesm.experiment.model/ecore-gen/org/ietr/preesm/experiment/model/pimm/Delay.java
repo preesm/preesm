@@ -53,7 +53,7 @@ package org.ietr.preesm.experiment.model.pimm;
  * @model
  * @generated
  */
-public interface Delay extends Parameterizable {
+public interface Delay extends Configurable {
 
   /**
    * Returns the value of the '<em><b>Expression</b></em>' containment reference. <!-- begin-user-doc -->

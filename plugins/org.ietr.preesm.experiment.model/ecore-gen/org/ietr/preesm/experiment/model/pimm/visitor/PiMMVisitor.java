@@ -12,6 +12,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
@@ -67,6 +68,14 @@ public interface PiMMVisitor extends EObject {
    * @generated
    */
   void visitActor(Actor subject);
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model subjectRequired="true"
+   * @generated
+   */
+  void visitConfigurable(Configurable subject);
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->

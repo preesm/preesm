@@ -37,6 +37,7 @@ package org.ietr.preesm.experiment.model.expression;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
@@ -62,7 +63,7 @@ public class ExpressionEvaluator {
    *
    */
   public static final long evaluate(final Expression expression) {
-    final Parameterizable parameterizableObj = ExpressionEvaluator.lookUpParameters(expression);
+    final Configurable parameterizableObj = ExpressionEvaluator.lookUpParameters(expression);
     final Map<String, Number> addInputParameterValues = ExpressionEvaluator.addInputParameterValues(parameterizableObj);
     return ExpressionEvaluator.evaluate(expression.getExpressionString(), addInputParameterValues);
   }
@@ -113,19 +114,19 @@ public class ExpressionEvaluator {
     return Math.round(dResult);
   }
 
-  private static Parameterizable lookUpParameters(final Expression expression) {
-    Parameterizable parameterizableObj;
+  private static Configurable lookUpParameters(final Expression expression) {
+    Configurable parameterizableObj;
     if (expression.eContainer() instanceof Parameterizable) {
-      parameterizableObj = (Parameterizable) expression.eContainer();
+      parameterizableObj = (Configurable) expression.eContainer();
     } else if (expression.eContainer().eContainer() instanceof Parameterizable) {
-      parameterizableObj = (Parameterizable) expression.eContainer().eContainer();
+      parameterizableObj = (Configurable) expression.eContainer().eContainer();
     } else {
       throw new ExpressionEvaluationException("Neither a child of Parameterizable nor a child of a child of Parameterizable");
     }
     return parameterizableObj;
   }
 
-  private static Map<String, Number> addInputParameterValues(final Parameterizable parameterizableObj) {
+  private static Map<String, Number> addInputParameterValues(final Configurable parameterizableObj) {
     final Map<String, Number> result = new LinkedHashMap<>();
     for (final ConfigInputPort port : parameterizableObj.getConfigInputPorts()) {
       if ((port.getIncomingDependency() != null) && (port.getIncomingDependency().getSetter() instanceof Parameter)) {

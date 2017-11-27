@@ -46,6 +46,7 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
@@ -239,7 +240,7 @@ public class ReconnectionDependencyFeature extends DefaultReconnectionFeature {
       if ((getterObject instanceof Parameter) || (getterObject instanceof InterfaceActor) || (getterObject instanceof Delay)) {
         // Create a ConfigInputPort
         newGetter = PiMMFactory.eINSTANCE.createConfigInputPort();
-        ((Parameterizable) getterObject).getConfigInputPorts().add(newGetter);
+        ((Configurable) getterObject).getConfigInputPorts().add(newGetter);
       } else {
         newGetter = (ConfigInputPort) getBusinessObjectForPictogramElement(context.getConnection().getEnd());
       }

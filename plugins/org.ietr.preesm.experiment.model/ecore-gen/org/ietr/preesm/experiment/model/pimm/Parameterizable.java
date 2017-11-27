@@ -43,12 +43,6 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Parameterizable</b></em>'. <!-- end-user-doc -->
  *
- * <p>
- * The following features are supported:
- * </p>
- * <ul>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.Parameterizable#getConfigInputPorts <em>Config Input Ports</em>}</li>
- * </ul>
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameterizable()
  * @model interface="true" abstract="true"
@@ -56,26 +50,9 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
  */
 public interface Parameterizable extends PiMMVisitable {
   /**
-   * Returns the value of the '<em><b>Config Input Ports</b></em>' containment reference list. The list contents are of type
-   * {@link org.ietr.preesm.experiment.model.pimm.ConfigInputPort}. <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Config Input Ports</em>' containment reference list isn't clear, there really should be more of a description here...
-   * </p>
-   * <!-- end-user-doc -->
-   *
-   * @return the value of the '<em>Config Input Ports</em>' containment reference list.
-   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameterizable_ConfigInputPorts()
-   * @model containment="true"
-   * @generated
-   */
-  EList<ConfigInputPort> getConfigInputPorts();
-
-  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='final EList&lt;Parameter&gt; result = ECollections.newBasicEList();\nfor
-   *        (final ConfigInputPort in : getConfigInputPorts()) {\n final ISetter setter = in.getIncomingDependency().getSetter();\n if (setter instanceof
-   *        Parameter) {\n\tresult.add((Parameter) setter);\n }\n}\nreturn result;'"
+   * @model kind="operation"
    * @generated
    */
   EList<Parameter> getInputParameters();

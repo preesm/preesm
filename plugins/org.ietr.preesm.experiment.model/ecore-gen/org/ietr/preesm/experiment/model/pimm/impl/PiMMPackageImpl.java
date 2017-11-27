@@ -56,6 +56,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
@@ -100,6 +101,13 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
    * @generated
    */
   private EClass parameterizableEClass = null;
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  private EClass configurableEClass = null;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
@@ -419,14 +427,23 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the parameterizable config input ports
    * @generated
    */
   @Override
-  public EReference getParameterizable_ConfigInputPorts() {
-    return (EReference) this.parameterizableEClass.getEStructuralFeatures().get(0);
+  public EClass getConfigurable() {
+    return this.configurableEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EReference getConfigurable_ConfigInputPorts() {
+    return (EReference) this.configurableEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -680,6 +697,16 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   @Override
   public EReference getConfigInputPort_IncomingDependency() {
     return (EReference) this.configInputPortEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EReference getConfigInputPort_Configurable() {
+    return (EReference) this.configInputPortEClass.getEStructuralFeatures().get(1);
   }
 
   /**
@@ -1277,7 +1304,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     // Create classes and their features
     this.parameterizableEClass = createEClass(PiMMPackage.PARAMETERIZABLE);
-    createEReference(this.parameterizableEClass, PiMMPackage.PARAMETERIZABLE__CONFIG_INPUT_PORTS);
+
+    this.configurableEClass = createEClass(PiMMPackage.CONFIGURABLE);
+    createEReference(this.configurableEClass, PiMMPackage.CONFIGURABLE__CONFIG_INPUT_PORTS);
 
     this.abstractVertexEClass = createEClass(PiMMPackage.ABSTRACT_VERTEX);
     createEAttribute(this.abstractVertexEClass, PiMMPackage.ABSTRACT_VERTEX__NAME);
@@ -1319,6 +1348,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     this.configInputPortEClass = createEClass(PiMMPackage.CONFIG_INPUT_PORT);
     createEReference(this.configInputPortEClass, PiMMPackage.CONFIG_INPUT_PORT__INCOMING_DEPENDENCY);
+    createEReference(this.configInputPortEClass, PiMMPackage.CONFIG_INPUT_PORT__CONFIGURABLE);
 
     this.configOutputPortEClass = createEClass(PiMMPackage.CONFIG_OUTPUT_PORT);
 
@@ -1426,7 +1456,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     // Add supertypes to classes
     this.parameterizableEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
-    this.abstractVertexEClass.getESuperTypes().add(getParameterizable());
+    this.configurableEClass.getESuperTypes().add(getParameterizable());
+    this.abstractVertexEClass.getESuperTypes().add(getConfigurable());
     this.abstractActorEClass.getESuperTypes().add(getAbstractVertex());
     this.piGraphEClass.getESuperTypes().add(getAbstractActor());
     this.executableActorEClass.getESuperTypes().add(getAbstractActor());
@@ -1453,7 +1484,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     this.parameterEClass.getESuperTypes().add(getAbstractVertex());
     this.parameterEClass.getESuperTypes().add(getISetter());
     this.dependencyEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
-    this.delayEClass.getESuperTypes().add(getParameterizable());
+    this.delayEClass.getESuperTypes().add(getConfigurable());
     this.expressionEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.functionPrototypeEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.functionParameterEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
@@ -1462,13 +1493,18 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     // Initialize classes and features; add operations and parameters
     initEClass(this.parameterizableEClass, Parameterizable.class, "Parameterizable", EPackageImpl.IS_ABSTRACT, EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getParameterizable_ConfigInputPorts(), getConfigInputPort(), null, "configInputPorts", null, 0, -1, Parameterizable.class,
-        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES,
-        !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
     addEOperation(this.parameterizableEClass, getParameter(), "getInputParameters", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     addEOperation(this.parameterizableEClass, this.ecorePackage.getEBoolean(), "isLocallyStatic", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
+    initEClass(this.configurableEClass, Configurable.class, "Configurable", EPackageImpl.IS_ABSTRACT, EPackageImpl.IS_INTERFACE,
+        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getConfigurable_ConfigInputPorts(), getConfigInputPort(), getConfigInputPort_Configurable(), "configInputPorts", null, 0, -1,
+        Configurable.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE,
+        !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+
+    addEOperation(this.configurableEClass, getParameter(), "getInputParameters", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     initEClass(this.abstractVertexEClass, AbstractVertex.class, "AbstractVertex", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
@@ -1567,6 +1603,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
     initEReference(getConfigInputPort_IncomingDependency(), getDependency(), getDependency_Getter(), "incomingDependency", null, 0, 1, ConfigInputPort.class,
         !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES,
+        !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getConfigInputPort_Configurable(), getConfigurable(), getConfigurable_ConfigInputPorts(), "configurable", null, 0, 1, ConfigInputPort.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES,
         !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
     initEClass(this.configOutputPortEClass, ConfigOutputPort.class, "ConfigOutputPort", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,

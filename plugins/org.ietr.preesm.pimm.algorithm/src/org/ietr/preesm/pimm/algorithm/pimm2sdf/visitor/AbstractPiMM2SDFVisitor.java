@@ -73,6 +73,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
@@ -120,7 +121,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
 
   /** The pi port 2 vx. */
   // Map from PiMM ports to their vertex (used for SDFEdge creation)
-  protected Map<Port, Parameterizable> piPort2Vx = new LinkedHashMap<>();
+  protected Map<Port, Configurable> piPort2Vx = new LinkedHashMap<>();
   // Map from original PiMM ports to generated SDF ports (used for SDFEdge
   /** The pi port 2 SDF port. */
   // creation)
@@ -318,7 +319,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
    */
   @Override
   public void visitAbstractVertex(final AbstractVertex av) {
-    visitParameterizable(av);
+    visitConfigurable(av);
   }
 
   /*
@@ -445,7 +446,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitParameterizable(org.ietr.preesm.experiment.model.pimm.Parameterizable)
    */
   @Override
-  public void visitParameterizable(final Parameterizable p) {
+  public void visitConfigurable(final Configurable p) {
     for (final ConfigInputPort cip : p.getConfigInputPorts()) {
       this.piPort2Vx.put(cip, p);
     }

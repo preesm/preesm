@@ -50,6 +50,7 @@ import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
@@ -240,7 +241,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
       // Create a configInputPort
       final PictogramElement tgtPE = context.getTargetPictogramElement();
       final Object tgtObj = getBusinessObjectForPictogramElement(tgtPE);
-      if (tgtObj instanceof Parameterizable) {
+      if (tgtObj instanceof Configurable) {
         // The target can be: A Parameter, A Fifo, An Actor, An
         // interface.
 
@@ -266,7 +267,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
         if ((tgtObj instanceof Parameter) || (tgtObj instanceof InterfaceActor) || (tgtObj instanceof Delay)) {
           // Create a ConfigInputPort
           getter = PiMMFactory.eINSTANCE.createConfigInputPort();
-          ((Parameterizable) tgtObj).getConfigInputPorts().add((ConfigInputPort) getter);
+          ((Configurable) tgtObj).getConfigInputPorts().add((ConfigInputPort) getter);
         }
 
         // TODO implement the creation of configInputPort

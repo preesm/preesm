@@ -102,20 +102,38 @@ public interface PiMMPackage extends EPackage {
   int PARAMETERIZABLE = 0;
 
   /**
-   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int PARAMETERIZABLE__CONFIG_INPUT_PORTS = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 0;
-
-  /**
    * The number of structural features of the '<em>Parameterizable</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int PARAMETERIZABLE_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 1;
+  int PARAMETERIZABLE_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 0;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.Configurable <em>Configurable</em>}' class. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.Configurable
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getConfigurable()
+   * @generated
+   */
+  int CONFIGURABLE = 1;
+
+  /**
+   * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int CONFIGURABLE__CONFIG_INPUT_PORTS = PiMMPackage.PARAMETERIZABLE_FEATURE_COUNT + 0;
+
+  /**
+   * The number of structural features of the '<em>Configurable</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int CONFIGURABLE_FEATURE_COUNT = PiMMPackage.PARAMETERIZABLE_FEATURE_COUNT + 1;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl <em>Abstract Vertex</em>}' class. <!-- begin-user-doc -->
@@ -125,7 +143,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getAbstractVertex()
    * @generated
    */
-  int ABSTRACT_VERTEX = 1;
+  int ABSTRACT_VERTEX = 2;
 
   /**
    * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -133,7 +151,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int ABSTRACT_VERTEX__CONFIG_INPUT_PORTS = PiMMPackage.PARAMETERIZABLE__CONFIG_INPUT_PORTS;
+  int ABSTRACT_VERTEX__CONFIG_INPUT_PORTS = PiMMPackage.CONFIGURABLE__CONFIG_INPUT_PORTS;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -141,7 +159,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int ABSTRACT_VERTEX__NAME = PiMMPackage.PARAMETERIZABLE_FEATURE_COUNT + 0;
+  int ABSTRACT_VERTEX__NAME = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 0;
 
   /**
    * The number of structural features of the '<em>Abstract Vertex</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -149,7 +167,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int ABSTRACT_VERTEX_FEATURE_COUNT = PiMMPackage.PARAMETERIZABLE_FEATURE_COUNT + 1;
+  int ABSTRACT_VERTEX_FEATURE_COUNT = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 1;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl <em>Abstract Actor</em>}' class. <!-- begin-user-doc -->
@@ -159,7 +177,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getAbstractActor()
    * @generated
    */
-  int ABSTRACT_ACTOR = 2;
+  int ABSTRACT_ACTOR = 3;
 
   /**
    * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -217,7 +235,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getPiGraph()
    * @generated
    */
-  int PI_GRAPH = 3;
+  int PI_GRAPH = 4;
 
   /**
    * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -307,7 +325,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getExecutableActor()
    * @generated
    */
-  int EXECUTABLE_ACTOR = 4;
+  int EXECUTABLE_ACTOR = 5;
 
   /**
    * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -365,7 +383,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getActor()
    * @generated
    */
-  int ACTOR = 5;
+  int ACTOR = 6;
 
   /**
    * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -438,7 +456,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getPort()
    * @generated
    */
-  int PORT = 10;
+  int PORT = 11;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataPortImpl <em>Data Port</em>}' class. <!-- begin-user-doc --> <!--
@@ -448,7 +466,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDataPort()
    * @generated
    */
-  int DATA_PORT = 31;
+  int DATA_PORT = 32;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataInputPortImpl <em>Data Input Port</em>}' class. <!-- begin-user-doc -->
@@ -458,7 +476,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDataInputPort()
    * @generated
    */
-  int DATA_INPUT_PORT = 11;
+  int DATA_INPUT_PORT = 12;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataOutputPortImpl <em>Data Output Port</em>}' class. <!-- begin-user-doc -->
@@ -468,7 +486,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDataOutputPort()
    * @generated
    */
-  int DATA_OUTPUT_PORT = 12;
+  int DATA_OUTPUT_PORT = 13;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigInputPortImpl <em>Config Input Port</em>}' class. <!-- begin-user-doc
@@ -478,7 +496,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getConfigInputPort()
    * @generated
    */
-  int CONFIG_INPUT_PORT = 13;
+  int CONFIG_INPUT_PORT = 14;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigOutputPortImpl <em>Config Output Port</em>}' class. <!-- begin-user-doc
@@ -488,7 +506,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getConfigOutputPort()
    * @generated
    */
-  int CONFIG_OUTPUT_PORT = 14;
+  int CONFIG_OUTPUT_PORT = 15;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl <em>Fifo</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -497,7 +515,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getFifo()
    * @generated
    */
-  int FIFO = 15;
+  int FIFO = 16;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl <em>Interface Actor</em>}' class. <!-- begin-user-doc -->
@@ -507,7 +525,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getInterfaceActor()
    * @generated
    */
-  int INTERFACE_ACTOR = 16;
+  int INTERFACE_ACTOR = 17;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataInputInterfaceImpl <em>Data Input Interface</em>}' class. <!--
@@ -517,7 +535,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDataInputInterface()
    * @generated
    */
-  int DATA_INPUT_INTERFACE = 17;
+  int DATA_INPUT_INTERFACE = 18;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataOutputInterfaceImpl <em>Data Output Interface</em>}' class. <!--
@@ -527,7 +545,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDataOutputInterface()
    * @generated
    */
-  int DATA_OUTPUT_INTERFACE = 18;
+  int DATA_OUTPUT_INTERFACE = 19;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigOutputInterfaceImpl <em>Config Output Interface</em>}' class. <!--
@@ -537,7 +555,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getConfigOutputInterface()
    * @generated
    */
-  int CONFIG_OUTPUT_INTERFACE = 20;
+  int CONFIG_OUTPUT_INTERFACE = 21;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl <em>Parameter</em>}' class. <!-- begin-user-doc --> <!--
@@ -547,7 +565,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getParameter()
    * @generated
    */
-  int PARAMETER = 24;
+  int PARAMETER = 25;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DependencyImpl <em>Dependency</em>}' class. <!-- begin-user-doc --> <!--
@@ -557,7 +575,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDependency()
    * @generated
    */
-  int DEPENDENCY = 25;
+  int DEPENDENCY = 26;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.ISetter <em>ISetter</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -566,7 +584,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getISetter()
    * @generated
    */
-  int ISETTER = 26;
+  int ISETTER = 27;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DelayImpl <em>Delay</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc
@@ -576,7 +594,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDelay()
    * @generated
    */
-  int DELAY = 27;
+  int DELAY = 28;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl <em>Expression</em>}' class. <!-- begin-user-doc --> <!--
@@ -586,7 +604,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getExpression()
    * @generated
    */
-  int EXPRESSION = 28;
+  int EXPRESSION = 29;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigInputInterfaceImpl <em>Config Input Interface</em>}' class. <!--
@@ -596,7 +614,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getConfigInputInterface()
    * @generated
    */
-  int CONFIG_INPUT_INTERFACE = 19;
+  int CONFIG_INPUT_INTERFACE = 20;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.Refinement <em>Refinement</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc
@@ -606,7 +624,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getRefinement()
    * @generated
    */
-  int REFINEMENT = 21;
+  int REFINEMENT = 22;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.PiSDFRefinementImpl <em>Pi SDF Refinement</em>}' class. <!-- begin-user-doc
@@ -616,7 +634,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getPiSDFRefinement()
    * @generated
    */
-  int PI_SDF_REFINEMENT = 22;
+  int PI_SDF_REFINEMENT = 23;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.CHeaderRefinementImpl <em>CHeader Refinement</em>}' class. <!--
@@ -626,7 +644,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getCHeaderRefinement()
    * @generated
    */
-  int CHEADER_REFINEMENT = 23;
+  int CHEADER_REFINEMENT = 24;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl <em>Function Prototype</em>}' class. <!--
@@ -636,7 +654,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getFunctionPrototype()
    * @generated
    */
-  int FUNCTION_PROTOTYPE = 29;
+  int FUNCTION_PROTOTYPE = 30;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl <em>Function Parameter</em>}' class. <!--
@@ -646,7 +664,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getFunctionParameter()
    * @generated
    */
-  int FUNCTION_PARAMETER = 30;
+  int FUNCTION_PARAMETER = 31;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.BroadcastActorImpl <em>Broadcast Actor</em>}' class. <!-- begin-user-doc -->
@@ -656,7 +674,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getBroadcastActor()
    * @generated
    */
-  int BROADCAST_ACTOR = 6;
+  int BROADCAST_ACTOR = 7;
 
   /**
    * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -714,7 +732,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getJoinActor()
    * @generated
    */
-  int JOIN_ACTOR = 7;
+  int JOIN_ACTOR = 8;
 
   /**
    * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -772,7 +790,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getForkActor()
    * @generated
    */
-  int FORK_ACTOR = 8;
+  int FORK_ACTOR = 9;
 
   /**
    * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -830,7 +848,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getRoundBufferActor()
    * @generated
    */
-  int ROUND_BUFFER_ACTOR = 9;
+  int ROUND_BUFFER_ACTOR = 10;
 
   /**
    * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1065,12 +1083,20 @@ public interface PiMMPackage extends EPackage {
   int CONFIG_INPUT_PORT__INCOMING_DEPENDENCY = PiMMPackage.PORT_FEATURE_COUNT + 0;
 
   /**
+   * The feature id for the '<em><b>Configurable</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int CONFIG_INPUT_PORT__CONFIGURABLE = PiMMPackage.PORT_FEATURE_COUNT + 1;
+
+  /**
    * The number of structural features of the '<em>Config Input Port</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int CONFIG_INPUT_PORT_FEATURE_COUNT = PiMMPackage.PORT_FEATURE_COUNT + 1;
+  int CONFIG_INPUT_PORT_FEATURE_COUNT = PiMMPackage.PORT_FEATURE_COUNT + 2;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1654,7 +1680,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int DELAY__CONFIG_INPUT_PORTS = PiMMPackage.PARAMETERIZABLE__CONFIG_INPUT_PORTS;
+  int DELAY__CONFIG_INPUT_PORTS = PiMMPackage.CONFIGURABLE__CONFIG_INPUT_PORTS;
 
   /**
    * The feature id for the '<em><b>Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1662,7 +1688,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int DELAY__EXPRESSION = PiMMPackage.PARAMETERIZABLE_FEATURE_COUNT + 0;
+  int DELAY__EXPRESSION = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 0;
 
   /**
    * The number of structural features of the '<em>Delay</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1670,7 +1696,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int DELAY_FEATURE_COUNT = PiMMPackage.PARAMETERIZABLE_FEATURE_COUNT + 1;
+  int DELAY_FEATURE_COUNT = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 1;
 
   /**
    * The feature id for the '<em><b>Expression String</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1759,7 +1785,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDirection()
    * @generated
    */
-  int DIRECTION = 32;
+  int DIRECTION = 33;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation <em>Port Memory Annotation</em>}' enum. <!-- begin-user-doc
@@ -1769,7 +1795,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getPortMemoryAnnotation()
    * @generated
    */
-  int PORT_MEMORY_ANNOTATION = 33;
+  int PORT_MEMORY_ANNOTATION = 34;
 
   /**
    * The meta object id for the '<em>IPath</em>' data type. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1778,7 +1804,7 @@ public interface PiMMPackage extends EPackage {
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getIPath()
    * @generated
    */
-  int IPATH = 34;
+  int IPATH = 35;
 
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Parameterizable <em>Parameterizable</em>}'. <!-- begin-user-doc --> <!--
@@ -1791,15 +1817,25 @@ public interface PiMMPackage extends EPackage {
   EClass getParameterizable();
 
   /**
-   * Returns the meta object for the containment reference list '{@link org.ietr.preesm.experiment.model.pimm.Parameterizable#getConfigInputPorts <em>Config
-   * Input Ports</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Configurable <em>Configurable</em>}'. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    *
-   * @return the meta object for the containment reference list '<em>Config Input Ports</em>'.
-   * @see org.ietr.preesm.experiment.model.pimm.Parameterizable#getConfigInputPorts()
-   * @see #getParameterizable()
+   * @return the meta object for class '<em>Configurable</em>'.
+   * @see org.ietr.preesm.experiment.model.pimm.Configurable
    * @generated
    */
-  EReference getParameterizable_ConfigInputPorts();
+  EClass getConfigurable();
+
+  /**
+   * Returns the meta object for the containment reference list '{@link org.ietr.preesm.experiment.model.pimm.Configurable#getConfigInputPorts <em>Config Input
+   * Ports</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @return the meta object for the containment reference list '<em>Config Input Ports</em>'.
+   * @see org.ietr.preesm.experiment.model.pimm.Configurable#getConfigInputPorts()
+   * @see #getConfigurable()
+   * @generated
+   */
+  EReference getConfigurable_ConfigInputPorts();
 
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.AbstractVertex <em>Abstract Vertex</em>}'. <!-- begin-user-doc --> <!--
@@ -2042,6 +2078,17 @@ public interface PiMMPackage extends EPackage {
    * @generated
    */
   EReference getConfigInputPort_IncomingDependency();
+
+  /**
+   * Returns the meta object for the container reference '{@link org.ietr.preesm.experiment.model.pimm.ConfigInputPort#getConfigurable <em>Configurable</em>}'.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @return the meta object for the container reference '<em>Configurable</em>'.
+   * @see org.ietr.preesm.experiment.model.pimm.ConfigInputPort#getConfigurable()
+   * @see #getConfigInputPort()
+   * @generated
+   */
+  EReference getConfigInputPort_Configurable();
 
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.ConfigOutputPort <em>Config Output Port</em>}'. <!-- begin-user-doc -->
@@ -2618,11 +2665,21 @@ public interface PiMMPackage extends EPackage {
     EClass PARAMETERIZABLE = PiMMPackage.eINSTANCE.getParameterizable();
 
     /**
+     * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.Configurable <em>Configurable</em>}' class. <!-- begin-user-doc --> <!--
+     * end-user-doc -->
+     *
+     * @see org.ietr.preesm.experiment.model.pimm.Configurable
+     * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getConfigurable()
+     * @generated
+     */
+    EClass CONFIGURABLE = PiMMPackage.eINSTANCE.getConfigurable();
+
+    /**
      * The meta object literal for the '<em><b>Config Input Ports</b></em>' containment reference list feature. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
      * @generated
      */
-    EReference PARAMETERIZABLE__CONFIG_INPUT_PORTS = PiMMPackage.eINSTANCE.getParameterizable_ConfigInputPorts();
+    EReference CONFIGURABLE__CONFIG_INPUT_PORTS = PiMMPackage.eINSTANCE.getConfigurable_ConfigInputPorts();
 
     /**
      * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl <em>Abstract Vertex</em>}' class. <!--
@@ -2808,6 +2865,13 @@ public interface PiMMPackage extends EPackage {
      * @generated
      */
     EReference CONFIG_INPUT_PORT__INCOMING_DEPENDENCY = PiMMPackage.eINSTANCE.getConfigInputPort_IncomingDependency();
+
+    /**
+     * The meta object literal for the '<em><b>Configurable</b></em>' container reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
+     * @generated
+     */
+    EReference CONFIG_INPUT_PORT__CONFIGURABLE = PiMMPackage.eINSTANCE.getConfigInputPort_Configurable();
 
     /**
      * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigOutputPortImpl <em>Config Output Port</em>}' class. <!--
