@@ -85,9 +85,9 @@ public class HSDFBuildLoops {
 
   private final Map<String, DataType> dataTypes;
 
-  private PreesmScenario scenario;
+  private final PreesmScenario scenario;
 
-  private Design architecture;
+  private final Design architecture;
 
   /**
    * Build loops.
@@ -649,8 +649,7 @@ public class HSDFBuildLoops {
     return l;
   }
 
-  @SuppressWarnings("unused")
-  private MemoryExclusionGraph getMemEx(SDFGraph srGraph) {
+  MemoryExclusionGraph getMemEx(final SDFGraph srGraph) {
     // Build DAG
     final MapperDAG dag = SdfToDagConverter.convert(srGraph, this.architecture, this.scenario, false);
 
@@ -659,12 +658,12 @@ public class HSDFBuildLoops {
     memEx.buildGraph(dag);
 
     // BUffer Merging
-    String valueAlignment = new String("0");
-    String log = new String();
-    String checkString = new String();
+    final String valueAlignment = new String("0");
+    final String log = new String();
+    final String checkString = new String();
     final MemoryScriptEngine engine = new MemoryScriptEngine(valueAlignment, log, false, this.scenario);
     try {
-      engine.runScripts(dag, dataTypes, checkString);
+      engine.runScripts(dag, this.dataTypes, checkString);
     } catch (CoreException | IOException | URISyntaxException | EvalError e) {
       final String message = "An error occurred during memory scripts execution";
       WorkflowLogger.getLogger().log(Level.SEVERE, message, e);
@@ -686,7 +685,7 @@ public class HSDFBuildLoops {
     return memEx;
   }
 
-  private int getNaiveWorkingMemAlloc(SDFGraph resultGraph) {
+  private int getNaiveWorkingMemAlloc(final SDFGraph resultGraph) {
     final List<SDFEdge> allocEdge = new ArrayList<>();
     // getting edges that are allocated by Karol
     final List<SDFEdge> edgeUpperGraph = new ArrayList<>();
@@ -801,7 +800,7 @@ public class HSDFBuildLoops {
       g.getGraphDescription().getPropertyBean().setValue(MapperDAG.CLUSTERED_VERTEX, clust);
 
       // clust.setMemEx(getMemEx(resultGraph.clone()));
-      int bufSize = getNaiveWorkingMemAlloc(resultGraph);
+      final int bufSize = getNaiveWorkingMemAlloc(resultGraph);
 
       g.getPropertyBean().setValue("working_memory", new Integer(bufSize));
       // p("Internal working memory computation " + g.getName() + " number of allocation " + nbWorkingBufferAllocated + " byte allocated " + bufSize);
