@@ -44,18 +44,16 @@ import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
+import org.ietr.preesm.experiment.model.pimm.impl.PiMMFactoryImpl;
 
 /**
  *
  * @author anmorvan
  *
  */
-public final class PiMMUserFactory {
+public final class PiMMUserFactory extends PiMMFactoryImpl {
 
   public static final PiMMUserFactory instance = new PiMMUserFactory();
-
-  private static final PiMMFactory factory = PiMMFactory.eINSTANCE;
 
   private static final EcoreUtil.Copier copier = new EcoreUtil.Copier(false);
 
@@ -81,7 +79,7 @@ public final class PiMMUserFactory {
    *
    */
   public Dependency createDependency(final ISetter setter, final ConfigInputPort target) {
-    final Dependency dep = PiMMUserFactory.factory.createDependency();
+    final Dependency dep = createDependency();
     dep.setGetter(target);
     dep.setSetter(setter);
     return dep;
@@ -91,7 +89,7 @@ public final class PiMMUserFactory {
    *
    */
   public Fifo createFifo(final DataOutputPort sourcePortCopy, final DataInputPort targetPortCopy, final String type) {
-    final Fifo res = PiMMUserFactory.factory.createFifo();
+    final Fifo res = createFifo();
     res.setSourcePort(sourcePortCopy);
     res.setTargetPort(targetPortCopy);
     res.setType(type);
