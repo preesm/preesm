@@ -61,7 +61,6 @@ import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 
@@ -266,7 +265,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
         // If the getter is a Parameter or an InterfaceActor
         if ((tgtObj instanceof Parameter) || (tgtObj instanceof InterfaceActor) || (tgtObj instanceof Delay)) {
           // Create a ConfigInputPort
-          getter = PiMMFactory.eINSTANCE.createConfigInputPort();
+          getter = PiMMUserFactory.instance.createConfigInputPort();
           ((Configurable) tgtObj).getConfigInputPorts().add((ConfigInputPort) getter);
         }
 

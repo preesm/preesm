@@ -54,6 +54,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.architecture.utils.DomUtil;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
@@ -77,7 +78,6 @@ import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
@@ -177,7 +177,7 @@ public class PiParser {
    */
   public PiGraph parse(final InputStream inputStream) {
     // Instantiate the graph that will be filled with parser informations
-    final PiGraph graph = PiMMFactory.eINSTANCE.createPiGraph();
+    final PiGraph graph = PiMMUserFactory.instance.createPiGraph();
 
     // Parse the input stream
     final Document document = DomUtil.parseDocument(inputStream);
@@ -207,7 +207,7 @@ public class PiParser {
    */
   protected Actor parseActor(final Element nodeElt, final PiGraph graph) {
     // Instantiate the new actor
-    final Actor actor = PiMMFactory.eINSTANCE.createActor();
+    final Actor actor = PiMMUserFactory.instance.createActor();
 
     // Get the actor properties
     actor.setName(nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME));
@@ -242,7 +242,7 @@ public class PiParser {
       // If the refinement is a .h file, then we need to create a
       // HRefinement
       if (path.getFileExtension().equals("h")) {
-        final CHeaderRefinement hrefinement = PiMMFactory.eINSTANCE.createCHeaderRefinement();
+        final CHeaderRefinement hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
         // The nodeElt should have a loop element, and may have an init
         // element
         final NodeList childList = nodeElt.getChildNodes();
@@ -280,7 +280,7 @@ public class PiParser {
    * @return the function prototype
    */
   private FunctionPrototype parseFunctionPrototype(final Element protoElt, final String protoName) {
-    final FunctionPrototype proto = PiMMFactory.eINSTANCE.createFunctionPrototype();
+    final FunctionPrototype proto = PiMMUserFactory.instance.createFunctionPrototype();
 
     proto.setName(protoName);
     final NodeList childList = protoElt.getChildNodes();
@@ -306,11 +306,11 @@ public class PiParser {
    * @return the function parameter
    */
   private FunctionParameter parseFunctionParameter(final Element elt) {
-    final FunctionParameter param = PiMMFactory.eINSTANCE.createFunctionParameter();
+    final FunctionParameter param = PiMMUserFactory.instance.createFunctionParameter();
 
     param.setName(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_NAME));
     param.setType(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_TYPE));
-    param.setDirection(PiMMFactory.eINSTANCE.createDirection(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_DIRECTION)));
+    param.setDirection(PiMMUserFactory.instance.createDirection(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_DIRECTION)));
     param.setIsConfigurationParameter(Boolean.valueOf(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_IS_CONFIG)));
 
     return param;
@@ -327,7 +327,7 @@ public class PiParser {
    */
   protected ConfigInputInterface parseConfigInputInterface(final Element nodeElt, final PiGraph graph) {
     // Instantiate the new Config Input Interface
-    final ConfigInputInterface param = PiMMFactory.eINSTANCE.createConfigInputInterface();
+    final ConfigInputInterface param = PiMMUserFactory.instance.createConfigInputInterface();
 
     // Get the actor properties
     param.setName(nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME));
@@ -348,7 +348,7 @@ public class PiParser {
    */
   protected void parseDependencies(final Element edgeElt, final PiGraph graph) {
     // Instantiate the new Dependency
-    final Dependency dependency = PiMMFactory.eINSTANCE.createDependency();
+    final Dependency dependency = PiMMUserFactory.instance.createDependency();
 
     // Find the source and target of the fifo
     final String setterName = edgeElt.getAttribute(PiIdentifiers.DEPENDENCY_SOURCE);
@@ -399,7 +399,7 @@ public class PiParser {
     }
 
     if ((target instanceof Parameter) || (target instanceof InterfaceActor) || (target instanceof Delay)) {
-      final ConfigInputPort iCfgPort = PiMMFactory.eINSTANCE.createConfigInputPort();
+      final ConfigInputPort iCfgPort = PiMMUserFactory.instance.createConfigInputPort();
       ((Configurable) target).getConfigInputPorts().add(iCfgPort);
       dependency.setGetter(iCfgPort);
     }
@@ -446,7 +446,7 @@ public class PiParser {
    */
   protected void parseFifo(final Element edgeElt, final PiGraph graph) {
     // Instantiate the new Fifo
-    final Fifo fifo = PiMMFactory.eINSTANCE.createFifo();
+    final Fifo fifo = PiMMUserFactory.instance.createFifo();
 
     // Find the source and target of the fifo
     final String sourceName = edgeElt.getAttribute(PiIdentifiers.FIFO_SOURCE);
@@ -488,7 +488,7 @@ public class PiParser {
     if (PiParser.getProperty(edgeElt, PiIdentifiers.DELAY) != null) {
       // TODO replace with a parse Delay if delay have their own element
       // in the future
-      final Delay delay = PiMMFactory.eINSTANCE.createDelay();
+      final Delay delay = PiMMUserFactory.instance.createDelay();
       delay.getSizeExpression().setExpressionString(edgeElt.getAttribute(PiIdentifiers.DELAY_EXPRESSION));
       fifo.setDelay(delay);
     }
@@ -629,7 +629,7 @@ public class PiParser {
    */
   protected Parameter parseParameter(final Element nodeElt, final PiGraph graph) {
     // Instantiate the new Parameter
-    final Parameter param = PiMMFactory.eINSTANCE.createParameter();
+    final Parameter param = PiMMUserFactory.instance.createParameter();
     param.getValueExpression().setExpressionString(nodeElt.getAttribute(PiIdentifiers.PARAMETER_EXPRESSION));
 
     // Get the actor properties
@@ -681,7 +681,7 @@ public class PiParser {
         // Do not create data ports for InterfaceActor since the unique port
         // is automatically created when the vertex is instantiated
         if (!(vertex instanceof InterfaceActor)) {
-          iPort = PiMMFactory.eINSTANCE.createDataInputPort();
+          iPort = PiMMUserFactory.instance.createDataInputPort();
           ((AbstractActor) vertex).getDataInputPorts().add(iPort);
           iPort.setName(portName);
         } else {
@@ -701,7 +701,7 @@ public class PiParser {
         // Do not create data ports for InterfaceActor since the unique port
         // is automatically created when the vertex is instantiated
         if (!(vertex instanceof InterfaceActor)) {
-          oPort = PiMMFactory.eINSTANCE.createDataOutputPort();
+          oPort = PiMMUserFactory.instance.createDataOutputPort();
           ((AbstractActor) vertex).getDataOutputPorts().add(oPort);
           oPort.setName(portName);
         } else {
@@ -711,7 +711,7 @@ public class PiParser {
         oPort.setAnnotation(PortMemoryAnnotation.get(elt.getAttribute(PiIdentifiers.PORT_MEMORY_ANNOTATION)));
         break;
       case PiIdentifiers.CONFIGURATION_INPUT_PORT:
-        final ConfigInputPort iCfgPort = PiMMFactory.eINSTANCE.createConfigInputPort();
+        final ConfigInputPort iCfgPort = PiMMUserFactory.instance.createConfigInputPort();
         iCfgPort.setName(portName);
         vertex.getConfigInputPorts().add(iCfgPort);
         break;
@@ -721,7 +721,7 @@ public class PiParser {
         if (!(vertex instanceof AbstractActor)) {
           throw new RuntimeException("Parsed config. port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
         }
-        final ConfigOutputPort oCfgPort = PiMMFactory.eINSTANCE.createConfigOutputPort();
+        final ConfigOutputPort oCfgPort = PiMMUserFactory.instance.createConfigOutputPort();
         oCfgPort.setName(portName);
         ((AbstractActor) vertex).getConfigOutputPorts().add(oCfgPort);
         break;
@@ -741,7 +741,7 @@ public class PiParser {
    */
   protected AbstractActor parseConfigOutputInterface(final Element nodeElt, final PiGraph graph) {
     // Instantiate the new Interface and its corresponding port
-    final ConfigOutputInterface cfgOutIf = PiMMFactory.eINSTANCE.createConfigOutputInterface();
+    final ConfigOutputInterface cfgOutIf = PiMMUserFactory.instance.createConfigOutputInterface();
 
     // Set the Interface properties
     cfgOutIf.setName(nodeElt.getAttribute(PiIdentifiers.CONFIGURATION_OUTPUT_INTERFACE_NAME));
@@ -763,7 +763,7 @@ public class PiParser {
    */
   protected AbstractActor parseSinkInterface(final Element nodeElt, final PiGraph graph) {
     // Instantiate the new Interface and its corresponding port
-    final DataOutputInterface snkInterface = PiMMFactory.eINSTANCE.createDataOutputInterface();
+    final DataOutputInterface snkInterface = PiMMUserFactory.instance.createDataOutputInterface();
 
     // Set the sourceInterface properties
     snkInterface.setName(nodeElt.getAttribute(PiIdentifiers.DATA_OUTPUT_INTERFACE_NAME));
@@ -785,7 +785,7 @@ public class PiParser {
    */
   protected AbstractActor parseSourceInterface(final Element nodeElt, final PiGraph graph) {
     // Instantiate the new Interface and its corresponding port
-    final DataInputInterface srcInterface = PiMMFactory.eINSTANCE.createDataInputInterface();
+    final DataInputInterface srcInterface = PiMMUserFactory.instance.createDataInputInterface();
 
     // Set the sourceInterface properties
     srcInterface.setName(nodeElt.getAttribute(PiIdentifiers.DATA_INPUT_INTERFACE_NAME));
@@ -813,16 +813,16 @@ public class PiParser {
     // Instantiate the actor.
     switch (nodeKind) {
       case PiIdentifiers.BROADCAST:
-        actor = PiMMFactory.eINSTANCE.createBroadcastActor();
+        actor = PiMMUserFactory.instance.createBroadcastActor();
         break;
       case PiIdentifiers.FORK:
-        actor = PiMMFactory.eINSTANCE.createForkActor();
+        actor = PiMMUserFactory.instance.createForkActor();
         break;
       case PiIdentifiers.JOIN:
-        actor = PiMMFactory.eINSTANCE.createJoinActor();
+        actor = PiMMUserFactory.instance.createJoinActor();
         break;
       case PiIdentifiers.ROUND_BUFFER:
-        actor = PiMMFactory.eINSTANCE.createRoundBufferActor();
+        actor = PiMMUserFactory.instance.createRoundBufferActor();
         break;
       default:
         throw new IllegalArgumentException("Given node element has an unknown kind");

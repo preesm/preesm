@@ -525,7 +525,7 @@ public class ExportSVGFeature extends AbstractCustomFeature {
      */
     @Override
     public Integer caseParameter(final Parameter p) {
-      if (p.isLocallyStatic() && (p.isConfigurationInterface() && ((ConfigInputInterface) p).getGraphPort() instanceof ConfigInputPort)) {
+      if (p.isLocallyStatic() && (p.isConfigurationInterface() && (((ConfigInputInterface) p).getGraphPort() instanceof ConfigInputPort))) {
         return caseConfigInputInterface(p);
       }
 

@@ -53,8 +53,8 @@ import org.eclipse.graphiti.mm.pictograms.PictogramsFactory;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -108,7 +108,7 @@ public class NewPiMMPage extends WizardNewFileCreationPage {
       this.graphName = this.graphName.substring(0, idx - 1);
     }
 
-    final PiGraph graph = PiMMFactory.eINSTANCE.createPiGraph();
+    final PiGraph graph = PiMMUserFactory.instance.createPiGraph();
     graph.setName(this.graphName);
 
     return graph;

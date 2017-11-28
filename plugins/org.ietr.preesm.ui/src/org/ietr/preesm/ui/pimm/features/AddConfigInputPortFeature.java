@@ -45,9 +45,9 @@ import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.util.IColorConstant;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
 // TODO: Auto-generated Javadoc
@@ -160,7 +160,7 @@ public class AddConfigInputPortFeature extends AbstractAddActorPortFeature {
    */
   @Override
   public Port getNewPort(final String portName, final ExecutableActor actor) {
-    final ConfigInputPort newPort = PiMMFactory.eINSTANCE.createConfigInputPort();
+    final ConfigInputPort newPort = PiMMUserFactory.instance.createConfigInputPort();
     newPort.setName(portName);
     actor.getConfigInputPorts().add(newPort);
     return newPort;

@@ -51,6 +51,7 @@ import java.util.List;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
+import javax.swing.WindowConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.layout.FillLayout;
@@ -243,7 +244,7 @@ public class GanttPlotter extends ApplicationFrame {
     this.chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
     this.chartPanel.setMouseZoomable(true, true);
     this.chartPanel.setMouseWheelEnabled(true);
-    CategoryPlot categoryPlot = this.chartPanel.getChart().getCategoryPlot();
+    final CategoryPlot categoryPlot = this.chartPanel.getChart().getCategoryPlot();
     categoryPlot.setRangePannable(true);
     setContentPane(this.chartPanel);
 
@@ -252,8 +253,8 @@ public class GanttPlotter extends ApplicationFrame {
 
     final JFrame helpFrame = new JFrame("Gantt Help");
     helpFrame.setSize(400, 250);
-    helpFrame.setLocationRelativeTo(chartPanel);
-    helpFrame.setDefaultCloseOperation(HIDE_ON_CLOSE);
+    helpFrame.setLocationRelativeTo(this.chartPanel);
+    helpFrame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 
     try {
       final URL resource = this.getClass().getResource("/resources/GanttHelp.html");

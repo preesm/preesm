@@ -41,6 +41,7 @@ import java.util.List;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
@@ -53,7 +54,6 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
@@ -114,15 +114,15 @@ public class GraphInterfaceObserver extends AdapterImpl {
     Port port;
     switch (iActor.getKind()) {
       case DataInputInterface.KIND:
-        port = PiMMFactory.eINSTANCE.createDataInputPort();
+        port = PiMMUserFactory.instance.createDataInputPort();
         graph.getDataInputPorts().add((DataInputPort) port);
         break;
       case DataOutputInterface.KIND:
-        port = PiMMFactory.eINSTANCE.createDataOutputPort();
+        port = PiMMUserFactory.instance.createDataOutputPort();
         graph.getDataOutputPorts().add((DataOutputPort) port);
         break;
       case ConfigOutputInterface.KIND:
-        port = PiMMFactory.eINSTANCE.createConfigOutputPort();
+        port = PiMMUserFactory.instance.createConfigOutputPort();
         graph.getConfigOutputPorts().add((ConfigOutputPort) port);
         break;
       default:
@@ -144,7 +144,7 @@ public class GraphInterfaceObserver extends AdapterImpl {
    *          the observed {@link PiGraph}
    */
   protected void addParamInterfaceActor(final ConfigInputInterface param, final PiGraph graph) {
-    final ConfigInputPort port = PiMMFactory.eINSTANCE.createConfigInputPort();
+    final ConfigInputPort port = PiMMUserFactory.instance.createConfigInputPort();
     port.setName(param.getName());
     graph.getConfigInputPorts().add(port);
 

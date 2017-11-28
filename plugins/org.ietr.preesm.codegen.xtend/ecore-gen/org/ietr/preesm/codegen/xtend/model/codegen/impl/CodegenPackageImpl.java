@@ -338,7 +338,8 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
     // Obtain or create and register package
     final CodegenPackageImpl theCodegenPackage = (CodegenPackageImpl) (EPackage.Registry.INSTANCE.get(CodegenPackage.eNS_URI) instanceof CodegenPackageImpl
-        ? EPackage.Registry.INSTANCE.get(CodegenPackage.eNS_URI) : new CodegenPackageImpl());
+        ? EPackage.Registry.INSTANCE.get(CodegenPackage.eNS_URI)
+        : new CodegenPackageImpl());
 
     CodegenPackageImpl.isInited = true;
 

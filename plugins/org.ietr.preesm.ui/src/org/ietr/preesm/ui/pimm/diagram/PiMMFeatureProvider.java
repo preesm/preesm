@@ -393,7 +393,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
   private class PiMMDeleteFeatureSelectionSwitch extends PiMMSwitch<IDeleteFeature> {
 
     @Override
-    public IDeleteFeature casePort(Port object) {
+    public IDeleteFeature casePort(final Port object) {
 
       if (object.eContainer() instanceof ExecutableActor) {
         return new DeleteActorPortFeature(PiMMFeatureProvider.this);
@@ -402,7 +402,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
         // through the GUI
         return new DefaultDeleteFeature(PiMMFeatureProvider.this) {
           @Override
-          public boolean canDelete(IDeleteContext context) {
+          public boolean canDelete(final IDeleteContext context) {
             return false;
           }
         };
@@ -412,32 +412,32 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     }
 
     @Override
-    public IDeleteFeature caseAbstractActor(AbstractActor object) {
+    public IDeleteFeature caseAbstractActor(final AbstractActor object) {
       return new DeleteAbstractActorFeature(PiMMFeatureProvider.this);
     }
 
     @Override
-    public IDeleteFeature caseParameter(Parameter object) {
+    public IDeleteFeature caseParameter(final Parameter object) {
       return new DeleteParameterizableFeature(PiMMFeatureProvider.this);
     }
 
     @Override
-    public IDeleteFeature caseFifo(Fifo object) {
+    public IDeleteFeature caseFifo(final Fifo object) {
       return new DeleteFifoFeature(PiMMFeatureProvider.this);
     }
 
     @Override
-    public IDeleteFeature caseDependency(Dependency object) {
+    public IDeleteFeature caseDependency(final Dependency object) {
       return new DeleteDependencyFeature(PiMMFeatureProvider.this);
     }
 
     @Override
-    public IDeleteFeature caseDelay(Delay object) {
+    public IDeleteFeature caseDelay(final Delay object) {
       return new DeleteDelayFeature(PiMMFeatureProvider.this);
     }
 
     @Override
-    public IDeleteFeature defaultCase(EObject object) {
+    public IDeleteFeature defaultCase(final EObject object) {
       return new DefaultDeleteFeature(PiMMFeatureProvider.this);
     }
   }
@@ -545,12 +545,12 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     if (obj instanceof EObject) {
       return new PiMMSwitch<IReconnectionFeature>() {
         @Override
-        public IReconnectionFeature caseFifo(Fifo object) {
+        public IReconnectionFeature caseFifo(final Fifo object) {
           return new ReconnectionFifoFeature(PiMMFeatureProvider.this);
         }
 
         @Override
-        public IReconnectionFeature caseDependency(Dependency object) {
+        public IReconnectionFeature caseDependency(final Dependency object) {
           return new ReconnectionDependencyFeature(PiMMFeatureProvider.this);
         }
       }.doSwitch((EObject) obj);

@@ -64,6 +64,7 @@ import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
@@ -92,7 +93,6 @@ import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
@@ -129,10 +129,6 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
   /** The current SDF refinement. */
   // Current SDF Refinement
   protected IRefinement currentSDFRefinement;
-
-  /** The pi factory. */
-  // Factory for creation of new Pi Expressions
-  protected PiMMFactory piFactory = PiMMFactory.eINSTANCE;
 
   /**
    * Creates the value.
@@ -195,7 +191,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
   @Override
   public void visitParameter(final Parameter p) {
     if (p.isConfigurationInterface()) {
-      ConfigInputInterface cii = (ConfigInputInterface) p;
+      final ConfigInputInterface cii = (ConfigInputInterface) p;
       final ConfigInputPort graphPort = cii.getGraphPort();
       final Dependency incomingDependency = graphPort.getIncomingDependency();
       final ISetter setter = incomingDependency.getSetter();
@@ -203,7 +199,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
       // be a parameter
       if (setter instanceof Parameter) {
         final Expression setterParam = ((Parameter) setter).getValueExpression();
-        final Expression pExp = this.piFactory.createExpression();
+        final Expression pExp = PiMMUserFactory.instance.createExpression();
         pExp.setExpressionString(setterParam.getExpressionString());
         cii.setValueExpression(pExp);
       }
@@ -212,7 +208,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
       // its
       if (this.execution.hasValue(p)) {
         final Integer value = this.execution.getValue(p);
-        final Expression pExp = this.piFactory.createExpression();
+        final Expression pExp = PiMMUserFactory.instance.createExpression();
         pExp.setExpressionString(value.toString());
         p.setValueExpression(pExp);
       }
@@ -230,7 +226,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
     // Setter of an incoming dependency into a ConfigInputInterface must be
     // a parameter
     if (setter instanceof Parameter) {
-      final Expression pExp = this.piFactory.createExpression();
+      final Expression pExp = PiMMUserFactory.instance.createExpression();
       pExp.setExpressionString(((Parameter) setter).getValueExpression().getExpressionString());
       cii.setValueExpression(pExp);
     }
@@ -253,7 +249,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
       if (!execution.hasValue(p)) {
         // Evaluate the expression wrt. the current values of the
         // parameters and set the result as new expression
-        final Expression pExp = this.piFactory.createExpression();
+        final Expression pExp = PiMMUserFactory.instance.createExpression();
         final String value = p.getValueExpression().evaluate();
         pExp.setExpressionString(value);
         p.setValueExpression(pExp);

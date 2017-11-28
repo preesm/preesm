@@ -42,9 +42,9 @@ import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.func.ICreate;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 
@@ -106,7 +106,7 @@ public class CreateActorFeature extends AbstractCreateFeature {
     }
 
     // create Actor
-    final Actor newActor = PiMMFactory.eINSTANCE.createActor();
+    final Actor newActor = PiMMUserFactory.instance.createActor();
     newActor.setName(newActorName);
 
     // Add new actor to the graph.

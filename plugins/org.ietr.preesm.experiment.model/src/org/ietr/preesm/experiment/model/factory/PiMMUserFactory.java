@@ -35,16 +35,14 @@
 package org.ietr.preesm.experiment.model.factory;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
-import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.impl.PiMMFactoryImpl;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
 
 /**
  *
@@ -62,17 +60,12 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   }
 
   /**
-   * Copy an existing Vertex
+   * Copy an existing PiMM node
    */
-  public final Configurable copy(final AbstractVertex vertex) {
-    return (Configurable) PiMMUserFactory.copier.copy(vertex);
-  }
-
-  /**
-   * Copy an existing Delay
-   */
-  public final Delay copy(final Delay delay) {
-    return (Delay) PiMMUserFactory.copier.copy(delay);
+  public final <T extends PiMMVisitable> T copy(final T vertex) {
+    @SuppressWarnings("unchecked")
+    final T copy = (T) PiMMUserFactory.copier.copy(vertex);
+    return copy;
   }
 
   /**

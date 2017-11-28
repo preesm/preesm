@@ -176,7 +176,7 @@ public class PreesmScenario {
       for (final SDFAbstractVertex vertex : graph.vertexSet()) {
         result.add(vertex.getName());
       }
-    } catch (InvalidModelException e) {
+    } catch (final InvalidModelException e) {
       e.printStackTrace();
     }
     return result;

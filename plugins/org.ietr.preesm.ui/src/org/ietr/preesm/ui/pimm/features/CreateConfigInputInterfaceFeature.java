@@ -42,9 +42,9 @@ import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.func.ICreate;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 
@@ -110,7 +110,7 @@ public class CreateConfigInputInterfaceFeature extends AbstractCreateFeature {
     }
 
     // create Configuration Input Interface (i.e. a Parameter)
-    final ConfigInputInterface newParameter = PiMMFactory.eINSTANCE.createConfigInputInterface();
+    final ConfigInputInterface newParameter = PiMMUserFactory.instance.createConfigInputInterface();
     newParameter.setName(newCfgInIfName);
 
     // Add new parameter to the graph.
