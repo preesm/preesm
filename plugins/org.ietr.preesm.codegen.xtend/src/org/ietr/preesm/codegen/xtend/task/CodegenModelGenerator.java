@@ -135,7 +135,6 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.ietr.preesm.memory.script.Range;
 
-// TODO: Auto-generated Javadoc
 /**
  * The objective of this class is to generate an intermediate model that will be used to print the generated code. <br>
  * The generation of the intermediate model is based on elements resulting from a workflow execution: an {@link Design architecture}, a scheduled
@@ -148,11 +147,11 @@ import org.ietr.preesm.memory.script.Range;
  */
 public class CodegenModelGenerator {
 
+  private static final String ERROR_PATTERN_1 = "MemEx graph memory object (%s) refers to a DAG Vertex %s that does not exist in the input DAG.\n"
+      + "Make sure that the MemEx is derived from the input DAG of the codegen.";
+
   /** Targeted {@link Design Architecture} of the code generation. */
   private final Design archi;
-
-  /** The shared {@link Buffer}. */
-  // private Buffer sharedBuffer;
 
   /**
    * {@link Map} of the main {@link Buffer} for the code generation. Each {@link Buffer} in this {@link List} contains one or more {@link SubBuffer} and is
@@ -256,7 +255,7 @@ public class CodegenModelGenerator {
    *           When one of the previous verification fails.
    */
   public CodegenModelGenerator(final Design archi, final DirectedAcyclicGraph dag, final Map<String, MemoryExclusionGraph> megs, final PreesmScenario scenario,
-      final Workflow workflow) throws CodegenException {
+      final Workflow workflow) {
     this.archi = archi;
     this.dag = dag;
     this.megs = megs;
@@ -295,19 +294,19 @@ public class CodegenModelGenerator {
    * @throws CodegenException
    *           When one of the previous verification fails.
    */
-  protected void checkInputs(final Design archi, final DirectedAcyclicGraph dag, final Map<String, MemoryExclusionGraph> megs) throws CodegenException {
+  protected void checkInputs(final Design archi, final DirectedAcyclicGraph dag, final Map<String, MemoryExclusionGraph> megs) {
     // Check that the input DAG is scheduled and Mapped on the targeted
     // architecture
     for (final DAGVertex vertex : dag.vertexSet()) {
       final ComponentInstance operator = vertex.getPropertyBean().getValue("Operator", ComponentInstance.class);
       if (operator == null) {
-        throw new CodegenException(
-            "The DAG Actor " + vertex + " is not mapped on any operator.\n" + " All actors must be mapped before using the code generation.");
+        final String msg = "The DAG Actor " + vertex + " is not mapped on any operator.\n" + " All actors must be mapped before using the code generation.";
+        throw new CodegenException(msg);
       }
 
       if (!archi.getComponentInstances().contains(operator)) {
-        throw new CodegenException(
-            "The DAG Actor " + vertex + " is not mapped on an operator " + operator + " that does not belong to the ipnut architecture.");
+        final String msg = "The DAG Actor " + vertex + " is not mapped on an operator " + operator + " that does not belong to the ipnut architecture.";
+        throw new CodegenException(msg);
       }
     }
 
@@ -325,22 +324,26 @@ public class CodegenModelGenerator {
           sourceName = sourceName.substring(10, sourceName.length());
         }
 
-        if (dag.getVertex(sourceName) == null) {
-          throw new CodegenException("MemEx graph memory object (" + memObj + ") refers to a DAG Vertex " + sourceName
-              + " that does not exist in the input DAG.\n" + "Make sure that the MemEx is derived from the input DAG of the codegen.");
+        final DAGVertex sourceVertex = dag.getVertex(sourceName);
+        final DAGVertex sinkVertex = dag.getVertex(sinkName);
+
+        // Check that vertices exist
+        final boolean sourceVertexIsNull = sourceVertex == null;
+        final boolean sinkVertexIsNull = sinkVertex == null;
+        if (sourceVertexIsNull) {
+          throw new CodegenException(String.format(ERROR_PATTERN_1, memObj.toString(), sourceName));
         }
-        if (dag.getVertex(sinkName) == null) {
-          throw new CodegenException("MemEx graph memory object (" + memObj + ") refers to a DAG Vertex " + sinkName
-              + " that does not exist in the input DAG.\n" + "Make sure that the MemEx is derived from the input DAG of the codegen.");
+        if (sinkVertexIsNull) {
+          throw new CodegenException(String.format(ERROR_PATTERN_1, memObj.toString(), sinkName));
         }
-        // If the memObject corresponds to an edge of the DAG
-        if (!sinkName.equals(sourceName) && !isFifo) {
-          // Check that the edge corresponding to the MemObject
-          // exists.
-          if (!dag.containsEdge(dag.getVertex(sourceName), dag.getVertex(sinkName))) {
-            throw new CodegenException("MemEx graph memory object (" + memObj + ") refers to a DAG Edge" + " that does not exist in the input DAG.\n"
-                + "Make sure that the MemEx is derived from the input DAG of the codegen.");
-          }
+
+        // Check that the edge is part of the memeExGraph
+        final boolean sinkAndSourceNamesDiffer = !sinkName.equals(sourceName);
+        final boolean memObjectIsAnEdge = sinkAndSourceNamesDiffer && !isFifo;
+        final boolean memExGraphContainsEdge = dag.containsEdge(sourceVertex, sinkVertex);
+        if (memObjectIsAnEdge && !memExGraphContainsEdge) {
+          throw new CodegenException("MemEx graph memory object (" + memObj + ") refers to a DAG Edge" + " that does not exist in the input DAG.\n"
+              + "Make sure that the MemEx is derived from the input DAG of the codegen.");
         }
 
         // Check that the MemEx graph is allocated.
