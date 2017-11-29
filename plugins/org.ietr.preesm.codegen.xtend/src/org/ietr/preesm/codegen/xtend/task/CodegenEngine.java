@@ -273,6 +273,9 @@ public class CodegenEngine {
         throw new WorkflowException("Could not access target directory [" + this.codegenPath + "] during code generation", e);
       }
 
+      // initialize printer engine
+      printer.setEngine(this);
+
       // Do the pre-processing
       printer.preProcessing(printerAndBlocks.getValue(), this.codeBlocks);
       this.realPrinters.put(printerAndBlocks.getKey(), printer);
@@ -286,7 +289,6 @@ public class CodegenEngine {
     for (final Entry<IConfigurationElement, List<Block>> printerAndBlocks : this.registeredPrintersAndBlocks.entrySet()) {
       final String extension = printerAndBlocks.getKey().getAttribute("extension");
       final CodegenAbstractPrinter printer = this.realPrinters.get(printerAndBlocks.getKey());
-      printer.setEngine(this);
       final IWorkspace workspace = ResourcesPlugin.getWorkspace();
       for (final Block b : printerAndBlocks.getValue()) {
         final IFile iFile = workspace.getRoot().getFile(new Path(this.codegenPath + b.getName() + extension));
