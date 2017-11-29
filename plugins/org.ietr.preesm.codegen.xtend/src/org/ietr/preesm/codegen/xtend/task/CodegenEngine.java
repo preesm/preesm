@@ -67,21 +67,21 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
 import org.ietr.preesm.codegen.xtend.printer.CodegenAbstractPrinter;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class CodegenEngine.
  */
 public class CodegenEngine {
-
-  /** The scenario. */
-  private final PreesmScenario scenario;
 
   /** The codegen path. */
   private final String codegenPath;
@@ -95,20 +95,32 @@ public class CodegenEngine {
   /** The real printers. */
   private Map<IConfigurationElement, CodegenAbstractPrinter> realPrinters;
 
+  private CodegenModelGenerator generator;
+
   /**
    * Instantiates a new codegen engine.
    *
-   * @param scenario
-   *          the scenario
-   * @param codegenPath
-   *          the codegen path
-   * @param codeBlocks
-   *          the code blocks
    */
-  public CodegenEngine(final PreesmScenario scenario, final String codegenPath, final List<Block> codeBlocks) {
-    this.scenario = scenario;
+  public CodegenEngine(final String codegenPath, final List<Block> codeBlocks, CodegenModelGenerator generator) {
     this.codegenPath = codegenPath;
     this.codeBlocks = codeBlocks;
+    this.generator = generator;
+  }
+
+  public final Design getArchi() {
+    return this.generator.getArchi();
+  }
+
+  public final DirectedAcyclicGraph getAlgo() {
+    return this.generator.getAlgo();
+  }
+
+  public final Map<String, MemoryExclusionGraph> getMegs() {
+    return this.generator.getMegs();
+  }
+
+  public final PreesmScenario getScenario() {
+    return this.generator.getScenario();
   }
 
   /**
@@ -130,7 +142,7 @@ public class CodegenEngine {
 
     for (final Block b : this.codeBlocks) {
       // Create a resource
-      this.scenario.getCodegenManager().getCodegenDirectory();
+      this.getScenario().getCodegenManager().getCodegenDirectory();
       final Resource resource = resSet.createResource(URI.createURI(codegenPath + b.getName() + ".codegen"));
       // Get the first model element and cast it to the right type, in
       // my example everything is hierarchical included in this first

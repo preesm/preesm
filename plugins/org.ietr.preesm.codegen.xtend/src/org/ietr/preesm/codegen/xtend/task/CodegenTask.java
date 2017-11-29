@@ -96,7 +96,7 @@ public class CodegenTask extends AbstractTaskImplementation {
     final String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + "/";
 
     // Create the codegen engine
-    final CodegenEngine engine = new CodegenEngine(scenario, codegenPath, codeBlocks);
+    final CodegenEngine engine = new CodegenEngine(codegenPath, codeBlocks, generator);
 
     if (CodegenTask.VALUE_PRINTER_IR.equals(selectedPrinter)) {
       engine.initializePrinterIR(codegenPath);

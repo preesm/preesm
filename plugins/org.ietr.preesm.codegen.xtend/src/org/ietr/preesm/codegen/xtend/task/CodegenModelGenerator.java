@@ -276,6 +276,22 @@ public class CodegenModelGenerator {
     this.linkHSDFVertexBuffer = new LinkedHashMap<>();
   }
 
+  public final Design getArchi() {
+    return this.archi;
+  }
+
+  public final DirectedAcyclicGraph getAlgo() {
+    return this.algo;
+  }
+
+  public final Map<String, MemoryExclusionGraph> getMegs() {
+    return this.megs;
+  }
+
+  public final PreesmScenario getScenario() {
+    return this.scenario;
+  }
+
   /**
    * Verification to ensure that the inputs are valid:
    * <ul>
@@ -332,10 +348,10 @@ public class CodegenModelGenerator {
         final boolean sourceVertexIsNull = sourceVertex == null;
         final boolean sinkVertexIsNull = sinkVertex == null;
         if (sourceVertexIsNull) {
-          throw new CodegenException(String.format(ERROR_PATTERN_1, memObj.toString(), sourceName));
+          throw new CodegenException(String.format(CodegenModelGenerator.ERROR_PATTERN_1, memObj.toString(), sourceName));
         }
         if (sinkVertexIsNull) {
-          throw new CodegenException(String.format(ERROR_PATTERN_1, memObj.toString(), sinkName));
+          throw new CodegenException(String.format(CodegenModelGenerator.ERROR_PATTERN_1, memObj.toString(), sinkName));
         }
 
         // Check that the edge is part of the memeExGraph
