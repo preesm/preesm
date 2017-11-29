@@ -66,6 +66,7 @@ import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.util.PrototypeFormatter;
 import org.ietr.preesm.ui.pimm.features.ClearActorMemoryScriptFeature;
 import org.ietr.preesm.ui.pimm.features.ClearActorRefinementFeature;
 import org.ietr.preesm.ui.pimm.features.OpenMemoryScriptFeature;
@@ -539,12 +540,12 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
               int maxLength = (int) ((this.composite.getBounds().width - this.FIRST_COLUMN_WIDTH) * 0.17);
               maxLength = Math.max(maxLength, 40);
               if (((CHeaderRefinement) refinement).getLoopPrototype() != null) {
-                final String loop = "loop: " + ((CHeaderRefinement) refinement).getLoopPrototype().format();
+                final String loop = "loop: " + PrototypeFormatter.format(((CHeaderRefinement) refinement).getLoopPrototype());
                 view += (loop.length() <= maxLength) ? loop : loop.substring(0, maxLength) + "...";
                 tooltip = loop;
               }
               if (((CHeaderRefinement) refinement).getInitPrototype() != null) {
-                final String init = "\ninit: " + ((CHeaderRefinement) refinement).getInitPrototype().format();
+                final String init = "\ninit: " + PrototypeFormatter.format(((CHeaderRefinement) refinement).getInitPrototype());
                 view += (init.length() <= maxLength) ? init : init.substring(0, maxLength) + "...";
                 ;
                 tooltip += init;

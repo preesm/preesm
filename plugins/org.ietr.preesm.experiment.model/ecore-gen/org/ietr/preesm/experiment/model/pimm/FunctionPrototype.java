@@ -96,11 +96,4 @@ public interface FunctionPrototype extends PiMMVisitable {
    */
   EList<FunctionParameter> getParameters();
 
-  /**
-   * Format.
-   *
-   * @return a String formatted as follows: name (parameters types)
-   */
-  String format();
-
 } // FunctionPrototype
