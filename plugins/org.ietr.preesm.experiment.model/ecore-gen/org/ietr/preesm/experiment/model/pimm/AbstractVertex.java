@@ -92,12 +92,12 @@ public interface AbstractVertex extends PiMMVisitable {
   EList<Port> getAllPorts();
 
   /**
-   * Get the {@link Port} with a given name from the {@link AbstractActor} ports lists.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param portName
-   *          the name of the desired {@link Port}
-   * @return the requested port, or <code>null</code> if no such port exists.s
+   * @model annotation="http://www.eclipse.org/emf/2002/GenModel body='return getAllPorts().stream().filter(Objects::nonNull).filter(p -&gt; (p.getName() ==
+   *        null) &amp;&amp; (portName == null) || (p.getName() != null) &amp;&amp; p.getName().equals(portName)).findFirst().orElse(null);'"
+   * @generated
    */
-  public Port lookupPort(String portName);
+  Port lookupPort(String portName);
 
 } // AbstractVertex
