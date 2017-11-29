@@ -46,6 +46,12 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory
 import org.ietr.preesm.codegen.xtend.printer.PrinterState
 import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
+import org.ietr.dftools.architecture.slam.ComponentInstance
+import org.ietr.dftools.architecture.slam.Design
+import org.ietr.dftools.architecture.slam.SlamPackage
+
+
+import org.ietr.preesm.core.architecture.util.DesignTools
 
 /**
  * This printer currently papify C code for X86 cores..
@@ -69,6 +75,10 @@ class PapifiedCPrinter extends CPrinter {
 		String PAPI_end_usec = "PAPI_end_usec_";
 		String PAPI_eventCodeSet = "PAPI_eventCodeSet_";
 		String PAPI_eventSet = "PAPI_eventSet_";
+		
+		String PAPI_AVAIL_EVENTS;
+		
+		
 
 	/**
 	 * Add a required library for PAPI utilization
@@ -96,8 +106,32 @@ class PapifiedCPrinter extends CPrinter {
 	 * 			modified)
 	 */
 	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {
+		
+			///////////////////////////////////
+			//	Trying to get the slamDesign //
+			///////////////////////////////////
+		
+		//Design slamDesign = this.		//Maybe it is inherit in the class --> no option found
+		//Design slamDesign = org.ietr.dftools.architecture.slam.Design.		//Maybe from the slamDesign class --> no option found
+		//ComponentInstance slamDesign = org.ietr.preesm.core.architecture.util.DesignTools.getComponentInstance(slamDesign, "Core0");
+
+	
 		for (Block block : printerBlocks){
-			for(CodeElt elts : (block as CoreBlock).loopBlock.codeElts){
+			
+			System.out.println("PE [" + block.name + "]");
+			System.out.println("PE Class = " + block.class);
+			System.out.println("PE Type = " + (block as CoreBlock).coreType);
+			System.out.println("PE Class = " + (block as CoreBlock).class);
+			System.out.println("PE ID = " + (block as CoreBlock).coreID);
+			
+			
+			//////////////////////////
+			//	Trying with casting //
+			//////////////////////////
+			
+			//System.out.println("PE [" + (block as ComponentInstance).instanceName + "]");
+			
+			for(CodeElt elts : (block as CoreBlock).loopBlock.codeElts){	
 				//For all the FunctionCalls within the main code loop
 				if(elts.eClass.name.equals("FunctionCall")){
 					//Add PAPI action variable
@@ -228,10 +262,13 @@ class PapifiedCPrinter extends CPrinter {
 						func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
 						func.actorName = "PAPI eventList_set_multiplex_".concat((elts as FunctionCall).actorName)
 						func
-					})
+					})					
 				}
 			}
 		}
+		
+		
+		
 		super.preProcessing(printerBlocks, allBlocks)
 	}
 
