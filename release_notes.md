@@ -10,6 +10,8 @@ PREESM Changelog
 * Update releng scripts;
 * Refactor UI: use PiMMSwitches instead of instanceof ifs;
 * Upadte product: now starts up the Preesm perspective by default and show Preesm in the title;
+* Refactor code generation;
+* Make scenario, architecture and algorithm visible from the codegen printers;
 
 ### Bug fix
 
