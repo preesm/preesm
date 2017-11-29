@@ -46,12 +46,14 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory
 import org.ietr.preesm.codegen.xtend.printer.PrinterState
 import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
-import org.ietr.dftools.architecture.slam.ComponentInstance
+import org.ietr.dftools.architecture.slam.Design
+
+/*import org.ietr.dftools.architecture.slam.ComponentInstance
 import org.ietr.dftools.architecture.slam.Design
 import org.ietr.dftools.architecture.slam.SlamPackage
 
 
-import org.ietr.preesm.core.architecture.util.DesignTools
+import org.ietr.preesm.core.architecture.util.DesignTools*/
 
 /**
  * This printer currently papify C code for X86 cores..
@@ -78,7 +80,9 @@ class PapifiedCPrinter extends CPrinter {
 		
 		String PAPI_AVAIL_EVENTS;
 		
-		
+		//List<ComponentInstance> compInstances = this.engine.archi.componentInstances; 
+		//ComponentInstance pe;
+		//int instance;
 
 	/**
 	 * Add a required library for PAPI utilization
@@ -107,22 +111,24 @@ class PapifiedCPrinter extends CPrinter {
 	 */
 	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {
 		
-			///////////////////////////////////
-			//	Trying to get the slamDesign //
-			///////////////////////////////////
+		//instance = 0;
 		
-		//Design slamDesign = this.		//Maybe it is inherit in the class --> no option found
-		//Design slamDesign = org.ietr.dftools.architecture.slam.Design.		//Maybe from the slamDesign class --> no option found
-		//ComponentInstance slamDesign = org.ietr.preesm.core.architecture.util.DesignTools.getComponentInstance(slamDesign, "Core0");
-
+		var Design slamDesign = this.engine.archi;		//NullPointerException
+		//var List<ComponentInstance> compInstances = slamDesign.componentInstances; 
 	
+		println(slamDesign.parameters.toString);
+		
 		for (Block block : printerBlocks){
 			
-			System.out.println("PE [" + block.name + "]");
-			System.out.println("PE Class = " + block.class);
-			System.out.println("PE Type = " + (block as CoreBlock).coreType);
-			System.out.println("PE Class = " + (block as CoreBlock).class);
-			System.out.println("PE ID = " + (block as CoreBlock).coreID);
+		//	pe = compInstances.get(instance);
+			
+			
+			System.out.println("block [" + block.name + "]");
+			//System.out.println("PE [" + pe.instanceName + "]");
+			System.out.println("block Class = " + block.class);
+			System.out.println("block Type = " + (block as CoreBlock).coreType);
+			System.out.println("block Class = " + (block as CoreBlock).class);
+			System.out.println("block ID = " + (block as CoreBlock).coreID);
 			
 			
 			//////////////////////////
@@ -265,6 +271,7 @@ class PapifiedCPrinter extends CPrinter {
 					})					
 				}
 			}
+		//	instance++;
 		}
 		
 		
