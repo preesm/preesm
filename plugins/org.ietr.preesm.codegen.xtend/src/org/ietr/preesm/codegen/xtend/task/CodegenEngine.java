@@ -286,7 +286,7 @@ public class CodegenEngine {
     for (final Entry<IConfigurationElement, List<Block>> printerAndBlocks : this.registeredPrintersAndBlocks.entrySet()) {
       final String extension = printerAndBlocks.getKey().getAttribute("extension");
       final CodegenAbstractPrinter printer = this.realPrinters.get(printerAndBlocks.getKey());
-
+      printer.setEngine(this);
       final IWorkspace workspace = ResourcesPlugin.getWorkspace();
       for (final Block b : printerAndBlocks.getValue()) {
         final IFile iFile = workspace.getRoot().getFile(new Path(this.codegenPath + b.getName() + extension));

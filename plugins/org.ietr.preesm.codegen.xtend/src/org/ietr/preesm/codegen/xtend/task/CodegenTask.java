@@ -38,6 +38,7 @@
  */
 package org.ietr.preesm.codegen.xtend.task;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -50,14 +51,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class CodegenTask.
  */
@@ -77,7 +76,7 @@ public class CodegenTask extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
+      final String nodeName, final Workflow workflow) {
 
     // Retrieve inputs
     final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
@@ -93,7 +92,7 @@ public class CodegenTask extends AbstractTaskImplementation {
 
     // Retrieve the desired printer and target folder path
     final String selectedPrinter = parameters.get(CodegenTask.PARAM_PRINTER);
-    final String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + "/";
+    final String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + File.separator;
 
     // Create the codegen engine
     final CodegenEngine engine = new CodegenEngine(codegenPath, codeBlocks, generator);
@@ -107,8 +106,7 @@ public class CodegenTask extends AbstractTaskImplementation {
     engine.print();
 
     // Create empty output map (codegen doesn't have output)
-    final Map<String, Object> output = new LinkedHashMap<>();
-    return output;
+    return new LinkedHashMap<>();
   }
 
   /*
@@ -133,7 +131,6 @@ public class CodegenTask extends AbstractTaskImplementation {
     for (final String lang : languages) {
       avilableLanguages += lang + ", ";
     }
-
     avilableLanguages += CodegenTask.VALUE_PRINTER_IR + "}";
 
     parameters.put(CodegenTask.PARAM_PRINTER, avilableLanguages);
