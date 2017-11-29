@@ -65,6 +65,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 import org.ietr.preesm.codegen.xtend.model.codegen.util.CodegenSwitch
 import org.ietr.preesm.codegen.xtend.task.CodegenException
+import org.ietr.preesm.codegen.xtend.task.CodegenEngine
 
 enum PrinterState {
 	PRINTING_DEFINITIONS,
@@ -126,6 +127,9 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 */
 	@Accessors
 	protected CoreBlock printedCoreBlock;
+
+	@Accessors
+	protected CodegenEngine engine;
 
 	override caseCommunication(Communication communication) {
 		return printCommunication(communication);
