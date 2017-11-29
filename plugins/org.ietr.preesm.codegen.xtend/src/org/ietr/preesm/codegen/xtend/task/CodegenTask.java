@@ -91,29 +91,22 @@ public class CodegenTask extends AbstractTaskImplementation {
 
     final List<Block> codeBlocks = new ArrayList<>(generator.generate());
 
-    // Retrieve the desired printer
+    // Retrieve the desired printer and target folder path
     final String selectedPrinter = parameters.get(CodegenTask.PARAM_PRINTER);
-
-    // Do the print
     final String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + "/";
 
     // Create the codegen engine
     final CodegenEngine engine = new CodegenEngine(scenario, codegenPath, codeBlocks);
 
-    if (selectedPrinter.equals(CodegenTask.VALUE_PRINTER_IR)) {
+    if (CodegenTask.VALUE_PRINTER_IR.equals(selectedPrinter)) {
       engine.initializePrinterIR(codegenPath);
     }
 
-    // Fill a map associating printers with printed files
     engine.registerPrintersAndBlocks(selectedPrinter);
-
-    // Pre-process the printers one by one to:
     engine.preprocessPrinters();
-
-    // Do the print for all Blocks
     engine.print();
 
-    // Create empty output map
+    // Create empty output map (codegen doesn't have output)
     final Map<String, Object> output = new LinkedHashMap<>();
     return output;
   }
