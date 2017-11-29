@@ -128,12 +128,12 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	@Accessors
 	protected CoreBlock printedCoreBlock;
 
-	//@Accessors
+	@Accessors
 	protected CodegenEngine engine;
 	
-	def public void setEngine(CodegenEngine engine){
+	/*def public void setEngine(CodegenEngine engine){
 		this.engine = engine;
-	}
+	}*/
 
 	override caseCommunication(Communication communication) {
 		return printCommunication(communication);

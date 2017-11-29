@@ -47,6 +47,7 @@ import org.ietr.preesm.codegen.xtend.printer.PrinterState
 import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
 import org.ietr.dftools.architecture.slam.Design
+import org.ietr.dftools.architecture.slam.ComponentInstance
 
 /*import org.ietr.dftools.architecture.slam.ComponentInstance
 import org.ietr.dftools.architecture.slam.Design
@@ -82,7 +83,7 @@ class PapifiedCPrinter extends CPrinter {
 		
 		//List<ComponentInstance> compInstances = this.engine.archi.componentInstances; 
 		//ComponentInstance pe;
-		//int instance;
+		int instance;
 
 	/**
 	 * Add a required library for PAPI utilization
@@ -111,20 +112,20 @@ class PapifiedCPrinter extends CPrinter {
 	 */
 	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {
 		
-		//instance = 0;
+		instance = 0;
 		
 		var Design slamDesign = this.engine.archi;		//NullPointerException
-		//var List<ComponentInstance> compInstances = slamDesign.componentInstances; 
+		var List<ComponentInstance> compInstances = slamDesign.componentInstances; 
 	
-		println(slamDesign.parameters.toString);
-		
+		var ComponentInstance pe;
+				
 		for (Block block : printerBlocks){
 			
-		//	pe = compInstances.get(instance);
+			pe = compInstances.get(instance);
 			
 			
 			System.out.println("block [" + block.name + "]");
-			//System.out.println("PE [" + pe.instanceName + "]");
+			System.out.println("PE [" + pe.instanceName + "]");
 			System.out.println("block Class = " + block.class);
 			System.out.println("block Type = " + (block as CoreBlock).coreType);
 			System.out.println("block Class = " + (block as CoreBlock).class);
@@ -271,7 +272,7 @@ class PapifiedCPrinter extends CPrinter {
 					})					
 				}
 			}
-		//	instance++;
+			instance++;
 		}
 		
 		
