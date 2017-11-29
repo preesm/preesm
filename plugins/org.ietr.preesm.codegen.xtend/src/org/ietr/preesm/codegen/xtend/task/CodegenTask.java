@@ -44,8 +44,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -97,12 +95,10 @@ public class CodegenTask extends AbstractTaskImplementation {
     final String selectedPrinter = parameters.get(CodegenTask.PARAM_PRINTER);
 
     // Do the print
-    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-    workspace.getRoot().getLocation();
     final String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + "/";
 
     // Create the codegen engine
-    final CodegenEngine engine = new CodegenEngine(scenario, workspace, codegenPath, codeBlocks);
+    final CodegenEngine engine = new CodegenEngine(scenario, codegenPath, codeBlocks);
 
     if (selectedPrinter.equals(CodegenTask.VALUE_PRINTER_IR)) {
       engine.initializePrinterIR(codegenPath);
