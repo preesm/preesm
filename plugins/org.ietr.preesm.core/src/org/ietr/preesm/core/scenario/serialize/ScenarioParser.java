@@ -274,7 +274,7 @@ public class ScenarioParser {
     final String name = paramValueElt.getAttribute("name");
     String stringValue = paramValueElt.getAttribute("value");
 
-    currentParameter = graph.getParameterNamedWithParent(name, parent);
+    currentParameter = graph.lookupParameterGivenGraph(name, parent);
 
     switch (type) {
       case "INDEPENDENT":

@@ -511,8 +511,8 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getParameterNamedWithParent(java.lang.String, java.lang.String)
    */
   @Override
-  public Parameter getParameterNamedWithParent(final String name, final String parent) {
-    return getAllParameters().stream().filter(p -> p.getName().equals(name) && p.getContainingGraph().getName().equals(parent)).findFirst().orElse(null);
+  public Parameter lookupParameterGivenGraph(final String parameterName, final String graphName) {
+    return getAllParameters().stream().filter(p -> p.getName().equals(parameterName) && p.getContainingGraph().getName().equals(graphName)).findFirst().orElse(null);
   }
 
   /*

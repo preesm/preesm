@@ -200,7 +200,7 @@ public interface PiGraph extends AbstractActor {
    *          the parent
    * @return the first Parameter with the given name found in the graph hierarchy, null if none is found
    */
-  public Parameter getParameterNamedWithParent(String name, String parent);
+  public Parameter lookupParameterGivenGraph(String name, String parent);
 
   /**
    * Gets the all vertices.
