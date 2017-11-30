@@ -48,6 +48,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
 import org.ietr.dftools.architecture.slam.Design
 import org.ietr.dftools.architecture.slam.ComponentInstance
+import org.ietr.dftools.architecture.slam.attributes.Parameter
 
 /*import org.ietr.dftools.architecture.slam.ComponentInstance
 import org.ietr.dftools.architecture.slam.Design
@@ -84,6 +85,8 @@ class PapifiedCPrinter extends CPrinter {
 		//List<ComponentInstance> compInstances = this.engine.archi.componentInstances; 
 		//ComponentInstance pe;
 		int instance;
+		var int code_set_size;
+		var String all_event_names;
 
 	/**
 	 * Add a required library for PAPI utilization
@@ -118,14 +121,49 @@ class PapifiedCPrinter extends CPrinter {
 		var List<ComponentInstance> compInstances = slamDesign.componentInstances; 
 	
 		var ComponentInstance pe;
+		
+		var List<Parameter> params;
+				
+		var String[] event_names;
+		
+		
 				
 		for (Block block : printerBlocks){
 			
 			pe = compInstances.get(instance);
 			
+			params = pe.parameters;
 			
 			System.out.println("block [" + block.name + "]");
 			System.out.println("PE [" + pe.instanceName + "]");
+						
+			for(Parameter param : params){
+				
+				println(param.key);
+				println(param.value);
+				
+				
+			}
+			
+			
+			all_event_names = org.ietr.preesm.core.architecture.util.DesignTools.getParameter(pe, "PAPI_AVAIL_EVENTS");
+			
+			println(all_event_names);
+			event_names = all_event_names.split(",");
+			
+			
+			code_set_size = event_names.length;
+			
+			println("Code_set_size = " + code_set_size);
+			
+			for(String event_name : event_names){
+				
+				println(event_name);
+								
+			}
+			
+				
+			
 			System.out.println("block Class = " + block.class);
 			System.out.println("block Type = " + (block as CoreBlock).coreType);
 			System.out.println("block Class = " + (block as CoreBlock).class);
@@ -170,7 +208,7 @@ class PapifiedCPrinter extends CPrinter {
 					block.definitions.add({
 						var const = CodegenFactory.eINSTANCE.createConstant
 						const.name = "Code_set_size"
-						const.value = 2
+						const.value = code_set_size
 						const
 					})
 					//Create a constant for use 0 as a funtion parameter
@@ -190,12 +228,20 @@ class PapifiedCPrinter extends CPrinter {
 						func.actorName = "PAPI Init_papi_actions_".concat((elts as FunctionCall).actorName)
 						func
 					})
+					//Create a constant for use 0 as a funtion parameter
+					block.definitions.add({
+						var const = CodegenFactory.eINSTANCE.createConstantString
+						const.name = "all_event_names"
+						const.value = all_event_names
+						const
+					})
 					//Create a function to initialize output file
 					(block as CoreBlock).initBlock.codeElts.add({
 						var func = CodegenFactory.eINSTANCE.createFunctionCall()
 						func.name = "event_init_output_file"
+						func.addParameter(block.definitions.get(block.definitions.length-5), PortDirection.INPUT)
 						func.addParameter(block.definitions.get(block.definitions.length-4), PortDirection.INPUT)
-						func.addParameter(block.definitions.get(block.definitions.length-3), PortDirection.INPUT)
+						func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.INPUT)
 						func.actorName = "PAPI Init_output_file_".concat((elts as FunctionCall).actorName)
 						func
 					})
@@ -221,7 +267,7 @@ class PapifiedCPrinter extends CPrinter {
 					block.definitions.add({
 						var const = CodegenFactory.eINSTANCE.createBuffer
 						const.name = PAPI_eventCodeSet.concat((elts as FunctionCall).actorName)
-						const.size = 2
+						const.size = code_set_size
 						const.type = "int"
 						const.comment = const.name.concat("_code_set")
 						const
@@ -256,9 +302,9 @@ class PapifiedCPrinter extends CPrinter {
 						var func = CodegenFactory.eINSTANCE.createFunctionCall()
 						func.name = "event_create_eventList"
 						func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
-						func.addParameter(block.definitions.get(block.definitions.length-6), PortDirection.INPUT)
+						func.addParameter(block.definitions.get(block.definitions.length-7), PortDirection.INPUT)
 						func.addParameter(block.definitions.get(block.definitions.length-2), PortDirection.INPUT)
-						func.addParameter(block.definitions.get(block.definitions.length-5), PortDirection.INPUT)
+						func.addParameter(block.definitions.get(block.definitions.length-6), PortDirection.INPUT)
 						func.actorName = "PAPI create_eventlist_".concat((elts as FunctionCall).actorName)
 						func
 					})
@@ -302,7 +348,7 @@ class PapifiedCPrinter extends CPrinter {
 			«super.printFunctionCall(functionCall)»
 
 			// Papi Stop for «functionCall.actorName»
-			event_stop(&(PAPI_eventSet_«functionCall.actorName»[0]), 2, PAPI_actions_«functionCall.actorName»[0].counterValues, 0);
+			event_stop(&(PAPI_eventSet_«functionCall.actorName»[0]), «code_set_size», PAPI_actions_«functionCall.actorName»[0].counterValues, 0);
 			PAPI_end_usec_«functionCall.actorName»[0] = PAPI_get_real_usec();
 			PAPI_output_«functionCall.actorName»[0] = fopen("papi-output/papi_output_«functionCall.actorName».csv","a+");
 			fprintf(PAPI_output_«functionCall.actorName»[0], "%s,%s,%llu,%llu,%lu,%lu\n", "Sobel", PAPI_actions_«functionCall.actorName»[0].action_id, PAPI_start_usec_«functionCall.actorName»[0], PAPI_end_usec_«functionCall.actorName»[0], PAPI_actions_«functionCall.actorName»[0].counterValues[0], PAPI_actions_«functionCall.actorName»[0].counterValues[1]);
@@ -342,11 +388,7 @@ class PapifiedCPrinter extends CPrinter {
 		{
 		  mkdir("papi-output", 0777);
 
-		 «IF printerBlocks.length == 1 »
-		 event_init();
-		 «ELSE»
 		 event_init_multiplex();
-		 «ENDIF»
 
 		  // Declaring thread pointers
 		  «FOR coreBlock : printerBlocks »
