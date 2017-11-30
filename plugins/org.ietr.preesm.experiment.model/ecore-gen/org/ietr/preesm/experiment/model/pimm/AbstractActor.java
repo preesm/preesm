@@ -164,10 +164,12 @@ public interface AbstractActor extends Configurable {
   EList<Port> getAllPorts();
 
   /**
-   * Gets the path.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the path
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='if (getContainingGraph() != null) {\n return
+   *        getContainingGraph().getActorPath() + \"/\" + getName();\n}\nreturn getName();'"
+   * @generated
    */
-  public String getActorPath();
+  String getActorPath();
 
 } // AbstractActor

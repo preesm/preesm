@@ -1555,6 +1555,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     addEOperation(this.abstractActorEClass, getPort(), "getAllPorts", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
+    addEOperation(this.abstractActorEClass, this.ecorePackage.getEString(), "getActorPath", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
     initEClass(this.piGraphEClass, PiGraph.class, "PiGraph", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
     initEReference(getPiGraph_Vertices(), getAbstractActor(), getAbstractActor_ContainingGraph(), "vertices", null, 0, -1, PiGraph.class,
         !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES,

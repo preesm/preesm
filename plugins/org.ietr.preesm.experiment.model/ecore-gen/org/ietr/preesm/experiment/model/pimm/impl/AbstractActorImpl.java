@@ -410,6 +410,19 @@ public abstract class AbstractActorImpl extends ConfigurableImpl implements Abst
    * @generated
    */
   @Override
+  public String getActorPath() {
+    if (getContainingGraph() != null) {
+      return getContainingGraph().getActorPath() + "/" + getName();
+    }
+    return getName();
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
   public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, NotificationChain msgs) {
     switch (featureID) {
       case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
@@ -419,19 +432,6 @@ public abstract class AbstractActorImpl extends ConfigurableImpl implements Abst
         return basicSetContainingGraph((PiGraph) otherEnd, msgs);
     }
     return super.eInverseAdd(otherEnd, featureID, msgs);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.AbstractActor#getPath()
-   */
-  @Override
-  public String getActorPath() {
-    if (getContainingGraph() != null) {
-      return getContainingGraph().getActorPath() + getName();
-    }
-    return getName();
   }
 
   /*
