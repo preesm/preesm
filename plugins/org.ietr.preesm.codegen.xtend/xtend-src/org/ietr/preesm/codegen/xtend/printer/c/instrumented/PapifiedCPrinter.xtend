@@ -116,23 +116,29 @@ class PapifiedCPrinter extends CPrinter {
 		var Design slamDesign = this.engine.archi;		
 		var List<ComponentInstance> compInstances = slamDesign.componentInstances; 
 	
-		var ComponentInstance pe;		
-		var List<Parameter> params;				
+		var ComponentInstance pe;			
 		var String[] event_names;
 		
-		
+		compInstances = compInstances.sortBy[instanceName];
 				
 		for (Block block : printerBlocks){
 			
 			//Analyzing the user defined parameter PAPI_AVAIL_EVENTS
 			
-			pe = compInstances.get(instance);			
-			params = pe.parameters;		
-				
+			pe = compInstances.get(instance);	
+			
 			all_event_names = org.ietr.preesm.core.architecture.util.DesignTools.getParameter(pe, "PAPI_AVAIL_EVENTS");
 			
-			event_names = all_event_names.split(",");			
-			code_set_size = event_names.length;
+			//println(all_event_names.toString);
+			println("Analyzing = " + pe.instanceName);
+						
+			if(all_event_names !== null){	
+				
+				println(all_event_names.toString);
+				event_names = all_event_names.split(",");			
+				code_set_size = event_names.length;
+				
+			}
 												
 			for(CodeElt elts : (block as CoreBlock).loopBlock.codeElts){	
 				//For all the FunctionCalls within the main code loop
