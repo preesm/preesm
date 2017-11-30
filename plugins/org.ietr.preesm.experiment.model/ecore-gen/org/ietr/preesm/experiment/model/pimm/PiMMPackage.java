@@ -220,12 +220,20 @@ public interface PiMMPackage extends EPackage {
   int ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 2;
 
   /**
+   * The feature id for the '<em><b>Containing Graph</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int ABSTRACT_ACTOR__CONTAINING_GRAPH = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 3;
+
+  /**
    * The number of structural features of the '<em>Abstract Actor</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int ABSTRACT_ACTOR_FEATURE_COUNT = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 3;
+  int ABSTRACT_ACTOR_FEATURE_COUNT = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 4;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl <em>Pi Graph</em>}' class. <!-- begin-user-doc --> <!--
@@ -276,6 +284,14 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int PI_GRAPH__CONFIG_OUTPUT_PORTS = PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS;
+
+  /**
+   * The feature id for the '<em><b>Containing Graph</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int PI_GRAPH__CONTAINING_GRAPH = PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH;
 
   /**
    * The feature id for the '<em><b>Vertices</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -368,6 +384,14 @@ public interface PiMMPackage extends EPackage {
   int EXECUTABLE_ACTOR__CONFIG_OUTPUT_PORTS = PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS;
 
   /**
+   * The feature id for the '<em><b>Containing Graph</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int EXECUTABLE_ACTOR__CONTAINING_GRAPH = PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH;
+
+  /**
    * The number of structural features of the '<em>Executable Actor</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
@@ -424,6 +448,14 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int ACTOR__CONFIG_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_OUTPUT_PORTS;
+
+  /**
+   * The feature id for the '<em><b>Containing Graph</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int ACTOR__CONTAINING_GRAPH = PiMMPackage.EXECUTABLE_ACTOR__CONTAINING_GRAPH;
 
   /**
    * The feature id for the '<em><b>Refinement</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -717,6 +749,14 @@ public interface PiMMPackage extends EPackage {
   int BROADCAST_ACTOR__CONFIG_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_OUTPUT_PORTS;
 
   /**
+   * The feature id for the '<em><b>Containing Graph</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int BROADCAST_ACTOR__CONTAINING_GRAPH = PiMMPackage.EXECUTABLE_ACTOR__CONTAINING_GRAPH;
+
+  /**
    * The number of structural features of the '<em>Broadcast Actor</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
@@ -773,6 +813,14 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int JOIN_ACTOR__CONFIG_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_OUTPUT_PORTS;
+
+  /**
+   * The feature id for the '<em><b>Containing Graph</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int JOIN_ACTOR__CONTAINING_GRAPH = PiMMPackage.EXECUTABLE_ACTOR__CONTAINING_GRAPH;
 
   /**
    * The number of structural features of the '<em>Join Actor</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -833,6 +881,14 @@ public interface PiMMPackage extends EPackage {
   int FORK_ACTOR__CONFIG_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_OUTPUT_PORTS;
 
   /**
+   * The feature id for the '<em><b>Containing Graph</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int FORK_ACTOR__CONTAINING_GRAPH = PiMMPackage.EXECUTABLE_ACTOR__CONTAINING_GRAPH;
+
+  /**
    * The number of structural features of the '<em>Fork Actor</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
@@ -889,6 +945,14 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int ROUND_BUFFER_ACTOR__CONFIG_OUTPUT_PORTS = PiMMPackage.EXECUTABLE_ACTOR__CONFIG_OUTPUT_PORTS;
+
+  /**
+   * The feature id for the '<em><b>Containing Graph</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int ROUND_BUFFER_ACTOR__CONTAINING_GRAPH = PiMMPackage.EXECUTABLE_ACTOR__CONTAINING_GRAPH;
 
   /**
    * The number of structural features of the '<em>Round Buffer Actor</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1243,6 +1307,14 @@ public interface PiMMPackage extends EPackage {
   int INTERFACE_ACTOR__CONFIG_OUTPUT_PORTS = PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS;
 
   /**
+   * The feature id for the '<em><b>Containing Graph</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int INTERFACE_ACTOR__CONTAINING_GRAPH = PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH;
+
+  /**
    * The feature id for the '<em><b>Graph Port</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
@@ -1305,6 +1377,14 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int DATA_INPUT_INTERFACE__CONFIG_OUTPUT_PORTS = PiMMPackage.INTERFACE_ACTOR__CONFIG_OUTPUT_PORTS;
+
+  /**
+   * The feature id for the '<em><b>Containing Graph</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int DATA_INPUT_INTERFACE__CONTAINING_GRAPH = PiMMPackage.INTERFACE_ACTOR__CONTAINING_GRAPH;
 
   /**
    * The feature id for the '<em><b>Graph Port</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1371,6 +1451,14 @@ public interface PiMMPackage extends EPackage {
   int DATA_OUTPUT_INTERFACE__CONFIG_OUTPUT_PORTS = PiMMPackage.INTERFACE_ACTOR__CONFIG_OUTPUT_PORTS;
 
   /**
+   * The feature id for the '<em><b>Containing Graph</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int DATA_OUTPUT_INTERFACE__CONTAINING_GRAPH = PiMMPackage.INTERFACE_ACTOR__CONTAINING_GRAPH;
+
+  /**
    * The feature id for the '<em><b>Graph Port</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
@@ -1427,12 +1515,20 @@ public interface PiMMPackage extends EPackage {
   int PARAMETER__VALUE_EXPRESSION = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 1;
 
   /**
+   * The feature id for the '<em><b>Containing Graph</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int PARAMETER__CONTAINING_GRAPH = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 2;
+
+  /**
    * The number of structural features of the '<em>Parameter</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int PARAMETER_FEATURE_COUNT = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 2;
+  int PARAMETER_FEATURE_COUNT = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 3;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1465,6 +1561,14 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int CONFIG_INPUT_INTERFACE__VALUE_EXPRESSION = PiMMPackage.PARAMETER__VALUE_EXPRESSION;
+
+  /**
+   * The feature id for the '<em><b>Containing Graph</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int CONFIG_INPUT_INTERFACE__CONTAINING_GRAPH = PiMMPackage.PARAMETER__CONTAINING_GRAPH;
 
   /**
    * The feature id for the '<em><b>Graph Port</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1521,6 +1625,14 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int CONFIG_OUTPUT_INTERFACE__CONFIG_OUTPUT_PORTS = PiMMPackage.INTERFACE_ACTOR__CONFIG_OUTPUT_PORTS;
+
+  /**
+   * The feature id for the '<em><b>Containing Graph</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int CONFIG_OUTPUT_INTERFACE__CONTAINING_GRAPH = PiMMPackage.INTERFACE_ACTOR__CONTAINING_GRAPH;
 
   /**
    * The feature id for the '<em><b>Graph Port</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1884,6 +1996,17 @@ public interface PiMMPackage extends EPackage {
    * @generated
    */
   EReference getAbstractActor_ConfigOutputPorts();
+
+  /**
+   * Returns the meta object for the container reference '{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getContainingGraph <em>Containing
+   * Graph</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @return the meta object for the container reference '<em>Containing Graph</em>'.
+   * @see org.ietr.preesm.experiment.model.pimm.AbstractActor#getContainingGraph()
+   * @see #getAbstractActor()
+   * @generated
+   */
+  EReference getAbstractActor_ContainingGraph();
 
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.PiGraph <em>Pi Graph</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2261,6 +2384,17 @@ public interface PiMMPackage extends EPackage {
    * @generated
    */
   EReference getParameter_ValueExpression();
+
+  /**
+   * Returns the meta object for the container reference '{@link org.ietr.preesm.experiment.model.pimm.Parameter#getContainingGraph <em>Containing Graph</em>}'.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @return the meta object for the container reference '<em>Containing Graph</em>'.
+   * @see org.ietr.preesm.experiment.model.pimm.Parameter#getContainingGraph()
+   * @see #getParameter()
+   * @generated
+   */
+  EReference getParameter_ContainingGraph();
 
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Dependency <em>Dependency</em>}'. <!-- begin-user-doc --> <!-- end-user-doc
@@ -2703,6 +2837,13 @@ public interface PiMMPackage extends EPackage {
     EReference ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS = PiMMPackage.eINSTANCE.getAbstractActor_ConfigOutputPorts();
 
     /**
+     * The meta object literal for the '<em><b>Containing Graph</b></em>' container reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
+     * @generated
+     */
+    EReference ABSTRACT_ACTOR__CONTAINING_GRAPH = PiMMPackage.eINSTANCE.getAbstractActor_ContainingGraph();
+
+    /**
      * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl <em>Pi Graph</em>}' class. <!-- begin-user-doc --> <!--
      * end-user-doc -->
      *
@@ -2998,6 +3139,13 @@ public interface PiMMPackage extends EPackage {
      * @generated
      */
     EReference PARAMETER__VALUE_EXPRESSION = PiMMPackage.eINSTANCE.getParameter_ValueExpression();
+
+    /**
+     * The meta object literal for the '<em><b>Containing Graph</b></em>' container reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
+     * @generated
+     */
+    EReference PARAMETER__CONTAINING_GRAPH = PiMMPackage.eINSTANCE.getParameter_ContainingGraph();
 
     /**
      * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DependencyImpl <em>Dependency</em>}' class. <!-- begin-user-doc -->

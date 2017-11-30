@@ -71,6 +71,8 @@
         eType="#//DataOutputPort" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="configOutputPorts" upperBound="-1"
         eType="#//ConfigOutputPort" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="containingGraph" eType="#//PiGraph"
+        eOpposite="#//PiGraph/vertices"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="PiGraph" eSuperTypes="#//AbstractActor">
     <eOperations name="getVerticesNames" upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -94,11 +96,11 @@
       </eAnnotations>
     </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="vertices" upperBound="-1"
-        eType="#//AbstractActor" containment="true"/>
+        eType="#//AbstractActor" containment="true" eOpposite="#//AbstractActor/containingGraph"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="fifos" upperBound="-1"
         eType="#//Fifo" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
-        eType="#//Parameter" containment="true"/>
+        eType="#//Parameter" containment="true" eOpposite="#//Parameter/containingGraph"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dependencies" upperBound="-1"
         eType="#//Dependency" containment="true"/>
   </eClassifiers>
@@ -235,6 +237,8 @@
     </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="valueExpression" lowerBound="1"
         eType="#//Expression" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="containingGraph" eType="#//PiGraph"
+        eOpposite="#//PiGraph/parameters"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Dependency" eSuperTypes="#//visitor/PiMMVisitable">
     <eStructuralFeatures xsi:type="ecore:EReference" name="setter" lowerBound="1"

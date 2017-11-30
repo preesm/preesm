@@ -45,6 +45,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
@@ -290,7 +291,8 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
   @Override
   public EList<Parameter> getParameters() {
     if (this.parameters == null) {
-      this.parameters = new EObjectContainmentEList<>(Parameter.class, this, PiMMPackage.PI_GRAPH__PARAMETERS);
+      this.parameters = new EObjectContainmentWithInverseEList<>(Parameter.class, this, PiMMPackage.PI_GRAPH__PARAMETERS,
+          PiMMPackage.PARAMETER__CONTAINING_GRAPH);
     }
     return this.parameters;
   }
@@ -364,6 +366,23 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
     return result;
   }
 
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+    switch (featureID) {
+      case PiMMPackage.PI_GRAPH__VERTICES:
+        return ((InternalEList<InternalEObject>) (InternalEList<?>) getVertices()).basicAdd(otherEnd, msgs);
+      case PiMMPackage.PI_GRAPH__PARAMETERS:
+        return ((InternalEList<InternalEObject>) (InternalEList<?>) getParameters()).basicAdd(otherEnd, msgs);
+    }
+    return super.eInverseAdd(otherEnd, featureID, msgs);
+  }
+
   /*
    * (non-Javadoc)
    *
@@ -395,7 +414,8 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
   @Override
   public EList<AbstractActor> getVertices() {
     if (this.vertices == null) {
-      this.vertices = new EObjectContainmentEList<>(AbstractActor.class, this, PiMMPackage.PI_GRAPH__VERTICES);
+      this.vertices = new EObjectContainmentWithInverseEList<>(AbstractActor.class, this, PiMMPackage.PI_GRAPH__VERTICES,
+          PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH);
     }
     return this.vertices;
   }

@@ -59,7 +59,8 @@ import org.eclipse.emf.common.util.EList;
 public interface PiGraph extends AbstractActor {
   /**
    * Returns the value of the '<em><b>Vertices</b></em>' containment reference list. The list contents are of type
-   * {@link org.ietr.preesm.experiment.model.pimm.AbstractActor}. <!-- begin-user-doc -->
+   * {@link org.ietr.preesm.experiment.model.pimm.AbstractActor}. It is bidirectional and its opposite is
+   * '{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getContainingGraph <em>Containing Graph</em>}'. <!-- begin-user-doc -->
    * <p>
    * <b>Do not use this method when adding an Interface to the graph</b> (i.e. a {@link InterfaceActor} or an interface {@link Parameter}) <br>
    * Use {@link PiGraph#addInterface(AbstractVertex) and Graph#removeInterfaceActor(InterfaceActor)} instead.
@@ -71,7 +72,8 @@ public interface PiGraph extends AbstractActor {
    *
    * @return the value of the '<em>Vertices</em>' containment reference list.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiGraph_Vertices()
-   * @model containment="true"
+   * @see org.ietr.preesm.experiment.model.pimm.AbstractActor#getContainingGraph
+   * @model opposite="containingGraph" containment="true"
    * @generated
    */
   EList<AbstractActor> getVertices();
@@ -93,7 +95,8 @@ public interface PiGraph extends AbstractActor {
 
   /**
    * Returns the value of the '<em><b>Parameters</b></em>' containment reference list. The list contents are of type
-   * {@link org.ietr.preesm.experiment.model.pimm.Parameter}. <!-- begin-user-doc -->
+   * {@link org.ietr.preesm.experiment.model.pimm.Parameter}. It is bidirectional and its opposite is
+   * '{@link org.ietr.preesm.experiment.model.pimm.Parameter#getContainingGraph <em>Containing Graph</em>}'. <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Parameters</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
@@ -101,7 +104,8 @@ public interface PiGraph extends AbstractActor {
    *
    * @return the value of the '<em>Parameters</em>' containment reference list.
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiGraph_Parameters()
-   * @model containment="true"
+   * @see org.ietr.preesm.experiment.model.pimm.Parameter#getContainingGraph
+   * @model opposite="containingGraph" containment="true"
    * @generated
    */
   EList<Parameter> getParameters();

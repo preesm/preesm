@@ -47,6 +47,7 @@ package org.ietr.preesm.experiment.model.pimm;
  * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.Parameter#getValueExpression <em>Value Expression</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.Parameter#getContainingGraph <em>Containing Graph</em>}</li>
  * </ul>
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameter()
@@ -112,5 +113,33 @@ public interface Parameter extends Configurable, ISetter {
    * @generated
    */
   void setValueExpression(Expression value);
+
+  /**
+   * Returns the value of the '<em><b>Containing Graph</b></em>' container reference. It is bidirectional and its opposite is
+   * '{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getParameters <em>Parameters</em>}'. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Containing Graph</em>' container reference isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Containing Graph</em>' container reference.
+   * @see #setContainingGraph(PiGraph)
+   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameter_ContainingGraph()
+   * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getParameters
+   * @model opposite="parameters" transient="false"
+   * @generated
+   */
+  PiGraph getContainingGraph();
+
+  /**
+   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Parameter#getContainingGraph <em>Containing Graph</em>}' container reference. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @param value
+   *          the new value of the '<em>Containing Graph</em>' container reference.
+   * @see #getContainingGraph()
+   * @generated
+   */
+  void setContainingGraph(PiGraph value);
 
 } // Parameter

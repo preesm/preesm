@@ -514,6 +514,16 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EReference getAbstractActor_ContainingGraph() {
+    return (EReference) this.abstractActorEClass.getEStructuralFeatures().get(3);
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @return the pi graph
@@ -902,6 +912,16 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   @Override
   public EReference getParameter_ValueExpression() {
     return (EReference) this.parameterEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EReference getParameter_ContainingGraph() {
+    return (EReference) this.parameterEClass.getEStructuralFeatures().get(1);
   }
 
   /**
@@ -1303,6 +1323,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     createEReference(this.abstractActorEClass, PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS);
     createEReference(this.abstractActorEClass, PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS);
     createEReference(this.abstractActorEClass, PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS);
+    createEReference(this.abstractActorEClass, PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH);
 
     this.piGraphEClass = createEClass(PiMMPackage.PI_GRAPH);
     createEReference(this.piGraphEClass, PiMMPackage.PI_GRAPH__VERTICES);
@@ -1371,6 +1392,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     this.parameterEClass = createEClass(PiMMPackage.PARAMETER);
     createEReference(this.parameterEClass, PiMMPackage.PARAMETER__VALUE_EXPRESSION);
+    createEReference(this.parameterEClass, PiMMPackage.PARAMETER__CONTAINING_GRAPH);
 
     this.dependencyEClass = createEClass(PiMMPackage.DEPENDENCY);
     createEReference(this.dependencyEClass, PiMMPackage.DEPENDENCY__SETTER);
@@ -1523,6 +1545,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     initEReference(getAbstractActor_ConfigOutputPorts(), getConfigOutputPort(), null, "configOutputPorts", null, 0, -1, AbstractActor.class,
         !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES,
         !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getAbstractActor_ContainingGraph(), getPiGraph(), getPiGraph_Vertices(), "containingGraph", null, 0, 1, AbstractActor.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES,
+        !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
     addEOperation(this.abstractActorEClass, getDataPort(), "getAllDataPorts", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
@@ -1531,15 +1556,15 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     addEOperation(this.abstractActorEClass, getPort(), "getAllPorts", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     initEClass(this.piGraphEClass, PiGraph.class, "PiGraph", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getPiGraph_Vertices(), getAbstractActor(), null, "vertices", null, 0, -1, PiGraph.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getPiGraph_Vertices(), getAbstractActor(), getAbstractActor_ContainingGraph(), "vertices", null, 0, -1, PiGraph.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES,
+        !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
     initEReference(getPiGraph_Fifos(), getFifo(), null, "fifos", null, 0, -1, PiGraph.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
         EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
         !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getPiGraph_Parameters(), getParameter(), null, "parameters", null, 0, -1, PiGraph.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getPiGraph_Parameters(), getParameter(), getParameter_ContainingGraph(), "parameters", null, 0, -1, PiGraph.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES,
+        !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
     initEReference(getPiGraph_Dependencies(), getDependency(), null, "dependencies", null, 0, -1, PiGraph.class, !EPackageImpl.IS_TRANSIENT,
         !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
@@ -1693,6 +1718,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     initEReference(getParameter_ValueExpression(), getExpression(), null, "valueExpression", null, 1, 1, Parameter.class, !EPackageImpl.IS_TRANSIENT,
         !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getParameter_ContainingGraph(), getPiGraph(), getPiGraph_Parameters(), "containingGraph", null, 0, 1, Parameter.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES,
+        !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
     addEOperation(this.parameterEClass, this.ecorePackage.getEBoolean(), "isLocallyStatic", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
