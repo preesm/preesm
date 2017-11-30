@@ -38,6 +38,7 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
@@ -390,19 +391,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    */
   @Override
   public AbstractVertex lookupVertex(final String name) {
-    for (final AbstractVertex vert : this.vertices) {
-      if (vert.getName().equals(name)) {
-        return vert;
-      }
-    }
-
-    for (final AbstractVertex vert : this.parameters) {
-      if (vert.getName().equals(name)) {
-        return vert;
-      }
-    }
-
-    return null;
+    return Stream.concat(getVertices().stream(), getParameters().stream()).filter(v -> v.getName().equals(name)).findFirst().orElse(null);
   }
 
   /**
