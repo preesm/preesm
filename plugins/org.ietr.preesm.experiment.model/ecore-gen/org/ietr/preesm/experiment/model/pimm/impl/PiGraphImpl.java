@@ -438,7 +438,11 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    */
   @Override
   public AbstractActor lookupActorFromPath(final String path) {
-    final String[] splitPath = path.split("/");
+    final String safePath = path.replaceAll("/+", "/").replaceAll("/$", "").replaceAll("^/", "").replaceAll("$" + getName(), "");
+    if (safePath.isEmpty()) {
+      return this;
+    }
+    final String[] splitPath = safePath.split("/");
     int index = 0;
     // Get the first segment of the path, this is the name of the first
     // actor we will look for
@@ -464,7 +468,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
     }
     // Look for an actor named currentName
     for (final AbstractActor a : getVertices()) {
-      if (a.getName().equals(currentName)) {
+      if (currentName.equals(a.getName())) {
         // If currentPath is empty, then we are at the last hierarchy
         // level
         if (currentPath.equals("")) {
