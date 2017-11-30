@@ -427,12 +427,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    */
   @Override
   public Fifo lookupFifo(final String id) {
-    for (final Fifo fifo : getFifos()) {
-      if (fifo.getId().equals(id)) {
-        return fifo;
-      }
-    }
-    return null;
+    return getFifos().stream().filter(f -> f.getId().equals(id)).findFirst().orElse(null);
   }
 
   /*
@@ -512,7 +507,8 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    */
   @Override
   public Parameter lookupParameterGivenGraph(final String parameterName, final String graphName) {
-    return getAllParameters().stream().filter(p -> p.getName().equals(parameterName) && p.getContainingGraph().getName().equals(graphName)).findFirst().orElse(null);
+    return getAllParameters().stream().filter(p -> p.getName().equals(parameterName) && p.getContainingGraph().getName().equals(graphName)).findFirst()
+        .orElse(null);
   }
 
   /*
