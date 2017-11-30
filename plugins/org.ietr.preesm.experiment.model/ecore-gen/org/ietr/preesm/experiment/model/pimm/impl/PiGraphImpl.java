@@ -36,7 +36,10 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -438,59 +441,29 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    */
   @Override
   public AbstractActor lookupActorFromPath(final String path) {
-    final String safePath = path.replaceAll("/+", "/").replaceAll("/$", "").replaceAll("^/", "").replaceAll("$" + getName(), "");
+    final String safePath = path.replaceAll("/+", "/").replaceAll("^/*" + getName(), "").replaceAll("^/", "").replaceAll("/$", "");
     if (safePath.isEmpty()) {
       return this;
     }
-    final String[] splitPath = safePath.split("/");
-    int index = 0;
-    // Get the first segment of the path, this is the name of the first
-    // actor we will look for
-    String currentName = splitPath[index];
-    index++;
-    String currentPath = "";
-    // Handle the case where the first segment of path == name
-    if (getName().equals(currentName)) {
-      // If the first segment is the only one, then we are looking for
-      // this
-      if (splitPath.length == 1) {
-        return this;
-      }
-      currentName = splitPath[index];
-      index++;
-    }
-    // Compute the path for the next search (path minus currentName)
-    for (int i = index; i < splitPath.length; i++) {
-      if (i > index) {
-        currentPath += "/";
-      }
-      currentPath += splitPath[i];
-    }
-    // Look for an actor named currentName
-    for (final AbstractActor a : getVertices()) {
-      if (currentName.equals(a.getName())) {
-        // If currentPath is empty, then we are at the last hierarchy
-        // level
-        if (currentPath.equals("")) {
-          // We found the actor
-          return a;
-          // Otherwise, we need to go deeper in the hierarchy, either
-          // through a PiGraph object directly or through a Refinement
-        } else if (a instanceof PiGraph) {
-          return ((PiGraph) a).lookupActorFromPath(currentPath);
-        } else if (a instanceof Actor) {
-          final Refinement refinement = ((Actor) a).getRefinement();
-          if (refinement != null) {
-            final AbstractActor subGraph = refinement.getAbstractActor();
-            if ((subGraph != null) && (subGraph instanceof PiGraph)) {
-              return ((PiGraph) subGraph).lookupActorFromPath(currentPath);
-            }
-          }
+    final List<String> pathFragments = new ArrayList<>(Arrays.asList(safePath.split("/")));
+    final String firstFragment = pathFragments.remove(0);
+    final AbstractActor current = getVertices().stream().filter(a -> firstFragment.equals(a.getName())).findFirst().orElse(null);
+    if (pathFragments.isEmpty()) {
+      return current;
+    } else {
+      if (current instanceof PiGraph) {
+        return ((PiGraph) current).lookupActorFromPath(String.join("/", pathFragments));
+      } else if (current instanceof Actor) {
+        AbstractActor aa = ((Actor) current).getRefinement().getAbstractActor();
+        if (aa instanceof PiGraph) {
+          return ((PiGraph) aa).lookupActorFromPath(String.join("/", pathFragments));
+        } else {
+          return null;
         }
+      } else {
+        return null;
       }
     }
-    // If we reach this point, no actor was found, return null
-    return null;
   }
 
   /*
