@@ -59,7 +59,6 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Abstract Vertex</b></em>'. <!-- end-user-doc -->
  * <p>
@@ -429,8 +428,8 @@ public abstract class AbstractActorImpl extends ConfigurableImpl implements Abst
    */
   @Override
   public String getActorPath() {
-    if ((this.eContainer != null) && (this.eContainer instanceof AbstractActor)) {
-      return ((AbstractActor) this.eContainer).getActorPath() + "/" + getName();
+    if (getContainingGraph() != null) {
+      return getContainingGraph().getActorPath() + getName();
     }
     return getName();
   }
