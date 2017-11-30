@@ -79,11 +79,7 @@ class PapifiedCPrinter extends CPrinter {
 		String PAPI_end_usec = "PAPI_end_usec_";
 		String PAPI_eventCodeSet = "PAPI_eventCodeSet_";
 		String PAPI_eventSet = "PAPI_eventSet_";
-		
-		String PAPI_AVAIL_EVENTS;
-		
-		//List<ComponentInstance> compInstances = this.engine.archi.componentInstances; 
-		//ComponentInstance pe;
+				
 		int instance;
 		var int code_set_size;
 		var String all_event_names;
@@ -117,65 +113,27 @@ class PapifiedCPrinter extends CPrinter {
 		
 		instance = 0;
 		
-		var Design slamDesign = this.engine.archi;		//NullPointerException
+		var Design slamDesign = this.engine.archi;		
 		var List<ComponentInstance> compInstances = slamDesign.componentInstances; 
 	
-		var ComponentInstance pe;
-		
-		var List<Parameter> params;
-				
+		var ComponentInstance pe;		
+		var List<Parameter> params;				
 		var String[] event_names;
 		
 		
 				
 		for (Block block : printerBlocks){
 			
-			pe = compInstances.get(instance);
+			//Analyzing the user defined parameter PAPI_AVAIL_EVENTS
 			
-			params = pe.parameters;
-			
-			System.out.println("block [" + block.name + "]");
-			System.out.println("PE [" + pe.instanceName + "]");
-						
-			for(Parameter param : params){
+			pe = compInstances.get(instance);			
+			params = pe.parameters;		
 				
-				println(param.key);
-				println(param.value);
-				
-				
-			}
-			
-			
 			all_event_names = org.ietr.preesm.core.architecture.util.DesignTools.getParameter(pe, "PAPI_AVAIL_EVENTS");
 			
-			println(all_event_names);
-			event_names = all_event_names.split(",");
-			
-			
+			event_names = all_event_names.split(",");			
 			code_set_size = event_names.length;
-			
-			println("Code_set_size = " + code_set_size);
-			
-			for(String event_name : event_names){
-				
-				println(event_name);
-								
-			}
-			
-				
-			
-			System.out.println("block Class = " + block.class);
-			System.out.println("block Type = " + (block as CoreBlock).coreType);
-			System.out.println("block Class = " + (block as CoreBlock).class);
-			System.out.println("block ID = " + (block as CoreBlock).coreID);
-			
-			
-			//////////////////////////
-			//	Trying with casting //
-			//////////////////////////
-			
-			//System.out.println("PE [" + (block as ComponentInstance).instanceName + "]");
-			
+												
 			for(CodeElt elts : (block as CoreBlock).loopBlock.codeElts){	
 				//For all the FunctionCalls within the main code loop
 				if(elts.eClass.name.equals("FunctionCall")){
@@ -277,6 +235,8 @@ class PapifiedCPrinter extends CPrinter {
 						var func = CodegenFactory.eINSTANCE.createFunctionCall()
 						func.name = "event_init_event_code_set"
 						func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
+						func.addParameter(block.definitions.get(block.definitions.length-6), PortDirection.OUTPUT)
+						func.addParameter(block.definitions.get(block.definitions.length-4), PortDirection.OUTPUT)
 						func.actorName = "PAPI Init_code_set_".concat((elts as FunctionCall).actorName)
 						func
 					})
