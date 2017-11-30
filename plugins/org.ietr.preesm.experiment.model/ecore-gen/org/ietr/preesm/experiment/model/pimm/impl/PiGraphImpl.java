@@ -512,33 +512,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    */
   @Override
   public Parameter getParameterNamedWithParent(final String name, final String parent) {
-    if (getName().equals(parent)) {
-      for (final Parameter p : this.parameters) {
-        if (p.getName().equals(name)) {
-          return p;
-        }
-      }
-    }
-    for (final AbstractActor aa : this.vertices) {
-      if ((aa instanceof Actor) && aa.getName().equals(parent)) {
-        final Refinement refinement = ((Actor) aa).getRefinement();
-        if (refinement != null) {
-          final AbstractActor subGraph = refinement.getAbstractActor();
-          if ((subGraph != null) && (subGraph instanceof PiGraph)) {
-            final Parameter p = ((PiGraph) subGraph).getParameterNamedWithParent(name, parent);
-            if (p != null) {
-              return p;
-            }
-          }
-        }
-      } else if (aa instanceof PiGraph) {
-        final Parameter p = ((PiGraph) aa).getParameterNamedWithParent(name, parent);
-        if (p != null) {
-          return p;
-        }
-      }
-    }
-    return null;
+    return getAllParameters().stream().filter(p -> p.getName().equals(name) && p.getContainingGraph().getName().equals(parent)).findFirst().orElse(null);
   }
 
   /*
