@@ -111,7 +111,6 @@ class PapifiedCPrinter extends CPrinter {
 	 */
 	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {
 		
-		instance = 0;
 		
 		var Design slamDesign = this.engine.archi;		
 		var List<ComponentInstance> compInstances = slamDesign.componentInstances; 
@@ -119,13 +118,27 @@ class PapifiedCPrinter extends CPrinter {
 		var ComponentInstance pe;			
 		var String[] event_names;
 		
-		compInstances = compInstances.sortBy[instanceName];
+		var int search_index;
+		
+		//compInstances = compInstances.sortBy[instanceName];
 				
 		for (Block block : printerBlocks){
 			
 			//Analyzing the user defined parameter PAPI_AVAIL_EVENTS
 			
-			pe = compInstances.get(instance);	
+			//pe = compInstances.get(instance);	
+			search_index = 0;
+			instance = 0;
+			for(ComponentInstance searching : compInstances){
+				if(searching.instanceName.equals(block.name)){
+					instance = search_index;
+				}
+				else{
+					search_index++;
+				}
+			}
+			
+			pe = compInstances.get(instance);
 			
 			all_event_names = org.ietr.preesm.core.architecture.util.DesignTools.getParameter(pe, "PAPI_AVAIL_EVENTS");
 			
@@ -284,7 +297,6 @@ class PapifiedCPrinter extends CPrinter {
 					})					
 				}
 			}
-			instance++;
 		}
 		
 		
