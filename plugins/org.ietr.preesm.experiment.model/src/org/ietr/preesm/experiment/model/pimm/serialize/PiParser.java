@@ -353,8 +353,8 @@ public class PiParser {
     // Find the source and target of the fifo
     final String setterName = edgeElt.getAttribute(PiIdentifiers.DEPENDENCY_SOURCE);
     final String getterName = edgeElt.getAttribute(PiIdentifiers.DEPENDENCY_TARGET);
-    final AbstractVertex source = graph.getVertexNamed(setterName);
-    AbstractVertex target = graph.getVertexNamed(getterName);
+    final AbstractVertex source = graph.lookupVertex(setterName);
+    AbstractVertex target = graph.lookupVertex(getterName);
     if (source == null) {
       throw new RuntimeException("Dependency source vertex " + setterName + " does not exist.");
     }
@@ -451,8 +451,8 @@ public class PiParser {
     // Find the source and target of the fifo
     final String sourceName = edgeElt.getAttribute(PiIdentifiers.FIFO_SOURCE);
     final String targetName = edgeElt.getAttribute(PiIdentifiers.FIFO_TARGET);
-    final AbstractActor source = (AbstractActor) graph.getVertexNamed(sourceName);
-    final AbstractActor target = (AbstractActor) graph.getVertexNamed(targetName);
+    final AbstractActor source = (AbstractActor) graph.lookupVertex(sourceName);
+    final AbstractActor target = (AbstractActor) graph.lookupVertex(targetName);
     if (source == null) {
       throw new RuntimeException("Edge source vertex " + sourceName + " does not exist.");
     }

@@ -389,7 +389,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getVertexNamed(java.lang.String)
    */
   @Override
-  public AbstractVertex getVertexNamed(final String name) {
+  public AbstractVertex lookupVertex(final String name) {
     for (final AbstractVertex vert : this.vertices) {
       if (vert.getName().equals(name)) {
         return vert;

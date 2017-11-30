@@ -171,7 +171,7 @@ public interface PiGraph extends AbstractActor {
    *          the desired name
    * @return the desired vertex, or <code>null</code> if no vertex has the requested name.
    */
-  public AbstractVertex getVertexNamed(String name);
+  public AbstractVertex lookupVertex(String name);
 
   /**
    * Return the {@link Fifo} whose ID is given as a parameter.
