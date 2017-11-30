@@ -175,7 +175,7 @@ public class SpiderCodegen {
     this.constraints = new LinkedHashMap<>();
     for (final ConstraintGroup cg : this.scenario.getConstraintGroupManager().getConstraintGroups()) {
       for (final String actorPath : cg.getVertexPaths()) {
-        final AbstractActor aa = pg.getHierarchicalActorFromPath(actorPath);
+        final AbstractActor aa = pg.lookupActorFromPath(actorPath);
         if (this.constraints.get(aa) == null) {
           this.constraints.put(aa, new LinkedHashSet<String>());
         }

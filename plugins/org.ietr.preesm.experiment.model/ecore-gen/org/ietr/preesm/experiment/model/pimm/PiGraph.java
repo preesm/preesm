@@ -189,7 +189,7 @@ public interface PiGraph extends AbstractActor {
    *          the path
    * @return the hierarchical actor from path
    */
-  public AbstractActor getHierarchicalActorFromPath(String path);
+  public AbstractActor lookupActorFromPath(String path);
 
   /**
    * Gets the parameter named with parent.

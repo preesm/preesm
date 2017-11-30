@@ -829,7 +829,7 @@ public class ScenarioParser {
     if (this.algoSDF != null) {
       result = this.algoSDF.getHierarchicalVertexFromPath(path);
     } else if (this.algoPi != null) {
-      result = this.algoPi.getHierarchicalActorFromPath(path);
+      result = this.algoPi.lookupActorFromPath(path);
     }
     return result;
   }

@@ -453,7 +453,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    * @return the hierarchical actor from path
    */
   @Override
-  public AbstractActor getHierarchicalActorFromPath(final String path) {
+  public AbstractActor lookupActorFromPath(final String path) {
     final String[] splitPath = path.split("/");
     int index = 0;
     // Get the first segment of the path, this is the name of the first
@@ -489,13 +489,13 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
           // Otherwise, we need to go deeper in the hierarchy, either
           // through a PiGraph object directly or through a Refinement
         } else if (a instanceof PiGraph) {
-          return ((PiGraph) a).getHierarchicalActorFromPath(currentPath);
+          return ((PiGraph) a).lookupActorFromPath(currentPath);
         } else if (a instanceof Actor) {
           final Refinement refinement = ((Actor) a).getRefinement();
           if (refinement != null) {
             final AbstractActor subGraph = refinement.getAbstractActor();
             if ((subGraph != null) && (subGraph instanceof PiGraph)) {
-              return ((PiGraph) subGraph).getHierarchicalActorFromPath(currentPath);
+              return ((PiGraph) subGraph).lookupActorFromPath(currentPath);
             }
           }
         }
