@@ -360,7 +360,7 @@ public class PiParser {
     }
     if (target == null) {
       // The target can also be a Delay associated to a Fifo
-      final Fifo targetFifo = graph.getFifoIded(getterName);
+      final Fifo targetFifo = graph.lookupFifo(getterName);
 
       if (targetFifo == null) {
         throw new RuntimeException("Dependency target " + getterName + " does not exist.");

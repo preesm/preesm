@@ -180,7 +180,7 @@ public interface PiGraph extends AbstractActor {
    *          the desired id
    * @return the desired {@link Fifo}, or <code>null</code> if no vertex has the requested name.
    */
-  public Fifo getFifoIded(String id);
+  public Fifo lookupFifo(String id);
 
   /**
    * Gets the hierarchical actor from path.

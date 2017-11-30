@@ -426,7 +426,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getFifoIded(java.lang.String)
    */
   @Override
-  public Fifo getFifoIded(final String id) {
+  public Fifo lookupFifo(final String id) {
     for (final Fifo fifo : getFifos()) {
       if (fifo.getId().equals(id)) {
         return fifo;
