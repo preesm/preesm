@@ -139,6 +139,6 @@ public interface AbstractActor extends Configurable {
    *
    * @return the path
    */
-  public String getPath();
+  public String getActorPath();
 
 } // AbstractActor

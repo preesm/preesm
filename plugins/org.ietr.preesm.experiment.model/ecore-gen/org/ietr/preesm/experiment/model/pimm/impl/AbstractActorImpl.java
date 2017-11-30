@@ -329,9 +329,9 @@ public abstract class AbstractActorImpl extends ConfigurableImpl implements Abst
    * @see org.ietr.preesm.experiment.model.pimm.AbstractActor#getPath()
    */
   @Override
-  public String getPath() {
+  public String getActorPath() {
     if ((this.eContainer != null) && (this.eContainer instanceof AbstractActor)) {
-      return ((AbstractActor) this.eContainer).getPath() + "/" + getName();
+      return ((AbstractActor) this.eContainer).getActorPath() + "/" + getName();
     }
     return getName();
   }

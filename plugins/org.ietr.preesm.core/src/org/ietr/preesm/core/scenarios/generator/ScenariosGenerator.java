@@ -265,7 +265,7 @@ public class ScenariosGenerator {
     for (final String opId : DesignTools.getOperatorComponentIds(archi)) {
       for (final AbstractActor aa : algo.getAllVertices()) {
         // Add timing: aa run on ci in 10000
-        scenario.getTimingManager().addTiming(new Timing(opId, aa.getPath(), 10000));
+        scenario.getTimingManager().addTiming(new Timing(opId, aa.getActorPath(), 10000));
       }
     }
     for (final String coreId : coreIds) {

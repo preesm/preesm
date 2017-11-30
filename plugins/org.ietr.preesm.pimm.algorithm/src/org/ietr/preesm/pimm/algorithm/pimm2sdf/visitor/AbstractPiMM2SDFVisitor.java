@@ -320,7 +320,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
     // Handle vertex's name
     v.setName(a.getName());
     // Handle vertex's path inside the graph hierarchy
-    v.setInfo(a.getPath());
+    v.setInfo(a.getActorPath());
     // Handle ID
     v.setId(a.getName());
     // Handle vertex's refinement (description of the vertex's behavior:
@@ -596,7 +596,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
     // Handle vertex's name
     bv.setName(ba.getName());
     // Handle vertex's path inside the graph hierarchy
-    bv.setInfo(ba.getPath());
+    bv.setInfo(ba.getActorPath());
 
     // Handle input parameters as instance arguments
     for (final ConfigInputPort p : ba.getConfigInputPorts()) {
@@ -626,7 +626,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
     // Handle vertex's name
     jv.setName(ja.getName());
     // Handle vertex's path inside the graph hierarchy
-    jv.setInfo(ja.getPath());
+    jv.setInfo(ja.getActorPath());
 
     // Handle input parameters as instance arguments
     for (final ConfigInputPort p : ja.getConfigInputPorts()) {
@@ -656,7 +656,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
     // Handle vertex's name
     fv.setName(fa.getName());
     // Handle vertex's path inside the graph hierarchy
-    fv.setInfo(fa.getPath());
+    fv.setInfo(fa.getActorPath());
 
     // Handle input parameters as instance arguments
     for (final ConfigInputPort p : fa.getConfigInputPorts()) {
@@ -686,7 +686,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
     // Handle vertex's name
     rbv.setName(rba.getName());
     // Handle vertex's path inside the graph hierarchy
-    rbv.setInfo(rba.getPath());
+    rbv.setInfo(rba.getActorPath());
 
     // Handle input parameters as instance arguments
     for (final ConfigInputPort p : rba.getConfigInputPorts()) {

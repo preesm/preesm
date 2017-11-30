@@ -108,7 +108,7 @@ public class StaticPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
       // Handle vertex's name
       v.setName(pg.getName());
       // Handle vertex's path inside the graph hierarchy
-      v.setInfo(pg.getPath());
+      v.setInfo(pg.getActorPath());
       // Handle ID
       v.setId(pg.getName());
 
