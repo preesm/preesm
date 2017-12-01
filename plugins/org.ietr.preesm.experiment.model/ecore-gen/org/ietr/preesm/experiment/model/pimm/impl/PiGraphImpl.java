@@ -321,7 +321,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    * @generated
    */
   @Override
-  public EList<String> getVerticesNames() {
+  public EList<String> getActorsNames() {
     return ECollections.newBasicEList(getActors().stream().map(AbstractActor::getName).collect(Collectors.toList()));
   }
 

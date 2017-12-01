@@ -132,7 +132,7 @@ public interface PiGraph extends AbstractActor {
    *        ECollections.newBasicEList(getActors().stream().map(AbstractActor::getName).collect(Collectors.toList()));'"
    * @generated
    */
-  EList<String> getVerticesNames();
+  EList<String> getActorsNames();
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->

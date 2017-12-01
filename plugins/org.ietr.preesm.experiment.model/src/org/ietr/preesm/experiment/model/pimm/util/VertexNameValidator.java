@@ -67,7 +67,7 @@ public class VertexNameValidator implements IInputValidator {
   public VertexNameValidator(final PiGraph graph, final AbstractVertex renamedVertex) {
     this.graph = graph;
     // Retrieve a list of all the actor and parameter names in the graph
-    this.existingNames = graph.getVerticesNames();
+    this.existingNames = graph.getActorsNames();
     this.existingNames.addAll(graph.getParametersNames());
 
     if (renamedVertex != null) {

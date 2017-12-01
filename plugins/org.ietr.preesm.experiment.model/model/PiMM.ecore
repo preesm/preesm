@@ -80,7 +80,7 @@
         eOpposite="#//PiGraph/actors"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="PiGraph" eSuperTypes="#//AbstractActor">
-    <eOperations name="getVerticesNames" upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+    <eOperations name="getActorsNames" upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
         <details key="body" value="return ECollections.newBasicEList(getActors().stream().map(AbstractActor::getName).collect(Collectors.toList()));"/>
       </eAnnotations>
