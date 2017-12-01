@@ -149,7 +149,7 @@ public class SpiderPreProcessVisitor extends PiMMDefaultVisitor {
   @Override
   public void visitPiGraph(final PiGraph pg) {
     visitAbstractActor(pg);
-    for (final AbstractActor a : pg.getVertices()) {
+    for (final AbstractActor a : pg.getActors()) {
       a.accept(this);
     }
     for (final Parameter p : pg.getParameters()) {

@@ -112,7 +112,7 @@ public class CreateConfigOutputInterfaceFeature extends AbstractCreateFeature {
     newCfgOutIf.setName(newCfgOutName);
 
     // Add new ConfigOutInterface to the graph.
-    if (graph.getVertices().add(newCfgOutIf)) {
+    if (graph.getActors().add(newCfgOutIf)) {
       this.hasDoneChanges = true;
     }
 

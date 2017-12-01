@@ -301,7 +301,7 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
     int nConfig = 0;
     int nBody = 0;
 
-    for (final AbstractActor v : pg.getVertices()) {
+    for (final AbstractActor v : pg.getActors()) {
       switch (SpiderTypeConverter.getType(v)) {
         case PISDF_TYPE_IF:
           if (SpiderTypeConverter.getSubType(v) == PiSDFSubType.PISDF_SUBTYPE_INPUT_IF) {
@@ -339,7 +339,7 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
 
     // Generating vertices
     append("\n\t/* Vertices */\n");
-    for (final AbstractActor v : pg.getVertices()) {
+    for (final AbstractActor v : pg.getActors()) {
       v.accept(this);
     }
     // Generating edges

@@ -46,7 +46,7 @@ import org.eclipse.emf.common.util.EList;
  * The following features are supported:
  * </p>
  * <ul>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getVertices <em>Vertices</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getActors <em>Actors</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getFifos <em>Fifos</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getParameters <em>Parameters</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getDependencies <em>Dependencies</em>}</li>
@@ -58,7 +58,7 @@ import org.eclipse.emf.common.util.EList;
  */
 public interface PiGraph extends AbstractActor {
   /**
-   * Returns the value of the '<em><b>Vertices</b></em>' containment reference list. The list contents are of type
+   * Returns the value of the '<em><b>Actors</b></em>' containment reference list. The list contents are of type
    * {@link org.ietr.preesm.experiment.model.pimm.AbstractActor}. It is bidirectional and its opposite is
    * '{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getContainingGraph <em>Containing Graph</em>}'. <!-- begin-user-doc -->
    * <p>
@@ -70,13 +70,13 @@ public interface PiGraph extends AbstractActor {
    * </p>
    * <!-- end-user-doc -->
    *
-   * @return the value of the '<em>Vertices</em>' containment reference list.
-   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiGraph_Vertices()
+   * @return the value of the '<em>Actors</em>' containment reference list.
+   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiGraph_Actors()
    * @see org.ietr.preesm.experiment.model.pimm.AbstractActor#getContainingGraph
    * @model opposite="containingGraph" containment="true"
    * @generated
    */
-  EList<AbstractActor> getVertices();
+  EList<AbstractActor> getActors();
 
   /**
    * Returns the value of the '<em><b>Fifos</b></em>' containment reference list. The list contents are of type
@@ -129,7 +129,7 @@ public interface PiGraph extends AbstractActor {
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return
-   *        ECollections.newBasicEList(getVertices().stream().map(AbstractActor::getName).collect(Collectors.toList()));'"
+   *        ECollections.newBasicEList(getActors().stream().map(AbstractActor::getName).collect(Collectors.toList()));'"
    * @generated
    */
   EList<String> getVerticesNames();
@@ -147,7 +147,7 @@ public interface PiGraph extends AbstractActor {
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return
-   *        ECollections.newBasicEList(getVertices().stream().filter(Actor.class::isInstance).map(Actor.class::cast).collect(Collectors.toList()));'"
+   *        ECollections.newBasicEList(getActors().stream().filter(Actor.class::isInstance).map(Actor.class::cast).collect(Collectors.toList()));'"
    * @generated
    */
   EList<Actor> getActorsWithRefinement();
@@ -156,7 +156,7 @@ public interface PiGraph extends AbstractActor {
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='final EList&lt;Parameter&gt; result = ECollections.newBasicEList();\nfor
-   *        (final AbstractActor aa : getVertices()) {\n if (aa instanceof PiGraph) {\n result.addAll(((PiGraph) aa).getAllParameters());\n } else if (aa
+   *        (final AbstractActor aa : getActors()) {\n if (aa instanceof PiGraph) {\n result.addAll(((PiGraph) aa).getAllParameters());\n } else if (aa
    *        instanceof Actor) {\n final Refinement refinement = ((Actor) aa).getRefinement();\n if (refinement != null) {\n final AbstractActor subGraph =
    *        refinement.getAbstractActor();\n if ((subGraph != null) &amp;&amp; (subGraph instanceof PiGraph)) {\n result.addAll(((PiGraph)
    *        subGraph).getAllParameters());\n }\n }\n }\n}\nresult.addAll(getParameters());\nreturn result;'"

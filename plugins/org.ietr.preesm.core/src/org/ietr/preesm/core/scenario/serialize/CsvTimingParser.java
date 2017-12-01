@@ -184,7 +184,7 @@ public class CsvTimingParser {
     // Each of the vertices of the graph is either itself a graph (hierarchical vertex), in which case we call recursively this method
     // a standard actor, in which case we parser its timing; or a special
     // vertex, in which case we do nothing
-    for (final AbstractActor vertex : currentGraph.getVertices()) {
+    for (final AbstractActor vertex : currentGraph.getActors()) {
       // Handle connected graphs from hierarchical vertices
       if (vertex instanceof PiGraph) {
         parseTimingsForPISDFGraph(timings, (PiGraph) vertex, opDefIds);

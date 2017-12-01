@@ -88,7 +88,7 @@ public class StaticPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
       parameters2GraphVariables(pg, this.result);
 
       // Visit each of the vertices of pg with the values set
-      for (final AbstractActor aa : pg.getVertices()) {
+      for (final AbstractActor aa : pg.getActors()) {
         aa.accept(this);
       }
       // And each of the data edges of pg with the values set

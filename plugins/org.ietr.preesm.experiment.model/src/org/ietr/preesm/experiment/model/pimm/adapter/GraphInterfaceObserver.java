@@ -59,7 +59,7 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 
 // TODO: Auto-generated Javadoc
 /**
- * The purpose of this {@link Adapter} is to observe the {@link PiGraph#getVertices()} list of a {@link PiGraph} to detect the addition, the deletion and the
+ * The purpose of this {@link Adapter} is to observe the {@link PiGraph#getActors()} list of a {@link PiGraph} to detect the addition, the deletion and the
  * renaming of {@link PiGraph} interfaces in order to automatically compute the repercussions on {@link PiGraph#getInputPorts()},
  * {@link PiGraph#getOutputPorts()} and {@link PiGraph#getConfigInputPorts()}.
  *
@@ -164,7 +164,7 @@ public class GraphInterfaceObserver extends AdapterImpl {
     // Check if the vertices or Parameters are concerned by this
     // notification
     if ((notification.getNotifier() instanceof PiGraph)
-        && ((notification.getFeatureID(null) == PiMMPackage.PI_GRAPH__VERTICES) || (notification.getFeatureID(null) == PiMMPackage.PI_GRAPH__PARAMETERS))) {
+        && ((notification.getFeatureID(null) == PiMMPackage.PI_GRAPH__ACTORS) || (notification.getFeatureID(null) == PiMMPackage.PI_GRAPH__PARAMETERS))) {
 
       final PiGraph graph = (PiGraph) notification.getNotifier();
 

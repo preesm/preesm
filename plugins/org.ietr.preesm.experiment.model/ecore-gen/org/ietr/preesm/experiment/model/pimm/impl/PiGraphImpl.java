@@ -70,7 +70,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  * The following features are implemented:
  * </p>
  * <ul>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl#getVertices <em>Vertices</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl#getActors <em>Actors</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl#getFifos <em>Fifos</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl#getParameters <em>Parameters</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl#getDependencies <em>Dependencies</em>}</li>
@@ -80,13 +80,13 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  */
 public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
   /**
-   * The cached value of the '{@link #getVertices() <em>Vertices</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getActors() <em>Actors</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @see #getVertices()
+   * @see #getActors()
    * @generated
    * @ordered
    */
-  protected EList<AbstractActor> vertices;
+  protected EList<AbstractActor> actors;
 
   /**
    * The cached value of the '{@link #getFifos() <em>Fifos</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -140,8 +140,8 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
   @Override
   public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
     switch (featureID) {
-      case PiMMPackage.PI_GRAPH__VERTICES:
-        return getVertices();
+      case PiMMPackage.PI_GRAPH__ACTORS:
+        return getActors();
       case PiMMPackage.PI_GRAPH__FIFOS:
         return getFifos();
       case PiMMPackage.PI_GRAPH__PARAMETERS:
@@ -167,8 +167,8 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
   @Override
   public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
     switch (featureID) {
-      case PiMMPackage.PI_GRAPH__VERTICES:
-        return ((InternalEList<?>) getVertices()).basicRemove(otherEnd, msgs);
+      case PiMMPackage.PI_GRAPH__ACTORS:
+        return ((InternalEList<?>) getActors()).basicRemove(otherEnd, msgs);
       case PiMMPackage.PI_GRAPH__FIFOS:
         return ((InternalEList<?>) getFifos()).basicRemove(otherEnd, msgs);
       case PiMMPackage.PI_GRAPH__PARAMETERS:
@@ -190,8 +190,8 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
   @Override
   public boolean eIsSet(final int featureID) {
     switch (featureID) {
-      case PiMMPackage.PI_GRAPH__VERTICES:
-        return (this.vertices != null) && !this.vertices.isEmpty();
+      case PiMMPackage.PI_GRAPH__ACTORS:
+        return (this.actors != null) && !this.actors.isEmpty();
       case PiMMPackage.PI_GRAPH__FIFOS:
         return (this.fifos != null) && !this.fifos.isEmpty();
       case PiMMPackage.PI_GRAPH__PARAMETERS:
@@ -215,9 +215,9 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
   @Override
   public void eSet(final int featureID, final Object newValue) {
     switch (featureID) {
-      case PiMMPackage.PI_GRAPH__VERTICES:
-        getVertices().clear();
-        getVertices().addAll((Collection<? extends AbstractActor>) newValue);
+      case PiMMPackage.PI_GRAPH__ACTORS:
+        getActors().clear();
+        getActors().addAll((Collection<? extends AbstractActor>) newValue);
         return;
       case PiMMPackage.PI_GRAPH__FIFOS:
         getFifos().clear();
@@ -256,8 +256,8 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
   @Override
   public void eUnset(final int featureID) {
     switch (featureID) {
-      case PiMMPackage.PI_GRAPH__VERTICES:
-        getVertices().clear();
+      case PiMMPackage.PI_GRAPH__ACTORS:
+        getActors().clear();
         return;
       case PiMMPackage.PI_GRAPH__FIFOS:
         getFifos().clear();
@@ -322,7 +322,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    */
   @Override
   public EList<String> getVerticesNames() {
-    return ECollections.newBasicEList(getVertices().stream().map(AbstractActor::getName).collect(Collectors.toList()));
+    return ECollections.newBasicEList(getActors().stream().map(AbstractActor::getName).collect(Collectors.toList()));
   }
 
   /**
@@ -342,7 +342,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    */
   @Override
   public EList<Actor> getActorsWithRefinement() {
-    return ECollections.newBasicEList(getVertices().stream().filter(Actor.class::isInstance).map(Actor.class::cast).collect(Collectors.toList()));
+    return ECollections.newBasicEList(getActors().stream().filter(Actor.class::isInstance).map(Actor.class::cast).collect(Collectors.toList()));
   }
 
   /**
@@ -353,7 +353,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
   @Override
   public EList<Parameter> getAllParameters() {
     final EList<Parameter> result = ECollections.newBasicEList();
-    for (final AbstractActor aa : getVertices()) {
+    for (final AbstractActor aa : getActors()) {
       if (aa instanceof PiGraph) {
         result.addAll(((PiGraph) aa).getAllParameters());
       } else if (aa instanceof Actor) {
@@ -379,8 +379,8 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
   @Override
   public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
     switch (featureID) {
-      case PiMMPackage.PI_GRAPH__VERTICES:
-        return ((InternalEList<InternalEObject>) (InternalEList<?>) getVertices()).basicAdd(otherEnd, msgs);
+      case PiMMPackage.PI_GRAPH__ACTORS:
+        return ((InternalEList<InternalEObject>) (InternalEList<?>) getActors()).basicAdd(otherEnd, msgs);
       case PiMMPackage.PI_GRAPH__PARAMETERS:
         return ((InternalEList<InternalEObject>) (InternalEList<?>) getParameters()).basicAdd(otherEnd, msgs);
     }
@@ -394,7 +394,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    */
   @Override
   public AbstractVertex lookupVertex(final String name) {
-    return Stream.concat(getVertices().stream(), getParameters().stream()).filter(v -> v.getName().equals(name)).findFirst().orElse(null);
+    return Stream.concat(getActors().stream(), getParameters().stream()).filter(v -> v.getName().equals(name)).findFirst().orElse(null);
   }
 
   /**
@@ -404,12 +404,12 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    * @generated
    */
   @Override
-  public EList<AbstractActor> getVertices() {
-    if (this.vertices == null) {
-      this.vertices = new EObjectContainmentWithInverseEList<>(AbstractActor.class, this, PiMMPackage.PI_GRAPH__VERTICES,
+  public EList<AbstractActor> getActors() {
+    if (this.actors == null) {
+      this.actors = new EObjectContainmentWithInverseEList<>(AbstractActor.class, this, PiMMPackage.PI_GRAPH__ACTORS,
           PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH);
     }
-    return this.vertices;
+    return this.actors;
   }
 
   /*
@@ -447,7 +447,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
     }
     final List<String> pathFragments = new ArrayList<>(Arrays.asList(safePath.split("/")));
     final String firstFragment = pathFragments.remove(0);
-    final AbstractActor current = getVertices().stream().filter(a -> firstFragment.equals(a.getName())).findFirst().orElse(null);
+    final AbstractActor current = getActors().stream().filter(a -> firstFragment.equals(a.getName())).findFirst().orElse(null);
     if (pathFragments.isEmpty()) {
       return current;
     } else {
@@ -485,7 +485,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
   @Override
   public EList<AbstractActor> getAllActors() {
     final EList<AbstractActor> result = new BasicEList<>();
-    for (final AbstractActor aa : getVertices()) {
+    for (final AbstractActor aa : getActors()) {
       result.add(aa);
       if (aa instanceof PiGraph) {
         result.addAll(((PiGraph) aa).getAllActors());

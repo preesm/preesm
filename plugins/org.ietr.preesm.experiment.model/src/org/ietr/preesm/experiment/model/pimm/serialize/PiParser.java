@@ -213,7 +213,7 @@ public class PiParser {
     actor.setName(nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME));
 
     // Add the actor to the parsed graph
-    graph.getVertices().add(actor);
+    graph.getActors().add(actor);
 
     parseRefinement(nodeElt, actor);
 
@@ -747,7 +747,7 @@ public class PiParser {
     cfgOutIf.setName(nodeElt.getAttribute(PiIdentifiers.CONFIGURATION_OUTPUT_INTERFACE_NAME));
 
     // Add the actor to the parsed graph
-    graph.getVertices().add(cfgOutIf);
+    graph.getActors().add(cfgOutIf);
 
     return cfgOutIf;
   }
@@ -769,7 +769,7 @@ public class PiParser {
     snkInterface.setName(nodeElt.getAttribute(PiIdentifiers.DATA_OUTPUT_INTERFACE_NAME));
 
     // Add the actor to the parsed graph
-    graph.getVertices().add(snkInterface);
+    graph.getActors().add(snkInterface);
 
     return snkInterface;
   }
@@ -791,7 +791,7 @@ public class PiParser {
     srcInterface.setName(nodeElt.getAttribute(PiIdentifiers.DATA_INPUT_INTERFACE_NAME));
 
     // Add the actor to the parsed graph
-    graph.getVertices().add(srcInterface);
+    graph.getActors().add(srcInterface);
 
     return srcInterface;
   }
@@ -832,7 +832,7 @@ public class PiParser {
     actor.setName(nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME));
 
     // Add the actor to the parsed graph
-    graph.getVertices().add(actor);
+    graph.getActors().add(actor);
 
     return actor;
   }

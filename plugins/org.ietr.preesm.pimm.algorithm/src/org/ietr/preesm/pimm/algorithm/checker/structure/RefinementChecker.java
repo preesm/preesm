@@ -90,7 +90,7 @@ public class RefinementChecker {
    */
   public boolean checkRefinements(final PiGraph graph) {
     boolean ok = true;
-    for (final AbstractActor aa : graph.getVertices()) {
+    for (final AbstractActor aa : graph.getActors()) {
       if (aa instanceof Actor) {
         ok &= checkRefinement((Actor) aa);
       } else if (aa instanceof PiGraph) {

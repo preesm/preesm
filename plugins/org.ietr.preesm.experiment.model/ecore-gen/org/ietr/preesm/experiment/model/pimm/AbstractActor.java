@@ -105,7 +105,7 @@ public interface AbstractActor extends Configurable {
 
   /**
    * Returns the value of the '<em><b>Containing Graph</b></em>' container reference. It is bidirectional and its opposite is
-   * '{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getVertices <em>Vertices</em>}'. <!-- begin-user-doc -->
+   * '{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getActors <em>Actors</em>}'. <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Containing Graph</em>' container reference isn't clear, there really should be more of a description here...
    * </p>
@@ -114,8 +114,8 @@ public interface AbstractActor extends Configurable {
    * @return the value of the '<em>Containing Graph</em>' container reference.
    * @see #setContainingGraph(PiGraph)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getAbstractActor_ContainingGraph()
-   * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getVertices
-   * @model opposite="vertices" transient="false"
+   * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getActors
+   * @model opposite="actors" transient="false"
    * @generated
    */
   PiGraph getContainingGraph();

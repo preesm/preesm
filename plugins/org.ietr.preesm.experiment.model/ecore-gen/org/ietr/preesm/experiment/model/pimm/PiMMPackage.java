@@ -294,12 +294,12 @@ public interface PiMMPackage extends EPackage {
   int PI_GRAPH__CONTAINING_GRAPH = PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH;
 
   /**
-   * The feature id for the '<em><b>Vertices</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The feature id for the '<em><b>Actors</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int PI_GRAPH__VERTICES = PiMMPackage.ABSTRACT_ACTOR_FEATURE_COUNT + 0;
+  int PI_GRAPH__ACTORS = PiMMPackage.ABSTRACT_ACTOR_FEATURE_COUNT + 0;
 
   /**
    * The feature id for the '<em><b>Fifos</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2018,15 +2018,15 @@ public interface PiMMPackage extends EPackage {
   EClass getPiGraph();
 
   /**
-   * Returns the meta object for the containment reference list '{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getVertices <em>Vertices</em>}'. <!--
+   * Returns the meta object for the containment reference list '{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getActors <em>Actors</em>}'. <!--
    * begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the meta object for the containment reference list '<em>Vertices</em>'.
-   * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getVertices()
+   * @return the meta object for the containment reference list '<em>Actors</em>'.
+   * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getActors()
    * @see #getPiGraph()
    * @generated
    */
-  EReference getPiGraph_Vertices();
+  EReference getPiGraph_Actors();
 
   /**
    * Returns the meta object for the containment reference list '{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getFifos <em>Fifos</em>}'. <!--
@@ -2854,11 +2854,11 @@ public interface PiMMPackage extends EPackage {
     EClass PI_GRAPH = PiMMPackage.eINSTANCE.getPiGraph();
 
     /**
-     * The meta object literal for the '<em><b>Vertices</b></em>' containment reference list feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * The meta object literal for the '<em><b>Actors</b></em>' containment reference list feature. <!-- begin-user-doc --> <!-- end-user-doc -->
      *
      * @generated
      */
-    EReference PI_GRAPH__VERTICES = PiMMPackage.eINSTANCE.getPiGraph_Vertices();
+    EReference PI_GRAPH__ACTORS = PiMMPackage.eINSTANCE.getPiGraph_Actors();
 
     /**
      * The meta object literal for the '<em><b>Fifos</b></em>' containment reference list feature. <!-- begin-user-doc --> <!-- end-user-doc -->

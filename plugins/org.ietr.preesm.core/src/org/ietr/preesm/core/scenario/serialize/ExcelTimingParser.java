@@ -179,7 +179,7 @@ public class ExcelTimingParser {
     // (hierarchical vertex), in which case we call recursively this method;
     // a standard actor, in which case we parser its timing; or a special
     // vertex, in which case we do nothing
-    for (final AbstractActor vertex : currentGraph.getVertices()) {
+    for (final AbstractActor vertex : currentGraph.getActors()) {
       // Handle connected graphs from hierarchical vertices
       if (vertex instanceof PiGraph) {
         parseTimingsForPISDFGraph(w, (PiGraph) vertex, opDefIds, missingVertices, missingOperatorTypes);

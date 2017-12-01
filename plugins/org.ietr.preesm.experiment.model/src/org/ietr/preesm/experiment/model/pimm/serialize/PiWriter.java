@@ -465,7 +465,7 @@ public class PiWriter {
     }
 
     // Write the vertices of the graph
-    for (final AbstractActor actor : graph.getVertices()) {
+    for (final AbstractActor actor : graph.getActors()) {
       writeAbstractActor(graphElt, actor);
     }
 

@@ -175,7 +175,7 @@ public abstract class AbstractActorImpl extends ConfigurableImpl implements Abst
   public NotificationChain eBasicRemoveFromContainerFeature(final NotificationChain msgs) {
     switch (eContainerFeatureID()) {
       case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
-        return eInternalContainer().eInverseRemove(this, PiMMPackage.PI_GRAPH__VERTICES, PiGraph.class, msgs);
+        return eInternalContainer().eInverseRemove(this, PiMMPackage.PI_GRAPH__ACTORS, PiGraph.class, msgs);
     }
     return super.eBasicRemoveFromContainerFeature(msgs);
   }
@@ -354,7 +354,7 @@ public abstract class AbstractActorImpl extends ConfigurableImpl implements Abst
         msgs = eBasicRemoveFromContainer(msgs);
       }
       if (newContainingGraph != null) {
-        msgs = ((InternalEObject) newContainingGraph).eInverseAdd(this, PiMMPackage.PI_GRAPH__VERTICES, PiGraph.class, msgs);
+        msgs = ((InternalEObject) newContainingGraph).eInverseAdd(this, PiMMPackage.PI_GRAPH__ACTORS, PiGraph.class, msgs);
       }
       msgs = basicSetContainingGraph(newContainingGraph, msgs);
       if (msgs != null) {

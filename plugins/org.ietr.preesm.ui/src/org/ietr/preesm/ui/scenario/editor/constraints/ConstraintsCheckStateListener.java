@@ -197,7 +197,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
   private void fireOnCheck(final PiGraph graph, final boolean isChecked) {
     if (this.currentOpId != null) {
       // Checks the children of the current graph
-      for (final AbstractActor v : this.contentProvider.filterPISDFChildren(graph.getVertices())) {
+      for (final AbstractActor v : this.contentProvider.filterPISDFChildren(graph.getActors())) {
         if (v instanceof PiGraph) {
           fireOnCheck(((PiGraph) v), isChecked);
         }
@@ -260,7 +260,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
         if (subGraph instanceof PiGraph) {
           final PiGraph graph = (PiGraph) subGraph;
 
-          for (final AbstractActor v : this.contentProvider.filterPISDFChildren(graph.getVertices())) {
+          for (final AbstractActor v : this.contentProvider.filterPISDFChildren(graph.getActors())) {
             fireOnCheck(v, isChecked);
           }
         }
@@ -334,7 +334,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 
       // If all the children of a graph are checked, it is checked itself
       boolean allChildrenChecked = true;
-      for (final AbstractActor v : this.contentProvider.filterPISDFChildren(currentGraph.getVertices())) {
+      for (final AbstractActor v : this.contentProvider.filterPISDFChildren(currentGraph.getActors())) {
         allChildrenChecked &= this.treeViewer.getChecked(v);
       }
 

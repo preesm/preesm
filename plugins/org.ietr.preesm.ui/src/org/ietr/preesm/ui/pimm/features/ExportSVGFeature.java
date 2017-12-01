@@ -426,7 +426,7 @@ public class ExportSVGFeature extends AbstractCustomFeature {
     for (final Parameter p : graph.getParameters()) {
       visitor.doSwitch(p);
     }
-    for (final AbstractActor aa : graph.getVertices()) {
+    for (final AbstractActor aa : graph.getActors()) {
       visitor.doSwitch(aa);
     }
 

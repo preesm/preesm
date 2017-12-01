@@ -110,7 +110,7 @@ public class CreateForkActorFeature extends AbstractCreateFeature {
     newActor.setName(newActorName);
 
     // Add new actor to the graph.
-    if (graph.getVertices().add(newActor)) {
+    if (graph.getActors().add(newActor)) {
       this.hasDoneChanges = true;
     }
 

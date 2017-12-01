@@ -114,8 +114,8 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
 
     for (final Entry<PiGraph, List<ActorByGraphReplacement>> e : this.graphReplacements.entrySet()) {
       for (final ActorByGraphReplacement r : e.getValue()) {
-        e.getKey().getVertices().remove(r.toBeRemoved);
-        e.getKey().getVertices().add(r.toBeAdded);
+        e.getKey().getActors().remove(r.toBeRemoved);
+        e.getKey().getActors().add(r.toBeAdded);
 
       }
     }
@@ -130,7 +130,7 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
   public void visitPiGraph(final PiGraph pg) {
     final PiGraph oldGraph = this.currentGraph;
     this.currentGraph = pg;
-    for (final AbstractActor v : pg.getVertices()) {
+    for (final AbstractActor v : pg.getActors()) {
       v.accept(this);
     }
     for (final Parameter p : pg.getParameters()) {

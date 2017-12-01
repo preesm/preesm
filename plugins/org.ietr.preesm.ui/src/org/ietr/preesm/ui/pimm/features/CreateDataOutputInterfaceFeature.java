@@ -111,7 +111,7 @@ public class CreateDataOutputInterfaceFeature extends AbstractCreateFeature {
     newSinkInterface.setName(newSnkName);
 
     // Add new SinkInterface to the graph.
-    if (graph.getVertices().add(newSinkInterface)) {
+    if (graph.getActors().add(newSinkInterface)) {
       this.hasDoneChanges = true;
     }
 
