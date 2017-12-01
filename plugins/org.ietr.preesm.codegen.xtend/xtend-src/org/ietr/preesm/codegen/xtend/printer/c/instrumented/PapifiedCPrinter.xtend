@@ -75,8 +75,6 @@ class PapifiedCPrinter extends CPrinter {
 		String actor_name = "actor_name_";
 		String PAPI_actions = "PAPI_actions_";
 		String PAPI_output = "PAPI_output_";
-		String PAPI_start_usec = "PAPI_start_usec_";
-		String PAPI_end_usec = "PAPI_end_usec_";
 		String PAPI_eventCodeSet = "PAPI_eventCodeSet_";
 		String PAPI_eventSet = "PAPI_eventSet_";
 				
@@ -145,10 +143,12 @@ class PapifiedCPrinter extends CPrinter {
 			//println(all_event_names.toString);
 			//println("Analyzing = " + pe.instanceName);
 						
-			if(all_event_names !== null){	
+			if(all_event_names !== null && all_event_names != ""){	
 				
-				//println(all_event_names.toString);
-				event_names = all_event_names.split(",");			
+				println(all_event_names.toString);
+				event_names = all_event_names.split(",");		
+				
+				println(event_names.toString);	
 				code_set_size = event_names.length;
 												
 				for(CodeElt elts : (block as CoreBlock).loopBlock.codeElts){	
@@ -220,24 +220,6 @@ class PapifiedCPrinter extends CPrinter {
 							func.actorName = "PAPI Init_output_file_".concat((elts as FunctionCall).actorName)
 							func
 						})
-						//Create a variable to store the start of the actor execution
-						block.definitions.add({
-							var const = CodegenFactory.eINSTANCE.createBuffer
-							const.name = PAPI_start_usec.concat((elts as FunctionCall).actorName)
-							const.size = 1
-							const.type = "unsigned long long"
-							const.comment = const.name.concat("_start_time_measure")
-							const
-						})
-						//Create a variable to store the end of the actor execution
-						block.definitions.add({
-							var const = CodegenFactory.eINSTANCE.createBuffer
-							const.name = PAPI_end_usec.concat((elts as FunctionCall).actorName)
-							const.size = 1
-							const.type = "unsigned long long"
-							const.comment = const.name.concat("_end_time_measure")
-							const
-						})
 						//Create a variable to store the event code set
 						block.definitions.add({
 							var const = CodegenFactory.eINSTANCE.createBuffer
@@ -252,8 +234,8 @@ class PapifiedCPrinter extends CPrinter {
 							var func = CodegenFactory.eINSTANCE.createFunctionCall()
 							func.name = "event_init_event_code_set"
 							func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
-							func.addParameter(block.definitions.get(block.definitions.length-6), PortDirection.OUTPUT)
 							func.addParameter(block.definitions.get(block.definitions.length-4), PortDirection.OUTPUT)
+							func.addParameter(block.definitions.get(block.definitions.length-2), PortDirection.OUTPUT)
 							func.actorName = "PAPI Init_code_set_".concat((elts as FunctionCall).actorName)
 							func
 						})
@@ -279,9 +261,9 @@ class PapifiedCPrinter extends CPrinter {
 							var func = CodegenFactory.eINSTANCE.createFunctionCall()
 							func.name = "event_create_eventList"
 							func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
-							func.addParameter(block.definitions.get(block.definitions.length-7), PortDirection.INPUT)
+							func.addParameter(block.definitions.get(block.definitions.length-5), PortDirection.INPUT)
 							func.addParameter(block.definitions.get(block.definitions.length-2), PortDirection.INPUT)
-							func.addParameter(block.definitions.get(block.definitions.length-6), PortDirection.INPUT)
+							func.addParameter(block.definitions.get(block.definitions.length-4), PortDirection.INPUT)
 							func.actorName = "PAPI create_eventlist_".concat((elts as FunctionCall).actorName)
 							func
 						})
@@ -327,16 +309,16 @@ class PapifiedCPrinter extends CPrinter {
 		«IF state == PrinterState::PRINTING_LOOP_BLOCK && functionCall.parameters.get(functionCall.parameters.length-1).name.equals("Papified")»
 
 			// Papi Start for «functionCall.actorName»
-			PAPI_start_usec_«functionCall.actorName»[0] = PAPI_get_real_usec();
+			event_start_PAPI_timing(PAPI_actions_«functionCall.actorName»);
 			event_start(&(PAPI_eventSet_«functionCall.actorName»[0]), 0);
 						
 			«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-1) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 			
 			// Papi Stop for «functionCall.actorName»
 			event_stop(&(PAPI_eventSet_«functionCall.actorName»[0]), «code_set_size», PAPI_actions_«functionCall.actorName»[0].counterValues, 0);
-			PAPI_end_usec_«functionCall.actorName»[0] = PAPI_get_real_usec();
+			event_stop_PAPI_timing(PAPI_actions_«functionCall.actorName»);
 			PAPI_output_«functionCall.actorName»[0] = fopen("papi-output/papi_output_«functionCall.actorName».csv","a+");
-			fprintf(PAPI_output_«functionCall.actorName»[0], "%s,%s,%llu,%llu,%lu,%lu\n", "Sobel", PAPI_actions_«functionCall.actorName»[0].action_id, PAPI_start_usec_«functionCall.actorName»[0], PAPI_end_usec_«functionCall.actorName»[0], PAPI_actions_«functionCall.actorName»[0].counterValues[0], PAPI_actions_«functionCall.actorName»[0].counterValues[1]);
+			fprintf(PAPI_output_«functionCall.actorName»[0], "%s,%s,%llu,%llu,%lu,%lu\n", "Sobel", PAPI_actions_«functionCall.actorName»[0].action_id, PAPI_actions_«functionCall.actorName»[0].time_init_action, PAPI_actions_«functionCall.actorName»[0].time_end_action, PAPI_actions_«functionCall.actorName»[0].counterValues[0], PAPI_actions_«functionCall.actorName»[0].counterValues[1]);
 			fclose(PAPI_output_«functionCall.actorName»[0]);
 
 		«ELSE»
