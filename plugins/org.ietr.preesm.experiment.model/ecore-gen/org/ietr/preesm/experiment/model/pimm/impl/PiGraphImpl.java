@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -368,6 +369,19 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
     }
     result.addAll(getParameters());
     return ECollections.unmodifiableEList(result);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EList<PiGraph> getChildrenGraphs() {
+    final Stream<PiGraph> directChildrenGraphs = getActors().stream().filter(PiGraph.class::isInstance).map(PiGraph.class::cast);
+    final Stream<PiGraph> refinementChildrenGraphs = getActorsWithRefinement().stream().map(Actor::getRefinement).filter(Objects::nonNull)
+        .map(Refinement::getAbstractActor).filter(PiGraph.class::isInstance).map(PiGraph.class::cast);
+    return ECollections.unmodifiableEList(Stream.concat(directChildrenGraphs, refinementChildrenGraphs).collect(Collectors.toList()));
   }
 
   /**

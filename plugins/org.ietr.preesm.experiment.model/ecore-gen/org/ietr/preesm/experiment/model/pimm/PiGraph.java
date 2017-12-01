@@ -165,6 +165,17 @@ public interface PiGraph extends AbstractActor {
   EList<Parameter> getAllParameters();
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='final Stream&lt;PiGraph&gt; directChildrenGraphs =
+   *        getActors().stream().filter(PiGraph.class::isInstance).map(PiGraph.class::cast);\nfinal Stream&lt;PiGraph&gt; refinementChildrenGraphs =
+   *        getActorsWithRefinement().stream().map(Actor::getRefinement).filter(Objects::nonNull).map(Refinement::getAbstractActor).filter(PiGraph.class::isInstance).map(PiGraph.class::cast);\nreturn
+   *        ECollections.unmodifiableEList(Stream.concat(directChildrenGraphs, refinementChildrenGraphs).collect(Collectors.toList()));'"
+   * @generated
+   */
+  EList<PiGraph> getChildrenGraphs();
+
+  /**
    * Return the {@link AbstractVertex} ( {@link AbstractActor} or {@link Parameter}) whose name is given as a parameter.
    *
    * @param name

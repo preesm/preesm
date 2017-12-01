@@ -100,6 +100,11 @@
         <details key="body" value="final EList&lt;Parameter> result = ECollections.newBasicEList();&#xA;for (final AbstractActor aa : getActors()) {&#xA;  if (aa instanceof PiGraph) {&#xA;    result.addAll(((PiGraph) aa).getAllParameters());&#xA;  } else if (aa instanceof Actor) {&#xA;    final Refinement refinement = ((Actor) aa).getRefinement();&#xA;    if (refinement != null) {&#xA;      final AbstractActor subGraph = refinement.getAbstractActor();&#xA;      if ((subGraph != null) &amp;&amp; (subGraph instanceof PiGraph)) {&#xA;        result.addAll(((PiGraph) subGraph).getAllParameters());&#xA;      }&#xA;    }&#xA;  }&#xA;}&#xA;result.addAll(getParameters());&#xA;return ECollections.unmodifiableEList(result);"/>
       </eAnnotations>
     </eOperations>
+    <eOperations name="getChildrenGraphs" upperBound="-1" eType="#//PiGraph">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="final Stream&lt;PiGraph> directChildrenGraphs = getActors().stream().filter(PiGraph.class::isInstance).map(PiGraph.class::cast);&#xA;final Stream&lt;PiGraph> refinementChildrenGraphs = getActorsWithRefinement().stream().map(Actor::getRefinement).filter(Objects::nonNull).map(Refinement::getAbstractActor).filter(PiGraph.class::isInstance).map(PiGraph.class::cast);&#xA;return ECollections.unmodifiableEList(Stream.concat(directChildrenGraphs, refinementChildrenGraphs).collect(Collectors.toList()));"/>
+      </eAnnotations>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="actors" upperBound="-1"
         eType="#//AbstractActor" containment="true" eOpposite="#//AbstractActor/containingGraph"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="fifos" upperBound="-1"
