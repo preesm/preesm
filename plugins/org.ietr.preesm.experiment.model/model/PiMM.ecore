@@ -97,7 +97,7 @@
     </eOperations>
     <eOperations name="getAllParameters" upperBound="-1" eType="#//Parameter">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="body" value="final EList&lt;Parameter> result = ECollections.newBasicEList();&#xA;for (final AbstractActor aa : getActors()) {&#xA;  if (aa instanceof PiGraph) {&#xA;    result.addAll(((PiGraph) aa).getAllParameters());&#xA;  } else if (aa instanceof Actor) {&#xA;    final Refinement refinement = ((Actor) aa).getRefinement();&#xA;    if (refinement != null) {&#xA;      final AbstractActor subGraph = refinement.getAbstractActor();&#xA;      if ((subGraph != null) &amp;&amp; (subGraph instanceof PiGraph)) {&#xA;        result.addAll(((PiGraph) subGraph).getAllParameters());&#xA;      }&#xA;    }&#xA;  }&#xA;}&#xA;result.addAll(getParameters());&#xA;return ECollections.unmodifiableEList(result);"/>
+        <details key="body" value="final Stream&lt;Parameter> currentGraphParameters = getParameters().stream();&#xA;final Stream&lt;Parameter> childrenGraphsParameters = getChildrenGraphs().stream().map(PiGraph::getAllParameters).flatMap(List::stream);&#xA;return ECollections.unmodifiableEList(Stream.concat(currentGraphParameters, childrenGraphsParameters).collect(Collectors.toList()));"/>
       </eAnnotations>
     </eOperations>
     <eOperations name="getChildrenGraphs" upperBound="-1" eType="#//PiGraph">

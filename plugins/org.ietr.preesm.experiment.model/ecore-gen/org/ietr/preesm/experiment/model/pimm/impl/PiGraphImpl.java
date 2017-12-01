@@ -353,22 +353,9 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    */
   @Override
   public EList<Parameter> getAllParameters() {
-    final EList<Parameter> result = ECollections.newBasicEList();
-    for (final AbstractActor aa : getActors()) {
-      if (aa instanceof PiGraph) {
-        result.addAll(((PiGraph) aa).getAllParameters());
-      } else if (aa instanceof Actor) {
-        final Refinement refinement = ((Actor) aa).getRefinement();
-        if (refinement != null) {
-          final AbstractActor subGraph = refinement.getAbstractActor();
-          if ((subGraph != null) && (subGraph instanceof PiGraph)) {
-            result.addAll(((PiGraph) subGraph).getAllParameters());
-          }
-        }
-      }
-    }
-    result.addAll(getParameters());
-    return ECollections.unmodifiableEList(result);
+    final Stream<Parameter> currentGraphParameters = getParameters().stream();
+    final Stream<Parameter> childrenGraphsParameters = getChildrenGraphs().stream().map(PiGraph::getAllParameters).flatMap(List::stream);
+    return ECollections.unmodifiableEList(Stream.concat(currentGraphParameters, childrenGraphsParameters).collect(Collectors.toList()));
   }
 
   /**

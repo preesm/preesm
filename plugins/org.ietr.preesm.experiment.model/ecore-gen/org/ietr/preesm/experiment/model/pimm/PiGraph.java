@@ -155,11 +155,10 @@ public interface PiGraph extends AbstractActor {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='final EList&lt;Parameter&gt; result = ECollections.newBasicEList();\nfor
-   *        (final AbstractActor aa : getActors()) {\n if (aa instanceof PiGraph) {\n result.addAll(((PiGraph) aa).getAllParameters());\n } else if (aa
-   *        instanceof Actor) {\n final Refinement refinement = ((Actor) aa).getRefinement();\n if (refinement != null) {\n final AbstractActor subGraph =
-   *        refinement.getAbstractActor();\n if ((subGraph != null) &amp;&amp; (subGraph instanceof PiGraph)) {\n result.addAll(((PiGraph)
-   *        subGraph).getAllParameters());\n }\n }\n }\n}\nresult.addAll(getParameters());\nreturn ECollections.unmodifiableEList(result);'"
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='final Stream&lt;Parameter&gt; currentGraphParameters =
+   *        getParameters().stream();\nfinal Stream&lt;Parameter&gt; childrenGraphsParameters =
+   *        getChildrenGraphs().stream().map(PiGraph::getAllParameters).flatMap(List::stream);\nreturn
+   *        ECollections.unmodifiableEList(Stream.concat(currentGraphParameters, childrenGraphsParameters).collect(Collectors.toList()));'"
    * @generated
    */
   EList<Parameter> getAllParameters();
