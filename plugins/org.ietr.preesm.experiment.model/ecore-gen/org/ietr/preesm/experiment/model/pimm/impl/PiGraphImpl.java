@@ -341,7 +341,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    * @generated
    */
   @Override
-  public EList<Actor> getActors() {
+  public EList<Actor> getActorsWithRefinement() {
     return ECollections.newBasicEList(getVertices().stream().filter(Actor.class::isInstance).map(Actor.class::cast).collect(Collectors.toList()));
   }
 
@@ -454,7 +454,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
       if (current instanceof PiGraph) {
         return ((PiGraph) current).lookupActorFromPath(String.join("/", pathFragments));
       } else if (current instanceof Actor) {
-        AbstractActor aa = ((Actor) current).getRefinement().getAbstractActor();
+        final AbstractActor aa = ((Actor) current).getRefinement().getAbstractActor();
         if (aa instanceof PiGraph) {
           return ((PiGraph) aa).lookupActorFromPath(String.join("/", pathFragments));
         } else {

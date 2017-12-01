@@ -58,7 +58,7 @@ class SpiderMainFilePrinter {
 	#include <stdlib.h>
 	
 	/* Include your files here */
-	«FOR actor : pg.actors»
+	«FOR actor : pg.actorsWithRefinement»
 	  «IF actor.refinement instanceof CHeaderRefinement && (actor.refinement as CHeaderRefinement).getInitPrototype !== null»
 	    #include <«actor.refinement.getFileName»>
 	  «ENDIF»
@@ -180,7 +180,7 @@ class SpiderMainFilePrinter {
 		Spider::init(cfg);
 	
 		/* Actor initialisation here if needed */
-		«FOR actor : pg.actors»
+		«FOR actor : pg.actorsWithRefinement»
 		  «IF actor.refinement instanceof CHeaderRefinement && (actor.refinement as CHeaderRefinement).getInitPrototype !== null»
 		    «printInitCall(actor)»
 		  «ENDIF»

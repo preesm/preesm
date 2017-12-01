@@ -90,7 +90,7 @@
         <details key="body" value="return ECollections.newBasicEList(getParameters().stream().map(Parameter::getName).collect(Collectors.toList()));"/>
       </eAnnotations>
     </eOperations>
-    <eOperations name="getActors" upperBound="-1" eType="#//Actor">
+    <eOperations name="getActorsWithRefinement" upperBound="-1" eType="#//Actor">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
         <details key="body" value="return ECollections.newBasicEList(getVertices().stream().filter(Actor.class::isInstance).map(Actor.class::cast).collect(Collectors.toList()));"/>
       </eAnnotations>

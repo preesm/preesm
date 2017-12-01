@@ -458,7 +458,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   private final void layoutActorContent(final Diagram diagram) {
     final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(diagram);
 
-    final List<Actor> actors = graph.getActors();
+    final List<Actor> actors = graph.getActorsWithRefinement();
     for (final Actor a : actors) {
       final List<PictogramElement> actorPEs = Graphiti.getLinkService().getPictogramElements(diagram, a);
       for (final PictogramElement p : actorPEs) {
