@@ -175,6 +175,17 @@ public interface PiGraph extends AbstractActor {
   EList<PiGraph> getChildrenGraphs();
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='final Stream&lt;AbstractActor&gt; currentGraphActors =
+   *        getActors().stream();\nfinal Stream&lt;AbstractActor&gt; chidrenGraphsActors =
+   *        getChildrenGraphs().stream().map(PiGraph::getAllActors).flatMap(List::stream);\nreturn
+   *        ECollections.unmodifiableEList(Stream.concat(currentGraphActors, chidrenGraphsActors).collect(Collectors.toList()));'"
+   * @generated
+   */
+  EList<AbstractActor> getAllActors();
+
+  /**
    * Return the {@link AbstractVertex} ( {@link AbstractActor} or {@link Parameter}) whose name is given as a parameter.
    *
    * @param name
@@ -211,12 +222,5 @@ public interface PiGraph extends AbstractActor {
    * @return the first Parameter with the given name found in the graph hierarchy, null if none is found
    */
   public Parameter lookupParameterGivenGraph(String name, String parent);
-
-  /**
-   * Gets the all vertices.
-   *
-   * @return the set of all the actors contained by the graph and its subgraphs
-   */
-  public EList<AbstractActor> getAllActors();
 
 } // Graph

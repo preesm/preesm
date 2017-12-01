@@ -1580,6 +1580,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     addEOperation(this.piGraphEClass, getPiGraph(), "getChildrenGraphs", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
+    addEOperation(this.piGraphEClass, getAbstractActor(), "getAllActors", 0, -1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
     initEClass(this.executableActorEClass, ExecutableActor.class, "ExecutableActor", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
 

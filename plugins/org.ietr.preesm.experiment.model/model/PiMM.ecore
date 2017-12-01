@@ -105,6 +105,11 @@
         <details key="body" value="final Stream&lt;PiGraph> directChildrenGraphs = getActors().stream().filter(PiGraph.class::isInstance).map(PiGraph.class::cast);&#xA;final Stream&lt;PiGraph> refinementChildrenGraphs = getActorsWithRefinement().stream().map(Actor::getRefinement).filter(Objects::nonNull).map(Refinement::getAbstractActor).filter(PiGraph.class::isInstance).map(PiGraph.class::cast);&#xA;return ECollections.unmodifiableEList(Stream.concat(directChildrenGraphs, refinementChildrenGraphs).collect(Collectors.toList()));"/>
       </eAnnotations>
     </eOperations>
+    <eOperations name="getAllActors" upperBound="-1" eType="#//AbstractActor">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="final Stream&lt;AbstractActor> currentGraphActors = getActors().stream();&#xA;final Stream&lt;AbstractActor> chidrenGraphsActors = getChildrenGraphs().stream().map(PiGraph::getAllActors).flatMap(List::stream);&#xA;return ECollections.unmodifiableEList(Stream.concat(currentGraphActors, chidrenGraphsActors).collect(Collectors.toList()));"/>
+      </eAnnotations>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="actors" upperBound="-1"
         eType="#//AbstractActor" containment="true" eOpposite="#//AbstractActor/containingGraph"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="fifos" upperBound="-1"

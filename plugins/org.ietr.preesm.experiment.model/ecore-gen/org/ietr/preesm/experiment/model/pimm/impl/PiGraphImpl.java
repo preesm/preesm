@@ -44,7 +44,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.eclipse.emf.common.notify.NotificationChain;
-import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
@@ -376,6 +375,18 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    *
    * @generated
    */
+  @Override
+  public EList<AbstractActor> getAllActors() {
+    final Stream<AbstractActor> currentGraphActors = getActors().stream();
+    final Stream<AbstractActor> chidrenGraphsActors = getChildrenGraphs().stream().map(PiGraph::getAllActors).flatMap(List::stream);
+    return ECollections.unmodifiableEList(Stream.concat(currentGraphActors, chidrenGraphsActors).collect(Collectors.toList()));
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
   @SuppressWarnings("unchecked")
   @Override
   public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
@@ -478,28 +489,4 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
         .orElse(null);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getAllVertices()
-   */
-  @Override
-  public EList<AbstractActor> getAllActors() {
-    final EList<AbstractActor> result = new BasicEList<>();
-    for (final AbstractActor aa : getActors()) {
-      result.add(aa);
-      if (aa instanceof PiGraph) {
-        result.addAll(((PiGraph) aa).getAllActors());
-      } else if (aa instanceof Actor) {
-        final Refinement refinement = ((Actor) aa).getRefinement();
-        if (refinement != null) {
-          final AbstractActor subGraph = refinement.getAbstractActor();
-          if ((subGraph != null) && (subGraph instanceof PiGraph)) {
-            result.addAll(((PiGraph) subGraph).getAllActors());
-          }
-        }
-      }
-    }
-    return ECollections.unmodifiableEList(result);
-  }
 } // GraphImpl
