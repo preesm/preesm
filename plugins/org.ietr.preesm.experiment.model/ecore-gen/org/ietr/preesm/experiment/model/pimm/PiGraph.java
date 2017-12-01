@@ -207,6 +207,6 @@ public interface PiGraph extends AbstractActor {
    *
    * @return the set of all the actors contained by the graph and its subgraphs
    */
-  public EList<AbstractActor> getAllVertices();
+  public EList<AbstractActor> getAllActors();
 
 } // Graph

@@ -483,22 +483,22 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getAllVertices()
    */
   @Override
-  public EList<AbstractActor> getAllVertices() {
+  public EList<AbstractActor> getAllActors() {
     final EList<AbstractActor> result = new BasicEList<>();
     for (final AbstractActor aa : getVertices()) {
       result.add(aa);
       if (aa instanceof PiGraph) {
-        result.addAll(((PiGraph) aa).getAllVertices());
+        result.addAll(((PiGraph) aa).getAllActors());
       } else if (aa instanceof Actor) {
         final Refinement refinement = ((Actor) aa).getRefinement();
         if (refinement != null) {
           final AbstractActor subGraph = refinement.getAbstractActor();
           if ((subGraph != null) && (subGraph instanceof PiGraph)) {
-            result.addAll(((PiGraph) subGraph).getAllVertices());
+            result.addAll(((PiGraph) subGraph).getAllActors());
           }
         }
       }
     }
-    return result;
+    return ECollections.unmodifiableEList(result);
   }
 } // GraphImpl

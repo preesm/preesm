@@ -103,7 +103,7 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
    */
   public Set<AbstractActor> getSortedPISDFVertices(final PreesmScenario inputScenario) throws InvalidModelException, CoreException {
     final PiGraph currentGraph = PiParser.getPiGraph(inputScenario.getAlgorithmURL());
-    return filterVertices(currentGraph.getAllVertices());
+    return filterVertices(currentGraph.getAllActors());
   }
 
   /**
