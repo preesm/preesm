@@ -322,7 +322,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    */
   @Override
   public EList<String> getActorsNames() {
-    return ECollections.newBasicEList(getActors().stream().map(AbstractActor::getName).collect(Collectors.toList()));
+    return ECollections.unmodifiableEList(getActors().stream().map(AbstractActor::getName).collect(Collectors.toList()));
   }
 
   /**
@@ -332,7 +332,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    */
   @Override
   public EList<String> getParametersNames() {
-    return ECollections.newBasicEList(getParameters().stream().map(Parameter::getName).collect(Collectors.toList()));
+    return ECollections.unmodifiableEList(getParameters().stream().map(Parameter::getName).collect(Collectors.toList()));
   }
 
   /**
@@ -342,7 +342,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    */
   @Override
   public EList<Actor> getActorsWithRefinement() {
-    return ECollections.newBasicEList(getActors().stream().filter(Actor.class::isInstance).map(Actor.class::cast).collect(Collectors.toList()));
+    return ECollections.unmodifiableEList(getActors().stream().filter(Actor.class::isInstance).map(Actor.class::cast).collect(Collectors.toList()));
   }
 
   /**
@@ -367,7 +367,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
       }
     }
     result.addAll(getParameters());
-    return result;
+    return ECollections.unmodifiableEList(result);
   }
 
   /**

@@ -129,7 +129,7 @@ public interface PiGraph extends AbstractActor {
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return
-   *        ECollections.newBasicEList(getActors().stream().map(AbstractActor::getName).collect(Collectors.toList()));'"
+   *        ECollections.unmodifiableEList(getActors().stream().map(AbstractActor::getName).collect(Collectors.toList()));'"
    * @generated
    */
   EList<String> getActorsNames();
@@ -138,7 +138,7 @@ public interface PiGraph extends AbstractActor {
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return
-   *        ECollections.newBasicEList(getParameters().stream().map(Parameter::getName).collect(Collectors.toList()));'"
+   *        ECollections.unmodifiableEList(getParameters().stream().map(Parameter::getName).collect(Collectors.toList()));'"
    * @generated
    */
   EList<String> getParametersNames();
@@ -147,7 +147,7 @@ public interface PiGraph extends AbstractActor {
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return
-   *        ECollections.newBasicEList(getActors().stream().filter(Actor.class::isInstance).map(Actor.class::cast).collect(Collectors.toList()));'"
+   *        ECollections.unmodifiableEList(getActors().stream().filter(Actor.class::isInstance).map(Actor.class::cast).collect(Collectors.toList()));'"
    * @generated
    */
   EList<Actor> getActorsWithRefinement();
@@ -159,7 +159,7 @@ public interface PiGraph extends AbstractActor {
    *        (final AbstractActor aa : getActors()) {\n if (aa instanceof PiGraph) {\n result.addAll(((PiGraph) aa).getAllParameters());\n } else if (aa
    *        instanceof Actor) {\n final Refinement refinement = ((Actor) aa).getRefinement();\n if (refinement != null) {\n final AbstractActor subGraph =
    *        refinement.getAbstractActor();\n if ((subGraph != null) &amp;&amp; (subGraph instanceof PiGraph)) {\n result.addAll(((PiGraph)
-   *        subGraph).getAllParameters());\n }\n }\n }\n}\nresult.addAll(getParameters());\nreturn result;'"
+   *        subGraph).getAllParameters());\n }\n }\n }\n}\nresult.addAll(getParameters());\nreturn ECollections.unmodifiableEList(result);'"
    * @generated
    */
   EList<Parameter> getAllParameters();
