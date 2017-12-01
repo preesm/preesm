@@ -143,163 +143,170 @@ class PapifiedCPrinter extends CPrinter {
 			all_event_names = org.ietr.preesm.core.architecture.util.DesignTools.getParameter(pe, "PAPI_AVAIL_EVENTS");
 			
 			//println(all_event_names.toString);
-			println("Analyzing = " + pe.instanceName);
+			//println("Analyzing = " + pe.instanceName);
 						
 			if(all_event_names !== null){	
 				
-				println(all_event_names.toString);
+				//println(all_event_names.toString);
 				event_names = all_event_names.split(",");			
 				code_set_size = event_names.length;
-				
-			}
 												
-			for(CodeElt elts : (block as CoreBlock).loopBlock.codeElts){	
-				//For all the FunctionCalls within the main code loop
-				if(elts.eClass.name.equals("FunctionCall")){
-					//Add PAPI action variable
-					block.definitions.add({
-						var const = CodegenFactory.eINSTANCE.createBuffer
-						const.name = PAPI_actions.concat((elts as FunctionCall).actorName)
-						const.size = 1
-						const.type = "papi_action_s"
-						const.comment = const.name.concat("_buffer_definition")
-						const
-					})
-					//Add FILE variable to store PAPI data
-					block.definitions.add({
-						var const = CodegenFactory.eINSTANCE.createBuffer
-						const.name = PAPI_output.concat((elts as FunctionCall).actorName)
-						const.size = 1
-						const.type = "FILE *"
-						const.comment = const.name.concat("_output_file")
-						const
-					})
-					//Create a constant string with the actor name
-					block.definitions.add({
-						var const = CodegenFactory.eINSTANCE.createConstantString
-						const.name = actor_name.concat((elts as FunctionCall).actorName)
-						const.value = (elts as FunctionCall).actorName
-						const
-					})
-					//Create a constant for the Code_set_size
-					block.definitions.add({
-						var const = CodegenFactory.eINSTANCE.createConstant
-						const.name = "Code_set_size"
-						const.value = code_set_size
-						const
-					})
-					//Create a constant for use 0 as a funtion parameter
-					block.definitions.add({
-						var const = CodegenFactory.eINSTANCE.createConstant
-						const.name = "Zero"
-						const.value = 0
-						const
-					})
-					//Create a function to initialize PAPI actions
-					(block as CoreBlock).initBlock.codeElts.add({
-						var func = CodegenFactory.eINSTANCE.createFunctionCall()
-						func.name = "event_init_papi_actions"
-						func.addParameter(block.definitions.get(block.definitions.length-5), PortDirection.OUTPUT)
-						func.addParameter(block.definitions.get(block.definitions.length-3), PortDirection.INPUT)
-						func.addParameter(block.definitions.get(block.definitions.length-2), PortDirection.INPUT)
-						func.actorName = "PAPI Init_papi_actions_".concat((elts as FunctionCall).actorName)
-						func
-					})
-					//Create a constant for use 0 as a funtion parameter
-					block.definitions.add({
-						var const = CodegenFactory.eINSTANCE.createConstantString
-						const.name = "all_event_names"
-						const.value = all_event_names
-						const
-					})
-					//Create a function to initialize output file
-					(block as CoreBlock).initBlock.codeElts.add({
-						var func = CodegenFactory.eINSTANCE.createFunctionCall()
-						func.name = "event_init_output_file"
-						func.addParameter(block.definitions.get(block.definitions.length-5), PortDirection.INPUT)
-						func.addParameter(block.definitions.get(block.definitions.length-4), PortDirection.INPUT)
-						func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.INPUT)
-						func.actorName = "PAPI Init_output_file_".concat((elts as FunctionCall).actorName)
-						func
-					})
-					//Create a variable to store the start of the actor execution
-					block.definitions.add({
-						var const = CodegenFactory.eINSTANCE.createBuffer
-						const.name = PAPI_start_usec.concat((elts as FunctionCall).actorName)
-						const.size = 1
-						const.type = "unsigned long long"
-						const.comment = const.name.concat("_start_time_measure")
-						const
-					})
-					//Create a variable to store the end of the actor execution
-					block.definitions.add({
-						var const = CodegenFactory.eINSTANCE.createBuffer
-						const.name = PAPI_end_usec.concat((elts as FunctionCall).actorName)
-						const.size = 1
-						const.type = "unsigned long long"
-						const.comment = const.name.concat("_end_time_measure")
-						const
-					})
-					//Create a variable to store the event code set
-					block.definitions.add({
-						var const = CodegenFactory.eINSTANCE.createBuffer
-						const.name = PAPI_eventCodeSet.concat((elts as FunctionCall).actorName)
-						const.size = code_set_size
-						const.type = "int"
-						const.comment = const.name.concat("_code_set")
-						const
-					})
-					//Create a function to initialize the event code set
-					(block as CoreBlock).initBlock.codeElts.add({
-						var func = CodegenFactory.eINSTANCE.createFunctionCall()
-						func.name = "event_init_event_code_set"
-						func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
-						func.addParameter(block.definitions.get(block.definitions.length-6), PortDirection.OUTPUT)
-						func.addParameter(block.definitions.get(block.definitions.length-4), PortDirection.OUTPUT)
-						func.actorName = "PAPI Init_code_set_".concat((elts as FunctionCall).actorName)
-						func
-					})
-					//Create a variable to store the event set
-					block.definitions.add({
-						var const = CodegenFactory.eINSTANCE.createBuffer
-						const.name = PAPI_eventSet.concat((elts as FunctionCall).actorName)
-						const.size = 1
-						const.type = "unsigned long"
-						const.comment = const.name.concat("_event_set")
-						const
-					})
-					//Create a function to initialize the event set
-					(block as CoreBlock).initBlock.codeElts.add({
-						var func = CodegenFactory.eINSTANCE.createFunctionCall()
-						func.name = "event_init_event_set"
-						func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
-						func.actorName = "PAPI Init_event_set_".concat((elts as FunctionCall).actorName)
-						func
-					})
-					//Create a function to initialize the event list
-					(block as CoreBlock).initBlock.codeElts.add({
-						var func = CodegenFactory.eINSTANCE.createFunctionCall()
-						func.name = "event_create_eventList"
-						func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
-						func.addParameter(block.definitions.get(block.definitions.length-7), PortDirection.INPUT)
-						func.addParameter(block.definitions.get(block.definitions.length-2), PortDirection.INPUT)
-						func.addParameter(block.definitions.get(block.definitions.length-6), PortDirection.INPUT)
-						func.actorName = "PAPI create_eventlist_".concat((elts as FunctionCall).actorName)
-						func
-					})
-					//Create a function to initialize the event monitor multiplexing
-					(block as CoreBlock).initBlock.codeElts.add({
-						var func = CodegenFactory.eINSTANCE.createFunctionCall()
-						func.name = "eventList_set_multiplex"
-						func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
-						func.actorName = "PAPI eventList_set_multiplex_".concat((elts as FunctionCall).actorName)
-						func
-					})					
+				for(CodeElt elts : (block as CoreBlock).loopBlock.codeElts){	
+					//For all the FunctionCalls within the main code loop
+					if(elts.eClass.name.equals("FunctionCall")){
+						//Add PAPI action variable
+						block.definitions.add({
+							var const = CodegenFactory.eINSTANCE.createBuffer
+							const.name = PAPI_actions.concat((elts as FunctionCall).actorName)
+							const.size = 1
+							const.type = "papi_action_s"
+							const.comment = const.name.concat("_buffer_definition")
+							const
+						})
+						//Add FILE variable to store PAPI data
+						block.definitions.add({
+							var const = CodegenFactory.eINSTANCE.createBuffer
+							const.name = PAPI_output.concat((elts as FunctionCall).actorName)
+							const.size = 1
+							const.type = "FILE *"
+							const.comment = const.name.concat("_output_file")
+							const
+						})
+						//Create a constant string with the actor name
+						block.definitions.add({
+							var const = CodegenFactory.eINSTANCE.createConstantString
+							const.name = actor_name.concat((elts as FunctionCall).actorName)
+							const.value = (elts as FunctionCall).actorName
+							const
+						})
+						//Create a constant for the Code_set_size
+						block.definitions.add({
+							var const = CodegenFactory.eINSTANCE.createConstant
+							const.name = "Code_set_size"
+							const.value = code_set_size
+							const
+						})
+						//Create a constant for use 0 as a funtion parameter
+						block.definitions.add({
+							var const = CodegenFactory.eINSTANCE.createConstant
+							const.name = "Zero"
+							const.value = 0
+							const
+						})
+						//Create a function to initialize PAPI actions
+						(block as CoreBlock).initBlock.codeElts.add({
+							var func = CodegenFactory.eINSTANCE.createFunctionCall()
+							func.name = "event_init_papi_actions"
+							func.addParameter(block.definitions.get(block.definitions.length-5), PortDirection.OUTPUT)
+							func.addParameter(block.definitions.get(block.definitions.length-3), PortDirection.INPUT)
+							func.addParameter(block.definitions.get(block.definitions.length-2), PortDirection.INPUT)
+							func.actorName = "PAPI Init_papi_actions_".concat((elts as FunctionCall).actorName)
+							func
+						})
+						//Create a constant for use 0 as a funtion parameter
+						block.definitions.add({
+							var const = CodegenFactory.eINSTANCE.createConstantString
+							const.name = "all_event_names"
+							const.value = all_event_names
+							const
+						})
+						//Create a function to initialize output file
+						(block as CoreBlock).initBlock.codeElts.add({
+							var func = CodegenFactory.eINSTANCE.createFunctionCall()
+							func.name = "event_init_output_file"
+							func.addParameter(block.definitions.get(block.definitions.length-5), PortDirection.INPUT)
+							func.addParameter(block.definitions.get(block.definitions.length-4), PortDirection.INPUT)
+							func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.INPUT)
+							func.actorName = "PAPI Init_output_file_".concat((elts as FunctionCall).actorName)
+							func
+						})
+						//Create a variable to store the start of the actor execution
+						block.definitions.add({
+							var const = CodegenFactory.eINSTANCE.createBuffer
+							const.name = PAPI_start_usec.concat((elts as FunctionCall).actorName)
+							const.size = 1
+							const.type = "unsigned long long"
+							const.comment = const.name.concat("_start_time_measure")
+							const
+						})
+						//Create a variable to store the end of the actor execution
+						block.definitions.add({
+							var const = CodegenFactory.eINSTANCE.createBuffer
+							const.name = PAPI_end_usec.concat((elts as FunctionCall).actorName)
+							const.size = 1
+							const.type = "unsigned long long"
+							const.comment = const.name.concat("_end_time_measure")
+							const
+						})
+						//Create a variable to store the event code set
+						block.definitions.add({
+							var const = CodegenFactory.eINSTANCE.createBuffer
+							const.name = PAPI_eventCodeSet.concat((elts as FunctionCall).actorName)
+							const.size = code_set_size
+							const.type = "int"
+							const.comment = const.name.concat("_code_set")
+							const
+						})
+						//Create a function to initialize the event code set
+						(block as CoreBlock).initBlock.codeElts.add({
+							var func = CodegenFactory.eINSTANCE.createFunctionCall()
+							func.name = "event_init_event_code_set"
+							func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
+							func.addParameter(block.definitions.get(block.definitions.length-6), PortDirection.OUTPUT)
+							func.addParameter(block.definitions.get(block.definitions.length-4), PortDirection.OUTPUT)
+							func.actorName = "PAPI Init_code_set_".concat((elts as FunctionCall).actorName)
+							func
+						})
+						//Create a variable to store the event set
+						block.definitions.add({
+							var const = CodegenFactory.eINSTANCE.createBuffer
+							const.name = PAPI_eventSet.concat((elts as FunctionCall).actorName)
+							const.size = 1
+							const.type = "unsigned long"
+							const.comment = const.name.concat("_event_set")
+							const
+						})
+						//Create a function to initialize the event set
+						(block as CoreBlock).initBlock.codeElts.add({
+							var func = CodegenFactory.eINSTANCE.createFunctionCall()
+							func.name = "event_init_event_set"
+							func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
+							func.actorName = "PAPI Init_event_set_".concat((elts as FunctionCall).actorName)
+							func
+						})
+						//Create a function to initialize the event list
+						(block as CoreBlock).initBlock.codeElts.add({
+							var func = CodegenFactory.eINSTANCE.createFunctionCall()
+							func.name = "event_create_eventList"
+							func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
+							func.addParameter(block.definitions.get(block.definitions.length-7), PortDirection.INPUT)
+							func.addParameter(block.definitions.get(block.definitions.length-2), PortDirection.INPUT)
+							func.addParameter(block.definitions.get(block.definitions.length-6), PortDirection.INPUT)
+							func.actorName = "PAPI create_eventlist_".concat((elts as FunctionCall).actorName)
+							func
+						})
+						//Create a function to initialize the event monitor multiplexing
+						(block as CoreBlock).initBlock.codeElts.add({
+							var func = CodegenFactory.eINSTANCE.createFunctionCall()
+							func.name = "eventList_set_multiplex"
+							func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
+							func.actorName = "PAPI eventList_set_multiplex_".concat((elts as FunctionCall).actorName)
+							func
+						})	
+						
+						block.definitions.add({
+							var const = CodegenFactory.eINSTANCE.createConstant
+							const.comment = "Actor to be papified"
+							const.name = "Papified"
+							const.type = "boolean"
+							const.value = 1
+							const
+						})
+						(elts as FunctionCall).addParameter(block.definitions.get(block.definitions.length-1), PortDirection.NONE);
+					}
 				}
 			}
 		}
-		
-		
 		
 		super.preProcessing(printerBlocks, allBlocks)
 	}
@@ -317,14 +324,14 @@ class PapifiedCPrinter extends CPrinter {
 	 * 			modified)
 	 */
 	override printFunctionCall(FunctionCall functionCall) '''
-		«IF state == PrinterState::PRINTING_LOOP_BLOCK»
+		«IF state == PrinterState::PRINTING_LOOP_BLOCK && functionCall.parameters.get(functionCall.parameters.length-1).name.equals("Papified")»
 
 			// Papi Start for «functionCall.actorName»
 			PAPI_start_usec_«functionCall.actorName»[0] = PAPI_get_real_usec();
 			event_start(&(PAPI_eventSet_«functionCall.actorName»[0]), 0);
-
-			«super.printFunctionCall(functionCall)»
-
+						
+			«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-1) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
+			
 			// Papi Stop for «functionCall.actorName»
 			event_stop(&(PAPI_eventSet_«functionCall.actorName»[0]), «code_set_size», PAPI_actions_«functionCall.actorName»[0].counterValues, 0);
 			PAPI_end_usec_«functionCall.actorName»[0] = PAPI_get_real_usec();
