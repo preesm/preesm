@@ -49,7 +49,6 @@ import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
@@ -96,11 +95,12 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
   protected IPath memoryScriptPath = ActorImpl.MEMORY_SCRIPT_PATH_EDEFAULT;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
    */
   protected ActorImpl() {
     super();
-    setRefinement(PiMMFactory.eINSTANCE.createPiSDFRefinement());
   }
 
   /**
@@ -349,12 +349,13 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
    */
   @Override
   public PiGraph getGraph() {
-    final AbstractActor subgraph = getRefinement().getAbstractActor();
-    if (subgraph instanceof PiGraph) {
-      return (PiGraph) subgraph;
-    } else {
-      return null;
+    if (getRefinement() != null) {
+      final AbstractActor subgraph = getRefinement().getAbstractActor();
+      if (subgraph instanceof PiGraph) {
+        return (PiGraph) subgraph;
+      }
     }
+    return null;
   }
 
   /*

@@ -235,6 +235,7 @@ public class PiParser {
    *          the actor
    */
   private void parseRefinement(final Element nodeElt, final Actor actor) {
+    actor.setRefinement(PiMMUserFactory.instance.createPiSDFRefinement());
     final String refinement = PiParser.getProperty(nodeElt, PiIdentifiers.REFINEMENT);
     if ((refinement != null) && !refinement.isEmpty()) {
       final IPath path = getWorkspaceRelativePathFrom(new Path(refinement));
