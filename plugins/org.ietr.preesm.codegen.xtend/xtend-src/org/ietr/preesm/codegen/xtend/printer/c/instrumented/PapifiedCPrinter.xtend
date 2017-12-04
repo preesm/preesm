@@ -160,16 +160,15 @@ class PapifiedCPrinter extends CPrinter {
 							const.name = PAPI_actions.concat((elts as FunctionCall).actorName)
 							const.size = 1
 							const.type = "papi_action_s"
-							const.comment = const.name.concat("_buffer_definition")
+							const.comment = "Papification configuration variable"
 							const
 						})
-						//Add FILE variable to store PAPI data
+						//Create a constant string with the instance name
 						block.definitions.add({
-							var const = CodegenFactory.eINSTANCE.createBuffer
-							const.name = PAPI_output.concat((elts as FunctionCall).actorName)
-							const.size = 1
-							const.type = "FILE *"
-							const.comment = const.name.concat("_output_file")
+							var const = CodegenFactory.eINSTANCE.createConstantString
+							const.name = "component_name".concat((elts as FunctionCall).actorName)
+							const.value = block.name
+							const.comment = "Instance name"
 							const
 						})
 						//Create a constant string with the actor name
@@ -177,6 +176,7 @@ class PapifiedCPrinter extends CPrinter {
 							var const = CodegenFactory.eINSTANCE.createConstantString
 							const.name = actor_name.concat((elts as FunctionCall).actorName)
 							const.value = (elts as FunctionCall).actorName
+							const.comment = "Actor name"
 							const
 						})
 						//Create a constant for the Code_set_size
@@ -188,94 +188,24 @@ class PapifiedCPrinter extends CPrinter {
 						})
 						//Create a constant for use 0 as a funtion parameter
 						block.definitions.add({
-							var const = CodegenFactory.eINSTANCE.createConstant
-							const.name = "Zero"
-							const.value = 0
+							var const = CodegenFactory.eINSTANCE.createConstantString
+							const.name = "all_event_names"
+							const.value = all_event_names
+							const.comment = "PAPI events"
 							const
 						})
 						//Create a function to initialize PAPI actions
 						(block as CoreBlock).initBlock.codeElts.add({
 							var func = CodegenFactory.eINSTANCE.createFunctionCall()
-							func.name = "event_init_papi_actions"
+							func.name = "configure_papification"
 							func.addParameter(block.definitions.get(block.definitions.length-5), PortDirection.OUTPUT)
+							func.addParameter(block.definitions.get(block.definitions.length-4), PortDirection.INPUT)
 							func.addParameter(block.definitions.get(block.definitions.length-3), PortDirection.INPUT)
 							func.addParameter(block.definitions.get(block.definitions.length-2), PortDirection.INPUT)
-							func.actorName = "PAPI Init_papi_actions_".concat((elts as FunctionCall).actorName)
-							func
-						})
-						//Create a constant for use 0 as a funtion parameter
-						block.definitions.add({
-							var const = CodegenFactory.eINSTANCE.createConstantString
-							const.name = "all_event_names"
-							const.value = all_event_names
-							const
-						})
-						//Create a function to initialize output file
-						(block as CoreBlock).initBlock.codeElts.add({
-							var func = CodegenFactory.eINSTANCE.createFunctionCall()
-							func.name = "event_init_output_file"
-							func.addParameter(block.definitions.get(block.definitions.length-5), PortDirection.INPUT)
-							func.addParameter(block.definitions.get(block.definitions.length-4), PortDirection.INPUT)
 							func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.INPUT)
-							func.actorName = "PAPI Init_output_file_".concat((elts as FunctionCall).actorName)
+							func.actorName = "Papify --> configure papification of ".concat((elts as FunctionCall).actorName)
 							func
-						})
-						//Create a variable to store the event code set
-						block.definitions.add({
-							var const = CodegenFactory.eINSTANCE.createBuffer
-							const.name = PAPI_eventCodeSet.concat((elts as FunctionCall).actorName)
-							const.size = code_set_size
-							const.type = "int"
-							const.comment = const.name.concat("_code_set")
-							const
-						})
-						//Create a function to initialize the event code set
-						(block as CoreBlock).initBlock.codeElts.add({
-							var func = CodegenFactory.eINSTANCE.createFunctionCall()
-							func.name = "event_init_event_code_set"
-							func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
-							func.addParameter(block.definitions.get(block.definitions.length-4), PortDirection.OUTPUT)
-							func.addParameter(block.definitions.get(block.definitions.length-2), PortDirection.OUTPUT)
-							func.actorName = "PAPI Init_code_set_".concat((elts as FunctionCall).actorName)
-							func
-						})
-						//Create a variable to store the event set
-						block.definitions.add({
-							var const = CodegenFactory.eINSTANCE.createBuffer
-							const.name = PAPI_eventSet.concat((elts as FunctionCall).actorName)
-							const.size = 1
-							const.type = "unsigned long"
-							const.comment = const.name.concat("_event_set")
-							const
-						})
-						//Create a function to initialize the event set
-						(block as CoreBlock).initBlock.codeElts.add({
-							var func = CodegenFactory.eINSTANCE.createFunctionCall()
-							func.name = "event_init_event_set"
-							func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
-							func.actorName = "PAPI Init_event_set_".concat((elts as FunctionCall).actorName)
-							func
-						})
-						//Create a function to initialize the event list
-						(block as CoreBlock).initBlock.codeElts.add({
-							var func = CodegenFactory.eINSTANCE.createFunctionCall()
-							func.name = "event_create_eventList"
-							func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
-							func.addParameter(block.definitions.get(block.definitions.length-5), PortDirection.INPUT)
-							func.addParameter(block.definitions.get(block.definitions.length-2), PortDirection.INPUT)
-							func.addParameter(block.definitions.get(block.definitions.length-4), PortDirection.INPUT)
-							func.actorName = "PAPI create_eventlist_".concat((elts as FunctionCall).actorName)
-							func
-						})
-						//Create a function to initialize the event monitor multiplexing
-						(block as CoreBlock).initBlock.codeElts.add({
-							var func = CodegenFactory.eINSTANCE.createFunctionCall()
-							func.name = "eventList_set_multiplex"
-							func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.OUTPUT)
-							func.actorName = "PAPI eventList_set_multiplex_".concat((elts as FunctionCall).actorName)
-							func
-						})	
-						
+						})												
 						block.definitions.add({
 							var const = CodegenFactory.eINSTANCE.createConstant
 							const.comment = "Actor to be papified"
@@ -308,19 +238,14 @@ class PapifiedCPrinter extends CPrinter {
 	override printFunctionCall(FunctionCall functionCall) '''
 		«IF state == PrinterState::PRINTING_LOOP_BLOCK && functionCall.parameters.get(functionCall.parameters.length-1).name.equals("Papified")»
 
-			// Papi Start for «functionCall.actorName»
+			// Monitoring Start for «functionCall.actorName»
 			event_start_PAPI_timing(PAPI_actions_«functionCall.actorName»);
-			event_start(&(PAPI_eventSet_«functionCall.actorName»[0]), 0);
-						
+			event_start(PAPI_actions_«functionCall.actorName», 0);
 			«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-1) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
-			
-			// Papi Stop for «functionCall.actorName»
-			event_stop(&(PAPI_eventSet_«functionCall.actorName»[0]), «code_set_size», PAPI_actions_«functionCall.actorName»[0].counterValues, 0);
+			// Monitoring Stop for «functionCall.actorName»
+			event_stop(PAPI_actions_«functionCall.actorName», 0);
 			event_stop_PAPI_timing(PAPI_actions_«functionCall.actorName»);
-			PAPI_output_«functionCall.actorName»[0] = fopen("papi-output/papi_output_«functionCall.actorName».csv","a+");
-			fprintf(PAPI_output_«functionCall.actorName»[0], "%s,%s,%llu,%llu,%lu,%lu\n", "Sobel", PAPI_actions_«functionCall.actorName»[0].action_id, PAPI_actions_«functionCall.actorName»[0].time_init_action, PAPI_actions_«functionCall.actorName»[0].time_end_action, PAPI_actions_«functionCall.actorName»[0].counterValues[0], PAPI_actions_«functionCall.actorName»[0].counterValues[1]);
-			fclose(PAPI_output_«functionCall.actorName»[0]);
-
+			event_write_file(PAPI_actions_«functionCall.actorName»);
 		«ELSE»
 			«super.printFunctionCall(functionCall)»
 		«ENDIF»
