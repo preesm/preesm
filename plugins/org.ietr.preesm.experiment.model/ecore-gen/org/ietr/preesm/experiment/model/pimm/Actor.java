@@ -131,11 +131,4 @@ public interface Actor extends ExecutableActor {
    * @generated
    */
   void setMemoryScriptPath(IPath value);
-
-  /**
-   * Get the graph from hierarchy.
-   *
-   * @return The {@link PiGraph}
-   */
-  public PiGraph getGraph();
 } // Actor

@@ -44,11 +44,9 @@ import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
@@ -340,22 +338,6 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
     result.append(this.memoryScriptPath);
     result.append(')');
     return result.toString();
-  }
-
-  /**
-   * Get the graph from hierarchy.
-   *
-   * @return The {@link PiGraph}
-   */
-  @Override
-  public PiGraph getGraph() {
-    if (getRefinement() != null) {
-      final AbstractActor subgraph = getRefinement().getAbstractActor();
-      if (subgraph instanceof PiGraph) {
-        return (PiGraph) subgraph;
-      }
-    }
-    return null;
   }
 
   /*

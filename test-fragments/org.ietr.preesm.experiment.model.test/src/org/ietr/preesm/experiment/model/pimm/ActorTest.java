@@ -50,8 +50,8 @@ public class ActorTest {
     actor = PiMMUserFactory.instance.createActor();
     Assert.assertNotNull(actor);
     Assert.assertTrue(ActorImpl.class.isInstance(actor));
-    final PiGraph graph = actor.getGraph();
-    Assert.assertNull(graph);
+    final Refinement refinement = actor.getRefinement();
+    Assert.assertNull(refinement);
   }
 
 }
