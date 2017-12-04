@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm code generation plug-in (XTend) Tests
 Bundle-SymbolicName: org.ietr.preesm.codegen.xtend.test
-Bundle-Version: 2.5.3.qualifier
+Bundle-Version: 2.5.4
 Bundle-Vendor: IETR/INSA Rennes
 Fragment-Host: org.ietr.preesm.codegen.xtend
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
