@@ -15,7 +15,7 @@ PREESM Changelog
 * Fix autolayout;
 
 ### Bug fix
-
+* Force DFTools to version 1.2.7+ (fix issue #50);
 
 ## Release version 2.5.3
 *2017.11.14*
