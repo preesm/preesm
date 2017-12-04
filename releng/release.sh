@@ -4,6 +4,9 @@
 DEV_BRANCH=develop
 MAIN_BRANCH=master
 
+# First check access on git & SF
+#TODO
+
 ### Commands
 [ "$#" -ne "1" ] && echo "usage: $0 <new version>" && exit 1
 
@@ -28,12 +31,16 @@ git checkout $DEV_BRANCH
 git reset --hard
 git clean -xdf
 
+./releng/fix_header_copyright_and_authors.sh
 #update version in code and create commit
 ./releng/update-version.sh $NEW_VERSION
 sed -i -e "s/X\.Y\.Z/$NEW_VERSION/g" release_notes.md
 sed -i -e "s/XXXX\.XX\.XX/$TODAY_DATE/g" release_notes.md
 git add -A
 git commit -m "[RELENG] Prepare version $NEW_VERSION"
+
+# make sure integration works before deplying and pushing
+#TODO
 
 #merge in master, add tag
 git checkout $MAIN_BRANCH
@@ -66,9 +73,9 @@ git push
 
 #deploy and push master (that is new version)
 git checkout master
-./releng/deploy.sh
 git push
 git push --tags
+./releng/deploy.sh
 
 #get back to original branch and restore work
 git checkout $CURRENT_BRANCH
