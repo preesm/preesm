@@ -55,6 +55,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -66,24 +67,21 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
 import org.ietr.preesm.codegen.xtend.printer.CodegenAbstractPrinter;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class CodegenEngine.
  */
 public class CodegenEngine {
-
-  /** The scenario. */
-  private final PreesmScenario scenario;
-
-  /** The workspace. */
-  private final IWorkspace workspace;
 
   /** The codegen path. */
   private final String codegenPath;
@@ -97,23 +95,32 @@ public class CodegenEngine {
   /** The real printers. */
   private Map<IConfigurationElement, CodegenAbstractPrinter> realPrinters;
 
+  private CodegenModelGenerator generator;
+
   /**
    * Instantiates a new codegen engine.
    *
-   * @param scenario
-   *          the scenario
-   * @param workspace
-   *          the workspace
-   * @param codegenPath
-   *          the codegen path
-   * @param codeBlocks
-   *          the code blocks
    */
-  public CodegenEngine(final PreesmScenario scenario, final IWorkspace workspace, final String codegenPath, final List<Block> codeBlocks) {
-    this.scenario = scenario;
-    this.workspace = workspace;
+  public CodegenEngine(final String codegenPath, final List<Block> codeBlocks, CodegenModelGenerator generator) {
     this.codegenPath = codegenPath;
     this.codeBlocks = codeBlocks;
+    this.generator = generator;
+  }
+
+  public final Design getArchi() {
+    return this.generator.getArchi();
+  }
+
+  public final DirectedAcyclicGraph getAlgo() {
+    return this.generator.getAlgo();
+  }
+
+  public final Map<String, MemoryExclusionGraph> getMegs() {
+    return this.generator.getMegs();
+  }
+
+  public final PreesmScenario getScenario() {
+    return this.generator.getScenario();
   }
 
   /**
@@ -135,7 +142,7 @@ public class CodegenEngine {
 
     for (final Block b : this.codeBlocks) {
       // Create a resource
-      this.scenario.getCodegenManager().getCodegenDirectory();
+      this.getScenario().getCodegenManager().getCodegenDirectory();
       final Resource resource = resSet.createResource(URI.createURI(codegenPath + b.getName() + ".codegen"));
       // Get the first model element and cast it to the right type, in
       // my example everything is hierarchical included in this first
@@ -236,14 +243,15 @@ public class CodegenEngine {
       // Erase previous files with extension
       // Lists all files in folder
       try {
-        this.workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
-        final IFolder f = this.workspace.getRoot().getFolder(new Path(this.codegenPath));
+        final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
+        final IFolder f = workspace.getRoot().getFolder(new Path(this.codegenPath));
         final File folder = new File(f.getRawLocation().toOSString());
         if (!folder.exists()) {
           folder.mkdirs();
           WorkflowLogger.getLogger().info("Created missing target dir [" + folder.getAbsolutePath() + "] during codegen");
         }
-        this.workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
+        workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
         if (!f.exists()) {
           f.create(true, true, null);
         }
@@ -265,6 +273,9 @@ public class CodegenEngine {
         throw new WorkflowException("Could not access target directory [" + this.codegenPath + "] during code generation", e);
       }
 
+      // initialize printer engine
+      printer.setEngine(this);
+
       // Do the pre-processing
       printer.preProcessing(printerAndBlocks.getValue(), this.codeBlocks);
       this.realPrinters.put(printerAndBlocks.getKey(), printer);
@@ -278,11 +289,11 @@ public class CodegenEngine {
     for (final Entry<IConfigurationElement, List<Block>> printerAndBlocks : this.registeredPrintersAndBlocks.entrySet()) {
       final String extension = printerAndBlocks.getKey().getAttribute("extension");
       final CodegenAbstractPrinter printer = this.realPrinters.get(printerAndBlocks.getKey());
-
+      final IWorkspace workspace = ResourcesPlugin.getWorkspace();
       for (final Block b : printerAndBlocks.getValue()) {
-        final IFile iFile = this.workspace.getRoot().getFile(new Path(this.codegenPath + b.getName() + extension));
+        final IFile iFile = workspace.getRoot().getFile(new Path(this.codegenPath + b.getName() + extension));
         try {
-          final IFolder iFolder = this.workspace.getRoot().getFolder(new Path(this.codegenPath));
+          final IFolder iFolder = workspace.getRoot().getFolder(new Path(this.codegenPath));
           if (!iFolder.exists()) {
             iFolder.create(false, true, new NullProgressMonitor());
           }
@@ -299,9 +310,9 @@ public class CodegenEngine {
 
       // Print secondary files
       for (final Entry<String, CharSequence> entry : printer.createSecondaryFiles(printerAndBlocks.getValue(), this.codeBlocks).entrySet()) {
-        final IFile iFile = this.workspace.getRoot().getFile(new Path(this.codegenPath + entry.getKey()));
+        final IFile iFile = workspace.getRoot().getFile(new Path(this.codegenPath + entry.getKey()));
         try {
-          final IFolder iFolder = this.workspace.getRoot().getFolder(new Path(this.codegenPath));
+          final IFolder iFolder = workspace.getRoot().getFolder(new Path(this.codegenPath));
           if (!iFolder.exists()) {
             iFolder.create(false, true, new NullProgressMonitor());
           }

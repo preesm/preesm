@@ -1,6 +1,22 @@
 PREESM Changelog
 ================
 
+## Release version 2.5.4
+*2017.12.04*
+
+### New Feature
+
+### Changes
+* Update releng scripts;
+* Refactor UI: use PiMMSwitches instead of instanceof ifs;
+* Update product: now starts up the Preesm perspective by default and show Preesm in the title;
+* Refactor code generation;
+* Make scenario, architecture and algorithm visible from the codegen printers;
+* Fix autolayout;
+
+### Bug fix
+* Force DFTools to version 1.2.7+ (fix issue #50);
+
 ## Release version 2.5.3
 *2017.11.14*
 

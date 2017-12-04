@@ -3,6 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Florian <farresti@insa-rennes.fr> (2017)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2015)
  *
@@ -953,12 +954,13 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
         // Find the closest gap to the feedback fifo
         final Point penultimate = ffc.getBendpoints().get(ffc.getBendpoints().size() - 2);
         final Range closestGap = new Range(-1, -1);
+
         final boolean isTop = findClosestGap(stagesGaps.get(stageIdx), penultimate.getY(), closestGap);
 
         // Make the Fifo go through this gap
         int keptY = (isTop) ? closestGap.start + AutoLayoutFeature.FIFO_SPACE : closestGap.end - AutoLayoutFeature.FIFO_SPACE;
         keptY = (((closestGap.start + AutoLayoutFeature.FIFO_SPACE) <= penultimate.getY())
-            && ((closestGap.end - AutoLayoutFeature.FIFO_SPACE) >= penultimate.getY())) ? penultimate.getY() : keptY;
+            && (closestGap.end == -1 || (closestGap.end - AutoLayoutFeature.FIFO_SPACE) >= penultimate.getY())) ? penultimate.getY() : keptY;
         if (keptY != penultimate.getY()) {
           ffc.getBendpoints().add(ffc.getBendpoints().size() - 1,
               Graphiti.getGaCreateService().createPoint(stageWidth.get(stageIdx).end + AutoLayoutFeature.BENDPOINT_SPACE, keptY));

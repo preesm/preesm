@@ -97,13 +97,14 @@ echo " Starting (#files = $NBFILES)"
 time (
 NBCPUS=`grep -c ^processor /proc/cpuinfo`
 ((NBTHREADS=NBCPUS*2))
+
 while read -r line
 do
-	((i=i%NBTHREADS)); ((i++==0)) && wait && echo "    $NBFILES left ..."
-	((NBFILES=NBFILES-1))
-	fixFile "$line" &
+  MOD=$((NBFILES % NBTHREADS))
+  [ $MOD -eq 0 ] && echo "    $NBFILES left ..." && wait
+  NBFILES=$((NBFILES-1))
+  fixFile "$line" &
 done < $TMPFILE
-
 wait
 )
 rm $TMPFILE

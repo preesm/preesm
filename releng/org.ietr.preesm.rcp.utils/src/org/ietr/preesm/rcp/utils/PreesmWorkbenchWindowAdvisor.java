@@ -35,26 +35,22 @@
  */
 package org.ietr.preesm.rcp.utils;
 
-import org.eclipse.ui.application.ActionBarAdvisor;
-import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
-import org.eclipse.ui.internal.ide.WorkbenchActionBuilder;
 
 /**
  *
  */
-@SuppressWarnings("restriction")
 public class PreesmWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
   public PreesmWorkbenchWindowAdvisor(final IWorkbenchWindowConfigurer configurer) {
     super(configurer);
   }
 
-  @Override
-  public ActionBarAdvisor createActionBarAdvisor(final IActionBarConfigurer configurer) {
-    return new WorkbenchActionBuilder(configurer);
-  }
+  // @Override
+  // public ActionBarAdvisor createActionBarAdvisor(final IActionBarConfigurer configurer) {
+  // return new WorkbenchActionBuilder(configurer);
+  // }
 
   @Override
   public void preWindowOpen() {
@@ -63,5 +59,7 @@ public class PreesmWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
     configurer.setShowStatusLine(true);
     configurer.setShowPerspectiveBar(true);
     configurer.setShowMenuBar(true);
+    configurer.setShowProgressIndicator(true);
+    configurer.setTitle("Preesm");
   }
 }

@@ -75,7 +75,6 @@ import org.ietr.preesm.ui.pimm.features.RenameAbstractVertexFeature;
 import org.ietr.preesm.ui.pimm.features.RenameActorPortFeature;
 import org.ietr.preesm.ui.pimm.layout.AutoLayoutFeature;
 
-// TODO: Auto-generated Javadoc
 /**
  * {@link IToolBehaviorProvider} for the {@link Diagram} with type {@link PiMMDiagramTypeProvider}.
  *
@@ -128,28 +127,7 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
       final Object bo = featureProvider.getBusinessObjectForPictogramElement(pe);
       IDecorator[] result = null;
       if (bo instanceof ExecutableActor) {
-        // Add decorators for each ports of the actor
-        final List<IDecorator> decorators = new ArrayList<>();
-        for (final Anchor a : ((ContainerShape) pe).getAnchors()) {
-          for (final Object pbo : a.getLink().getBusinessObjects()) {
-            if (pbo instanceof Port) {
-              for (final IDecorator d : PortDecorators.getDecorators((Port) pbo, a)) {
-                decorators.add(d);
-              }
-            }
-          }
-        }
-
-        if (bo instanceof Actor) {
-          // Add decorators to the actor itself
-          for (final IDecorator d : ActorDecorators.getDecorators((Actor) bo, pe)) {
-            decorators.add(d);
-          }
-        }
-
-        result = new IDecorator[decorators.size()];
-        decorators.toArray(result);
-        this.decoratorAdapter.getPesAndDecorators().put(pe, result);
+        result = decorateActor(pe, bo);
       }
 
       if ((bo instanceof Parameter) && !((Parameter) bo).isConfigurationInterface()) {
@@ -170,6 +148,33 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
       this.decoratorAdapter.getPesAndDecorators().put(pe, result);
       return result;
     }
+  }
+
+  private IDecorator[] decorateActor(final PictogramElement pe, final Object bo) {
+    IDecorator[] result;
+    // Add decorators for each ports of the actor
+    final List<IDecorator> decorators = new ArrayList<>();
+    for (final Anchor a : ((ContainerShape) pe).getAnchors()) {
+      for (final Object pbo : a.getLink().getBusinessObjects()) {
+        if (pbo instanceof Port) {
+          for (final IDecorator d : PortDecorators.getDecorators((Port) pbo, a)) {
+            decorators.add(d);
+          }
+        }
+      }
+    }
+
+    if (bo instanceof Actor) {
+      // Add decorators to the actor itself
+      for (final IDecorator d : ActorDecorators.getDecorators((Actor) bo, pe)) {
+        decorators.add(d);
+      }
+    }
+
+    result = new IDecorator[decorators.size()];
+    decorators.toArray(result);
+    this.decoratorAdapter.getPesAndDecorators().put(pe, result);
+    return result;
   }
 
   /*

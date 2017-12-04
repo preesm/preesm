@@ -38,28 +38,25 @@
  */
 package org.ietr.preesm.codegen.xtend.task;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class CodegenTask.
  */
@@ -79,47 +76,37 @@ public class CodegenTask extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
+      final String nodeName, final Workflow workflow) {
 
     // Retrieve inputs
     final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
     final Design archi = (Design) inputs.get("architecture");
     @SuppressWarnings("unchecked")
     final Map<String, MemoryExclusionGraph> megs = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");
-    final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
+    final DirectedAcyclicGraph algo = (DirectedAcyclicGraph) inputs.get("DAG");
 
     // Generate intermediate model
-    final CodegenModelGenerator generator = new CodegenModelGenerator(archi, dag, megs, scenario, workflow);
+    final CodegenModelGenerator generator = new CodegenModelGenerator(archi, algo, megs, scenario, workflow);
 
     final List<Block> codeBlocks = new ArrayList<>(generator.generate());
 
-    // Retrieve the desired printer
+    // Retrieve the desired printer and target folder path
     final String selectedPrinter = parameters.get(CodegenTask.PARAM_PRINTER);
-
-    // Do the print
-    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-    workspace.getRoot().getLocation();
-    final String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + "/";
+    final String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + File.separator;
 
     // Create the codegen engine
-    final CodegenEngine engine = new CodegenEngine(scenario, workspace, codegenPath, codeBlocks);
+    final CodegenEngine engine = new CodegenEngine(codegenPath, codeBlocks, generator);
 
-    if (selectedPrinter.equals(CodegenTask.VALUE_PRINTER_IR)) {
+    if (CodegenTask.VALUE_PRINTER_IR.equals(selectedPrinter)) {
       engine.initializePrinterIR(codegenPath);
     }
 
-    // Fill a map associating printers with printed files
     engine.registerPrintersAndBlocks(selectedPrinter);
-
-    // Pre-process the printers one by one to:
     engine.preprocessPrinters();
-
-    // Do the print for all Blocks
     engine.print();
 
-    // Create empty output map
-    final Map<String, Object> output = new LinkedHashMap<>();
-    return output;
+    // Create empty output map (codegen doesn't have output)
+    return new LinkedHashMap<>();
   }
 
   /*
@@ -144,7 +131,6 @@ public class CodegenTask extends AbstractTaskImplementation {
     for (final String lang : languages) {
       avilableLanguages += lang + ", ";
     }
-
     avilableLanguages += CodegenTask.VALUE_PRINTER_IR + "}";
 
     parameters.put(CodegenTask.PARAM_PRINTER, avilableLanguages);
