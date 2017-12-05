@@ -107,4 +107,13 @@ public interface DataPort extends Port {
    */
   void setAnnotation(PortMemoryAnnotation value);
 
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='if (eContainer() instanceof AbstractActor) {\n return (AbstractActor)
+   *        eContainer();\n}\nreturn null;'"
+   * @generated
+   */
+  AbstractActor getContainingActor();
+
 } // DataPort

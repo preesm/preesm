@@ -40,6 +40,7 @@ import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
@@ -191,6 +192,19 @@ public abstract class DataPortImpl extends PortImpl implements DataPort {
     if (eNotificationRequired()) {
       eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_PORT__ANNOTATION, oldAnnotation, this.annotation));
     }
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public AbstractActor getContainingActor() {
+    if (eContainer() instanceof AbstractActor) {
+      return (AbstractActor) eContainer();
+    }
+    return null;
   }
 
   /**
