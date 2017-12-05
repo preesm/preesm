@@ -46,6 +46,7 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
@@ -366,15 +367,15 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   @Override
   public String getId() {
 
-    final Port srcPort = getSourcePort();
-    final Port tgtPort = getTargetPort();
+    final DataPort srcPort = getSourcePort();
+    final DataPort tgtPort = getTargetPort();
 
     if ((srcPort == null) || (tgtPort == null)) {
       throw new RuntimeException("Fifo has no source or no target port.");
     }
 
-    final AbstractActor src = (AbstractActor) srcPort.eContainer();
-    final AbstractActor tgt = (AbstractActor) tgtPort.eContainer();
+    final AbstractActor src = srcPort.getContainingActor();
+    final AbstractActor tgt = tgtPort.getContainingActor();
 
     String id = src.getName();
     if ((srcPort.getName() != null) && !srcPort.getName().isEmpty()) {
