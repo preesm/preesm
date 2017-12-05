@@ -72,6 +72,7 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
+import org.ietr.preesm.experiment.model.pimm.PortKind;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 
@@ -190,6 +191,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
         return createDirectionFromString(eDataType, initialValue);
       case PiMMPackage.PORT_MEMORY_ANNOTATION:
         return createPortMemoryAnnotationFromString(eDataType, initialValue);
+      case PiMMPackage.PORT_KIND:
+        return createPortKindFromString(eDataType, initialValue);
       case PiMMPackage.IPATH:
         return createIPathFromString(eDataType, initialValue);
       default:
@@ -214,6 +217,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
         return convertDirectionToString(eDataType, instanceValue);
       case PiMMPackage.PORT_MEMORY_ANNOTATION:
         return convertPortMemoryAnnotationToString(eDataType, instanceValue);
+      case PiMMPackage.PORT_KIND:
+        return convertPortKindToString(eDataType, instanceValue);
       case PiMMPackage.IPATH:
         return convertIPathToString(eDataType, instanceValue);
       default:
@@ -610,6 +615,48 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
    */
   public String convertPortMemoryAnnotationToString(final EDataType eDataType, final Object instanceValue) {
     return convertPortMemoryAnnotation((PortMemoryAnnotation) instanceValue);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public PortKind createPortKind(final String literal) {
+    final PortKind result = PortKind.get(literal);
+    if (result == null) {
+      throw new IllegalArgumentException("The value '" + literal + "' is not a valid enumerator of '" + PiMMPackage.Literals.PORT_KIND.getName() + "'");
+    }
+    return result;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  public PortKind createPortKindFromString(final EDataType eDataType, final String initialValue) {
+    return createPortKind(initialValue);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public String convertPortKind(final PortKind instanceValue) {
+    return instanceValue == null ? null : instanceValue.toString();
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  public String convertPortKindToString(final EDataType eDataType, final Object instanceValue) {
+    return convertPortKind((PortKind) instanceValue);
   }
 
   /**

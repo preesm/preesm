@@ -82,6 +82,7 @@ import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.PortKind;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
@@ -333,6 +334,13 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
    * @generated
    */
   private EEnum portMemoryAnnotationEEnum = null;
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  private EEnum portKindEEnum = null;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
@@ -1237,6 +1245,16 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EEnum getPortKind() {
+    return this.portKindEEnum;
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @return the i path
@@ -1411,6 +1429,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     // Create enums
     this.directionEEnum = createEEnum(PiMMPackage.DIRECTION);
     this.portMemoryAnnotationEEnum = createEEnum(PiMMPackage.PORT_MEMORY_ANNOTATION);
+    this.portKindEEnum = createEEnum(PiMMPackage.PORT_KIND);
 
     // Create data types
     this.iPathEDataType = createEDataType(PiMMPackage.IPATH);
@@ -1794,6 +1813,12 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     addEEnumLiteral(this.portMemoryAnnotationEEnum, PortMemoryAnnotation.READ_ONLY);
     addEEnumLiteral(this.portMemoryAnnotationEEnum, PortMemoryAnnotation.WRITE_ONLY);
     addEEnumLiteral(this.portMemoryAnnotationEEnum, PortMemoryAnnotation.UNUSED);
+
+    initEEnum(this.portKindEEnum, PortKind.class, "PortKind");
+    addEEnumLiteral(this.portKindEEnum, PortKind.CFG_INPUT);
+    addEEnumLiteral(this.portKindEEnum, PortKind.DATA_INPUT);
+    addEEnumLiteral(this.portKindEEnum, PortKind.DATA_OUTPUT);
+    addEEnumLiteral(this.portKindEEnum, PortKind.CFG_OUTPUT);
 
     // Initialize data types
     initEDataType(this.iPathEDataType, IPath.class, "IPath", EPackageImpl.IS_SERIALIZABLE, !EPackageImpl.IS_GENERATED_INSTANCE_CLASS);

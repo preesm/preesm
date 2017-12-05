@@ -1886,13 +1886,22 @@ public interface PiMMPackage extends EPackage {
   int PORT_MEMORY_ANNOTATION = 34;
 
   /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.PortKind <em>Port Kind</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.PortKind
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getPortKind()
+   * @generated
+   */
+  int PORT_KIND = 35;
+
+  /**
    * The meta object id for the '<em>IPath</em>' data type. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @see org.eclipse.core.runtime.IPath
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getIPath()
    * @generated
    */
-  int IPATH = 35;
+  int IPATH = 36;
 
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Parameterizable <em>Parameterizable</em>}'. <!-- begin-user-doc --> <!--
@@ -2691,6 +2700,15 @@ public interface PiMMPackage extends EPackage {
   EEnum getPortMemoryAnnotation();
 
   /**
+   * Returns the meta object for enum '{@link org.ietr.preesm.experiment.model.pimm.PortKind <em>Port Kind</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @return the meta object for enum '<em>Port Kind</em>'.
+   * @see org.ietr.preesm.experiment.model.pimm.PortKind
+   * @generated
+   */
+  EEnum getPortKind();
+
+  /**
    * Returns the meta object for data type '{@link org.eclipse.core.runtime.IPath <em>IPath</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for data type '<em>IPath</em>'.
@@ -3375,6 +3393,16 @@ public interface PiMMPackage extends EPackage {
      * @generated
      */
     EEnum PORT_MEMORY_ANNOTATION = PiMMPackage.eINSTANCE.getPortMemoryAnnotation();
+
+    /**
+     * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.PortKind <em>Port Kind</em>}' enum. <!-- begin-user-doc --> <!--
+     * end-user-doc -->
+     *
+     * @see org.ietr.preesm.experiment.model.pimm.PortKind
+     * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getPortKind()
+     * @generated
+     */
+    EEnum PORT_KIND = PiMMPackage.eINSTANCE.getPortKind();
 
     /**
      * The meta object literal for the '<em>IPath</em>' data type. <!-- begin-user-doc --> <!-- end-user-doc -->
