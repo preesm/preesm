@@ -36,6 +36,7 @@
  */
 package org.ietr.preesm.experiment.model.pimm.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
@@ -67,7 +68,7 @@ public class VertexNameValidator implements IInputValidator {
   public VertexNameValidator(final PiGraph graph, final AbstractVertex renamedVertex) {
     this.graph = graph;
     // Retrieve a list of all the actor and parameter names in the graph
-    this.existingNames = graph.getActorsNames();
+    this.existingNames = new ArrayList<>(graph.getActorsNames());
     this.existingNames.addAll(graph.getParametersNames());
 
     if (renamedVertex != null) {
