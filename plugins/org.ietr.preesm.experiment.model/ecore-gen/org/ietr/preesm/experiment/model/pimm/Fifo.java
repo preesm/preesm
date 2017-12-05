@@ -50,7 +50,6 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
  * <li>{@link org.ietr.preesm.experiment.model.pimm.Fifo#getSourcePort <em>Source Port</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.Fifo#getTargetPort <em>Target Port</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.Fifo#getDelay <em>Delay</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.Fifo#getId <em>Id</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.Fifo#getType <em>Type</em>}</li>
  * </ul>
  *
@@ -142,29 +141,16 @@ public interface Fifo extends PiMMVisitable {
   void setDelay(Delay value);
 
   /**
-   * Returns the value of the '<em><b>Id</b></em>' attribute. <!-- begin-user-doc -->
+   * <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Id</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
    *
-   * @return the value of the '<em>Id</em>' attribute.
-   * @see #isSetId()
-   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getFifo_Id()
-   * @model unsettable="true" required="true" changeable="false" volatile="true" derived="true"
+   * @model kind="operation"
    * @generated
    */
   String getId();
-
-  /**
-   * Returns whether the value of the '{@link org.ietr.preesm.experiment.model.pimm.Fifo#getId <em>Id</em>}' attribute is set. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
-   *
-   * @return whether the value of the '<em>Id</em>' attribute is set.
-   * @see #getId()
-   * @generated
-   */
-  boolean isSetId();
 
   /**
    * Returns the value of the '<em><b>Type</b></em>' attribute. The default value is <code>"void"</code>. <!-- begin-user-doc -->

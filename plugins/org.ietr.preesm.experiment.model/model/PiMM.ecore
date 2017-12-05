@@ -166,14 +166,13 @@
     </eOperations>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Fifo" eSuperTypes="#//visitor/PiMMVisitable">
+    <eOperations name="getId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="sourcePort" lowerBound="1"
         eType="#//DataOutputPort" eOpposite="#//DataOutputPort/outgoingFifo"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetPort" lowerBound="1"
         eType="#//DataInputPort" eOpposite="#//DataInputPort/incomingFifo"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="delay" eType="#//Delay"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
-        changeable="false" volatile="true" unsettable="true" derived="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         defaultValueLiteral="void"/>
   </eClassifiers>

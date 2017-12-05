@@ -777,23 +777,12 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
-   * @return the fifo id
-   * @generated
-   */
-  @Override
-  public EAttribute getFifo_Id() {
-    return (EAttribute) this.fifoEClass.getEStructuralFeatures().get(3);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
    * @return the fifo type
    * @generated
    */
   @Override
   public EAttribute getFifo_Type() {
-    return (EAttribute) this.fifoEClass.getEStructuralFeatures().get(4);
+    return (EAttribute) this.fifoEClass.getEStructuralFeatures().get(3);
   }
 
   /**
@@ -1364,7 +1353,6 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     createEReference(this.fifoEClass, PiMMPackage.FIFO__SOURCE_PORT);
     createEReference(this.fifoEClass, PiMMPackage.FIFO__TARGET_PORT);
     createEReference(this.fifoEClass, PiMMPackage.FIFO__DELAY);
-    createEAttribute(this.fifoEClass, PiMMPackage.FIFO__ID);
     createEAttribute(this.fifoEClass, PiMMPackage.FIFO__TYPE);
 
     this.interfaceActorEClass = createEClass(PiMMPackage.INTERFACE_ACTOR);
@@ -1653,11 +1641,11 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     initEReference(getFifo_Delay(), getDelay(), null, "delay", null, 0, 1, Fifo.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
         EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
         !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEAttribute(getFifo_Id(), this.ecorePackage.getEString(), "id", null, 1, 1, Fifo.class, !EPackageImpl.IS_TRANSIENT, EPackageImpl.IS_VOLATILE,
-        !EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
     initEAttribute(getFifo_Type(), this.ecorePackage.getEString(), "type", "void", 1, 1, Fifo.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
         EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
         EPackageImpl.IS_ORDERED);
+
+    addEOperation(this.fifoEClass, this.ecorePackage.getEString(), "getId", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     initEClass(this.interfaceActorEClass, InterfaceActor.class, "InterfaceActor", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);

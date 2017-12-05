@@ -1243,20 +1243,12 @@ public interface PiMMPackage extends EPackage {
   int FIFO__DELAY = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 2;
 
   /**
-   * The feature id for the '<em><b>Id</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int FIFO__ID = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 3;
-
-  /**
    * The feature id for the '<em><b>Type</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int FIFO__TYPE = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 4;
+  int FIFO__TYPE = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 3;
 
   /**
    * The number of structural features of the '<em>Fifo</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1264,7 +1256,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int FIFO_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 5;
+  int FIFO_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 4;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2250,17 +2242,6 @@ public interface PiMMPackage extends EPackage {
   EReference getFifo_Delay();
 
   /**
-   * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Fifo#getId <em>Id</em>}'. <!-- begin-user-doc --> <!-- end-user-doc
-   * -->
-   *
-   * @return the meta object for the attribute '<em>Id</em>'.
-   * @see org.ietr.preesm.experiment.model.pimm.Fifo#getId()
-   * @see #getFifo()
-   * @generated
-   */
-  EAttribute getFifo_Id();
-
-  /**
    * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Fifo#getType <em>Type</em>}'. <!-- begin-user-doc --> <!--
    * end-user-doc -->
    *
@@ -3027,13 +3008,6 @@ public interface PiMMPackage extends EPackage {
      * @generated
      */
     EReference FIFO__DELAY = PiMMPackage.eINSTANCE.getFifo_Delay();
-
-    /**
-     * The meta object literal for the '<em><b>Id</b></em>' attribute feature. <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    EAttribute FIFO__ID = PiMMPackage.eINSTANCE.getFifo_Id();
 
     /**
      * The meta object literal for the '<em><b>Type</b></em>' attribute feature. <!-- begin-user-doc --> <!-- end-user-doc -->
