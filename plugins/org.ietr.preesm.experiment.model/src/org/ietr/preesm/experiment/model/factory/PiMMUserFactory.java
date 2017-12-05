@@ -39,8 +39,10 @@ import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.impl.PiMMFactoryImpl;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
 
@@ -87,5 +89,13 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
     res.setTargetPort(targetPortCopy);
     res.setType(type);
     return res;
+  }
+
+  @Override
+  public Parameter createParameter() {
+    final Parameter createParameter = super.createParameter();
+    final Expression createExpression = createExpression();
+    createParameter.setValueExpression(createExpression);
+    return createParameter;
   }
 }

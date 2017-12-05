@@ -55,7 +55,6 @@ import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
@@ -96,11 +95,12 @@ public class ParameterImpl extends ConfigurableImpl implements Parameter {
   protected Expression valueExpression;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
    */
   protected ParameterImpl() {
     super();
-    setValueExpression(PiMMFactory.eINSTANCE.createExpression());
   }
 
   /**
