@@ -201,22 +201,6 @@ public class PiIdentifiers {
   /** The Constant PORT_MEMORY_ANNOTATION. */
   public static final String PORT_MEMORY_ANNOTATION = "annotation";
 
-  /** The Constant DATA_INPUT_PORT. */
-  // DATA INPUT PORTS
-  public static final String DATA_INPUT_PORT = "input";
-
-  /** The Constant DATA_OUTPUT_PORT. */
-  // DATA OUTPUT PORTS
-  public static final String DATA_OUTPUT_PORT = "output";
-
-  /** The Constant CONFIGURATION_INPUT_PORT. */
-  // CONFIGURATION INPUT PORTS
-  public static final String CONFIGURATION_INPUT_PORT = "cfg_input";
-
-  /** The Constant CONFIGURATION_OUPUT_PORT. */
-  // CONFIGURATION OUTPUT PORTS
-  public static final String CONFIGURATION_OUPUT_PORT = "cfg_output";
-
   /** The Constant EDGE. */
   // EDGES
   public static final String EDGE = "edge";
