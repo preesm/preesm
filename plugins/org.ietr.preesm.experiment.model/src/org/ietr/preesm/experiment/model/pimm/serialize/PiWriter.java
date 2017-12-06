@@ -61,8 +61,6 @@ import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
@@ -583,19 +581,15 @@ public class PiWriter {
       }
 
       portElt.setAttribute(PiIdentifiers.PORT_NAME, port.getName());
-      portElt.setAttribute(PiIdentifiers.PORT_KIND, port.getKind());
+      portElt.setAttribute(PiIdentifiers.PORT_KIND, port.getKind().getLiteral());
 
       switch (port.getKind()) {
-        case PiIdentifiers.DATA_INPUT_PORT:
-          portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION, ((DataInputPort) port).getPortRateExpression().getExpressionString());
+        case DATA_INPUT:
+        case DATA_OUTPUT:
+          portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION, ((DataPort) port).getPortRateExpression().getExpressionString());
           break;
-        case PiIdentifiers.DATA_OUTPUT_PORT:
-          portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION, ((DataOutputPort) port).getPortRateExpression().getExpressionString());
-          break;
-        case PiIdentifiers.CONFIGURATION_INPUT_PORT:
-          break;
-        case PiIdentifiers.CONFIGURATION_OUPUT_PORT:
-          break;
+        case CFG_INPUT:
+        case CFG_OUTPUT:
         default:
           break;
       }

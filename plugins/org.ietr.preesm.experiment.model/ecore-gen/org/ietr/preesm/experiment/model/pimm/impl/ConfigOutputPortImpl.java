@@ -49,7 +49,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
+import org.ietr.preesm.experiment.model.pimm.PortKind;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
@@ -75,11 +75,12 @@ public class ConfigOutputPortImpl extends DataOutputPortImpl implements ConfigOu
   protected EList<Dependency> outgoingDependencies;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
    */
   protected ConfigOutputPortImpl() {
     super();
-    this.kind = PiIdentifiers.CONFIGURATION_OUPUT_PORT;
   }
 
   /**
@@ -282,6 +283,16 @@ public class ConfigOutputPortImpl extends DataOutputPortImpl implements ConfigOu
   public boolean isLocallyStatic() {
     // config output ports are never considered static
     return false;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public PortKind getKind() {
+    return PortKind.CFG_OUTPUT;
   }
 
   /*

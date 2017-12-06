@@ -971,20 +971,12 @@ public interface PiMMPackage extends EPackage {
   int PORT__NAME = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Kind</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int PORT__KIND = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 1;
-
-  /**
    * The number of structural features of the '<em>Port</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int PORT_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 2;
+  int PORT_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 1;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -993,14 +985,6 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int DATA_PORT__NAME = PiMMPackage.PORT__NAME;
-
-  /**
-   * The feature id for the '<em><b>Kind</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int DATA_PORT__KIND = PiMMPackage.PORT__KIND;
 
   /**
    * The feature id for the '<em><b>Port Rate Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1033,14 +1017,6 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int DATA_INPUT_PORT__NAME = PiMMPackage.DATA_PORT__NAME;
-
-  /**
-   * The feature id for the '<em><b>Kind</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int DATA_INPUT_PORT__KIND = PiMMPackage.DATA_PORT__KIND;
 
   /**
    * The feature id for the '<em><b>Port Rate Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1083,14 +1059,6 @@ public interface PiMMPackage extends EPackage {
   int DATA_OUTPUT_PORT__NAME = PiMMPackage.DATA_PORT__NAME;
 
   /**
-   * The feature id for the '<em><b>Kind</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int DATA_OUTPUT_PORT__KIND = PiMMPackage.DATA_PORT__KIND;
-
-  /**
    * The feature id for the '<em><b>Port Rate Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
@@ -1131,14 +1099,6 @@ public interface PiMMPackage extends EPackage {
   int CONFIG_INPUT_PORT__NAME = PiMMPackage.PORT__NAME;
 
   /**
-   * The feature id for the '<em><b>Kind</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int CONFIG_INPUT_PORT__KIND = PiMMPackage.PORT__KIND;
-
-  /**
    * The feature id for the '<em><b>Incoming Dependency</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
@@ -1169,14 +1129,6 @@ public interface PiMMPackage extends EPackage {
    * @ordered
    */
   int CONFIG_OUTPUT_PORT__NAME = PiMMPackage.DATA_OUTPUT_PORT__NAME;
-
-  /**
-   * The feature id for the '<em><b>Kind</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   * @ordered
-   */
-  int CONFIG_OUTPUT_PORT__KIND = PiMMPackage.DATA_OUTPUT_PORT__KIND;
 
   /**
    * The feature id for the '<em><b>Port Rate Expression</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2114,17 +2066,6 @@ public interface PiMMPackage extends EPackage {
   EAttribute getPort_Name();
 
   /**
-   * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Port#getKind <em>Kind</em>}'. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
-   *
-   * @return the meta object for the attribute '<em>Kind</em>'.
-   * @see org.ietr.preesm.experiment.model.pimm.Port#getKind()
-   * @see #getPort()
-   * @generated
-   */
-  EAttribute getPort_Kind();
-
-  /**
    * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.DataInputPort <em>Data Input Port</em>}'. <!-- begin-user-doc --> <!--
    * end-user-doc -->
    *
@@ -2920,13 +2861,6 @@ public interface PiMMPackage extends EPackage {
      * @generated
      */
     EAttribute PORT__NAME = PiMMPackage.eINSTANCE.getPort_Name();
-
-    /**
-     * The meta object literal for the '<em><b>Kind</b></em>' attribute feature. <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    EAttribute PORT__KIND = PiMMPackage.eINSTANCE.getPort_Kind();
 
     /**
      * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataInputPortImpl <em>Data Input Port</em>}' class. <!--

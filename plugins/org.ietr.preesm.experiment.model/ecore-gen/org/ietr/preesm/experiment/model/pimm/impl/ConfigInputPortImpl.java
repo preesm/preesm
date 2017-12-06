@@ -49,7 +49,7 @@ import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
+import org.ietr.preesm.experiment.model.pimm.PortKind;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
@@ -76,11 +76,12 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
   protected Dependency incomingDependency;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
    */
   protected ConfigInputPortImpl() {
     super();
-    this.kind = PiIdentifiers.CONFIGURATION_INPUT_PORT;
   }
 
   /**
@@ -224,6 +225,16 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
     } else if (eNotificationRequired()) {
       eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.CONFIG_INPUT_PORT__CONFIGURABLE, newConfigurable, newConfigurable));
     }
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public PortKind getKind() {
+    return PortKind.CFG_INPUT;
   }
 
   /**

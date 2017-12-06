@@ -48,7 +48,6 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
  * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.Port#getName <em>Name</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.Port#getKind <em>Kind</em>}</li>
  * </ul>
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPort()
@@ -82,17 +81,15 @@ public interface Port extends PiMMVisitable {
   void setName(String value);
 
   /**
-   * Returns the value of the '<em><b>Kind</b></em>' attribute. <!-- begin-user-doc -->
+   * <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Kind</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
    *
-   * @return the value of the '<em>Kind</em>' attribute.
-   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPort_Kind()
-   * @model required="true" changeable="false"
+   * @model kind="operation" required="true"
    * @generated
    */
-  String getKind();
+  PortKind getKind();
 
 } // Port

@@ -598,24 +598,23 @@ public class PasteFeature extends AbstractPasteFeature {
       final PictogramElement pe;
       if (childElement instanceof Port) {
         final Port copiedPort = (Port) childElement;
-        final String portKind = copiedPort.getKind();
         if (vertexModelCopy instanceof ExecutableActor) {
           final AbstractAddActorPortFeature addPortFeature;
-          switch (portKind) {
-            case "input":
+          switch (copiedPort.getKind()) {
+            case DATA_INPUT:
               addPortFeature = new AddDataInputPortFeature(getFeatureProvider());
               break;
-            case "output":
+            case DATA_OUTPUT:
               addPortFeature = new AddDataOutputPortFeature(getFeatureProvider());
               break;
-            case "cfg_input":
+            case CFG_INPUT:
               addPortFeature = new AddConfigInputPortFeature(getFeatureProvider());
               break;
-            case "cfg_output":
+            case CFG_OUTPUT:
               addPortFeature = new AddConfigOutputPortFeature(getFeatureProvider());
               break;
             default:
-              throw new UnsupportedOperationException("Port kind [" + portKind + "] not supported.");
+              throw new UnsupportedOperationException("Port kind [" + copiedPort.getKind() + "] not supported.");
           }
           pe = addPortFeature.addPictogramElement(newVertexPE, copiedPort);
         } else if (vertexModelCopy instanceof InterfaceActor) {

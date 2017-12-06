@@ -79,6 +79,7 @@ import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.PortKind;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.ietr.preesm.experiment.model.pimm.util.SubgraphConnectorVisitor;
@@ -670,8 +671,8 @@ public class PiParser {
     final String portName = elt.getAttribute(PiIdentifiers.PORT_NAME);
     final String portKind = elt.getAttribute(PiIdentifiers.PORT_KIND);
 
-    switch (portKind) {
-      case PiIdentifiers.DATA_INPUT_PORT:
+    switch (PortKind.get(portKind)) {
+      case DATA_INPUT:
         // Throw an error if the parsed vertex is not an actor
         if (!(vertex instanceof AbstractActor)) {
           throw new RuntimeException("Parsed data port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
@@ -691,7 +692,7 @@ public class PiParser {
         iPort.getPortRateExpression().setExpressionString(elt.getAttribute(PiIdentifiers.PORT_EXPRESSION));
         iPort.setAnnotation(PortMemoryAnnotation.get(elt.getAttribute(PiIdentifiers.PORT_MEMORY_ANNOTATION)));
         break;
-      case PiIdentifiers.DATA_OUTPUT_PORT:
+      case DATA_OUTPUT:
         // Throw an error if the parsed vertex is not an actor
         if (!(vertex instanceof AbstractActor)) {
           throw new RuntimeException("Parsed data port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
@@ -711,13 +712,13 @@ public class PiParser {
         oPort.getPortRateExpression().setExpressionString(elt.getAttribute(PiIdentifiers.PORT_EXPRESSION));
         oPort.setAnnotation(PortMemoryAnnotation.get(elt.getAttribute(PiIdentifiers.PORT_MEMORY_ANNOTATION)));
         break;
-      case PiIdentifiers.CONFIGURATION_INPUT_PORT:
+      case CFG_INPUT:
         final ConfigInputPort iCfgPort = PiMMUserFactory.instance.createConfigInputPort();
         iCfgPort.setName(portName);
         vertex.getConfigInputPorts().add(iCfgPort);
         break;
 
-      case PiIdentifiers.CONFIGURATION_OUPUT_PORT:
+      case CFG_OUTPUT:
         // Throw an error if the parsed vertex is not an actor
         if (!(vertex instanceof AbstractActor)) {
           throw new RuntimeException("Parsed config. port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());

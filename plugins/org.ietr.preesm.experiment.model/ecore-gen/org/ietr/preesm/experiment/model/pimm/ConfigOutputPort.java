@@ -55,4 +55,13 @@ public interface ConfigOutputPort extends DataOutputPort, ISetter {
    */
   @Override
   boolean isLocallyStatic();
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" required="true" annotation="http://www.eclipse.org/emf/2002/GenModel body='return PortKind.CFG_OUTPUT;'"
+   * @generated
+   */
+  @Override
+  PortKind getKind();
 } // ConfigOutputPort

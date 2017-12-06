@@ -140,19 +140,33 @@
   <eClassifiers xsi:type="ecore:EClass" name="ForkActor" eSuperTypes="#//ExecutableActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="RoundBufferActor" eSuperTypes="#//ExecutableActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="Port" abstract="true" eSuperTypes="#//visitor/PiMMVisitable">
+    <eOperations name="getKind" lowerBound="1" eType="#//PortKind"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
-        changeable="false"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DataInputPort" eSuperTypes="#//DataPort">
+    <eOperations name="getKind" lowerBound="1" eType="#//PortKind">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return PortKind.DATA_INPUT;"/>
+      </eAnnotations>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="incomingFifo" eType="#//Fifo"
         eOpposite="#//Fifo/targetPort"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DataOutputPort" eSuperTypes="#//DataPort">
+    <eOperations name="getKind" lowerBound="1" eType="#//PortKind">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return PortKind.DATA_OUTPUT;"/>
+      </eAnnotations>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingFifo" eType="#//Fifo"
         eOpposite="#//Fifo/sourcePort"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ConfigInputPort" eSuperTypes="#//Port">
+    <eOperations name="getKind" lowerBound="1" eType="#//PortKind">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return PortKind.CFG_INPUT;"/>
+      </eAnnotations>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="incomingDependency" eType="#//Dependency"
         eOpposite="#//Dependency/getter"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="configurable" eType="#//Configurable"
@@ -162,6 +176,11 @@
     <eOperations name="isLocallyStatic" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
         <details key="body" value="// config output ports are never considered static&#xA;return false;"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="getKind" lowerBound="1" eType="#//PortKind">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return PortKind.CFG_OUTPUT;"/>
       </eAnnotations>
     </eOperations>
   </eClassifiers>
