@@ -39,11 +39,14 @@ import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.adapter.GraphInterfaceObserver;
 import org.ietr.preesm.experiment.model.pimm.impl.PiMMFactoryImpl;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
 
@@ -118,6 +121,20 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   public ConfigOutputPort createConfigOutputPort() {
     final ConfigOutputPort res = super.createConfigOutputPort();
     res.setPortRateExpression(createExpression());
+    return res;
+  }
+
+  @Override
+  public Delay createDelay() {
+    final Delay res = super.createDelay();
+    res.setSizeExpression(createExpression());
+    return res;
+  }
+
+  @Override
+  public PiGraph createPiGraph() {
+    final PiGraph res = super.createPiGraph();
+    res.eAdapters().add(new GraphInterfaceObserver());
     return res;
   }
 }

@@ -60,7 +60,6 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
-import org.ietr.preesm.experiment.model.pimm.adapter.GraphInterfaceObserver;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
@@ -116,13 +115,12 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
   protected EList<Dependency> dependencies;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
    */
   protected PiGraphImpl() {
     super();
-    // Add an observer to apply all the changes required when adding an
-    // interface
-    eAdapters().add(new GraphInterfaceObserver());
   }
 
   /**

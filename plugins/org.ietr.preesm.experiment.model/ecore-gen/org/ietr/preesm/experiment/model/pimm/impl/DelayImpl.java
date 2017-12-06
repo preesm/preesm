@@ -43,7 +43,6 @@ import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
@@ -67,18 +66,17 @@ public class DelayImpl extends ConfigurableImpl implements Delay {
    * The cached value of the '{@link #getSizeExpression() <em>Size Expression</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @see #getSizeExpression()
-   * @generated
    * @ordered
    */
   protected Expression sizeExpression;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
    */
   protected DelayImpl() {
     super();
-
-    setSizeExpression(PiMMUserFactory.instance.createExpression());
   }
 
   /**
