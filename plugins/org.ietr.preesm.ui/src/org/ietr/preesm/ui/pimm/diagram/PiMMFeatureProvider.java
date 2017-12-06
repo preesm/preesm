@@ -176,6 +176,16 @@ import org.ietr.preesm.ui.pimm.layout.AutoLayoutFeature;
  */
 public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
+  private boolean editable = true;
+
+  public final boolean isEditable() {
+    return this.editable;
+  }
+
+  public final void setEditable(final boolean editable) {
+    this.editable = editable;
+  }
+
   /**
    * Instantiates a new pi MM feature provider.
    *
@@ -267,7 +277,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
    */
   @Override
   public IAddFeature getAddFeature(final IAddContext context) {
-
+    if (!isEditable()) {
+      return null;
+    }
     final Object newObject = context.getNewObject();
     final IAddFeature addFeature;
     if (newObject instanceof EObject) {
@@ -295,6 +307,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
    */
   @Override
   public ICreateConnectionFeature[] getCreateConnectionFeatures() {
+    if (!isEditable()) {
+      return new ICreateConnectionFeature[0];
+    }
     return new ICreateConnectionFeature[] { new CreateFifoFeature(this), new CreateDependencyFeature(this) };
   }
 
@@ -305,6 +320,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
    */
   @Override
   public ICreateFeature[] getCreateFeatures() {
+    if (!isEditable()) {
+      return new ICreateFeature[0];
+    }
     return new ICreateFeature[] { new CreateActorFeature(this), new CreateParameterFeature(this), new CreateConfigInputInterfaceFeature(this),
         new CreateConfigOutputInterfaceFeature(this), new CreateDataInputInterfaceFeature(this), new CreateDataOutputInterfaceFeature(this),
         new CreateBroadcastActorFeature(this), new CreateJoinActorFeature(this), new CreateForkActorFeature(this), new CreateRoundBufferActorFeature(this) };
@@ -317,6 +335,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
   @Override
   public IPasteFeature getPasteFeature(final IPasteContext context) {
+    if (!isEditable()) {
+      return null;
+    }
     return new PasteFeature(this);
   }
 
@@ -327,6 +348,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
    */
   @Override
   public ICustomFeature[] getCustomFeatures(final ICustomContext context) {
+    if (!isEditable()) {
+      return new ICustomFeature[0];
+    }
     final ArrayList<ICustomFeature> features = new ArrayList<>();
 
     final PictogramElement[] pes = context.getPictogramElements();
@@ -449,6 +473,10 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
    */
   @Override
   public IDeleteFeature getDeleteFeature(final IDeleteContext context) {
+    if (!isEditable()) {
+      return null;
+    }
+
     final PictogramElement pe = context.getPictogramElement();
     final Object bo = getBusinessObjectForPictogramElement(pe);
     final IDeleteFeature delFeature;
@@ -469,6 +497,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
    */
   @Override
   public IDirectEditingFeature getDirectEditingFeature(final IDirectEditingContext context) {
+    if (!isEditable()) {
+      return null;
+    }
     final PictogramElement pe = context.getPictogramElement();
     final Object bo = getBusinessObjectForPictogramElement(pe);
     if (bo instanceof AbstractVertex) {
@@ -484,6 +515,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
    */
   @Override
   public ILayoutFeature getLayoutFeature(final ILayoutContext context) {
+    if (!isEditable()) {
+      return null;
+    }
     final PictogramElement pictogramElement = context.getPictogramElement();
     final Object bo = getBusinessObjectForPictogramElement(pictogramElement);
     if (bo instanceof ExecutableActor) {
@@ -523,6 +557,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
    */
   @Override
   public IMoveShapeFeature getMoveShapeFeature(final IMoveShapeContext context) {
+    if (!isEditable()) {
+      return null;
+    }
     final PictogramElement pe = context.getPictogramElement();
     final Object bo = getBusinessObjectForPictogramElement(pe);
     if (bo instanceof AbstractActor) {
@@ -538,6 +575,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
    */
   @Override
   public IReconnectionFeature getReconnectionFeature(final IReconnectionContext context) {
+    if (!isEditable()) {
+      return null;
+    }
 
     final Connection connection = context.getConnection();
     final Object obj = getBusinessObjectForPictogramElement(connection);
@@ -566,6 +606,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
    */
   @Override
   public IRemoveFeature getRemoveFeature(final IRemoveContext context) {
+    if (!isEditable()) {
+      return null;
+    }
     return new DefaultRemoveFeature(this) {
       @Override
       public boolean isAvailable(final IContext context) {
@@ -638,6 +681,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
    */
   @Override
   public IUpdateFeature getUpdateFeature(final IUpdateContext context) {
+    if (!isEditable()) {
+      return null;
+    }
     final PictogramElement pictogramElement = context.getPictogramElement();
     if (pictogramElement instanceof Diagram) {
       return new UpdateDiagramFeature(this);
