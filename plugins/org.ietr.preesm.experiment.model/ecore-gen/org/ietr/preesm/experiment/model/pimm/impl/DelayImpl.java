@@ -43,9 +43,9 @@ import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
@@ -78,7 +78,7 @@ public class DelayImpl extends ConfigurableImpl implements Delay {
   protected DelayImpl() {
     super();
 
-    setSizeExpression(PiMMFactory.eINSTANCE.createExpression());
+    setSizeExpression(PiMMUserFactory.instance.createExpression());
   }
 
   /**

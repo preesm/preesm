@@ -71,6 +71,7 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
+import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
@@ -671,6 +672,7 @@ public class PiParser {
     final String portName = elt.getAttribute(PiIdentifiers.PORT_NAME);
     final String portKind = elt.getAttribute(PiIdentifiers.PORT_KIND);
 
+    final String attribute = elt.getAttribute(PiIdentifiers.PORT_EXPRESSION);
     switch (PortKind.get(portKind)) {
       case DATA_INPUT:
         // Throw an error if the parsed vertex is not an actor
@@ -689,7 +691,7 @@ public class PiParser {
         } else {
           iPort = ((AbstractActor) vertex).getDataInputPorts().get(0);
         }
-        iPort.getPortRateExpression().setExpressionString(elt.getAttribute(PiIdentifiers.PORT_EXPRESSION));
+        iPort.getPortRateExpression().setExpressionString(attribute);
         iPort.setAnnotation(PortMemoryAnnotation.get(elt.getAttribute(PiIdentifiers.PORT_MEMORY_ANNOTATION)));
         break;
       case DATA_OUTPUT:
@@ -709,7 +711,8 @@ public class PiParser {
         } else {
           oPort = ((AbstractActor) vertex).getDataOutputPorts().get(0);
         }
-        oPort.getPortRateExpression().setExpressionString(elt.getAttribute(PiIdentifiers.PORT_EXPRESSION));
+        final Expression portRateExpression = oPort.getPortRateExpression();
+        portRateExpression.setExpressionString(attribute);
         oPort.setAnnotation(PortMemoryAnnotation.get(elt.getAttribute(PiIdentifiers.PORT_MEMORY_ANNOTATION)));
         break;
       case CFG_INPUT:

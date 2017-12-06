@@ -37,9 +37,9 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.ecore.EClass;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
@@ -62,7 +62,7 @@ public class DataOutputInterfaceImpl extends InterfaceActorImpl implements DataO
 
     // Add the unique input port of the Sink Interface
     // The port intentionally has no name
-    final DataInputPort port = PiMMFactory.eINSTANCE.createDataInputPort();
+    final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
     port.setName(null);
     getDataInputPorts().add(port);
   }

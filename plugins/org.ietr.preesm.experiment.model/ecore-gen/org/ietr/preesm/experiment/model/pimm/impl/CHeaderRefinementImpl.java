@@ -44,6 +44,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
@@ -53,7 +54,6 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Direction;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
@@ -217,7 +217,7 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
   public AbstractActor getAbstractActor() {
     if (getLoopPrototype() != null) {
       // Create the actor returned by the function
-      final AbstractActor result = PiMMFactory.eINSTANCE.createActor();
+      final AbstractActor result = PiMMUserFactory.instance.createActor();
 
       // Create all its ports corresponding to parameters of the
       // prototype
@@ -228,12 +228,12 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
           // Data Port
           if (param.getDirection().equals(Direction.IN)) {
             // Data Input
-            final DataInputPort port = PiMMFactory.eINSTANCE.createDataInputPort();
+            final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
             port.setName(param.getName());
             result.getDataInputPorts().add(port);
           } else {
             // Data Output
-            final DataOutputPort port = PiMMFactory.eINSTANCE.createDataOutputPort();
+            final DataOutputPort port = PiMMUserFactory.instance.createDataOutputPort();
             port.setName(param.getName());
             result.getDataOutputPorts().add(port);
           }
@@ -241,12 +241,12 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
           // Config Port
           if (param.getDirection().equals(Direction.IN)) {
             // Config Input
-            final ConfigInputPort port = PiMMFactory.eINSTANCE.createConfigInputPort();
+            final ConfigInputPort port = PiMMUserFactory.instance.createConfigInputPort();
             port.setName(param.getName());
             result.getConfigInputPorts().add(port);
           } else {
             // Config Output
-            final ConfigOutputPort port = PiMMFactory.eINSTANCE.createConfigOutputPort();
+            final ConfigOutputPort port = PiMMUserFactory.instance.createConfigOutputPort();
             port.setName(param.getName());
             result.getConfigOutputPorts().add(port);
           }
