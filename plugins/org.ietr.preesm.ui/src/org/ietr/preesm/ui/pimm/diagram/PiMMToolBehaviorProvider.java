@@ -135,7 +135,7 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
             if (eIsProxy) {
               final String title = "Warning: the diagram is linked to an old version of the PiSDF meta-model";
               final StringBuilder sb = new StringBuilder();
-              sb.append("We found business objects in the diagram that are not part of the PiSDF meta-model. ");
+              sb.append("We found business objects in the diagram that are no longer part of the PiSDF format. ");
               sb.append("That means the links from the diagram file to the PiSDF file are obsolete. ");
               sb.append("This can cause issues when exploring or manipulating the application specification. ");
               sb.append("\n\n");
