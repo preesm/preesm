@@ -133,11 +133,24 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
           for (EObject bo : businessObjects) {
             final boolean eIsProxy = bo.eIsProxy();
             if (eIsProxy) {
-              MessageDialog.openWarning(null, "Warning: the diagram is linked to an old version of the PiSDF meta-model",
-                  "We found business objects in the diagram that are not part of the PiSDF meta-model. That means the links "
-                      + "from the diagram file to the PiSDF file are obsolete. This can cause issues when exploring or manipulating "
-                      + "the application specification.\n\n" + "This can be fixed by generating a new diagram file from the pi file (note "
-                      + "that the layout will be recomputed). To do so, right click on the pi file, then on \"Preem / Generate .diagram\".");
+              final String title = "Warning: the diagram is linked to an old version of the PiSDF meta-model";
+              final StringBuilder sb = new StringBuilder();
+              sb.append("We found business objects in the diagram that are not part of the PiSDF meta-model. ");
+              sb.append("That means the links from the diagram file to the PiSDF file are obsolete. ");
+              sb.append("This can cause issues when exploring or manipulating the application specification. ");
+              sb.append("\n\n");
+              sb.append("For this reason, editing this graph is disabled.");
+              sb.append("\n\n");
+              sb.append("This can be fixed by generating a new diagram file from the pi file (note that the layout will be recomputed). ");
+              sb.append("To do so, right click on the pi file, then on \"Preem / Generate .diagram\".");
+
+              MessageDialog.openWarning(null, title, sb.toString());
+
+              final IFeatureProvider featureProvider = diagramTypeProvider.getFeatureProvider();
+              if (featureProvider instanceof PiMMFeatureProvider) {
+                final PiMMFeatureProvider pfp = (PiMMFeatureProvider) featureProvider;
+                pfp.setEditable(false);
+              }
               return;
             }
           }
