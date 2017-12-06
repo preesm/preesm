@@ -521,7 +521,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
         if (bo instanceof Actor) {
           final Actor actor = (Actor) bo;
           final Refinement refinement = actor.getRefinement();
-          if (refinement.getFilePath() == null) {
+          if (refinement == null || refinement.getFilePath() == null) {
             this.lblRefinementObj.setText("(none)");
             this.lblRefinementView.setText("(none)");
             this.butRefinementClear.setEnabled(false);
