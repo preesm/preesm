@@ -62,7 +62,6 @@ public class DataInputInterfaceImpl extends InterfaceActorImpl implements DataIn
     // Add the unique output port of the Source Interface
     // The port intentionally has no name
     final DataOutputPort port = PiMMUserFactory.instance.createDataOutputPort();
-    port.setName(null);
     getDataOutputPorts().add(port);
   }
 

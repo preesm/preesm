@@ -63,7 +63,6 @@ public class DataOutputInterfaceImpl extends InterfaceActorImpl implements DataO
     // Add the unique input port of the Sink Interface
     // The port intentionally has no name
     final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
-    port.setName(null);
     getDataInputPorts().add(port);
   }
 
