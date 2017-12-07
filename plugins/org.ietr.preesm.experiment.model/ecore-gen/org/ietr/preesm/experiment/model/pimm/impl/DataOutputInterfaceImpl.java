@@ -37,7 +37,6 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.ecore.EClass;
-import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
@@ -57,13 +56,7 @@ public class DataOutputInterfaceImpl extends InterfaceActorImpl implements DataO
    */
   protected DataOutputInterfaceImpl() {
     super();
-
     this.kind = PiIdentifiers.DATA_OUTPUT_INTERFACE;
-
-    // Add the unique input port of the Sink Interface
-    // The port intentionally has no name
-    final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
-    getDataInputPorts().add(port);
   }
 
   /**

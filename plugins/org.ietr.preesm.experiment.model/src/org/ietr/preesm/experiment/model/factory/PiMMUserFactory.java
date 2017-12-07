@@ -36,8 +36,11 @@ package org.ietr.preesm.experiment.model.factory;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
@@ -135,6 +138,30 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   public PiGraph createPiGraph() {
     final PiGraph res = super.createPiGraph();
     res.eAdapters().add(new GraphInterfaceObserver());
+    return res;
+  }
+
+  @Override
+  public DataInputInterface createDataInputInterface() {
+    final DataInputInterface res = super.createDataInputInterface();
+    final DataOutputPort port = PiMMUserFactory.instance.createDataOutputPort();
+    res.getDataOutputPorts().add(port);
+    return res;
+  }
+
+  @Override
+  public DataOutputInterface createDataOutputInterface() {
+    final DataOutputInterface res = super.createDataOutputInterface();
+    final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
+    res.getDataInputPorts().add(port);
+    return res;
+  }
+
+  @Override
+  public ConfigOutputInterface createConfigOutputInterface() {
+    final ConfigOutputInterface res = super.createConfigOutputInterface();
+    final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
+    res.getDataInputPorts().add(port);
     return res;
   }
 }

@@ -38,9 +38,7 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.ecore.EClass;
-import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
@@ -58,13 +56,7 @@ public class ConfigOutputInterfaceImpl extends InterfaceActorImpl implements Con
    */
   protected ConfigOutputInterfaceImpl() {
     super();
-
     this.kind = PiIdentifiers.CONFIGURATION_OUTPUT_INTERFACE;
-
-    // Add the unique input port of the ConfigOutputInterface
-    // The port intentionally has no name
-    final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
-    getDataInputPorts().add(port);
   }
 
   /**
