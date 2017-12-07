@@ -74,6 +74,7 @@ import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
@@ -341,6 +342,13 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
    * @generated
    */
   private EEnum portKindEEnum = null;
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  private EEnum interfaceKindEEnum = null;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
@@ -1244,6 +1252,16 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EEnum getInterfaceKind() {
+    return this.interfaceKindEEnum;
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @return the i path
@@ -1418,6 +1436,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     this.directionEEnum = createEEnum(PiMMPackage.DIRECTION);
     this.portMemoryAnnotationEEnum = createEEnum(PiMMPackage.PORT_MEMORY_ANNOTATION);
     this.portKindEEnum = createEEnum(PiMMPackage.PORT_KIND);
+    this.interfaceKindEEnum = createEEnum(PiMMPackage.INTERFACE_KIND);
 
     // Create data types
     this.iPathEDataType = createEDataType(PiMMPackage.IPATH);
@@ -1814,6 +1833,12 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     addEEnumLiteral(this.portKindEEnum, PortKind.DATA_INPUT);
     addEEnumLiteral(this.portKindEEnum, PortKind.DATA_OUTPUT);
     addEEnumLiteral(this.portKindEEnum, PortKind.CFG_OUTPUT);
+
+    initEEnum(this.interfaceKindEEnum, InterfaceKind.class, "InterfaceKind");
+    addEEnumLiteral(this.interfaceKindEEnum, InterfaceKind.DATA_INPUT);
+    addEEnumLiteral(this.interfaceKindEEnum, InterfaceKind.DATA_OUTPUT);
+    addEEnumLiteral(this.interfaceKindEEnum, InterfaceKind.CFG_OUTPUT);
+    addEEnumLiteral(this.interfaceKindEEnum, InterfaceKind.CFG_INPUT);
 
     // Initialize data types
     initEDataType(this.iPathEDataType, IPath.class, "IPath", EPackageImpl.IS_SERIALIZABLE, !EPackageImpl.IS_GENERATED_INSTANCE_CLASS);

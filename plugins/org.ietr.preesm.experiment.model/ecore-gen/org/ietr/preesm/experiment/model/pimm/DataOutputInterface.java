@@ -36,7 +36,6 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Sink Interface</b></em>'. <!-- end-user-doc -->
  *
@@ -46,7 +45,4 @@ package org.ietr.preesm.experiment.model.pimm;
  * @generated
  */
 public interface DataOutputInterface extends InterfaceActor {
-
-  /** The Constant KIND. */
-  public static final String KIND = "snk";
 } // SinkInterface

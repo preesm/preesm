@@ -71,6 +71,7 @@ import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
@@ -84,7 +85,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-// TODO: Auto-generated Javadoc
 /**
  * Writer for the PiMM Model in the Pi format.
  *
@@ -487,13 +487,12 @@ public class PiWriter {
   protected void writeInterfaceVertex(final Element vertexElt, final InterfaceActor vertex) {
     // Set the kind of the Actor
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, vertex.getKind());
-    // writeDataElt(vertexElt, "kind", "actor");
     // Write ports of the actor
-    switch (vertex.getKind()) {
-      case PiIdentifiers.DATA_INPUT_INTERFACE:
+    switch (InterfaceKind.get(vertex.getKind())) {
+      case DATA_INPUT:
         writePorts(vertexElt, vertex.getDataOutputPorts());
         break;
-      case PiIdentifiers.DATA_OUTPUT_INTERFACE:
+      case DATA_OUTPUT:
         writePorts(vertexElt, vertex.getDataInputPorts());
         break;
       default:
@@ -537,7 +536,7 @@ public class PiWriter {
       paramElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.PARAMETER);
       paramElt.setAttribute(PiIdentifiers.PARAMETER_EXPRESSION, param.getValueExpression().getExpressionString());
     } else {
-      paramElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.CONFIGURATION_INPUT_INTERFACE);
+      paramElt.setAttribute(PiIdentifiers.NODE_KIND, InterfaceKind.CFG_INPUT.getLiteral());
     }
   }
 

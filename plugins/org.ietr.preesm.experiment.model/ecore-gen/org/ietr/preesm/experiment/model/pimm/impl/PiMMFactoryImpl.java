@@ -66,6 +66,7 @@ import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -193,6 +194,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
         return createPortMemoryAnnotationFromString(eDataType, initialValue);
       case PiMMPackage.PORT_KIND:
         return createPortKindFromString(eDataType, initialValue);
+      case PiMMPackage.INTERFACE_KIND:
+        return createInterfaceKindFromString(eDataType, initialValue);
       case PiMMPackage.IPATH:
         return createIPathFromString(eDataType, initialValue);
       default:
@@ -219,6 +222,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
         return convertPortMemoryAnnotationToString(eDataType, instanceValue);
       case PiMMPackage.PORT_KIND:
         return convertPortKindToString(eDataType, instanceValue);
+      case PiMMPackage.INTERFACE_KIND:
+        return convertInterfaceKindToString(eDataType, instanceValue);
       case PiMMPackage.IPATH:
         return convertIPathToString(eDataType, instanceValue);
       default:
@@ -657,6 +662,48 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
    */
   public String convertPortKindToString(final EDataType eDataType, final Object instanceValue) {
     return convertPortKind((PortKind) instanceValue);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public InterfaceKind createInterfaceKind(final String literal) {
+    final InterfaceKind result = InterfaceKind.get(literal);
+    if (result == null) {
+      throw new IllegalArgumentException("The value '" + literal + "' is not a valid enumerator of '" + PiMMPackage.Literals.INTERFACE_KIND.getName() + "'");
+    }
+    return result;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  public InterfaceKind createInterfaceKindFromString(final EDataType eDataType, final String initialValue) {
+    return createInterfaceKind(initialValue);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public String convertInterfaceKind(final InterfaceKind instanceValue) {
+    return instanceValue == null ? null : instanceValue.toString();
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  public String convertInterfaceKindToString(final EDataType eDataType, final Object instanceValue) {
+    return convertInterfaceKind((InterfaceKind) instanceValue);
   }
 
   /**

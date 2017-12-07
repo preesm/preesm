@@ -332,6 +332,12 @@
     <eLiterals name="DATA_OUTPUT" value="2" literal="output"/>
     <eLiterals name="CFG_OUTPUT" value="3" literal="cfg_output"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="InterfaceKind">
+    <eLiterals name="DATA_INPUT" literal="src"/>
+    <eLiterals name="DATA_OUTPUT" value="1" literal="snk"/>
+    <eLiterals name="CFG_OUTPUT" value="2" literal="cfg_out_iface"/>
+    <eLiterals name="CFG_INPUT" value="3" literal="cfg_in_iface"/>
+  </eClassifiers>
   <eSubpackages name="visitor" nsURI="http://org.ietr.preesm/experiment/model/pimm/visitor"
       nsPrefix="org.ietr.preesm.experiment.pimm.visitor">
     <eClassifiers xsi:type="ecore:EClass" name="PiMMVisitable" abstract="true" interface="true">

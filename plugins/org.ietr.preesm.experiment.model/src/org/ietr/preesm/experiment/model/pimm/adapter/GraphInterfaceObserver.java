@@ -45,13 +45,11 @@ import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
-import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
@@ -112,16 +110,16 @@ public class GraphInterfaceObserver extends AdapterImpl {
   protected void addInterfaceActor(final InterfaceActor iActor, final PiGraph graph) {
     // Create the Associated port and store it in the appropriate List
     Port port;
-    switch (iActor.getKind()) {
-      case DataInputInterface.KIND:
+    switch (InterfaceKind.get(iActor.getKind())) {
+      case DATA_INPUT:
         port = PiMMUserFactory.instance.createDataInputPort();
         graph.getDataInputPorts().add((DataInputPort) port);
         break;
-      case DataOutputInterface.KIND:
+      case DATA_OUTPUT:
         port = PiMMUserFactory.instance.createDataOutputPort();
         graph.getDataOutputPorts().add((DataOutputPort) port);
         break;
-      case ConfigOutputInterface.KIND:
+      case CFG_OUTPUT:
         port = PiMMUserFactory.instance.createConfigOutputPort();
         graph.getConfigOutputPorts().add((ConfigOutputPort) port);
         break;

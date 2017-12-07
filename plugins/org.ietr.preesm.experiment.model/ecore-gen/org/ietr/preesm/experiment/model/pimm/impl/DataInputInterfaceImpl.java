@@ -39,11 +39,10 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 import org.eclipse.emf.ecore.EClass;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Source Interface</b></em>'. <!-- end-user-doc -->
  *
@@ -56,7 +55,7 @@ public class DataInputInterfaceImpl extends InterfaceActorImpl implements DataIn
    */
   protected DataInputInterfaceImpl() {
     super();
-    this.kind = PiIdentifiers.DATA_INPUT_INTERFACE;
+    this.kind = InterfaceKind.DATA_INPUT.getLiteral();
   }
 
   /**

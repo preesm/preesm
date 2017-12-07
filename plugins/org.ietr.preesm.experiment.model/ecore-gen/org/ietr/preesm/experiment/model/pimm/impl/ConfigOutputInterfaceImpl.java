@@ -39,11 +39,10 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.ecore.EClass;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Config Output Interface</b></em>'. <!-- end-user-doc -->
  *
@@ -56,7 +55,7 @@ public class ConfigOutputInterfaceImpl extends InterfaceActorImpl implements Con
    */
   protected ConfigOutputInterfaceImpl() {
     super();
-    this.kind = PiIdentifiers.CONFIGURATION_OUTPUT_INTERFACE;
+    this.kind = InterfaceKind.CFG_OUTPUT.getLiteral();
   }
 
   /**

@@ -1847,13 +1847,23 @@ public interface PiMMPackage extends EPackage {
   int PORT_KIND = 35;
 
   /**
+   * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.InterfaceKind <em>Interface Kind</em>}' enum. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.InterfaceKind
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getInterfaceKind()
+   * @generated
+   */
+  int INTERFACE_KIND = 36;
+
+  /**
    * The meta object id for the '<em>IPath</em>' data type. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @see org.eclipse.core.runtime.IPath
    * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getIPath()
    * @generated
    */
-  int IPATH = 36;
+  int IPATH = 37;
 
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Parameterizable <em>Parameterizable</em>}'. <!-- begin-user-doc --> <!--
@@ -2650,6 +2660,16 @@ public interface PiMMPackage extends EPackage {
   EEnum getPortKind();
 
   /**
+   * Returns the meta object for enum '{@link org.ietr.preesm.experiment.model.pimm.InterfaceKind <em>Interface Kind</em>}'. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   *
+   * @return the meta object for enum '<em>Interface Kind</em>'.
+   * @see org.ietr.preesm.experiment.model.pimm.InterfaceKind
+   * @generated
+   */
+  EEnum getInterfaceKind();
+
+  /**
    * Returns the meta object for data type '{@link org.eclipse.core.runtime.IPath <em>IPath</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for data type '<em>IPath</em>'.
@@ -3337,6 +3357,16 @@ public interface PiMMPackage extends EPackage {
      * @generated
      */
     EEnum PORT_KIND = PiMMPackage.eINSTANCE.getPortKind();
+
+    /**
+     * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.InterfaceKind <em>Interface Kind</em>}' enum. <!-- begin-user-doc --> <!--
+     * end-user-doc -->
+     *
+     * @see org.ietr.preesm.experiment.model.pimm.InterfaceKind
+     * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getInterfaceKind()
+     * @generated
+     */
+    EEnum INTERFACE_KIND = PiMMPackage.eINSTANCE.getInterfaceKind();
 
     /**
      * The meta object literal for the '<em>IPath</em>' data type. <!-- begin-user-doc --> <!-- end-user-doc -->

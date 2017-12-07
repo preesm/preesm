@@ -77,6 +77,7 @@ import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -89,7 +90,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-// TODO: Auto-generated Javadoc
 /**
  * Parser for the PiMM Model in the Pi format.
  *
@@ -568,41 +568,42 @@ public class PiParser {
     final String nodeKind = nodeElt.getAttribute(PiIdentifiers.NODE_KIND);
     Configurable vertex;
 
-    switch (nodeKind) {
-      case PiIdentifiers.ACTOR:
-        vertex = parseActor(nodeElt, graph);
-        break;
-      case PiIdentifiers.BROADCAST:
-      case PiIdentifiers.FORK:
-      case PiIdentifiers.JOIN:
-      case PiIdentifiers.ROUND_BUFFER:
-        vertex = parseSpecialActor(nodeElt, graph);
-        break;
-      case PiIdentifiers.DATA_INPUT_INTERFACE:
-        vertex = parseSourceInterface(nodeElt, graph);
-        break;
-      case PiIdentifiers.DATA_OUTPUT_INTERFACE:
-        vertex = parseSinkInterface(nodeElt, graph);
-        break;
-      case PiIdentifiers.PARAMETER:
-        vertex = parseParameter(nodeElt, graph);
-        break;
-      case PiIdentifiers.CONFIGURATION_INPUT_INTERFACE:
-        vertex = parseConfigInputInterface(nodeElt, graph);
-        break;
-      case PiIdentifiers.CONFIGURATION_OUTPUT_INTERFACE:
-        vertex = parseConfigOutputInterface(nodeElt, graph);
-        break;
-      // TODO Parse all types of nodes
-      // case "implode":
-      // break;
-      // case "explode":
-      // break;
-      // case "parameter":
-      // break;
+    InterfaceKind ik = InterfaceKind.get(nodeKind);
+    if (ik != null) {
+      switch (ik) {
+        case DATA_INPUT:
+          vertex = parseSourceInterface(nodeElt, graph);
+          break;
+        case DATA_OUTPUT:
+          vertex = parseSinkInterface(nodeElt, graph);
+          break;
+        case CFG_INPUT:
+          vertex = parseConfigInputInterface(nodeElt, graph);
+          break;
+        case CFG_OUTPUT:
+          vertex = parseConfigOutputInterface(nodeElt, graph);
+          break;
 
-      default:
-        throw new RuntimeException("Parsed node " + nodeElt.getNodeName() + " has an unknown kind: " + nodeKind);
+        default:
+          throw new RuntimeException("Parsed node " + nodeElt.getNodeName() + " has an unknown kind: " + nodeKind);
+      }
+    } else {
+      switch (nodeKind) {
+        case PiIdentifiers.ACTOR:
+          vertex = parseActor(nodeElt, graph);
+          break;
+        case PiIdentifiers.BROADCAST:
+        case PiIdentifiers.FORK:
+        case PiIdentifiers.JOIN:
+        case PiIdentifiers.ROUND_BUFFER:
+          vertex = parseSpecialActor(nodeElt, graph);
+          break;
+        case PiIdentifiers.PARAMETER:
+          vertex = parseParameter(nodeElt, graph);
+          break;
+        default:
+          throw new RuntimeException("Parsed node " + nodeElt.getNodeName() + " has an unknown kind: " + nodeKind);
+      }
     }
 
     // Parse the elements of the node

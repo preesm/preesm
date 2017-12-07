@@ -51,10 +51,8 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
-import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
-import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 
 /**
@@ -116,7 +114,7 @@ public class LayoutInterfaceFeature extends AbstractLayoutFeature {
     }
 
     if (vertex instanceof InterfaceActor) {
-      layoutInterfaceActor(containerShape, containerGa, vertex, size);
+      layoutInterfaceActor(containerShape, containerGa, (InterfaceActor) vertex, size);
     }
 
     if (vertex instanceof Parameter) {
@@ -138,7 +136,7 @@ public class LayoutInterfaceFeature extends AbstractLayoutFeature {
     }
   }
 
-  private void layoutInterfaceActor(final ContainerShape containerShape, final GraphicsAlgorithm containerGa, final AbstractVertex vertex,
+  private void layoutInterfaceActor(final ContainerShape containerShape, final GraphicsAlgorithm containerGa, final InterfaceActor vertex,
       final IDimension size) {
     // Layout the invisible rectangle
     containerGa.setWidth(size.getWidth() + 16 + 3);
@@ -146,13 +144,13 @@ public class LayoutInterfaceFeature extends AbstractLayoutFeature {
     for (final Shape shape : containerShape.getChildren()) {
       final GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
       if (ga instanceof Text) {
-        switch (((InterfaceActor) vertex).getKind()) {
-          case DataInputInterface.KIND:
+        switch (InterfaceKind.get(vertex.getKind())) {
+          case DATA_INPUT:
             ga.setWidth(size.getWidth());
             Graphiti.getGaService().setLocation(ga, 0, 0);
             break;
-          case DataOutputInterface.KIND:
-          case ConfigOutputInterface.KIND:
+          case DATA_OUTPUT:
+          case CFG_OUTPUT:
             ga.setWidth(size.getWidth());
             Graphiti.getGaService().setLocation(ga, 16 + 3, 0);
             break;
