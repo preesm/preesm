@@ -1,46 +1,11 @@
-/*******************************************************************************
- * Copyright or © or Copr. 2013 - 2017 IETR/INSA:
- *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Julien Heulot <julien.heulot@insa-rennes.fr> (2013 - 2014)
- *
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
- *
- * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use
- * modify and/ or redistribute the software under the terms of the CeCILL-C
- * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info".
- *
- * As a counterpart to the access to the source code and  rights to copy,
- * modify and redistribute granted by the license, users are provided only
- * with a limited warranty  and the software's author,  the holder of the
- * economic rights,  and the successive licensors  have only  limited
- * liability.
- *
- * In this respect, the user's attention is drawn to the risks associated
- * with loading,  using,  modifying and/or developing or reproducing the
- * software by the user in light of its specific status of free software,
- * that may mean  that it is complicated to manipulate,  and  that  also
- * therefore means  that it is reserved for developers  and  experienced
- * professionals having in-depth computer knowledge. Users are therefore
- * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or
- * data to be ensured and,  more generally, to use and operate it in the
- * same conditions as regards security.
- *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- *******************************************************************************/
+/**
+ */
 package org.ietr.preesm.experiment.model.pimm;
 
 import org.eclipse.emf.common.util.EList;
 
-// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> A representation of the model object ' <em><b>Graph</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A representation of the model object '<em><b>Pi Graph</b></em>'. <!-- end-user-doc -->
  *
  * <p>
  * The following features are supported:
@@ -62,11 +27,7 @@ public interface PiGraph extends AbstractActor {
    * {@link org.ietr.preesm.experiment.model.pimm.AbstractActor}. It is bidirectional and its opposite is
    * '{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getContainingGraph <em>Containing Graph</em>}'. <!-- begin-user-doc -->
    * <p>
-   * <b>Do not use this method when adding an Interface to the graph</b> (i.e. a {@link InterfaceActor} or an interface {@link Parameter}) <br>
-   * Use {@link PiGraph#addInterface(AbstractVertex) and Graph#removeInterfaceActor(InterfaceActor)} instead.
-   * </p>
-   * <p>
-   * If the meaning of the '<em>Vertices</em>' containment reference list isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Actors</em>' containment reference list isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
    *
@@ -186,41 +147,38 @@ public interface PiGraph extends AbstractActor {
   EList<AbstractActor> getAllActors();
 
   /**
-   * Return the {@link AbstractVertex} ( {@link AbstractActor} or {@link Parameter}) whose name is given as a parameter.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param name
-   *          the desired name
-   * @return the desired vertex, or <code>null</code> if no vertex has the requested name.
+   * @model annotation="http://www.eclipse.org/emf/2002/GenModel body='return getAllParameters().stream().filter(p -&gt; p.getName().equals(parameterName)
+   *        &amp;&amp; p.getContainingGraph().getName().equals(graphName)).findFirst().orElse(null);'"
+   * @generated
    */
-  public AbstractVertex lookupVertex(String name);
+  Parameter lookupParameterGivenGraph(String parameterName, String graphName);
 
   /**
-   * Return the {@link Fifo} whose ID is given as a parameter.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param id
-   *          the desired id
-   * @return the desired {@link Fifo}, or <code>null</code> if no vertex has the requested name.
+   * @model annotation="http://www.eclipse.org/emf/2002/GenModel body='return Stream.concat(getActors().stream(), getParameters().stream()).filter(v -&gt;
+   *        v.getName().equals(vertexName)).findFirst().orElse(null);'"
+   * @generated
    */
-  public Fifo lookupFifo(String id);
+  AbstractVertex lookupVertex(String vertexName);
 
   /**
-   * Gets the hierarchical actor from path.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param path
-   *          the path
-   * @return the hierarchical actor from path
+   * @model annotation="http://www.eclipse.org/emf/2002/GenModel body='return getFifos().stream().filter(f -&gt;
+   *        f.getId().equals(fifoId)).findFirst().orElse(null);'"
+   * @generated
    */
-  public AbstractActor lookupActorFromPath(String path);
+  Fifo lookupFifo(String fifoId);
 
   /**
-   * Gets the parameter named with parent.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param name
-   *          the name of the Parameter we are looking for
-   * @param parent
-   *          the parent
-   * @return the first Parameter with the given name found in the graph hierarchy, null if none is found
+   * @model
+   * @generated
    */
-  public Parameter lookupParameterGivenGraph(String name, String parent);
+  AbstractActor lookupActorFromPath(String actorPath);
 
-} // Graph
+} // PiGraph

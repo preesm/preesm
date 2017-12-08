@@ -110,6 +110,28 @@
         <details key="body" value="final Stream&lt;AbstractActor> currentGraphActors = getActors().stream();&#xA;final Stream&lt;AbstractActor> chidrenGraphsActors = getChildrenGraphs().stream().map(PiGraph::getAllActors).flatMap(List::stream);&#xA;return ECollections.unmodifiableEList(Stream.concat(currentGraphActors, chidrenGraphsActors).collect(Collectors.toList()));"/>
       </eAnnotations>
     </eOperations>
+    <eOperations name="lookupParameterGivenGraph" eType="#//Parameter">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return getAllParameters().stream().filter(p -> p.getName().equals(parameterName) &amp;&amp; p.getContainingGraph().getName().equals(graphName)).findFirst().orElse(null);"/>
+      </eAnnotations>
+      <eParameters name="parameterName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eParameters name="graphName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eOperations>
+    <eOperations name="lookupVertex" eType="#//AbstractVertex">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return Stream.concat(getActors().stream(), getParameters().stream()).filter(v -> v.getName().equals(vertexName)).findFirst().orElse(null);"/>
+      </eAnnotations>
+      <eParameters name="vertexName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eOperations>
+    <eOperations name="lookupFifo" eType="#//Fifo">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return getFifos().stream().filter(f -> f.getId().equals(fifoId)).findFirst().orElse(null);"/>
+      </eAnnotations>
+      <eParameters name="fifoId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eOperations>
+    <eOperations name="lookupActorFromPath" eType="#//AbstractActor">
+      <eParameters name="actorPath" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="actors" upperBound="-1"
         eType="#//AbstractActor" containment="true" eOpposite="#//AbstractActor/containingGraph"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="fifos" upperBound="-1"

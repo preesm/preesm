@@ -382,6 +382,37 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
    *
    * @generated
    */
+  @Override
+  public Parameter lookupParameterGivenGraph(final String parameterName, final String graphName) {
+    return getAllParameters().stream().filter(p -> p.getName().equals(parameterName) && p.getContainingGraph().getName().equals(graphName)).findFirst()
+        .orElse(null);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public AbstractVertex lookupVertex(final String vertexName) {
+    return Stream.concat(getActors().stream(), getParameters().stream()).filter(v -> v.getName().equals(vertexName)).findFirst().orElse(null);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public Fifo lookupFifo(final String fifoId) {
+    return getFifos().stream().filter(f -> f.getId().equals(fifoId)).findFirst().orElse(null);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
   @SuppressWarnings("unchecked")
   @Override
   public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
@@ -392,16 +423,6 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
         return ((InternalEList<InternalEObject>) (InternalEList<?>) getParameters()).basicAdd(otherEnd, msgs);
     }
     return super.eInverseAdd(otherEnd, featureID, msgs);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getVertexNamed(java.lang.String)
-   */
-  @Override
-  public AbstractVertex lookupVertex(final String name) {
-    return Stream.concat(getActors().stream(), getParameters().stream()).filter(v -> v.getName().equals(name)).findFirst().orElse(null);
   }
 
   /**
@@ -422,16 +443,6 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getFifoIded(java.lang.String)
-   */
-  @Override
-  public Fifo lookupFifo(final String id) {
-    return getFifos().stream().filter(f -> f.getId().equals(id)).findFirst().orElse(null);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
    */
   @Override
@@ -442,13 +453,13 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
   /**
    * Returns an Actor indicated through a path where separators are "/".
    *
-   * @param path
+   * @param actorPath
    *          the path
    * @return the hierarchical actor from path
    */
   @Override
-  public AbstractActor lookupActorFromPath(final String path) {
-    final String safePath = path.replaceAll("/+", "/").replaceAll("^/*" + getName(), "").replaceAll("^/", "").replaceAll("/$", "");
+  public AbstractActor lookupActorFromPath(final String actorPath) {
+    final String safePath = actorPath.replaceAll("/+", "/").replaceAll("^/*" + getName(), "").replaceAll("^/", "").replaceAll("/$", "");
     if (safePath.isEmpty()) {
       return this;
     }
@@ -471,17 +482,6 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
         return null;
       }
     }
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getParameterNamedWithParent(java.lang.String, java.lang.String)
-   */
-  @Override
-  public Parameter lookupParameterGivenGraph(final String parameterName, final String graphName) {
-    return getAllParameters().stream().filter(p -> p.getName().equals(parameterName) && p.getContainingGraph().getName().equals(graphName)).findFirst()
-        .orElse(null);
   }
 
 } // GraphImpl
