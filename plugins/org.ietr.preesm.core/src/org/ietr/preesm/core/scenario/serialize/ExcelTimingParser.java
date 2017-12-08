@@ -59,10 +59,7 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 
 // TODO: Auto-generated Javadoc
@@ -175,32 +172,11 @@ public class ExcelTimingParser {
    */
   private void parseTimingsForPISDFGraph(final Workbook w, final PiGraph currentGraph, final Set<String> opDefIds, final Set<String> missingVertices,
       final Set<String> missingOperatorTypes) {
-    // Each of the vertices of the graph is either itself a graph
-    // (hierarchical vertex), in which case we call recursively this method;
-    // a standard actor, in which case we parser its timing; or a special
-    // vertex, in which case we do nothing
-    for (final AbstractActor vertex : currentGraph.getActors()) {
-      // Handle connected graphs from hierarchical vertices
-      if (vertex instanceof PiGraph) {
-        parseTimingsForPISDFGraph(w, (PiGraph) vertex, opDefIds, missingVertices, missingOperatorTypes);
-      } else if (vertex instanceof Actor) {
-        final Actor actor = (Actor) vertex;
 
-        // Handle unconnected graphs from hierarchical vertices
-        final Refinement refinement = actor.getRefinement();
-        AbstractActor subgraph = null;
-        if (refinement != null) {
-          subgraph = refinement.getAbstractActor();
-        }
+    currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
+        .forEach(a -> parseTimingForVertex(w, a.getName(), opDefIds, missingVertices, missingOperatorTypes));
 
-        if ((subgraph != null) && (subgraph instanceof PiGraph)) {
-          parseTimingsForPISDFGraph(w, (PiGraph) subgraph, opDefIds, missingVertices, missingOperatorTypes);
-        } else {
-          // If the actor is not hierarchical, parse its timing
-          parseTimingForVertex(w, vertex.getName(), opDefIds, missingVertices, missingOperatorTypes);
-        }
-      }
-    }
+    currentGraph.getChildrenGraphs().stream().forEach(g -> parseTimingsForPISDFGraph(w, g, opDefIds, missingVertices, missingOperatorTypes));
 
   }
 
