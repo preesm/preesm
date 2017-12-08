@@ -42,7 +42,6 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.PortKind;
@@ -311,20 +310,6 @@ public class DataInputPortImpl extends DataPortImpl implements DataInputPort {
   @Override
   public void accept(final PiMMVisitor v) {
     v.visitDataInputPort(this);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PortImpl#getName()
-   */
-  @Override
-  public String getName() {
-    String name = super.getName();
-    if ((name == null) && (this.eContainer instanceof DataOutputInterface)) {
-      name = ((DataOutputInterface) this.eContainer).getName();
-    }
-    return name;
   }
 
 } // InputPortImpl

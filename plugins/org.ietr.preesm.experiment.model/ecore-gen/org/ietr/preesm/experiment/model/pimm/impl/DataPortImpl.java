@@ -43,6 +43,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Expression;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 
@@ -331,4 +332,17 @@ public abstract class DataPortImpl extends PortImpl implements DataPort {
     return result.toString();
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PortImpl#getName()
+   */
+  @Override
+  public String getName() {
+    String name = super.getName();
+    if ((name == null) && (this.eContainer instanceof InterfaceActor)) {
+      name = ((InterfaceActor) this.eContainer).getName();
+    }
+    return name;
+  }
 } // DataPortImpl
