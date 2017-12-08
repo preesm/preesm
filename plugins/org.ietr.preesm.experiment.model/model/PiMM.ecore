@@ -152,7 +152,7 @@
     </eOperations>
     <eOperations name="getChildAbstractActor" eType="#//AbstractActor">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="body" value="return Optional.of(getRefinement()).map(Refinement::getAbstractActor).orElse(null);"/>
+        <details key="body" value="return Optional.ofNullable(getRefinement()).map(Refinement::getAbstractActor).orElse(null);"/>
       </eAnnotations>
     </eOperations>
     <eOperations name="getSubGraph" eType="#//PiGraph">

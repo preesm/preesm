@@ -110,7 +110,7 @@ public interface Actor extends ExecutableActor {
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return
-   *        Optional.of(getRefinement()).map(Refinement::getAbstractActor).orElse(null);'"
+   *        Optional.ofNullable(getRefinement()).map(Refinement::getAbstractActor).orElse(null);'"
    * @generated
    */
   AbstractActor getChildAbstractActor();

@@ -225,7 +225,7 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
    */
   @Override
   public AbstractActor getChildAbstractActor() {
-    return Optional.of(getRefinement()).map(Refinement::getAbstractActor).orElse(null);
+    return Optional.ofNullable(getRefinement()).map(Refinement::getAbstractActor).orElse(null);
   }
 
   /**
