@@ -35,6 +35,7 @@
 package org.ietr.preesm.experiment.model.factory;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
@@ -95,6 +96,14 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
     res.setSourcePort(sourcePortCopy);
     res.setTargetPort(targetPortCopy);
     res.setType(type);
+    return res;
+  }
+
+  @Override
+  public ConfigInputInterface createConfigInputInterface() {
+    final ConfigInputInterface res = super.createConfigInputInterface();
+    final Expression createExpression = createExpression();
+    res.setValueExpression(createExpression);
     return res;
   }
 
