@@ -423,6 +423,16 @@ public abstract class AbstractActorImpl extends ConfigurableImpl implements Abst
    * @generated
    */
   @Override
+  public boolean isHierarchical() {
+    return false;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
   public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, NotificationChain msgs) {
     switch (featureID) {
       case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:

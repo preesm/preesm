@@ -104,6 +104,7 @@ public interface Actor extends ExecutableActor {
    * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return getRefinement().isHierarchical();'"
    * @generated
    */
+  @Override
   boolean isHierarchical();
 
   /**

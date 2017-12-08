@@ -70,6 +70,11 @@
         <details key="body" value="if (getContainingGraph() != null) {&#xA;  return getContainingGraph().getActorPath() + &quot;/&quot; + getName();&#xA;}&#xA;return getName();"/>
       </eAnnotations>
     </eOperations>
+    <eOperations name="isHierarchical" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return false;"/>
+      </eAnnotations>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dataInputPorts" upperBound="-1"
         eType="#//DataInputPort" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dataOutputPorts" upperBound="-1"

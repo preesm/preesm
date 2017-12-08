@@ -172,4 +172,12 @@ public interface AbstractActor extends Configurable {
    */
   String getActorPath();
 
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return false;'"
+   * @generated
+   */
+  boolean isHierarchical();
+
 } // AbstractActor
