@@ -47,6 +47,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
@@ -213,6 +214,20 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
   @Override
   public boolean isHierarchical() {
     return getRefinement().isHierarchical();
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public PiGraph getSubGraph() {
+    if (isHierarchical()) {
+      return (PiGraph) getRefinement().getAbstractActor();
+    } else {
+      throw new UnsupportedOperationException("Cannot get the subgraph of a non hierarchical actor.");
+    }
   }
 
   /**

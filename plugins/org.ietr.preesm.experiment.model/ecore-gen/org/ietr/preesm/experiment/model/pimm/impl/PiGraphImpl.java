@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -59,7 +58,6 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
@@ -363,8 +361,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
   @Override
   public EList<PiGraph> getChildrenGraphs() {
     final Stream<PiGraph> directChildrenGraphs = getActors().stream().filter(PiGraph.class::isInstance).map(PiGraph.class::cast);
-    final Stream<PiGraph> refinementChildrenGraphs = getActorsWithRefinement().stream().map(Actor::getRefinement).filter(Objects::nonNull)
-        .map(Refinement::getAbstractActor).filter(PiGraph.class::isInstance).map(PiGraph.class::cast);
+    final Stream<PiGraph> refinementChildrenGraphs = getActorsWithRefinement().stream().filter(Actor::isHierarchical).map(Actor::getSubGraph);
     return ECollections.unmodifiableEList(Stream.concat(directChildrenGraphs, refinementChildrenGraphs).collect(Collectors.toList()));
   }
 
@@ -464,9 +461,9 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
       if (current instanceof PiGraph) {
         return ((PiGraph) current).lookupActorFromPath(String.join("/", pathFragments));
       } else if (current instanceof Actor) {
-        final AbstractActor aa = ((Actor) current).getRefinement().getAbstractActor();
-        if (aa instanceof PiGraph) {
-          return ((PiGraph) aa).lookupActorFromPath(String.join("/", pathFragments));
+        final Actor actor = (Actor) current;
+        if (actor.isHierarchical()) {
+          return actor.getSubGraph().lookupActorFromPath(String.join("/", pathFragments));
         } else {
           return null;
         }

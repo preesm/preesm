@@ -131,6 +131,11 @@
         <details key="body" value="return getRefinement().isHierarchical();"/>
       </eAnnotations>
     </eOperations>
+    <eOperations name="getSubGraph" eType="#//PiGraph">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="if (isHierarchical()) {&#xA;&#x9;return (PiGraph) getRefinement().getAbstractActor();&#xA;} else {&#xA;&#x9;throw new UnsupportedOperationException(&quot;Cannot get the subgraph of a non hierarchical actor.&quot;);&#xA;}"/>
+      </eAnnotations>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="refinement" lowerBound="1"
         eType="#//Refinement" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="memoryScriptPath" eType="#//IPath"/>

@@ -107,6 +107,16 @@ public interface Actor extends ExecutableActor {
   boolean isHierarchical();
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='if (isHierarchical()) {\n\treturn (PiGraph)
+   *        getRefinement().getAbstractActor();\n} else {\n\tthrow new UnsupportedOperationException(\"Cannot get the subgraph of a non hierarchical
+   *        actor.\");\n}'"
+   * @generated
+   */
+  PiGraph getSubGraph();
+
+  /**
    * Returns the value of the '<em><b>Memory Script Path</b></em>' attribute. <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Memory Script Path</em>' attribute isn't clear, there really should be more of a description here...
