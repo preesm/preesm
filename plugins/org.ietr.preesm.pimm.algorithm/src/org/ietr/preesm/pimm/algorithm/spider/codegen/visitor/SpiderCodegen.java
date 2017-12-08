@@ -52,6 +52,7 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
@@ -234,7 +235,7 @@ public class SpiderCodegen {
         if (parameters_proto.length() > 0) {
           parameters_proto.append(", ");
         }
-        parameters_proto.append("Param " + p.getName() + " = " + ((int) Double.parseDouble(p.getValueExpression().evaluate())));
+        parameters_proto.append("Param " + p.getName() + " = " + ExpressionEvaluator.evaluate(p.getValueExpression()));
       }
     }
     append(parameters_proto);

@@ -42,11 +42,9 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
-import org.nfunk.jep.ParseException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -124,19 +122,6 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
     if (eNotificationRequired()) {
       eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.EXPRESSION__EXPRESSION_STRING, oldExpressionString, this.expressionString));
     }
-  }
-
-  /**
-   * <!-- begin-user-doc --> Evaluate expression of the class for which it is called. <!-- end-user-doc -->
-   *
-   * @return the result of the expression evaluated as an int.
-   * @throws ParseException
-   */
-  @Override
-  public String evaluate() {
-    long evaluate;
-    evaluate = ExpressionEvaluator.evaluate(this);
-    return Long.toString(evaluate);
   }
 
   /**

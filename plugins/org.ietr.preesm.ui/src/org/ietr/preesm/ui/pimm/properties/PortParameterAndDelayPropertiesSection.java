@@ -59,6 +59,7 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
+import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
@@ -346,9 +347,9 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 
         try {
           // try out evaluating the expression
-          final String eltExprEvaluation = elementValueExpression.evaluate();
+          final long evaluate = ExpressionEvaluator.evaluate(elementValueExpression);
           // if evaluation went well, just write the result
-          this.lblValueObj.setText(eltExprEvaluation);
+          this.lblValueObj.setText(Long.toString(evaluate));
           this.txtExpression.setBackground(new Color(null, 255, 255, 255));
         } catch (final ExpressionEvaluationException e) {
           // otherwise print error message and put red background

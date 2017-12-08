@@ -52,6 +52,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.types.DataType;
+import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
@@ -276,7 +277,7 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
           parameters_proto.append(", ");
           parameters_def.append(", ");
         }
-        parameters_proto.append("Param " + p.getName() + " = " + ((int) Double.parseDouble(p.getValueExpression().evaluate())));
+        parameters_proto.append("Param " + p.getName() + " = " + ExpressionEvaluator.evaluate(p.getValueExpression()));
         parameters_def.append("Param " + p.getName());
       }
     }

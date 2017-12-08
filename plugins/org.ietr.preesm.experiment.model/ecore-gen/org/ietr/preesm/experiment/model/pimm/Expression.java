@@ -82,13 +82,4 @@ public interface Expression extends PiMMVisitable {
    */
   void setExpressionString(String value);
 
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the string
-   * @model required="true"
-   * @generated
-   */
-  String evaluate();
-
 } // Expression

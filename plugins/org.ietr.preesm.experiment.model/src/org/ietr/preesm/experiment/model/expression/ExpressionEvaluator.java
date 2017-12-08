@@ -140,8 +140,7 @@ public class ExpressionEvaluator {
         }
 
         final Expression valueExpression = p.getValueExpression();
-        final String evaluatedParam = valueExpression.evaluate();
-        final double parseDouble = Double.parseDouble(evaluatedParam);
+        final double parseDouble = ExpressionEvaluator.evaluate(valueExpression);
         result.put(parameterName, parseDouble);
       }
     }

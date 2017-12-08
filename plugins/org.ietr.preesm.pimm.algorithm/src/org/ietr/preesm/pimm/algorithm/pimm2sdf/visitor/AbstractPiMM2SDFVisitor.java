@@ -64,6 +64,7 @@ import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
+import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
@@ -176,7 +177,8 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
    */
   protected void parameters2GraphVariables(final PiGraph pg, final SDFGraph sdf) {
     for (final Parameter p : pg.getParameters()) {
-      final Variable var = new Variable(p.getName(), p.getValueExpression().evaluate());
+      final String evaluate = Long.toString(ExpressionEvaluator.evaluate(p.getValueExpression()));
+      final Variable var = new Variable(p.getName(), evaluate);
       sdf.addVariable(var);
     }
   }
@@ -250,8 +252,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
         // Evaluate the expression wrt. the current values of the
         // parameters and set the result as new expression
         final Expression pExp = PiMMUserFactory.instance.createExpression();
-        final String value = p.getValueExpression().evaluate();
-        pExp.setExpressionString(value);
+        pExp.setExpressionString(Long.toString(ExpressionEvaluator.evaluate(p.getValueExpression())));
         p.setValueExpression(pExp);
       }
     }
@@ -377,18 +378,17 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
       if (f.getDelay() != null) {
         // Evaluate the expression wrt. the current values of the
         // parameters
-        final String piDelay = f.getDelay().getSizeExpression().evaluate();
-        delay = new SDFExpressionEdgePropertyType(createValue(piDelay));
+        delay = new SDFExpressionEdgePropertyType(createValue(Long.toString(ExpressionEvaluator.evaluate(f.getDelay().getSizeExpression()))));
       } else {
         delay = new SDFExpressionEdgePropertyType(new ConstantValue(0));
       }
       // Evaluate the expression wrt. the current values of the parameters
-      final String piCons = piInputPort.getPortRateExpression().evaluate();
-      final SDFExpressionEdgePropertyType cons = new SDFExpressionEdgePropertyType(createValue(piCons));
+      final SDFExpressionEdgePropertyType cons = new SDFExpressionEdgePropertyType(
+          createValue(Long.toString(ExpressionEvaluator.evaluate(piInputPort.getPortRateExpression()))));
 
       // Evaluate the expression wrt. the current values of the parameters
-      final String piProd = piOutputPort.getPortRateExpression().evaluate();
-      final SDFExpressionEdgePropertyType prod = new SDFExpressionEdgePropertyType(createValue(piProd));
+      final SDFExpressionEdgePropertyType prod = new SDFExpressionEdgePropertyType(
+          createValue(Long.toString(ExpressionEvaluator.evaluate(piOutputPort.getPortRateExpression()))));
 
       final SDFEdge edge = this.result.addEdge(sdfSource, sdfOutputPort, sdfTarget, sdfInputPort, prod, cons, delay);
 
