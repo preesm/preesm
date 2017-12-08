@@ -38,12 +38,14 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import java.util.Objects;
+import java.util.Optional;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
@@ -222,9 +224,19 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
    * @generated
    */
   @Override
+  public AbstractActor getChildAbstractActor() {
+    return Optional.of(getRefinement()).map(Refinement::getAbstractActor).orElse(null);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
   public PiGraph getSubGraph() {
     if (isHierarchical()) {
-      return (PiGraph) getRefinement().getAbstractActor();
+      return (PiGraph) getChildAbstractActor();
     } else {
       throw new UnsupportedOperationException("Cannot get the subgraph of a non hierarchical actor.");
     }

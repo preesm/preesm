@@ -109,9 +109,17 @@ public interface Actor extends ExecutableActor {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='if (isHierarchical()) {\n\treturn (PiGraph)
-   *        getRefinement().getAbstractActor();\n} else {\n\tthrow new UnsupportedOperationException(\"Cannot get the subgraph of a non hierarchical
-   *        actor.\");\n}'"
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return
+   *        Optional.of(getRefinement()).map(Refinement::getAbstractActor).orElse(null);'"
+   * @generated
+   */
+  AbstractActor getChildAbstractActor();
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='if (isHierarchical()) {\n\treturn (PiGraph) getChildAbstractActor();\n}
+   *        else {\n\tthrow new UnsupportedOperationException(\"Cannot get the subgraph of a non hierarchical actor.\");\n}'"
    * @generated
    */
   PiGraph getSubGraph();

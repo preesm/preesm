@@ -168,7 +168,7 @@ public interface PiGraph extends AbstractActor {
    *
    * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='final Stream&lt;PiGraph&gt; directChildrenGraphs =
    *        getActors().stream().filter(PiGraph.class::isInstance).map(PiGraph.class::cast);\nfinal Stream&lt;PiGraph&gt; refinementChildrenGraphs =
-   *        getActorsWithRefinement().stream().map(Actor::getRefinement).filter(Objects::nonNull).map(Refinement::getAbstractActor).filter(PiGraph.class::isInstance).map(PiGraph.class::cast);\nreturn
+   *        getActorsWithRefinement().stream().filter(Actor::isHierarchical).map(Actor::getSubGraph);\nreturn
    *        ECollections.unmodifiableEList(Stream.concat(directChildrenGraphs, refinementChildrenGraphs).collect(Collectors.toList()));'"
    * @generated
    */
