@@ -54,13 +54,9 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 
-// TODO: Auto-generated Javadoc
 /**
  * Importing timings in a scenario from a csv file. task names are rows while operator types are columns
  *
@@ -181,32 +177,11 @@ public class CsvTimingParser {
    *          the op def ids
    */
   private void parseTimingsForPISDFGraph(final Map<String, Map<String, String>> timings, final PiGraph currentGraph, final Set<String> opDefIds) {
-    // Each of the vertices of the graph is either itself a graph (hierarchical vertex), in which case we call recursively this method
-    // a standard actor, in which case we parser its timing; or a special
-    // vertex, in which case we do nothing
-    for (final AbstractActor vertex : currentGraph.getActors()) {
-      // Handle connected graphs from hierarchical vertices
-      if (vertex instanceof PiGraph) {
-        parseTimingsForPISDFGraph(timings, (PiGraph) vertex, opDefIds);
-      } else if (vertex instanceof Actor) {
-        final Actor actor = (Actor) vertex;
 
-        // Handle unconnected graphs from hierarchical vertices
-        final Refinement refinement = actor.getRefinement();
-        AbstractActor subgraph = null;
-        if (refinement != null) {
-          subgraph = refinement.getAbstractActor();
-        }
-
-        if ((subgraph != null) && (subgraph instanceof PiGraph)) {
-          parseTimingsForPISDFGraph(timings, (PiGraph) subgraph, opDefIds);
-        } else {
-          // If the actor is not hierarchical, parse its timing
-          parseTimingForVertex(timings, vertex.getName(), opDefIds);
-        }
-      }
-    }
-
+    // parse timings of non hierarchical actors of currentGraph
+    currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical()).forEach(a -> parseTimingForVertex(timings, a.getName(), opDefIds));
+    // parse timings of all direct subgraphs
+    currentGraph.getChildrenGraphs().stream().forEach(g -> parseTimingsForPISDFGraph(timings, g, opDefIds));
   }
 
   /**
