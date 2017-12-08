@@ -46,4 +46,13 @@ package org.ietr.preesm.experiment.model.pimm;
  * @generated
  */
 public interface ConfigOutputInterface extends InterfaceActor {
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" required="true" annotation="http://www.eclipse.org/emf/2002/GenModel body='return InterfaceKind.CFG_OUTPUT;'"
+   * @generated
+   */
+  @Override
+  InterfaceKind getKind();
 } // ConfigOutputInterface

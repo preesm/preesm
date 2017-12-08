@@ -49,7 +49,6 @@ import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
@@ -110,7 +109,7 @@ public class GraphInterfaceObserver extends AdapterImpl {
   protected void addInterfaceActor(final InterfaceActor iActor, final PiGraph graph) {
     // Create the Associated port and store it in the appropriate List
     Port port;
-    switch (InterfaceKind.get(iActor.getKind())) {
+    switch (iActor.getKind()) {
       case DATA_INPUT:
         port = PiMMUserFactory.instance.createDataInputPort();
         graph.getDataInputPorts().add((DataInputPort) port);

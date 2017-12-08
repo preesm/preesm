@@ -52,7 +52,6 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 
 /**
@@ -144,7 +143,7 @@ public class LayoutInterfaceFeature extends AbstractLayoutFeature {
     for (final Shape shape : containerShape.getChildren()) {
       final GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
       if (ga instanceof Text) {
-        switch (InterfaceKind.get(vertex.getKind())) {
+        switch (vertex.getKind()) {
           case DATA_INPUT:
             ga.setWidth(size.getWidth());
             Graphiti.getGaService().setLocation(ga, 0, 0);

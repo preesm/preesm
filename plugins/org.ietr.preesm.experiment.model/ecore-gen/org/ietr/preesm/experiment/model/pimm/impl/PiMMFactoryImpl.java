@@ -65,7 +65,6 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
@@ -144,8 +143,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
         return createConfigOutputPort();
       case PiMMPackage.FIFO:
         return createFifo();
-      case PiMMPackage.INTERFACE_ACTOR:
-        return createInterfaceActor();
       case PiMMPackage.DATA_INPUT_INTERFACE:
         return createDataInputInterface();
       case PiMMPackage.DATA_OUTPUT_INTERFACE:
@@ -313,18 +310,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   public Fifo createFifo() {
     final FifoImpl fifo = new FifoImpl();
     return fifo;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the interface actor
-   * @generated
-   */
-  @Override
-  public InterfaceActor createInterfaceActor() {
-    final InterfaceActorImpl interfaceActor = new InterfaceActorImpl();
-    return interfaceActor;
   }
 
   /**

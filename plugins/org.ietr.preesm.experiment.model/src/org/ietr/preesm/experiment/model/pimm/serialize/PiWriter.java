@@ -486,9 +486,9 @@ public class PiWriter {
    */
   protected void writeInterfaceVertex(final Element vertexElt, final InterfaceActor vertex) {
     // Set the kind of the Actor
-    vertexElt.setAttribute(PiIdentifiers.NODE_KIND, vertex.getKind());
+    vertexElt.setAttribute(PiIdentifiers.NODE_KIND, vertex.getKind().getLiteral());
     // Write ports of the actor
-    switch (InterfaceKind.get(vertex.getKind())) {
+    switch (vertex.getKind()) {
       case DATA_INPUT:
         writePorts(vertexElt, vertex.getDataOutputPorts());
         break;

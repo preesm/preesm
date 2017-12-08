@@ -815,17 +815,6 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
-   * @return the interface actor kind
-   * @generated
-   */
-  @Override
-  public EAttribute getInterfaceActor_Kind() {
-    return (EAttribute) this.interfaceActorEClass.getEStructuralFeatures().get(1);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
    * @return the data input interface
    * @generated
    */
@@ -1381,7 +1370,6 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     this.interfaceActorEClass = createEClass(PiMMPackage.INTERFACE_ACTOR);
     createEReference(this.interfaceActorEClass, PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT);
-    createEAttribute(this.interfaceActorEClass, PiMMPackage.INTERFACE_ACTOR__KIND);
 
     this.dataInputInterfaceEClass = createEClass(PiMMPackage.DATA_INPUT_INTERFACE);
 
@@ -1680,22 +1668,25 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     addEOperation(this.fifoEClass, this.ecorePackage.getEString(), "getId", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
-    initEClass(this.interfaceActorEClass, InterfaceActor.class, "InterfaceActor", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
+    initEClass(this.interfaceActorEClass, InterfaceActor.class, "InterfaceActor", EPackageImpl.IS_ABSTRACT, EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
     initEReference(getInterfaceActor_GraphPort(), getPort(), null, "graphPort", null, 1, 1, InterfaceActor.class, !EPackageImpl.IS_TRANSIENT,
         !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEAttribute(getInterfaceActor_Kind(), this.ecorePackage.getEString(), "kind", null, 1, 1, InterfaceActor.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, !EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
     addEOperation(this.interfaceActorEClass, getDataPort(), "getDataPort", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
+    addEOperation(this.interfaceActorEClass, getInterfaceKind(), "getKind", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     initEClass(this.dataInputInterfaceEClass, DataInputInterface.class, "DataInputInterface", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
 
+    addEOperation(this.dataInputInterfaceEClass, getInterfaceKind(), "getKind", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
     initEClass(this.dataOutputInterfaceEClass, DataOutputInterface.class, "DataOutputInterface", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+
+    addEOperation(this.dataOutputInterfaceEClass, getInterfaceKind(), "getKind", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     initEClass(this.configInputInterfaceEClass, ConfigInputInterface.class, "ConfigInputInterface", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
@@ -1710,6 +1701,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     initEClass(this.configOutputInterfaceEClass, ConfigOutputInterface.class, "ConfigOutputInterface", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+
+    addEOperation(this.configOutputInterfaceEClass, getInterfaceKind(), "getKind", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     initEClass(this.refinementEClass, Refinement.class, "Refinement", EPackageImpl.IS_ABSTRACT, EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);

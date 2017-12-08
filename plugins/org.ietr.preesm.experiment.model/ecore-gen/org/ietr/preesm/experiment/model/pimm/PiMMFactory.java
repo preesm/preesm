@@ -114,14 +114,6 @@ public interface PiMMFactory extends EFactory {
   Fifo createFifo();
 
   /**
-   * Returns a new object of class '<em>Interface Actor</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @return a new object of class '<em>Interface Actor</em>'.
-   * @generated
-   */
-  InterfaceActor createInterfaceActor();
-
-  /**
    * Returns a new object of class '<em>Data Input Interface</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return a new object of class '<em>Data Input Interface</em>'.
