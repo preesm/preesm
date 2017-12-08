@@ -222,17 +222,20 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
    */
   @Override
   public void visitConfigInputInterface(final ConfigInputInterface cii) {
-    // Connect the interface to the incoming dependencies from the outer
-    // graph
-    ConfigInputPort correspondingPort = null;
-    for (final ConfigInputPort cip : this.currentActor.getConfigInputPorts()) {
-      if (cip.getName().equals(cii.getName())) {
-        correspondingPort = cip;
-        break;
+    // only reconnects if we parse a hierarchical actor
+    if (this.currentActor != null) {
+      // Connect the interface to the incoming dependencies from the outer
+      // graph
+      ConfigInputPort correspondingPort = null;
+      for (final ConfigInputPort cip : this.currentActor.getConfigInputPorts()) {
+        if (cip.getName().equals(cii.getName())) {
+          correspondingPort = cip;
+          break;
+        }
       }
-    }
-    if (correspondingPort != null) {
-      cii.setGraphPort(correspondingPort);
+      if (correspondingPort != null) {
+        cii.setGraphPort(correspondingPort);
+      }
     }
   }
 
