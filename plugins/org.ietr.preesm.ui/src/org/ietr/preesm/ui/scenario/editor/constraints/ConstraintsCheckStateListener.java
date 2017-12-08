@@ -62,7 +62,6 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.ui.scenario.editor.HierarchicalSDFVertex;
 import org.ietr.preesm.ui.scenario.editor.ISDFCheckStateListener;
 import org.ietr.preesm.ui.scenario.editor.Messages;
@@ -238,31 +237,27 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
   /**
    * Fire on check.
    *
-   * @param actor
+   * @param abstractActor
    *          the actor
    * @param isChecked
    *          the is checked
    */
-  private void fireOnCheck(final AbstractActor actor, final boolean isChecked) {
+  private void fireOnCheck(final AbstractActor abstractActor, final boolean isChecked) {
     if (this.currentOpId != null) {
       if (isChecked) {
-        this.scenario.getConstraintGroupManager().addConstraint(this.currentOpId, actor);
+        this.scenario.getConstraintGroupManager().addConstraint(this.currentOpId, abstractActor);
       } else {
-        this.scenario.getConstraintGroupManager().removeConstraint(this.currentOpId, actor);
+        this.scenario.getConstraintGroupManager().removeConstraint(this.currentOpId, abstractActor);
       }
     }
 
     // Checks the children of the current vertex
-    if (actor instanceof Actor) {
-      final Refinement refinement = ((Actor) actor).getRefinement();
-      if (refinement != null) {
-        final AbstractActor subGraph = refinement.getAbstractActor();
-        if (subGraph instanceof PiGraph) {
-          final PiGraph graph = (PiGraph) subGraph;
-
-          for (final AbstractActor v : this.contentProvider.filterPISDFChildren(graph.getActors())) {
-            fireOnCheck(v, isChecked);
-          }
+    if (abstractActor instanceof Actor) {
+      final Actor actor = (Actor) abstractActor;
+      if (actor.isHierarchical()) {
+        final PiGraph subGraph = actor.getSubGraph();
+        for (final AbstractActor v : this.contentProvider.filterPISDFChildren(subGraph.getActors())) {
+          fireOnCheck(v, isChecked);
         }
       }
     }
