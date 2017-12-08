@@ -62,6 +62,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.util.ActorPath;
 import org.ietr.preesm.ui.scenario.editor.HierarchicalSDFVertex;
 import org.ietr.preesm.ui.scenario.editor.ISDFCheckStateListener;
 import org.ietr.preesm.ui.scenario.editor.Messages;
@@ -318,7 +319,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
         // Retrieves the elements in the tree that have the same name as
         // the ones to select in the constraint group
         for (final String vertexId : cg.getVertexPaths()) {
-          final AbstractVertex v = currentGraph.lookupActorFromPath(vertexId);
+          final AbstractVertex v = ActorPath.lookup(currentGraph, vertexId);
           if (v != null) {
             cgSet.add(v);
           }

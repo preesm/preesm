@@ -1594,9 +1594,6 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     op = addEOperation(this.piGraphEClass, getFifo(), "lookupFifo", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
     addEParameter(op, this.ecorePackage.getEString(), "fifoId", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
-    op = addEOperation(this.piGraphEClass, getAbstractActor(), "lookupActorFromPath", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
-    addEParameter(op, this.ecorePackage.getEString(), "actorPath", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
-
     initEClass(this.executableActorEClass, ExecutableActor.class, "ExecutableActor", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
 

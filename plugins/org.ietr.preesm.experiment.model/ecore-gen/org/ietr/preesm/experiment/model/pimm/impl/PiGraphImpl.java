@@ -36,8 +36,6 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -448,40 +446,6 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
   @Override
   public void accept(final PiMMVisitor v) {
     v.visitPiGraph(this);
-  }
-
-  /**
-   * Returns an Actor indicated through a path where separators are "/".
-   *
-   * @param actorPath
-   *          the path
-   * @return the hierarchical actor from path
-   */
-  @Override
-  public AbstractActor lookupActorFromPath(final String actorPath) {
-    final String safePath = actorPath.replaceAll("/+", "/").replaceAll("^/*" + getName(), "").replaceAll("^/", "").replaceAll("/$", "");
-    if (safePath.isEmpty()) {
-      return this;
-    }
-    final List<String> pathFragments = new ArrayList<>(Arrays.asList(safePath.split("/")));
-    final String firstFragment = pathFragments.remove(0);
-    final AbstractActor current = getActors().stream().filter(a -> firstFragment.equals(a.getName())).findFirst().orElse(null);
-    if (pathFragments.isEmpty()) {
-      return current;
-    } else {
-      if (current instanceof PiGraph) {
-        return ((PiGraph) current).lookupActorFromPath(String.join("/", pathFragments));
-      } else if (current instanceof Actor) {
-        final Actor actor = (Actor) current;
-        if (actor.isHierarchical()) {
-          return actor.getSubGraph().lookupActorFromPath(String.join("/", pathFragments));
-        } else {
-          return null;
-        }
-      } else {
-        return null;
-      }
-    }
   }
 
 } // GraphImpl

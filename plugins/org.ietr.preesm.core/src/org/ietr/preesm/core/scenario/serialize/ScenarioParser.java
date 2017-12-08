@@ -78,6 +78,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
+import org.ietr.preesm.experiment.model.pimm.util.ActorPath;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -829,7 +830,7 @@ public class ScenarioParser {
     if (this.algoSDF != null) {
       result = this.algoSDF.getHierarchicalVertexFromPath(path);
     } else if (this.algoPi != null) {
-      result = this.algoPi.lookupActorFromPath(path);
+      result = ActorPath.lookup(algoPi, path);
     }
     return result;
   }

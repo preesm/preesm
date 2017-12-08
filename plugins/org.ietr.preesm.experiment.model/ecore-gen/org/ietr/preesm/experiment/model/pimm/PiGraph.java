@@ -173,12 +173,4 @@ public interface PiGraph extends AbstractActor {
    */
   Fifo lookupFifo(String fifoId);
 
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @model
-   * @generated
-   */
-  AbstractActor lookupActorFromPath(String actorPath);
-
 } // PiGraph

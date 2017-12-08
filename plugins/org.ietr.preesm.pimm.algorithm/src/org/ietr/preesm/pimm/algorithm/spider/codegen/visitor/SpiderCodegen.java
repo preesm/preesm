@@ -61,10 +61,10 @@ import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.util.ActorPath;
 import org.ietr.preesm.pimm.algorithm.SpiderMainFilePrinter;
 import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderNameGenerator;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SpiderCodegen.
  */
@@ -176,7 +176,7 @@ public class SpiderCodegen {
     this.constraints = new LinkedHashMap<>();
     for (final ConstraintGroup cg : this.scenario.getConstraintGroupManager().getConstraintGroups()) {
       for (final String actorPath : cg.getVertexPaths()) {
-        final AbstractActor aa = pg.lookupActorFromPath(actorPath);
+        final AbstractActor aa = ActorPath.lookup(pg, actorPath);
         if (this.constraints.get(aa) == null) {
           this.constraints.put(aa, new LinkedHashSet<String>());
         }
