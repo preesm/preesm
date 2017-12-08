@@ -29,6 +29,7 @@ public class PiGraphLookupTest {
     refinementGraph.setName("refinementGraph");
     final PiSDFRefinement pisdfRefinmentMock = Mockito.mock(PiSDFRefinementImpl.class);
     Mockito.when(pisdfRefinmentMock.getAbstractActor()).thenReturn(refinementGraph);
+    Mockito.when(pisdfRefinmentMock.isHierarchical()).thenReturn(true);
     actor2.setRefinement(pisdfRefinmentMock);
     final Actor actor3 = PiMMUserFactory.instance.createActor();
     actor3.setName("tutu");

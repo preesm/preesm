@@ -52,7 +52,6 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.ui.pimm.diagram.PiMMImageProvider;
 import org.ietr.preesm.ui.pimm.util.PortEqualityHelper;
 
@@ -146,29 +145,26 @@ public class ActorDecorators {
    * @return a reason stating if an update of the ports is needed
    */
   public static IReason portsUpdateNeeded(final Actor actor) {
-    final Refinement refinement = actor.getRefinement();
-    if (refinement != null) {
-      final AbstractActor vertex = refinement.getAbstractActor();
-      if (vertex != null) {
-        final Map<SimpleEntry<Port, Port>, IReason> m = PortEqualityHelper.buildEquivalentPortsMap(actor, vertex);
+    final AbstractActor vertex = actor.getChildAbstractActor();
+    if (vertex != null) {
+      final Map<SimpleEntry<Port, Port>, IReason> m = PortEqualityHelper.buildEquivalentPortsMap(actor, vertex);
 
-        String reasons = "";
-        for (final Entry<SimpleEntry<Port, Port>, IReason> e : m.entrySet()) {
-          if (!e.getValue().toBoolean()) {
-            if (e.getValue().getText().equals(PortEqualityHelper.NULL_PORT)) {
-              final Port actorPort = e.getKey().getKey();
-              final Port refinePort = e.getKey().getValue();
-              if (actorPort != null) {
-                reasons += "\nPort \"" + actorPort.getName() + "\" not present in refinement.";
-              } else {
-                reasons += "\nRefinement has an extra " + refinePort.getKind() + " port \"" + refinePort.getName() + "\".";
-              }
+      String reasons = "";
+      for (final Entry<SimpleEntry<Port, Port>, IReason> e : m.entrySet()) {
+        if (!e.getValue().toBoolean()) {
+          if (e.getValue().getText().equals(PortEqualityHelper.NULL_PORT)) {
+            final Port actorPort = e.getKey().getKey();
+            final Port refinePort = e.getKey().getValue();
+            if (actorPort != null) {
+              reasons += "\nPort \"" + actorPort.getName() + "\" not present in refinement.";
+            } else {
+              reasons += "\nRefinement has an extra " + refinePort.getKind() + " port \"" + refinePort.getName() + "\".";
             }
           }
         }
-        if (!reasons.equals("")) {
-          return Reason.createTrueReason("Ports are out of sync with the refinement." + reasons);
-        }
+      }
+      if (!reasons.equals("")) {
+        return Reason.createTrueReason("Ports are out of sync with the refinement." + reasons);
       }
     }
     return Reason.createFalseReason();

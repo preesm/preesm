@@ -71,7 +71,6 @@ import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 
 /**
@@ -148,25 +147,21 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
   public void visitActor(final Actor a) {
     // If the refinement of the Actor a points to the description of
     // PiGraph, visit it to connect the subgraph to its supergraph
-    final Refinement refinement = a.getRefinement();
-    if (refinement != null) {
-      final AbstractActor aa = refinement.getAbstractActor();
-      if ((aa != null) && (aa instanceof PiGraph)) {
-        final PiGraph innerGraph = (PiGraph) aa;
-        // Connect all Fifos and Dependencies incoming into a and outgoing
-        // from a in order to make them incoming into innerGraph and
-        // outgoing from innerGraph instead
-        SubgraphReconnector.reconnectPiGraph(a, innerGraph);
+    if (a.isHierarchical()) {
+      final PiGraph innerGraph = a.getSubGraph();
+      // Connect all Fifos and Dependencies incoming into a and outgoing
+      // from a in order to make them incoming into innerGraph and
+      // outgoing from innerGraph instead
+      SubgraphReconnector.reconnectPiGraph(a, innerGraph);
 
-        this.currentActor = innerGraph;
-        innerGraph.accept(this);
+      this.currentActor = innerGraph;
+      innerGraph.accept(this);
 
-        final ActorByGraphReplacement replacement = new ActorByGraphReplacement(a, innerGraph);
-        if (!this.graphReplacements.containsKey(this.currentGraph)) {
-          this.graphReplacements.put(this.currentGraph, new ArrayList<ActorByGraphReplacement>());
-        }
-        this.graphReplacements.get(this.currentGraph).add(replacement);
+      final ActorByGraphReplacement replacement = new ActorByGraphReplacement(a, innerGraph);
+      if (!this.graphReplacements.containsKey(this.currentGraph)) {
+        this.graphReplacements.put(this.currentGraph, new ArrayList<ActorByGraphReplacement>());
       }
+      this.graphReplacements.get(this.currentGraph).add(replacement);
     }
   }
 
