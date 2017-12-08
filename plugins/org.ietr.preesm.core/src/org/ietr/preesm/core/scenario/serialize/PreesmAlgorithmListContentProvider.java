@@ -114,7 +114,7 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
    * @return a set of Actors, with none of them being a hierarchical actor
    */
   private Set<AbstractActor> filterVertices(final EList<AbstractActor> vertices) {
-    return vertices.stream().filter(Actor.class::isInstance).filter(a -> !a.isHierarchical()).collect(Collectors.toSet());
+    return vertices.stream().filter(Actor.class::isInstance).map(Actor.class::cast).filter(a -> !a.isHierarchical()).collect(Collectors.toSet());
   }
 
   /**
