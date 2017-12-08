@@ -11,8 +11,6 @@ dist: trusty
 
 notifications:
   email:
-    recipients:
-      - preesm-devs@lists.sourceforge.net
     on_success: change
     on_failure: always
 
