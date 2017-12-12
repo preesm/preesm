@@ -34,12 +34,14 @@
  */
 package org.ietr.preesm.core.scenario.serialize;
 
+import org.ietr.dftools.workflow.WorkflowException;
+
 /**
  *
  * @author anmorvan
  *
  */
-public class ScenarioParserException extends RuntimeException {
+public class ScenarioParserException extends WorkflowException {
 
   public ScenarioParserException(final String string, final Exception e) {
     super(string, e);

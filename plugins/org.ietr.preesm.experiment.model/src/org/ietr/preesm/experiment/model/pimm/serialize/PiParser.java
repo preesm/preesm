@@ -54,6 +54,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.architecture.utils.DomUtil;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.ietr.preesm.experiment.model.PiGraphException;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
@@ -359,18 +360,18 @@ public class PiParser {
     final AbstractVertex source = graph.lookupVertex(setterName);
     AbstractVertex target = graph.lookupVertex(getterName);
     if (source == null) {
-      throw new RuntimeException("Dependency source vertex " + setterName + " does not exist.");
+      throw new PiGraphException("Dependency source vertex " + setterName + " does not exist.");
     }
     if (target == null) {
       // The target can also be a Delay associated to a Fifo
       final Fifo targetFifo = graph.lookupFifo(getterName);
 
       if (targetFifo == null) {
-        throw new RuntimeException("Dependency target " + getterName + " does not exist.");
+        throw new PiGraphException("Dependency target " + getterName + " does not exist.");
       }
 
       if (targetFifo.getDelay() == null) {
-        throw new RuntimeException("Dependency fifo target " + getterName + " has no delay to receive the dependency.");
+        throw new PiGraphException("Dependency fifo target " + getterName + " has no delay to receive the dependency.");
       } else {
         target = targetFifo.getDelay();
       }
@@ -383,7 +384,7 @@ public class PiParser {
       sourcePortName = (sourcePortName.isEmpty()) ? null : sourcePortName;
       final ConfigOutputPort oPort = (ConfigOutputPort) ((ExecutableActor) source).lookupPort(sourcePortName);
       if (oPort == null) {
-        throw new RuntimeException("Edge source port " + sourcePortName + " does not exist for vertex " + setterName);
+        throw new PiGraphException("Edge source port " + sourcePortName + " does not exist for vertex " + setterName);
       }
       dependency.setSetter(oPort);
     }
@@ -396,7 +397,7 @@ public class PiParser {
       targetPortName = (targetPortName.isEmpty()) ? null : targetPortName;
       final ConfigInputPort iPort = (ConfigInputPort) target.lookupPort(targetPortName);
       if (iPort == null) {
-        throw new RuntimeException("Dependency target port " + targetPortName + " does not exist for vertex " + getterName);
+        throw new PiGraphException("Dependency target port " + targetPortName + " does not exist for vertex " + getterName);
       }
       dependency.setGetter(iPort);
     }
@@ -408,7 +409,7 @@ public class PiParser {
     }
 
     if ((dependency.getGetter() == null) || (dependency.getSetter() == null)) {
-      throw new RuntimeException("There was a problem parsing the following dependency: " + setterName + "=>" + getterName);
+      throw new PiGraphException("There was a problem parsing the following dependency: " + setterName + "=>" + getterName);
     }
 
     // Add the new dependency to the graph
@@ -435,7 +436,7 @@ public class PiParser {
         parseDependencies(edgeElt, graph);
         break;
       default:
-        throw new RuntimeException("Parsed edge has an unknown kind: " + edgeKind);
+        throw new PiGraphException("Parsed edge has an unknown kind: " + edgeKind);
     }
   }
 
@@ -457,10 +458,10 @@ public class PiParser {
     final AbstractActor source = (AbstractActor) graph.lookupVertex(sourceName);
     final AbstractActor target = (AbstractActor) graph.lookupVertex(targetName);
     if (source == null) {
-      throw new RuntimeException("Edge source vertex " + sourceName + " does not exist.");
+      throw new PiGraphException("Edge source vertex " + sourceName + " does not exist.");
     }
     if (target == null) {
-      throw new RuntimeException("Edge target vertex " + sourceName + " does not exist.");
+      throw new PiGraphException("Edge target vertex " + sourceName + " does not exist.");
     }
     // Get the type
     String type = edgeElt.getAttribute(PiIdentifiers.FIFO_TYPE);
@@ -477,11 +478,11 @@ public class PiParser {
     final DataOutputPort oPort = (DataOutputPort) source.lookupPort(sourcePortName);
     final DataInputPort iPort = (DataInputPort) target.lookupPort(targetPortName);
 
-    if (iPort == null) {
-      throw new RuntimeException("Edge target port " + targetPortName + " does not exist for vertex " + targetName);
-    }
     if (oPort == null) {
-      throw new RuntimeException("Edge source port " + sourcePortName + " does not exist for vertex " + sourceName);
+      throw new PiGraphException("Edge source port " + sourcePortName + " does not exist for vertex " + sourceName);
+    }
+    if (iPort == null) {
+      throw new PiGraphException("Edge target port " + targetPortName + " does not exist for vertex " + targetName);
     }
 
     fifo.setSourcePort(oPort);
@@ -512,10 +513,10 @@ public class PiParser {
     // Retrieve the Graph Element
     final NodeList graphElts = rootElt.getElementsByTagName(PiIdentifiers.GRAPH);
     if (graphElts.getLength() == 0) {
-      throw new RuntimeException("No graph was found in the parsed document");
+      throw new PiGraphException("No graph was found in the parsed document");
     }
     if (graphElts.getLength() > 1) {
-      throw new RuntimeException("More than one graph was found in the parsed document");
+      throw new PiGraphException("More than one graph was found in the parsed document");
     }
     // If this code is reached, a unique graph element was found in the
     // document
@@ -585,7 +586,7 @@ public class PiParser {
           break;
 
         default:
-          throw new RuntimeException("Parsed node " + nodeElt.getNodeName() + " has an unknown kind: " + nodeKind);
+          throw new PiGraphException("Parsed node " + nodeElt.getNodeName() + " has an unknown kind: " + nodeKind);
       }
     } else {
       switch (nodeKind) {
@@ -602,7 +603,7 @@ public class PiParser {
           vertex = parseParameter(nodeElt, graph);
           break;
         default:
-          throw new RuntimeException("Parsed node " + nodeElt.getNodeName() + " has an unknown kind: " + nodeKind);
+          throw new PiGraphException("Parsed node " + nodeElt.getNodeName() + " has an unknown kind: " + nodeKind);
       }
     }
 
@@ -678,7 +679,7 @@ public class PiParser {
       case DATA_INPUT:
         // Throw an error if the parsed vertex is not an actor
         if (!(vertex instanceof AbstractActor)) {
-          throw new RuntimeException("Parsed data port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
+          throw new PiGraphException("Parsed data port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
         }
 
         DataInputPort iPort;
@@ -698,7 +699,7 @@ public class PiParser {
       case DATA_OUTPUT:
         // Throw an error if the parsed vertex is not an actor
         if (!(vertex instanceof AbstractActor)) {
-          throw new RuntimeException("Parsed data port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
+          throw new PiGraphException("Parsed data port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
         }
 
         DataOutputPort oPort;
@@ -725,14 +726,14 @@ public class PiParser {
       case CFG_OUTPUT:
         // Throw an error if the parsed vertex is not an actor
         if (!(vertex instanceof AbstractActor)) {
-          throw new RuntimeException("Parsed config. port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
+          throw new PiGraphException("Parsed config. port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
         }
         final ConfigOutputPort oCfgPort = PiMMUserFactory.instance.createConfigOutputPort();
         oCfgPort.setName(portName);
         ((AbstractActor) vertex).getConfigOutputPorts().add(oCfgPort);
         break;
       default:
-        throw new RuntimeException("Parsed port " + portName + " has children of unknown kind: " + portKind);
+        throw new PiGraphException("Parsed port " + portName + " has children of unknown kind: " + portKind);
     }
   }
 
