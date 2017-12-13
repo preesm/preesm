@@ -53,26 +53,28 @@ function fixFile {
 			;;
 	esac
 	
-    FILEAUTHORLIST=`git log --follow --use-mailmap --date=format:'%Y' --format='%aE' "$file" | sort -u`
-    for AUTHOR in $FILEAUTHORLIST; do 
-		AUTHORUPPERDATE=`git log --follow --use-mailmap --date=format:'%Y' --format='%ad %aE' "$file" | sort -u | grep $AUTHOR | tail -n 1 | cut -d' ' -f1`
-		AUTHORLOWERDATE=`git log --follow --use-mailmap --date=format:'%Y' --format='%ad %aE' "$file" | sort -u | grep $AUTHOR | head -n 1 | cut -d' ' -f1`
+	FILEAUTHORLISTWITHDATES=`git log --follow --use-mailmap --date=format:'%Y' --format='%ad %aN <%aE>' "$file" | sort -u`
+    FILEAUTHORLIST=`echo "$FILEAUTHORLISTWITHDATES" | rev | cut -d' ' -f1 | rev | sort -u`
+    for AUTHOR in $FILEAUTHORLIST; do
+		AUTHORDATELIST=`echo "$FILEAUTHORLISTWITHDATES" | grep "$AUTHOR" | cut -d' ' -f1 | sort -u`
+		AUTHORUPPERDATE=`echo "$AUTHORDATELIST" | tail -n 1`
+		AUTHORLOWERDATE=`echo "$AUTHORDATELIST" | head -n 1`
 		if [ "$AUTHORLOWERDATE" == "$AUTHORUPPERDATE" ]; then
 			AUTHORDATE="($AUTHORLOWERDATE)"
 		else
 			AUTHORDATE="($AUTHORLOWERDATE - $AUTHORUPPERDATE)"
 		fi
 		
-		LINE=`git log --follow --use-mailmap --date=format:'%Y' --format='%aN <%aE>' "$file" | sort -u | grep $AUTHOR`
+		LINE=`echo "$FILEAUTHORLISTWITHDATES" | grep "$AUTHOR" | cut -d' ' -f2- | sort -u`
 		sed -i -e "s/$AUTHORSPATTERN/${LINE} ${AUTHORDATE}\n$COMMENT$AUTHORSPATTERN/g" "$file"
     done
     
 	TMPFILE2=`mktemp --suffix=tosed`
 	cat "$file" | grep -v "$AUTHORSPATTERN" > $TMPFILE2
 	
-	
-    LOWDATE=`git log --follow --date=format:'%Y' --format='%ad' "$file" | sort -u | head -n 1`
-    UPPDATE=`git log --follow --date=format:'%Y' --format='%ad' "$file" | sort -u | tail -n 1`
+	DATELIST=`echo "$FILEAUTHORLISTWITHDATES" | cut -d' ' -f1 | sort -u`
+    LOWDATE=`echo "$DATELIST" | head -n 1`
+    UPPDATE=`echo "$DATELIST" | tail -n 1`
 	
 	if [ "$LOWDATE" == "$UPPDATE" ]; then
 		GLOBDATE="$LOWDATE"
