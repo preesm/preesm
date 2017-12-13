@@ -86,30 +86,43 @@ function fixFile {
     rm $TMPFILE2
 }
 
+# from https://github.com/fearside/ProgressBar/
+function ProgressBar {
+    let _progress=(${1}*100/${2}*100)/100
+    let _done=(${_progress}*5)/10
+    let _left=50-$_done
+    _fill=$(printf "%${_done}s")
+    _empty=$(printf "%${_left}s")
+	printf "\rProgress : [${_fill// /#}${_empty// /-}] ${_progress}%%"
+}
+
 DATEPATTERN="%%DATE%%"
 AUTHORSPATTERN="%%AUTHORS%%"
 
 TMPFILE=`mktemp --suffix=biglisttosed`
 grep "%%AUTHORS%%" -R | cut -d':' -f1 | sort -u | grep -v "copyright_template.txt" | grep -v "fix_header_copyright_and_authors.sh" | grep -v "VAADER_eclipse_preferences.epf" | grep -v "README" > $TMPFILE
 
+echo ""
+echo " Header template applied."
+echo " Replacing author and date patterns using git log data..."
+echo ""
+
 NBFILES=`cat $TMPFILE | wc -l`
-
-echo " Starting (#files = $NBFILES)"
-
+NBFILESPROCESSED=0
 time (
 NBCPUS=`grep -c ^processor /proc/cpuinfo`
 ((NBTHREADS=NBCPUS*2))
-
 while read -r line
 do
-  MOD=$((NBFILES % NBTHREADS))
-  [ $MOD -eq 0 ] && echo "    $NBFILES left ..." && wait
-  NBFILES=$((NBFILES-1))
+  MOD=$((NBFILESPROCESSED % NBTHREADS))
+  [ $MOD -eq 0 ] && ProgressBar ${NBFILESPROCESSED} ${NBFILES} && wait
+  NBFILESPROCESSED=$((NBFILESPROCESSED+1))
   fixFile "$line" &
 done < $TMPFILE
+ProgressBar $((NBFILES-1)) ${NBFILES}
+echo " Done."
 wait
 )
 rm $TMPFILE
 
-echo " Done."
 echo ""
