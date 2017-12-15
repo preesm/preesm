@@ -1,0 +1,64 @@
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>org.preesm.test.ui</artifactId>
+	<packaging>rcpttTest</packaging>
+
+	<parent>
+		<groupId>org.ietr.preesm</groupId>
+		<artifactId>org.ietr.preesm.test</artifactId>
+		<version>2.5.4-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
+  
+  <dependencies>
+    <!--
+      Have the dependency to make sure the product is built before
+      running the test, but as a 'pom' type and not 'eclipse-repository'
+      to not have dependency resolution issues when invoking maven with
+      goal prior to package.
+    -->
+    <dependency>
+      <groupId>org.ietr.preesm</groupId>
+      <artifactId>org.ietr.preesm.product</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
+    <!-- for safe go-offline execution -->
+    <dependency>
+      <groupId>org.jacoco</groupId>
+      <artifactId>jacoco-maven-plugin</artifactId>
+      <version>${jacoco-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.rcptt.runner</groupId>
+      <artifactId>rcptt.runner</artifactId>
+      <version>${rcptt-maven-version}</version>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.rcptt</groupId>
+        <artifactId>rcptt-maven-plugin</artifactId>
+        <version>${rcptt-maven-version}</version>
+        <extensions>true</extensions>
+        <configuration>
+          <runner>
+            <version>${rcptt-maven-version}</version>
+          </runner>
+          <!-- The main configuration section goes here -->
+          <aut>
+            <groupId>org.ietr.preesm</groupId>
+            <artifactId>org.ietr.preesm.product</artifactId>
+            <version>${project.version}</version>
+            <vmArgs>
+              <vmArg>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco-version}/org.jacoco.agent-${jacoco-version}-runtime.jar=destfile=${project.basedir}/${sonar.jacoco.reportPaths},append=true,excludes=**/tests/**:**/test-fragments/**:**/releng/**</vmArg>
+            </vmArgs>
+          </aut>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -40,14 +40,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.ietr.preesm.test</artifactId>
 	<packaging>pom</packaging>
-	
+
 	<parent>
 		<groupId>org.ietr.preesm</groupId>
 		<artifactId>org.ietr.preesm.parent</artifactId>
 		<version>2.5.4-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -61,8 +61,10 @@
 			</plugin>
 		</plugins>
 	</build>
+
 	<modules>
 		<module>org.ietr.preesm.test.it</module>
+		<module>org.preesm.test.ui</module>
 	</modules>
 
 </project>

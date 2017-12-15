@@ -5,6 +5,7 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* Add UI Testing via RCPTT;
 
 ### Changes
 * update release script;
