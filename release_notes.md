@@ -7,7 +7,8 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
-* update release script
+* update release script;
+* disable javadoc generation (source is available via the Dev Features and source plugins);
 
 ### Bug fix
 
