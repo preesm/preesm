@@ -4,6 +4,9 @@
 DEV_BRANCH=develop
 MAIN_BRANCH=master
 
+CURRENT_VERSION=`mvn -B -Dtycho.mode=maven help:evaluate -Dexpression=project.version | grep -v 'INFO'`
+[ "$#" -ne "1" ] && echo -e "usage: $0 <new version>\nNote: current version = ${CURRENT_VERSION}" && exit 1
+
 # First check access on git (will exit on error)
 echo "Testing Github permission"
 git ls-remote git@github.com:preesm/preesm.git > /dev/null
@@ -62,8 +65,6 @@ echo "Testing SourceForge permission using Maven Sftp plugin"
 (cd $TMPDIR && mvn -q verify)
 rm -rf $TMPDIR
 
-### Commands
-[ "$#" -ne "1" ] && echo "usage: $0 <new version>" && exit 1
 
 #warning
 echo "Warning: this script will delete ignored files and remove all changes in $DEV_BRANCH and $MAIN_BRANCH"
@@ -86,7 +87,7 @@ git checkout $DEV_BRANCH
 git reset --hard
 git clean -xdf
 
-#update version in code and stash
+#update version in code and stash changes
 ./releng/update-version.sh $NEW_VERSION
 sed -i -e "s/X\.Y\.Z/$NEW_VERSION/g" release_notes.md
 sed -i -e "s/XXXX\.XX\.XX/$TODAY_DATE/g" release_notes.md
@@ -94,21 +95,18 @@ git stash
 
 # Fix headers
 ./releng/fix_header_copyright_and_authors.sh
-
-# make sure integration works before deploying and pushing
-git stash apply
-./releng/build_and_test.sh
-
 # commit fixed headers (if any)
-git reset --hard
 NBCHANGES=`git status --porcelain | wc -l`
 if [ $NBCHANGES -ne 0 ]; then
   git add -A
   git commit -m "[RELENG] Fix headers"
 fi
 
-# pop version update
-git stash pop
+# make sure integration works before deploying and pushing
+git stash apply
+./releng/build_and_test.sh
+
+#commit new version in develop
 git add -A
 git commit -m "[RELENG] Prepare version $NEW_VERSION"
 
@@ -139,10 +137,13 @@ cat tmp >> release_notes.md
 rm tmp
 git add -A
 git commit -m "[RELENG] Move to snapshot version"
-git push
 
-#deploy and push master (that is new version)
-git checkout master
+#deploy from master
+git checkout $MAIN_BRANCH
+./releng/deploy.sh
+
+#push if everything went fine
 git push
 git push --tags
-./releng/deploy.sh
+git checkout $DEV_BRANCH
+git push

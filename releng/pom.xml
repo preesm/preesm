@@ -80,12 +80,18 @@
   </repositories>
 
   <modules>
-    <module>org.ietr.preesm.complete.site</module>
-
     <module>org.ietr.preesm.rcp.utils</module>
     <module>org.ietr.preesm.feature</module>
-    <module>org.ietr.preesm.dev.feature</module>
     <module>org.ietr.preesm.product</module>
   </modules>
 
+  <profiles>
+    <profile>
+      <id>doUpdateSite</id>
+      <modules>
+        <module>org.ietr.preesm.dev.feature</module>
+        <module>org.ietr.preesm.complete.site</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>
