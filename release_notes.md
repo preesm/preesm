@@ -11,6 +11,7 @@ PREESM Changelog
 * disable javadoc generation (source is available via the Dev Features and source plugins);
 
 ### Bug fix
+* fix issue #51
 
 
 ## Release version 2.5.4

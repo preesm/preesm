@@ -245,7 +245,7 @@ public class OverviewPage extends FormPage {
     final String textFieldContent = text.getText();
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
     final IWorkspaceRoot root = workspace.getRoot();
-    final IResource findMember = root.findMember(Path.fromPortableString(textFieldContent));
+    final IResource findMember = root.findMember(Path.fromOSString(textFieldContent));
     if (findMember == null) {
       text.setBackground(new Color(null, 240, 150, 150));
     } else {
