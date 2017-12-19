@@ -11,6 +11,7 @@ PREESM Changelog
 * Update maven dependency plugin to 3.0.2;
 * Rename releng profile to doUpdateSite and impact release scripts;
 * disable javadoc generation (source is available via the Dev Features and source plugins);
+* disable os specific archive format;
 
 ### Bug fix
 * fix issue #51
