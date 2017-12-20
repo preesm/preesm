@@ -14,6 +14,8 @@ PREESM Changelog
 * disable javadoc generation (source is available via the Dev Features and source plugins);
 * disable os specific archive format;
 * Add dependency to RCPTT in the dev feature;
+* Refactor the PiMM Model
+* Remove Multi* Tasks
 
 ### Bug fix
 * fix issue #51
@@ -31,8 +33,6 @@ PREESM Changelog
 * Refactor code generation;
 * Make scenario, architecture and algorithm visible from the codegen printers;
 * Fix autolayout;
-* Refactor the PiMM Model
-* Remove Multi* Tasks
 
 ### Bug fix
 * Force DFTools to version 1.2.7+ (fix issue #50);
