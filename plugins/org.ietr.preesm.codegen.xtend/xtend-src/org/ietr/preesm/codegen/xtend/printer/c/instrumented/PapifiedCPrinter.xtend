@@ -239,12 +239,12 @@ class PapifiedCPrinter extends CPrinter {
 		«IF state == PrinterState::PRINTING_LOOP_BLOCK && functionCall.parameters.get(functionCall.parameters.length-1).name.equals("Papified")»
 
 			// Monitoring Start for «functionCall.actorName»
-			event_start_PAPI_timing(PAPI_actions_«functionCall.actorName»);
 			event_start(PAPI_actions_«functionCall.actorName», 0);
+			event_start_PAPI_timing(PAPI_actions_«functionCall.actorName»);
 			«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-1) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 			// Monitoring Stop for «functionCall.actorName»
-			event_stop(PAPI_actions_«functionCall.actorName», 0);
 			event_stop_PAPI_timing(PAPI_actions_«functionCall.actorName»);
+			event_stop(PAPI_actions_«functionCall.actorName», 0);
 			event_write_file(PAPI_actions_«functionCall.actorName»);
 		«ELSE»
 			«super.printFunctionCall(functionCall)»
