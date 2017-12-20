@@ -228,6 +228,7 @@ class PapifiedCPrinter extends CPrinter {
 					}
 				}
 			}
+			papifying = false;
 		}
 		
 		super.preProcessing(printerBlocks, allBlocks)
