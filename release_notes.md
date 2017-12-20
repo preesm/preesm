@@ -12,6 +12,7 @@ PREESM Changelog
 * Rename releng profile to doUpdateSite and impact release scripts;
 * disable javadoc generation (source is available via the Dev Features and source plugins);
 * disable os specific archive format;
+* Add dependency to RCPTT in the dev feature;
 
 ### Bug fix
 * fix issue #51

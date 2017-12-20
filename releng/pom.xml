@@ -52,6 +52,12 @@
   <!-- Extra repositories for building the all-in-one dev feature -->
   <repositories>
     <repository>
+      <id>RCPTT</id>
+      <layout>p2</layout>
+      <url>http://download.eclipse.org/rcptt/release/2.2.0/repository/</url>
+    </repository>
+
+    <repository>
       <id>Checkstyle</id>
       <layout>p2</layout>
       <url>http://eclipse-cs.sf.net/update/</url>
