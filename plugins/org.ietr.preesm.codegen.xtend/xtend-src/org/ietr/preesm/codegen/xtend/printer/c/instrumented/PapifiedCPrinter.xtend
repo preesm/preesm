@@ -74,13 +74,12 @@ class PapifiedCPrinter extends CPrinter {
 	 */
 		String actor_name = "actor_name_";
 		String PAPI_actions = "PAPI_actions_";
-		String PAPI_output = "PAPI_output_";
-		String PAPI_eventCodeSet = "PAPI_eventCodeSet_";
-		String PAPI_eventSet = "PAPI_eventSet_";
 				
 		int instance;
 		var int code_set_size;
 		var String all_event_names;
+		var String timing_active;
+		var boolean papifying = false;
 
 	/**
 	 * Add a required library for PAPI utilization
@@ -139,18 +138,24 @@ class PapifiedCPrinter extends CPrinter {
 			pe = compInstances.get(instance);
 			
 			all_event_names = org.ietr.preesm.core.architecture.util.DesignTools.getParameter(pe, "PAPI_AVAIL_EVENTS");
+			timing_active = org.ietr.preesm.core.architecture.util.DesignTools.getParameter(pe, "PAPI_TIMING");
 			
 			//println(all_event_names.toString);
 			//println("Analyzing = " + pe.instanceName);
-						
+			
 			if(all_event_names !== null && all_event_names != ""){	
 				
-				println(all_event_names.toString);
+				//println(all_event_names.toString);
 				event_names = all_event_names.split(",");		
 				
-				println(event_names.toString);	
+				//println(event_names.toString);	
 				code_set_size = event_names.length;
-												
+				papifying = true;
+			}else if(timing_active == "1"){
+				code_set_size = 0;
+				papifying = true;
+			}
+			if(papifying == true){									
 				for(CodeElt elts : (block as CoreBlock).loopBlock.codeElts){	
 					//For all the FunctionCalls within the main code loop
 					if(elts.eClass.name.equals("FunctionCall")){
@@ -210,8 +215,13 @@ class PapifiedCPrinter extends CPrinter {
 							var const = CodegenFactory.eINSTANCE.createConstant
 							const.comment = "Actor to be papified"
 							const.name = "Papified"
-							const.type = "boolean"
-							const.value = 1
+							if(code_set_size == 0){
+								const.type = "int"						
+							}
+							else{
+							 	const.type = "boolean"							
+							}
+							const.value = 1		
 							const
 						})
 						(elts as FunctionCall).addParameter(block.definitions.get(block.definitions.length-1), PortDirection.NONE);
@@ -237,15 +247,23 @@ class PapifiedCPrinter extends CPrinter {
 	 */
 	override printFunctionCall(FunctionCall functionCall) '''
 		«IF state == PrinterState::PRINTING_LOOP_BLOCK && functionCall.parameters.get(functionCall.parameters.length-1).name.equals("Papified")»
-
-			// Monitoring Start for «functionCall.actorName»
-			event_start(PAPI_actions_«functionCall.actorName», 0);
-			event_start_PAPI_timing(PAPI_actions_«functionCall.actorName»);
-			«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-1) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
-			// Monitoring Stop for «functionCall.actorName»
-			event_stop_PAPI_timing(PAPI_actions_«functionCall.actorName»);
-			event_stop(PAPI_actions_«functionCall.actorName», 0);
-			event_write_file(PAPI_actions_«functionCall.actorName»);
+			«IF functionCall.parameters.get(functionCall.parameters.length-1).type == "int"»
+				// Monitoring Start for «functionCall.actorName»
+				event_start_PAPI_timing(PAPI_actions_«functionCall.actorName»);
+				«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-1) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
+				// Monitoring Stop for «functionCall.actorName»
+				event_stop_PAPI_timing(PAPI_actions_«functionCall.actorName»);
+				event_write_file(PAPI_actions_«functionCall.actorName»);
+			«ELSE»
+				// Monitoring Start for «functionCall.actorName»
+				event_start(PAPI_actions_«functionCall.actorName», 0);
+				event_start_PAPI_timing(PAPI_actions_«functionCall.actorName»);
+				«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-1) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
+				// Monitoring Stop for «functionCall.actorName»
+				event_stop_PAPI_timing(PAPI_actions_«functionCall.actorName»);
+				event_stop(PAPI_actions_«functionCall.actorName», 0);
+				event_write_file(PAPI_actions_«functionCall.actorName»);
+			«ENDIF»
 		«ELSE»
 			«super.printFunctionCall(functionCall)»
 		«ENDIF»
