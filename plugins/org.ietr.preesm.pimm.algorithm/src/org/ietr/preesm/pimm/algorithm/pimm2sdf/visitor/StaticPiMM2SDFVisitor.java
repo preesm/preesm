@@ -88,7 +88,7 @@ public class StaticPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
       parameters2GraphVariables(pg, this.result);
 
       // Visit each of the vertices of pg with the values set
-      for (final AbstractActor aa : pg.getVertices()) {
+      for (final AbstractActor aa : pg.getActors()) {
         aa.accept(this);
       }
       // And each of the data edges of pg with the values set
@@ -108,7 +108,7 @@ public class StaticPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
       // Handle vertex's name
       v.setName(pg.getName());
       // Handle vertex's path inside the graph hierarchy
-      v.setInfo(pg.getPath());
+      v.setInfo(pg.getActorPath());
       // Handle ID
       v.setId(pg.getName());
 
@@ -116,7 +116,7 @@ public class StaticPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
 
       // Visit the subgraph
       final StaticPiMM2SDFVisitor innerVisitor = new StaticPiMM2SDFVisitor(this.execution);
-      innerVisitor.visit(pg);
+      pg.accept(innerVisitor);
       // Set the obtained SDFGraph as refinement for v
       final SDFGraph sdf = innerVisitor.getResult();
       sdf.setName(sdf.getName() + this.execution.getExecutionLabel());

@@ -19,5 +19,4 @@ Export-Package: org.ietr.preesm.memory.allocation,
  org.ietr.preesm.memory.bounds,
  org.ietr.preesm.memory.distributed,
  org.ietr.preesm.memory.exclusiongraph,
- org.ietr.preesm.memory.multiSDFTasks,
  org.ietr.preesm.memory.script

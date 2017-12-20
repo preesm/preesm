@@ -41,6 +41,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.TreeIterator;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IDoubleClickContext;
@@ -51,10 +54,12 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.PictogramLink;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.tb.DefaultToolBehaviorProvider;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
@@ -104,10 +109,53 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
     this.decoratorAdapter = new PiMMDecoratorAdapter(diagramTypeProvider);
 
     final IFeatureProvider featureProvider = getFeatureProvider();
-    final Diagram diagram = featureProvider.getDiagramTypeProvider().getDiagram();
+    final Diagram diagram = diagramTypeProvider.getDiagram();
+
+    checkVersion(diagramTypeProvider);
+
     final PiGraph piGraph = (PiGraph) featureProvider.getBusinessObjectForPictogramElement(diagram);
     if (!piGraph.eAdapters().contains(this.decoratorAdapter)) {
       piGraph.eAdapters().add(this.decoratorAdapter);
+    }
+  }
+
+  private void checkVersion(IDiagramTypeProvider diagramTypeProvider) {
+
+    final Diagram diagram = diagramTypeProvider.getDiagram();
+    final TreeIterator<EObject> eAllContents = diagram.eAllContents();
+    while (eAllContents.hasNext()) {
+      EObject child = eAllContents.next();
+      if (child instanceof PictogramElement) {
+        PictogramElement node = (PictogramElement) child;
+        final PictogramLink link = node.getLink();
+        if (link != null) {
+          final EList<EObject> businessObjects = link.getBusinessObjects();
+          for (EObject bo : businessObjects) {
+            final boolean eIsProxy = bo.eIsProxy();
+            if (eIsProxy) {
+              final String title = "Warning: the diagram is linked to an old version of the PiSDF meta-model";
+              final StringBuilder sb = new StringBuilder();
+              sb.append("We found business objects in the diagram that are no longer part of the PiSDF format. ");
+              sb.append("That means the links from the diagram file to the PiSDF file are obsolete. ");
+              sb.append("This can cause issues when exploring or manipulating the application specification. ");
+              sb.append("\n\n");
+              sb.append("For this reason, editing this graph is disabled.");
+              sb.append("\n\n");
+              sb.append("This can be fixed by generating a new diagram file from the pi file (note that the layout will be recomputed). ");
+              sb.append("To do so, right click on the pi file, then on \"Preem / Generate .diagram\".");
+
+              MessageDialog.openWarning(null, title, sb.toString());
+
+              final IFeatureProvider featureProvider = diagramTypeProvider.getFeatureProvider();
+              if (featureProvider instanceof PiMMFeatureProvider) {
+                final PiMMFeatureProvider pfp = (PiMMFeatureProvider) featureProvider;
+                pfp.setEditable(false);
+              }
+              return;
+            }
+          }
+        }
+      }
     }
   }
 

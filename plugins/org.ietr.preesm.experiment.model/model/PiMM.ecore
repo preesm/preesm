@@ -1,60 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
-
-    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
-    Clément Guy <clement.guy@insa-rennes.fr> (2014)
-    Julien Heulot <julien.heulot@insa-rennes.fr> (2013 - 2014)
-    Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
-    Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2013)
-    Romina Racca <romina.racca@gmail.com> (2013)
-
-    This software is a computer program whose purpose is to help prototyping
-    parallel applications using dataflow formalism.
-
-    This software is governed by the CeCILL  license under French law and
-    abiding by the rules of distribution of free software.  You can  use,
-    modify and/ or redistribute the software under the terms of the CeCILL
-    license as circulated by CEA, CNRS and INRIA at the following URL
-    "http://www.cecill.info".
-
-    As a counterpart to the access to the source code and  rights to copy,
-    modify and redistribute granted by the license, users are provided only
-    with a limited warranty  and the software's author,  the holder of the
-    economic rights,  and the successive licensors  have only  limited
-    liability.
-
-    In this respect, the user's attention is drawn to the risks associated
-    with loading,  using,  modifying and/or developing or reproducing the
-    software by the user in light of its specific status of free software,
-    that may mean  that it is complicated to manipulate,  and  that  also
-    therefore means  that it is reserved for developers  and  experienced
-    professionals having in-depth computer knowledge. Users are therefore
-    encouraged to load and test the software's suitability as regards their
-    requirements in conditions enabling the security of their systems and/or
-    data to be ensured and,  more generally, to use and operate it in the
-    same conditions as regards security.
-
-    The fact that you are presently reading this means that you have had
-    knowledge of the CeCILL license and that you accept its terms.
-
--->
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="pimm" nsURI="http://org.ietr.preesm/experiment/model/pimm" nsPrefix="org.ietr.preesm.experiment.pimm">
-  <eClassifiers xsi:type="ecore:EClass" name="Parameterizable" abstract="true" eSuperTypes="#//visitor/PiMMVisitable">
+  <eClassifiers xsi:type="ecore:EClass" name="Parameterizable" abstract="true" interface="true"
+      eSuperTypes="#//visitor/PiMMVisitable">
+    <eOperations name="getInputParameters" upperBound="-1" eType="#//Parameter"/>
+    <eOperations name="isLocallyStatic" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="// a Parameterizable is static if all its parameters are static (or it has no parameter)&#xA;return getInputParameters().stream().filter(Objects::nonNull).allMatch(Parameter::isLocallyStatic);"/>
+      </eAnnotations>
+    </eOperations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AbstractVertex" abstract="true" eSuperTypes="#//visitor/PiMMVisitable">
+    <eOperations name="getAllPorts" upperBound="-1" eType="#//Port">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="final BasicEList&lt;Port> result = ECollections.newBasicEList();&#xA;return ECollections.unmodifiableEList(result);"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="lookupPort" eType="#//Port">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return getAllPorts().stream().filter(Objects::nonNull).filter(p -> (p.getName() == null) &amp;&amp; (portName == null) || (p.getName() != null) &amp;&amp; p.getName().equals(portName)).findFirst().orElse(null);"/>
+      </eAnnotations>
+      <eParameters name="portName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Configurable" abstract="true" eSuperTypes="#//AbstractVertex #//Parameterizable">
     <eOperations name="getInputParameters" upperBound="-1" eType="#//Parameter">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="body" value="final EList&lt;Parameter> result = ECollections.newBasicEList();&#xA;for (final ConfigInputPort in : getConfigInputPorts()) {&#xA;  final ISetter setter = in.getIncomingDependency().getSetter();&#xA;  if (setter instanceof Parameter) {&#xA;&#x9;result.add((Parameter) setter);&#xA;  }&#xA;}&#xA;return result;"/>
+        <details key="body" value="final List&lt;Parameter> collect = getConfigInputPorts().stream().filter(Objects::nonNull).map(ConfigInputPort::getIncomingDependency).filter(Objects::nonNull).map(Dependency::getSetter).filter(Objects::nonNull).filter(Parameter.class::isInstance).map(Parameter.class::cast).collect(Collectors.toList());&#xA;return ECollections.unmodifiableEList(collect);"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="lookupPortConnectedWithParameter" eType="#//Port">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return getConfigInputPorts().stream().filter(Objects::nonNull).map(ConfigInputPort::getIncomingDependency).filter(Objects::nonNull).filter(it -> it.getSetter() == parameter).findFirst().map(Dependency::getGetter).orElse(null);"/>
+      </eAnnotations>
+      <eParameters name="parameter" eType="#//Parameter"/>
+    </eOperations>
+    <eOperations name="getAllConfigPorts" upperBound="-1" eType="#//Port">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="final BasicEList&lt;Port> result = ECollections.newBasicEList();&#xA;result.addAll(getConfigInputPorts());&#xA;return ECollections.unmodifiableEList(result);"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="getAllPorts" upperBound="-1" eType="#//Port">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="final BasicEList&lt;Port> result = ECollections.newBasicEList();&#xA;result.addAll(super.getAllPorts());&#xA;result.addAll(getAllConfigPorts());&#xA;return ECollections.unmodifiableEList(result);"/>
       </eAnnotations>
     </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="configInputPorts" upperBound="-1"
-        eType="#//ConfigInputPort" containment="true"/>
+        eType="#//ConfigInputPort" containment="true" eOpposite="#//ConfigInputPort/configurable"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="AbstractVertex" abstract="true" eSuperTypes="#//Parameterizable">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="AbstractActor" abstract="true" eSuperTypes="#//AbstractVertex">
+  <eClassifiers xsi:type="ecore:EClass" name="AbstractActor" abstract="true" eSuperTypes="#//Configurable">
     <eOperations name="getAllDataPorts" upperBound="-1" eType="#//DataPort">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
         <details key="body" value="final BasicEList&lt;DataPort> result = ECollections.newBasicEList();&#xA;result.addAll(getDataInputPorts());&#xA;result.addAll(getDataOutputPorts());&#xA;return ECollections.unmodifiableEList(result);"/>
@@ -62,12 +57,17 @@
     </eOperations>
     <eOperations name="getAllConfigPorts" upperBound="-1" eType="#//Port">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="body" value="final BasicEList&lt;Port> result = ECollections.newBasicEList();&#xA;result.addAll(getConfigOutputPorts());&#xA;result.addAll(getConfigInputPorts());&#xA;return ECollections.unmodifiableEList(result);"/>
+        <details key="body" value="final BasicEList&lt;Port> result = ECollections.newBasicEList();&#xA;result.addAll(super.getAllConfigPorts());&#xA;result.addAll(getConfigOutputPorts());&#xA;return ECollections.unmodifiableEList(result);"/>
       </eAnnotations>
     </eOperations>
     <eOperations name="getAllPorts" upperBound="-1" eType="#//Port">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
         <details key="body" value="final BasicEList&lt;Port> result = ECollections.newBasicEList();&#xA;result.addAll(getAllConfigPorts());&#xA;result.addAll(getAllDataPorts());&#xA;return ECollections.unmodifiableEList(result);"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="getActorPath" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="if (getContainingGraph() != null) {&#xA;  return getContainingGraph().getActorPath() + &quot;/&quot; + getName();&#xA;}&#xA;return getName();"/>
       </eAnnotations>
     </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dataInputPorts" upperBound="-1"
@@ -76,105 +76,249 @@
         eType="#//DataOutputPort" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="configOutputPorts" upperBound="-1"
         eType="#//ConfigOutputPort" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="containingGraph" eType="#//PiGraph"
+        eOpposite="#//PiGraph/actors"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="PiGraph" eSuperTypes="#//AbstractActor">
-    <eOperations name="getVerticesNames" upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+    <eOperations name="getActorsNames" upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="body" value="return ECollections.newBasicEList(getVertices().stream().map(AbstractActor::getName).collect(Collectors.toList()));"/>
+        <details key="body" value="return ECollections.unmodifiableEList(getActors().stream().map(AbstractActor::getName).collect(Collectors.toList()));"/>
       </eAnnotations>
     </eOperations>
     <eOperations name="getParametersNames" upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="body" value="return ECollections.newBasicEList(getParameters().stream().map(Parameter::getName).collect(Collectors.toList()));"/>
+        <details key="body" value="return ECollections.unmodifiableEList(getParameters().stream().map(Parameter::getName).collect(Collectors.toList()));"/>
       </eAnnotations>
     </eOperations>
-    <eOperations name="getActors" upperBound="-1" eType="#//Actor">
+    <eOperations name="getActorsWithRefinement" upperBound="-1" eType="#//Actor">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="body" value="return ECollections.newBasicEList(getVertices().stream().filter(Actor.class::isInstance).map(Actor.class::cast).collect(Collectors.toList()));"/>
+        <details key="body" value="return ECollections.unmodifiableEList(getActors().stream().filter(Actor.class::isInstance).map(Actor.class::cast).collect(Collectors.toList()));"/>
       </eAnnotations>
     </eOperations>
     <eOperations name="getAllParameters" upperBound="-1" eType="#//Parameter">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="body" value="final EList&lt;Parameter> result = ECollections.newBasicEList();&#xA;for (final AbstractActor aa : getVertices()) {&#xA;  if (aa instanceof PiGraph) {&#xA;    result.addAll(((PiGraph) aa).getAllParameters());&#xA;  } else if (aa instanceof Actor) {&#xA;    final Refinement refinement = ((Actor) aa).getRefinement();&#xA;    if (refinement != null) {&#xA;      final AbstractActor subGraph = refinement.getAbstractActor();&#xA;      if ((subGraph != null) &amp;&amp; (subGraph instanceof PiGraph)) {&#xA;        result.addAll(((PiGraph) subGraph).getAllParameters());&#xA;      }&#xA;    }&#xA;  }&#xA;}&#xA;result.addAll(getParameters());&#xA;return result;"/>
+        <details key="body" value="final Stream&lt;Parameter> currentGraphParameters = getParameters().stream();&#xA;final Stream&lt;Parameter> childrenGraphsParameters = getChildrenGraphs().stream().map(PiGraph::getAllParameters).flatMap(List::stream);&#xA;return ECollections.unmodifiableEList(Stream.concat(currentGraphParameters, childrenGraphsParameters).collect(Collectors.toList()));"/>
       </eAnnotations>
     </eOperations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="vertices" upperBound="-1"
-        eType="#//AbstractActor" containment="true"/>
+    <eOperations name="getChildrenGraphs" upperBound="-1" eType="#//PiGraph">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="final Stream&lt;PiGraph> directChildrenGraphs = getActors().stream().filter(PiGraph.class::isInstance).map(PiGraph.class::cast);&#xA;final Stream&lt;PiGraph> refinementChildrenGraphs = getActorsWithRefinement().stream().filter(Actor::isHierarchical).map(Actor::getSubGraph);&#xA;return ECollections.unmodifiableEList(Stream.concat(directChildrenGraphs, refinementChildrenGraphs).collect(Collectors.toList()));"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="getAllActors" upperBound="-1" eType="#//AbstractActor">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="final Stream&lt;AbstractActor> currentGraphActors = getActors().stream();&#xA;final Stream&lt;AbstractActor> chidrenGraphsActors = getChildrenGraphs().stream().map(PiGraph::getAllActors).flatMap(List::stream);&#xA;return ECollections.unmodifiableEList(Stream.concat(currentGraphActors, chidrenGraphsActors).collect(Collectors.toList()));"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="lookupParameterGivenGraph" eType="#//Parameter">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return getAllParameters().stream().filter(p -> p.getName().equals(parameterName) &amp;&amp; p.getContainingGraph().getName().equals(graphName)).findFirst().orElse(null);"/>
+      </eAnnotations>
+      <eParameters name="parameterName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eParameters name="graphName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eOperations>
+    <eOperations name="lookupVertex" eType="#//AbstractVertex">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return Stream.concat(getActors().stream(), getParameters().stream()).filter(v -> v.getName().equals(vertexName)).findFirst().orElse(null);"/>
+      </eAnnotations>
+      <eParameters name="vertexName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eOperations>
+    <eOperations name="lookupFifo" eType="#//Fifo">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return getFifos().stream().filter(f -> f.getId().equals(fifoId)).findFirst().orElse(null);"/>
+      </eAnnotations>
+      <eParameters name="fifoId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="actors" upperBound="-1"
+        eType="#//AbstractActor" containment="true" eOpposite="#//AbstractActor/containingGraph"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="fifos" upperBound="-1"
         eType="#//Fifo" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
-        eType="#//Parameter" containment="true"/>
+        eType="#//Parameter" containment="true" eOpposite="#//Parameter/containingGraph"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dependencies" upperBound="-1"
         eType="#//Dependency" containment="true"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ExecutableActor" abstract="true" eSuperTypes="#//AbstractActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="Actor" eSuperTypes="#//ExecutableActor">
+    <eOperations name="isConfigurationActor" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="// an Actor is considered as a Configuration Actor iff it has at least a ConfigOutputPort that is connected to a getter&#xA;return getConfigOutputPorts().stream().filter(Objects::nonNull).map(ConfigOutputPort::getOutgoingDependencies).filter(l -> !l.isEmpty()).map(l -> l.get(0))&#xA;        .map(Dependency::getGetter).filter(Objects::nonNull).anyMatch(x -> true);"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="isHierarchical" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return getRefinement().isHierarchical();"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="getChildAbstractActor" eType="#//AbstractActor">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return Optional.ofNullable(getRefinement()).map(Refinement::getAbstractActor).orElse(null);"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="getSubGraph" eType="#//PiGraph">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="if (isHierarchical()) {&#xA;&#x9;return (PiGraph) getChildAbstractActor();&#xA;} else {&#xA;&#x9;throw new UnsupportedOperationException(&quot;Cannot get the subgraph of a non hierarchical actor.&quot;);&#xA;}"/>
+      </eAnnotations>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="refinement" lowerBound="1"
         eType="#//Refinement" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="configurationActor" lowerBound="1"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" changeable="false"
-        volatile="true" unsettable="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="memoryScriptPath" eType="#//IPath"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BroadcastActor" eSuperTypes="#//ExecutableActor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="JoinActor" eSuperTypes="#//ExecutableActor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ForkActor" eSuperTypes="#//ExecutableActor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="RoundBufferActor" eSuperTypes="#//ExecutableActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="Port" abstract="true" eSuperTypes="#//visitor/PiMMVisitable">
+    <eOperations name="getKind" lowerBound="1" eType="#//PortKind"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
-        changeable="false"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DataInputPort" eSuperTypes="#//DataPort">
+    <eOperations name="getKind" lowerBound="1" eType="#//PortKind">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return PortKind.DATA_INPUT;"/>
+      </eAnnotations>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="incomingFifo" eType="#//Fifo"
         eOpposite="#//Fifo/targetPort"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DataOutputPort" eSuperTypes="#//DataPort">
+    <eOperations name="getKind" lowerBound="1" eType="#//PortKind">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return PortKind.DATA_OUTPUT;"/>
+      </eAnnotations>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingFifo" eType="#//Fifo"
         eOpposite="#//Fifo/sourcePort"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ConfigInputPort" eSuperTypes="#//Port">
+    <eOperations name="getKind" lowerBound="1" eType="#//PortKind">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return PortKind.CFG_INPUT;"/>
+      </eAnnotations>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="incomingDependency" eType="#//Dependency"
         eOpposite="#//Dependency/getter"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="configurable" eType="#//Configurable"
+        eOpposite="#//Configurable/configInputPorts"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ConfigOutputPort" eSuperTypes="#//DataOutputPort #//ISetter"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ConfigOutputPort" eSuperTypes="#//DataOutputPort #//ISetter">
+    <eOperations name="isLocallyStatic" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="// config output ports are never considered static&#xA;return false;"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="getKind" lowerBound="1" eType="#//PortKind">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return PortKind.CFG_OUTPUT;"/>
+      </eAnnotations>
+    </eOperations>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Fifo" eSuperTypes="#//visitor/PiMMVisitable">
+    <eOperations name="getId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="sourcePort" lowerBound="1"
         eType="#//DataOutputPort" eOpposite="#//DataOutputPort/outgoingFifo"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetPort" lowerBound="1"
         eType="#//DataInputPort" eOpposite="#//DataInputPort/incomingFifo"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="delay" eType="#//Delay"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
-        changeable="false" volatile="true" unsettable="true" derived="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         defaultValueLiteral="void"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="InterfaceActor" eSuperTypes="#//AbstractActor">
+  <eClassifiers xsi:type="ecore:EClass" name="InterfaceActor" abstract="true" interface="true"
+      eSuperTypes="#//AbstractActor">
     <eOperations name="getDataPort" lowerBound="1" eType="#//DataPort">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
         <details key="body" value="// Data in/out interfaces have only one data port&#xA;return getAllDataPorts().get(0);"/>
       </eAnnotations>
     </eOperations>
+    <eOperations name="getKind" lowerBound="1" eType="#//InterfaceKind"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="graphPort" lowerBound="1"
         eType="#//Port"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
-        changeable="false"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="DataInputInterface" eSuperTypes="#//InterfaceActor"/>
-  <eClassifiers xsi:type="ecore:EClass" name="DataOutputInterface" eSuperTypes="#//InterfaceActor"/>
-  <eClassifiers xsi:type="ecore:EClass" name="ConfigInputInterface" eSuperTypes="#//Parameter"/>
-  <eClassifiers xsi:type="ecore:EClass" name="ConfigOutputInterface" eSuperTypes="#//InterfaceActor"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Refinement" eSuperTypes="#//visitor/PiMMVisitable">
-    <eOperations name="getAbstractActor" eType="#//AbstractActor"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="fileName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
-        defaultValueLiteral="&quot;&quot;"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="filePath" eType="#//IPath"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DataInputInterface" eSuperTypes="#//InterfaceActor">
+    <eOperations name="getKind" lowerBound="1" eType="#//InterfaceKind">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return InterfaceKind.DATA_INPUT;"/>
+      </eAnnotations>
+    </eOperations>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Parameter" eSuperTypes="#//AbstractVertex #//ISetter">
-    <eOperations name="isLocallyStatic" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
-    <eOperations name="isDependent" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="configurationInterface"
-        lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DataOutputInterface" eSuperTypes="#//InterfaceActor">
+    <eOperations name="getKind" lowerBound="1" eType="#//InterfaceKind">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return InterfaceKind.DATA_OUTPUT;"/>
+      </eAnnotations>
+    </eOperations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConfigInputInterface" eSuperTypes="#//Parameter">
+    <eOperations name="isLocallyStatic" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="// a ConfigInputInterface gets its value from the parent graph once per execution&#xA;// during one iteration, its value does not change, thus is locally static&#xA;return true;"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="isConfigurationInterface" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return true;"/>
+      </eAnnotations>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="graphPort" lowerBound="1"
         eType="#//ConfigInputPort"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConfigOutputInterface" eSuperTypes="#//InterfaceActor">
+    <eOperations name="getKind" lowerBound="1" eType="#//InterfaceKind">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return InterfaceKind.CFG_OUTPUT;"/>
+      </eAnnotations>
+    </eOperations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Refinement" abstract="true" interface="true"
+      eSuperTypes="#//visitor/PiMMVisitable">
+    <eOperations name="getAbstractActor" eType="#//AbstractActor"/>
+    <eOperations name="getFileName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return (this.getFilePath() == null) ? null : this.getFilePath().lastSegment();"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="isHierarchical" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="filePath" eType="#//IPath"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="PiSDFRefinement" eSuperTypes="#//Refinement">
+    <eOperations name="isHierarchical" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return (getFilePath() != null) &amp;&amp; !getFilePath().isEmpty();"/>
+      </eAnnotations>
+    </eOperations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CHeaderRefinement" eSuperTypes="#//Refinement">
+    <eOperations name="isHierarchical" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="//C Header Refinement means it is obviously not a subgraph&#xA;return false;"/>
+      </eAnnotations>
+    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="loopPrototype" lowerBound="1"
+        eType="#//FunctionPrototype" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="initPrototype" eType="#//FunctionPrototype"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Parameter" eSuperTypes="#//Configurable #//ISetter">
+    <eOperations name="isLocallyStatic" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="// a parameter is static if all its setters are static (or it has no setter)&#xA;return getConfigInputPorts().stream().filter(Objects::nonNull).map(ConfigInputPort::getIncomingDependency).filter(Objects::nonNull)&#xA;        .map(Dependency::getSetter).filter(Objects::nonNull).allMatch(ISetter::isLocallyStatic);"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="isDependent" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return !getConfigInputPorts().isEmpty();"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="isConfigurationInterface" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return false;"/>
+      </eAnnotations>
+    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="valueExpression" lowerBound="1"
         eType="#//Expression" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="containingGraph" eType="#//PiGraph"
+        eOpposite="#//PiGraph/parameters"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Dependency" eSuperTypes="#//visitor/PiMMVisitable">
     <eStructuralFeatures xsi:type="ecore:EReference" name="setter" lowerBound="1"
@@ -183,24 +327,17 @@
         eType="#//ConfigInputPort" eOpposite="#//ConfigInputPort/incomingDependency"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ISetter" abstract="true" interface="true">
-    <eOperations name="getValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eOperations name="isLocallyStatic" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingDependencies" upperBound="-1"
         eType="#//Dependency" eOpposite="#//Dependency/setter"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Delay" eSuperTypes="#//Parameterizable">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
+  <eClassifiers xsi:type="ecore:EClass" name="Delay" eSuperTypes="#//Configurable">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sizeExpression" lowerBound="1"
         eType="#//Expression" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Expression" eSuperTypes="#//visitor/PiMMVisitable">
-    <eOperations name="evaluate" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="string" lowerBound="1"
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="expressionString" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral="0"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="HRefinement" eSuperTypes="#//Refinement">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="loopPrototype" lowerBound="1"
-        eType="#//FunctionPrototype" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="initPrototype" eType="#//FunctionPrototype"
-        containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="FunctionPrototype" eSuperTypes="#//visitor/PiMMVisitable">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
@@ -219,7 +356,12 @@
     <eLiterals name="OUT" value="1"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DataPort" abstract="true" eSuperTypes="#//Port">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
+    <eOperations name="getContainingActor" eType="#//AbstractActor">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="if (eContainer() instanceof AbstractActor) {&#xA;  return (AbstractActor) eContainer();&#xA;}&#xA;return null;"/>
+      </eAnnotations>
+    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="portRateExpression" lowerBound="1"
         eType="#//Expression" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="annotation" eType="#//PortMemoryAnnotation"/>
   </eClassifiers>
@@ -230,11 +372,18 @@
     <eLiterals name="UNUSED" value="3" literal="UNUSED"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EDataType" name="IPath" instanceClassName="org.eclipse.core.runtime.IPath"/>
-  <eClassifiers xsi:type="ecore:EClass" name="BroadcastActor" eSuperTypes="#//ExecutableActor"/>
-  <eClassifiers xsi:type="ecore:EClass" name="JoinActor" eSuperTypes="#//ExecutableActor"/>
-  <eClassifiers xsi:type="ecore:EClass" name="ForkActor" eSuperTypes="#//ExecutableActor"/>
-  <eClassifiers xsi:type="ecore:EClass" name="RoundBufferActor" eSuperTypes="#//ExecutableActor"/>
-  <eClassifiers xsi:type="ecore:EClass" name="ExecutableActor" abstract="true" eSuperTypes="#//AbstractActor"/>
+  <eClassifiers xsi:type="ecore:EEnum" name="PortKind">
+    <eLiterals name="CFG_INPUT" literal="cfg_input"/>
+    <eLiterals name="DATA_INPUT" value="1" literal="input"/>
+    <eLiterals name="DATA_OUTPUT" value="2" literal="output"/>
+    <eLiterals name="CFG_OUTPUT" value="3" literal="cfg_output"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="InterfaceKind">
+    <eLiterals name="DATA_INPUT" literal="src"/>
+    <eLiterals name="DATA_OUTPUT" value="1" literal="snk"/>
+    <eLiterals name="CFG_OUTPUT" value="2" literal="cfg_out_iface"/>
+    <eLiterals name="CFG_INPUT" value="3" literal="cfg_in_iface"/>
+  </eClassifiers>
   <eSubpackages name="visitor" nsURI="http://org.ietr.preesm/experiment/model/pimm/visitor"
       nsPrefix="org.ietr.preesm.experiment.pimm.visitor">
     <eClassifiers xsi:type="ecore:EClass" name="PiMMVisitable" abstract="true" interface="true">
@@ -243,12 +392,6 @@
       </eOperations>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="PiMMVisitor" abstract="true">
-      <eOperations name="visit" lowerBound="1">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="body" value="subject.accept(this);"/>
-        </eAnnotations>
-        <eParameters name="subject" lowerBound="1" eType="#//visitor/PiMMVisitable"/>
-      </eOperations>
       <eOperations name="visitAbstractActor" lowerBound="1">
         <eParameters name="subject" lowerBound="1" eType="#//AbstractActor"/>
       </eOperations>
@@ -257,6 +400,9 @@
       </eOperations>
       <eOperations name="visitActor" lowerBound="1">
         <eParameters name="subject" lowerBound="1" eType="#//Actor"/>
+      </eOperations>
+      <eOperations name="visitConfigurable" lowerBound="1">
+        <eParameters name="subject" lowerBound="1" eType="#//Configurable"/>
       </eOperations>
       <eOperations name="visitConfigInputInterface" lowerBound="1">
         <eParameters name="subject" lowerBound="1" eType="#//ConfigInputInterface"/>
@@ -313,7 +459,7 @@
         <eParameters name="subject" lowerBound="1" eType="#//Port"/>
       </eOperations>
       <eOperations name="visitRefinement" lowerBound="1">
-        <eParameters name="subject" lowerBound="1" eType="#//Refinement"/>
+        <eParameters name="subject" lowerBound="1" eType="#//PiSDFRefinement"/>
       </eOperations>
       <eOperations name="visitFunctionParameter" lowerBound="1">
         <eParameters name="subject" lowerBound="1" eType="#//FunctionParameter"/>
@@ -322,7 +468,7 @@
         <eParameters name="subject" lowerBound="1" eType="#//FunctionPrototype"/>
       </eOperations>
       <eOperations name="visitHRefinement" lowerBound="1">
-        <eParameters name="subject" lowerBound="1" eType="#//HRefinement"/>
+        <eParameters name="subject" lowerBound="1" eType="#//CHeaderRefinement"/>
       </eOperations>
       <eOperations name="visitDataPort" lowerBound="1">
         <eParameters name="subject" lowerBound="1" eType="#//DataPort"/>

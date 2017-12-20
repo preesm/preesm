@@ -46,7 +46,6 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -109,19 +108,25 @@ public class MoveDownActorPortFeature extends MoveUpActorPortFeature {
         final Port port = (Port) bo;
         if (port.eContainer() instanceof ExecutableActor) {
           final ExecutableActor actor = (ExecutableActor) (port.eContainer());
-          final String kind = port.getKind();
-          if (kind.compareTo("input") == 0) {
-            ret = actor.getDataInputPorts().size() > 1;
-            ret = ret && (actor.getDataInputPorts().indexOf(port) < (actor.getDataInputPorts().size() - 1));
-          } else if (kind.compareTo("output") == 0) {
-            ret = actor.getDataOutputPorts().size() > 1;
-            ret = ret && (actor.getDataOutputPorts().indexOf(port) < (actor.getDataOutputPorts().size() - 1));
-          } else if (kind.compareTo("cfg_input") == 0) {
-            ret = actor.getConfigInputPorts().size() > 1;
-            ret = ret && (actor.getConfigInputPorts().indexOf(port) < (actor.getConfigInputPorts().size() - 1));
-          } else if (kind.compareTo("cfg_output") == 0) {
-            ret = actor.getConfigOutputPorts().size() > 1;
-            ret = ret && (actor.getConfigOutputPorts().indexOf(port) < (actor.getConfigOutputPorts().size() - 1));
+          switch (port.getKind()) {
+            case CFG_INPUT:
+              ret = actor.getConfigInputPorts().size() > 1;
+              ret = ret && (actor.getConfigInputPorts().indexOf(port) < (actor.getConfigInputPorts().size() - 1));
+              break;
+            case CFG_OUTPUT:
+              ret = actor.getConfigOutputPorts().size() > 1;
+              ret = ret && (actor.getConfigOutputPorts().indexOf(port) < (actor.getConfigOutputPorts().size() - 1));
+              break;
+            case DATA_INPUT:
+              ret = actor.getDataInputPorts().size() > 1;
+              ret = ret && (actor.getDataInputPorts().indexOf(port) < (actor.getDataInputPorts().size() - 1));
+              break;
+            case DATA_OUTPUT:
+              ret = actor.getDataOutputPorts().size() > 1;
+              ret = ret && (actor.getDataOutputPorts().indexOf(port) < (actor.getDataOutputPorts().size() - 1));
+              break;
+            default:
+              throw new UnsupportedOperationException("Port kind " + port.getKind() + " not supported.");
           }
         }
       }
@@ -150,23 +155,21 @@ public class MoveDownActorPortFeature extends MoveUpActorPortFeature {
 
         portToMoveDown = (Port) bo;
         actor = (ExecutableActor) (portToMoveDown.eContainer());
-        final String portKind = portToMoveDown.getKind();
-
         // Switch Port into Actor Object
-        switch (portKind) {
-          case PiIdentifiers.DATA_INPUT_PORT:
+        switch (portToMoveDown.getKind()) {
+          case DATA_INPUT:
             portToMoveDownIndex = actor.getDataInputPorts().indexOf(portToMoveDown);
             portToMoveUp = actor.getDataInputPorts().get(portToMoveDownIndex + 1);
             break;
-          case PiIdentifiers.DATA_OUTPUT_PORT:
+          case DATA_OUTPUT:
             portToMoveDownIndex = actor.getDataOutputPorts().indexOf(portToMoveDown);
             portToMoveUp = actor.getDataOutputPorts().get(portToMoveDownIndex + 1);
             break;
-          case PiIdentifiers.CONFIGURATION_INPUT_PORT:
+          case CFG_INPUT:
             portToMoveDownIndex = actor.getConfigInputPorts().indexOf(portToMoveDown);
             portToMoveUp = actor.getConfigInputPorts().get(portToMoveDownIndex + 1);
             break;
-          case PiIdentifiers.CONFIGURATION_OUPUT_PORT:
+          case CFG_OUTPUT:
             portToMoveDownIndex = actor.getConfigOutputPorts().indexOf(portToMoveDown);
             portToMoveUp = actor.getConfigOutputPorts().get(portToMoveDownIndex + 1);
             break;

@@ -138,7 +138,7 @@ public class ExcelConstraintsParser {
           }
         }
       } else if (this.scenario.isPISDFScenario()) {
-        for (final AbstractActor vertex : currentPiGraph.getAllVertices()) {
+        for (final AbstractActor vertex : currentPiGraph.getAllActors()) {
 
           if (vertex instanceof Actor) {
             for (final String operatorId : allOperatorIds) {

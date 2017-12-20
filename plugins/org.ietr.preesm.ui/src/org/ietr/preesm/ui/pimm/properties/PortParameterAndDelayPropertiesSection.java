@@ -59,6 +59,7 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
+import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
@@ -246,8 +247,8 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 
       if (bo instanceof Parameter) {
         final Parameter param = (Parameter) bo;
-        if (param.getExpression().getString().compareTo(this.txtExpression.getText()) != 0) {
-          setNewExpression(param.getExpression(), this.txtExpression.getText());
+        if (param.getValueExpression().getExpressionString().compareTo(this.txtExpression.getText()) != 0) {
+          setNewExpression(param.getValueExpression(), this.txtExpression.getText());
           getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
         }
       } // end Parameter
@@ -276,8 +277,8 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 
       if (bo instanceof Delay) {
         final Delay delay = (Delay) bo;
-        if (delay.getExpression().getString().compareTo(this.txtExpression.getText()) != 0) {
-          setNewExpression(delay.getExpression(), this.txtExpression.getText());
+        if (delay.getSizeExpression().getExpressionString().compareTo(this.txtExpression.getText()) != 0) {
+          setNewExpression(delay.getSizeExpression(), this.txtExpression.getText());
           getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
         }
       } // end Delay
@@ -307,7 +308,7 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 
       if (businessObject instanceof Parameter) {
         elementName = ((Parameter) businessObject).getName();
-        elementValueExpression = ((Parameter) businessObject).getExpression();
+        elementValueExpression = ((Parameter) businessObject).getValueExpression();
       } else if (businessObject instanceof DataPort) {
         final DataPort iPort = ((DataPort) businessObject);
 
@@ -319,17 +320,17 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
           elementName = iPort.getName();
         }
 
-        elementValueExpression = iPort.getExpression();
+        elementValueExpression = iPort.getPortRateExpression();
 
       } else if (businessObject instanceof InterfaceActor) {
         final InterfaceActor iface = ((InterfaceActor) businessObject);
         elementName = iface.getName();
-        elementValueExpression = iface.getDataPort().getExpression();
+        elementValueExpression = iface.getDataPort().getPortRateExpression();
       } else if (businessObject instanceof Delay) {
         if (((Delay) businessObject).eContainer() instanceof Fifo) {
           final Fifo fifo = (Fifo) ((Delay) businessObject).eContainer();
           elementName = fifo.getId();
-          elementValueExpression = fifo.getDelay().getExpression();
+          elementValueExpression = fifo.getDelay().getSizeExpression();
         }
       } else {
         throw new UnsupportedOperationException();
@@ -339,16 +340,16 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
       if (elementValueExpression != null) {
         this.txtExpression.setEnabled(true);
 
-        final String eltExprString = elementValueExpression.getString();
+        final String eltExprString = elementValueExpression.getExpressionString();
         if (this.txtExpression.getText().compareTo(eltExprString) != 0) {
           this.txtExpression.setText(eltExprString);
         }
 
         try {
           // try out evaluating the expression
-          final String eltExprEvaluation = elementValueExpression.evaluate();
+          final long evaluate = ExpressionEvaluator.evaluate(elementValueExpression);
           // if evaluation went well, just write the result
-          this.lblValueObj.setText(eltExprEvaluation);
+          this.lblValueObj.setText(Long.toString(evaluate));
           this.txtExpression.setBackground(new Color(null, 255, 255, 255));
         } catch (final ExpressionEvaluationException e) {
           // otherwise print error message and put red background

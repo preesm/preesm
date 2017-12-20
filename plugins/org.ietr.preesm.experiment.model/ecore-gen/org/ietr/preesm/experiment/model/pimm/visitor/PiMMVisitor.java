@@ -7,10 +7,12 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
@@ -24,15 +26,14 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 
 /**
@@ -44,14 +45,6 @@ import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
  * @generated
  */
 public interface PiMMVisitor extends EObject {
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @model subjectRequired="true" annotation="http://www.eclipse.org/emf/2002/GenModel body='subject.accept(this);'"
-   * @generated
-   */
-  void visit(PiMMVisitable subject);
-
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -75,6 +68,14 @@ public interface PiMMVisitor extends EObject {
    * @generated
    */
   void visitActor(Actor subject);
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model subjectRequired="true"
+   * @generated
+   */
+  void visitConfigurable(Configurable subject);
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -226,7 +227,7 @@ public interface PiMMVisitor extends EObject {
    * @model subjectRequired="true"
    * @generated
    */
-  void visitRefinement(Refinement subject);
+  void visitRefinement(PiSDFRefinement subject);
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -250,7 +251,7 @@ public interface PiMMVisitor extends EObject {
    * @model subjectRequired="true"
    * @generated
    */
-  void visitHRefinement(HRefinement subject);
+  void visitHRefinement(CHeaderRefinement subject);
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->

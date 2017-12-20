@@ -36,9 +36,7 @@
  */
 package org.ietr.preesm.pimm.algorithm.pimm2sdf;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -84,11 +82,11 @@ public class StaticPiMM2SDFLauncher {
     SDFGraph result;
 
     // Get all the available values for all the parameters
-    final Map<Parameter, List<Integer>> parametersValues = getParametersValues();
+    final Map<Parameter, Integer> parametersValues = getParametersValues();
 
     // Visitor creating the SDFGraph
     StaticPiMM2SDFVisitor visitor;
-    final PiGraphExecution execution = new PiGraphExecution(this.graph, parametersValues);
+    final PiGraphExecution execution = new PiGraphExecution(parametersValues);
     visitor = new StaticPiMM2SDFVisitor(execution);
     this.graph.accept(visitor);
 
@@ -103,8 +101,8 @@ public class StaticPiMM2SDFLauncher {
    * @throws StaticPiMM2SDFException
    *           the static pi MM 2 SDF exception
    */
-  private Map<Parameter, List<Integer>> getParametersValues() throws StaticPiMM2SDFException {
-    final Map<Parameter, List<Integer>> result = new LinkedHashMap<>();
+  private Map<Parameter, Integer> getParametersValues() throws StaticPiMM2SDFException {
+    final Map<Parameter, Integer> result = new LinkedHashMap<>();
 
     final ParameterValueManager parameterValueManager = this.scenario.getParameterValueManager();
     final Set<ParameterValue> parameterValues = parameterValueManager.getParameterValues();
@@ -117,9 +115,7 @@ public class StaticPiMM2SDFLauncher {
         case INDEPENDENT:
           try {
             final int value = Integer.parseInt(paramValue.getValue());
-            final List<Integer> values = new ArrayList<>();
-            values.add(value);
-            result.put(paramValue.getParameter(), values);
+            result.put(paramValue.getParameter(), value);
             break;
           } catch (final NumberFormatException e) {
             // The expression associated to the parameter is an

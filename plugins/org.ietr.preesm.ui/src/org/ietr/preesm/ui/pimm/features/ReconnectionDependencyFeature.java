@@ -44,8 +44,10 @@ import org.eclipse.graphiti.features.context.impl.ReconnectionContext;
 import org.eclipse.graphiti.features.impl.DefaultReconnectionFeature;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
@@ -53,7 +55,6 @@ import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
 // TODO: Auto-generated Javadoc
@@ -238,8 +239,8 @@ public class ReconnectionDependencyFeature extends DefaultReconnectionFeature {
       // If the getter is a Parameter, a FIFO, or an InterfaceActor
       if ((getterObject instanceof Parameter) || (getterObject instanceof InterfaceActor) || (getterObject instanceof Delay)) {
         // Create a ConfigInputPort
-        newGetter = PiMMFactory.eINSTANCE.createConfigInputPort();
-        ((Parameterizable) getterObject).getConfigInputPorts().add(newGetter);
+        newGetter = PiMMUserFactory.instance.createConfigInputPort();
+        ((Configurable) getterObject).getConfigInputPorts().add(newGetter);
       } else {
         newGetter = (ConfigInputPort) getBusinessObjectForPictogramElement(context.getConnection().getEnd());
       }

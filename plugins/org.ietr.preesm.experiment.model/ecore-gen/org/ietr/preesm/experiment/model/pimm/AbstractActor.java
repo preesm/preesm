@@ -50,13 +50,14 @@ import org.eclipse.emf.common.util.EList;
  * <li>{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getDataInputPorts <em>Data Input Ports</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getDataOutputPorts <em>Data Output Ports</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getConfigOutputPorts <em>Config Output Ports</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getContainingGraph <em>Containing Graph</em>}</li>
  * </ul>
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getAbstractActor()
  * @model abstract="true"
  * @generated
  */
-public interface AbstractActor extends AbstractVertex {
+public interface AbstractActor extends Configurable {
   /**
    * Returns the value of the '<em><b>Data Input Ports</b></em>' containment reference list. The list contents are of type
    * {@link org.ietr.preesm.experiment.model.pimm.DataInputPort}. <!-- begin-user-doc -->
@@ -103,6 +104,34 @@ public interface AbstractActor extends AbstractVertex {
   EList<ConfigOutputPort> getConfigOutputPorts();
 
   /**
+   * Returns the value of the '<em><b>Containing Graph</b></em>' container reference. It is bidirectional and its opposite is
+   * '{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getActors <em>Actors</em>}'. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Containing Graph</em>' container reference isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Containing Graph</em>' container reference.
+   * @see #setContainingGraph(PiGraph)
+   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getAbstractActor_ContainingGraph()
+   * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getActors
+   * @model opposite="actors" transient="false"
+   * @generated
+   */
+  PiGraph getContainingGraph();
+
+  /**
+   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getContainingGraph <em>Containing Graph</em>}' container reference. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @param value
+   *          the new value of the '<em>Containing Graph</em>' container reference.
+   * @see #getContainingGraph()
+   * @generated
+   */
+  void setContainingGraph(PiGraph value);
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='final BasicEList&lt;DataPort&gt; result =
@@ -116,10 +145,11 @@ public interface AbstractActor extends AbstractVertex {
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='final BasicEList&lt;Port&gt; result =
-   *        ECollections.newBasicEList();\nresult.addAll(getConfigOutputPorts());\nresult.addAll(getConfigInputPorts());\nreturn
+   *        ECollections.newBasicEList();\nresult.addAll(super.getAllConfigPorts());\nresult.addAll(getConfigOutputPorts());\nreturn
    *        ECollections.unmodifiableEList(result);'"
    * @generated
    */
+  @Override
   EList<Port> getAllConfigPorts();
 
   /**
@@ -130,13 +160,16 @@ public interface AbstractActor extends AbstractVertex {
    *        ECollections.unmodifiableEList(result);'"
    * @generated
    */
+  @Override
   EList<Port> getAllPorts();
 
   /**
-   * Gets the path.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the path
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='if (getContainingGraph() != null) {\n return
+   *        getContainingGraph().getActorPath() + \"/\" + getName();\n}\nreturn getName();'"
+   * @generated
    */
-  public String getPath();
+  String getActorPath();
 
 } // AbstractActor

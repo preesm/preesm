@@ -44,6 +44,7 @@ import org.eclipse.graphiti.platform.IPlatformImageConstants;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
 import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
+import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
@@ -174,9 +175,9 @@ public class ParameterDecorators {
    * @return the {@link IDecorator} for the {@link Parameter} or <code>null</code> if the {@link Parameter} have a valid expression.
    */
   protected static IDecorator getExpressionDecorator(final Parameter param, final PictogramElement pe) {
-    final Expression expression = param.getExpression();
+    final Expression expression = param.getValueExpression();
     try {
-      expression.evaluate();
+      ExpressionEvaluator.evaluate(expression);
     } catch (final ExpressionEvaluationException e) {
       final ImageDecorator imageRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
       imageRenderingDecorator.setMessage("Problems in parameter resolution: " + e.getMessage());

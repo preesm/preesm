@@ -49,10 +49,10 @@ public abstract class AbstractClust {
   private MemoryExclusionGraph memEx;
 
   public MemoryExclusionGraph getMemEx() {
-    return memEx;
+    return this.memEx;
   }
 
-  public void setMemEx(MemoryExclusionGraph memEx) {
+  public void setMemEx(final MemoryExclusionGraph memEx) {
     this.memEx = memEx;
   }
 

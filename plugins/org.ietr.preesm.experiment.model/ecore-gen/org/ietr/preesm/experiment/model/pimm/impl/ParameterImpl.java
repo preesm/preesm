@@ -39,7 +39,7 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Objects;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
@@ -47,17 +47,15 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.InternalEList;
-import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.util.DependencyCycleDetector;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
@@ -68,14 +66,13 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#getOutgoingDependencies <em>Outgoing Dependencies</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#isConfigurationInterface <em>Configuration Interface</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#getGraphPort <em>Graph Port</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#getExpression <em>Expression</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#getValueExpression <em>Value Expression</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#getContainingGraph <em>Containing Graph</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class ParameterImpl extends AbstractVertexImpl implements Parameter {
+public class ParameterImpl extends ConfigurableImpl implements Parameter {
   /**
    * The cached value of the '{@link #getOutgoingDependencies() <em>Outgoing Dependencies</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -89,47 +86,21 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
   protected static final boolean LOCALLY_STATIC_EDEFAULT = false;
 
   /**
-   * The default value of the '{@link #isConfigurationInterface() <em>Configuration Interface</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getValueExpression() <em>Value Expression</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @see #isConfigurationInterface()
+   * @see #getValueExpression()
    * @generated
    * @ordered
    */
-  protected static final boolean CONFIGURATION_INTERFACE_EDEFAULT = false;
+  protected Expression valueExpression;
 
   /**
-   * The cached value of the '{@link #isConfigurationInterface() <em>Configuration Interface</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @see #isConfigurationInterface()
    * @generated
-   * @ordered
-   */
-  protected boolean configurationInterface = ParameterImpl.CONFIGURATION_INTERFACE_EDEFAULT;
-
-  /**
-   * The cached value of the '{@link #getGraphPort() <em>Graph Port</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see #getGraphPort()
-   * @generated
-   * @ordered
-   */
-  protected ConfigInputPort graphPort;
-
-  /**
-   * The cached value of the '{@link #getExpression() <em>Expression</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see #getExpression()
-   * @generated
-   * @ordered
-   */
-  protected Expression expression;
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
    */
   protected ParameterImpl() {
     super();
-    setExpression(PiMMFactory.eINSTANCE.createExpression());
   }
 
   /**
@@ -159,159 +130,27 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
   }
 
   /**
-   * <!-- begin-user-doc --> Check whether the {@link Parameter} is a locally static {@link Parameter} or a dynamically configurable {@link Parameter}.<br>
-   * <br>
-   * A {@link Parameter} is locally static if its value only depends on locally static {@link Parameter}s. If the value of a {@link Parameter} depends on a
-   * {@link Actor#isConfigurationActor() configuration actor} or a configurable {@link Parameter}, the {@link Parameter} becomes a configurable
-   * {@link Parameter}. <br>
-   * <br>
-   * <b>This method should only be called on an acyclic {@link Dependency} tree otherwise the call will result in an infinite loop. Use
-   * {@link DependencyCycleDetector} to check that the {@link Dependency} tree is acyclic.</b>
-   *
-   * @return <code>true</code> if the {@link Parameter} is locally static, <code>false</code> if the {@link Parameter} is configurable. <!-- end-user-doc -->
-   *
-   */
-  @Override
-  public boolean isLocallyStatic() {
-
-    // Retrieve all incoming dependencies
-    final List<ConfigInputPort> ports = getConfigInputPorts();
-    for (final ConfigInputPort port : ports) {
-      if (port.getIncomingDependency() != null) {
-        // For each dependency, check if the setter is configurable or
-        // an actor
-        final ISetter setter = port.getIncomingDependency().getSetter();
-        if (setter instanceof ConfigOutputPort) {
-          // The setter is an actor, the parameter is configurable
-          return false;
-        }
-
-        if ((setter instanceof Parameter) && !((Parameter) setter).isLocallyStatic()) {
-          // The setter is a configurable parameter
-          return false;
-        }
-
-        if (!(setter instanceof ConfigOutputPort) && !(setter instanceof Parameter)) {
-          return false;
-        }
-      }
-    }
-
-    // If this code is reached, the parameter is locally static
-    return true;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return true, if is dependent
-   * @generated NOT
-   */
-  @Override
-  public boolean isDependent() {
-    return !getConfigInputPorts().isEmpty();
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return true, if is configuration interface
-   * @generated
-   */
-  @Override
-  public boolean isConfigurationInterface() {
-    return this.configurationInterface;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @param newConfigurationInterface
-   *          the new configuration interface
-   * @generated
-   */
-  @Override
-  public void setConfigurationInterface(final boolean newConfigurationInterface) {
-    final boolean oldConfigurationInterface = this.configurationInterface;
-    this.configurationInterface = newConfigurationInterface;
-    if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE, oldConfigurationInterface,
-          this.configurationInterface));
-    }
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the graph port
-   * @generated
-   */
-  @Override
-  public ConfigInputPort getGraphPort() {
-    if ((this.graphPort != null) && this.graphPort.eIsProxy()) {
-      final InternalEObject oldGraphPort = (InternalEObject) this.graphPort;
-      this.graphPort = (ConfigInputPort) eResolveProxy(oldGraphPort);
-      if (this.graphPort != oldGraphPort) {
-        if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.PARAMETER__GRAPH_PORT, oldGraphPort, this.graphPort));
-        }
-      }
-    }
-    return this.graphPort;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the config input port
-   * @generated
-   */
-  public ConfigInputPort basicGetGraphPort() {
-    return this.graphPort;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @param newGraphPort
-   *          the new graph port
-   * @generated
-   */
-  @Override
-  public void setGraphPort(final ConfigInputPort newGraphPort) {
-    final ConfigInputPort oldGraphPort = this.graphPort;
-    this.graphPort = newGraphPort;
-    if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.PARAMETER__GRAPH_PORT, oldGraphPort, this.graphPort));
-    }
-  }
-
-  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @return the expression
    * @generated
    */
   @Override
-  public Expression getExpression() {
-    return this.expression;
+  public Expression getValueExpression() {
+    return this.valueExpression;
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param newExpression
-   *          the new expression
-   * @param msgs
-   *          the msgs
-   * @return the notification chain
    * @generated
    */
-  public NotificationChain basicSetExpression(final Expression newExpression, NotificationChain msgs) {
-    final Expression oldExpression = this.expression;
-    this.expression = newExpression;
+  public NotificationChain basicSetValueExpression(final Expression newValueExpression, NotificationChain msgs) {
+    final Expression oldValueExpression = this.valueExpression;
+    this.valueExpression = newValueExpression;
     if (eNotificationRequired()) {
-      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.PARAMETER__EXPRESSION, oldExpression, newExpression);
+      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.PARAMETER__VALUE_EXPRESSION, oldValueExpression,
+          newValueExpression);
       if (msgs == null) {
         msgs = notification;
       } else {
@@ -329,32 +168,106 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
    * @generated
    */
   @Override
-  public void setExpression(final Expression newExpression) {
-    if (newExpression != this.expression) {
+  public void setValueExpression(final Expression newValueExpression) {
+    if (newValueExpression != this.valueExpression) {
       NotificationChain msgs = null;
-      if (this.expression != null) {
-        msgs = ((InternalEObject) this.expression).eInverseRemove(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.PARAMETER__EXPRESSION, null, msgs);
+      if (this.valueExpression != null) {
+        msgs = ((InternalEObject) this.valueExpression).eInverseRemove(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.PARAMETER__VALUE_EXPRESSION,
+            null, msgs);
       }
-      if (newExpression != null) {
-        msgs = ((InternalEObject) newExpression).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.PARAMETER__EXPRESSION, null, msgs);
+      if (newValueExpression != null) {
+        msgs = ((InternalEObject) newValueExpression).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.PARAMETER__VALUE_EXPRESSION, null,
+            msgs);
       }
-      msgs = basicSetExpression(newExpression, msgs);
+      msgs = basicSetValueExpression(newValueExpression, msgs);
       if (msgs != null) {
         msgs.dispatch();
       }
     } else if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.PARAMETER__EXPRESSION, newExpression, newExpression));
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.PARAMETER__VALUE_EXPRESSION, newValueExpression, newValueExpression));
     }
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the value
+   * @generated
    */
   @Override
-  public int getValue() {
-    throw new UnsupportedOperationException();
+  public PiGraph getContainingGraph() {
+    if (eContainerFeatureID() != PiMMPackage.PARAMETER__CONTAINING_GRAPH) {
+      return null;
+    }
+    return (PiGraph) eInternalContainer();
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  public NotificationChain basicSetContainingGraph(final PiGraph newContainingGraph, NotificationChain msgs) {
+    msgs = eBasicSetContainer((InternalEObject) newContainingGraph, PiMMPackage.PARAMETER__CONTAINING_GRAPH, msgs);
+    return msgs;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public void setContainingGraph(final PiGraph newContainingGraph) {
+    if ((newContainingGraph != eInternalContainer()) || ((eContainerFeatureID() != PiMMPackage.PARAMETER__CONTAINING_GRAPH) && (newContainingGraph != null))) {
+      if (EcoreUtil.isAncestor(this, newContainingGraph)) {
+        throw new IllegalArgumentException("Recursive containment not allowed for " + toString());
+      }
+      NotificationChain msgs = null;
+      if (eInternalContainer() != null) {
+        msgs = eBasicRemoveFromContainer(msgs);
+      }
+      if (newContainingGraph != null) {
+        msgs = ((InternalEObject) newContainingGraph).eInverseAdd(this, PiMMPackage.PI_GRAPH__PARAMETERS, PiGraph.class, msgs);
+      }
+      msgs = basicSetContainingGraph(newContainingGraph, msgs);
+      if (msgs != null) {
+        msgs.dispatch();
+      }
+    } else if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.PARAMETER__CONTAINING_GRAPH, newContainingGraph, newContainingGraph));
+    }
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public boolean isLocallyStatic() {
+    // a parameter is static if all its setters are static (or it has no setter)
+    return getConfigInputPorts().stream().filter(Objects::nonNull).map(ConfigInputPort::getIncomingDependency).filter(Objects::nonNull)
+        .map(Dependency::getSetter).filter(Objects::nonNull).allMatch(ISetter::isLocallyStatic);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public boolean isDependent() {
+    return !getConfigInputPorts().isEmpty();
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public boolean isConfigurationInterface() {
+    return false;
   }
 
   /**
@@ -371,10 +284,15 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
    */
   @SuppressWarnings("unchecked")
   @Override
-  public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+  public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, NotificationChain msgs) {
     switch (featureID) {
       case PiMMPackage.PARAMETER__OUTGOING_DEPENDENCIES:
         return ((InternalEList<InternalEObject>) (InternalEList<?>) getOutgoingDependencies()).basicAdd(otherEnd, msgs);
+      case PiMMPackage.PARAMETER__CONTAINING_GRAPH:
+        if (eInternalContainer() != null) {
+          msgs = eBasicRemoveFromContainer(msgs);
+        }
+        return basicSetContainingGraph((PiGraph) otherEnd, msgs);
     }
     return super.eInverseAdd(otherEnd, featureID, msgs);
   }
@@ -396,10 +314,26 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
     switch (featureID) {
       case PiMMPackage.PARAMETER__OUTGOING_DEPENDENCIES:
         return ((InternalEList<?>) getOutgoingDependencies()).basicRemove(otherEnd, msgs);
-      case PiMMPackage.PARAMETER__EXPRESSION:
-        return basicSetExpression(null, msgs);
+      case PiMMPackage.PARAMETER__VALUE_EXPRESSION:
+        return basicSetValueExpression(null, msgs);
+      case PiMMPackage.PARAMETER__CONTAINING_GRAPH:
+        return basicSetContainingGraph(null, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public NotificationChain eBasicRemoveFromContainerFeature(final NotificationChain msgs) {
+    switch (eContainerFeatureID()) {
+      case PiMMPackage.PARAMETER__CONTAINING_GRAPH:
+        return eInternalContainer().eInverseRemove(this, PiMMPackage.PI_GRAPH__PARAMETERS, PiGraph.class, msgs);
+    }
+    return super.eBasicRemoveFromContainerFeature(msgs);
   }
 
   /**
@@ -419,15 +353,10 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
     switch (featureID) {
       case PiMMPackage.PARAMETER__OUTGOING_DEPENDENCIES:
         return getOutgoingDependencies();
-      case PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE:
-        return isConfigurationInterface();
-      case PiMMPackage.PARAMETER__GRAPH_PORT:
-        if (resolve) {
-          return getGraphPort();
-        }
-        return basicGetGraphPort();
-      case PiMMPackage.PARAMETER__EXPRESSION:
-        return getExpression();
+      case PiMMPackage.PARAMETER__VALUE_EXPRESSION:
+        return getValueExpression();
+      case PiMMPackage.PARAMETER__CONTAINING_GRAPH:
+        return getContainingGraph();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -449,14 +378,11 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
         getOutgoingDependencies().clear();
         getOutgoingDependencies().addAll((Collection<? extends Dependency>) newValue);
         return;
-      case PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE:
-        setConfigurationInterface((Boolean) newValue);
+      case PiMMPackage.PARAMETER__VALUE_EXPRESSION:
+        setValueExpression((Expression) newValue);
         return;
-      case PiMMPackage.PARAMETER__GRAPH_PORT:
-        setGraphPort((ConfigInputPort) newValue);
-        return;
-      case PiMMPackage.PARAMETER__EXPRESSION:
-        setExpression((Expression) newValue);
+      case PiMMPackage.PARAMETER__CONTAINING_GRAPH:
+        setContainingGraph((PiGraph) newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -475,14 +401,11 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
       case PiMMPackage.PARAMETER__OUTGOING_DEPENDENCIES:
         getOutgoingDependencies().clear();
         return;
-      case PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE:
-        setConfigurationInterface(ParameterImpl.CONFIGURATION_INTERFACE_EDEFAULT);
+      case PiMMPackage.PARAMETER__VALUE_EXPRESSION:
+        setValueExpression((Expression) null);
         return;
-      case PiMMPackage.PARAMETER__GRAPH_PORT:
-        setGraphPort((ConfigInputPort) null);
-        return;
-      case PiMMPackage.PARAMETER__EXPRESSION:
-        setExpression((Expression) null);
+      case PiMMPackage.PARAMETER__CONTAINING_GRAPH:
+        setContainingGraph((PiGraph) null);
         return;
     }
     super.eUnset(featureID);
@@ -501,12 +424,10 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
     switch (featureID) {
       case PiMMPackage.PARAMETER__OUTGOING_DEPENDENCIES:
         return (this.outgoingDependencies != null) && !this.outgoingDependencies.isEmpty();
-      case PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE:
-        return this.configurationInterface != ParameterImpl.CONFIGURATION_INTERFACE_EDEFAULT;
-      case PiMMPackage.PARAMETER__GRAPH_PORT:
-        return this.graphPort != null;
-      case PiMMPackage.PARAMETER__EXPRESSION:
-        return this.expression != null;
+      case PiMMPackage.PARAMETER__VALUE_EXPRESSION:
+        return this.valueExpression != null;
+      case PiMMPackage.PARAMETER__CONTAINING_GRAPH:
+        return getContainingGraph() != null;
     }
     return super.eIsSet(featureID);
   }
@@ -534,19 +455,6 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
     return super.eBaseStructuralFeatureID(derivedFeatureID, baseClass);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#setName(java.lang.String)
-   */
-  @Override
-  public void setName(final String newName) {
-    super.setName(newName);
-    if (isConfigurationInterface() && (getGraphPort() != null)) {
-      getGraphPort().setName(newName);
-    }
-  }
-
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
@@ -568,25 +476,6 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
       }
     }
     return super.eDerivedStructuralFeatureID(baseFeatureID, baseClass);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the string
-   * @generated
-   */
-  @Override
-  public String toString() {
-    if (eIsProxy()) {
-      return super.toString();
-    }
-
-    final StringBuffer result = new StringBuffer(super.toString());
-    result.append(" (configurationInterface: ");
-    result.append(this.configurationInterface);
-    result.append(')');
-    return result.toString();
   }
 
   /*

@@ -80,4 +80,17 @@ public interface DataInputPort extends DataPort {
    * @generated
    */
   void setIncomingFifo(Fifo value);
+
+  /**
+   * <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Kind</em>' attribute isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @model kind="operation" required="true" annotation="http://www.eclipse.org/emf/2002/GenModel body='return PortKind.DATA_INPUT;'"
+   * @generated
+   */
+  @Override
+  PortKind getKind();
 } // InputPort

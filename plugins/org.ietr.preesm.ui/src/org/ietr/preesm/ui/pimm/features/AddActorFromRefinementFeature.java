@@ -129,7 +129,7 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
     final PictogramElement[] pictElements = new PictogramElement[1];
     pictElements[0] = getFeatureProvider().getAllPictogramElementsForBusinessObject(actors[0])[0];
 
-    final AbstractActor protoPort = actor.getRefinement().getAbstractActor();
+    final AbstractActor protoPort = actor.getChildAbstractActor();
     // protoPort is Null if actor creation was cancelled during refinement
     // prototype selection
     if (protoPort != null) {

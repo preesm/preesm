@@ -41,12 +41,10 @@ import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
+import org.ietr.preesm.experiment.model.pimm.PortKind;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
@@ -72,13 +70,12 @@ public class DataOutputPortImpl extends DataPortImpl implements DataOutputPort {
   protected Fifo outgoingFifo;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
    */
   protected DataOutputPortImpl() {
     super();
-    this.kind = PiIdentifiers.DATA_OUTPUT_PORT;
-
-    setExpression(PiMMFactory.eINSTANCE.createExpression());
   }
 
   /**
@@ -171,6 +168,16 @@ public class DataOutputPortImpl extends DataPortImpl implements DataOutputPort {
     } else if (eNotificationRequired()) {
       eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO, newOutgoingFifo, newOutgoingFifo));
     }
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public PortKind getKind() {
+    return PortKind.DATA_OUTPUT;
   }
 
   /**
@@ -303,20 +310,6 @@ public class DataOutputPortImpl extends DataPortImpl implements DataOutputPort {
   @Override
   public void accept(final PiMMVisitor v) {
     v.visitDataOutputPort(this);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PortImpl#getName()
-   */
-  @Override
-  public String getName() {
-    String name = super.getName();
-    if ((name == null) && (this.eContainer instanceof DataInputInterface)) {
-      name = ((DataInputInterface) this.eContainer).getName();
-    }
-    return name;
   }
 
 } // OutputPortImpl

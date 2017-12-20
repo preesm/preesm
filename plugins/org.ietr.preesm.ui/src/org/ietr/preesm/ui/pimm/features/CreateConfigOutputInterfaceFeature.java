@@ -42,9 +42,9 @@ import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.func.ICreate;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 
@@ -108,11 +108,11 @@ public class CreateConfigOutputInterfaceFeature extends AbstractCreateFeature {
     }
 
     // create ConfigOutInterface
-    final ConfigOutputInterface newCfgOutIf = PiMMFactory.eINSTANCE.createConfigOutputInterface();
+    final ConfigOutputInterface newCfgOutIf = PiMMUserFactory.instance.createConfigOutputInterface();
     newCfgOutIf.setName(newCfgOutName);
 
     // Add new ConfigOutInterface to the graph.
-    if (graph.getVertices().add(newCfgOutIf)) {
+    if (graph.getActors().add(newCfgOutIf)) {
       this.hasDoneChanges = true;
     }
 

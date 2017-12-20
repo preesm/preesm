@@ -58,7 +58,6 @@ import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -125,19 +124,19 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
         if (port.eContainer() instanceof ExecutableActor) {
           final ExecutableActor actor = (ExecutableActor) (port.eContainer());
           switch (port.getKind()) {
-            case PiIdentifiers.DATA_INPUT_PORT:
+            case DATA_INPUT:
               ret = actor.getDataInputPorts().size() > 1;
               ret = ret && (actor.getDataInputPorts().indexOf(port) > 0);
               break;
-            case PiIdentifiers.DATA_OUTPUT_PORT:
+            case DATA_OUTPUT:
               ret = actor.getDataOutputPorts().size() > 1;
               ret = ret && (actor.getDataOutputPorts().indexOf(port) > 0);
               break;
-            case PiIdentifiers.CONFIGURATION_INPUT_PORT:
+            case CFG_INPUT:
               ret = actor.getConfigInputPorts().size() > 1;
               ret = ret && (actor.getConfigInputPorts().indexOf(port) > 0);
               break;
-            case PiIdentifiers.CONFIGURATION_OUPUT_PORT:
+            case CFG_OUTPUT:
               ret = actor.getConfigOutputPorts().size() > 1;
               ret = ret && (actor.getConfigOutputPorts().indexOf(port) > 0);
               break;
@@ -177,25 +176,24 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
 
         portToMoveUp = (Port) bo;
         actor = (ExecutableActor) (portToMoveUp.eContainer());
-        final String portKind = portToMoveUp.getKind();
 
         int portToMoveUpIndex = -1;
         int portToMoveDownIndex = -1;
         // Switch Port into Actor Object
-        switch (portKind) {
-          case PiIdentifiers.DATA_INPUT_PORT:
+        switch (portToMoveUp.getKind()) {
+          case DATA_INPUT:
             portToMoveUpIndex = actor.getDataInputPorts().indexOf(portToMoveUp);
             portToMoveDown = actor.getDataInputPorts().get(portToMoveUpIndex - 1);
             break;
-          case PiIdentifiers.DATA_OUTPUT_PORT:
+          case DATA_OUTPUT:
             portToMoveUpIndex = actor.getDataOutputPorts().indexOf(portToMoveUp);
             portToMoveDown = actor.getDataOutputPorts().get(portToMoveUpIndex - 1);
             break;
-          case PiIdentifiers.CONFIGURATION_INPUT_PORT:
+          case CFG_INPUT:
             portToMoveUpIndex = actor.getConfigInputPorts().indexOf(portToMoveUp);
             portToMoveDown = actor.getConfigInputPorts().get(portToMoveUpIndex - 1);
             break;
-          case PiIdentifiers.CONFIGURATION_OUPUT_PORT:
+          case CFG_OUTPUT:
             portToMoveUpIndex = actor.getConfigOutputPorts().indexOf(portToMoveUp);
             portToMoveDown = actor.getConfigOutputPorts().get(portToMoveUpIndex - 1);
             break;
@@ -230,17 +228,17 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
         // Do Modifications
         this.hasDoneChanges = true;
 
-        switch (portKind) {
-          case PiIdentifiers.DATA_INPUT_PORT:
+        switch (portToMoveUp.getKind()) {
+          case DATA_INPUT:
             actor.getDataInputPorts().move(portToMoveDownIndex, portToMoveUpIndex);
             break;
-          case PiIdentifiers.DATA_OUTPUT_PORT:
+          case DATA_OUTPUT:
             actor.getDataOutputPorts().move(portToMoveDownIndex, portToMoveUpIndex);
             break;
-          case PiIdentifiers.CONFIGURATION_INPUT_PORT:
+          case CFG_INPUT:
             actor.getConfigInputPorts().move(portToMoveDownIndex, portToMoveUpIndex);
             break;
-          case PiIdentifiers.CONFIGURATION_OUPUT_PORT:
+          case CFG_OUTPUT:
             actor.getConfigOutputPorts().move(portToMoveDownIndex, portToMoveUpIndex);
             break;
           default:
@@ -293,22 +291,22 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
     List<Connection> edges = new ArrayList<>();
     boolean fromStart = true;
     switch (portToMove.getKind()) {
-      case PiIdentifiers.DATA_INPUT_PORT:
+      case DATA_INPUT:
         edges = anchor.getIncomingConnections();
         fromStart = false;
         break;
 
-      case PiIdentifiers.DATA_OUTPUT_PORT:
+      case DATA_OUTPUT:
         edges = anchor.getOutgoingConnections();
         fromStart = true;
         break;
 
-      case PiIdentifiers.CONFIGURATION_INPUT_PORT:
+      case CFG_INPUT:
         edges = anchor.getIncomingConnections();
         fromStart = false;
         break;
 
-      case PiIdentifiers.CONFIGURATION_OUPUT_PORT:
+      case CFG_OUTPUT:
         final EList<Dependency> outgoingDependencies = ((ConfigOutputPort) portToMove).getOutgoingDependencies();
         fromStart = true;
         if (outgoingDependencies.size() > 0) {

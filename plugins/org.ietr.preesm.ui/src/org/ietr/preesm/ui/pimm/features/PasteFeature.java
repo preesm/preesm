@@ -65,6 +65,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
@@ -114,8 +115,8 @@ public class PasteFeature extends AbstractPasteFeature {
     return result;
   }
 
-  private final Map<EObject, PictogramElement>        links         = new LinkedHashMap<>();
-  private final Map<Parameterizable, Parameterizable> copiedObjects = new LinkedHashMap<>();
+  private final Map<EObject, PictogramElement>  links         = new LinkedHashMap<>();
+  private final Map<Configurable, Configurable> copiedObjects = new LinkedHashMap<>();
 
   @Override
   public void paste(final IPasteContext context) {
@@ -135,9 +136,9 @@ public class PasteFeature extends AbstractPasteFeature {
     final Map<VertexCopy, Pair<Integer, Integer>> caluclatePositions = caluclatePositions(context, copies);
 
     for (final VertexCopy vertexCopy : copies) {
-      final AbstractVertex vertex = vertexCopy.originalVertex;
+      final Configurable vertex = vertexCopy.originalVertex;
 
-      final AbstractVertex copy = PiMMUserFactory.instance.copy(vertex);
+      final Configurable copy = PiMMUserFactory.instance.copy(vertex);
       final String name = computeUniqueNameForCopy(vertex);
       copy.setName(name);
       final Pair<Integer, Integer> pair = caluclatePositions.get(vertexCopy);
@@ -195,8 +196,8 @@ public class PasteFeature extends AbstractPasteFeature {
    * Post process the pasted objects. Actually remove parameter input ports that have no associated dependencies
    */
   public void postProcess() {
-    for (final Entry<Parameterizable, Parameterizable> e : this.copiedObjects.entrySet()) {
-      final Parameterizable value = e.getValue();
+    for (final Entry<Configurable, Configurable> e : this.copiedObjects.entrySet()) {
+      final Configurable value = e.getValue();
       if (value instanceof ExecutableActor) {
         // continue
       } else {
@@ -229,7 +230,7 @@ public class PasteFeature extends AbstractPasteFeature {
   }
 
   private void connectDep(final PiGraph targetPiGraph, final ISetter setter, final ConfigInputPort getter, final Parameterizable targetParameterizable) {
-    final Parameterizable copiedParameterizable = this.copiedObjects.get(targetParameterizable);
+    final Configurable copiedParameterizable = this.copiedObjects.get(targetParameterizable);
     // lookup copied setter
     ISetter copiedSetter = null;
     if (setter instanceof Parameter) {
@@ -385,7 +386,7 @@ public class PasteFeature extends AbstractPasteFeature {
     }
   }
 
-  private void autoConnectInputConfigPorts(final Parameterizable originalParameterizable, final Parameterizable parameterizableCopy) {
+  private void autoConnectInputConfigPorts(final Configurable originalParameterizable, final Configurable parameterizableCopy) {
 
     if (getPiGraph() != getOriginalPiGraph()) {
       return;
@@ -429,9 +430,7 @@ public class PasteFeature extends AbstractPasteFeature {
     // setter is either a Parameter or ConfigOutputPort
     final ISetter setter = newDep.getSetter();
     final Anchor setterPE;
-    if (setter instanceof ConfigInputInterface) {
-      setterPE = (Anchor) findPE(setter);
-    } else if (setter instanceof Parameter) {
+    if (setter instanceof ConfigInputInterface || setter instanceof Parameter) {
       final PictogramElement pe = findPE(setter);
       if (pe instanceof Anchor) {
         setterPE = (Anchor) pe;
@@ -478,9 +477,9 @@ public class PasteFeature extends AbstractPasteFeature {
    *          input port in the original vertex
    * @return the vertexCopy's input port whose name matches getter
    */
-  private ConfigInputPort lookupConfigInputPort(final Parameterizable vertexCopy, final ConfigInputPort getter) {
+  private ConfigInputPort lookupConfigInputPort(final Configurable vertexCopy, final ConfigInputPort getter) {
     final EList<ConfigInputPort> copiedConfigInputPorts = vertexCopy.getConfigInputPorts();
-    final Parameterizable eContainer = (Parameterizable) getter.eContainer();
+    final Configurable eContainer = getter.getConfigurable();
     final EList<ConfigInputPort> origConfigInputPorts = eContainer.getConfigInputPorts();
 
     if (copiedConfigInputPorts.size() != origConfigInputPorts.size()) {
@@ -597,24 +596,23 @@ public class PasteFeature extends AbstractPasteFeature {
       final PictogramElement pe;
       if (childElement instanceof Port) {
         final Port copiedPort = (Port) childElement;
-        final String portKind = copiedPort.getKind();
         if (vertexModelCopy instanceof ExecutableActor) {
           final AbstractAddActorPortFeature addPortFeature;
-          switch (portKind) {
-            case "input":
+          switch (copiedPort.getKind()) {
+            case DATA_INPUT:
               addPortFeature = new AddDataInputPortFeature(getFeatureProvider());
               break;
-            case "output":
+            case DATA_OUTPUT:
               addPortFeature = new AddDataOutputPortFeature(getFeatureProvider());
               break;
-            case "cfg_input":
+            case CFG_INPUT:
               addPortFeature = new AddConfigInputPortFeature(getFeatureProvider());
               break;
-            case "cfg_output":
+            case CFG_OUTPUT:
               addPortFeature = new AddConfigOutputPortFeature(getFeatureProvider());
               break;
             default:
-              throw new UnsupportedOperationException("Port kind [" + portKind + "] not supported.");
+              throw new UnsupportedOperationException("Port kind [" + copiedPort.getKind() + "] not supported.");
           }
           pe = addPortFeature.addPictogramElement(newVertexPE, copiedPort);
         } else if (vertexModelCopy instanceof InterfaceActor) {

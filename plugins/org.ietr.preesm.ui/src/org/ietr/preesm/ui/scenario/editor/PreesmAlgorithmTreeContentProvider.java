@@ -54,7 +54,6 @@ import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 
 // TODO: Auto-generated Javadoc
@@ -118,19 +117,13 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
       if (parentElement instanceof PiGraph) {
         final PiGraph graph = (PiGraph) parentElement;
         // Some types of vertices are ignored in the constraints view
-        table = filterPISDFChildren(graph.getVertices()).toArray();
+        table = filterPISDFChildren(graph.getActors()).toArray();
       } else if (parentElement instanceof Actor) {
         final Actor actor = (Actor) parentElement;
-        final Refinement refinement = actor.getRefinement();
-
-        if (refinement != null) {
-          final AbstractActor subgraph = refinement.getAbstractActor();
-          if (subgraph instanceof PiGraph) {
-            final PiGraph graph = (PiGraph) subgraph;
-            table = filterPISDFChildren(graph.getVertices()).toArray();
-          }
+        if (actor.isHierarchical()) {
+          final PiGraph subGraph = actor.getSubGraph();
+          table = filterPISDFChildren(subGraph.getActors()).toArray();
         }
-
       }
     }
 
@@ -171,7 +164,7 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
     } else if (this.scenario.isPISDFScenario()) {
       if (element instanceof PiGraph) {
         final PiGraph graph = (PiGraph) element;
-        hasChildren = !graph.getVertices().isEmpty();
+        hasChildren = !graph.getActors().isEmpty();
       } else if (element instanceof Actor) {
         final Actor actor = (Actor) element;
         hasChildren = actor.getRefinement() != null;

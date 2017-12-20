@@ -41,6 +41,7 @@ import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.stream.Collectors;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -52,7 +53,6 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 import org.ietr.preesm.utils.sdf.NameComparator;
 
@@ -103,7 +103,7 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
    */
   public Set<AbstractActor> getSortedPISDFVertices(final PreesmScenario inputScenario) throws InvalidModelException, CoreException {
     final PiGraph currentGraph = PiParser.getPiGraph(inputScenario.getAlgorithmURL());
-    return filterVertices(currentGraph.getAllVertices());
+    return filterVertices(currentGraph.getAllActors());
   }
 
   /**
@@ -114,23 +114,7 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
    * @return a set of Actors, with none of them being a hierarchical actor
    */
   private Set<AbstractActor> filterVertices(final EList<AbstractActor> vertices) {
-    final Set<AbstractActor> result = new ConcurrentSkipListSet<>((o1, o2) -> o1.getName().compareTo(o2.getName()));
-    for (final AbstractActor vertex : vertices) {
-      if (vertex instanceof Actor) {
-        final Refinement refinement = ((Actor) vertex).getRefinement();
-        if (refinement == null) {
-          result.add(vertex);
-        } else {
-          final AbstractActor subGraph = refinement.getAbstractActor();
-          if (subGraph == null) {
-            result.add(vertex);
-          } else if (!(subGraph instanceof PiGraph)) {
-            result.add(vertex);
-          }
-        }
-      }
-    }
-    return result;
+    return vertices.stream().filter(Actor.class::isInstance).map(Actor.class::cast).filter(a -> !a.isHierarchical()).collect(Collectors.toSet());
   }
 
   /**

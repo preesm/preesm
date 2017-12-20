@@ -281,28 +281,4 @@ public class FunctionPrototypeImpl extends EObjectImpl implements FunctionProtot
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
   }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.FunctionPrototype#format()
-   */
-  @Override
-  public String format() {
-    String result = getName() + "(";
-    boolean first = true;
-    for (final FunctionParameter p : getParameters()) {
-      if (first) {
-        first = false;
-      } else {
-        result += ", ";
-      }
-      result += p.getType();
-      result += (!p.isIsConfigurationParameter()) ? " * " : "";
-      result += " " + p.getName();
-    }
-    result += ")";
-    return result;
-  }
-
 } // FunctionPrototypeImpl

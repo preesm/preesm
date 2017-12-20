@@ -52,18 +52,19 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.util.ActorPath;
 import org.ietr.preesm.pimm.algorithm.SpiderMainFilePrinter;
 import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderNameGenerator;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SpiderCodegen.
  */
@@ -131,7 +132,7 @@ public class SpiderCodegen {
     /* Preprocessor visitor */
     /* Initialize functions, dataports and dependency maps */
     this.preprocessor = new SpiderPreProcessVisitor();
-    this.preprocessor.visit(pg);
+    pg.accept(this.preprocessor);
 
     this.portMap = this.preprocessor.getPortMap();
     this.functionMap = this.preprocessor.getFunctionMap();
@@ -175,7 +176,7 @@ public class SpiderCodegen {
     this.constraints = new LinkedHashMap<>();
     for (final ConstraintGroup cg : this.scenario.getConstraintGroupManager().getConstraintGroups()) {
       for (final String actorPath : cg.getVertexPaths()) {
-        final AbstractActor aa = pg.getHierarchicalActorFromPath(actorPath);
+        final AbstractActor aa = ActorPath.lookup(pg, actorPath);
         if (this.constraints.get(aa) == null) {
           this.constraints.put(aa, new LinkedHashSet<String>());
         }
@@ -234,7 +235,7 @@ public class SpiderCodegen {
         if (parameters_proto.length() > 0) {
           parameters_proto.append(", ");
         }
-        parameters_proto.append("Param " + p.getName() + " = " + ((int) Double.parseDouble(p.getExpression().evaluate())));
+        parameters_proto.append("Param " + p.getName() + " = " + ExpressionEvaluator.evaluate(p.getValueExpression()));
       }
     }
     append(parameters_proto);
@@ -296,7 +297,7 @@ public class SpiderCodegen {
         this.scenario.getSimulationManager().getDataTypes());
     // Generate C++ code for the whole PiGraph, at the end, tmp will contain
     // the vertex declaration for pg
-    codeGenerator.visit(pg);
+    pg.accept(codeGenerator);
 
     // /Generate the header (license, includes and constants)
     append(getLicense());
@@ -345,7 +346,7 @@ public class SpiderCodegen {
     final Set<String> includeList = new LinkedHashSet<>();
     for (final AbstractActor aa : this.functionMap.keySet()) {
       final Actor a = (Actor) aa;
-      if (a.getRefinement() instanceof HRefinement) {
+      if (a.getRefinement() instanceof CHeaderRefinement) {
         if (!includeList.contains(a.getRefinement().getFileName())) {
           includeList.add(a.getRefinement().getFileName());
         }
@@ -439,8 +440,8 @@ public class SpiderCodegen {
     append("(void* inputFIFOs[], void* outputFIFOs[], Param inParams[], Param outParams[]){\n");
 
     final Actor a = (Actor) aa;
-    if ((a.getRefinement() != null) && (a.getRefinement() instanceof HRefinement)) {
-      final HRefinement href = (HRefinement) a.getRefinement();
+    if ((a.getRefinement() != null) && (a.getRefinement() instanceof CHeaderRefinement)) {
+      final CHeaderRefinement href = (CHeaderRefinement) a.getRefinement();
       final FunctionPrototype proto = href.getLoopPrototype();
 
       append("\t" + proto.getName() + "(\n");

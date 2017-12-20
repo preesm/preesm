@@ -46,38 +46,38 @@ package org.ietr.preesm.experiment.model.pimm;
  * The following features are supported:
  * </p>
  * <ul>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.Delay#getExpression <em>Expression</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.Delay#getSizeExpression <em>Size Expression</em>}</li>
  * </ul>
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDelay()
  * @model
  * @generated
  */
-public interface Delay extends Parameterizable {
+public interface Delay extends Configurable {
 
   /**
-   * Returns the value of the '<em><b>Expression</b></em>' containment reference. <!-- begin-user-doc -->
+   * Returns the value of the '<em><b>Size Expression</b></em>' containment reference. <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Expression</em>' containment reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
    *
-   * @return the value of the '<em>Expression</em>' containment reference.
-   * @see #setExpression(Expression)
-   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDelay_Expression()
+   * @return the value of the '<em>Size Expression</em>' containment reference.
+   * @see #setSizeExpression(Expression)
+   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDelay_SizeExpression()
    * @model containment="true" required="true"
    * @generated
    */
-  Expression getExpression();
+  Expression getSizeExpression();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Delay#getExpression <em>Expression</em>}' containment reference. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Delay#getSizeExpression <em>Size Expression</em>}' containment reference. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
    *
    * @param value
-   *          the new value of the '<em>Expression</em>' containment reference.
-   * @see #getExpression()
+   *          the new value of the '<em>Size Expression</em>' containment reference.
+   * @see #getSizeExpression()
    * @generated
    */
-  void setExpression(Expression value);
+  void setSizeExpression(Expression value);
 } // Delay

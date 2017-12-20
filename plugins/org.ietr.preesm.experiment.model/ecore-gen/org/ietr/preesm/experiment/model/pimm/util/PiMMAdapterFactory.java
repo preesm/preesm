@@ -49,10 +49,12 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
@@ -66,7 +68,6 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
@@ -74,6 +75,7 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
@@ -141,6 +143,11 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
     }
 
     @Override
+    public Adapter caseConfigurable(final Configurable object) {
+      return createConfigurableAdapter();
+    }
+
+    @Override
     public Adapter caseAbstractActor(final AbstractActor object) {
       return createAbstractActorAdapter();
     }
@@ -151,8 +158,33 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
     }
 
     @Override
+    public Adapter caseExecutableActor(final ExecutableActor object) {
+      return createExecutableActorAdapter();
+    }
+
+    @Override
     public Adapter caseActor(final Actor object) {
       return createActorAdapter();
+    }
+
+    @Override
+    public Adapter caseBroadcastActor(final BroadcastActor object) {
+      return createBroadcastActorAdapter();
+    }
+
+    @Override
+    public Adapter caseJoinActor(final JoinActor object) {
+      return createJoinActorAdapter();
+    }
+
+    @Override
+    public Adapter caseForkActor(final ForkActor object) {
+      return createForkActorAdapter();
+    }
+
+    @Override
+    public Adapter caseRoundBufferActor(final RoundBufferActor object) {
+      return createRoundBufferActorAdapter();
     }
 
     @Override
@@ -216,6 +248,16 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
     }
 
     @Override
+    public Adapter casePiSDFRefinement(final PiSDFRefinement object) {
+      return createPiSDFRefinementAdapter();
+    }
+
+    @Override
+    public Adapter caseCHeaderRefinement(final CHeaderRefinement object) {
+      return createCHeaderRefinementAdapter();
+    }
+
+    @Override
     public Adapter caseParameter(final Parameter object) {
       return createParameterAdapter();
     }
@@ -241,11 +283,6 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
     }
 
     @Override
-    public Adapter caseHRefinement(final HRefinement object) {
-      return createHRefinementAdapter();
-    }
-
-    @Override
     public Adapter caseFunctionPrototype(final FunctionPrototype object) {
       return createFunctionPrototypeAdapter();
     }
@@ -258,31 +295,6 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
     @Override
     public Adapter caseDataPort(final DataPort object) {
       return createDataPortAdapter();
-    }
-
-    @Override
-    public Adapter caseBroadcastActor(final BroadcastActor object) {
-      return createBroadcastActorAdapter();
-    }
-
-    @Override
-    public Adapter caseJoinActor(final JoinActor object) {
-      return createJoinActorAdapter();
-    }
-
-    @Override
-    public Adapter caseForkActor(final ForkActor object) {
-      return createForkActorAdapter();
-    }
-
-    @Override
-    public Adapter caseRoundBufferActor(final RoundBufferActor object) {
-      return createRoundBufferActorAdapter();
-    }
-
-    @Override
-    public Adapter caseExecutableActor(final ExecutableActor object) {
-      return createExecutableActorAdapter();
     }
 
     @Override
@@ -319,6 +331,19 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * @generated
    */
   public Adapter createParameterizableAdapter() {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.Configurable <em>Configurable</em>}'. <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   *
+   * @return the new adapter.
+   * @see org.ietr.preesm.experiment.model.pimm.Configurable
+   * @generated
+   */
+  public Adapter createConfigurableAdapter() {
     return null;
   }
 
@@ -518,6 +543,19 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.PiSDFRefinement <em>Pi SDF Refinement</em>}'. <!--
+   * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
+   * all the cases anyway. <!-- end-user-doc -->
+   *
+   * @return the new adapter.
+   * @see org.ietr.preesm.experiment.model.pimm.PiSDFRefinement
+   * @generated
+   */
+  public Adapter createPiSDFRefinementAdapter() {
+    return null;
+  }
+
+  /**
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.Parameter <em>Parameter</em>}'. <!-- begin-user-doc --> This
    * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
    * end-user-doc -->
@@ -583,15 +621,15 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.HRefinement <em>HRefinement</em>}'. <!-- begin-user-doc --> This
-   * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
-   * end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.CHeaderRefinement <em>CHeader Refinement</em>}'. <!--
+   * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
+   * all the cases anyway. <!-- end-user-doc -->
    *
    * @return the new adapter.
-   * @see org.ietr.preesm.experiment.model.pimm.HRefinement
+   * @see org.ietr.preesm.experiment.model.pimm.CHeaderRefinement
    * @generated
    */
-  public Adapter createHRefinementAdapter() {
+  public Adapter createCHeaderRefinementAdapter() {
     return null;
   }
 

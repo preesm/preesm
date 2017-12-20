@@ -458,7 +458,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   private final void layoutActorContent(final Diagram diagram) {
     final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(diagram);
 
-    final List<Actor> actors = graph.getActors();
+    final List<Actor> actors = graph.getActorsWithRefinement();
     for (final Actor a : actors) {
       final List<PictogramElement> actorPEs = Graphiti.getLinkService().getPictogramElements(diagram, a);
       for (final PictogramElement p : actorPEs) {
@@ -718,7 +718,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   protected void layoutActors(final Diagram diagram) {
     final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(diagram);
 
-    if (!graph.getVertices().isEmpty()) {
+    if (!graph.getActors().isEmpty()) {
       this.feedbackFifos = findFeedbackFifos(graph);
 
       // 2. Sort stage by stage (ignoring feedback FIFO)
@@ -1241,7 +1241,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
    */
   protected List<List<AbstractActor>> stageByStageActorSort(final PiGraph graph, final List<Fifo> feedbackFifos) {
     // 1. Sort actor in alphabetical order
-    final List<AbstractActor> actors = new ArrayList<>(graph.getVertices());
+    final List<AbstractActor> actors = new ArrayList<>(graph.getActors());
     actors.sort((a1, a2) -> a1.getName().compareTo(a2.getName()));
 
     // 2. Find source actors (actor without input non feedback FIFOs)

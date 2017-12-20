@@ -64,14 +64,18 @@ import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
+import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
@@ -85,14 +89,12 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
@@ -119,7 +121,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
 
   /** The pi port 2 vx. */
   // Map from PiMM ports to their vertex (used for SDFEdge creation)
-  protected Map<Port, Parameterizable> piPort2Vx = new LinkedHashMap<>();
+  protected Map<Port, Configurable> piPort2Vx = new LinkedHashMap<>();
   // Map from original PiMM ports to generated SDF ports (used for SDFEdge
   /** The pi port 2 SDF port. */
   // creation)
@@ -128,10 +130,6 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
   /** The current SDF refinement. */
   // Current SDF Refinement
   protected IRefinement currentSDFRefinement;
-
-  /** The pi factory. */
-  // Factory for creation of new Pi Expressions
-  protected PiMMFactory piFactory = PiMMFactory.eINSTANCE;
 
   /**
    * Creates the value.
@@ -179,7 +177,8 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
    */
   protected void parameters2GraphVariables(final PiGraph pg, final SDFGraph sdf) {
     for (final Parameter p : pg.getParameters()) {
-      final Variable var = new Variable(p.getName(), p.getExpression().evaluate());
+      final String evaluate = Long.toString(ExpressionEvaluator.evaluate(p.getValueExpression()));
+      final Variable var = new Variable(p.getName(), evaluate);
       sdf.addVariable(var);
     }
   }
@@ -194,22 +193,26 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
   @Override
   public void visitParameter(final Parameter p) {
     if (p.isConfigurationInterface()) {
-      final ISetter setter = p.getGraphPort().getIncomingDependency().getSetter();
+      final ConfigInputInterface cii = (ConfigInputInterface) p;
+      final ConfigInputPort graphPort = cii.getGraphPort();
+      final Dependency incomingDependency = graphPort.getIncomingDependency();
+      final ISetter setter = incomingDependency.getSetter();
       // Setter of an incoming dependency into a ConfigInputInterface must
       // be a parameter
       if (setter instanceof Parameter) {
-        final Expression pExp = this.piFactory.createExpression();
-        pExp.setString(((Parameter) setter).getExpression().getString());
-        p.setExpression(pExp);
+        final Expression setterParam = ((Parameter) setter).getValueExpression();
+        final Expression pExp = PiMMUserFactory.instance.createExpression();
+        pExp.setExpressionString(setterParam.getExpressionString());
+        cii.setValueExpression(pExp);
       }
     } else {
       // If there is only one value available for Parameter p, we can set
-      // it
-      final Integer value = this.execution.getUniqueValue(p);
-      if (value != null) {
-        final Expression pExp = this.piFactory.createExpression();
-        pExp.setString(value.toString());
-        p.setExpression(pExp);
+      // its
+      if (this.execution.hasValue(p)) {
+        final Integer value = this.execution.getValue(p);
+        final Expression pExp = PiMMUserFactory.instance.createExpression();
+        pExp.setExpressionString(value.toString());
+        p.setValueExpression(pExp);
       }
     }
   }
@@ -225,9 +228,9 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
     // Setter of an incoming dependency into a ConfigInputInterface must be
     // a parameter
     if (setter instanceof Parameter) {
-      final Expression pExp = this.piFactory.createExpression();
-      pExp.setString(((Parameter) setter).getExpression().getString());
-      cii.setExpression(pExp);
+      final Expression pExp = PiMMUserFactory.instance.createExpression();
+      pExp.setExpressionString(((Parameter) setter).getValueExpression().getExpressionString());
+      cii.setValueExpression(pExp);
     }
   }
 
@@ -248,10 +251,9 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
       if (!execution.hasValue(p)) {
         // Evaluate the expression wrt. the current values of the
         // parameters and set the result as new expression
-        final Expression pExp = this.piFactory.createExpression();
-        final String value = p.getExpression().evaluate();
-        pExp.setString(value);
-        p.setExpression(pExp);
+        final Expression pExp = PiMMUserFactory.instance.createExpression();
+        pExp.setExpressionString(Long.toString(ExpressionEvaluator.evaluate(p.getValueExpression())));
+        p.setValueExpression(pExp);
       }
     }
   }
@@ -304,17 +306,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
     for (final ConfigOutputPort cop : aa.getConfigOutputPorts()) {
       this.piPort2Vx.put(cop, aa);
     }
-    visitAbstractVertex(aa);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitAbstractVertex(org.ietr.preesm.experiment.model.pimm.AbstractVertex)
-   */
-  @Override
-  public void visitAbstractVertex(final AbstractVertex av) {
-    visitParameterizable(av);
+    visitConfigurable(aa);
   }
 
   /*
@@ -329,7 +321,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
     // Handle vertex's name
     v.setName(a.getName());
     // Handle vertex's path inside the graph hierarchy
-    v.setInfo(a.getPath());
+    v.setInfo(a.getActorPath());
     // Handle ID
     v.setId(a.getName());
     // Handle vertex's refinement (description of the vertex's behavior:
@@ -367,8 +359,8 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
     final DataOutputPort piOutputPort = f.getSourcePort();
     final DataInputPort piInputPort = f.getTargetPort();
 
-    final Parameterizable source = this.piPort2Vx.get(piOutputPort);
-    final Parameterizable target = this.piPort2Vx.get(piInputPort);
+    final Configurable source = this.piPort2Vx.get(piOutputPort);
+    final Configurable target = this.piPort2Vx.get(piInputPort);
 
     if ((source instanceof AbstractVertex) && (target instanceof AbstractVertex)) {
       // Get SDFAbstractVertices corresponding to source and target
@@ -386,18 +378,17 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
       if (f.getDelay() != null) {
         // Evaluate the expression wrt. the current values of the
         // parameters
-        final String piDelay = f.getDelay().getExpression().evaluate();
-        delay = new SDFExpressionEdgePropertyType(createValue(piDelay));
+        delay = new SDFExpressionEdgePropertyType(createValue(Long.toString(ExpressionEvaluator.evaluate(f.getDelay().getSizeExpression()))));
       } else {
         delay = new SDFExpressionEdgePropertyType(new ConstantValue(0));
       }
       // Evaluate the expression wrt. the current values of the parameters
-      final String piCons = piInputPort.getExpression().evaluate();
-      final SDFExpressionEdgePropertyType cons = new SDFExpressionEdgePropertyType(createValue(piCons));
+      final SDFExpressionEdgePropertyType cons = new SDFExpressionEdgePropertyType(
+          createValue(Long.toString(ExpressionEvaluator.evaluate(piInputPort.getPortRateExpression()))));
 
       // Evaluate the expression wrt. the current values of the parameters
-      final String piProd = piOutputPort.getExpression().evaluate();
-      final SDFExpressionEdgePropertyType prod = new SDFExpressionEdgePropertyType(createValue(piProd));
+      final SDFExpressionEdgePropertyType prod = new SDFExpressionEdgePropertyType(
+          createValue(Long.toString(ExpressionEvaluator.evaluate(piOutputPort.getPortRateExpression()))));
 
       final SDFEdge edge = this.result.addEdge(sdfSource, sdfOutputPort, sdfTarget, sdfInputPort, prod, cons, delay);
 
@@ -441,7 +432,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitParameterizable(org.ietr.preesm.experiment.model.pimm.Parameterizable)
    */
   @Override
-  public void visitParameterizable(final Parameterizable p) {
+  public void visitConfigurable(final Configurable p) {
     for (final ConfigInputPort cip : p.getConfigInputPorts()) {
       this.piPort2Vx.put(cip, p);
     }
@@ -505,7 +496,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitRefinement(org.ietr.preesm.experiment.model.pimm.Refinement)
    */
   @Override
-  public void visitRefinement(final Refinement r) {
+  public void visitRefinement(final PiSDFRefinement r) {
     this.currentSDFRefinement = new CodeRefinement(r.getFilePath());
   }
 
@@ -526,7 +517,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitHRefinement(org.ietr.preesm.experiment.model.pimm.HRefinement)
    */
   @Override
-  public void visitHRefinement(final HRefinement h) {
+  public void visitHRefinement(final CHeaderRefinement h) {
     final ActorPrototypes actorPrototype = new ActorPrototypes(h.getFilePath().toOSString());
 
     h.getLoopPrototype().accept(this);
@@ -605,7 +596,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
     // Handle vertex's name
     bv.setName(ba.getName());
     // Handle vertex's path inside the graph hierarchy
-    bv.setInfo(ba.getPath());
+    bv.setInfo(ba.getActorPath());
 
     // Handle input parameters as instance arguments
     for (final ConfigInputPort p : ba.getConfigInputPorts()) {
@@ -635,7 +626,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
     // Handle vertex's name
     jv.setName(ja.getName());
     // Handle vertex's path inside the graph hierarchy
-    jv.setInfo(ja.getPath());
+    jv.setInfo(ja.getActorPath());
 
     // Handle input parameters as instance arguments
     for (final ConfigInputPort p : ja.getConfigInputPorts()) {
@@ -665,7 +656,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
     // Handle vertex's name
     fv.setName(fa.getName());
     // Handle vertex's path inside the graph hierarchy
-    fv.setInfo(fa.getPath());
+    fv.setInfo(fa.getActorPath());
 
     // Handle input parameters as instance arguments
     for (final ConfigInputPort p : fa.getConfigInputPorts()) {
@@ -695,7 +686,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMDefaultVisitor {
     // Handle vertex's name
     rbv.setName(rba.getName());
     // Handle vertex's path inside the graph hierarchy
-    rbv.setInfo(rba.getPath());
+    rbv.setInfo(rba.getActorPath());
 
     // Handle input parameters as instance arguments
     for (final ConfigInputPort p : rba.getConfigInputPorts()) {

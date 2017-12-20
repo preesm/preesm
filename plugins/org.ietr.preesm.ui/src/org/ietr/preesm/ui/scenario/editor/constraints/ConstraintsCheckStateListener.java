@@ -62,7 +62,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.util.ActorPath;
 import org.ietr.preesm.ui.scenario.editor.HierarchicalSDFVertex;
 import org.ietr.preesm.ui.scenario.editor.ISDFCheckStateListener;
 import org.ietr.preesm.ui.scenario.editor.Messages;
@@ -197,7 +197,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
   private void fireOnCheck(final PiGraph graph, final boolean isChecked) {
     if (this.currentOpId != null) {
       // Checks the children of the current graph
-      for (final AbstractActor v : this.contentProvider.filterPISDFChildren(graph.getVertices())) {
+      for (final AbstractActor v : this.contentProvider.filterPISDFChildren(graph.getActors())) {
         if (v instanceof PiGraph) {
           fireOnCheck(((PiGraph) v), isChecked);
         }
@@ -238,31 +238,27 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
   /**
    * Fire on check.
    *
-   * @param actor
+   * @param abstractActor
    *          the actor
    * @param isChecked
    *          the is checked
    */
-  private void fireOnCheck(final AbstractActor actor, final boolean isChecked) {
+  private void fireOnCheck(final AbstractActor abstractActor, final boolean isChecked) {
     if (this.currentOpId != null) {
       if (isChecked) {
-        this.scenario.getConstraintGroupManager().addConstraint(this.currentOpId, actor);
+        this.scenario.getConstraintGroupManager().addConstraint(this.currentOpId, abstractActor);
       } else {
-        this.scenario.getConstraintGroupManager().removeConstraint(this.currentOpId, actor);
+        this.scenario.getConstraintGroupManager().removeConstraint(this.currentOpId, abstractActor);
       }
     }
 
     // Checks the children of the current vertex
-    if (actor instanceof Actor) {
-      final Refinement refinement = ((Actor) actor).getRefinement();
-      if (refinement != null) {
-        final AbstractActor subGraph = refinement.getAbstractActor();
-        if (subGraph instanceof PiGraph) {
-          final PiGraph graph = (PiGraph) subGraph;
-
-          for (final AbstractActor v : this.contentProvider.filterPISDFChildren(graph.getVertices())) {
-            fireOnCheck(v, isChecked);
-          }
+    if (abstractActor instanceof Actor) {
+      final Actor actor = (Actor) abstractActor;
+      if (actor.isHierarchical()) {
+        final PiGraph subGraph = actor.getSubGraph();
+        for (final AbstractActor v : this.contentProvider.filterPISDFChildren(subGraph.getActors())) {
+          fireOnCheck(v, isChecked);
         }
       }
     }
@@ -323,7 +319,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
         // Retrieves the elements in the tree that have the same name as
         // the ones to select in the constraint group
         for (final String vertexId : cg.getVertexPaths()) {
-          final AbstractVertex v = currentGraph.getHierarchicalActorFromPath(vertexId);
+          final AbstractVertex v = ActorPath.lookup(currentGraph, vertexId);
           if (v != null) {
             cgSet.add(v);
           }
@@ -334,7 +330,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 
       // If all the children of a graph are checked, it is checked itself
       boolean allChildrenChecked = true;
-      for (final AbstractActor v : this.contentProvider.filterPISDFChildren(currentGraph.getVertices())) {
+      for (final AbstractActor v : this.contentProvider.filterPISDFChildren(currentGraph.getActors())) {
         allChildrenChecked &= this.treeViewer.getChecked(v);
       }
 

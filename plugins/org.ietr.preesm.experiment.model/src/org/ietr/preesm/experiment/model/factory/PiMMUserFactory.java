@@ -35,26 +35,33 @@
 package org.ietr.preesm.experiment.model.factory;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.adapter.GraphInterfaceObserver;
+import org.ietr.preesm.experiment.model.pimm.impl.PiMMFactoryImpl;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
 
 /**
  *
  * @author anmorvan
  *
  */
-public final class PiMMUserFactory {
+public final class PiMMUserFactory extends PiMMFactoryImpl {
 
   public static final PiMMUserFactory instance = new PiMMUserFactory();
-
-  private static final PiMMFactory factory = PiMMFactory.eINSTANCE;
 
   private static final EcoreUtil.Copier copier = new EcoreUtil.Copier(false);
 
@@ -63,24 +70,19 @@ public final class PiMMUserFactory {
   }
 
   /**
-   * Copy an existing Vertex
+   * Copy an existing PiMM node
    */
-  public final AbstractVertex copy(final AbstractVertex vertex) {
-    return (AbstractVertex) PiMMUserFactory.copier.copy(vertex);
-  }
-
-  /**
-   * Copy an existing Delay
-   */
-  public final Delay copy(final Delay delay) {
-    return (Delay) PiMMUserFactory.copier.copy(delay);
+  public final <T extends PiMMVisitable> T copy(final T vertex) {
+    @SuppressWarnings("unchecked")
+    final T copy = (T) PiMMUserFactory.copier.copy(vertex);
+    return copy;
   }
 
   /**
    *
    */
   public Dependency createDependency(final ISetter setter, final ConfigInputPort target) {
-    final Dependency dep = PiMMUserFactory.factory.createDependency();
+    final Dependency dep = createDependency();
     dep.setGetter(target);
     dep.setSetter(setter);
     return dep;
@@ -90,10 +92,85 @@ public final class PiMMUserFactory {
    *
    */
   public Fifo createFifo(final DataOutputPort sourcePortCopy, final DataInputPort targetPortCopy, final String type) {
-    final Fifo res = PiMMUserFactory.factory.createFifo();
+    final Fifo res = createFifo();
     res.setSourcePort(sourcePortCopy);
     res.setTargetPort(targetPortCopy);
     res.setType(type);
+    return res;
+  }
+
+  @Override
+  public ConfigInputInterface createConfigInputInterface() {
+    final ConfigInputInterface res = super.createConfigInputInterface();
+    final Expression createExpression = createExpression();
+    res.setValueExpression(createExpression);
+    return res;
+  }
+
+  @Override
+  public Parameter createParameter() {
+    final Parameter createParameter = super.createParameter();
+    final Expression createExpression = createExpression();
+    createParameter.setValueExpression(createExpression);
+    return createParameter;
+  }
+
+  @Override
+  public DataInputPort createDataInputPort() {
+    final DataInputPort res = super.createDataInputPort();
+    res.setPortRateExpression(createExpression());
+    return res;
+  }
+
+  @Override
+  public DataOutputPort createDataOutputPort() {
+    final DataOutputPort res = super.createDataOutputPort();
+    res.setPortRateExpression(createExpression());
+    return res;
+  }
+
+  @Override
+  public ConfigOutputPort createConfigOutputPort() {
+    final ConfigOutputPort res = super.createConfigOutputPort();
+    res.setPortRateExpression(createExpression());
+    return res;
+  }
+
+  @Override
+  public Delay createDelay() {
+    final Delay res = super.createDelay();
+    res.setSizeExpression(createExpression());
+    return res;
+  }
+
+  @Override
+  public PiGraph createPiGraph() {
+    final PiGraph res = super.createPiGraph();
+    res.eAdapters().add(new GraphInterfaceObserver());
+    return res;
+  }
+
+  @Override
+  public DataInputInterface createDataInputInterface() {
+    final DataInputInterface res = super.createDataInputInterface();
+    final DataOutputPort port = PiMMUserFactory.instance.createDataOutputPort();
+    res.getDataOutputPorts().add(port);
+    return res;
+  }
+
+  @Override
+  public DataOutputInterface createDataOutputInterface() {
+    final DataOutputInterface res = super.createDataOutputInterface();
+    final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
+    res.getDataInputPorts().add(port);
+    return res;
+  }
+
+  @Override
+  public ConfigOutputInterface createConfigOutputInterface() {
+    final ConfigOutputInterface res = super.createConfigOutputInterface();
+    final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
+    res.getDataInputPorts().add(port);
     return res;
   }
 }

@@ -45,6 +45,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
@@ -62,15 +63,14 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 
 /**
@@ -113,8 +113,8 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
 
     for (final Entry<PiGraph, List<ActorByGraphReplacement>> e : this.graphReplacements.entrySet()) {
       for (final ActorByGraphReplacement r : e.getValue()) {
-        e.getKey().getVertices().remove(r.toBeRemoved);
-        e.getKey().getVertices().add(r.toBeAdded);
+        e.getKey().getActors().remove(r.toBeRemoved);
+        e.getKey().getActors().add(r.toBeAdded);
 
       }
     }
@@ -129,7 +129,7 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
   public void visitPiGraph(final PiGraph pg) {
     final PiGraph oldGraph = this.currentGraph;
     this.currentGraph = pg;
-    for (final AbstractActor v : pg.getVertices()) {
+    for (final AbstractActor v : pg.getActors()) {
       v.accept(this);
     }
     for (final Parameter p : pg.getParameters()) {
@@ -147,25 +147,21 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
   public void visitActor(final Actor a) {
     // If the refinement of the Actor a points to the description of
     // PiGraph, visit it to connect the subgraph to its supergraph
-    final Refinement refinement = a.getRefinement();
-    if (refinement != null) {
-      final AbstractActor aa = refinement.getAbstractActor();
-      if ((aa != null) && (aa instanceof PiGraph)) {
-        final PiGraph innerGraph = (PiGraph) aa;
-        // Connect all Fifos and Dependencies incoming into a and outgoing
-        // from a in order to make them incoming into innerGraph and
-        // outgoing from innerGraph instead
-        SubgraphReconnector.reconnectPiGraph(a, innerGraph);
+    if (a.isHierarchical()) {
+      final PiGraph innerGraph = a.getSubGraph();
+      // Connect all Fifos and Dependencies incoming into a and outgoing
+      // from a in order to make them incoming into innerGraph and
+      // outgoing from innerGraph instead
+      SubgraphReconnector.reconnectPiGraph(a, innerGraph);
 
-        this.currentActor = innerGraph;
-        innerGraph.accept(this);
+      this.currentActor = innerGraph;
+      innerGraph.accept(this);
 
-        final ActorByGraphReplacement replacement = new ActorByGraphReplacement(a, innerGraph);
-        if (!this.graphReplacements.containsKey(this.currentGraph)) {
-          this.graphReplacements.put(this.currentGraph, new ArrayList<ActorByGraphReplacement>());
-        }
-        this.graphReplacements.get(this.currentGraph).add(replacement);
+      final ActorByGraphReplacement replacement = new ActorByGraphReplacement(a, innerGraph);
+      if (!this.graphReplacements.containsKey(this.currentGraph)) {
+        this.graphReplacements.put(this.currentGraph, new ArrayList<ActorByGraphReplacement>());
       }
+      this.graphReplacements.get(this.currentGraph).add(replacement);
     }
   }
 
@@ -221,17 +217,20 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
    */
   @Override
   public void visitConfigInputInterface(final ConfigInputInterface cii) {
-    // Connect the interface to the incoming dependencies from the outer
-    // graph
-    ConfigInputPort correspondingPort = null;
-    for (final ConfigInputPort cip : this.currentActor.getConfigInputPorts()) {
-      if (cip.getName().equals(cii.getName())) {
-        correspondingPort = cip;
-        break;
+    // only reconnects if we parse a hierarchical actor
+    if (this.currentActor != null) {
+      // Connect the interface to the incoming dependencies from the outer
+      // graph
+      ConfigInputPort correspondingPort = null;
+      for (final ConfigInputPort cip : this.currentActor.getConfigInputPorts()) {
+        if (cip.getName().equals(cii.getName())) {
+          correspondingPort = cip;
+          break;
+        }
       }
-    }
-    if (correspondingPort != null) {
-      cii.setGraphPort(correspondingPort);
+      if (correspondingPort != null) {
+        cii.setGraphPort(correspondingPort);
+      }
     }
   }
 
@@ -423,7 +422,7 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitRefinement(org.ietr.preesm.experiment.model.pimm.Refinement)
    */
   @Override
-  public void visitRefinement(final Refinement r) {
+  public void visitRefinement(final PiSDFRefinement r) {
     throw new UnsupportedOperationException();
   }
 
@@ -503,7 +502,7 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitHRefinement(org.ietr.preesm.experiment.model.pimm.HRefinement)
    */
   @Override
-  public void visitHRefinement(final HRefinement hRefinement) {
+  public void visitHRefinement(final CHeaderRefinement hRefinement) {
     throw new UnsupportedOperationException();
   }
 

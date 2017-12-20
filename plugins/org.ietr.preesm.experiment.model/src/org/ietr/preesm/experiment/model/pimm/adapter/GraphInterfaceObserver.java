@@ -41,24 +41,22 @@ import java.util.List;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
-import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
 // TODO: Auto-generated Javadoc
 /**
- * The purpose of this {@link Adapter} is to observe the {@link PiGraph#getVertices()} list of a {@link PiGraph} to detect the addition, the deletion and the
+ * The purpose of this {@link Adapter} is to observe the {@link PiGraph#getActors()} list of a {@link PiGraph} to detect the addition, the deletion and the
  * renaming of {@link PiGraph} interfaces in order to automatically compute the repercussions on {@link PiGraph#getInputPorts()},
  * {@link PiGraph#getOutputPorts()} and {@link PiGraph#getConfigInputPorts()}.
  *
@@ -95,7 +93,7 @@ public class GraphInterfaceObserver extends AdapterImpl {
 
     // If the added vertex is an Parameter and an Interface of the graph
     if ((vertex instanceof Parameter) && ((Parameter) vertex).isConfigurationInterface()) {
-      addParamInterfaceActor((Parameter) vertex, graph);
+      addParamInterfaceActor((ConfigInputInterface) vertex, graph);
       return;
     }
   }
@@ -112,16 +110,16 @@ public class GraphInterfaceObserver extends AdapterImpl {
     // Create the Associated port and store it in the appropriate List
     Port port;
     switch (iActor.getKind()) {
-      case DataInputInterface.KIND:
-        port = PiMMFactory.eINSTANCE.createDataInputPort();
+      case DATA_INPUT:
+        port = PiMMUserFactory.instance.createDataInputPort();
         graph.getDataInputPorts().add((DataInputPort) port);
         break;
-      case DataOutputInterface.KIND:
-        port = PiMMFactory.eINSTANCE.createDataOutputPort();
+      case DATA_OUTPUT:
+        port = PiMMUserFactory.instance.createDataOutputPort();
         graph.getDataOutputPorts().add((DataOutputPort) port);
         break;
-      case ConfigOutputInterface.KIND:
-        port = PiMMFactory.eINSTANCE.createConfigOutputPort();
+      case CFG_OUTPUT:
+        port = PiMMUserFactory.instance.createConfigOutputPort();
         graph.getConfigOutputPorts().add((ConfigOutputPort) port);
         break;
       default:
@@ -142,8 +140,8 @@ public class GraphInterfaceObserver extends AdapterImpl {
    * @param graph
    *          the observed {@link PiGraph}
    */
-  protected void addParamInterfaceActor(final Parameter param, final PiGraph graph) {
-    final ConfigInputPort port = PiMMFactory.eINSTANCE.createConfigInputPort();
+  protected void addParamInterfaceActor(final ConfigInputInterface param, final PiGraph graph) {
+    final ConfigInputPort port = PiMMUserFactory.instance.createConfigInputPort();
     port.setName(param.getName());
     graph.getConfigInputPorts().add(port);
 
@@ -163,7 +161,7 @@ public class GraphInterfaceObserver extends AdapterImpl {
     // Check if the vertices or Parameters are concerned by this
     // notification
     if ((notification.getNotifier() instanceof PiGraph)
-        && ((notification.getFeatureID(null) == PiMMPackage.PI_GRAPH__VERTICES) || (notification.getFeatureID(null) == PiMMPackage.PI_GRAPH__PARAMETERS))) {
+        && ((notification.getFeatureID(null) == PiMMPackage.PI_GRAPH__ACTORS) || (notification.getFeatureID(null) == PiMMPackage.PI_GRAPH__PARAMETERS))) {
 
       final PiGraph graph = (PiGraph) notification.getNotifier();
 
@@ -227,7 +225,7 @@ public class GraphInterfaceObserver extends AdapterImpl {
     }
 
     if ((vertex instanceof Parameter) && ((Parameter) vertex).isConfigurationInterface()) {
-      removeParamInterfaceActor((Parameter) vertex, graph);
+      removeParamInterfaceActor((ConfigInputInterface) vertex, graph);
       return;
     }
   }
@@ -256,7 +254,7 @@ public class GraphInterfaceObserver extends AdapterImpl {
    * @param graph
    *          the observed {@link PiGraph}
    */
-  protected void removeParamInterfaceActor(final Parameter param, final PiGraph graph) {
+  protected void removeParamInterfaceActor(final ConfigInputInterface param, final PiGraph graph) {
     graph.getConfigInputPorts().remove(param.getGraphPort());
   }
 }

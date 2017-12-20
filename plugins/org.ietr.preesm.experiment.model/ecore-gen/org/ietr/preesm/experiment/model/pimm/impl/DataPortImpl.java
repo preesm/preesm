@@ -40,8 +40,10 @@ import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Expression;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 
@@ -52,7 +54,7 @@ import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
  * The following features are implemented:
  * </p>
  * <ul>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DataPortImpl#getExpression <em>Expression</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DataPortImpl#getPortRateExpression <em>Port Rate Expression</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DataPortImpl#getAnnotation <em>Annotation</em>}</li>
  * </ul>
  *
@@ -60,13 +62,14 @@ import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
  */
 public abstract class DataPortImpl extends PortImpl implements DataPort {
   /**
-   * The cached value of the '{@link #getExpression() <em>Expression</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getPortRateExpression() <em>Port Rate Expression</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
    *
-   * @see #getExpression()
+   * @see #getPortRateExpression()
    * @generated
    * @ordered
    */
-  protected Expression expression;
+  protected Expression portRateExpression;
 
   /**
    * The default value of the '{@link #getAnnotation() <em>Annotation</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -113,25 +116,21 @@ public abstract class DataPortImpl extends PortImpl implements DataPort {
    * @generated
    */
   @Override
-  public Expression getExpression() {
-    return this.expression;
+  public Expression getPortRateExpression() {
+    return this.portRateExpression;
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param newExpression
-   *          the new expression
-   * @param msgs
-   *          the msgs
-   * @return the notification chain
    * @generated
    */
-  public NotificationChain basicSetExpression(final Expression newExpression, NotificationChain msgs) {
-    final Expression oldExpression = this.expression;
-    this.expression = newExpression;
+  public NotificationChain basicSetPortRateExpression(final Expression newPortRateExpression, NotificationChain msgs) {
+    final Expression oldPortRateExpression = this.portRateExpression;
+    this.portRateExpression = newPortRateExpression;
     if (eNotificationRequired()) {
-      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_PORT__EXPRESSION, oldExpression, newExpression);
+      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_PORT__PORT_RATE_EXPRESSION, oldPortRateExpression,
+          newPortRateExpression);
       if (msgs == null) {
         msgs = notification;
       } else {
@@ -149,21 +148,23 @@ public abstract class DataPortImpl extends PortImpl implements DataPort {
    * @generated
    */
   @Override
-  public void setExpression(final Expression newExpression) {
-    if (newExpression != this.expression) {
+  public void setPortRateExpression(final Expression newPortRateExpression) {
+    if (newPortRateExpression != this.portRateExpression) {
       NotificationChain msgs = null;
-      if (this.expression != null) {
-        msgs = ((InternalEObject) this.expression).eInverseRemove(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.DATA_PORT__EXPRESSION, null, msgs);
+      if (this.portRateExpression != null) {
+        msgs = ((InternalEObject) this.portRateExpression).eInverseRemove(this,
+            InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.DATA_PORT__PORT_RATE_EXPRESSION, null, msgs);
       }
-      if (newExpression != null) {
-        msgs = ((InternalEObject) newExpression).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.DATA_PORT__EXPRESSION, null, msgs);
+      if (newPortRateExpression != null) {
+        msgs = ((InternalEObject) newPortRateExpression).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.DATA_PORT__PORT_RATE_EXPRESSION,
+            null, msgs);
       }
-      msgs = basicSetExpression(newExpression, msgs);
+      msgs = basicSetPortRateExpression(newPortRateExpression, msgs);
       if (msgs != null) {
         msgs.dispatch();
       }
     } else if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_PORT__EXPRESSION, newExpression, newExpression));
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_PORT__PORT_RATE_EXPRESSION, newPortRateExpression, newPortRateExpression));
     }
   }
 
@@ -195,6 +196,19 @@ public abstract class DataPortImpl extends PortImpl implements DataPort {
   }
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public AbstractActor getContainingActor() {
+    if (eContainer() instanceof AbstractActor) {
+      return (AbstractActor) eContainer();
+    }
+    return null;
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @param otherEnd
@@ -209,8 +223,8 @@ public abstract class DataPortImpl extends PortImpl implements DataPort {
   @Override
   public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
     switch (featureID) {
-      case PiMMPackage.DATA_PORT__EXPRESSION:
-        return basicSetExpression(null, msgs);
+      case PiMMPackage.DATA_PORT__PORT_RATE_EXPRESSION:
+        return basicSetPortRateExpression(null, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
   }
@@ -230,8 +244,8 @@ public abstract class DataPortImpl extends PortImpl implements DataPort {
   @Override
   public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
     switch (featureID) {
-      case PiMMPackage.DATA_PORT__EXPRESSION:
-        return getExpression();
+      case PiMMPackage.DATA_PORT__PORT_RATE_EXPRESSION:
+        return getPortRateExpression();
       case PiMMPackage.DATA_PORT__ANNOTATION:
         return getAnnotation();
     }
@@ -250,8 +264,8 @@ public abstract class DataPortImpl extends PortImpl implements DataPort {
   @Override
   public void eSet(final int featureID, final Object newValue) {
     switch (featureID) {
-      case PiMMPackage.DATA_PORT__EXPRESSION:
-        setExpression((Expression) newValue);
+      case PiMMPackage.DATA_PORT__PORT_RATE_EXPRESSION:
+        setPortRateExpression((Expression) newValue);
         return;
       case PiMMPackage.DATA_PORT__ANNOTATION:
         setAnnotation((PortMemoryAnnotation) newValue);
@@ -270,8 +284,8 @@ public abstract class DataPortImpl extends PortImpl implements DataPort {
   @Override
   public void eUnset(final int featureID) {
     switch (featureID) {
-      case PiMMPackage.DATA_PORT__EXPRESSION:
-        setExpression((Expression) null);
+      case PiMMPackage.DATA_PORT__PORT_RATE_EXPRESSION:
+        setPortRateExpression((Expression) null);
         return;
       case PiMMPackage.DATA_PORT__ANNOTATION:
         setAnnotation(DataPortImpl.ANNOTATION_EDEFAULT);
@@ -291,8 +305,8 @@ public abstract class DataPortImpl extends PortImpl implements DataPort {
   @Override
   public boolean eIsSet(final int featureID) {
     switch (featureID) {
-      case PiMMPackage.DATA_PORT__EXPRESSION:
-        return this.expression != null;
+      case PiMMPackage.DATA_PORT__PORT_RATE_EXPRESSION:
+        return this.portRateExpression != null;
       case PiMMPackage.DATA_PORT__ANNOTATION:
         return this.annotation != DataPortImpl.ANNOTATION_EDEFAULT;
     }
@@ -318,4 +332,17 @@ public abstract class DataPortImpl extends PortImpl implements DataPort {
     return result.toString();
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PortImpl#getName()
+   */
+  @Override
+  public String getName() {
+    String name = super.getName();
+    if ((name == null) && (this.eContainer instanceof InterfaceActor)) {
+      name = ((InterfaceActor) this.eContainer).getName();
+    }
+    return name;
+  }
 } // DataPortImpl

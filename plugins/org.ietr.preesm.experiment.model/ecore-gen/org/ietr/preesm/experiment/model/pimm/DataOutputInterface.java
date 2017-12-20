@@ -36,7 +36,6 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Sink Interface</b></em>'. <!-- end-user-doc -->
  *
@@ -47,6 +46,12 @@ package org.ietr.preesm.experiment.model.pimm;
  */
 public interface DataOutputInterface extends InterfaceActor {
 
-  /** The Constant KIND. */
-  public static final String KIND = "snk";
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" required="true" annotation="http://www.eclipse.org/emf/2002/GenModel body='return InterfaceKind.DATA_OUTPUT;'"
+   * @generated
+   */
+  @Override
+  InterfaceKind getKind();
 } // SinkInterface

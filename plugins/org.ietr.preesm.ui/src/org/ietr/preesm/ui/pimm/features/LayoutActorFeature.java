@@ -71,6 +71,7 @@ import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 
 /**
@@ -418,7 +419,8 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
    *          the container ga
    */
   private void layoutActor(final Actor actor, final EList<Shape> childrenShapes, final GraphicsAlgorithm containerGa) {
-    final boolean isHactor = (actor.getRefinement().getFilePath() != null) && actor.getRefinement().getFilePath().getFileExtension().equals("pi");
+    final Refinement refinement = actor.getRefinement();
+    final boolean isHactor = refinement != null && (refinement.getFilePath() != null) && refinement.getFilePath().getFileExtension().equals("pi");
 
     final IColorConstant bgColor = isHactor ? AddActorFeature.HIERARCHICAL_ACTOR_BACKGROUND : AddActorFeature.ACTOR_BACKGROUND;
     final IColorConstant fgColor = isHactor ? AddActorFeature.HIERARCHICAL_ACTOR_FOREGROUND : AddActorFeature.ACTOR_FOREGROUND;

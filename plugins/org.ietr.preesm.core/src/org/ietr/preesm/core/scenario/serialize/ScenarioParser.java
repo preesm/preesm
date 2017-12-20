@@ -78,6 +78,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
+import org.ietr.preesm.experiment.model.pimm.util.ActorPath;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -274,7 +275,7 @@ public class ScenarioParser {
     final String name = paramValueElt.getAttribute("name");
     String stringValue = paramValueElt.getAttribute("value");
 
-    currentParameter = graph.getParameterNamedWithParent(name, parent);
+    currentParameter = graph.lookupParameterGivenGraph(name, parent);
 
     switch (type) {
       case "INDEPENDENT":
@@ -545,7 +546,7 @@ public class ScenarioParser {
                 this.algoPi = getPiGraph();
               }
             } catch (final Exception e) {
-              throw new ScenarioParserException("Could not parse the algorithm", e);
+              throw new ScenarioParserException("Could not parse the algorithm: " + e.getMessage(), e);
             }
           } else if (type.equals("architecture")) {
             try {
@@ -829,7 +830,7 @@ public class ScenarioParser {
     if (this.algoSDF != null) {
       result = this.algoSDF.getHierarchicalVertexFromPath(path);
     } else if (this.algoPi != null) {
-      result = this.algoPi.getHierarchicalActorFromPath(path);
+      result = ActorPath.lookup(algoPi, path);
     }
     return result;
   }

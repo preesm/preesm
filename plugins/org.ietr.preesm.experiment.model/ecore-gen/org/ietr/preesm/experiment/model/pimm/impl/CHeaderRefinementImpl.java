@@ -37,12 +37,16 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import java.util.List;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.emf.ecore.impl.EObjectImpl;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
@@ -50,8 +54,6 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Direction;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
@@ -62,13 +64,30 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  * The following features are implemented:
  * </p>
  * <ul>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl#getLoopPrototype <em>Loop Prototype</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl#getInitPrototype <em>Init Prototype</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.CHeaderRefinementImpl#getFilePath <em>File Path</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.CHeaderRefinementImpl#getLoopPrototype <em>Loop Prototype</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.CHeaderRefinementImpl#getInitPrototype <em>Init Prototype</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class HRefinementImpl extends RefinementImpl implements HRefinement {
+public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinement {
+  /**
+   * The default value of the '{@link #getFilePath() <em>File Path</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getFilePath()
+   * @generated
+   * @ordered
+   */
+  protected static final IPath FILE_PATH_EDEFAULT = null;
+  /**
+   * The cached value of the '{@link #getFilePath() <em>File Path</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getFilePath()
+   * @generated
+   * @ordered
+   */
+  protected IPath              filePath           = CHeaderRefinementImpl.FILE_PATH_EDEFAULT;
   /**
    * The cached value of the '{@link #getLoopPrototype() <em>Loop Prototype</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -76,7 +95,7 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
    * @generated
    * @ordered
    */
-  protected FunctionPrototype loopPrototype;
+  protected FunctionPrototype  loopPrototype;
   /**
    * The cached value of the '{@link #getInitPrototype() <em>Init Prototype</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -84,14 +103,14 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
    * @generated
    * @ordered
    */
-  protected FunctionPrototype initPrototype;
+  protected FunctionPrototype  initPrototype;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @generated
    */
-  protected HRefinementImpl() {
+  protected CHeaderRefinementImpl() {
     super();
   }
 
@@ -103,7 +122,31 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
    */
   @Override
   protected EClass eStaticClass() {
-    return PiMMPackage.Literals.HREFINEMENT;
+    return PiMMPackage.Literals.CHEADER_REFINEMENT;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public IPath getFilePath() {
+    return this.filePath;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public void setFilePath(final IPath newFilePath) {
+    final IPath oldFilePath = this.filePath;
+    this.filePath = newFilePath;
+    if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.CHEADER_REFINEMENT__FILE_PATH, oldFilePath, this.filePath));
+    }
   }
 
   /**
@@ -126,7 +169,7 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
     final FunctionPrototype oldLoopPrototype = this.loopPrototype;
     this.loopPrototype = newLoopPrototype;
     if (eNotificationRequired()) {
-      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE, oldLoopPrototype,
+      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE, oldLoopPrototype,
           newLoopPrototype);
       if (msgs == null) {
         msgs = notification;
@@ -149,19 +192,19 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
     if (newLoopPrototype != this.loopPrototype) {
       NotificationChain msgs = null;
       if (this.loopPrototype != null) {
-        msgs = ((InternalEObject) this.loopPrototype).eInverseRemove(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE,
-            null, msgs);
+        msgs = ((InternalEObject) this.loopPrototype).eInverseRemove(this,
+            InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE, null, msgs);
       }
       if (newLoopPrototype != null) {
-        msgs = ((InternalEObject) newLoopPrototype).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE, null,
-            msgs);
+        msgs = ((InternalEObject) newLoopPrototype).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE,
+            null, msgs);
       }
       msgs = basicSetLoopPrototype(newLoopPrototype, msgs);
       if (msgs != null) {
         msgs.dispatch();
       }
     } else if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE, newLoopPrototype, newLoopPrototype));
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE, newLoopPrototype, newLoopPrototype));
     }
   }
 
@@ -174,7 +217,7 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
   public AbstractActor getAbstractActor() {
     if (getLoopPrototype() != null) {
       // Create the actor returned by the function
-      final AbstractActor result = PiMMFactory.eINSTANCE.createActor();
+      final AbstractActor result = PiMMUserFactory.instance.createActor();
 
       // Create all its ports corresponding to parameters of the
       // prototype
@@ -185,12 +228,12 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
           // Data Port
           if (param.getDirection().equals(Direction.IN)) {
             // Data Input
-            final DataInputPort port = PiMMFactory.eINSTANCE.createDataInputPort();
+            final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
             port.setName(param.getName());
             result.getDataInputPorts().add(port);
           } else {
             // Data Output
-            final DataOutputPort port = PiMMFactory.eINSTANCE.createDataOutputPort();
+            final DataOutputPort port = PiMMUserFactory.instance.createDataOutputPort();
             port.setName(param.getName());
             result.getDataOutputPorts().add(port);
           }
@@ -198,12 +241,12 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
           // Config Port
           if (param.getDirection().equals(Direction.IN)) {
             // Config Input
-            final ConfigInputPort port = PiMMFactory.eINSTANCE.createConfigInputPort();
+            final ConfigInputPort port = PiMMUserFactory.instance.createConfigInputPort();
             port.setName(param.getName());
             result.getConfigInputPorts().add(port);
           } else {
             // Config Output
-            final ConfigOutputPort port = PiMMFactory.eINSTANCE.createConfigOutputPort();
+            final ConfigOutputPort port = PiMMUserFactory.instance.createConfigOutputPort();
             port.setName(param.getName());
             result.getConfigOutputPorts().add(port);
           }
@@ -215,6 +258,27 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
       return null;
     }
 
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public String getFileName() {
+    return (getFilePath() == null) ? null : getFilePath().lastSegment();
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public boolean isHierarchical() {
+    // C Header Refinement means it is obviously not a subgraph
+    return false;
   }
 
   /**
@@ -237,7 +301,7 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
     final FunctionPrototype oldInitPrototype = this.initPrototype;
     this.initPrototype = newInitPrototype;
     if (eNotificationRequired()) {
-      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.HREFINEMENT__INIT_PROTOTYPE, oldInitPrototype,
+      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE, oldInitPrototype,
           newInitPrototype);
       if (msgs == null) {
         msgs = notification;
@@ -260,19 +324,19 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
     if (newInitPrototype != this.initPrototype) {
       NotificationChain msgs = null;
       if (this.initPrototype != null) {
-        msgs = ((InternalEObject) this.initPrototype).eInverseRemove(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.HREFINEMENT__INIT_PROTOTYPE,
-            null, msgs);
+        msgs = ((InternalEObject) this.initPrototype).eInverseRemove(this,
+            InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE, null, msgs);
       }
       if (newInitPrototype != null) {
-        msgs = ((InternalEObject) newInitPrototype).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.HREFINEMENT__INIT_PROTOTYPE, null,
-            msgs);
+        msgs = ((InternalEObject) newInitPrototype).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE,
+            null, msgs);
       }
       msgs = basicSetInitPrototype(newInitPrototype, msgs);
       if (msgs != null) {
         msgs.dispatch();
       }
     } else if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.HREFINEMENT__INIT_PROTOTYPE, newInitPrototype, newInitPrototype));
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE, newInitPrototype, newInitPrototype));
     }
   }
 
@@ -284,9 +348,9 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
   @Override
   public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
     switch (featureID) {
-      case PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE:
+      case PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE:
         return basicSetLoopPrototype(null, msgs);
-      case PiMMPackage.HREFINEMENT__INIT_PROTOTYPE:
+      case PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE:
         return basicSetInitPrototype(null, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
@@ -307,9 +371,11 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
   @Override
   public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
     switch (featureID) {
-      case PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE:
+      case PiMMPackage.CHEADER_REFINEMENT__FILE_PATH:
+        return getFilePath();
+      case PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE:
         return getLoopPrototype();
-      case PiMMPackage.HREFINEMENT__INIT_PROTOTYPE:
+      case PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE:
         return getInitPrototype();
     }
     return super.eGet(featureID, resolve, coreType);
@@ -327,10 +393,13 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
   @Override
   public void eSet(final int featureID, final Object newValue) {
     switch (featureID) {
-      case PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE:
+      case PiMMPackage.CHEADER_REFINEMENT__FILE_PATH:
+        setFilePath((IPath) newValue);
+        return;
+      case PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE:
         setLoopPrototype((FunctionPrototype) newValue);
         return;
-      case PiMMPackage.HREFINEMENT__INIT_PROTOTYPE:
+      case PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE:
         setInitPrototype((FunctionPrototype) newValue);
         return;
     }
@@ -347,10 +416,13 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
   @Override
   public void eUnset(final int featureID) {
     switch (featureID) {
-      case PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE:
+      case PiMMPackage.CHEADER_REFINEMENT__FILE_PATH:
+        setFilePath(CHeaderRefinementImpl.FILE_PATH_EDEFAULT);
+        return;
+      case PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE:
         setLoopPrototype((FunctionPrototype) null);
         return;
-      case PiMMPackage.HREFINEMENT__INIT_PROTOTYPE:
+      case PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE:
         setInitPrototype((FunctionPrototype) null);
         return;
     }
@@ -368,12 +440,32 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
   @Override
   public boolean eIsSet(final int featureID) {
     switch (featureID) {
-      case PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE:
+      case PiMMPackage.CHEADER_REFINEMENT__FILE_PATH:
+        return CHeaderRefinementImpl.FILE_PATH_EDEFAULT == null ? this.filePath != null : !CHeaderRefinementImpl.FILE_PATH_EDEFAULT.equals(this.filePath);
+      case PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE:
         return this.loopPrototype != null;
-      case PiMMPackage.HREFINEMENT__INIT_PROTOTYPE:
+      case PiMMPackage.CHEADER_REFINEMENT__INIT_PROTOTYPE:
         return this.initPrototype != null;
     }
     return super.eIsSet(featureID);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public String toString() {
+    if (eIsProxy()) {
+      return super.toString();
+    }
+
+    final StringBuffer result = new StringBuffer(super.toString());
+    result.append(" (filePath: ");
+    result.append(this.filePath);
+    result.append(')');
+    return result.toString();
   }
 
   /*

@@ -42,9 +42,9 @@ import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.func.ICreate;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 
@@ -107,11 +107,11 @@ public class CreateDataInputInterfaceFeature extends AbstractCreateFeature {
     }
 
     // create SourceInterface
-    final DataInputInterface newSrcInterface = PiMMFactory.eINSTANCE.createDataInputInterface();
+    final DataInputInterface newSrcInterface = PiMMUserFactory.instance.createDataInputInterface();
     newSrcInterface.setName(newSrcName);
 
     // Add new sourceInterface to the graph.
-    if (graph.getVertices().add(newSrcInterface)) {
+    if (graph.getActors().add(newSrcInterface)) {
       this.hasDoneChanges = true;
     }
 

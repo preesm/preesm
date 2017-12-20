@@ -42,10 +42,10 @@ import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.func.ICreate;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 
@@ -111,13 +111,10 @@ public class CreateParameterFeature extends AbstractCreateFeature {
     }
 
     // create Parameter
-    final Parameter newParameter = PiMMFactory.eINSTANCE.createParameter();
-    final Expression expr = PiMMFactory.eINSTANCE.createExpression();
-    newParameter.setExpression(expr);
+    final Parameter newParameter = PiMMUserFactory.instance.createParameter();
+    final Expression expr = PiMMUserFactory.instance.createExpression();
+    newParameter.setValueExpression(expr);
     newParameter.setName(newParameterName);
-    newParameter.setConfigurationInterface(false);
-    // newParameter.setLocallyStatic(true);
-    newParameter.setGraphPort(null); // No port of the graph corresponds to
     // this parameter
 
     // Add new parameter to the graph.

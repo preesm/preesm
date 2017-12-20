@@ -76,11 +76,10 @@ public interface ISetter extends EObject {
   EList<Dependency> getOutgoingDependencies();
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the value
    * @model kind="operation"
    * @generated
    */
-  int getValue();
+  boolean isLocallyStatic();
 } // ISetter

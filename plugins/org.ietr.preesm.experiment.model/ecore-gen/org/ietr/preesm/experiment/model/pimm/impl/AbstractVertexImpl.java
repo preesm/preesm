@@ -37,11 +37,14 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm.impl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.emf.common.util.ECollections;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -59,7 +62,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  *
  * @generated
  */
-public abstract class AbstractVertexImpl extends ParameterizableImpl implements AbstractVertex {
+public abstract class AbstractVertexImpl extends EObjectImpl implements AbstractVertex {
   /**
    * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -123,6 +126,28 @@ public abstract class AbstractVertexImpl extends ParameterizableImpl implements 
     if (eNotificationRequired()) {
       eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.ABSTRACT_VERTEX__NAME, oldName, this.name));
     }
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EList<Port> getAllPorts() {
+    final BasicEList<Port> result = ECollections.newBasicEList();
+    return ECollections.unmodifiableEList(result);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public Port lookupPort(final String portName) {
+    return getAllPorts().stream().filter(Objects::nonNull)
+        .filter(p -> ((p.getName() == null) && (portName == null)) || ((p.getName() != null) && p.getName().equals(portName))).findFirst().orElse(null);
   }
 
   /**
@@ -216,27 +241,6 @@ public abstract class AbstractVertexImpl extends ParameterizableImpl implements 
     result.append(this.name);
     result.append(')');
     return result.toString();
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.AbstractVertex#getPortNamed(java.lang.String)
-   */
-  @Override
-  public Port getPortNamed(final String portName) {
-    final List<Port> ports = new ArrayList<>(getConfigInputPorts());
-
-    for (final Object port : ports) {
-      final String name = ((Port) port).getName();
-      if ((name == null) && (portName == null)) {
-        return (Port) port;
-      }
-      if ((name != null) && name.equals(portName)) {
-        return (Port) port;
-      }
-    }
-    return null;
   }
 
   /*

@@ -191,7 +191,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
       for (final Parameter p : this.graph.getParameters()) {
         pasteFeature.addGraphicalRepresentationForVertex(p, 0, 0);
       }
-      for (final AbstractVertex v : this.graph.getVertices()) {
+      for (final AbstractVertex v : this.graph.getActors()) {
         pasteFeature.addGraphicalRepresentationForVertex(v, 0, 0);
       }
       for (final Fifo fifo : this.graph.getFifos()) {

@@ -56,9 +56,9 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.services.IPeLayoutService;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 
 /**
  * Add feature responsible for creating and adding a delay to a {@link Fifo}.
@@ -148,7 +148,7 @@ public class AddDelayFeature extends AbstractCustomFeature {
     final Fifo fifo = (Fifo) getBusinessObjectForPictogramElement(connection);
 
     // Create the Delay and add it to the Fifo
-    final Delay delay = PiMMFactory.eINSTANCE.createDelay();
+    final Delay delay = PiMMUserFactory.instance.createDelay();
     fifo.setDelay(delay);
 
     // Get the GaService

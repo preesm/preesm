@@ -199,9 +199,6 @@ public class VisitorPackageImpl extends EPackageImpl implements VisitorPackage {
     initEClass(this.piMMVisitorEClass, PiMMVisitor.class, "PiMMVisitor", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
 
-    op = addEOperation(this.piMMVisitorEClass, null, "visit", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
-    addEParameter(op, getPiMMVisitable(), "subject", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
-
     op = addEOperation(this.piMMVisitorEClass, null, "visitAbstractActor", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
     addEParameter(op, thePiMMPackage.getAbstractActor(), "subject", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
@@ -210,6 +207,9 @@ public class VisitorPackageImpl extends EPackageImpl implements VisitorPackage {
 
     op = addEOperation(this.piMMVisitorEClass, null, "visitActor", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
     addEParameter(op, thePiMMPackage.getActor(), "subject", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
+    op = addEOperation(this.piMMVisitorEClass, null, "visitConfigurable", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+    addEParameter(op, thePiMMPackage.getConfigurable(), "subject", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     op = addEOperation(this.piMMVisitorEClass, null, "visitConfigInputInterface", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
     addEParameter(op, thePiMMPackage.getConfigInputInterface(), "subject", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
@@ -266,7 +266,7 @@ public class VisitorPackageImpl extends EPackageImpl implements VisitorPackage {
     addEParameter(op, thePiMMPackage.getPort(), "subject", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     op = addEOperation(this.piMMVisitorEClass, null, "visitRefinement", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
-    addEParameter(op, thePiMMPackage.getRefinement(), "subject", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+    addEParameter(op, thePiMMPackage.getPiSDFRefinement(), "subject", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     op = addEOperation(this.piMMVisitorEClass, null, "visitFunctionParameter", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
     addEParameter(op, thePiMMPackage.getFunctionParameter(), "subject", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
@@ -275,7 +275,7 @@ public class VisitorPackageImpl extends EPackageImpl implements VisitorPackage {
     addEParameter(op, thePiMMPackage.getFunctionPrototype(), "subject", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     op = addEOperation(this.piMMVisitorEClass, null, "visitHRefinement", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
-    addEParameter(op, thePiMMPackage.getHRefinement(), "subject", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+    addEParameter(op, thePiMMPackage.getCHeaderRefinement(), "subject", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     op = addEOperation(this.piMMVisitorEClass, null, "visitDataPort", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
     addEParameter(op, thePiMMPackage.getDataPort(), "subject", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);

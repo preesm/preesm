@@ -69,6 +69,7 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.ietr.dftools.ui.util.FileUtils;
 import org.ietr.dftools.ui.util.FileUtils.FileContentProvider;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
+import org.ietr.preesm.experiment.model.pimm.util.PrototypeFormatter;
 import org.ietr.preesm.ui.pimm.diagram.PiMMToolBehaviorProvider;
 
 // TODO: Auto-generated Javadoc
@@ -230,7 +231,7 @@ public class PiMMUtil {
       @Override
       public String getText(final Object element) {
         if ((element != null) && (element instanceof FunctionPrototype)) {
-          return ((FunctionPrototype) element).format();
+          return PrototypeFormatter.format((FunctionPrototype) element);
         } else {
           return "";
         }

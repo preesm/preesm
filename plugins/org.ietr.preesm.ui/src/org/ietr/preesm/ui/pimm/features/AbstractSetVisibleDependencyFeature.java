@@ -39,9 +39,9 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
-import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -104,7 +104,7 @@ public abstract class AbstractSetVisibleDependencyFeature extends AbstractCustom
    * @param param
    *          the new visible ingoing dependencies
    */
-  protected void setVisibleIngoingDependencies(final Parameterizable param) {
+  protected void setVisibleIngoingDependencies(final Configurable param) {
     for (final ConfigInputPort p : param.getConfigInputPorts()) {
       setVisible(p.getIncomingDependency());
     }
