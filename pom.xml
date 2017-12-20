@@ -400,6 +400,7 @@
             <exclude>**/*.sh</exclude>
             <exclude>**/*.css</exclude>
             <exclude>**/*.xsl</exclude>
+            <exclude>**/rcptt.properties</exclude>
           </excludes>
           <!-- Additional extensions to support -->
           <mapping>
