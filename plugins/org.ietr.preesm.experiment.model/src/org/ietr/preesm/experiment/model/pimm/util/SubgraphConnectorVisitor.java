@@ -217,8 +217,8 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
    */
   @Override
   public void visitConfigInputInterface(final ConfigInputInterface cii) {
-    // only reconnects if we parse a hierarchical actor
-    if (this.currentActor != null) {
+    // only reconnects if we parse a hierarchical actor and the current actor is the one containing the interface
+    if (this.currentActor != null && cii.getContainingGraph() == this.currentActor) {
       // Connect the interface to the incoming dependencies from the outer
       // graph
       ConfigInputPort correspondingPort = null;
