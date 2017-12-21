@@ -14,8 +14,9 @@ PREESM Changelog
 * disable javadoc generation (source is available via the Dev Features and source plugins);
 * disable os specific archive format;
 * Add dependency to RCPTT in the dev feature;
-* Refactor the PiMM Model
-* Remove Multi* Tasks
+* Refactor the PiMM Model;
+* Remove Multi* Tasks;
+* split ui plugins into dedicated plugins (PiSDF, scenario, SDF);
 
 ### Bug fix
 * fix issue #51
