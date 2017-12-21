@@ -47,7 +47,6 @@ import org.ietr.preesm.core.scenarios.generator.ScenariosGenerator;
 import org.ietr.preesm.ui.Activator;
 import org.ietr.preesm.ui.wizards.PreesmProjectNature;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class for pop-up menu on IProjects, allowing to generate PreesmScenarios from the content of the Algo and Archi folders.
  *
@@ -75,7 +74,7 @@ public class ScenariosGeneratorPopup extends AbstractHandler {
       }
 
     } catch (final Exception e) {
-      e.printStackTrace();
+      throw new ExecutionException("Could not generate scenarios", e);
     }
     return null;
   }

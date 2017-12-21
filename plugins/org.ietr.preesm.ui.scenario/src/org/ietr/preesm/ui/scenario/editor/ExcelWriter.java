@@ -46,7 +46,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.events.SelectionListener;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 
-// TODO: Auto-generated Javadoc
 /**
  * Abstract class, must be implementing when exporting Timings, or variables into an excel sheet.
  *

@@ -46,7 +46,6 @@
    <!-- Editors defined by this plugin -->
    <extension
          point="org.eclipse.ui.editors">
-      <!-- TOMOVE -->
       <editor
             class="org.ietr.preesm.ui.scenario.editor.ScenarioEditor"
             default="true"
@@ -56,10 +55,9 @@
             name="Preesm scenario editor">
       </editor>
    </extension>
-   
+
    <extension
          point="org.eclipse.ui.newWizards">
-      <!-- new Scenario TOMOVE -->
       <wizard
             category="org.ietr.preesm.category"
             class="org.ietr.preesm.ui.wizards.NewScenarioFileWizard"
@@ -73,11 +71,10 @@
          </description>
       </wizard>
    </extension>
-   
+
    <!-- Navigator content -->
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">
-     <!-- Scenario Wizard ref TOMOVE -->
 	 <commonWizard type="new"
 	   wizardId="org.ietr.preesm.core.ui.wizards.NewScenarioFileWizard">
 	     <enablement>
@@ -88,7 +85,7 @@
 	     </enablement>
 	 </commonWizard>
    </extension>
-   
+
    <!-- Preesm Menus -->
    <extension
          point="org.eclipse.ui.menus">
@@ -126,7 +123,7 @@
          </menu>
       </menuContribution>
    </extension>
-   
+
    <!-- Preesm commands (for menus) -->
    <extension
          point="org.eclipse.ui.commands">
