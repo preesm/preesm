@@ -66,15 +66,6 @@
             id="org.ietr.preesm.ui.editor.graph"
             name="Preesm Network Editor">
       </editor>
-      <!-- TOMOVE -->
-      <editor
-            class="org.ietr.preesm.ui.scenario.editor.ScenarioEditor"
-            default="true"
-            extensions="scenario"
-            icon="icons/preesm4mini.PNG"
-            id="org.ietr.preesm.ui.scenario.editor.ScenarioEditor"
-            name="Preesm scenario editor">
-      </editor>
       <editor
             class="org.eclipse.ui.editors.text.TextEditor"
             default="false"
@@ -206,19 +197,6 @@
             Create a new Preesm project
          </description>
       </wizard>
-      <!-- new Scenario TOMOVE -->
-      <wizard
-            category="org.ietr.preesm.category"
-            class="org.ietr.preesm.ui.wizards.NewScenarioFileWizard"
-            hasPages="true"
-            icon="icons/preesm4mini.PNG"
-            id="org.ietr.preesm.core.ui.wizards.NewScenarioFileWizard"
-            name="Preesm Scenario"
-            project="false">
-         <description>
-            Create a new scenario file
-         </description>
-      </wizard>
       <!-- new PiSDF Algo TOMOVE -->
       <wizard
             canFinishEarly="false"
@@ -283,7 +261,6 @@
      </commonFilter>
 
      <!-- PiSDF Wizard ref -->
-     <!-- Scenario Wizard ref TOMOVE -->
 	 <commonWizard type="new"
 	   wizardId="org.ietr.preesm.experiment.ui.pimm.wizards.NewPiMMWizard">
 	     <enablement>
@@ -318,16 +295,6 @@
 	     </enablement>
 	 </commonWizard>
 
-     <!-- Scenario Wizard ref TOMOVE -->
-	 <commonWizard type="new"
-	   wizardId="org.ietr.preesm.core.ui.wizards.NewScenarioFileWizard">
-	     <enablement>
-		   <or>
-		    <adapt type="org.eclipse.core.resources.IFolder" />
-		    <adapt type="org.eclipse.core.resources.IProject" />
-		   </or>
-	     </enablement>
-	 </commonWizard>
 
      <!-- Preesm project Wizard ref -->
 	 <commonWizard type="new"
@@ -1441,30 +1408,6 @@
                   </with>
                </visibleWhen>
             </command>
-            <!-- generate a default empty scenario in the selected project -->
-            <command
-                  commandId="org.ietr.preesm.ui.command.ScenarioGenerator"
-                  icon="icons/preesm4mini.PNG"
-                  label="Generate Scenario"
-                  style="push">
-               <visibleWhen
-                     checkEnabled="true">
-                  <with
-                        variable="selection">
-                     <iterate
-                           ifEmpty="false"
-                           operator="and">
-                        <adapt
-                              type="org.eclipse.core.resources.IProject">
-                           <test
-                                 property="org.eclipse.core.resources.projectNature"
-                                 value="org.ietr.preesm.core.ui.wizards.nature">
-                           </test>
-                        </adapt>
-                     </iterate>
-                  </with>
-               </visibleWhen>
-            </command>
             <!-- run the selected workflow -->
             <command
                   commandId="org.ietr.preesm.ui.command.RunWorkflow"
@@ -1529,10 +1472,6 @@
             name="Generate Diagram file from PiMM Graph">
       </command>
       <command
-            id="org.ietr.preesm.ui.command.ScenarioGenerator"
-            name="Scenario Generator">
-      </command>
-      <command
             id="org.ietr.preesm.ui.command.RunWorkflow"
             name="Run Workflow">
       </command>
@@ -1548,10 +1487,6 @@
       <handler
             class="org.ietr.preesm.ui.pimm.checker.popup.actions.PiMM2DiagramGeneratorPopup"
             commandId="org.ietr.preesm.ui.command.PiMM2Diagram">
-      </handler>
-      <handler
-            class="org.ietr.preesm.ui.pimm.checker.popup.actions.ScenariosGeneratorPopup"
-            commandId="org.ietr.preesm.ui.command.ScenarioGenerator">
       </handler>
       <handler
             class="org.ietr.preesm.ui.pimm.checker.popup.actions.WorkflowRunnerPopup"
