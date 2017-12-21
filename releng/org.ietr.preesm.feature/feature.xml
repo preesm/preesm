@@ -52,7 +52,7 @@
       Copyright (c) 2008-2017, IETR/INSA Rennes. All rights reserved.
    </copyright>
 
-   <license url="http://www.cecill.info"><![CDATA[
+   <license url="http://www.cecill.info">
       CeCILL-C FREE SOFTWARE LICENSE AGREEMENT
 
 
@@ -73,7 +73,7 @@ the two main principles guiding its drafting:
 The authors of the CeCILL-C (for Ce[a] C[nrs] I[nria] L[ogiciel] L[ibre])
 license are:
 
-Commissariat à l&apos;Energie Atomique - CEA, a public scientific, technical
+Commissariat à l&amp;apos;Energie Atomique - CEA, a public scientific, technical
 and industrial research establishment, having its principal place of
 business at 25 rue Leblanc, immeuble Le Ponant D, 75015 Paris, France.
 
@@ -98,12 +98,12 @@ the software so as to contribute to its evolution.
 
 In consideration of access to the source code and the rights to copy,
 modify and redistribute granted by the license, users are provided only
-with a limited warranty and the software&apos;s author, the holder of the
+with a limited warranty and the software&amp;apos;s author, the holder of the
 economic rights, and the successive licensors only have limited liability.
 
 In this respect, the risks associated with loading, using, modifying
 and/or developing or reproducing the software by the user are brought to
-the user&apos;s attention, given its Free Software status, which may make it
+the user&amp;apos;s attention, given its Free Software status, which may make it
 complicated to use, with the result that its use is reserved for
 developers and experienced professionals having in-depth computer
 knowledge. Users are therefore encouraged to load and test the
@@ -127,17 +127,17 @@ Agreement: means this license agreement, and its possible subsequent
 versions and annexes.
 
 Software: means the software in its Object Code and/or Source Code form
-and, where applicable, its documentation, &quot;as is&quot; when the Licensee
+and, where applicable, its documentation, &amp;quot;as is&amp;quot; when the Licensee
 accepts the Agreement.
 
 Initial Software: means the Software in its Source Code and possibly its
-Object Code form and, where applicable, its documentation, &quot;as is&quot; when
+Object Code form and, where applicable, its documentation, &amp;quot;as is&amp;quot; when
 it is first distributed under the terms and conditions of the Agreement.
 
 Modified Software: means the Software modified by at least one
 Integrated Contribution.
 
-Source Code: means all the Software&apos;s instructions and program lines to
+Source Code: means all the Software&amp;apos;s instructions and program lines to
 which access is required so as to modify the Software.
 
 Object Code: means the binary files originating from the compilation of
@@ -282,7 +282,7 @@ complies with all the provisions of the Agreement and is accompanied by:
 
    1. a copy of the Agreement,
 
-   2. a notice relating to the limitation of both the Licensor&apos;s
+   2. a notice relating to the limitation of both the Licensor&amp;apos;s
       warranty and liability as set forth in Articles 8 and 9,
 
 and that, in the event that only the Object Code of the Software is
@@ -305,7 +305,7 @@ complies with all the provisions of the Agreement and is accompanied by:
 
    1. a copy of the Agreement,
 
-   2. a notice relating to the limitation of both the Licensor&apos;s
+   2. a notice relating to the limitation of both the Licensor&amp;apos;s
       warranty and liability as set forth in Articles 8 and 9,
 
 and that, in the event that only the object code of the Modified
@@ -424,9 +424,9 @@ entitled to claim compensation for any direct loss it may have suffered
 from the Software as a result of a fault on the part of the relevant
 Licensor, subject to providing evidence thereof.
 
-8.2 The Licensor&apos;s liability is limited to the commitments made under
+8.2 The Licensor&amp;apos;s liability is limited to the commitments made under
 this Agreement and shall not be incurred as a result of in particular:
-(i) loss due the Licensee&apos;s total or partial failure to fulfill its
+(i) loss due the Licensee&amp;apos;s total or partial failure to fulfill its
 obligations, (ii) direct or consequential loss that is suffered by the
 Licensee due to the use or performance of the Software, and (iii) more
 generally, any consequential loss. In particular the Parties expressly
@@ -443,7 +443,7 @@ any or all compensation from the Licensor.
 9.1 The Licensee acknowledges that the scientific and technical
 state-of-the-art when the Software was distributed did not enable all
 possible uses to be tested and verified, nor for the presence of
-possible defects to be detected. In this respect, the Licensee&apos;s
+possible defects to be detected. In this respect, the Licensee&amp;apos;s
 attention has been drawn to the risks associated with loading, using,
 modifying and/or developing and reproducing the Software which are
 reserved for experienced users.
@@ -457,7 +457,7 @@ or properties.
 to grant all the rights over the Software (including in particular the
 rights set forth in Article 5).
 
-9.3 The Licensee acknowledges that the Software is supplied &quot;as is&quot; by
+9.3 The Licensee acknowledges that the Software is supplied &amp;quot;as is&amp;quot; by
 the Licensor without any other express or tacit warranty, other than
 that provided for in Article 9.2 and, in particular, without any warranty
 as to its commercial value, its secured, safe, innovative or relevant
@@ -465,8 +465,8 @@ nature.
 
 Specifically, the Licensor does not warrant that the Software is free
 from any error, that it will operate without interruption, that it will
-be compatible with the Licensee&apos;s own equipment and software
-configuration, nor that it will meet the Licensee&apos;s requirements.
+be compatible with the Licensee&amp;apos;s own equipment and software
+configuration, nor that it will meet the Licensee&amp;apos;s requirements.
 
 9.4 The Licensor does not either expressly or tacitly warrant that the
 Software does not infringe any third party intellectual property right
@@ -479,7 +479,7 @@ the Licensee, the Licensor shall provide it with technical and legal
 assistance for its defense. Such technical and legal assistance shall be
 decided on a case-by-case basis between the relevant Licensor and the
 Licensee pursuant to a memorandum of understanding. The Licensor
-disclaims any and all liability as regards the Licensee&apos;s use of the
+disclaims any and all liability as regards the Licensee&amp;apos;s use of the
 name of the Software. No warranty is given as regards the existence of
 prior rights over the name of the Software or as regards the existence
 of a trademark.
@@ -568,32 +568,20 @@ disagreements or disputes shall be referred to the Paris Courts having
 jurisdiction, by the more diligent Party.
 
 
-Version 1.0 dated 2006-09-05.]]>
+Version 1.0 dated 2006-09-05.
    </license>
 
-   <!-- The following section tells where to lookup missing imported features -->
    <url>
-      <!-- Eclipse main repos -->
       <discovery label="Oxygen" url="http://mirror.ibcp.fr/pub/eclipse/releases/oxygen/"/>
       <discovery label="Oxygen Updates" url="http://mirror.ibcp.fr/pub/eclipse/eclipse/updates/4.7"/>
-
-      <!-- TMF Repo for latest xtend -->
       <discovery label="TMF Releases" url="http://mirror.ibcp.fr/pub/eclipse/modeling/tmf/xtext/updates/releases/"/>
-
-      <!-- Preesm Repo -->
       <discovery label="Preesm" url="http://preesm.sourceforge.net/gensite/update-site/complete/"/>
    </url>
 
    <requires>
-      <!-- Modeling runtime (from Eclipse repos)  -->
       <import feature="org.eclipse.xtext.xbase.lib" version="2.11" match="greaterOrEqual"/>
-
-      <!-- TM Terminal (from Eclipse repos) -->
       <import feature="org.eclipse.tm.terminal.feature"/>
-
-      <!-- C Editor within Eclipse (from Eclipse repos)  -->
       <import feature="org.eclipse.cdt"/>
-
    </requires>
 
    <plugin
@@ -654,6 +642,13 @@ Version 1.0 dated 2006-09-05.]]>
 
    <plugin
          id="org.ietr.preesm.ui"
+         download-size="0"
+         install-size="0"
+         version="2.5.4.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="org.ietr.preesm.ui.pimm"
          download-size="0"
          install-size="0"
          version="2.5.4.qualifier"

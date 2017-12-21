@@ -485,6 +485,7 @@
     <module>plugins/org.ietr.preesm.pimm.algorithm</module>
 
     <module>plugins/org.ietr.preesm.ui</module>
+    <module>plugins/org.ietr.preesm.ui.pimm</module>
     <module>plugins/org.ietr.preesm.ui.scenario</module>
 
     <module>test-fragments</module>
