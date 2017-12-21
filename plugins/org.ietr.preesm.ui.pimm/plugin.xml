@@ -239,15 +239,15 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="org.ietr.preesm.ui.pimm.checker.popup.actions.PiMMAlgorithmCheckerPopup"
+            class="org.ietr.preesm.ui.pimm.popup.actions.PiMMAlgorithmCheckerPopup"
             commandId="org.ietr.preesm.ui.command.PimmChecker">
       </handler>
       <handler
-            class="org.ietr.preesm.ui.pimm.checker.popup.actions.PiMM2DiagramGeneratorPopup"
+            class="org.ietr.preesm.ui.pimm.popup.actions.PiMM2DiagramGeneratorPopup"
             commandId="org.ietr.preesm.ui.command.PiMM2Diagram">
       </handler>
       <handler
-            class="org.ietr.preesm.ui.pimm.checker.popup.actions.WorkflowRunnerPopup"
+            class="org.ietr.preesm.ui.pimm.popup.actions.WorkflowRunnerPopup"
             commandId="org.ietr.preesm.ui.command.RunWorkflow">
       </handler>
    </extension>

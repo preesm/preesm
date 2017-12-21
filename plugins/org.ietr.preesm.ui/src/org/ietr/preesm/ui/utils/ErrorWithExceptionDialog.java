@@ -42,7 +42,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
-import org.ietr.preesm.ui.Activator;
+import org.ietr.preesm.ui.PreesmUIPlugin;
 
 /**
  *
@@ -73,10 +73,10 @@ public class ErrorWithExceptionDialog {
     // Split output by OS-independend new-line
     for (final String line : trace.split(System.getProperty("line.separator"))) {
       // build & add status
-      childStatuses.add(new Status(IStatus.ERROR, Activator.PLUGIN_ID, line));
+      childStatuses.add(new Status(IStatus.ERROR, PreesmUIPlugin.PLUGIN_ID, line));
     }
 
-    final MultiStatus ms = new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR, childStatuses.toArray(new Status[] {}), // convert to array of statuses
+    final MultiStatus ms = new MultiStatus(PreesmUIPlugin.PLUGIN_ID, IStatus.ERROR, childStatuses.toArray(new Status[] {}), // convert to array of statuses
         t.getLocalizedMessage(), t);
 
     ErrorDialog.openError(null, "Title", msg, ms);

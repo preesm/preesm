@@ -35,7 +35,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.ui.pimm.checker.popup.actions;
+package org.ietr.preesm.ui.scenario.popup.actions;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -44,7 +44,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IWorkbenchPage;
 import org.ietr.preesm.core.scenarios.generator.ScenariosGenerator;
-import org.ietr.preesm.ui.Activator;
+import org.ietr.preesm.ui.PreesmUIPlugin;
 import org.ietr.preesm.ui.wizards.PreesmProjectNature;
 
 /**
@@ -64,7 +64,7 @@ public class ScenariosGeneratorPopup extends AbstractHandler {
     final ScenariosGenerator generator = new ScenariosGenerator();
     try {
       // Get the selected IProject
-      final IWorkbenchPage page = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+      final IWorkbenchPage page = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
       final TreeSelection selection = (TreeSelection) page.getSelection();
       final IProject project = (IProject) selection.getFirstElement();
       // If it is a Preesm project, generate the PreesmScenarios from the

@@ -34,7 +34,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.ui.pimm.checker.popup.actions;
+package org.ietr.preesm.ui.pimm.popup.actions;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -47,7 +47,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 import org.ietr.preesm.pimm.algorithm.checker.PiMMAlgorithmChecker;
-import org.ietr.preesm.ui.Activator;
+import org.ietr.preesm.ui.PreesmUIPlugin;
 
 /**
  * Class to launch a PiGraph check through pop-up menu.
@@ -76,7 +76,7 @@ public class PiMMAlgorithmCheckerPopup extends AbstractHandler {
     final PiMMAlgorithmChecker checker = new PiMMAlgorithmChecker();
     try {
 
-      final IWorkbenchPage page = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+      final IWorkbenchPage page = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
       final TreeSelection selection = (TreeSelection) page.getSelection();
       final IFile file = (IFile) selection.getFirstElement();
       final PiGraph graph = PiParser.getPiGraph(file.getFullPath().toString());

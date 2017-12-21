@@ -61,7 +61,7 @@ import org.eclipse.swt.widgets.Display;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiResourceImpl;
 import org.ietr.preesm.pimm.algorithm.checker.PiMMAlgorithmChecker;
-import org.ietr.preesm.ui.Activator;
+import org.ietr.preesm.ui.PreesmUIPlugin;
 
 /**
  * Class inheriting from the {@link DefaultMarkerBehavior}. This class was created to define a custom {@link DefaultMarkerBehavior} that does not reset problems
@@ -155,7 +155,7 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
             final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, msgs.getValue());
             final PictogramElement pictogramElement = pes.get(0);
             final String uriFragment = pictogramElement.eResource().getURIFragment(pictogramElement);
-            final BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.WARNING, Activator.PLUGIN_ID, 0, msg,
+            final BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.WARNING, PreesmUIPlugin.PLUGIN_ID, 0, msg,
                 new Object[] { pictogramElement, uriFragment });
 
             result.add(d);
@@ -167,7 +167,7 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
             final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, msgs.getValue());
             final PictogramElement pictogramElement = pes.get(0);
             final String uriFragment = pictogramElement.eResource().getURIFragment(pictogramElement);
-            final BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.ERROR, Activator.PLUGIN_ID, 0, msg,
+            final BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.ERROR, PreesmUIPlugin.PLUGIN_ID, 0, msg,
                 new Object[] { pictogramElement, uriFragment });
 
             result.add(d);
@@ -210,7 +210,7 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
     final TransactionalEditingDomain editingDomain = this.diagramBehavior.getEditingDomain();
     if (this.updateProblemIndication && (editingDomain != null)) {
       final ResourceSet resourceSet = editingDomain.getResourceSet();
-      final BasicDiagnostic diagnostic = new BasicDiagnostic(Diagnostic.OK, Activator.PLUGIN_ID, 0, null, new Object[] { resourceSet });
+      final BasicDiagnostic diagnostic = new BasicDiagnostic(Diagnostic.OK, PreesmUIPlugin.PLUGIN_ID, 0, null, new Object[] { resourceSet });
       for (final Diagnostic childDiagnostic : this.resourceToDiagnosticMap.values()) {
         if (childDiagnostic.getSeverity() != Diagnostic.OK) {
           diagnostic.add(childDiagnostic);

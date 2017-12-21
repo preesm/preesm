@@ -60,7 +60,7 @@
          point="org.eclipse.ui.newWizards">
       <wizard
             category="org.ietr.preesm.category"
-            class="org.ietr.preesm.ui.wizards.NewScenarioFileWizard"
+            class="org.ietr.preesm.ui.scenario.wizards.NewScenarioFileWizard"
             hasPages="true"
             icon="icons/preesm4mini.PNG"
             id="org.ietr.preesm.core.ui.wizards.NewScenarioFileWizard"
@@ -137,7 +137,7 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="org.ietr.preesm.ui.pimm.checker.popup.actions.ScenariosGeneratorPopup"
+            class="org.ietr.preesm.ui.scenario.popup.actions.ScenariosGeneratorPopup"
             commandId="org.ietr.preesm.ui.command.ScenarioGenerator">
       </handler>
    </extension>

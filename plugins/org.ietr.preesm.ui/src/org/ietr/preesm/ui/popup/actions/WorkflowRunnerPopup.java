@@ -32,7 +32,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.ui.pimm.checker.popup.actions;
+package org.ietr.preesm.ui.popup.actions;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -50,7 +50,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
 import org.ietr.dftools.ui.workflow.launch.WorkflowLaunchShortcut;
-import org.ietr.preesm.ui.Activator;
+import org.ietr.preesm.ui.PreesmUIPlugin;
 
 /**
  *
@@ -80,7 +80,7 @@ public class WorkflowRunnerPopup extends AbstractHandler {
         if (org.ietr.dftools.graphiti.ui.properties.PropertiesConstants.CONTRIBUTOR_ID.equals(contributorId)) {
           // get there when the active selection is within a tab with id PropertiesConstants.CONTRIBUTOR_ID from Graphiti package.
           // this is one way to make sure the command is triggered from Graphiti editor
-          final IWorkbenchPage page = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+          final IWorkbenchPage page = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
           final IEditorPart activeEditor = page.getActiveEditor();
           final IEditorInput input = activeEditor.getEditorInput();
           workflowFile = ResourceUtil.getFile(input);

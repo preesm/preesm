@@ -32,9 +32,10 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.ui.pimm.checker.popup.actions;
+package org.ietr.preesm.ui.pimm.popup.actions;
 
 import java.io.IOException;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -81,7 +82,7 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
-import org.ietr.preesm.ui.Activator;
+import org.ietr.preesm.ui.PreesmUIPlugin;
 import org.ietr.preesm.ui.pimm.diagram.PiMMDiagramEditor;
 import org.ietr.preesm.ui.pimm.features.PasteFeature;
 import org.ietr.preesm.ui.pimm.layout.AutoLayoutFeature;
@@ -97,7 +98,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
   @Override
   public Object execute(final ExecutionEvent event) throws ExecutionException {
 
-    final IWorkbench workbench = Activator.getDefault().getWorkbench();
+    final IWorkbench workbench = PreesmUIPlugin.getDefault().getWorkbench();
     final Shell shell = workbench.getModalDialogShellProvider().getShell();
     final IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
     final TreeSelection selection = (TreeSelection) page.getSelection();
@@ -135,7 +136,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
   }
 
   private void closeEditorIfOpen(final IPath diagramFilePath) {
-    final IWorkbench workbench = Activator.getDefault().getWorkbench();
+    final IWorkbench workbench = PreesmUIPlugin.getDefault().getWorkbench();
     final IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
     final IEditorPart activeEditor = page.getActiveEditor();
     if (activeEditor instanceof PiMMDiagramEditor) {
@@ -217,7 +218,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
   private void openAndPopulateDiagram(final IFile diagramFile) throws PartInitException {
 
     // open editor
-    final IWorkbench workbench = Activator.getDefault().getWorkbench();
+    final IWorkbench workbench = PreesmUIPlugin.getDefault().getWorkbench();
     final IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
     final IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(diagramFile.getName());
 

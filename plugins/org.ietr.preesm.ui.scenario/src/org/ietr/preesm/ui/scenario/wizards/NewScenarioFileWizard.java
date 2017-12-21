@@ -34,7 +34,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.ui.wizards;
+package org.ietr.preesm.ui.scenario.wizards;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
