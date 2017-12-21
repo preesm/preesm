@@ -1,9 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm UI
-Bundle-SymbolicName: org.ietr.preesm.ui;singleton:=true
+Bundle-SymbolicName: org.ietr.preesm.ui.pimm;singleton:=true
 Bundle-Version: 2.5.4.qualifier
-Bundle-Activator: org.ietr.preesm.ui.Activator
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
  org.eclipse.ui.editors,
@@ -17,13 +16,10 @@ Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
  net.sourceforge.jexcelapi.jxl;bundle-version="2.6.10",
  org.ietr.dftools.ui;bundle-version="1.2.7";visibility:=reexport,
  org.ietr.preesm.core,
- org.ietr.preesm.pimm.algorithm
+ org.ietr.preesm.pimm.algorithm,
+ org.ietr.preesm.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
-Export-Package: org.ietr.preesm.ui,
- org.ietr.preesm.ui.console,
- org.ietr.preesm.ui.perspective,
- org.ietr.preesm.ui.utils,
- org.ietr.preesm.ui.wizards
+Export-Package: org.ietr.preesm.ui.pimm.features
 
