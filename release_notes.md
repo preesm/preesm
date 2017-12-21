@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 2.6.0
+*2017.12.21*
 
 ### New Feature
 * Add UI Testing via RCPTT;
