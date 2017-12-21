@@ -41,13 +41,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
@@ -61,15 +62,14 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMDefaultVisitor;
 
@@ -149,7 +149,7 @@ public class SpiderPreProcessVisitor extends PiMMDefaultVisitor {
   @Override
   public void visitPiGraph(final PiGraph pg) {
     visitAbstractActor(pg);
-    for (final AbstractActor a : pg.getVertices()) {
+    for (final AbstractActor a : pg.getActors()) {
       a.accept(this);
     }
     for (final Parameter p : pg.getParameters()) {
@@ -174,7 +174,7 @@ public class SpiderPreProcessVisitor extends PiMMDefaultVisitor {
     this.cfgOutPortIndices.put(aa, 0);
 
     // Visit configuration input ports to fill cfgInPortMap
-    visitAbstractVertex(aa);
+    visitConfigurable(aa);
     // Visit data ports to fill the dataPortMap
     for (final DataInputPort p : aa.getDataInputPorts()) {
       p.accept(this);
@@ -194,7 +194,7 @@ public class SpiderPreProcessVisitor extends PiMMDefaultVisitor {
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitAbstractVertex(org.ietr.preesm.experiment.model.pimm.AbstractVertex)
    */
   @Override
-  public void visitAbstractVertex(final AbstractVertex av) {
+  public void visitConfigurable(final Configurable av) {
     // Visit configuration input ports to fill cfgInPortMap
     for (final ConfigInputPort p : av.getConfigInputPorts()) {
       p.accept(this);
@@ -211,9 +211,9 @@ public class SpiderPreProcessVisitor extends PiMMDefaultVisitor {
     // Register associated function
     if (!(a instanceof PiGraph)) {
       this.functionMap.put(a, this.functionMap.size());
-      if (!(a.getRefinement() instanceof HRefinement)) {
+      if (!(a.getRefinement() instanceof CHeaderRefinement)) {
         WorkflowLogger.getLogger().warning("Actor " + a.getName() + " doesn't have correct refinement.");
-      } else if (((HRefinement) (a.getRefinement())).getInitPrototype() != null) {
+      } else if (((CHeaderRefinement) (a.getRefinement())).getInitPrototype() != null) {
         WorkflowLogger.getLogger().warning("Init function of Actor " + a.getName() + " will not be handled");
       }
     }
@@ -298,7 +298,7 @@ public class SpiderPreProcessVisitor extends PiMMDefaultVisitor {
     // Fix currentAbstractVertexName
     this.currentAbstractVertexName = "param_" + p.getName();
     // Visit configuration input ports to fill cfgInPortMap
-    visitAbstractVertex(p);
+    visitConfigurable(p);
     // Fill the setterMap
     this.setterMap.put(p, this.currentAbstractVertexName);
   }
@@ -439,7 +439,7 @@ public class SpiderPreProcessVisitor extends PiMMDefaultVisitor {
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitRefinement(org.ietr.preesm.experiment.model.pimm.Refinement)
    */
   @Override
-  public void visitRefinement(final Refinement r) {
+  public void visitRefinement(final PiSDFRefinement r) {
     throw new UnsupportedOperationException();
   }
 
@@ -469,7 +469,7 @@ public class SpiderPreProcessVisitor extends PiMMDefaultVisitor {
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitHRefinement(org.ietr.preesm.experiment.model.pimm.HRefinement)
    */
   @Override
-  public void visitHRefinement(final HRefinement hRefinement) {
+  public void visitHRefinement(final CHeaderRefinement hRefinement) {
     throw new UnsupportedOperationException();
   }
 

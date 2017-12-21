@@ -45,7 +45,7 @@
   <parent>
     <groupId>org.ietr.preesm</groupId>
     <artifactId>org.ietr.preesm.releng</artifactId>
-    <version>2.5.4</version>
+    <version>2.6.0</version>
     <relativePath>..</relativePath>
   </parent>
 
@@ -74,11 +74,6 @@
           </execution>
         </executions>
         <configuration>
-          <formats>
-            <linux>tar.gz</linux>
-            <macosx>tar.gz</macosx>
-            <win32>zip</win32>
-          </formats>
           <!-- see https://bugs.eclipse.org/bugs/show_bug.cgi?id=357503#c20 -->
           <products>
             <product>

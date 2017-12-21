@@ -37,27 +37,28 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Abstract Vertex</b></em>'. <!-- end-user-doc -->
  * <p>
@@ -67,11 +68,12 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#getDataInputPorts <em>Data Input Ports</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#getDataOutputPorts <em>Data Output Ports</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#getConfigOutputPorts <em>Config Output Ports</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#getContainingGraph <em>Containing Graph</em>}</li>
  * </ul>
  *
  * @generated
  */
-public abstract class AbstractActorImpl extends AbstractVertexImpl implements AbstractActor {
+public abstract class AbstractActorImpl extends ConfigurableImpl implements AbstractActor {
   /**
    * The cached value of the '{@link #getDataInputPorts() <em>Data Input Ports</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -131,6 +133,8 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements Ab
         return getDataOutputPorts();
       case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
         return getConfigOutputPorts();
+      case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
+        return getContainingGraph();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -156,8 +160,24 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements Ab
         return ((InternalEList<?>) getDataOutputPorts()).basicRemove(otherEnd, msgs);
       case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
         return ((InternalEList<?>) getConfigOutputPorts()).basicRemove(otherEnd, msgs);
+      case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
+        return basicSetContainingGraph(null, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public NotificationChain eBasicRemoveFromContainerFeature(final NotificationChain msgs) {
+    switch (eContainerFeatureID()) {
+      case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
+        return eInternalContainer().eInverseRemove(this, PiMMPackage.PI_GRAPH__ACTORS, PiGraph.class, msgs);
+    }
+    return super.eBasicRemoveFromContainerFeature(msgs);
   }
 
   /**
@@ -177,6 +197,8 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements Ab
         return (this.dataOutputPorts != null) && !this.dataOutputPorts.isEmpty();
       case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
         return (this.configOutputPorts != null) && !this.configOutputPorts.isEmpty();
+      case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
+        return getContainingGraph() != null;
     }
     return super.eIsSet(featureID);
   }
@@ -205,6 +227,9 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements Ab
       case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
         getConfigOutputPorts().clear();
         getConfigOutputPorts().addAll((Collection<? extends ConfigOutputPort>) newValue);
+        return;
+      case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
+        setContainingGraph((PiGraph) newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -268,6 +293,9 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements Ab
       case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
         getConfigOutputPorts().clear();
         return;
+      case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
+        setContainingGraph((PiGraph) null);
+        return;
     }
     super.eUnset(featureID);
   }
@@ -292,6 +320,57 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements Ab
    * @generated
    */
   @Override
+  public PiGraph getContainingGraph() {
+    if (eContainerFeatureID() != PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH) {
+      return null;
+    }
+    return (PiGraph) eInternalContainer();
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  public NotificationChain basicSetContainingGraph(final PiGraph newContainingGraph, NotificationChain msgs) {
+    msgs = eBasicSetContainer((InternalEObject) newContainingGraph, PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH, msgs);
+    return msgs;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public void setContainingGraph(final PiGraph newContainingGraph) {
+    if ((newContainingGraph != eInternalContainer())
+        || ((eContainerFeatureID() != PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH) && (newContainingGraph != null))) {
+      if (EcoreUtil.isAncestor(this, newContainingGraph)) {
+        throw new IllegalArgumentException("Recursive containment not allowed for " + toString());
+      }
+      NotificationChain msgs = null;
+      if (eInternalContainer() != null) {
+        msgs = eBasicRemoveFromContainer(msgs);
+      }
+      if (newContainingGraph != null) {
+        msgs = ((InternalEObject) newContainingGraph).eInverseAdd(this, PiMMPackage.PI_GRAPH__ACTORS, PiGraph.class, msgs);
+      }
+      msgs = basicSetContainingGraph(newContainingGraph, msgs);
+      if (msgs != null) {
+        msgs.dispatch();
+      }
+    } else if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH, newContainingGraph, newContainingGraph));
+    }
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
   public EList<DataPort> getAllDataPorts() {
     final BasicEList<DataPort> result = ECollections.newBasicEList();
     result.addAll(getDataInputPorts());
@@ -307,8 +386,8 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements Ab
   @Override
   public EList<Port> getAllConfigPorts() {
     final BasicEList<Port> result = ECollections.newBasicEList();
+    result.addAll(super.getAllConfigPorts());
     result.addAll(getConfigOutputPorts());
-    result.addAll(getConfigInputPorts());
     return ECollections.unmodifiableEList(result);
   }
 
@@ -325,47 +404,34 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements Ab
     return ECollections.unmodifiableEList(result);
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#getPortNamed(java.lang.String)
+   * @generated
    */
   @Override
-  public Port getPortNamed(final String portName) {
-    // If the super method return a port, return it
-    final Port p = super.getPortNamed(portName);
-    if (p != null) {
-      return p;
-    }
-
-    final List<Port> ports = new ArrayList<>(getDataInputPorts());
-
-    ports.addAll(getDataOutputPorts());
-    ports.addAll(getConfigOutputPorts());
-
-    for (final Object port : ports) {
-      final String name = ((Port) port).getName();
-      if ((name == null) && (portName == null)) {
-        return (Port) port;
-      }
-      if ((name != null) && name.equals(portName)) {
-        return (Port) port;
-      }
-    }
-    return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.AbstractActor#getPath()
-   */
-  @Override
-  public String getPath() {
-    if ((this.eContainer != null) && (this.eContainer instanceof AbstractActor)) {
-      return ((AbstractActor) this.eContainer).getPath() + "/" + getName();
+  public String getActorPath() {
+    if (getContainingGraph() != null) {
+      return getContainingGraph().getActorPath() + "/" + getName();
     }
     return getName();
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, NotificationChain msgs) {
+    switch (featureID) {
+      case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
+        if (eInternalContainer() != null) {
+          msgs = eBasicRemoveFromContainer(msgs);
+        }
+        return basicSetContainingGraph((PiGraph) otherEnd, msgs);
+    }
+    return super.eInverseAdd(otherEnd, featureID, msgs);
   }
 
   /*

@@ -1,6 +1,27 @@
 PREESM Changelog
 ================
 
+## Release version 2.6.0
+*2017.12.21*
+
+### New Feature
+* Add UI Testing via RCPTT;
+
+### Changes
+* update release script;
+* Update maven dependency plugin to 3.0.2;
+* Rename releng profile to doUpdateSite and impact release scripts;
+* disable javadoc generation (source is available via the Dev Features and source plugins);
+* disable os specific archive format;
+* Add dependency to RCPTT in the dev feature;
+* Refactor the PiMM Model;
+* Remove Multi* Tasks;
+* split ui plugins into dedicated plugins (PiSDF, scenario, SDF);
+
+### Bug fix
+* fix issue #51
+
+
 ## Release version 2.5.4
 *2017.12.04*
 

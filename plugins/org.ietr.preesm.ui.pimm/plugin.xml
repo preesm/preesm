@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+
+    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+
+    This software is a computer program whose purpose is to help prototyping
+    parallel applications using dataflow formalism.
+
+    This software is governed by the CeCILL  license under French law and
+    abiding by the rules of distribution of free software.  You can  use,
+    modify and/ or redistribute the software under the terms of the CeCILL
+    license as circulated by CEA, CNRS and INRIA at the following URL
+    "http://www.cecill.info".
+
+    As a counterpart to the access to the source code and  rights to copy,
+    modify and redistribute granted by the license, users are provided only
+    with a limited warranty  and the software's author,  the holder of the
+    economic rights,  and the successive licensors  have only  limited
+    liability.
+
+    In this respect, the user's attention is drawn to the risks associated
+    with loading,  using,  modifying and/or developing or reproducing the
+    software by the user in light of its specific status of free software,
+    that may mean  that it is complicated to manipulate,  and  that  also
+    therefore means  that it is reserved for developers  and  experienced
+    professionals having in-depth computer knowledge. Users are therefore
+    encouraged to load and test the software's suitability as regards their
+    requirements in conditions enabling the security of their systems and/or
+    data to be ensured and,  more generally, to use and operate it in the
+    same conditions as regards security.
+
+    The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL license and that you accept its terms.
+
+-->
+<?eclipse version="3.4"?>
+
+<plugin>
+
+   <!-- Graphiti Image Provider for PiMM -->
+   <extension
+         point="org.eclipse.graphiti.ui.imageProviders">
+      <imageProvider
+            class="org.ietr.preesm.ui.pimm.diagram.PiMMImageProvider"
+            id="org.ietr.preesm.experiment.ui.pimm.util.PiMMImageProvider">
+      </imageProvider>
+   </extension>
+
+   <!-- Override rename of PiMM files (.pi and .diagram) -->
+   <extension
+         point="org.eclipse.ltk.core.refactoring.renameParticipants">
+      <renameParticipant
+            class="org.ietr.preesm.ui.pimm.refactoring.RenamePi"
+            id="org.ietr.preesm.experiment.ui.pimm.refactoring.RenamePi"
+            name="RenamePi">
+         <enablement>
+            <and>
+               <instanceof
+                     value="org.eclipse.core.resources.IFile">
+               </instanceof>
+               <test
+                     property="org.eclipse.core.resources.extension"
+                     value="pi">
+               </test>
+            </and>
+         </enablement>
+      </renameParticipant>
+      <renameParticipant
+            class="org.ietr.preesm.ui.pimm.refactoring.RenameDiagram"
+            id="org.ietr.preesm.experiment.ui.pimm.refactoring.RenameDiagram"
+            name="RenameDiagram">
+         <enablement>
+            <and>
+               <instanceof
+                     value="org.eclipse.core.resources.IFile">
+               </instanceof>
+               <test
+                     property="org.eclipse.core.resources.extension"
+                     value="diagram">
+               </test>
+            </and>
+         </enablement>
+      </renameParticipant>
+   </extension>
+
+   <!-- Override copy of PiMM files (.pi and .diagram) -->
+   <extension
+         point="org.eclipse.ltk.core.refactoring.copyParticipants">
+      <copyParticipant
+            class="org.ietr.preesm.ui.pimm.refactoring.CopyPi"
+            id="org.ietr.preesm.experiment.ui.pimm.refactoring.CopyPi"
+            name="CopyPi">
+         <enablement>
+            <and>
+               <instanceof
+                     value="org.eclipse.core.resources.IFile">
+               </instanceof>
+               <test
+                     property="org.eclipse.core.resources.extension"
+                     value="pi">
+               </test>
+            </and>
+         </enablement>
+      </copyParticipant>
+      <copyParticipant
+            class="org.ietr.preesm.ui.pimm.refactoring.CopyDiagram"
+            id="org.ietr.preesm.experiment.ui.pimm.refactoring.CopyDiagram"
+            name="CopyDiagram">
+         <enablement>
+            <and>
+               <instanceof
+                     value="org.eclipse.core.resources.IFile">
+               </instanceof>
+               <test
+                     property="org.eclipse.core.resources.extension"
+                     value="diagram">
+               </test>
+            </and></enablement>
+      </copyParticipant>
+   </extension>
+
+   <!-- ?? Port Parameters and Delay; Actor; Fifo property tabs -->
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertySections">
+      <propertySections
+            contributorId="PiMM.PropertyContributor">
+         <propertySection
+               class="org.ietr.preesm.ui.pimm.properties.PortParameterAndDelayPropertiesSection"
+               filter="org.ietr.preesm.ui.pimm.properties.PiMMFilter"
+               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basic"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basic">
+         </propertySection>
+         <propertySection
+               class="org.ietr.preesm.ui.pimm.properties.ActorPropertiesSection"
+               filter="org.ietr.preesm.ui.pimm.properties.PiMMActorFilter"
+               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicActor"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor">
+         </propertySection>
+         <propertySection
+               class="org.ietr.preesm.ui.pimm.properties.FifoPropertiesSection"
+               filter="org.ietr.preesm.ui.pimm.properties.PiMMFifoFilter"
+               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicFifo"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicFifo">
+         </propertySection>
+      </propertySections>
+   </extension>
+   <!-- Graphiti Diagram Type for PiMM -->
+   <extension
+         point="org.eclipse.graphiti.ui.diagramTypes">
+      <diagramType
+            name="PiMM Diagram Type"
+            type="PiMM"
+            id="org.ietr.preesm.experiment.ui.pimm.pimmDiagramType">
+      </diagramType>
+   </extension>
+
+   <!-- Graphiti Diagram Type Provider for PiMM -->
+   <extension
+         point="org.eclipse.graphiti.ui.diagramTypeProviders">
+      <diagramTypeProvider
+            class="org.ietr.preesm.ui.pimm.diagram.PiMMDiagramTypeProvider"
+            context="org.ietr.preesm.experiment.ui.pimm"
+            id="org.ietr.preesm.experiment.ui.pimm.pimmDiagramTypeProvider"
+            name="PiMM Diagram Type Provider">
+         <diagramType
+               id="org.ietr.preesm.experiment.ui.pimm.pimmDiagramType">
+         </diagramType>
+         <imageProvider
+               id="org.ietr.preesm.experiment.ui.pimm.util.PiMMImageProvider">
+         </imageProvider>
+      </diagramTypeProvider>
+   </extension>
+
+   <!-- Editors defined by this plugin -->
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.ietr.preesm.ui.pimm.diagram.PiMMDiagramEditor"
+            contributorClass="org.eclipse.graphiti.ui.editor.DiagramEditorActionBarContributor"
+            default="true"
+            extensions="diagram"
+            icon="icons/pi.gif"
+            id="org.ietr.preesm.ui.pimm.editor.diagram"
+            matchingStrategy="org.eclipse.graphiti.ui.editor.DiagramEditorMatchingStrategy"
+            name="PiMM Diagram Editor">
+      </editor>
+      <editor
+            class="org.eclipse.ui.editors.text.TextEditor"
+            default="false"
+            extensions="pi"
+            icon="icons/pi.gif"
+            id="org.ietr.preesm.experiment.ui.pimm.editor"
+            name="PiMM Editor">
+      </editor>
+   </extension>
+
+   <!-- Wizards -->
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <!-- new PiSDF Algo TOMOVE -->
+      <wizard
+            canFinishEarly="false"
+            category="org.ietr.preesm.category"
+            class="org.ietr.preesm.ui.pimm.wizards.NewPiMMWizard"
+            hasPages="true"
+            icon="icons/pi.gif"
+            id="org.ietr.preesm.experiment.ui.pimm.wizards.NewPiMMWizard"
+            name="Preesm Algorithm (PiSDF)"
+            project="true">
+         <description>
+            Create a new PiMM algorithm.
+         </description>
+      </wizard>
+   </extension>
+   <!-- Preesm commands (for menus) -->
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="org.ietr.preesm.ui.command.PimmChecker"
+            name="PiMM Checker">
+      </command>
+      <command
+            id="org.ietr.preesm.ui.command.PiMM2Diagram"
+            name="Generate Diagram file from PiMM Graph">
+      </command>
+      <command
+            id="org.ietr.preesm.ui.command.RunWorkflow"
+            name="Run Workflow">
+      </command>
+   </extension>
+
+   <!-- Preesm command handlers (for menus) -->
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="org.ietr.preesm.ui.pimm.popup.actions.PiMMAlgorithmCheckerPopup"
+            commandId="org.ietr.preesm.ui.command.PimmChecker">
+      </handler>
+      <handler
+            class="org.ietr.preesm.ui.pimm.popup.actions.PiMM2DiagramGeneratorPopup"
+            commandId="org.ietr.preesm.ui.command.PiMM2Diagram">
+      </handler>
+      <handler
+            class="org.ietr.preesm.ui.popup.actions.WorkflowRunnerPopup"
+            commandId="org.ietr.preesm.ui.command.RunWorkflow">
+      </handler>
+   </extension>
+
+
+   <!-- ??? -->
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
+      <propertyContributor
+            contributorId="PiMM.PropertyContributor">
+         <propertyCategory
+               category="org.ietr.preesm.experiment.model.transformation.properties.category.graph">
+         </propertyCategory>
+      </propertyContributor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
+      <propertyTabs
+            contributorId="PiMM.PropertyContributor">
+         <propertyTab
+               category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
+               id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basic"
+               label="Basic">
+         </propertyTab>
+         <propertyTab
+               category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
+               id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor"
+               label="Actor">
+         </propertyTab>
+         <propertyTab
+               category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
+               id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicFifo"
+               label="Fifo">
+         </propertyTab>
+      </propertyTabs>
+   </extension>
+
+
+   <!-- Navigator content -->
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <!-- *.layout filter -->
+      <commonFilter
+            activeByDefault="true"
+            class="org.ietr.preesm.ui.ProjectExplorerFilter"
+            description="Filters the *.layout files"
+            id="org.ietr.preesm.core.layoutfilefilter"
+            name="LayoutFileFilter"
+            visibleInUI="true">
+     </commonFilter>
+
+     <!-- PiSDF Wizard ref -->
+	 <commonWizard type="new"
+	   wizardId="org.ietr.preesm.experiment.ui.pimm.wizards.NewPiMMWizard">
+	     <enablement>
+		   <or>
+		    <adapt type="org.eclipse.core.resources.IFolder" />
+		    <adapt type="org.eclipse.core.resources.IProject" />
+		   </or>
+	     </enablement>
+	 </commonWizard>
+   </extension>
+   <!-- keyboard shortcuts -->
+   <extension
+         point="org.eclipse.ui.bindings">
+      <!-- ?? -->
+      <key
+            commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+            contextId="org.ietr.preesm.experiment.ui.pimm"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+ARROW_UP">
+         <parameter
+               id="org.eclipse.graphiti.ui.featureHint"
+               value="up">
+         </parameter>
+      </key>
+      <!-- ?? -->
+      <key
+            commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+            contextId="org.ietr.preesm.experiment.ui.pimm"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+ARROW_DOWN">
+         <parameter
+               id="org.eclipse.graphiti.ui.featureHint"
+               value="down">
+         </parameter>
+      </key>
+      <!-- CTRL + SHIFT + F => auto layout -->
+      <key
+            commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+            contextId="org.ietr.preesm.experiment.ui.pimm"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+F">
+         <parameter
+               id="org.eclipse.graphiti.ui.featureHint"
+               value="layout">
+         </parameter>
+      </key>
+      <!-- F2 => rename -->
+      <key
+            commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+            contextId="org.ietr.preesm.experiment.ui.pimm"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="F2">
+         <parameter
+               id="org.eclipse.graphiti.ui.featureHint"
+               value="rename">
+         </parameter>
+      </key>
+      <!-- F3 => show properties -->
+      <!-- TODO -->
+   </extension>
+
+   <!-- PiMM Editor context (extend all Graphiti Diagram Editors) -->
+   <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            id="org.ietr.preesm.experiment.ui.pimm"
+            name="PiMM editor context"
+            parentId="org.eclipse.graphiti.ui.diagramEditor">
+      </context>
+   </extension>
+
+   <!-- Preesm Menus -->
+   <extension
+         point="org.eclipse.ui.menus">
+      <!-- show properties view from any selected element in the PiMM Editor -->
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <command
+              commandId="org.eclipse.ui.views.showView"
+              icon="icons/pi.gif"
+              label="Show in Properties View"
+              style="push">
+           <parameter
+                 name="org.eclipse.ui.views.showView.viewId"
+                 value="org.eclipse.ui.views.PropertySheet">
+           </parameter>
+				<visibleWhen checkEnabled="true">
+					<and>
+					<with variable="activePartId">
+						<equals value="org.ietr.preesm.ui.pimm.editor.diagram"/>
+					</with>
+					</and>
+				</visibleWhen>
+        </command>
+      </menuContribution>
+      <!-- actions available in the project navigator (not PiMM specific) -->
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.ui.popup.any?before=additions">
+         <menu
+               icon="icons/preesmProject.png"
+               id="org.ietr.preesm.ui.menu1"
+               label="Preesm">
+            <!-- Check the selected pimm file -->
+            <command
+                  commandId="org.ietr.preesm.ui.command.PimmChecker"
+                  icon="icons/pi.gif"
+                  label="Check PiMM Model"
+                  style="push">
+               <visibleWhen
+                     checkEnabled="true">
+                  <with
+                        variable="selection">
+                     <iterate
+                           ifEmpty="false"
+                           operator="and">
+                        <adapt
+                              type="org.eclipse.core.resources.IResource">
+                           <test
+                                 property="org.eclipse.core.resources.projectNature"
+                                 value="org.ietr.preesm.core.ui.wizards.nature">
+                           </test>
+                           <test
+                                 property="org.eclipse.core.resources.extension"
+                                 value="pi">
+                           </test>
+                        </adapt>
+                     </iterate>
+                  </with>
+               </visibleWhen>
+            </command>
+            <!-- generation .diagram from the selected .pi file -->
+            <command
+                  commandId="org.ietr.preesm.ui.command.PiMM2Diagram"
+                  icon="icons/pi.gif"
+                  label="Generate .diagram"
+                  style="push">
+               <visibleWhen
+                     checkEnabled="true">
+                  <with
+                        variable="selection">
+                     <iterate
+                           ifEmpty="false"
+                           operator="and">
+                        <adapt
+                              type="org.eclipse.core.resources.IResource">
+                           <test
+                                 property="org.eclipse.core.resources.extension"
+                                 value="pi">
+                           </test>
+                        </adapt>
+                     </iterate>
+                  </with>
+               </visibleWhen>
+            </command>
+         </menu>
+      </menuContribution>
+   </extension>
+</plugin>

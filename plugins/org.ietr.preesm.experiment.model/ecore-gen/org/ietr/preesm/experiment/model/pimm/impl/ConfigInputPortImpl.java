@@ -42,12 +42,14 @@ import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
+import org.ietr.preesm.experiment.model.pimm.PortKind;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
@@ -58,6 +60,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigInputPortImpl#getIncomingDependency <em>Incoming Dependency</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigInputPortImpl#getConfigurable <em>Configurable</em>}</li>
  * </ul>
  *
  * @generated
@@ -73,11 +76,12 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
   protected Dependency incomingDependency;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
    */
   protected ConfigInputPortImpl() {
     super();
-    this.kind = PiIdentifiers.CONFIGURATION_INPUT_PORT;
   }
 
   /**
@@ -174,6 +178,66 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
   }
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public Configurable getConfigurable() {
+    if (eContainerFeatureID() != PiMMPackage.CONFIG_INPUT_PORT__CONFIGURABLE) {
+      return null;
+    }
+    return (Configurable) eInternalContainer();
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  public NotificationChain basicSetConfigurable(final Configurable newConfigurable, NotificationChain msgs) {
+    msgs = eBasicSetContainer((InternalEObject) newConfigurable, PiMMPackage.CONFIG_INPUT_PORT__CONFIGURABLE, msgs);
+    return msgs;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public void setConfigurable(final Configurable newConfigurable) {
+    if ((newConfigurable != eInternalContainer()) || ((eContainerFeatureID() != PiMMPackage.CONFIG_INPUT_PORT__CONFIGURABLE) && (newConfigurable != null))) {
+      if (EcoreUtil.isAncestor(this, newConfigurable)) {
+        throw new IllegalArgumentException("Recursive containment not allowed for " + toString());
+      }
+      NotificationChain msgs = null;
+      if (eInternalContainer() != null) {
+        msgs = eBasicRemoveFromContainer(msgs);
+      }
+      if (newConfigurable != null) {
+        msgs = ((InternalEObject) newConfigurable).eInverseAdd(this, PiMMPackage.CONFIGURABLE__CONFIG_INPUT_PORTS, Configurable.class, msgs);
+      }
+      msgs = basicSetConfigurable(newConfigurable, msgs);
+      if (msgs != null) {
+        msgs.dispatch();
+      }
+    } else if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.CONFIG_INPUT_PORT__CONFIGURABLE, newConfigurable, newConfigurable));
+    }
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public PortKind getKind() {
+    return PortKind.CFG_INPUT;
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @param otherEnd
@@ -193,6 +257,11 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
           msgs = ((InternalEObject) this.incomingDependency).eInverseRemove(this, PiMMPackage.DEPENDENCY__GETTER, Dependency.class, msgs);
         }
         return basicSetIncomingDependency((Dependency) otherEnd, msgs);
+      case PiMMPackage.CONFIG_INPUT_PORT__CONFIGURABLE:
+        if (eInternalContainer() != null) {
+          msgs = eBasicRemoveFromContainer(msgs);
+        }
+        return basicSetConfigurable((Configurable) otherEnd, msgs);
     }
     return super.eInverseAdd(otherEnd, featureID, msgs);
   }
@@ -214,8 +283,24 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
     switch (featureID) {
       case PiMMPackage.CONFIG_INPUT_PORT__INCOMING_DEPENDENCY:
         return basicSetIncomingDependency(null, msgs);
+      case PiMMPackage.CONFIG_INPUT_PORT__CONFIGURABLE:
+        return basicSetConfigurable(null, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public NotificationChain eBasicRemoveFromContainerFeature(final NotificationChain msgs) {
+    switch (eContainerFeatureID()) {
+      case PiMMPackage.CONFIG_INPUT_PORT__CONFIGURABLE:
+        return eInternalContainer().eInverseRemove(this, PiMMPackage.CONFIGURABLE__CONFIG_INPUT_PORTS, Configurable.class, msgs);
+    }
+    return super.eBasicRemoveFromContainerFeature(msgs);
   }
 
   /**
@@ -238,6 +323,8 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
           return getIncomingDependency();
         }
         return basicGetIncomingDependency();
+      case PiMMPackage.CONFIG_INPUT_PORT__CONFIGURABLE:
+        return getConfigurable();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -257,6 +344,9 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
       case PiMMPackage.CONFIG_INPUT_PORT__INCOMING_DEPENDENCY:
         setIncomingDependency((Dependency) newValue);
         return;
+      case PiMMPackage.CONFIG_INPUT_PORT__CONFIGURABLE:
+        setConfigurable((Configurable) newValue);
+        return;
     }
     super.eSet(featureID, newValue);
   }
@@ -273,6 +363,9 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
     switch (featureID) {
       case PiMMPackage.CONFIG_INPUT_PORT__INCOMING_DEPENDENCY:
         setIncomingDependency((Dependency) null);
+        return;
+      case PiMMPackage.CONFIG_INPUT_PORT__CONFIGURABLE:
+        setConfigurable((Configurable) null);
         return;
     }
     super.eUnset(featureID);
@@ -291,6 +384,8 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
     switch (featureID) {
       case PiMMPackage.CONFIG_INPUT_PORT__INCOMING_DEPENDENCY:
         return this.incomingDependency != null;
+      case PiMMPackage.CONFIG_INPUT_PORT__CONFIGURABLE:
+        return getConfigurable() != null;
     }
     return super.eIsSet(featureID);
   }

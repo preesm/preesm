@@ -40,7 +40,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 
-// TODO: Auto-generated Javadoc
 /**
  * Filtering the .layout files that do not need to be displayed in the file explorer
  *

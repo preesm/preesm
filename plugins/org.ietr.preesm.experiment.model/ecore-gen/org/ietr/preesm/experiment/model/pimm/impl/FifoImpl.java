@@ -46,6 +46,7 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
@@ -62,7 +63,6 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getSourcePort <em>Source Port</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getTargetPort <em>Target Port</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getDelay <em>Delay</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getId <em>Id</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getType <em>Type</em>}</li>
  * </ul>
  *
@@ -95,15 +95,6 @@ public class FifoImpl extends EObjectImpl implements Fifo {
    * @ordered
    */
   protected Delay delay;
-
-  /**
-   * The default value of the '{@link #getId() <em>Id</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see #getId()
-   * @generated
-   * @ordered
-   */
-  protected static final String ID_EDEFAULT = null;
 
   /**
    * The default value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -376,15 +367,15 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   @Override
   public String getId() {
 
-    final Port srcPort = getSourcePort();
-    final Port tgtPort = getTargetPort();
+    final DataPort srcPort = getSourcePort();
+    final DataPort tgtPort = getTargetPort();
 
     if ((srcPort == null) || (tgtPort == null)) {
       throw new RuntimeException("Fifo has no source or no target port.");
     }
 
-    final AbstractActor src = (AbstractActor) srcPort.eContainer();
-    final AbstractActor tgt = (AbstractActor) tgtPort.eContainer();
+    final AbstractActor src = srcPort.getContainingActor();
+    final AbstractActor tgt = tgtPort.getContainingActor();
 
     String id = src.getName();
     if ((srcPort.getName() != null) && !srcPort.getName().isEmpty()) {
@@ -396,19 +387,6 @@ public class FifoImpl extends EObjectImpl implements Fifo {
     }
 
     return id;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return true, if is sets the id
-   * @generated
-   */
-  @Override
-  public boolean isSetId() {
-    // TODO: implement this method to return whether the 'Id' attribute is set
-    // Ensure that you remove @generated or mark it @generated NOT
-    throw new UnsupportedOperationException();
   }
 
   /**
@@ -519,8 +497,6 @@ public class FifoImpl extends EObjectImpl implements Fifo {
         return basicGetTargetPort();
       case PiMMPackage.FIFO__DELAY:
         return getDelay();
-      case PiMMPackage.FIFO__ID:
-        return getId();
       case PiMMPackage.FIFO__TYPE:
         return getType();
     }
@@ -618,8 +594,6 @@ public class FifoImpl extends EObjectImpl implements Fifo {
         return this.targetPort != null;
       case PiMMPackage.FIFO__DELAY:
         return this.delay != null;
-      case PiMMPackage.FIFO__ID:
-        return isSetId();
       case PiMMPackage.FIFO__TYPE:
         return FifoImpl.TYPE_EDEFAULT == null ? this.type != null : !FifoImpl.TYPE_EDEFAULT.equals(this.type);
     }

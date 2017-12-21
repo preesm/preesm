@@ -119,16 +119,8 @@ public class PiIdentifiers {
   /** The Constant ROUND_BUFFER. */
   public static final String ROUND_BUFFER = "roundbuffer";
 
-  /** The Constant DATA_INPUT_INTERFACE. */
-  // DATA INPUT INTERFACES
-  public static final String DATA_INPUT_INTERFACE = "src";
-
   /** The Constant DATA_INPUT_INTERFACE_NAME. */
   public static final String DATA_INPUT_INTERFACE_NAME = PiIdentifiers.ID;
-
-  /** The Constant DATA_OUTPUT_INTERFACE. */
-  // DATA OUTPUT INTERFACES
-  public static final String DATA_OUTPUT_INTERFACE = "snk";
 
   /** The Constant DATA_OUTPUT_INTERFACE_NAME. */
   public static final String DATA_OUTPUT_INTERFACE_NAME = PiIdentifiers.ID;
@@ -143,16 +135,8 @@ public class PiIdentifiers {
   /** The Constant PARAMETER_EXPRESSION. */
   public static final String PARAMETER_EXPRESSION = PiIdentifiers.EXPR;
 
-  /** The Constant CONFIGURATION_INPUT_INTERFACE. */
-  // CONFIGURATION INPUT INTERFACES
-  public static final String CONFIGURATION_INPUT_INTERFACE = "cfg_in_iface";
-
   /** The Constant CONFIGURATION_INPUT_INTERFACE_NAME. */
   public static final String CONFIGURATION_INPUT_INTERFACE_NAME = PiIdentifiers.ID;
-
-  /** The Constant CONFIGURATION_OUTPUT_INTERFACE. */
-  // CONFIGURATION OUTPUT INTERFACES
-  public static final String CONFIGURATION_OUTPUT_INTERFACE = "cfg_out_iface";
 
   /** The Constant CONFIGURATION_OUTPUT_INTERFACE_NAME. */
   public static final String CONFIGURATION_OUTPUT_INTERFACE_NAME = PiIdentifiers.ID;
@@ -200,22 +184,6 @@ public class PiIdentifiers {
 
   /** The Constant PORT_MEMORY_ANNOTATION. */
   public static final String PORT_MEMORY_ANNOTATION = "annotation";
-
-  /** The Constant DATA_INPUT_PORT. */
-  // DATA INPUT PORTS
-  public static final String DATA_INPUT_PORT = "input";
-
-  /** The Constant DATA_OUTPUT_PORT. */
-  // DATA OUTPUT PORTS
-  public static final String DATA_OUTPUT_PORT = "output";
-
-  /** The Constant CONFIGURATION_INPUT_PORT. */
-  // CONFIGURATION INPUT PORTS
-  public static final String CONFIGURATION_INPUT_PORT = "cfg_input";
-
-  /** The Constant CONFIGURATION_OUPUT_PORT. */
-  // CONFIGURATION OUTPUT PORTS
-  public static final String CONFIGURATION_OUPUT_PORT = "cfg_output";
 
   /** The Constant EDGE. */
   // EDGES

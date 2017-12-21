@@ -220,11 +220,11 @@ public class CodegenHierarchicalModelGenerator {
           final SDFAbstractVertex a = i.getAssociatedEdge(s).getTarget();
           final SDFAbstractVertex b = i.getAssociatedEdge(s).getSource();
           if ((a instanceof SDFVertex) || (a instanceof SDFRoundBufferVertex) || (a instanceof SDFBroadcastVertex)) {
-            outputRepVertexs.add(a);
+            inputRepVertexs.add(a);
             // p("1 input target " + a.getName());
           }
           if ((b instanceof SDFVertex) || (b instanceof SDFRoundBufferVertex) || (b instanceof SDFBroadcastVertex)) {
-            inputRepVertexs.add(b);
+            outputRepVertexs.add(b);
             // p("2 input source " + b.getName());
           }
         }

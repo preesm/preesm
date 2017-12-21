@@ -48,6 +48,7 @@ import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
@@ -64,15 +65,15 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
-import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
+import org.ietr.preesm.experiment.model.pimm.PortKind;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 
 // TODO: Auto-generated Javadoc
@@ -124,6 +125,14 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
         return createPiGraph();
       case PiMMPackage.ACTOR:
         return createActor();
+      case PiMMPackage.BROADCAST_ACTOR:
+        return createBroadcastActor();
+      case PiMMPackage.JOIN_ACTOR:
+        return createJoinActor();
+      case PiMMPackage.FORK_ACTOR:
+        return createForkActor();
+      case PiMMPackage.ROUND_BUFFER_ACTOR:
+        return createRoundBufferActor();
       case PiMMPackage.DATA_INPUT_PORT:
         return createDataInputPort();
       case PiMMPackage.DATA_OUTPUT_PORT:
@@ -134,8 +143,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
         return createConfigOutputPort();
       case PiMMPackage.FIFO:
         return createFifo();
-      case PiMMPackage.INTERFACE_ACTOR:
-        return createInterfaceActor();
       case PiMMPackage.DATA_INPUT_INTERFACE:
         return createDataInputInterface();
       case PiMMPackage.DATA_OUTPUT_INTERFACE:
@@ -144,8 +151,10 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
         return createConfigInputInterface();
       case PiMMPackage.CONFIG_OUTPUT_INTERFACE:
         return createConfigOutputInterface();
-      case PiMMPackage.REFINEMENT:
-        return createRefinement();
+      case PiMMPackage.PI_SDF_REFINEMENT:
+        return createPiSDFRefinement();
+      case PiMMPackage.CHEADER_REFINEMENT:
+        return createCHeaderRefinement();
       case PiMMPackage.PARAMETER:
         return createParameter();
       case PiMMPackage.DEPENDENCY:
@@ -154,20 +163,10 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
         return createDelay();
       case PiMMPackage.EXPRESSION:
         return createExpression();
-      case PiMMPackage.HREFINEMENT:
-        return createHRefinement();
       case PiMMPackage.FUNCTION_PROTOTYPE:
         return createFunctionPrototype();
       case PiMMPackage.FUNCTION_PARAMETER:
         return createFunctionParameter();
-      case PiMMPackage.BROADCAST_ACTOR:
-        return createBroadcastActor();
-      case PiMMPackage.JOIN_ACTOR:
-        return createJoinActor();
-      case PiMMPackage.FORK_ACTOR:
-        return createForkActor();
-      case PiMMPackage.ROUND_BUFFER_ACTOR:
-        return createRoundBufferActor();
       default:
         throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
     }
@@ -190,6 +189,10 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
         return createDirectionFromString(eDataType, initialValue);
       case PiMMPackage.PORT_MEMORY_ANNOTATION:
         return createPortMemoryAnnotationFromString(eDataType, initialValue);
+      case PiMMPackage.PORT_KIND:
+        return createPortKindFromString(eDataType, initialValue);
+      case PiMMPackage.INTERFACE_KIND:
+        return createInterfaceKindFromString(eDataType, initialValue);
       case PiMMPackage.IPATH:
         return createIPathFromString(eDataType, initialValue);
       default:
@@ -214,6 +217,10 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
         return convertDirectionToString(eDataType, instanceValue);
       case PiMMPackage.PORT_MEMORY_ANNOTATION:
         return convertPortMemoryAnnotationToString(eDataType, instanceValue);
+      case PiMMPackage.PORT_KIND:
+        return convertPortKindToString(eDataType, instanceValue);
+      case PiMMPackage.INTERFACE_KIND:
+        return convertInterfaceKindToString(eDataType, instanceValue);
       case PiMMPackage.IPATH:
         return convertIPathToString(eDataType, instanceValue);
       default:
@@ -308,18 +315,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
-   * @return the interface actor
-   * @generated
-   */
-  @Override
-  public InterfaceActor createInterfaceActor() {
-    final InterfaceActorImpl interfaceActor = new InterfaceActorImpl();
-    return interfaceActor;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
    * @return the data input interface
    * @generated
    */
@@ -354,29 +349,25 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the refinement
    * @generated
    */
   @Override
-  public Refinement createRefinement() {
-    final RefinementImpl refinement = new RefinementImpl();
-    return refinement;
+  public PiSDFRefinement createPiSDFRefinement() {
+    final PiSDFRefinementImpl piSDFRefinement = new PiSDFRefinementImpl();
+    return piSDFRefinement;
   }
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @return the parameter
-   * @generated NOT
+   * @generated
    */
   @Override
   public Parameter createParameter() {
     final ParameterImpl parameter = new ParameterImpl();
-    // Set the expression to 1 to prevent from errors with division with
-    // default expression value (0)
-    parameter.getExpression().setString("1");
     return parameter;
   }
 
@@ -417,15 +408,14 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the h refinement
    * @generated
    */
   @Override
-  public HRefinement createHRefinement() {
-    final HRefinementImpl hRefinement = new HRefinementImpl();
-    return hRefinement;
+  public CHeaderRefinement createCHeaderRefinement() {
+    final CHeaderRefinementImpl cHeaderRefinement = new CHeaderRefinementImpl();
+    return cHeaderRefinement;
   }
 
   /**
@@ -615,6 +605,90 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
    */
   public String convertPortMemoryAnnotationToString(final EDataType eDataType, final Object instanceValue) {
     return convertPortMemoryAnnotation((PortMemoryAnnotation) instanceValue);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public PortKind createPortKind(final String literal) {
+    final PortKind result = PortKind.get(literal);
+    if (result == null) {
+      throw new IllegalArgumentException("The value '" + literal + "' is not a valid enumerator of '" + PiMMPackage.Literals.PORT_KIND.getName() + "'");
+    }
+    return result;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  public PortKind createPortKindFromString(final EDataType eDataType, final String initialValue) {
+    return createPortKind(initialValue);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public String convertPortKind(final PortKind instanceValue) {
+    return instanceValue == null ? null : instanceValue.toString();
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  public String convertPortKindToString(final EDataType eDataType, final Object instanceValue) {
+    return convertPortKind((PortKind) instanceValue);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public InterfaceKind createInterfaceKind(final String literal) {
+    final InterfaceKind result = InterfaceKind.get(literal);
+    if (result == null) {
+      throw new IllegalArgumentException("The value '" + literal + "' is not a valid enumerator of '" + PiMMPackage.Literals.INTERFACE_KIND.getName() + "'");
+    }
+    return result;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  public InterfaceKind createInterfaceKindFromString(final EDataType eDataType, final String initialValue) {
+    return createInterfaceKind(initialValue);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public String convertInterfaceKind(final InterfaceKind instanceValue) {
+    return instanceValue == null ? null : instanceValue.toString();
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  public String convertInterfaceKindToString(final EDataType eDataType, final Object instanceValue) {
+    return convertInterfaceKind((InterfaceKind) instanceValue);
   }
 
   /**

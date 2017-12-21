@@ -43,7 +43,7 @@ package org.ietr.preesm.experiment.model.pimm;
  * The following features are supported:
  * </p>
  * <ul>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.DataPort#getExpression <em>Expression</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.DataPort#getPortRateExpression <em>Port Rate Expression</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.DataPort#getAnnotation <em>Annotation</em>}</li>
  * </ul>
  *
@@ -53,30 +53,30 @@ package org.ietr.preesm.experiment.model.pimm;
  */
 public interface DataPort extends Port {
   /**
-   * Returns the value of the '<em><b>Expression</b></em>' containment reference. <!-- begin-user-doc -->
+   * Returns the value of the '<em><b>Port Rate Expression</b></em>' containment reference. <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Expression</em>' containment reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
    *
-   * @return the value of the '<em>Expression</em>' containment reference.
-   * @see #setExpression(Expression)
-   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDataPort_Expression()
+   * @return the value of the '<em>Port Rate Expression</em>' containment reference.
+   * @see #setPortRateExpression(Expression)
+   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDataPort_PortRateExpression()
    * @model containment="true" required="true"
    * @generated
    */
-  Expression getExpression();
+  Expression getPortRateExpression();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.DataPort#getExpression <em>Expression</em>}' containment reference. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.DataPort#getPortRateExpression <em>Port Rate Expression</em>}' containment reference.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @param value
-   *          the new value of the '<em>Expression</em>' containment reference.
-   * @see #getExpression()
+   *          the new value of the '<em>Port Rate Expression</em>' containment reference.
+   * @see #getPortRateExpression()
    * @generated
    */
-  void setExpression(Expression value);
+  void setPortRateExpression(Expression value);
 
   /**
    * Returns the value of the '<em><b>Annotation</b></em>' attribute. The literals are from the enumeration
@@ -106,5 +106,14 @@ public interface DataPort extends Port {
    * @generated
    */
   void setAnnotation(PortMemoryAnnotation value);
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='if (eContainer() instanceof AbstractActor) {\n return (AbstractActor)
+   *        eContainer();\n}\nreturn null;'"
+   * @generated
+   */
+  AbstractActor getContainingActor();
 
 } // DataPort

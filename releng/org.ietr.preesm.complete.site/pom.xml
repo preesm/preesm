@@ -45,7 +45,7 @@
   <parent>
     <groupId>org.ietr.preesm</groupId>
     <artifactId>org.ietr.preesm.releng</artifactId>
-    <version>2.5.4</version>
+    <version>2.6.0</version>
     <relativePath>..</relativePath>
   </parent>
 
@@ -64,41 +64,6 @@
           <skipArchive>true</skipArchive>
         </configuration>
       </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.4</version>
-        <executions>
-          <execution>
-            <id>javadoc-gen</id>
-            <phase />
-          </execution>
-          <execution>
-            <id>javadoc-aggregation</id>
-            <phase>package</phase>
-            <goals>
-              <goal>javadoc-no-fork</goal>
-            </goals>
-            <configuration>
-              <!-- switch on dependency-driven aggregation -->
-              <includeDependencySources>true</includeDependencySources>
-              <!-- include ONLY dependencies with same groupId -->
-              <dependencySourceIncludes>
-                <dependencySourceInclude>${project.groupId}:*</dependencySourceInclude>
-              </dependencySourceIncludes>
-              <!-- But exclude the coding policy jar, that has no source attached -->
-              <dependencySourceExcludes>
-                <dependencySourceExclude>org.ietr.preesm:coding-policy</dependencySourceExclude>
-              </dependencySourceExcludes>
-              <!-- make sure aggregated javadoc is put in the complete site -->
-              <reportOutputDirectory>${project.build.directory}/gensite/API/</reportOutputDirectory>
-              <destDir>${project.groupId}-${project.version}</destDir>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
       <plugin>
         <!-- ## NOTE: make sure this is after the tycho-p2-extras-plugin
           in the pom.xml text -->

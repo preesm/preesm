@@ -34,6 +34,7 @@
  */
 package org.ietr.preesm.experiment.model.pimm;
 
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.impl.ActorImpl;
 import org.junit.Assert;
 import org.junit.Test;
@@ -46,10 +47,11 @@ public class ActorTest {
   public void testCreateActor() {
     Actor actor = null;
     Assert.assertNull(actor);
-    actor = PiMMFactory.eINSTANCE.createActor();
+    actor = PiMMUserFactory.instance.createActor();
     Assert.assertNotNull(actor);
     Assert.assertTrue(ActorImpl.class.isInstance(actor));
-    Assert.assertNull(actor.getGraph());
+    final Refinement refinement = actor.getRefinement();
+    Assert.assertNull(refinement);
   }
 
 }

@@ -8,7 +8,7 @@ def javaToolID = "JDK-${javaVersion}"
 
 def mavenVersion = "3.5.0"
 def mavenToolID = "Maven-${mavenVersion}"
-def mavenOpts = "--errors --batch-mode -Dmaven.repo.local=m2-repository"
+def mavenOpts = "--errors --strict-checksums --batch-mode -Dmaven.repo.local=m2-repository"
 def mavenEnvOpt = "MAVEN_OPT=-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
 
 // tell Jenkins to remove 7 days old artifacts/builds and keep only 7 last ones
@@ -38,7 +38,7 @@ node {
 			,
 				'Validate POM': {
 					stage ('Validate POM') {
-						sh "mvn ${mavenOpts} -P releng -Dtycho.mode=maven help:help -q"
+						sh "mvn ${mavenOpts} -P doUpdateSite -Dtycho.mode=maven help:help -q"
 					}
 				}
 			)
@@ -48,7 +48,7 @@ node {
 					stage ('Resolve Maven Dependencies') {
 						retry(retryResolveCount) {
 							// resolve Maven dependencies (jars, plugins) for all modules
-							sh "mvn ${mavenOpts} -P releng dependency:go-offline -Dtycho.mode=maven"
+							sh "mvn ${mavenOpts} -P doUpdateSite dependency:go-offline -Dtycho.mode=maven"
 						}
 					}
 				}
@@ -62,7 +62,7 @@ node {
 						// tycho P2 resolver that will load all required dependencies
 						// This will allow to run next stages in offline mode
 						retry(retryResolveCount) {
-							sh "mvn ${mavenOpts} -P releng help:help"
+							sh "mvn ${mavenOpts} -P doUpdateSite help:help"
 						}
 					}
 				}
@@ -101,7 +101,7 @@ node {
 						stage ('Check Packaging') {
 							// final stage to check that the products and site can be packaged
 							// noneed to redo all tests there
-							sh "mvn --offline ${mavenOpts} -Dmaven.test.skip=true -P releng package"
+							sh "mvn --offline ${mavenOpts} -Dmaven.test.skip=true -P doUpdateSite package"
 						}
 					}
 				)

@@ -114,14 +114,6 @@ public interface PiMMFactory extends EFactory {
   Fifo createFifo();
 
   /**
-   * Returns a new object of class '<em>Interface Actor</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @return a new object of class '<em>Interface Actor</em>'.
-   * @generated
-   */
-  InterfaceActor createInterfaceActor();
-
-  /**
    * Returns a new object of class '<em>Data Input Interface</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return a new object of class '<em>Data Input Interface</em>'.
@@ -146,12 +138,12 @@ public interface PiMMFactory extends EFactory {
   ConfigOutputInterface createConfigOutputInterface();
 
   /**
-   * Returns a new object of class '<em>Refinement</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * Returns a new object of class '<em>Pi SDF Refinement</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return a new object of class '<em>Refinement</em>'.
+   * @return a new object of class '<em>Pi SDF Refinement</em>'.
    * @generated
    */
-  Refinement createRefinement();
+  PiSDFRefinement createPiSDFRefinement();
 
   /**
    * Returns a new object of class '<em>Parameter</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -186,12 +178,12 @@ public interface PiMMFactory extends EFactory {
   Expression createExpression();
 
   /**
-   * Returns a new object of class '<em>HRefinement</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * Returns a new object of class '<em>CHeader Refinement</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return a new object of class '<em>HRefinement</em>'.
+   * @return a new object of class '<em>CHeader Refinement</em>'.
    * @generated
    */
-  HRefinement createHRefinement();
+  CHeaderRefinement createCHeaderRefinement();
 
   /**
    * Returns a new object of class '<em>Function Prototype</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -280,6 +272,46 @@ public interface PiMMFactory extends EFactory {
    * @generated
    */
   String convertPortMemoryAnnotation(PortMemoryAnnotation instanceValue);
+
+  /**
+   * Returns an instance of data type '<em>Port Kind</em>' corresponding the given literal. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @param literal
+   *          a literal of the data type.
+   * @return a new instance value of the data type.
+   * @generated
+   */
+  PortKind createPortKind(String literal);
+
+  /**
+   * Returns a literal representation of an instance of data type '<em>Port Kind</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @param instanceValue
+   *          an instance value of the data type.
+   * @return a literal representation of the instance value.
+   * @generated
+   */
+  String convertPortKind(PortKind instanceValue);
+
+  /**
+   * Returns an instance of data type '<em>Interface Kind</em>' corresponding the given literal. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @param literal
+   *          a literal of the data type.
+   * @return a new instance value of the data type.
+   * @generated
+   */
+  InterfaceKind createInterfaceKind(String literal);
+
+  /**
+   * Returns a literal representation of an instance of data type '<em>Interface Kind</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @param instanceValue
+   *          an instance value of the data type.
+   * @return a literal representation of the instance value.
+   * @generated
+   */
+  String convertInterfaceKind(InterfaceKind instanceValue);
 
   /**
    * Returns an instance of data type '<em>IPath</em>' corresponding the given literal. <!-- begin-user-doc --> <!-- end-user-doc -->

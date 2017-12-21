@@ -37,7 +37,8 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm.impl;
 
-import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -48,11 +49,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
@@ -65,7 +62,6 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#getRefinement <em>Refinement</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#isConfigurationActor <em>Configuration Actor</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#getMemoryScriptPath <em>Memory Script Path</em>}</li>
  * </ul>
  *
@@ -80,15 +76,6 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
    * @ordered
    */
   protected Refinement refinement;
-
-  /**
-   * The default value of the '{@link #isConfigurationActor() <em>Configuration Actor</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see #isConfigurationActor()
-   * @generated
-   * @ordered
-   */
-  protected static final boolean CONFIGURATION_ACTOR_EDEFAULT = false;
 
   /**
    * The default value of the '{@link #getMemoryScriptPath() <em>Memory Script Path</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -109,11 +96,12 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
   protected IPath memoryScriptPath = ActorImpl.MEMORY_SCRIPT_PATH_EDEFAULT;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
    */
   protected ActorImpl() {
     super();
-    setRefinement(PiMMFactory.eINSTANCE.createRefinement());
   }
 
   /**
@@ -139,13 +127,8 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param newRefinement
-   *          the new refinement
-   * @param msgs
-   *          the msgs
-   * @return the notification chain
    * @generated
    */
   public NotificationChain basicSetRefinement(final Refinement newRefinement, NotificationChain msgs) {
@@ -163,10 +146,8 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param newRefinement
-   *          the new refinement
    * @generated
    */
   @Override
@@ -186,53 +167,6 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
     } else if (eNotificationRequired()) {
       eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.ACTOR__REFINEMENT, newRefinement, newRefinement));
     }
-  }
-
-  /**
-   * <!-- begin-user-doc --> Check whether the {@link Actor} is a configuration {@link Actor}.<br>
-   * <br>
-   * An {@link Actor} is a configuration {@link Actor} if it sets a {@link Parameter} value through a {@link ConfigOutputPort}.
-   *
-   * @return <code>true</code> if the {@link Actor} is a configuration {@link Actor} <code>false</code> else.<!-- end-user-doc -->
-   *
-   */
-  @Override
-  public boolean isConfigurationActor() {
-    boolean result = false;
-
-    final List<ConfigOutputPort> ports = getConfigOutputPorts();
-    for (final ConfigOutputPort port : ports) {
-      // If the port has an outgoing dependency
-      if (!port.getOutgoingDependencies().isEmpty()) {
-        // As soon as there is one dependency, the actor is a
-        // configuration actor
-        final Dependency dependency = port.getOutgoingDependencies().get(0);
-        final Parameterizable parameterizable = (Parameterizable) dependency.getGetter().eContainer();
-
-        // Should always be the case
-        if (parameterizable instanceof Parameter) {
-          result = true;
-        } else {
-          throw new RuntimeException(
-              "Actor configuration output ports can" + " only set the value of a Parameter. " + parameterizable.eClass() + " cannot be set directly.");
-        }
-      }
-    }
-
-    return result;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return true, if is sets the configuration actor
-   * @generated
-   */
-  @Override
-  public boolean isSetConfigurationActor() {
-    // TODO: implement this method to return whether the 'Configuration Actor' attribute is set
-    // Ensure that you remove @generated or mark it @generated NOT
-    throw new UnsupportedOperationException();
   }
 
   /**
@@ -259,6 +193,52 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
     this.memoryScriptPath = newMemoryScriptPath;
     if (eNotificationRequired()) {
       eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH, oldMemoryScriptPath, this.memoryScriptPath));
+    }
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public boolean isConfigurationActor() {
+    // an Actor is considered as a Configuration Actor iff it has at least a ConfigOutputPort that is connected to a getter
+    return getConfigOutputPorts().stream().filter(Objects::nonNull).map(ConfigOutputPort::getOutgoingDependencies).filter(l -> !l.isEmpty()).map(l -> l.get(0))
+        .map(Dependency::getGetter).filter(Objects::nonNull).anyMatch(x -> true);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public boolean isHierarchical() {
+    return getRefinement().isHierarchical();
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public AbstractActor getChildAbstractActor() {
+    return Optional.ofNullable(getRefinement()).map(Refinement::getAbstractActor).orElse(null);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public PiGraph getSubGraph() {
+    if (isHierarchical()) {
+      return (PiGraph) getChildAbstractActor();
+    } else {
+      throw new UnsupportedOperationException("Cannot get the subgraph of a non hierarchical actor.");
     }
   }
 
@@ -300,8 +280,6 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
     switch (featureID) {
       case PiMMPackage.ACTOR__REFINEMENT:
         return getRefinement();
-      case PiMMPackage.ACTOR__CONFIGURATION_ACTOR:
-        return isConfigurationActor();
       case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
         return getMemoryScriptPath();
     }
@@ -363,8 +341,6 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
     switch (featureID) {
       case PiMMPackage.ACTOR__REFINEMENT:
         return this.refinement != null;
-      case PiMMPackage.ACTOR__CONFIGURATION_ACTOR:
-        return isSetConfigurationActor();
       case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
         return ActorImpl.MEMORY_SCRIPT_PATH_EDEFAULT == null ? this.memoryScriptPath != null
             : !ActorImpl.MEMORY_SCRIPT_PATH_EDEFAULT.equals(this.memoryScriptPath);
@@ -389,31 +365,6 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
     result.append(this.memoryScriptPath);
     result.append(')');
     return result.toString();
-  }
-
-  /**
-   * Test if the actor is a hierarchical one.
-   *
-   * @return true, if it is.
-   */
-  @Override
-  public boolean isHierarchical() {
-    return !((getRefinement().getFilePath() == null) || getRefinement().getFilePath().isEmpty()) && !(getRefinement() instanceof HRefinement);
-  }
-
-  /**
-   * Get the graph from hierarchy.
-   *
-   * @return The {@link PiGraph}
-   */
-  @Override
-  public PiGraph getGraph() {
-    final AbstractActor subgraph = getRefinement().getAbstractActor();
-    if (subgraph instanceof PiGraph) {
-      return (PiGraph) subgraph;
-    } else {
-      return null;
-    }
   }
 
   /*

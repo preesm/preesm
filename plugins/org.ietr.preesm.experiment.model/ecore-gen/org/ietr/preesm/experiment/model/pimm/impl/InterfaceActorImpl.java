@@ -43,6 +43,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -56,7 +57,6 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#getGraphPort <em>Graph Port</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#getKind <em>Kind</em>}</li>
  * </ul>
  *
  * @generated
@@ -71,24 +71,6 @@ public class InterfaceActorImpl extends AbstractActorImpl implements InterfaceAc
    * @ordered
    */
   protected Port graphPort;
-
-  /**
-   * The default value of the '{@link #getKind() <em>Kind</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see #getKind()
-   * @generated
-   * @ordered
-   */
-  protected static final String KIND_EDEFAULT = null;
-
-  /**
-   * The cached value of the '{@link #getKind() <em>Kind</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see #getKind()
-   * @generated
-   * @ordered
-   */
-  protected String kind = InterfaceActorImpl.KIND_EDEFAULT;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
@@ -129,8 +111,6 @@ public class InterfaceActorImpl extends AbstractActorImpl implements InterfaceAc
           return getGraphPort();
         }
         return basicGetGraphPort();
-      case PiMMPackage.INTERFACE_ACTOR__KIND:
-        return getKind();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -148,8 +128,6 @@ public class InterfaceActorImpl extends AbstractActorImpl implements InterfaceAc
     switch (featureID) {
       case PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT:
         return this.graphPort != null;
-      case PiMMPackage.INTERFACE_ACTOR__KIND:
-        return InterfaceActorImpl.KIND_EDEFAULT == null ? this.kind != null : !InterfaceActorImpl.KIND_EDEFAULT.equals(this.kind);
     }
     return super.eIsSet(featureID);
   }
@@ -228,8 +206,10 @@ public class InterfaceActorImpl extends AbstractActorImpl implements InterfaceAc
    * @generated
    */
   @Override
-  public String getKind() {
-    return this.kind;
+  public InterfaceKind getKind() {
+    // TODO: implement this method
+    // Ensure that you remove @generated or mark it @generated NOT
+    throw new UnsupportedOperationException();
   }
 
   /**
@@ -270,25 +250,6 @@ public class InterfaceActorImpl extends AbstractActorImpl implements InterfaceAc
     if (getGraphPort() != null) {
       getGraphPort().setName(newName);
     }
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the string
-   * @generated
-   */
-  @Override
-  public String toString() {
-    if (eIsProxy()) {
-      return super.toString();
-    }
-
-    final StringBuffer result = new StringBuffer(super.toString());
-    result.append(" (kind: ");
-    result.append(this.kind);
-    result.append(')');
-    return result.toString();
   }
 
   /*

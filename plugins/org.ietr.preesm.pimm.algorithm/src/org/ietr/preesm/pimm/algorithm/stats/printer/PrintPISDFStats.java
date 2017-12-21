@@ -70,7 +70,7 @@ public class PrintPISDFStats extends AbstractTaskImplementation {
 
     WorkflowLogger.getLogger().log(Level.INFO, "PiMM Stats:");
     WorkflowLogger.getLogger().log(Level.INFO, "Name         : " + piGraph.getName());
-    WorkflowLogger.getLogger().log(Level.INFO, "Nb Vertices  : " + piGraph.getVertices().size());
+    WorkflowLogger.getLogger().log(Level.INFO, "Nb Vertices  : " + piGraph.getActors().size());
     WorkflowLogger.getLogger().log(Level.INFO, "Nb Fifos     : " + piGraph.getFifos().size());
     WorkflowLogger.getLogger().log(Level.INFO, "Nb Parameters: " + piGraph.getParameters().size());
 

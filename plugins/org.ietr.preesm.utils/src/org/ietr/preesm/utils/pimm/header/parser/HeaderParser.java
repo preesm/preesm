@@ -49,11 +49,11 @@ import java.util.regex.Pattern;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.EList;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Direction;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
 // TODO: Auto-generated Javadoc
@@ -136,7 +136,7 @@ public class HeaderParser {
     // and the list of parameters
     final Pattern pattern = Pattern.compile("(.+?)\\s(\\S+?)\\s?\\((.*?)\\)");
     for (final String prototypeString : prototypes) {
-      final FunctionPrototype funcProto = PiMMFactory.eINSTANCE.createFunctionPrototype();
+      final FunctionPrototype funcProto = PiMMUserFactory.instance.createFunctionPrototype();
 
       // Get the name
       Matcher matcher = pattern.matcher(prototypeString);
@@ -156,7 +156,7 @@ public class HeaderParser {
       final Pattern paramPattern = Pattern.compile(HeaderParser.PARAM_BREAK_DOWN_REGEX);
       // Procces parameters one by one
       for (final String param : parameters) {
-        final FunctionParameter fp = PiMMFactory.eINSTANCE.createFunctionParameter();
+        final FunctionParameter fp = PiMMUserFactory.instance.createFunctionParameter();
         matcher = paramPattern.matcher(param);
         final boolean matched = matcher.matches();
         if (matched) { // Apply the matcher (if possible)

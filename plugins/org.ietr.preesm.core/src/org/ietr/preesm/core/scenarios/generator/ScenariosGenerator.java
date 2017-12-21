@@ -263,13 +263,13 @@ public class ScenariosGenerator {
 
     // for all different type of cores
     for (final String opId : DesignTools.getOperatorComponentIds(archi)) {
-      for (final AbstractActor aa : algo.getAllVertices()) {
+      for (final AbstractActor aa : algo.getAllActors()) {
         // Add timing: aa run on ci in 10000
-        scenario.getTimingManager().addTiming(new Timing(opId, aa.getPath(), 10000));
+        scenario.getTimingManager().addTiming(new Timing(opId, aa.getActorPath(), 10000));
       }
     }
     for (final String coreId : coreIds) {
-      for (final AbstractActor aa : algo.getAllVertices()) {
+      for (final AbstractActor aa : algo.getAllActors()) {
         // Add constraint: aa can be run on ci
         scenario.getConstraintGroupManager().addConstraint(coreId, aa);
       }

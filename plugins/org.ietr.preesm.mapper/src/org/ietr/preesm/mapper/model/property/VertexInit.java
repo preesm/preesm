@@ -40,6 +40,7 @@
 package org.ietr.preesm.mapper.model.property;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
@@ -163,7 +164,7 @@ public class VertexInit {
    * @return the initial operator list
    */
   public List<ComponentInstance> getInitialOperatorList() {
-    return this.operators;
+    return Collections.unmodifiableList(this.operators);
   }
 
   /**
@@ -270,7 +271,7 @@ public class VertexInit {
    * @return the timings
    */
   public List<Timing> getTimings() {
-    return this.timings;
+    return Collections.unmodifiableList(this.timings);
   }
 
   /**

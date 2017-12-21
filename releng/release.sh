@@ -4,11 +4,67 @@
 DEV_BRANCH=develop
 MAIN_BRANCH=master
 
-# First check access on git & SF
-#TODO
+CURRENT_VERSION=`mvn -B -Dtycho.mode=maven help:evaluate -Dexpression=project.version | grep -v 'INFO'`
+[ "$#" -ne "1" ] && echo -e "usage: $0 <new version>\nNote: current version = ${CURRENT_VERSION}" && exit 1
 
-### Commands
-[ "$#" -ne "1" ] && echo "usage: $0 <new version>" && exit 1
+# First check access on git (will exit on error)
+echo "Testing Github permission"
+git ls-remote git@github.com:preesm/preesm.git > /dev/null
+# then on SF with maven settings
+TMPDIR=`mktemp -d`
+cat > $TMPDIR/pom.xml << "EOF"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>org.ietr.test</artifactId>
+  <groupId>org.ietr</groupId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+  <properties>
+    <preesm.maven.repo>https://preesm.github.io/preesm-maven/mavenrepo/</preesm.maven.repo>
+  </properties>
+  <!-- Preesm Repo hosts both Maven dependencies and Maven plugins -->
+  <pluginRepositories>
+    <pluginRepository>
+      <!-- Give same ID for safe offline mode -->
+      <id>Preesm Maven Repo</id>
+      <name>Preesm Maven Plugin Repo</name>
+      <url>${preesm.maven.repo}</url>
+    </pluginRepository>
+  </pluginRepositories>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.ietr.maven</groupId>
+        <artifactId>sftp-maven-plugin</artifactId>
+        <version>2.1.0</version>
+        <executions>
+          <execution>
+            <id>upload-repo</id>
+            <phase>verify</phase>
+            <configuration>
+              <serverId>sf-preesm-update-site</serverId>
+              <serverHost>web.sourceforge.net</serverHost>
+              <strictHostKeyChecking>false</strictHostKeyChecking>
+              <transferThreadCount>1</transferThreadCount>
+              <mode>receive</mode>
+              <remotePath>/home/project-web/preesm/htdocs/index.php</remotePath>
+              <localPath>/tmp/to_delete</localPath>
+            </configuration>
+            <goals>
+              <goal>sftp-transfert</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+EOF
+echo "Testing SourceForge permission using Maven Sftp plugin"
+(cd $TMPDIR && mvn -q verify)
+rm -rf $TMPDIR
+
 
 #warning
 echo "Warning: this script will delete ignored files and remove all changes in $DEV_BRANCH and $MAIN_BRANCH"
@@ -31,16 +87,28 @@ git checkout $DEV_BRANCH
 git reset --hard
 git clean -xdf
 
-./releng/fix_header_copyright_and_authors.sh
-#update version in code and create commit
+#update version in code and stash changes
 ./releng/update-version.sh $NEW_VERSION
 sed -i -e "s/X\.Y\.Z/$NEW_VERSION/g" release_notes.md
 sed -i -e "s/XXXX\.XX\.XX/$TODAY_DATE/g" release_notes.md
+git stash
+
+# Fix headers
+./releng/fix_header_copyright_and_authors.sh
+# commit fixed headers (if any)
+NBCHANGES=`git status --porcelain | wc -l`
+if [ $NBCHANGES -ne 0 ]; then
+  git add -A
+  git commit -m "[RELENG] Fix headers"
+fi
+
+# make sure integration works before deploying and pushing
+git stash apply
+./releng/build_and_test.sh
+
+#commit new version in develop
 git add -A
 git commit -m "[RELENG] Prepare version $NEW_VERSION"
-
-# make sure integration works before deplying and pushing
-#TODO
 
 #merge in master, add tag
 git checkout $MAIN_BRANCH
@@ -69,17 +137,13 @@ cat tmp >> release_notes.md
 rm tmp
 git add -A
 git commit -m "[RELENG] Move to snapshot version"
-git push
 
-#deploy and push master (that is new version)
-git checkout master
-git push
-git push --tags
+#deploy from master
+git checkout $MAIN_BRANCH
 ./releng/deploy.sh
 
-#get back to original branch and restore work
-git checkout $CURRENT_BRANCH
-STASH_COUNT=`git stash list | wc -l`
-[ "$STASH_COUNT" != "0" ] && git stash pop
-#get back to original dir
-cd $ORIG_DIR
+#push if everything went fine
+git push
+git push --tags
+git checkout $DEV_BRANCH
+git push

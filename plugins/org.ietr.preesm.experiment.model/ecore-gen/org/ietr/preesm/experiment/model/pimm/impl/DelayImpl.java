@@ -45,7 +45,6 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
@@ -56,29 +55,28 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  * The following features are implemented:
  * </p>
  * <ul>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DelayImpl#getExpression <em>Expression</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DelayImpl#getSizeExpression <em>Size Expression</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class DelayImpl extends ParameterizableImpl implements Delay {
+public class DelayImpl extends ConfigurableImpl implements Delay {
 
   /**
-   * The cached value of the '{@link #getExpression() <em>Expression</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getSizeExpression() <em>Size Expression</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @see #getExpression()
-   * @generated
+   * @see #getSizeExpression()
    * @ordered
    */
-  protected Expression expression;
+  protected Expression sizeExpression;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
    */
   protected DelayImpl() {
     super();
-
-    setExpression(PiMMFactory.eINSTANCE.createExpression());
   }
 
   /**
@@ -99,25 +97,21 @@ public class DelayImpl extends ParameterizableImpl implements Delay {
    * @generated
    */
   @Override
-  public Expression getExpression() {
-    return this.expression;
+  public Expression getSizeExpression() {
+    return this.sizeExpression;
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param newExpression
-   *          the new expression
-   * @param msgs
-   *          the msgs
-   * @return the notification chain
    * @generated
    */
-  public NotificationChain basicSetExpression(final Expression newExpression, NotificationChain msgs) {
-    final Expression oldExpression = this.expression;
-    this.expression = newExpression;
+  public NotificationChain basicSetSizeExpression(final Expression newSizeExpression, NotificationChain msgs) {
+    final Expression oldSizeExpression = this.sizeExpression;
+    this.sizeExpression = newSizeExpression;
     if (eNotificationRequired()) {
-      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.DELAY__EXPRESSION, oldExpression, newExpression);
+      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.DELAY__SIZE_EXPRESSION, oldSizeExpression,
+          newSizeExpression);
       if (msgs == null) {
         msgs = notification;
       } else {
@@ -135,21 +129,22 @@ public class DelayImpl extends ParameterizableImpl implements Delay {
    * @generated
    */
   @Override
-  public void setExpression(final Expression newExpression) {
-    if (newExpression != this.expression) {
+  public void setSizeExpression(final Expression newSizeExpression) {
+    if (newSizeExpression != this.sizeExpression) {
       NotificationChain msgs = null;
-      if (this.expression != null) {
-        msgs = ((InternalEObject) this.expression).eInverseRemove(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.DELAY__EXPRESSION, null, msgs);
+      if (this.sizeExpression != null) {
+        msgs = ((InternalEObject) this.sizeExpression).eInverseRemove(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.DELAY__SIZE_EXPRESSION, null,
+            msgs);
       }
-      if (newExpression != null) {
-        msgs = ((InternalEObject) newExpression).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.DELAY__EXPRESSION, null, msgs);
+      if (newSizeExpression != null) {
+        msgs = ((InternalEObject) newSizeExpression).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.DELAY__SIZE_EXPRESSION, null, msgs);
       }
-      msgs = basicSetExpression(newExpression, msgs);
+      msgs = basicSetSizeExpression(newSizeExpression, msgs);
       if (msgs != null) {
         msgs.dispatch();
       }
     } else if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DELAY__EXPRESSION, newExpression, newExpression));
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DELAY__SIZE_EXPRESSION, newSizeExpression, newSizeExpression));
     }
   }
 
@@ -168,8 +163,8 @@ public class DelayImpl extends ParameterizableImpl implements Delay {
   @Override
   public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
     switch (featureID) {
-      case PiMMPackage.DELAY__EXPRESSION:
-        return basicSetExpression(null, msgs);
+      case PiMMPackage.DELAY__SIZE_EXPRESSION:
+        return basicSetSizeExpression(null, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
   }
@@ -189,8 +184,8 @@ public class DelayImpl extends ParameterizableImpl implements Delay {
   @Override
   public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
     switch (featureID) {
-      case PiMMPackage.DELAY__EXPRESSION:
-        return getExpression();
+      case PiMMPackage.DELAY__SIZE_EXPRESSION:
+        return getSizeExpression();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -207,8 +202,8 @@ public class DelayImpl extends ParameterizableImpl implements Delay {
   @Override
   public void eSet(final int featureID, final Object newValue) {
     switch (featureID) {
-      case PiMMPackage.DELAY__EXPRESSION:
-        setExpression((Expression) newValue);
+      case PiMMPackage.DELAY__SIZE_EXPRESSION:
+        setSizeExpression((Expression) newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -224,8 +219,8 @@ public class DelayImpl extends ParameterizableImpl implements Delay {
   @Override
   public void eUnset(final int featureID) {
     switch (featureID) {
-      case PiMMPackage.DELAY__EXPRESSION:
-        setExpression((Expression) null);
+      case PiMMPackage.DELAY__SIZE_EXPRESSION:
+        setSizeExpression((Expression) null);
         return;
     }
     super.eUnset(featureID);
@@ -242,8 +237,8 @@ public class DelayImpl extends ParameterizableImpl implements Delay {
   @Override
   public boolean eIsSet(final int featureID) {
     switch (featureID) {
-      case PiMMPackage.DELAY__EXPRESSION:
-        return this.expression != null;
+      case PiMMPackage.DELAY__SIZE_EXPRESSION:
+        return this.sizeExpression != null;
     }
     return super.eIsSet(featureID);
   }

@@ -58,10 +58,9 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
@@ -70,13 +69,14 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
@@ -85,7 +85,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-// TODO: Auto-generated Javadoc
 /**
  * Writer for the PiMM Model in the Pi format.
  *
@@ -353,7 +352,7 @@ public class PiWriter {
    */
   protected void writeDelay(final Element fifoElt, final Delay delay) {
     writeDataElt(fifoElt, PiIdentifiers.DELAY, null);
-    fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, delay.getExpression().getString());
+    fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, delay.getSizeExpression().getExpressionString());
     // TODO when delay class will be updated, modify the writer/parser.
     // Maybe a specific element will be needed to store the Expression
     // associated to a delay as well as it .h file storing the default value
@@ -464,7 +463,7 @@ public class PiWriter {
     }
 
     // Write the vertices of the graph
-    for (final AbstractActor actor : graph.getVertices()) {
+    for (final AbstractActor actor : graph.getActors()) {
       writeAbstractActor(graphElt, actor);
     }
 
@@ -487,14 +486,13 @@ public class PiWriter {
    */
   protected void writeInterfaceVertex(final Element vertexElt, final InterfaceActor vertex) {
     // Set the kind of the Actor
-    vertexElt.setAttribute(PiIdentifiers.NODE_KIND, vertex.getKind());
-    // writeDataElt(vertexElt, "kind", "actor");
+    vertexElt.setAttribute(PiIdentifiers.NODE_KIND, vertex.getKind().getLiteral());
     // Write ports of the actor
     switch (vertex.getKind()) {
-      case PiIdentifiers.DATA_INPUT_INTERFACE:
+      case DATA_INPUT:
         writePorts(vertexElt, vertex.getDataOutputPorts());
         break;
-      case PiIdentifiers.DATA_OUTPUT_INTERFACE:
+      case DATA_OUTPUT:
         writePorts(vertexElt, vertex.getDataInputPorts());
         break;
       default:
@@ -536,9 +534,9 @@ public class PiWriter {
     // Set the kind of the node
     if (!param.isConfigurationInterface()) {
       paramElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.PARAMETER);
-      paramElt.setAttribute(PiIdentifiers.PARAMETER_EXPRESSION, param.getExpression().getString());
+      paramElt.setAttribute(PiIdentifiers.PARAMETER_EXPRESSION, param.getValueExpression().getExpressionString());
     } else {
-      paramElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.CONFIGURATION_INPUT_INTERFACE);
+      paramElt.setAttribute(PiIdentifiers.NODE_KIND, InterfaceKind.CFG_INPUT.getLiteral());
     }
   }
 
@@ -582,19 +580,15 @@ public class PiWriter {
       }
 
       portElt.setAttribute(PiIdentifiers.PORT_NAME, port.getName());
-      portElt.setAttribute(PiIdentifiers.PORT_KIND, port.getKind());
+      portElt.setAttribute(PiIdentifiers.PORT_KIND, port.getKind().getLiteral());
 
       switch (port.getKind()) {
-        case PiIdentifiers.DATA_INPUT_PORT:
-          portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION, ((DataInputPort) port).getExpression().getString());
+        case DATA_INPUT:
+        case DATA_OUTPUT:
+          portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION, ((DataPort) port).getPortRateExpression().getExpressionString());
           break;
-        case PiIdentifiers.DATA_OUTPUT_PORT:
-          portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION, ((DataOutputPort) port).getExpression().getString());
-          break;
-        case PiIdentifiers.CONFIGURATION_INPUT_PORT:
-          break;
-        case PiIdentifiers.CONFIGURATION_OUPUT_PORT:
-          break;
+        case CFG_INPUT:
+        case CFG_OUTPUT:
         default:
           break;
       }
@@ -608,23 +602,24 @@ public class PiWriter {
   }
 
   /**
-   * Write information of the {@link Refinement} in the given {@link Element}.
+   * Write information of the {@link PiSDFRefinement} in the given {@link Element}.
    *
    * @param vertexElt
    *          The {@link Element} to write
    * @param refinement
-   *          The {@link Refinement} to serialize
+   *          The {@link PiSDFRefinement} to serialize
    */
   protected void writeRefinement(final Element vertexElt, final Refinement refinement) {
-    if (refinement.getFilePath() != null) {
+    final IPath refinementFilePath = refinement.getFilePath();
+    if (refinementFilePath != null) {
 
-      final IPath refinementPath = getProjectRelativePathFrom(refinement.getFilePath());
+      final IPath refinementPath = getProjectRelativePathFrom(refinementFilePath);
 
       // The makeRelative() call ensures that the path is relative to the
       // project.
       writeDataElt(vertexElt, PiIdentifiers.REFINEMENT, refinementPath.makeRelative().toPortableString());
-      if (refinement instanceof HRefinement) {
-        final HRefinement hrefinement = (HRefinement) refinement;
+      if (refinement instanceof CHeaderRefinement) {
+        final CHeaderRefinement hrefinement = (CHeaderRefinement) refinement;
         writeFunctionPrototype(vertexElt, hrefinement.getLoopPrototype(), PiIdentifiers.REFINEMENT_LOOP);
         if (hrefinement.getInitPrototype() != null) {
           writeFunctionPrototype(vertexElt, hrefinement.getInitPrototype(), PiIdentifiers.REFINEMENT_INIT);

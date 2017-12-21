@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm UI
 Bundle-SymbolicName: org.ietr.preesm.ui;singleton:=true
-Bundle-Version: 2.5.4
-Bundle-Activator: org.ietr.preesm.ui.Activator
+Bundle-Version: 2.6.0
+Bundle-Activator: org.ietr.preesm.ui.PreesmUIPlugin
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
  org.eclipse.ui.editors,
@@ -21,16 +21,9 @@ Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
-Export-Package: org.ietr.preesm.ui.console,
+Export-Package: org.ietr.preesm.ui,
+ org.ietr.preesm.ui.console,
  org.ietr.preesm.ui.perspective,
- org.ietr.preesm.ui.pimm.features,
- org.ietr.preesm.ui.scenario.editor,
- org.ietr.preesm.ui.scenario.editor.codegen,
- org.ietr.preesm.ui.scenario.editor.constraints,
- org.ietr.preesm.ui.scenario.editor.parametervalues,
- org.ietr.preesm.ui.scenario.editor.relativeconstraints,
- org.ietr.preesm.ui.scenario.editor.simulation,
- org.ietr.preesm.ui.scenario.editor.timings,
- org.ietr.preesm.ui.scenario.editor.variables,
+ org.ietr.preesm.ui.utils,
  org.ietr.preesm.ui.wizards
 

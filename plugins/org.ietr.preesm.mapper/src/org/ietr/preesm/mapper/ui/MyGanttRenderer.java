@@ -66,7 +66,7 @@ public class MyGanttRenderer extends GanttRenderer {
   private static final long serialVersionUID = 1L;
 
   /** Map of the task colors. */
-  private Map<String, Color> colorMap = new LinkedHashMap<>();
+  private final Map<String, Color> colorMap = new LinkedHashMap<>();
 
   /**
    * Draws the tasks/subtasks for one item.
@@ -134,8 +134,8 @@ public class MyGanttRenderer extends GanttRenderer {
 
       /* Paint seriesPaint = */getItemPaint(row, column);
 
-      if (((TaskSeriesCollection) dataset).getSeriesCount() > 0 && ((TaskSeriesCollection) dataset).getSeries(0).getItemCount() > column
-          && ((TaskSeriesCollection) dataset).getSeries(0).get(column).getSubtaskCount() > subinterval) {
+      if ((((TaskSeriesCollection) dataset).getSeriesCount() > 0) && (((TaskSeriesCollection) dataset).getSeries(0).getItemCount() > column)
+          && (((TaskSeriesCollection) dataset).getSeries(0).get(column).getSubtaskCount() > subinterval)) {
         g2.setPaint(getRandomBrightColor(((TaskSeriesCollection) dataset).getSeries(0).get(column).getSubtask(subinterval).getDescription()));
 
       }

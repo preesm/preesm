@@ -80,4 +80,13 @@ public interface DataOutputPort extends DataPort {
    * @generated
    */
   void setOutgoingFifo(Fifo value);
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" required="true" annotation="http://www.eclipse.org/emf/2002/GenModel body='return PortKind.DATA_OUTPUT;'"
+   * @generated
+   */
+  @Override
+  PortKind getKind();
 } // OutputPort

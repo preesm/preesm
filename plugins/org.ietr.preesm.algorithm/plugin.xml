@@ -180,70 +180,6 @@
          </inputs>
       </task>
       <task
-            id="org.ietr.preesm.algorithm.exportXml.MultiSDFExporter"
-            name="Multi SDF Exporter "
-            type="org.ietr.preesm.algorithm.exportXml.MultiSDFExporter">
-         <inputs>
-            <input
-                  id="SDFs"
-                  object="java.util.Set">
-            </input>
-         </inputs>
-      </task>
-      <task
-            id="org.ietr.preesm.algorithm.transforms.MultiHSDFTransformation"
-            name="Multi SDF2HSDF"
-            type="org.ietr.preesm.algorithm.transforms.MultiHSDFTransformation">
-         <inputs>
-            <input
-                  id="SDFs"
-                  object="java.util.Set">
-            </input>
-         </inputs>
-         <outputs>
-            <output
-                  id="SDFs"
-                  object="java.util.Set">
-            </output>
-         </outputs>
-      </task>
-      <task
-            id="org.ietr.preesm.algorithm.transforms.MultiHierarchyFlattening"
-            name="Multi hierarchy flattening"
-            type="org.ietr.preesm.algorithm.transforms.MultiHierarchyFlattening">
-         <inputs>
-            <input
-                  id="SDFs"
-                  object="java.util.Set">
-            </input>
-         </inputs>
-         <outputs>
-            <output
-                  id="SDFs"
-                  object="java.util.Set">
-            </output>
-         </outputs>
-      </task>
-      <task
-            id="org.ietr.preesm.algorithm.exportSdf3Xml.MultiSDF3Exporter"
-            name="Multi SDF3 Exporter"
-            type="org.ietr.preesm.algorithm.exportSdf3Xml.MultiSDF3Exporter">
-         <inputs>
-            <input
-                  id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
-            </input>
-            <input
-                  id="SDFs"
-                  object="java.util.Set">
-            </input>
-            <input
-                  id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
-            </input>
-         </inputs>
-      </task>
-      <task
             id="org.ietr.preesm.algorithm.transforms.IterateAlgorithm"
             name="Algorithm Iterator"
             type="org.ietr.preesm.algorithm.transforms.IterateAlgorithm">
@@ -278,23 +214,6 @@
          </outputs>
       </task>
       <task
-            id="org.ietr.preesm.algorithm.optimization.MultiAlgorithmOptimizationTask"
-            name="PREESM Algorithm Optimization Pass for Multiple Graphs"
-            type="org.ietr.preesm.algorithm.optimization.MultiAlgorithmOptimizationTask">
-         <inputs>
-            <input
-                  id="SDFs"
-                  object="java.util.Set">
-            </input>
-         </inputs>
-         <outputs>
-            <output
-                  id="SDFs"
-                  object="java.util.Set">
-            </output>
-         </outputs>
-      </task>
-      <task
             id="org.ietr.preesm.algorithm.exportPromela.PromelaExporter"
             name="Promela Exporter"
             type="org.ietr.preesm.algorithm.exportPromela.PromelaExporter">
@@ -302,21 +221,6 @@
             <input
                   id="SDF"
                   object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
-            </input>
-            <input
-                  id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
-            </input>
-         </inputs>
-      </task>
-      <task
-            id="org.ietr.preesm.algorithm.exportPromela.MultiPromelaExporter"
-            name="Multi Promela Exporter"
-            type="org.ietr.preesm.algorithm.exportPromela.MultiPromelaExporter">
-         <inputs>
-            <input
-                  id="SDFs"
-                  object="java.util.Set">
             </input>
             <input
                   id="scenario"

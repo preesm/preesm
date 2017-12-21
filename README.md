@@ -30,8 +30,8 @@ See [release notes](release_notes.md).
 
 This project is maintained by the Preesm maintainers. Contact us using one of the following:
 
-*   User list : preesm-users@lists.sourceforge.net
-*   Developer list : preesm-devs@lists.sourceforge.net
+*   General information : contact@preesm.org
+*   Technical support : https://github.com/preesm/preesm/issues
 
 ## License
 

@@ -43,6 +43,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.PortKind;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
@@ -53,7 +54,6 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.PortImpl#getName <em>Name</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.PortImpl#getKind <em>Kind</em>}</li>
  * </ul>
  *
  * @generated
@@ -76,24 +76,6 @@ public abstract class PortImpl extends EObjectImpl implements Port {
    * @ordered
    */
   protected String name = PortImpl.NAME_EDEFAULT;
-
-  /**
-   * The default value of the '{@link #getKind() <em>Kind</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see #getKind()
-   * @generated
-   * @ordered
-   */
-  protected static final String KIND_EDEFAULT = null;
-
-  /**
-   * The cached value of the '{@link #getKind() <em>Kind</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @see #getKind()
-   * @generated
-   * @ordered
-   */
-  protected String kind = PortImpl.KIND_EDEFAULT;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
@@ -149,8 +131,10 @@ public abstract class PortImpl extends EObjectImpl implements Port {
    * @generated
    */
   @Override
-  public String getKind() {
-    return this.kind;
+  public PortKind getKind() {
+    // TODO: implement this method
+    // Ensure that you remove @generated or mark it @generated NOT
+    throw new UnsupportedOperationException();
   }
 
   /**
@@ -170,8 +154,6 @@ public abstract class PortImpl extends EObjectImpl implements Port {
     switch (featureID) {
       case PiMMPackage.PORT__NAME:
         return getName();
-      case PiMMPackage.PORT__KIND:
-        return getKind();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -225,8 +207,6 @@ public abstract class PortImpl extends EObjectImpl implements Port {
     switch (featureID) {
       case PiMMPackage.PORT__NAME:
         return PortImpl.NAME_EDEFAULT == null ? this.name != null : !PortImpl.NAME_EDEFAULT.equals(this.name);
-      case PiMMPackage.PORT__KIND:
-        return PortImpl.KIND_EDEFAULT == null ? this.kind != null : !PortImpl.KIND_EDEFAULT.equals(this.kind);
     }
     return super.eIsSet(featureID);
   }
@@ -246,8 +226,6 @@ public abstract class PortImpl extends EObjectImpl implements Port {
     final StringBuffer result = new StringBuffer(super.toString());
     result.append(" (name: ");
     result.append(this.name);
-    result.append(", kind: ");
-    result.append(this.kind);
     result.append(')');
     return result.toString();
   }

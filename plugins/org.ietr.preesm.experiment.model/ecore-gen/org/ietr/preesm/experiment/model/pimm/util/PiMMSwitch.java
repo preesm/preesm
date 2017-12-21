@@ -46,10 +46,12 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
@@ -63,7 +65,6 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
@@ -71,6 +72,7 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
@@ -143,10 +145,24 @@ public class PiMMSwitch<T> extends Switch<T> {
         final AbstractVertex abstractVertex = (AbstractVertex) theEObject;
         T result = caseAbstractVertex(abstractVertex);
         if (result == null) {
-          result = caseParameterizable(abstractVertex);
+          result = casePiMMVisitable(abstractVertex);
         }
         if (result == null) {
-          result = casePiMMVisitable(abstractVertex);
+          result = defaultCase(theEObject);
+        }
+        return result;
+      }
+      case PiMMPackage.CONFIGURABLE: {
+        final Configurable configurable = (Configurable) theEObject;
+        T result = caseConfigurable(configurable);
+        if (result == null) {
+          result = caseAbstractVertex(configurable);
+        }
+        if (result == null) {
+          result = caseParameterizable(configurable);
+        }
+        if (result == null) {
+          result = casePiMMVisitable(configurable);
         }
         if (result == null) {
           result = defaultCase(theEObject);
@@ -156,6 +172,9 @@ public class PiMMSwitch<T> extends Switch<T> {
       case PiMMPackage.ABSTRACT_ACTOR: {
         final AbstractActor abstractActor = (AbstractActor) theEObject;
         T result = caseAbstractActor(abstractActor);
+        if (result == null) {
+          result = caseConfigurable(abstractActor);
+        }
         if (result == null) {
           result = caseAbstractVertex(abstractActor);
         }
@@ -177,6 +196,9 @@ public class PiMMSwitch<T> extends Switch<T> {
           result = caseAbstractActor(piGraph);
         }
         if (result == null) {
+          result = caseConfigurable(piGraph);
+        }
+        if (result == null) {
           result = caseAbstractVertex(piGraph);
         }
         if (result == null) {
@@ -184,6 +206,29 @@ public class PiMMSwitch<T> extends Switch<T> {
         }
         if (result == null) {
           result = casePiMMVisitable(piGraph);
+        }
+        if (result == null) {
+          result = defaultCase(theEObject);
+        }
+        return result;
+      }
+      case PiMMPackage.EXECUTABLE_ACTOR: {
+        final ExecutableActor executableActor = (ExecutableActor) theEObject;
+        T result = caseExecutableActor(executableActor);
+        if (result == null) {
+          result = caseAbstractActor(executableActor);
+        }
+        if (result == null) {
+          result = caseConfigurable(executableActor);
+        }
+        if (result == null) {
+          result = caseAbstractVertex(executableActor);
+        }
+        if (result == null) {
+          result = caseParameterizable(executableActor);
+        }
+        if (result == null) {
+          result = casePiMMVisitable(executableActor);
         }
         if (result == null) {
           result = defaultCase(theEObject);
@@ -200,6 +245,9 @@ public class PiMMSwitch<T> extends Switch<T> {
           result = caseAbstractActor(actor);
         }
         if (result == null) {
+          result = caseConfigurable(actor);
+        }
+        if (result == null) {
           result = caseAbstractVertex(actor);
         }
         if (result == null) {
@@ -207,6 +255,110 @@ public class PiMMSwitch<T> extends Switch<T> {
         }
         if (result == null) {
           result = casePiMMVisitable(actor);
+        }
+        if (result == null) {
+          result = defaultCase(theEObject);
+        }
+        return result;
+      }
+      case PiMMPackage.BROADCAST_ACTOR: {
+        final BroadcastActor broadcastActor = (BroadcastActor) theEObject;
+        T result = caseBroadcastActor(broadcastActor);
+        if (result == null) {
+          result = caseExecutableActor(broadcastActor);
+        }
+        if (result == null) {
+          result = caseAbstractActor(broadcastActor);
+        }
+        if (result == null) {
+          result = caseConfigurable(broadcastActor);
+        }
+        if (result == null) {
+          result = caseAbstractVertex(broadcastActor);
+        }
+        if (result == null) {
+          result = caseParameterizable(broadcastActor);
+        }
+        if (result == null) {
+          result = casePiMMVisitable(broadcastActor);
+        }
+        if (result == null) {
+          result = defaultCase(theEObject);
+        }
+        return result;
+      }
+      case PiMMPackage.JOIN_ACTOR: {
+        final JoinActor joinActor = (JoinActor) theEObject;
+        T result = caseJoinActor(joinActor);
+        if (result == null) {
+          result = caseExecutableActor(joinActor);
+        }
+        if (result == null) {
+          result = caseAbstractActor(joinActor);
+        }
+        if (result == null) {
+          result = caseConfigurable(joinActor);
+        }
+        if (result == null) {
+          result = caseAbstractVertex(joinActor);
+        }
+        if (result == null) {
+          result = caseParameterizable(joinActor);
+        }
+        if (result == null) {
+          result = casePiMMVisitable(joinActor);
+        }
+        if (result == null) {
+          result = defaultCase(theEObject);
+        }
+        return result;
+      }
+      case PiMMPackage.FORK_ACTOR: {
+        final ForkActor forkActor = (ForkActor) theEObject;
+        T result = caseForkActor(forkActor);
+        if (result == null) {
+          result = caseExecutableActor(forkActor);
+        }
+        if (result == null) {
+          result = caseAbstractActor(forkActor);
+        }
+        if (result == null) {
+          result = caseConfigurable(forkActor);
+        }
+        if (result == null) {
+          result = caseAbstractVertex(forkActor);
+        }
+        if (result == null) {
+          result = caseParameterizable(forkActor);
+        }
+        if (result == null) {
+          result = casePiMMVisitable(forkActor);
+        }
+        if (result == null) {
+          result = defaultCase(theEObject);
+        }
+        return result;
+      }
+      case PiMMPackage.ROUND_BUFFER_ACTOR: {
+        final RoundBufferActor roundBufferActor = (RoundBufferActor) theEObject;
+        T result = caseRoundBufferActor(roundBufferActor);
+        if (result == null) {
+          result = caseExecutableActor(roundBufferActor);
+        }
+        if (result == null) {
+          result = caseAbstractActor(roundBufferActor);
+        }
+        if (result == null) {
+          result = caseConfigurable(roundBufferActor);
+        }
+        if (result == null) {
+          result = caseAbstractVertex(roundBufferActor);
+        }
+        if (result == null) {
+          result = caseParameterizable(roundBufferActor);
+        }
+        if (result == null) {
+          result = casePiMMVisitable(roundBufferActor);
         }
         if (result == null) {
           result = defaultCase(theEObject);
@@ -313,6 +465,9 @@ public class PiMMSwitch<T> extends Switch<T> {
           result = caseAbstractActor(interfaceActor);
         }
         if (result == null) {
+          result = caseConfigurable(interfaceActor);
+        }
+        if (result == null) {
           result = caseAbstractVertex(interfaceActor);
         }
         if (result == null) {
@@ -334,6 +489,9 @@ public class PiMMSwitch<T> extends Switch<T> {
         }
         if (result == null) {
           result = caseAbstractActor(dataInputInterface);
+        }
+        if (result == null) {
+          result = caseConfigurable(dataInputInterface);
         }
         if (result == null) {
           result = caseAbstractVertex(dataInputInterface);
@@ -359,6 +517,9 @@ public class PiMMSwitch<T> extends Switch<T> {
           result = caseAbstractActor(dataOutputInterface);
         }
         if (result == null) {
+          result = caseConfigurable(dataOutputInterface);
+        }
+        if (result == null) {
           result = caseAbstractVertex(dataOutputInterface);
         }
         if (result == null) {
@@ -379,10 +540,13 @@ public class PiMMSwitch<T> extends Switch<T> {
           result = caseParameter(configInputInterface);
         }
         if (result == null) {
-          result = caseAbstractVertex(configInputInterface);
+          result = caseConfigurable(configInputInterface);
         }
         if (result == null) {
           result = caseISetter(configInputInterface);
+        }
+        if (result == null) {
+          result = caseAbstractVertex(configInputInterface);
         }
         if (result == null) {
           result = caseParameterizable(configInputInterface);
@@ -403,6 +567,9 @@ public class PiMMSwitch<T> extends Switch<T> {
         }
         if (result == null) {
           result = caseAbstractActor(configOutputInterface);
+        }
+        if (result == null) {
+          result = caseConfigurable(configOutputInterface);
         }
         if (result == null) {
           result = caseAbstractVertex(configOutputInterface);
@@ -429,14 +596,45 @@ public class PiMMSwitch<T> extends Switch<T> {
         }
         return result;
       }
+      case PiMMPackage.PI_SDF_REFINEMENT: {
+        final PiSDFRefinement piSDFRefinement = (PiSDFRefinement) theEObject;
+        T result = casePiSDFRefinement(piSDFRefinement);
+        if (result == null) {
+          result = caseRefinement(piSDFRefinement);
+        }
+        if (result == null) {
+          result = casePiMMVisitable(piSDFRefinement);
+        }
+        if (result == null) {
+          result = defaultCase(theEObject);
+        }
+        return result;
+      }
+      case PiMMPackage.CHEADER_REFINEMENT: {
+        final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) theEObject;
+        T result = caseCHeaderRefinement(cHeaderRefinement);
+        if (result == null) {
+          result = caseRefinement(cHeaderRefinement);
+        }
+        if (result == null) {
+          result = casePiMMVisitable(cHeaderRefinement);
+        }
+        if (result == null) {
+          result = defaultCase(theEObject);
+        }
+        return result;
+      }
       case PiMMPackage.PARAMETER: {
         final Parameter parameter = (Parameter) theEObject;
         T result = caseParameter(parameter);
         if (result == null) {
-          result = caseAbstractVertex(parameter);
+          result = caseConfigurable(parameter);
         }
         if (result == null) {
           result = caseISetter(parameter);
+        }
+        if (result == null) {
+          result = caseAbstractVertex(parameter);
         }
         if (result == null) {
           result = caseParameterizable(parameter);
@@ -472,6 +670,12 @@ public class PiMMSwitch<T> extends Switch<T> {
         final Delay delay = (Delay) theEObject;
         T result = caseDelay(delay);
         if (result == null) {
+          result = caseConfigurable(delay);
+        }
+        if (result == null) {
+          result = caseAbstractVertex(delay);
+        }
+        if (result == null) {
           result = caseParameterizable(delay);
         }
         if (result == null) {
@@ -487,20 +691,6 @@ public class PiMMSwitch<T> extends Switch<T> {
         T result = caseExpression(expression);
         if (result == null) {
           result = casePiMMVisitable(expression);
-        }
-        if (result == null) {
-          result = defaultCase(theEObject);
-        }
-        return result;
-      }
-      case PiMMPackage.HREFINEMENT: {
-        final HRefinement hRefinement = (HRefinement) theEObject;
-        T result = caseHRefinement(hRefinement);
-        if (result == null) {
-          result = caseRefinement(hRefinement);
-        }
-        if (result == null) {
-          result = casePiMMVisitable(hRefinement);
         }
         if (result == null) {
           result = defaultCase(theEObject);
@@ -543,118 +733,6 @@ public class PiMMSwitch<T> extends Switch<T> {
         }
         return result;
       }
-      case PiMMPackage.BROADCAST_ACTOR: {
-        final BroadcastActor broadcastActor = (BroadcastActor) theEObject;
-        T result = caseBroadcastActor(broadcastActor);
-        if (result == null) {
-          result = caseExecutableActor(broadcastActor);
-        }
-        if (result == null) {
-          result = caseAbstractActor(broadcastActor);
-        }
-        if (result == null) {
-          result = caseAbstractVertex(broadcastActor);
-        }
-        if (result == null) {
-          result = caseParameterizable(broadcastActor);
-        }
-        if (result == null) {
-          result = casePiMMVisitable(broadcastActor);
-        }
-        if (result == null) {
-          result = defaultCase(theEObject);
-        }
-        return result;
-      }
-      case PiMMPackage.JOIN_ACTOR: {
-        final JoinActor joinActor = (JoinActor) theEObject;
-        T result = caseJoinActor(joinActor);
-        if (result == null) {
-          result = caseExecutableActor(joinActor);
-        }
-        if (result == null) {
-          result = caseAbstractActor(joinActor);
-        }
-        if (result == null) {
-          result = caseAbstractVertex(joinActor);
-        }
-        if (result == null) {
-          result = caseParameterizable(joinActor);
-        }
-        if (result == null) {
-          result = casePiMMVisitable(joinActor);
-        }
-        if (result == null) {
-          result = defaultCase(theEObject);
-        }
-        return result;
-      }
-      case PiMMPackage.FORK_ACTOR: {
-        final ForkActor forkActor = (ForkActor) theEObject;
-        T result = caseForkActor(forkActor);
-        if (result == null) {
-          result = caseExecutableActor(forkActor);
-        }
-        if (result == null) {
-          result = caseAbstractActor(forkActor);
-        }
-        if (result == null) {
-          result = caseAbstractVertex(forkActor);
-        }
-        if (result == null) {
-          result = caseParameterizable(forkActor);
-        }
-        if (result == null) {
-          result = casePiMMVisitable(forkActor);
-        }
-        if (result == null) {
-          result = defaultCase(theEObject);
-        }
-        return result;
-      }
-      case PiMMPackage.ROUND_BUFFER_ACTOR: {
-        final RoundBufferActor roundBufferActor = (RoundBufferActor) theEObject;
-        T result = caseRoundBufferActor(roundBufferActor);
-        if (result == null) {
-          result = caseExecutableActor(roundBufferActor);
-        }
-        if (result == null) {
-          result = caseAbstractActor(roundBufferActor);
-        }
-        if (result == null) {
-          result = caseAbstractVertex(roundBufferActor);
-        }
-        if (result == null) {
-          result = caseParameterizable(roundBufferActor);
-        }
-        if (result == null) {
-          result = casePiMMVisitable(roundBufferActor);
-        }
-        if (result == null) {
-          result = defaultCase(theEObject);
-        }
-        return result;
-      }
-      case PiMMPackage.EXECUTABLE_ACTOR: {
-        final ExecutableActor executableActor = (ExecutableActor) theEObject;
-        T result = caseExecutableActor(executableActor);
-        if (result == null) {
-          result = caseAbstractActor(executableActor);
-        }
-        if (result == null) {
-          result = caseAbstractVertex(executableActor);
-        }
-        if (result == null) {
-          result = caseParameterizable(executableActor);
-        }
-        if (result == null) {
-          result = casePiMMVisitable(executableActor);
-        }
-        if (result == null) {
-          result = defaultCase(theEObject);
-        }
-        return result;
-      }
       default:
         return defaultCase(theEObject);
     }
@@ -671,6 +749,20 @@ public class PiMMSwitch<T> extends Switch<T> {
    * @generated
    */
   public T caseParameterizable(final Parameterizable object) {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Configurable</em>'. <!-- begin-user-doc --> This implementation returns null;
+   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   *
+   * @param object
+   *          the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Configurable</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseConfigurable(final Configurable object) {
     return null;
   }
 
@@ -885,6 +977,20 @@ public class PiMMSwitch<T> extends Switch<T> {
   }
 
   /**
+   * Returns the result of interpreting the object as an instance of '<em>Pi SDF Refinement</em>'. <!-- begin-user-doc --> This implementation returns null;
+   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   *
+   * @param object
+   *          the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Pi SDF Refinement</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T casePiSDFRefinement(final PiSDFRefinement object) {
+    return null;
+  }
+
+  /**
    * Returns the result of interpreting the object as an instance of '<em>Parameter</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
    * non-null result will terminate the switch. <!-- end-user-doc -->
    *
@@ -955,16 +1061,16 @@ public class PiMMSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>HRefinement</em>'. <!-- begin-user-doc --> This implementation returns null; returning
-   * a non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>CHeader Refinement</em>'. <!-- begin-user-doc --> This implementation returns null;
+   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
    *
    * @param object
    *          the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>HRefinement</em>'.
+   * @return the result of interpreting the object as an instance of '<em>CHeader Refinement</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
-  public T caseHRefinement(final HRefinement object) {
+  public T caseCHeaderRefinement(final CHeaderRefinement object) {
     return null;
   }
 

@@ -52,10 +52,12 @@ import java.util.Set;
 import java.util.logging.Level;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.types.DataType;
+import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
@@ -73,15 +75,14 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMDefaultVisitor;
 import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderNameGenerator;
@@ -276,7 +277,7 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
           parameters_proto.append(", ");
           parameters_def.append(", ");
         }
-        parameters_proto.append("Param " + p.getName() + " = " + ((int) Double.parseDouble(p.getExpression().evaluate())));
+        parameters_proto.append("Param " + p.getName() + " = " + ExpressionEvaluator.evaluate(p.getValueExpression()));
         parameters_def.append("Param " + p.getName());
       }
     }
@@ -301,7 +302,7 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
     int nConfig = 0;
     int nBody = 0;
 
-    for (final AbstractActor v : pg.getVertices()) {
+    for (final AbstractActor v : pg.getActors()) {
       switch (SpiderTypeConverter.getType(v)) {
         case PISDF_TYPE_IF:
           if (SpiderTypeConverter.getSubType(v) == PiSDFSubType.PISDF_SUBTYPE_INPUT_IF) {
@@ -339,7 +340,7 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
 
     // Generating vertices
     append("\n\t/* Vertices */\n");
-    for (final AbstractActor v : pg.getVertices()) {
+    for (final AbstractActor v : pg.getActors()) {
       v.accept(this);
     }
     // Generating edges
@@ -569,11 +570,11 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
       typeSize = 1;
     }
 
-    final AbstractVertex srcActor = (AbstractVertex) srcPort.eContainer();
-    final AbstractVertex snkActor = (AbstractVertex) snkPort.eContainer();
+    final AbstractActor srcActor = (AbstractActor) srcPort.eContainer();
+    final AbstractActor snkActor = (AbstractActor) snkPort.eContainer();
 
-    String srcProd = srcPort.getExpression().getString();
-    String snkProd = snkPort.getExpression().getString();
+    String srcProd = srcPort.getPortRateExpression().getExpressionString();
+    String snkProd = snkPort.getPortRateExpression().getExpressionString();
 
     /* Change port name in prod/cons/delay */
     for (final ConfigInputPort cfgPort : srcActor.getConfigInputPorts()) {
@@ -588,7 +589,7 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
 
     String delay = "0";
     if (f.getDelay() != null) {
-      delay = f.getDelay().getExpression().getString();
+      delay = f.getDelay().getSizeExpression().getExpressionString();
 
       for (final ConfigInputPort cfgPort : f.getDelay().getConfigInputPorts()) {
         final String paramName = ((Parameter) cfgPort.getIncomingDependency().getSetter()).getName();
@@ -623,19 +624,20 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
         append("\tPiSDFParam *" + paramName + " = Spider::addDynamicParam(graph, " + "\"" + p.getName() + "\"" + ");\n");
       } else {
         /* DYNAMIC DEPENDANT */
-        append("\tPiSDFParam *" + paramName + " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName() + "\", \"" + p.getExpression().getString()
-            + "\");\n");
+        append("\tPiSDFParam *" + paramName + " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName() + "\", \""
+            + p.getValueExpression().getExpressionString() + "\");\n");
       }
-    } else if (p.getGraphPort() instanceof ConfigInputPort) {
+    } else if (p.isConfigurationInterface() && (((ConfigInputInterface) p).getGraphPort() instanceof ConfigInputPort)) {
       /* HERITED */
-      append("\tPiSDFParam *" + paramName + " = Spider::addHeritedParam(graph, " + "\"" + p.getName() + "\", " + this.portMap.get(p.getGraphPort()) + ");\n");
+      append("\tPiSDFParam *" + paramName + " = Spider::addHeritedParam(graph, " + "\"" + p.getName() + "\", "
+          + this.portMap.get(((ConfigInputInterface) p).getGraphPort()) + ");\n");
     } else if (p.getConfigInputPorts().isEmpty()) {
       /* STATIC */
       append("\tPiSDFParam *" + paramName + " = Spider::addStaticParam(graph, " + "\"" + p.getName() + "\", " + p.getName() + ");\n");
     } else {
       /* STATIC DEPENDANT */
-      append("\tPiSDFParam *" + paramName + " = Spider::addStaticDependentParam(graph, " + "\"" + p.getName() + "\", \"" + p.getExpression().getString()
-          + "\");\n");
+      append("\tPiSDFParam *" + paramName + " = Spider::addStaticDependentParam(graph, " + "\"" + p.getName() + "\", \""
+          + p.getValueExpression().getExpressionString() + "\");\n");
     }
   }
 
@@ -822,7 +824,7 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
   }
 
   @Override
-  public void visitRefinement(final Refinement r) {
+  public void visitRefinement(final PiSDFRefinement r) {
     throw new UnsupportedOperationException();
   }
 
@@ -837,7 +839,7 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
   }
 
   @Override
-  public void visitHRefinement(final HRefinement hRefinement) {
+  public void visitHRefinement(final CHeaderRefinement hRefinement) {
     throw new UnsupportedOperationException();
   }
 

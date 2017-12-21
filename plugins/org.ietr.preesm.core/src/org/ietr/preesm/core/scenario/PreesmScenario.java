@@ -176,7 +176,7 @@ public class PreesmScenario {
       for (final SDFAbstractVertex vertex : graph.vertexSet()) {
         result.add(vertex.getName());
       }
-    } catch (InvalidModelException e) {
+    } catch (final InvalidModelException e) {
       e.printStackTrace();
     }
     return result;
@@ -191,7 +191,7 @@ public class PreesmScenario {
     final Set<String> result = new LinkedHashSet<>();
     try {
       final PiGraph graph = PiParser.getPiGraph(this.algorithmURL);
-      for (final AbstractActor vertex : graph.getVertices()) {
+      for (final AbstractActor vertex : graph.getActors()) {
         result.add(vertex.getName());
       }
     } catch (CoreException | InvalidModelException e) {

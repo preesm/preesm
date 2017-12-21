@@ -117,10 +117,10 @@ public class ConstraintGroupManager {
     if (cgSet.isEmpty()) {
       final ConstraintGroup cg = new ConstraintGroup();
       cg.addOperatorId(opId);
-      cg.addActorPath(vertex.getPath());
+      cg.addActorPath(vertex.getActorPath());
       this.constraintgroups.add(cg);
     } else {
-      ((ConstraintGroup) cgSet.toArray()[0]).addActorPath(vertex.getPath());
+      ((ConstraintGroup) cgSet.toArray()[0]).addActorPath(vertex.getActorPath());
     }
   }
 
@@ -178,7 +178,7 @@ public class ConstraintGroupManager {
 
     if (!cgSet.isEmpty()) {
       for (final ConstraintGroup cg : cgSet) {
-        cg.removeVertexPath(vertex.getPath());
+        cg.removeVertexPath(vertex.getActorPath());
       }
     }
   }

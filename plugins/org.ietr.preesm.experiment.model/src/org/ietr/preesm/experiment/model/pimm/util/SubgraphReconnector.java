@@ -93,22 +93,21 @@ public class SubgraphReconnector {
   }
 
   private static void reconnectConfigInputPorts(final Actor hierarchicalActor, final PiGraph subGraph) {
-    boolean found;
-    for (final ConfigInputPort cip1 : hierarchicalActor.getConfigInputPorts()) {
-      found = false;
-      for (final ConfigInputPort cip2 : subGraph.getConfigInputPorts()) {
-        if (cip1.getName().equals(cip2.getName())) {
-          found = true;
-          final Dependency dep = cip1.getIncomingDependency();
-          if (dep != null) {
-            cip2.setIncomingDependency(dep);
-            dep.setGetter(cip2);
+    for (final ConfigInputPort topGraphActorConfigInputPort : hierarchicalActor.getConfigInputPorts()) {
+      boolean found = false;
+      for (final ConfigInputPort subGraphConfigInputPorts : subGraph.getConfigInputPorts()) {
+        if (topGraphActorConfigInputPort.getName().equals(subGraphConfigInputPorts.getName())) {
+          final Dependency topGraphDep = topGraphActorConfigInputPort.getIncomingDependency();
+          found = (topGraphDep != null);
+          if (found) {
+            subGraphConfigInputPorts.setIncomingDependency(topGraphDep);
+            topGraphDep.setGetter(subGraphConfigInputPorts);
           }
           break;
         }
       }
       if (!found) {
-        SubgraphReconnector.error(hierarchicalActor, subGraph, cip1);
+        SubgraphReconnector.error(hierarchicalActor, subGraph, topGraphActorConfigInputPort);
       }
     }
   }
@@ -124,7 +123,7 @@ public class SubgraphReconnector {
             dop2.setOutgoingFifo(fifo);
             fifo.setSourcePort(dop2);
 
-            dop2.setExpression(dop1.getExpression());
+            dop2.setPortRateExpression(dop1.getPortRateExpression());
             dop2.setAnnotation(dop1.getAnnotation());
           }
           found = true;
@@ -148,7 +147,7 @@ public class SubgraphReconnector {
             dip2.setIncomingFifo(fifo);
             fifo.setTargetPort(dip2);
 
-            dip2.setExpression(dip1.getExpression());
+            dip2.setPortRateExpression(dip1.getPortRateExpression());
             dip2.setAnnotation(dip1.getAnnotation());
           }
           found = true;

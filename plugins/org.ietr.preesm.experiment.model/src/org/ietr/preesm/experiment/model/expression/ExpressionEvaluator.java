@@ -37,6 +37,7 @@ package org.ietr.preesm.experiment.model.expression;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
@@ -53,14 +54,18 @@ import org.nfunk.jep.ParseException;
  */
 public class ExpressionEvaluator {
 
+  private ExpressionEvaluator() {
+    // use static methods only
+  }
+
   /**
    * Take an {@link Expression}, use its eContainers to lookup parameters and finally evaluates the expression to a long value representing the result
    *
    */
   public static final long evaluate(final Expression expression) {
-    final Parameterizable parameterizableObj = ExpressionEvaluator.lookUpParameters(expression);
+    final Configurable parameterizableObj = ExpressionEvaluator.lookUpParameters(expression);
     final Map<String, Number> addInputParameterValues = ExpressionEvaluator.addInputParameterValues(parameterizableObj);
-    return ExpressionEvaluator.evaluate(expression.getString(), addInputParameterValues);
+    return ExpressionEvaluator.evaluate(expression.getExpressionString(), addInputParameterValues);
   }
 
   public static final long evaluate(final String expression) {
@@ -84,9 +89,7 @@ public class ExpressionEvaluator {
     final JEP jep = new JEP();
 
     if (addInputParameterValues != null) {
-      addInputParameterValues.forEach((name, value) -> {
-        jep.addVariable(name, value);
-      });
+      addInputParameterValues.forEach(jep::addVariable);
     }
     jep.addStandardConstants();
     jep.addStandardFunctions();
@@ -95,6 +98,7 @@ public class ExpressionEvaluator {
     jep.addFunction("ceil", new CeilFunction());
 
     return jep;
+
   }
 
   private static long parse(final String allExpression, final JEP jep) throws ParseException {
@@ -104,23 +108,25 @@ public class ExpressionEvaluator {
       throw new UnsupportedOperationException("Unsupported result type " + result.getClass().getSimpleName());
     }
     final Double dResult = (Double) result;
-    final long round = Math.round(dResult);
-    return round;
+    if (Double.isInfinite(dResult)) {
+      throw new ExpressionEvaluationException("Expression " + allExpression + " evaluated to infinity.");
+    }
+    return Math.round(dResult);
   }
 
-  private static Parameterizable lookUpParameters(final Expression expression) {
-    Parameterizable parameterizableObj;
+  private static Configurable lookUpParameters(final Expression expression) {
+    Configurable parameterizableObj;
     if (expression.eContainer() instanceof Parameterizable) {
-      parameterizableObj = (Parameterizable) expression.eContainer();
+      parameterizableObj = (Configurable) expression.eContainer();
     } else if (expression.eContainer().eContainer() instanceof Parameterizable) {
-      parameterizableObj = (Parameterizable) expression.eContainer().eContainer();
+      parameterizableObj = (Configurable) expression.eContainer().eContainer();
     } else {
-      throw new RuntimeException("Neither a child of Parameterizable nor a child of a child of Parameterizable");
+      throw new ExpressionEvaluationException("Neither a child of Parameterizable nor a child of a child of Parameterizable");
     }
     return parameterizableObj;
   }
 
-  private static Map<String, Number> addInputParameterValues(final Parameterizable parameterizableObj) {
+  private static Map<String, Number> addInputParameterValues(final Configurable parameterizableObj) {
     final Map<String, Number> result = new LinkedHashMap<>();
     for (final ConfigInputPort port : parameterizableObj.getConfigInputPorts()) {
       if ((port.getIncomingDependency() != null) && (port.getIncomingDependency().getSetter() instanceof Parameter)) {
@@ -133,8 +139,8 @@ public class ExpressionEvaluator {
           parameterName = port.getName();
         }
 
-        final String evaluatedParam = p.getExpression().evaluate();
-        final double parseDouble = Double.parseDouble(evaluatedParam);
+        final Expression valueExpression = p.getValueExpression();
+        final double parseDouble = ExpressionEvaluator.evaluate(valueExpression);
         result.put(parameterName, parseDouble);
       }
     }

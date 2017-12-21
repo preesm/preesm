@@ -37,6 +37,9 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
+import org.eclipse.emf.common.util.EList;
+import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
+
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Abstract Vertex</b></em>'. <!-- end-user-doc -->
@@ -52,7 +55,7 @@ package org.ietr.preesm.experiment.model.pimm;
  * @model abstract="true"
  * @generated
  */
-public interface AbstractVertex extends Parameterizable {
+public interface AbstractVertex extends PiMMVisitable {
   /**
    * Returns the value of the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc -->
    * <p>
@@ -80,12 +83,21 @@ public interface AbstractVertex extends Parameterizable {
   void setName(String value);
 
   /**
-   * Get the {@link Port} with a given name from the {@link AbstractActor} ports lists.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param portName
-   *          the name of the desired {@link Port}
-   * @return the requested port, or <code>null</code> if no such port exists.s
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='final BasicEList&lt;Port&gt; result =
+   *        ECollections.newBasicEList();\nreturn ECollections.unmodifiableEList(result);'"
+   * @generated
    */
-  public Port getPortNamed(String portName);
+  EList<Port> getAllPorts();
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model annotation="http://www.eclipse.org/emf/2002/GenModel body='return getAllPorts().stream().filter(Objects::nonNull).filter(p -&gt; (p.getName() ==
+   *        null) &amp;&amp; (portName == null) || (p.getName() != null) &amp;&amp; p.getName().equals(portName)).findFirst().orElse(null);'"
+   * @generated
+   */
+  Port lookupPort(String portName);
 
 } // AbstractVertex

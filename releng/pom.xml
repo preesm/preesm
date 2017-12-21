@@ -45,12 +45,18 @@
   <parent>
     <groupId>org.ietr.preesm</groupId>
     <artifactId>org.ietr.preesm.parent</artifactId>
-    <version>2.5.4</version>
+    <version>2.6.0</version>
     <relativePath>..</relativePath>
   </parent>
 
   <!-- Extra repositories for building the all-in-one dev feature -->
   <repositories>
+    <repository>
+      <id>RCPTT</id>
+      <layout>p2</layout>
+      <url>http://download.eclipse.org/rcptt/release/2.2.0/repository/</url>
+    </repository>
+
     <repository>
       <id>Checkstyle</id>
       <layout>p2</layout>
@@ -80,12 +86,18 @@
   </repositories>
 
   <modules>
-    <module>org.ietr.preesm.complete.site</module>
-
     <module>org.ietr.preesm.rcp.utils</module>
     <module>org.ietr.preesm.feature</module>
-    <module>org.ietr.preesm.dev.feature</module>
     <module>org.ietr.preesm.product</module>
   </modules>
 
+  <profiles>
+    <profile>
+      <id>doUpdateSite</id>
+      <modules>
+        <module>org.ietr.preesm.dev.feature</module>
+        <module>org.ietr.preesm.complete.site</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>

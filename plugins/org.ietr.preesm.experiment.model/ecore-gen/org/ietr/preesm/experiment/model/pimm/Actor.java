@@ -48,7 +48,6 @@ import org.eclipse.core.runtime.IPath;
  * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.Actor#getRefinement <em>Refinement</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.Actor#isConfigurationActor <em>Configuration Actor</em>}</li>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.Actor#getMemoryScriptPath <em>Memory Script Path</em>}</li>
  * </ul>
  *
@@ -85,29 +84,45 @@ public interface Actor extends ExecutableActor {
   void setRefinement(Refinement value);
 
   /**
-   * Returns the value of the '<em><b>Configuration Actor</b></em>' attribute. <!-- begin-user-doc -->
+   * <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Configuration Actor</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
    *
-   * @return the value of the '<em>Configuration Actor</em>' attribute.
-   * @see #isSetConfigurationActor()
-   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getActor_ConfigurationActor()
-   * @model unsettable="true" required="true" changeable="false" volatile="true"
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='// an Actor is considered as a Configuration Actor iff it has at least a
+   *        ConfigOutputPort that is connected to a getter\nreturn
+   *        getConfigOutputPorts().stream().filter(Objects::nonNull).map(ConfigOutputPort::getOutgoingDependencies).filter(l -&gt; !l.isEmpty()).map(l -&gt;
+   *        l.get(0))\n .map(Dependency::getGetter).filter(Objects::nonNull).anyMatch(x -&gt; true);'"
    * @generated
    */
   boolean isConfigurationActor();
 
   /**
-   * Returns whether the value of the '{@link org.ietr.preesm.experiment.model.pimm.Actor#isConfigurationActor <em>Configuration Actor</em>}' attribute is set.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return whether the value of the '<em>Configuration Actor</em>' attribute is set.
-   * @see #isConfigurationActor()
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return getRefinement().isHierarchical();'"
    * @generated
    */
-  boolean isSetConfigurationActor();
+  boolean isHierarchical();
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return
+   *        Optional.ofNullable(getRefinement()).map(Refinement::getAbstractActor).orElse(null);'"
+   * @generated
+   */
+  AbstractActor getChildAbstractActor();
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='if (isHierarchical()) {\n\treturn (PiGraph) getChildAbstractActor();\n}
+   *        else {\n\tthrow new UnsupportedOperationException(\"Cannot get the subgraph of a non hierarchical actor.\");\n}'"
+   * @generated
+   */
+  PiGraph getSubGraph();
 
   /**
    * Returns the value of the '<em><b>Memory Script Path</b></em>' attribute. <!-- begin-user-doc -->
@@ -134,18 +149,4 @@ public interface Actor extends ExecutableActor {
    * @generated
    */
   void setMemoryScriptPath(IPath value);
-
-  /**
-   * Test if the actor is a hierarchical one.
-   *
-   * @return true, if it is.
-   */
-  public boolean isHierarchical();
-
-  /**
-   * Get the graph from hierarchy.
-   *
-   * @return The {@link PiGraph}
-   */
-  public PiGraph getGraph();
 } // Actor

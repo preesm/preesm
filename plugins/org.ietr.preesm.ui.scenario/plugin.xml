@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+
+    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+
+    This software is a computer program whose purpose is to help prototyping
+    parallel applications using dataflow formalism.
+
+    This software is governed by the CeCILL  license under French law and
+    abiding by the rules of distribution of free software.  You can  use,
+    modify and/ or redistribute the software under the terms of the CeCILL
+    license as circulated by CEA, CNRS and INRIA at the following URL
+    "http://www.cecill.info".
+
+    As a counterpart to the access to the source code and  rights to copy,
+    modify and redistribute granted by the license, users are provided only
+    with a limited warranty  and the software's author,  the holder of the
+    economic rights,  and the successive licensors  have only  limited
+    liability.
+
+    In this respect, the user's attention is drawn to the risks associated
+    with loading,  using,  modifying and/or developing or reproducing the
+    software by the user in light of its specific status of free software,
+    that may mean  that it is complicated to manipulate,  and  that  also
+    therefore means  that it is reserved for developers  and  experienced
+    professionals having in-depth computer knowledge. Users are therefore
+    encouraged to load and test the software's suitability as regards their
+    requirements in conditions enabling the security of their systems and/or
+    data to be ensured and,  more generally, to use and operate it in the
+    same conditions as regards security.
+
+    The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL license and that you accept its terms.
+
+-->
+<?eclipse version="3.4"?>
+
+<plugin>
+
+   <!-- Editors defined by this plugin -->
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.ietr.preesm.ui.scenario.editor.ScenarioEditor"
+            default="true"
+            extensions="scenario"
+            icon="icons/preesm4mini.PNG"
+            id="org.ietr.preesm.ui.scenario.editor.ScenarioEditor"
+            name="Preesm scenario editor">
+      </editor>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            category="org.ietr.preesm.category"
+            class="org.ietr.preesm.ui.scenario.wizards.NewScenarioFileWizard"
+            hasPages="true"
+            icon="icons/preesm4mini.PNG"
+            id="org.ietr.preesm.core.ui.wizards.NewScenarioFileWizard"
+            name="Preesm Scenario"
+            project="false">
+         <description>
+            Create a new scenario file
+         </description>
+      </wizard>
+   </extension>
+
+   <!-- Navigator content -->
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+	 <commonWizard type="new"
+	   wizardId="org.ietr.preesm.core.ui.wizards.NewScenarioFileWizard">
+	     <enablement>
+		   <or>
+		    <adapt type="org.eclipse.core.resources.IFolder" />
+		    <adapt type="org.eclipse.core.resources.IProject" />
+		   </or>
+	     </enablement>
+	 </commonWizard>
+   </extension>
+
+   <!-- Preesm Menus -->
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.ui.popup.any?before=additions">
+         <menu
+               icon="icons/preesmProject.png"
+               id="org.ietr.preesm.ui.menu1"
+               label="Preesm">
+            <!-- generate a default empty scenario in the selected project -->
+            <command
+                  commandId="org.ietr.preesm.ui.command.ScenarioGenerator"
+                  icon="icons/preesm4mini.PNG"
+                  label="Generate Scenario"
+                  style="push">
+               <visibleWhen
+                     checkEnabled="true">
+                  <with
+                        variable="selection">
+                     <iterate
+                           ifEmpty="false"
+                           operator="and">
+                        <adapt
+                              type="org.eclipse.core.resources.IProject">
+                           <test
+                                 property="org.eclipse.core.resources.projectNature"
+                                 value="org.ietr.preesm.core.ui.wizards.nature">
+                           </test>
+                        </adapt>
+                     </iterate>
+                  </with>
+               </visibleWhen>
+            </command>
+         </menu>
+      </menuContribution>
+   </extension>
+
+   <!-- Preesm commands (for menus) -->
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="org.ietr.preesm.ui.command.ScenarioGenerator"
+            name="Scenario Generator">
+      </command>
+   </extension>
+
+   <!-- Preesm command handlers (for menus) -->
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="org.ietr.preesm.ui.scenario.popup.actions.ScenariosGeneratorPopup"
+            commandId="org.ietr.preesm.ui.command.ScenarioGenerator">
+      </handler>
+   </extension>
+</plugin>
