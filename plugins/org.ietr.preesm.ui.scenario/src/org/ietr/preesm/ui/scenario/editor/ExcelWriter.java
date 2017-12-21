@@ -1,9 +1,11 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2010 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Clément Guy <clement.guy@insa-rennes.fr> (2015)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2010 - 2011)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Jonathan Piat <jpiat@laas.fr> (2009)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2012)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,35 +36,52 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.ui;
+package org.ietr.preesm.ui.scenario.editor;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerFilter;
+import java.io.FileNotFoundException;
+import java.io.OutputStream;
+import jxl.write.WritableSheet;
+import jxl.write.biff.RowsExceededException;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.swt.events.SelectionListener;
+import org.ietr.dftools.algorithm.importer.InvalidModelException;
 
 /**
- * Filtering the .layout files that do not need to be displayed in the file explorer
+ * Abstract class, must be implementing when exporting Timings, or variables into an excel sheet.
  *
- * @author mpelcat
+ * @author kdesnos
  */
-public class ProjectExplorerFilter extends ViewerFilter {
+public abstract class ExcelWriter implements SelectionListener {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.ViewerFilter#select(org.eclipse.jface.viewers .Viewer, java.lang.Object, java.lang.Object)
+  /**
+   * Instantiates a new excel writer.
    */
-  @Override
-  public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
-    if (element instanceof IFile) {
-      final IFile file = (IFile) element;
-      final String fileName = file.getName();
-      if (fileName.endsWith(".layout")) {
-        return false;
-      }
-    }
-
-    return true;
+  public ExcelWriter() {
+    super();
   }
+
+  /**
+   * Add timing cells to the newly created file.
+   *
+   * @param os
+   *          the os
+   */
+  public abstract void write(OutputStream os);
+
+  /**
+   * Add cells to the created excel sheet.
+   *
+   * @param sheet
+   *          the sheet
+   * @throws InvalidModelException
+   *           the invalid model exception
+   * @throws FileNotFoundException
+   *           the file not found exception
+   * @throws RowsExceededException
+   *           the rows exceeded exception
+   * @throws CoreException
+   *           the core exception
+   */
+  protected abstract void addCells(WritableSheet sheet) throws InvalidModelException, FileNotFoundException, RowsExceededException, CoreException;
 
 }

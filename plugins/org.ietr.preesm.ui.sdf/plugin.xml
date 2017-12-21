@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2017) :
+
+    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+    Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+    Jonathan Piat <jpiat@laas.fr> (2011 - 2012)
+    Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2015)
+    Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
+
+    This software is a computer program whose purpose is to help prototyping
+    parallel applications using dataflow formalism.
+
+    This software is governed by the CeCILL  license under French law and
+    abiding by the rules of distribution of free software.  You can  use,
+    modify and/ or redistribute the software under the terms of the CeCILL
+    license as circulated by CEA, CNRS and INRIA at the following URL
+    "http://www.cecill.info".
+
+    As a counterpart to the access to the source code and  rights to copy,
+    modify and redistribute granted by the license, users are provided only
+    with a limited warranty  and the software's author,  the holder of the
+    economic rights,  and the successive licensors  have only  limited
+    liability.
+
+    In this respect, the user's attention is drawn to the risks associated
+    with loading,  using,  modifying and/or developing or reproducing the
+    software by the user in light of its specific status of free software,
+    that may mean  that it is complicated to manipulate,  and  that  also
+    therefore means  that it is reserved for developers  and  experienced
+    professionals having in-depth computer knowledge. Users are therefore
+    encouraged to load and test the software's suitability as regards their
+    requirements in conditions enabling the security of their systems and/or
+    data to be ensured and,  more generally, to use and operate it in the
+    same conditions as regards security.
+
+    The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL license and that you accept its terms.
+
+-->
+<?eclipse version="3.4"?>
+
+<plugin>
+   <!-- GramphML Algos property tab sections -->
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertySections">
+      <propertySections
+            contributorId="org.ietr.dftools.graphiti.ui.properties.contributor">
+         <propertySection
+               class="org.ietr.preesm.ui.properties.SDFGraphParametersListSection"
+               filter="org.ietr.preesm.ui.properties.filters.SDFGraphFilter"
+               id="org.ietr.preesm.ui.properties.section.sdf.graph.parameters"
+               tab="org.ietr.preesm.ui.properties.tab.sdf.graph.parameters">
+         </propertySection>
+         <propertySection
+               class="org.ietr.preesm.ui.properties.SDFGraphVariablesMapSection"
+               filter="org.ietr.preesm.ui.properties.filters.SDFGraphFilter"
+               id="org.ietr.preesm.ui.properties.section.sdf.graph.variables"
+               tab="org.ietr.preesm.ui.properties.tab.sdf.graph.variables">
+         </propertySection>
+         <propertySection
+               class="org.ietr.preesm.ui.properties.SDFVertexInstanceArgumentsMapSection"
+               filter="org.ietr.preesm.ui.properties.filters.SDFVertexFilter"
+               id="org.ietr.preesm.ui.properties.section.sdf.vertex.arguments"
+               tab="org.ietr.preesm.ui.properties.tab.sdf.vertex.arguments">
+         </propertySection>
+      </propertySections>
+   </extension>
+
+
+   <!-- Editors defined by this plugin -->
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.ietr.dftools.graphiti.ui.editors.GraphEditor"
+            contributorClass="org.ietr.dftools.graphiti.ui.editors.GraphActionBarContributor"
+            default="true"
+            extensions="graphml, design, component"
+            icon="icons/graphiti.gif"
+            id="org.ietr.preesm.ui.editor.graph"
+            name="Preesm Network Editor">
+      </editor>
+   </extension>
+
+   <!-- GramphML Algos property tabs -->
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
+      <propertyTabs
+            contributorId="org.ietr.dftools.graphiti.ui.properties.contributor">
+         <propertyTab
+               category="org.ietr.dftools.graphiti.ui.properties.category.graph"
+               id="org.ietr.preesm.ui.properties.tab.sdf.graph.parameters"
+               label="Graph Parameters">
+         </propertyTab>
+         <propertyTab
+               category="org.ietr.dftools.graphiti.ui.properties.category.graph"
+               id="org.ietr.preesm.ui.properties.tab.sdf.graph.variables"
+               label="Graph Variable Declarations">
+         </propertyTab>
+         <propertyTab
+               category="org.ietr.dftools.graphiti.ui.properties.category.vertex"
+               id="org.ietr.preesm.ui.properties.tab.sdf.vertex.arguments"
+               label="Instance Arguments">
+         </propertyTab>
+      </propertyTabs>
+   </extension>
+
+
+   <!-- Wizards -->
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <!-- new GraphML -->
+      <wizard
+            canFinishEarly="false"
+            category="org.ietr.preesm.category"
+            class="org.ietr.preesm.ui.wizard.NewGraphMLWizard"
+            hasPages="true"
+            icon="icons/graphiti.gif"
+            id="org.ietr.preesm.ui.wizards.graphml"
+            name="Preesm Algorithm (IBSDF)"
+            project="false">
+         <description>
+            Create a new IBSDF algorithm.
+         </description>
+      </wizard>
+   </extension>
+
+   <extension
+         point="graphiti.definition">
+      <!-- GraphML Algo Editor specs -->
+      <configuration
+            extension="graphml"
+            name="GraphML"
+            type="text/xml"
+            validator="org.ietr.preesm.ui.editor.graph.validators.SDFValidator">
+         <graphType
+               name="Dataflow Graph">
+            <parameter
+                  default="sdf"
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="name"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="graph parameter"
+                  type="java.util.List">
+            </parameter>
+            <parameter
+                  name="graph variable"
+                  type="java.util.Map">
+            </parameter>
+         </graphType>
+         <vertexType
+               name="Input port">
+            <parameter
+                  name="id"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  default="port"
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="instance argument"
+                  type="java.util.Map">
+            </parameter>
+            <color
+                  blue="100"
+                  green="60"
+                  red="0">
+            </color>
+            <size
+                  height="30"
+                  width="30">
+            </size>
+            <shape
+                  type="triangle">
+            </shape>
+         </vertexType>
+         <vertexType
+               name="Output port">
+            <parameter
+                  name="id"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  default="port"
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="instance argument"
+                  type="java.util.Map">
+            </parameter>
+            <color
+                  blue="100"
+                  green="0"
+                  red="60">
+            </color>
+            <shape
+                  type="triangle">
+            </shape>
+            <size
+                  height="30"
+                  width="30">
+            </size>
+         </vertexType>
+         <vertexType
+               name="Vertex">
+            <parameter
+                  name="id"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  default="vertex"
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="instance argument"
+                  type="java.util.Map">
+            </parameter>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="memory script"
+                  type="java.lang.String">
+            </parameter>
+            <color
+                  blue="17"
+                  green="188"
+                  red="238">
+            </color>
+            <size
+                  height="40"
+                  width="40">
+            </size>
+            <shape
+                  type="roundedBox">
+            </shape>
+         </vertexType>
+         <edgeType
+               directed="true"
+               name="Dataflow edge">
+            <parameter
+                  name="source port"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="target port"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  default="1"
+                  name="source production"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  default="1"
+                  name="target consumption"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="source port modifier"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="target port modifier"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  default="0"
+                  name="delay"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  default="char"
+                  name="data type"
+                  type="java.lang.String">
+            </parameter>
+         </edgeType>
+         <import>
+            <xslt
+                  name="xslt/org/ietr/preesm/sdf4j/input_sdf4j.xslt">
+            </xslt>
+         </import>
+         <export>
+            <xslt
+                  name="xslt/org/ietr/preesm/sdf4j/output_sdf4j.xslt">
+            </xslt>
+         </export>
+         <vertexType
+               name="Broadcast">
+            <parameter
+                  name="id"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  default="Broadcast"
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="instance argument"
+                  type="java.util.Map">
+            </parameter>
+            <color
+                  blue="10"
+                  green="120"
+                  red="0">
+            </color>
+            <size
+                  height="30"
+                  width="30">
+            </size>
+            <shape
+                  type="circle">
+            </shape>
+         </vertexType>
+         <vertexType
+               name="fork">
+            <parameter
+                  name="id"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  default="fork"
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="instance argument"
+                  type="java.util.Map">
+            </parameter>
+            <color
+                  blue="0"
+                  green="10"
+                  red="120">
+            </color>
+            <size
+                  height="30"
+                  width="30">
+            </size>
+            <shape
+                  type="circle">
+            </shape>
+         </vertexType>
+         <vertexType
+               name="join">
+            <parameter
+                  name="id"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  default="join"
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="instance argument"
+                  type="java.util.Map">
+            </parameter>
+            <color
+                  blue="120"
+                  green="0"
+                  red="10">
+            </color>
+            <size
+                  height="30"
+                  width="30">
+            </size>
+            <shape
+                  type="circle">
+            </shape>
+         </vertexType>
+         <vertexType
+               name="SpecificType">
+            <parameter
+                  name="id"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="instance argument"
+                  type="java.util.Map">
+            </parameter>
+            <color
+                  blue="211"
+                  green="211"
+                  red="211">
+            </color>
+            <size
+                  height="30"
+                  width="30">
+            </size>
+            <shape
+                  type="circle">
+            </shape>
+         </vertexType>
+      </configuration>
+   </extension>
+</plugin>

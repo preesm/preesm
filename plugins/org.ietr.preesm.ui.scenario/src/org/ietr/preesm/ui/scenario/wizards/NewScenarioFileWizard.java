@@ -1,9 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2010 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Clément Guy <clement.guy@insa-rennes.fr> (2015)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2010 - 2011)
+ * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2011)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,35 +34,57 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.ui;
+package org.ietr.preesm.ui.scenario.wizards;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
+import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
 
+// TODO: Auto-generated Javadoc
 /**
- * Filtering the .layout files that do not need to be displayed in the file explorer
+ * The Class NewScenarioFileWizard.
  *
  * @author mpelcat
  */
-public class ProjectExplorerFilter extends ViewerFilter {
+public class NewScenarioFileWizard extends BasicNewFileResourceWizard {
 
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.jface.viewers.ViewerFilter#select(org.eclipse.jface.viewers .Viewer, java.lang.Object, java.lang.Object)
+   * @see org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard#addPages()
    */
   @Override
-  public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
-    if (element instanceof IFile) {
-      final IFile file = (IFile) element;
-      final String fileName = file.getName();
-      if (fileName.endsWith(".layout")) {
-        return false;
-      }
-    }
-
-    return true;
+  public void addPages() {
+    super.addPages();
+    super.setWindowTitle("New Scenario File");
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard#initializeDefaultPageImageDescriptor()
+   */
+  @Override
+  protected void initializeDefaultPageImageDescriptor() {
+    super.initializeDefaultPageImageDescriptor();
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard#performFinish()
+   */
+  @Override
+  public boolean performFinish() {
+    final WizardNewFileCreationPage page = (WizardNewFileCreationPage) (getPage("newFilePage1"));
+    String filename = page.getFileName();
+
+    if (!filename.endsWith(".scenario")) {
+      filename += ".scenario";
+      page.setFileName(filename);
+    }
+
+    final IFile createdFile = page.createNewFile();
+    return createdFile != null;
+  }
 }

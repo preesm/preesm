@@ -1,9 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2010 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2010 - 2011)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2011)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -36,33 +36,51 @@
  */
 package org.ietr.preesm.ui;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.BundleContext;
 
 /**
- * Filtering the .layout files that do not need to be displayed in the file explorer
- *
- * @author mpelcat
+ * The activator class controls the plug-in life cycle.
  */
-public class ProjectExplorerFilter extends ViewerFilter {
+public class PreesmUIPlugin extends AbstractUIPlugin {
+
+  /** The Constant PLUGIN_ID. */
+  // The plug-in ID
+  public static final String PLUGIN_ID = "org.ietr.preesm.ui"; //$NON-NLS-1$
+
+  /** The plugin. */
+  // The shared instance
+  private static PreesmUIPlugin plugin;
 
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.jface.viewers.ViewerFilter#select(org.eclipse.jface.viewers .Viewer, java.lang.Object, java.lang.Object)
+   * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext )
    */
   @Override
-  public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
-    if (element instanceof IFile) {
-      final IFile file = (IFile) element;
-      final String fileName = file.getName();
-      if (fileName.endsWith(".layout")) {
-        return false;
-      }
-    }
+  public void start(final BundleContext context) throws Exception {
+    super.start(context);
+    PreesmUIPlugin.plugin = this;
+  }
 
-    return true;
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext )
+   */
+  @Override
+  public void stop(final BundleContext context) throws Exception {
+    PreesmUIPlugin.plugin = null;
+    super.stop(context);
+  }
+
+  /**
+   * Returns the shared instance.
+   *
+   * @return the shared instance
+   */
+  public static PreesmUIPlugin getDefault() {
+    return PreesmUIPlugin.plugin;
   }
 
 }
