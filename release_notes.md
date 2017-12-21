@@ -1,6 +1,16 @@
 PREESM Changelog
 ================
 
+## Release version X.Y.Z
+*XXXX.XX.XX*
+
+### New Feature
+
+### Changes
+
+### Bug fix
+
+
 ## Release version 2.6.0
 *2017.12.21*
 
