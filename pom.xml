@@ -234,7 +234,7 @@
             <vmArgs>
               <vmArg>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco-version}/org.jacoco.agent-${jacoco-version}-runtime.jar=destfile=${project.basedir}/${sonar.jacoco.reportPaths},append=true,excludes=**/tests/**:**/test-fragments/**:**/releng/**</vmArg>
             </vmArgs>
-          
+
 					</aut>
 				</configuration>
 			</plugin>
@@ -483,7 +483,9 @@
     <module>plugins/org.ietr.preesm.mapper</module>
     <module>plugins/org.ietr.preesm.memory</module>
     <module>plugins/org.ietr.preesm.pimm.algorithm</module>
+
     <module>plugins/org.ietr.preesm.ui</module>
+    <module>plugins/org.ietr.preesm.ui.scenario</module>
 
     <module>test-fragments</module>
     <module>tests</module>
