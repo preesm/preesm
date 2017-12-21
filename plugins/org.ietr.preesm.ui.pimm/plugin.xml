@@ -247,7 +247,7 @@
             commandId="org.ietr.preesm.ui.command.PiMM2Diagram">
       </handler>
       <handler
-            class="org.ietr.preesm.ui.pimm.popup.actions.WorkflowRunnerPopup"
+            class="org.ietr.preesm.ui.popup.actions.WorkflowRunnerPopup"
             commandId="org.ietr.preesm.ui.command.RunWorkflow">
       </handler>
    </extension>
