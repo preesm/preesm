@@ -37,16 +37,15 @@
  */
 package org.ietr.preesm.core;
 
+import org.eclipse.core.runtime.Plugin;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 /**
  * The activator class controls the plug-in life cycle.
  */
-public class PreesmCorePlugin extends AbstractUIPlugin {
+public class PreesmCorePlugin extends Plugin {
 
   /** The plugin. */
   // The shared instance
@@ -103,24 +102,5 @@ public class PreesmCorePlugin extends AbstractUIPlugin {
   public void stop(final BundleContext context) throws Exception {
     PreesmCorePlugin.plugin = null;
     super.stop(context);
-  }
-
-  /**
-   * Returns an image for the image file at the given plug-in relative path.
-   *
-   * @param path
-   *          the path
-   * @return the image
-   */
-  public static Image getImage(final String path) {
-    final ImageRegistry ir = PreesmCorePlugin.plugin.getImageRegistry();
-    Image image = ir.get(path);
-    if (image == null) {
-      final ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(PreesmCorePlugin.PLUGIN_ID, path);
-      image = id.createImage();
-      ir.put(path, image);
-    }
-
-    return image;
   }
 }
