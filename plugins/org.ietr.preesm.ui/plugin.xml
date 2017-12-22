@@ -54,7 +54,7 @@
       </perspective>
    </extension>
 
-   <!-- Workflow Run As... shortcut (deprecated) -->
+   <!-- Workflow Run As... shortcut (deprecated)
    <extension
          point="org.eclipse.debug.ui.launchShortcuts">
       <shortcut
@@ -82,7 +82,7 @@
             </enablement>
          </contextualLaunch>
       </shortcut>
-   </extension>
+   </extension> -->
    <!-- Wizards -->
    <extension
          point="org.eclipse.ui.newWizards">
