@@ -55,7 +55,6 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
-// TODO: Auto-generated Javadoc
 /**
  * Importing variables in a scenario from an excel file.
  *
@@ -87,7 +86,7 @@ public class ExcelVariablesParser {
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  public void parse(final String url) throws InvalidModelException, FileNotFoundException {
+  public void parse(final String url) throws InvalidModelException {
     WorkflowLogger.getLogger().log(Level.INFO, "Importing variables from an excel sheet.");
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();

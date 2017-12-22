@@ -62,7 +62,6 @@ import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 
-// TODO: Auto-generated Javadoc
 /**
  * Importing constraints in a scenario from an excel file. The existing timings mean that the task can be mapped on the given operator. Task names are rows
  * while operator types are columns.
@@ -99,7 +98,7 @@ public class ExcelConstraintsParser {
    * @throws CoreException
    *           the core exception
    */
-  public void parse(final String url, final Set<String> allOperatorIds) throws InvalidModelException, FileNotFoundException, CoreException {
+  public void parse(final String url, final Set<String> allOperatorIds) throws InvalidModelException, CoreException {
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 

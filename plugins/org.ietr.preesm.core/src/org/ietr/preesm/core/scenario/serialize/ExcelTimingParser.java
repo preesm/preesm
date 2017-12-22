@@ -62,7 +62,6 @@ import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 
-// TODO: Auto-generated Javadoc
 /**
  * Importing timings in a scenario from an excel file. task names are rows while operator types are columns
  *
@@ -139,7 +138,7 @@ public class ExcelTimingParser {
    *           the core exception
    */
   private void parseTimings(final Workbook w, final Set<String> opDefIds, final Set<String> missingVertices, final Set<String> missingOperatorTypes)
-      throws FileNotFoundException, InvalidModelException, CoreException {
+      throws InvalidModelException, CoreException {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
     if (this.scenario.isIBSDFScenario()) {
