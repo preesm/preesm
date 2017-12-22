@@ -46,11 +46,11 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle.
  */
-public class Activator extends AbstractUIPlugin {
+public class PreesmCorePlugin extends AbstractUIPlugin {
 
   /** The plugin. */
   // The shared instance
-  private static Activator plugin;
+  private static PreesmCorePlugin plugin;
 
   /** The Constant PLUGIN_ID. */
   // The plug-in ID
@@ -61,8 +61,8 @@ public class Activator extends AbstractUIPlugin {
    *
    * @return the shared instance
    */
-  public static Activator getDefault() {
-    return Activator.plugin;
+  public static PreesmCorePlugin getDefault() {
+    return PreesmCorePlugin.plugin;
   }
 
   /**
@@ -73,13 +73,13 @@ public class Activator extends AbstractUIPlugin {
    * @return the image descriptor
    */
   public static ImageDescriptor getImageDescriptor(final String path) {
-    return AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, path);
+    return AbstractUIPlugin.imageDescriptorFromPlugin(PreesmCorePlugin.PLUGIN_ID, path);
   }
 
   /**
    * The constructor.
    */
-  public Activator() {
+  public PreesmCorePlugin() {
   }
 
   /*
@@ -90,7 +90,7 @@ public class Activator extends AbstractUIPlugin {
   @Override
   public void start(final BundleContext context) throws Exception {
     super.start(context);
-    Activator.plugin = this;
+    PreesmCorePlugin.plugin = this;
     getBundle();
   }
 
@@ -101,7 +101,7 @@ public class Activator extends AbstractUIPlugin {
    */
   @Override
   public void stop(final BundleContext context) throws Exception {
-    Activator.plugin = null;
+    PreesmCorePlugin.plugin = null;
     super.stop(context);
   }
 
@@ -113,10 +113,10 @@ public class Activator extends AbstractUIPlugin {
    * @return the image
    */
   public static Image getImage(final String path) {
-    final ImageRegistry ir = Activator.plugin.getImageRegistry();
+    final ImageRegistry ir = PreesmCorePlugin.plugin.getImageRegistry();
     Image image = ir.get(path);
     if (image == null) {
-      final ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, path);
+      final ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(PreesmCorePlugin.PLUGIN_ID, path);
       image = id.createImage();
       ir.put(path, image);
     }

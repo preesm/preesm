@@ -48,7 +48,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
-import org.ietr.preesm.core.Activator;
+import org.ietr.preesm.core.PreesmCorePlugin;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -138,7 +138,7 @@ public class SaveAsWizard extends Wizard implements INewWizard {
     }
 
     // Open editor on new file.
-    final IWorkbenchWindow dw = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow();
+    final IWorkbenchWindow dw = PreesmCorePlugin.getDefault().getWorkbench().getActiveWorkbenchWindow();
     try {
       if (dw != null) {
         BasicNewResourceWizard.selectAndReveal(file, dw);
