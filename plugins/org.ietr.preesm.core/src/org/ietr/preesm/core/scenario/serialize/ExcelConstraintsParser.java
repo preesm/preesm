@@ -55,12 +55,12 @@ import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
+import org.ietr.preesm.utils.files.WorkspaceUtils;
 
 /**
  * Importing constraints in a scenario from an excel file. The existing timings mean that the task can be mapped on the given operator. Task names are rows
@@ -102,7 +102,7 @@ public class ExcelConstraintsParser {
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-    Activator.updateWorkspace();
+    WorkspaceUtils.updateWorkspace();
 
     final Path path = new Path(url);
     final IFile file = workspace.getRoot().getFile(path);

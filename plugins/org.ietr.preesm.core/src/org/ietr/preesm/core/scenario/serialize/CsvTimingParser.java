@@ -51,11 +51,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
+import org.ietr.preesm.utils.files.WorkspaceUtils;
 
 /**
  * Importing timings in a scenario from a csv file. task names are rows while operator types are columns
@@ -95,7 +95,7 @@ public class CsvTimingParser {
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-    Activator.updateWorkspace();
+    WorkspaceUtils.updateWorkspace();
 
     final Path path = new Path(url);
     final IFile file = workspace.getRoot().getFile(path);

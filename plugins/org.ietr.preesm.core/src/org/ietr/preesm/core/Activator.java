@@ -37,10 +37,6 @@
  */
 package org.ietr.preesm.core;
 
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
@@ -126,19 +122,5 @@ public class Activator extends AbstractUIPlugin {
     }
 
     return image;
-  }
-
-  /**
-   * Update workspace.
-   */
-  public static void updateWorkspace() {
-
-    try {
-      final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-
-      workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-    } catch (final Exception e) {
-      e.printStackTrace();
-    }
   }
 }

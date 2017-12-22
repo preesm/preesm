@@ -52,8 +52,8 @@ import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.utils.files.WorkspaceUtils;
 
 /**
  * Importing variables in a scenario from an excel file.
@@ -91,7 +91,7 @@ public class ExcelVariablesParser {
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-    Activator.updateWorkspace();
+    WorkspaceUtils.updateWorkspace();
 
     final SDFGraph currentGraph = ScenarioParser.getSDFGraph(this.scenario.getAlgorithmURL());
 
