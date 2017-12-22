@@ -105,15 +105,6 @@ public class ExcelConstraintsParser {
 
     Activator.updateWorkspace();
 
-    SDFGraph currentIBSDFGraph = null;
-    PiGraph currentPiGraph = null;
-
-    if (this.scenario.isIBSDFScenario()) {
-      currentIBSDFGraph = ScenarioParser.getSDFGraph(this.scenario.getAlgorithmURL());
-    } else if (this.scenario.isPISDFScenario()) {
-      currentPiGraph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
-    }
-
     final Path path = new Path(url);
     final IFile file = workspace.getRoot().getFile(path);
 
@@ -129,8 +120,8 @@ public class ExcelConstraintsParser {
       final Set<String> missingOperators = new LinkedHashSet<>();
 
       if (this.scenario.isIBSDFScenario()) {
+        final SDFGraph currentIBSDFGraph = ScenarioParser.getSDFGraph(this.scenario.getAlgorithmURL());
         for (final SDFAbstractVertex vertex : currentIBSDFGraph.getHierarchicalVertexSet()) {
-
           if (vertex.getKind().equalsIgnoreCase("vertex")) {
             for (final String operatorId : allOperatorIds) {
               checkOpIBSDFConstraint(w, operatorId, vertex, missingVertices, missingOperators);
@@ -138,8 +129,8 @@ public class ExcelConstraintsParser {
           }
         }
       } else if (this.scenario.isPISDFScenario()) {
+        final PiGraph currentPiGraph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
         for (final AbstractActor vertex : currentPiGraph.getAllActors()) {
-
           if (vertex instanceof Actor) {
             for (final String operatorId : allOperatorIds) {
               checkOpPiConstraint(w, operatorId, (Actor) vertex, missingVertices, missingOperators);
@@ -147,10 +138,10 @@ public class ExcelConstraintsParser {
           }
         }
       }
-
     } catch (BiffException | IOException | CoreException e) {
       e.printStackTrace();
     }
+
   }
 
   /**

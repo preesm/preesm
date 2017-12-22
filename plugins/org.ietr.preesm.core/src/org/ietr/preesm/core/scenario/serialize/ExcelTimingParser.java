@@ -115,11 +115,7 @@ public class ExcelTimingParser {
 
       parseTimings(w, opDefIds, missingVertices, missingOperatorTypes);
 
-    } catch (final BiffException e) {
-      e.printStackTrace();
-    } catch (final IOException e) {
-      e.printStackTrace();
-    } catch (final CoreException e) {
+    } catch (final BiffException | IOException | CoreException e) {
       e.printStackTrace();
     }
   }
