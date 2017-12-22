@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Preesm UI
+Bundle-Name: Preesm UI :: SDF
 Bundle-SymbolicName: org.ietr.preesm.ui.sdf;singleton:=true
 Bundle-Version: 2.6.0.qualifier
 Bundle-Vendor: IETR/INSA Rennes
