@@ -92,8 +92,6 @@ public class ExcelTimingParser {
    *          the op def ids
    * @throws InvalidModelException
    *           the invalid model exception
-   * @throws FileNotFoundException
-   *           the file not found exception
    */
   public void parse(final String url, final Set<String> opDefIds) throws InvalidModelException, FileNotFoundException {
     WorkflowLogger.getLogger().log(Level.INFO, "Importing timings from an excel sheet. Non precised timings are kept unmodified.");
@@ -130,8 +128,6 @@ public class ExcelTimingParser {
    *          the missing vertices
    * @param missingOperatorTypes
    *          the missing operator types
-   * @throws FileNotFoundException
-   *           the file not found exception
    * @throws InvalidModelException
    *           the invalid model exception
    * @throws CoreException

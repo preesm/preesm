@@ -37,7 +37,6 @@
  */
 package org.ietr.preesm.core.scenario.serialize;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -93,8 +92,6 @@ public class ExcelConstraintsParser {
    *          the all operator ids
    * @throws InvalidModelException
    *           the invalid model exception
-   * @throws FileNotFoundException
-   *           the file not found exception
    * @throws CoreException
    *           the core exception
    */

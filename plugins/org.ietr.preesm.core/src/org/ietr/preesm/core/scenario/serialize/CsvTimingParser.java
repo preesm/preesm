@@ -37,7 +37,6 @@
 package org.ietr.preesm.core.scenario.serialize;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
@@ -87,8 +86,6 @@ public class CsvTimingParser {
    *          the op def ids
    * @throws InvalidModelException
    *           the invalid model exception
-   * @throws FileNotFoundException
-   *           the file not found exception
    */
   public void parse(final String url, final Set<String> opDefIds) throws InvalidModelException {
     WorkflowLogger.getLogger().log(Level.INFO, "Importing timings from a csv sheet. Non precised timings are kept unmodified.");
@@ -144,8 +141,6 @@ public class CsvTimingParser {
    *          the timings
    * @param opDefIds
    *          the op def ids
-   * @throws FileNotFoundException
-   *           the file not found exception
    * @throws InvalidModelException
    *           the invalid model exception
    * @throws CoreException

@@ -37,7 +37,6 @@
  */
 package org.ietr.preesm.core.scenario.serialize;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
 import jxl.Cell;
@@ -83,8 +82,6 @@ public class ExcelVariablesParser {
    *          the url
    * @throws InvalidModelException
    *           the invalid model exception
-   * @throws FileNotFoundException
-   *           the file not found exception
    */
   public void parse(final String url) throws InvalidModelException {
     WorkflowLogger.getLogger().log(Level.INFO, "Importing variables from an excel sheet.");
