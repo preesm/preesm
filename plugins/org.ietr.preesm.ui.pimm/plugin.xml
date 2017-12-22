@@ -225,10 +225,6 @@
             id="org.ietr.preesm.ui.command.PiMM2Diagram"
             name="Generate Diagram file from PiMM Graph">
       </command>
-      <command
-            id="org.ietr.preesm.ui.command.RunWorkflow"
-            name="Run Workflow">
-      </command>
    </extension>
 
    <!-- Preesm command handlers (for menus) -->
@@ -241,10 +237,6 @@
       <handler
             class="org.ietr.preesm.ui.pimm.popup.actions.PiMM2DiagramGeneratorPopup"
             commandId="org.ietr.preesm.ui.command.PiMM2Diagram">
-      </handler>
-      <handler
-            class="org.ietr.preesm.ui.popup.actions.WorkflowRunnerPopup"
-            commandId="org.ietr.preesm.ui.command.RunWorkflow">
       </handler>
    </extension>
 
