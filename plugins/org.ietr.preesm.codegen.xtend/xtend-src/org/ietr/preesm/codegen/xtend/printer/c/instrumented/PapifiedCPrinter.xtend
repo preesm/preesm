@@ -48,14 +48,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
 import org.ietr.dftools.architecture.slam.Design
 import org.ietr.dftools.architecture.slam.ComponentInstance
-import org.ietr.dftools.architecture.slam.attributes.Parameter
-
-/*import org.ietr.dftools.architecture.slam.ComponentInstance
-import org.ietr.dftools.architecture.slam.Design
-import org.ietr.dftools.architecture.slam.SlamPackage
 
 
-import org.ietr.preesm.core.architecture.util.DesignTools*/
 
 /**
  * This printer currently papify C code for X86 cores..
@@ -74,7 +68,9 @@ class PapifiedCPrinter extends CPrinter {
 	 */
 		String actor_name = "actor_name_";
 		String PAPI_actions = "PAPI_actions_";
-				
+	/**
+	 * variables to configure the papification
+	 */			
 		int instance;
 		var int code_set_size;
 		var String all_event_names;
@@ -95,19 +91,19 @@ class PapifiedCPrinter extends CPrinter {
 	'''
 
 	/**
-	 * Add PAPI instrumentation code to the {@link Block blocks}.<br>
-	 * In the current version, the instrumentation consists of:<br>
-	 * - Measuring execution time for each actor.<br>
-	 * - Calls to PAPI library to monitor the total amount of instructions.<br>
-	 * - Calls to PAPI library to monitor the total amount of L1 cache misses.<br>
-	 * - Writing the results into a .csv file.<br>
+	 * Configure the PAPI instrumentation of each {@link Block blocks}.<br>
+	 * In the current version, the instrumentation could be configured in terms of:<br>
+	 * - Which cores are being monitored.<br>
+	 * - Monitoring only time or time and events.<br>
+	 * 
+	 * This configuration is based on user defined parameters within the SLAM model.<br>
+	 * The results of the monitoring will be stored in a .csv file.<br>
 	 *
-	 * @param blocks
+	 * @param printerBlocks
 	 * 			List of the blocks printed by the printer. (will be
 	 * 			modified)
 	 */
 	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {
-		
 		
 		var Design slamDesign = this.engine.archi;		
 		var List<ComponentInstance> compInstances = slamDesign.componentInstances; 
@@ -117,13 +113,9 @@ class PapifiedCPrinter extends CPrinter {
 		
 		var int search_index;
 		
-		//compInstances = compInstances.sortBy[instanceName];
-				
+		// for each block				
 		for (Block block : printerBlocks){
-			
-			//Analyzing the user defined parameter PAPI_AVAIL_EVENTS
-			
-			//pe = compInstances.get(instance);	
+			// associate the block with its instance in the slam model
 			search_index = 0;
 			instance = 0;
 			for(ComponentInstance searching : compInstances){
@@ -134,27 +126,23 @@ class PapifiedCPrinter extends CPrinter {
 					search_index++;
 				}
 			}
-			
 			pe = compInstances.get(instance);
 			
+			// get the events to be monitored and/or if there will be only a timing measurement
 			all_event_names = org.ietr.preesm.core.architecture.util.DesignTools.getParameter(pe, "PAPI_AVAIL_EVENTS");
 			timing_active = org.ietr.preesm.core.architecture.util.DesignTools.getParameter(pe, "PAPI_TIMING");
-			
-			//println(all_event_names.toString);
-			//println("Analyzing = " + pe.instanceName);
-			
-			if(all_event_names !== null && all_event_names != ""){	
-				
-				//println(all_event_names.toString);
-				event_names = all_event_names.split(",");		
-				
-				//println(event_names.toString);	
+						
+			// configure the papification
+			if(all_event_names !== null && all_event_names != ""){					
+				event_names = all_event_names.split(",");	
 				code_set_size = event_names.length;
 				papifying = true;
 			}else if(timing_active == "1"){
 				code_set_size = 0;
 				papifying = true;
 			}
+			
+			// if the core instance is being papified
 			if(papifying == true){									
 				for(CodeElt elts : (block as CoreBlock).loopBlock.codeElts){	
 					//For all the FunctionCalls within the main code loop
@@ -191,7 +179,7 @@ class PapifiedCPrinter extends CPrinter {
 							const.value = code_set_size
 							const
 						})
-						//Create a constant for use 0 as a funtion parameter
+						//Create a constant string with the events to be measured
 						block.definitions.add({
 							var const = CodegenFactory.eINSTANCE.createConstantString
 							const.name = "all_event_names"
@@ -199,7 +187,7 @@ class PapifiedCPrinter extends CPrinter {
 							const.comment = "PAPI events"
 							const
 						})
-						//Create a function to initialize PAPI actions
+						//Create a function to configure the papification
 						(block as CoreBlock).initBlock.codeElts.add({
 							var func = CodegenFactory.eINSTANCE.createFunctionCall()
 							func.name = "configure_papification"
@@ -210,11 +198,14 @@ class PapifiedCPrinter extends CPrinter {
 							func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.INPUT)
 							func.actorName = "Papify --> configure papification of ".concat((elts as FunctionCall).actorName)
 							func
-						})												
+						})				
+						//Include a parameter in each actor to point out that it will be monitored								
 						block.definitions.add({
 							var const = CodegenFactory.eINSTANCE.createConstant
 							const.comment = "Actor to be papified"
 							const.name = "Papified"
+							//We cannot read the value of the parameter, so timing and event monitoring
+							//is distinguished using the type of variable
 							if(code_set_size == 0){
 								const.type = "int"						
 							}
@@ -229,22 +220,21 @@ class PapifiedCPrinter extends CPrinter {
 				}
 			}
 			papifying = false;
-		}
-		
+		}		
 		super.preProcessing(printerBlocks, allBlocks)
 	}
 
 	/**
-	 * Add PAPI instrumentation code to the funtions.<br>
-	 * In the current version, the monitoring consists of:<br>
-	 * - Measuring execution time for each actor.<br>
-	 * - Calls to PAPI library to monitor the total amount of instructions.<br>
-	 * - Calls to PAPI library to monitor the total amount of L1 cache misses.<br>
-	 * - Writing the results into a .csv file.<br>
+	 * Add PAPI instrumentation code in the code generation.<br>
+	 * In the current version, there are three possiblities for each core instance:<br>
+	 * - Monitoring timing (last parameter of the functionCall is Papified and its type is "int").<br>
+	 * - Monitoring timing and events (last parameter of the functionCall is Papified and its type is "boolean").<br>
+	 * - No monitoring at all.<br>
+	 * 
+	 * The results will be written into a .csv file.<br>
 	 *
-	 * @param blocks
-	 * 			List of the blocks printed by the printer. (will be
-	 * 			modified)
+	 * @param functionCall
+	 * 			Funtion that is being printed
 	 */
 	override printFunctionCall(FunctionCall functionCall) '''
 		«IF state == PrinterState::PRINTING_LOOP_BLOCK && functionCall.parameters.get(functionCall.parameters.length-1).name.equals("Papified")»
