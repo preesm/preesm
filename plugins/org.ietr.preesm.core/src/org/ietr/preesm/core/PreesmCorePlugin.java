@@ -38,8 +38,6 @@
 package org.ietr.preesm.core;
 
 import org.eclipse.core.runtime.Plugin;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -62,23 +60,6 @@ public class PreesmCorePlugin extends Plugin {
    */
   public static PreesmCorePlugin getDefault() {
     return PreesmCorePlugin.plugin;
-  }
-
-  /**
-   * Returns an image descriptor for the image file at the given plug-in relative path.
-   *
-   * @param path
-   *          the path
-   * @return the image descriptor
-   */
-  public static ImageDescriptor getImageDescriptor(final String path) {
-    return AbstractUIPlugin.imageDescriptorFromPlugin(PreesmCorePlugin.PLUGIN_ID, path);
-  }
-
-  /**
-   * The constructor.
-   */
-  public PreesmCorePlugin() {
   }
 
   /*
