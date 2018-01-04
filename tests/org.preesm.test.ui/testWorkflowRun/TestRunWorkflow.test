@@ -1,0 +1,27 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Contexts: _ZEsW0Ob4EeeMlf4lWoX8aw
+Element-Name: TestRunWorkflow
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _FZ2j4Ob4EeeMlf4lWoX8aw
+Runtime-Version: 2.2.0.201706152316
+Save-Time: 12/22/17 10:20 AM
+Testcase-Type: ecl
+Verifications: _VGp-gOb5EeeMlf4lWoX8aw
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+with [get-view "Project Explorer" | get-tree] {
+    select "org.ietr.preesm.sobel" | double-click
+    select "org.ietr.preesm.sobel/Workflows" | double-click
+    select "org.ietr.preesm.sobel/Workflows/Codegen.workflow" | get-menu -path "Preesm/Run Workflow" | click
+}
+with [get-window "Select an existing scenario file."] {
+    get-tree | select "org.ietr.preesm.sobel/Scenarios/01-display_1core.scenario"
+    get-button OK | click
+}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
