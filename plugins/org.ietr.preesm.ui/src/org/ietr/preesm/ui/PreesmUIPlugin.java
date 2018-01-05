@@ -40,7 +40,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.ietr.preesm.core.PreesmCorePlugin;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -98,7 +97,7 @@ public class PreesmUIPlugin extends AbstractUIPlugin {
     final ImageRegistry ir = plugin.getImageRegistry();
     Image image = ir.get(path);
     if (image == null) {
-      final ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(PreesmCorePlugin.PLUGIN_ID, path);
+      final ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(PreesmUIPlugin.PLUGIN_ID, path);
       image = id.createImage();
       ir.put(path, image);
     }
