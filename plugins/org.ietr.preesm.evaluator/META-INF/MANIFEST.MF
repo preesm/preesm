@@ -13,6 +13,7 @@ Bundle-ClassPath: .,
  lib/glpk-java.jar
 Export-Package: org.ietr.preesm.evaluator,
  org.ietr.preesm.mathematicalModels,
- org.ietr.preesm.schedule
+ org.ietr.preesm.schedule,
+ org.ietr.preesm.throughput.tools.helpers
 Bundle-Vendor: IETR/INSA Rennes
 Bundle-ActivationPolicy: lazy

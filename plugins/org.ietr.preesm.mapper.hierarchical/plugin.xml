@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.ietr.dftools.workflow.tasks">
+      <task
+            id="org.ietr.preesm.mapper.hierarchical.schedulingTask"
+            name="Hierarchical Scheduling Task"
+            type="org.ietr.preesm.mapper.hierarchical.HSchedulePlugin">
+         <inputs>
+            <input
+                  id="SDF"
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="latency"
+                  object="java.lang.Double">
+            </output></outputs>
+      </task>
+      <task
+            id="org.ietr.preesm.mapper.hierarchical.LatencyTask"
+            name="Latency Exploration Task"
+            type="org.ietr.preesm.mapper.hierarchical.LatencyExplorationPlugin">
+         <inputs>
+            <input
+                  id="SDF"
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input></inputs>
+         <outputs>
+            <output
+                  id="latency"
+                  object="java.lang.Double">
+            </output></outputs>
+      </task>
+   </extension>
+
+</plugin>
