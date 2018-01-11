@@ -168,9 +168,9 @@
 
       <!-- Finally upload merged metadata and new content -->
       <plugin>
-        <groupId>org.ietr.maven</groupId>
+        <groupId>org.preesm.maven</groupId>
         <artifactId>sftp-maven-plugin</artifactId>
-        <version>2.1.0</version>
+        <version>1.0.0</version>
         <executions>
           <execution>
             <id>upload-repo</id>
