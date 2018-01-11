@@ -130,10 +130,6 @@
       <layout>p2</layout>
       <url>${preesm.p2.repo}</url>
     </repository>
-    <repository>
-      <id>Preesm Maven Repo</id>
-      <url>${preesm.maven.repo}</url>
-    </repository>
 		<repository>
 			<id>rcptt-releases</id>
 			<name>RCPTT Maven repository</name>
@@ -143,12 +139,6 @@
 
   <!-- Preesm Repo hosts both Maven dependencies and Maven plugins -->
   <pluginRepositories>
-    <pluginRepository>
-      <!-- Give same ID for safe offline mode -->
-      <id>Preesm Maven Repo</id>
-      <name>Preesm Maven Plugin Repo</name>
-      <url>${preesm.maven.repo}</url>
-    </pluginRepository>
 		<pluginRepository>
 			<id>rcptt-releases</id>
 			<name>RCPTT Maven repository</name>
