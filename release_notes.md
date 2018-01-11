@@ -7,6 +7,12 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Update releng scripts;
+* update checkstyle to 8.5;
+* Fix coding policies to match Checkstyle 8.5;
+* Fix javadoc to respect Checkstyle 8.5;
+* update coding policies: max line length is now 120 chars;
+* use Maven plugins and coding policies from Maven Central instead of Preesm own maven repo;
 
 ### Bug fix
 
