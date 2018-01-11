@@ -615,7 +615,7 @@ Version 1.0 dated 2006-09-05.]]>
       <import feature="org.eclipse.m2e.feature"/>
       <import feature="com.basistech.m2e.code.quality.checkstyle.feature"/>
       <import feature="org.sonatype.tycho.m2e.feature"/>
-      <import feature="nl.topicus.m2e.settings.feature"/>
+      <import feature="nl.topicus.m2e.settings.feature" version="2.1.0" match="greaterOrEqual"/>
 
       <!-- Sonarlint for more code lints -->
       <import feature="org.sonarlint.eclipse.feature"/>
