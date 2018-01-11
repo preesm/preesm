@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm memory Plug-in Tests
 Bundle-SymbolicName: org.ietr.preesm.memory.test
-Bundle-Version: 2.6.0.qualifier
+Bundle-Version: 2.6.1
 Bundle-Vendor: IETR/INSA Rennes
 Fragment-Host: org.ietr.preesm.memory
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
