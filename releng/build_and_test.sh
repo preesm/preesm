@@ -40,7 +40,7 @@ time (
   echo ""
   echo "Test all & Run Sonar (offline)"
   echo ""
-  (cd $DIR && mvn --offline -e -C -B -V verify sonar:sonar -fae) || exit 7
+  (cd $DIR && mvn --offline -e -C -B -V verify -fae) || exit 7
   #package update site (offline, no tests)
   echo ""
   echo "Package update site (offline)"

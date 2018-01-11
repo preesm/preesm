@@ -1,6 +1,25 @@
 PREESM Changelog
 ================
 
+## Release version 2.6.1
+*2018.01.11*
+
+### New Feature
+
+### Changes
+* Update releng scripts;
+* update checkstyle to 8.5;
+* Fix coding policies to match Checkstyle 8.5;
+* Fix javadoc to respect Checkstyle 8.5;
+* update coding policies: max line length is now 120 chars;
+* use Maven plugins and coding policies from Maven Central instead of Preesm own maven repo;
+* Cleanup UI plugins dependencies;
+* Force DFTools to 1.2.10+;
+
+
+### Bug fix
+
+
 ## Release version 2.6.0
 *2017.12.21*
 

@@ -20,24 +20,12 @@ cat > $TMPDIR/pom.xml << "EOF"
   <groupId>org.ietr</groupId>
   <version>1.0.0</version>
   <packaging>pom</packaging>
-  <properties>
-    <preesm.maven.repo>https://preesm.github.io/preesm-maven/mavenrepo/</preesm.maven.repo>
-  </properties>
-  <!-- Preesm Repo hosts both Maven dependencies and Maven plugins -->
-  <pluginRepositories>
-    <pluginRepository>
-      <!-- Give same ID for safe offline mode -->
-      <id>Preesm Maven Repo</id>
-      <name>Preesm Maven Plugin Repo</name>
-      <url>${preesm.maven.repo}</url>
-    </pluginRepository>
-  </pluginRepositories>
   <build>
     <plugins>
       <plugin>
-        <groupId>org.ietr.maven</groupId>
+        <groupId>org.preesm.maven</groupId>
         <artifactId>sftp-maven-plugin</artifactId>
-        <version>2.1.0</version>
+        <version>1.0.0</version>
         <executions>
           <execution>
             <id>upload-repo</id>

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2013)
@@ -59,7 +59,7 @@ import org.w3c.dom.NodeList;
  * This class is used to parse a {@link File} in the SDF3 (SDF For Free) Xml format indo the corresponding {@link SDFGraph}.
  *
  * @author kdesnos
- * @see http://www.es.ele.tue.nl/sdf3/manuals/xml/sdf
+ * @see this page http://www.es.ele.tue.nl/sdf3/manuals/xml/sdf
  */
 public class Sdf3XmlParser {
 

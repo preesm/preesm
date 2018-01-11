@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2017)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
@@ -203,7 +203,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   private Map<Parameter, Integer> paramXPositions;
 
   /**
-   * Actors sorted stage by stage. {@link AutoLayoutFeature#stageByStageSort(PiGraph, List).}
+   * Actors sorted stage by stage. {@link AutoLayoutFeature#stageByStageSort(PiGraph, List)}.
    */
   private List<List<AbstractActor>> stagedActors;
 
