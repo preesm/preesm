@@ -203,7 +203,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   private Map<Parameter, Integer> paramXPositions;
 
   /**
-   * Actors sorted stage by stage. {@link AutoLayoutFeature#stageByStageSort(PiGraph, List).}
+   * Actors sorted stage by stage. {@link AutoLayoutFeature#stageByStageSort(PiGraph, List)}.
    */
   private List<List<AbstractActor>> stagedActors;
 

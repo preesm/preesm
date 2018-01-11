@@ -72,7 +72,7 @@ import org.ietr.preesm.core.scenario.Timing;
  * </p>
  *
  * @author kdesnos
- * @see http://www.ece.umd.edu/DSPCAD/dif/index.htm
+ * @see this page http://www.ece.umd.edu/DSPCAD/dif/index.htm
  */
 public class DIFExporterVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex, SDFEdge> {
 

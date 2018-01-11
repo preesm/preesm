@@ -59,7 +59,7 @@ import org.w3c.dom.NodeList;
  * This class is used to parse a {@link File} in the SDF3 (SDF For Free) Xml format indo the corresponding {@link SDFGraph}.
  *
  * @author kdesnos
- * @see http://www.es.ele.tue.nl/sdf3/manuals/xml/sdf
+ * @see this page http://www.es.ele.tue.nl/sdf3/manuals/xml/sdf
  */
 public class Sdf3XmlParser {
 
