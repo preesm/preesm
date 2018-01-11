@@ -80,7 +80,7 @@
     <sonar-version>3.3.0.603</sonar-version>
 		<rcptt-maven-version>2.2.0</rcptt-maven-version>
     <checkstyle-version>7.6.1</checkstyle-version>
-    <preesm.coding.policy.version>1.0.2</preesm.coding.policy.version>
+    <preesm.coding.policy.version>1.0.1</preesm.coding.policy.version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <preesm.maven.repo>https://preesm.github.io/preesm-maven/mavenrepo/</preesm.maven.repo>
@@ -344,7 +344,7 @@
         <dependencies>
           <!-- get settings -->
           <dependency>
-            <groupId>org.ietr.preesm</groupId>
+            <groupId>org.preesm.maven</groupId>
             <artifactId>coding-policy</artifactId>
             <version>${preesm.coding.policy.version}</version>
           </dependency>
@@ -460,7 +460,7 @@
     </dependency>
     <!-- get settings -->
     <dependency>
-      <groupId>org.ietr.preesm</groupId>
+      <groupId>org.preesm.maven</groupId>
       <artifactId>coding-policy</artifactId>
       <version>${preesm.coding.policy.version}</version>
     </dependency>
@@ -584,12 +584,12 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.ietr.maven</groupId>
+            <groupId>org.preesm.maven</groupId>
             <artifactId>m2e-settings-maven-plugin</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.0</version>
             <dependencies>
               <dependency>
-                <groupId>org.ietr.preesm</groupId>
+                <groupId>org.preesm.maven</groupId>
                 <artifactId>coding-policy</artifactId>
                 <version>${preesm.coding.policy.version}</version>
               </dependency>
