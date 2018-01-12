@@ -80,7 +80,7 @@ public class PapificationPage extends FormPage implements IPropertyListener {
   private PapificationCheckStateListener checkStateListener = null;
 
   /**
-   * Instantiates a new constraints page.
+   * Instantiates a new papification page.
    *
    * @param scenario
    *          the scenario
@@ -107,15 +107,15 @@ public class PapificationPage extends FormPage implements IPropertyListener {
     super.createFormContent(managedForm);
 
     final ScrolledForm f = managedForm.getForm();
-    f.setText(Messages.getString("Constraints.title"));
+    f.setText(Messages.getString("Papification.title"));
     f.getBody().setLayout(new GridLayout());
 
     // Constrints file chooser section
-    createFileSection(managedForm, Messages.getString("Constraints.file"), Messages.getString("Constraints.fileDescription"),
-        Messages.getString("Constraints.fileEdit"), this.scenario.getConstraintGroupManager().getExcelFileURL(),
-        Messages.getString("Constraints.fileBrowseTitle"), "xls");
+    createFileSection(managedForm, Messages.getString("Papification.file"), Messages.getString("Papification.fileDescription"),
+        Messages.getString("Papification.fileEdit"), this.scenario.getConstraintGroupManager().getExcelFileURL(),
+        Messages.getString("Papification.fileBrowseTitle"), "xls");
 
-    createConstraintsSection(managedForm, Messages.getString("Constraints.title"), Messages.getString("Constraints.description"));
+    createPapificationSection(managedForm, Messages.getString("Papification.title"), Messages.getString("Papification.description"));
 
     managedForm.refresh();
     managedForm.reflow(true);
@@ -188,7 +188,7 @@ public class PapificationPage extends FormPage implements IPropertyListener {
   }
 
   /**
-   * Creates the section editing constraints.
+   * Creates the section editing Papification.
    *
    * @param managedForm
    *          the managed form
@@ -197,7 +197,7 @@ public class PapificationPage extends FormPage implements IPropertyListener {
    * @param desc
    *          the desc
    */
-  private void createConstraintsSection(final IManagedForm managedForm, final String title, final String desc) {
+  private void createPapificationSection(final IManagedForm managedForm, final String title, final String desc) {
 
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
@@ -248,7 +248,7 @@ public class PapificationPage extends FormPage implements IPropertyListener {
       final String browseTitle, final String fileExtension) {
 
     final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-    gridData.heightHint = 120;
+    gridData.heightHint = 140;
     final Composite client = createSection(mform, title, desc, 2, gridData);
     final FormToolkit toolkit = mform.getToolkit();
 
