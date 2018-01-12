@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenario>
     <files>
-        <algorithm url="\org.ietr.preesm.tutorials.throughputEvaluationIBSDF\Algo\ABC_top.pi"/>
-        <architecture url="\org.ietr.preesm.tutorials.throughputEvaluationIBSDF\Archi\8CoreX86.slam"/>
+        <algorithm url="/org.ietr.preesm.tutorials.throughputEvaluationIBSDF/Algo/ABC_top.pi"/>
+        <architecture url="/org.ietr.preesm.tutorials.throughputEvaluationIBSDF/Archi/8CoreX86.slam"/>
         <codegenDirectory url=""/>
     </files>
     <constraints excelUrl=""/>
