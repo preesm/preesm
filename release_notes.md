@@ -9,6 +9,7 @@ PREESM Changelog
 ### Changes
 * Update new Preesm project wizard: do not generate subfolders;
 * Move icons to the proper plugin;
+* Fix codegen: thread function declaration and reference in the main now have matching name based on the core ID;
 
 ### Bug fix
 

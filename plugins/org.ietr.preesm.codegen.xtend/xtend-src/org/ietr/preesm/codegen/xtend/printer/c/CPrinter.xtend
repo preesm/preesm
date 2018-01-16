@@ -162,7 +162,7 @@ class CPrinter extends DefaultPrinter {
 	'''
 
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
-	void *computationThread_«(callBlock.eContainer as CoreBlock).name»(void *arg){
+	void *computationThread_Core«(callBlock.eContainer as CoreBlock).coreID»(void *arg){
 		«IF !callBlock.codeElts.empty»
 			// Initialisation(s)
 			
