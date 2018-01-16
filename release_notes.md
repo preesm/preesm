@@ -8,7 +8,7 @@ PREESM Changelog
 
 ### Changes
 * Update new Preesm project wizard: do not generate subfolders;
-
+* Move icons to the proper plugin;
 
 ### Bug fix
 
