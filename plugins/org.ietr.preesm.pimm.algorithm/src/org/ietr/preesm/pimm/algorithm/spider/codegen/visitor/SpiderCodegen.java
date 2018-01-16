@@ -221,7 +221,7 @@ public class SpiderCodegen {
 
     /* Declare the addGraph method */
     append("#define N_FCT_" + pg.getName().toUpperCase() + " " + this.functionMap.size() + "\n");
-    append("extern lrtFct " + pg.getName().toLowerCase() + "_fcts[N_FCT_" + pg.getName().toUpperCase() + "];\n");
+    append("extern lrtFct " + pg.getName() + "_fcts[N_FCT_" + pg.getName().toUpperCase() + "];\n");
     append("\n");
 
     /* Declare Fcts */
