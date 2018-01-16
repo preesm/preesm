@@ -44,11 +44,14 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class NewPreesmProjectCreator.
  */
 public class NewPreesmProjectCreator {
+
+  private NewPreesmProjectCreator() {
+    // disallow instantiation
+  }
 
   /**
    * For this project we need to: - create the default Eclipse project - add the custom project natures - create the folder structure.
@@ -68,8 +71,7 @@ public class NewPreesmProjectCreator {
     try {
       NewPreesmProjectCreator.addNatures(project);
 
-      final String[] paths = { "Algo/generated/flatten", "Algo/generated/singlerate", "Algo/generated/DAG", "Archi", "Code/generated", "Code/include",
-          "Code/lib/cmake_modules", "Code/src", "Scenarios", "Workflows" };
+      final String[] paths = { "Algo", "Archi", "Code/include", "Code/src", "Scenarios", "Workflows" };
       NewPreesmProjectCreator.addToProjectStructure(project, paths);
     } catch (final CoreException e) {
       e.printStackTrace();
@@ -111,7 +113,6 @@ public class NewPreesmProjectCreator {
       }
     }
 
-    // return cdtProj;
     return newProject;
   }
 

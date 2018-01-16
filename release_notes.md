@@ -7,6 +7,8 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Update new Preesm project wizard: do not generate subfolders;
+
 
 ### Bug fix
 
