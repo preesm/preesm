@@ -346,6 +346,16 @@
          </parameter>
       </key>
       <!-- F3 => show properties -->
+      <key
+            commandId="org.eclipse.ui.views.showView"
+            contextId="org.ietr.preesm.experiment.ui.pimm"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="F3">
+           <parameter
+                 id="org.eclipse.ui.views.showView.viewId"
+                 value="org.eclipse.ui.views.PropertySheet">
+         </parameter>
+      </key>
       <!-- TODO -->
    </extension>
 
