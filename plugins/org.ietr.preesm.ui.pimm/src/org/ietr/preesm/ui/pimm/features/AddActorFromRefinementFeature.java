@@ -56,7 +56,7 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 public class AddActorFromRefinementFeature extends AbstractAddFeature {
 
   /** The has done changes. */
-  boolean hasDoneChanges = false;
+  boolean hasDoneChanges = true;
 
   /**
    * When a file is drag and dropped on an graph, the feature attempts to create a new {@link Actor} and to set this file as the refinement of the actor.
@@ -97,37 +97,34 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
   @Override
   public PictogramElement add(final IAddContext context) {
     // 1- Create and Add Actor
-    final CreateActorFeature createActorFeature = new CreateActorFeature(getFeatureProvider());
-    final CreateContext createContext = new CreateContext();
-    createContext.setLocation(context.getX(), context.getY());
-    createContext.setSize(context.getWidth(), context.getWidth());
-    createContext.setTargetContainer(context.getTargetContainer());
-    createContext.setTargetConnection(context.getTargetConnection());
-    final Object[] actors = createActorFeature.create(createContext);
+    final Actor actors = createActor(context);
 
     // Stop if actor creation was cancelled
-    if (actors.length == 0) {
+    if (actors == null) {
+      System.out.println("issue while creating actor");
+      hasDoneChanges = false;
       return null;
     } else {
-      this.hasDoneChanges = true;
+      final Actor actor = actors;
+
+      // 2- Set Refinement
+      boolean validFile = setRefinement(context, actor);
+      if (!validFile) {
+        System.out.println("invalid file path");
+        hasDoneChanges = false;
+        return null;
+      }
+
+      // 3- Create all ports corresponding to the refinement.
+      final PictogramElement[] pictElements = createPorts(actor);
+
+      return pictElements[0];
     }
+  }
 
-    // 2- Set Refinement
-    final Actor actor = (Actor) actors[0];
-    final SetActorRefinementFeature setRefinementFeature = new SetActorRefinementFeature(getFeatureProvider());
-
-    IPath newFilePath;
-    if (context.getNewObject() instanceof IFile) {
-      newFilePath = ((IFile) context.getNewObject()).getFullPath();
-    } else {
-      return null;
-    }
-    setRefinementFeature.setShowOnlyValidPrototypes(false);
-    setRefinementFeature.setActorRefinement(actor, newFilePath);
-
-    // 3- Create all ports corresponding to the refinement.
+  private PictogramElement[] createPorts(final Actor actor) {
     final PictogramElement[] pictElements = new PictogramElement[1];
-    pictElements[0] = getFeatureProvider().getAllPictogramElementsForBusinessObject(actors[0])[0];
+    pictElements[0] = getFeatureProvider().getAllPictogramElementsForBusinessObject(actor)[0];
 
     final AbstractActor protoPort = actor.getChildAbstractActor();
     // protoPort is Null if actor creation was cancelled during refinement
@@ -165,8 +162,36 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
         addFeature.execute(portContext);
       }
     }
+    return pictElements;
+  }
 
-    return null;
+  private boolean setRefinement(final IAddContext context, final Actor actor) {
+    final SetActorRefinementFeature setRefinementFeature = new SetActorRefinementFeature(getFeatureProvider());
+    IPath newFilePath;
+    if (context.getNewObject() instanceof IFile) {
+      newFilePath = ((IFile) context.getNewObject()).getFullPath();
+    } else {
+      return false;
+    }
+    setRefinementFeature.setShowOnlyValidPrototypes(false);
+    setRefinementFeature.setActorRefinement(actor, newFilePath);
+    return true;
+  }
+
+  private Actor createActor(final IAddContext context) {
+    final CreateActorFeature createActorFeature = new CreateActorFeature(getFeatureProvider());
+    final CreateContext createContext = new CreateContext();
+    createContext.setLocation(context.getX(), context.getY());
+    createContext.setSize(context.getWidth(), context.getWidth());
+    createContext.setTargetContainer(context.getTargetContainer());
+    createContext.setTargetConnection(context.getTargetConnection());
+    createActorFeature.execute(createContext);
+    final Object[] actors = createActorFeature.getObjects();
+    if (actors.length > 0) {
+      return (Actor) actors[0];
+    } else {
+      return null;
+    }
   }
 
   /*
