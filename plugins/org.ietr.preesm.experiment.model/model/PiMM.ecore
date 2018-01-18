@@ -313,7 +313,11 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Refinement" abstract="true" interface="true"
       eSuperTypes="#//visitor/PiMMVisitable">
-    <eOperations name="getAbstractActor" eType="#//AbstractActor"/>
+    <eOperations name="getAbstractActor" eType="#//AbstractActor">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return RefinementResolver.resolveAbstractActor(this);"/>
+      </eAnnotations>
+    </eOperations>
     <eOperations name="getFileName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
         <details key="body" value="return (this.getFilePath() == null) ? null : this.getFilePath().lastSegment();"/>

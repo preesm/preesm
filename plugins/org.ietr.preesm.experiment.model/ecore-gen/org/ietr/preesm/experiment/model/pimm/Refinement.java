@@ -49,7 +49,7 @@ public interface Refinement extends PiMMVisitable {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @model kind="operation"
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return RefinementResolver.resolveAbstractActor(this);'"
    * @generated
    */
   AbstractActor getAbstractActor();
