@@ -751,7 +751,9 @@ public class PiParser {
     final ConfigOutputInterface cfgOutIf = PiMMUserFactory.instance.createConfigOutputInterface();
 
     // Set the Interface properties
-    cfgOutIf.setName(nodeElt.getAttribute(PiIdentifiers.CONFIGURATION_OUTPUT_INTERFACE_NAME));
+    final String name = nodeElt.getAttribute(PiIdentifiers.CONFIGURATION_OUTPUT_INTERFACE_NAME);
+    cfgOutIf.setName(name);
+    cfgOutIf.getDataPort().setName(name);
 
     // Add the actor to the parsed graph
     graph.getActors().add(cfgOutIf);
@@ -773,7 +775,9 @@ public class PiParser {
     final DataOutputInterface snkInterface = PiMMUserFactory.instance.createDataOutputInterface();
 
     // Set the sourceInterface properties
-    snkInterface.setName(nodeElt.getAttribute(PiIdentifiers.DATA_OUTPUT_INTERFACE_NAME));
+    final String name = nodeElt.getAttribute(PiIdentifiers.DATA_OUTPUT_INTERFACE_NAME);
+    snkInterface.setName(name);
+    snkInterface.getDataPort().setName(name);
 
     // Add the actor to the parsed graph
     graph.getActors().add(snkInterface);
@@ -795,7 +799,9 @@ public class PiParser {
     final DataInputInterface srcInterface = PiMMUserFactory.instance.createDataInputInterface();
 
     // Set the sourceInterface properties
-    srcInterface.setName(nodeElt.getAttribute(PiIdentifiers.DATA_INPUT_INTERFACE_NAME));
+    final String name = nodeElt.getAttribute(PiIdentifiers.DATA_INPUT_INTERFACE_NAME);
+    srcInterface.setName(name);
+    srcInterface.getDataPort().setName(name);
 
     // Add the actor to the parsed graph
     graph.getActors().add(srcInterface);

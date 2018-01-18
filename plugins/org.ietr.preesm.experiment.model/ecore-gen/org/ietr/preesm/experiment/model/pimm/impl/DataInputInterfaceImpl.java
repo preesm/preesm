@@ -41,7 +41,6 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
@@ -224,16 +223,4 @@ public class DataInputInterfaceImpl extends AbstractActorImpl implements DataInp
     v.visitDataInputInterface(this);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#setName(java.lang.String)
-   */
-  @Override
-  public void setName(final String value) {
-    super.setName(value);
-    for (final DataOutputPort p : getDataOutputPorts()) {
-      p.setName(value);
-    }
-  }
 } // SourceInterfaceImpl

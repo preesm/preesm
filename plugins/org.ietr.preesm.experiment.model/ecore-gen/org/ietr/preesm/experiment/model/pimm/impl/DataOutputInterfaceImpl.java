@@ -40,7 +40,6 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
@@ -222,19 +221,6 @@ public class DataOutputInterfaceImpl extends AbstractActorImpl implements DataOu
   @Override
   public void accept(final PiMMVisitor v) {
     v.visitDataOutputInterface(this);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#setName(java.lang.String)
-   */
-  @Override
-  public void setName(final String value) {
-    super.setName(value);
-    for (final DataInputPort p : getDataInputPorts()) {
-      p.setName(value);
-    }
   }
 
 } // SinkInterfaceImpl

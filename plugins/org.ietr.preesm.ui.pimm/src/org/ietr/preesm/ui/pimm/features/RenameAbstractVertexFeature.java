@@ -42,6 +42,7 @@ import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
@@ -137,6 +138,10 @@ public class RenameAbstractVertexFeature extends AbstractCustomFeature {
         if ((newVertexName != null) && !newVertexName.equals(currentName)) {
           this.hasDoneChanges = true;
           vertex.setName(newVertexName);
+          if (vertex instanceof InterfaceActor) {
+            InterfaceActor iface = (InterfaceActor) vertex;
+            iface.getDataPort().setName(newVertexName);
+          }
 
           // Update the Pictogram element
           updatePictogramElement(pes[0]);

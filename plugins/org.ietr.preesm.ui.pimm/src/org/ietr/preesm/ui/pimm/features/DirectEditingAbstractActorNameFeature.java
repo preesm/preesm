@@ -47,6 +47,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 
@@ -139,6 +140,10 @@ public class DirectEditingAbstractActorNameFeature extends AbstractDirectEditing
     final PictogramElement pe = context.getPictogramElement();
     final AbstractVertex vertex = (AbstractVertex) getBusinessObjectForPictogramElement(pe);
     vertex.setName(value);
+    if (vertex instanceof InterfaceActor) {
+      InterfaceActor iface = (InterfaceActor) vertex;
+      iface.getDataPort().setName(value);
+    }
 
     // we know, that pe is the Shape of the Text, so its container is the
     // main shape of the AbstractVertex
