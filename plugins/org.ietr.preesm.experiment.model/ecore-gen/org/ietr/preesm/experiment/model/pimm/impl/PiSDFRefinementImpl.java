@@ -227,7 +227,7 @@ public class PiSDFRefinementImpl extends EObjectImpl implements PiSDFRefinement 
             final EList<EObject> contents = resourceRefinement.getContents();
             for (final EObject object : contents) {
               if (object instanceof PiGraph) {
-                final AbstractActor actor = (AbstractActor) object;
+                final PiGraph actor = (PiGraph) object;
                 actor.setName(((Actor) this.eContainer).getName());
                 return actor;
               }
