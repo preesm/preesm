@@ -131,19 +131,6 @@ public class ConfigInputInterfaceImpl extends ParameterImpl implements ConfigInp
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#setName(java.lang.String)
-   */
-  @Override
-  public void setName(final String newName) {
-    super.setName(newName);
-    if (getGraphPort() != null) {
-      getGraphPort().setName(newName);
-    }
-  }
-
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *

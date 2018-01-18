@@ -334,7 +334,8 @@ public class PiParser {
     final ConfigInputInterface param = PiMMUserFactory.instance.createConfigInputInterface();
 
     // Get the actor properties
-    param.setName(nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME));
+    final String attribute = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
+    param.setName(attribute);
 
     // Add the actor to the parsed graph
     graph.getParameters().add(param);
