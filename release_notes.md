@@ -11,6 +11,7 @@ PREESM Changelog
 * Move icons to the proper plugin;
 * Add shortcut to open property view from PiSDF editor;
 * Fix codegen: thread function declaration and reference in the main now have matching name based on the core ID;
+* Fix createActorFromRefinement feature: properly set the editor in unsaved state;
 
 ### Bug fix
 
