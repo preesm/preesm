@@ -85,6 +85,8 @@ public class CreateActorFeature extends AbstractCreateFeature {
     return context.getTargetContainer() instanceof Diagram;
   }
 
+  private Object[] objects;
+
   /*
    * (non-Javadoc)
    *
@@ -118,7 +120,8 @@ public class CreateActorFeature extends AbstractCreateFeature {
     addGraphicalRepresentation(context, newActor);
 
     // return newly created business object(s)
-    return new Object[] { newActor };
+    setObjects(new Object[] { newActor });
+    return getObjects();
   }
 
   /*
@@ -129,6 +132,14 @@ public class CreateActorFeature extends AbstractCreateFeature {
   @Override
   public boolean hasDoneChanges() {
     return this.hasDoneChanges;
+  }
+
+  public Object[] getObjects() {
+    return objects;
+  }
+
+  public void setObjects(Object[] objects) {
+    this.objects = objects;
   }
 
 }
