@@ -43,6 +43,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
+import org.ietr.preesm.experiment.model.PiGraphException;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
@@ -53,7 +54,6 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Fifo</b></em>'. <!-- end-user-doc -->
  * <p>
@@ -371,7 +371,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
     final DataPort tgtPort = getTargetPort();
 
     if ((srcPort == null) || (tgtPort == null)) {
-      throw new RuntimeException("Fifo has no source or no target port.");
+      throw new PiGraphException("Fifo has no source or no target port.");
     }
 
     final AbstractActor src = srcPort.getContainingActor();
