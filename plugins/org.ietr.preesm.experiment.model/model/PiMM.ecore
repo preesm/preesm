@@ -170,7 +170,7 @@
   <eClassifiers xsi:type="ecore:EClass" name="RoundBufferActor" eSuperTypes="#//ExecutableActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="Port" abstract="true" eSuperTypes="#//visitor/PiMMVisitable">
     <eOperations name="getKind" lowerBound="1" eType="#//PortKind"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DataInputPort" eSuperTypes="#//DataPort">
     <eOperations name="getKind" lowerBound="1" eType="#//PortKind">
