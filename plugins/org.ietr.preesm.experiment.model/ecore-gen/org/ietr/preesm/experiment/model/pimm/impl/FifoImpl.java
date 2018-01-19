@@ -563,26 +563,6 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * Two {@link Fifo} are equals if they have the same {@link #getId()}.
-   *
-   * @param obj
-   *          the obj
-   * @return true, if successful
-   */
-  @Override
-  public boolean equals(final Object obj) {
-    if (obj instanceof Fifo) {
-      try {
-        return getId().equals(((Fifo) obj).getId());
-      } catch (final RuntimeException e) {
-        return super.equals(obj);
-      }
-    } else {
-      return false;
-    }
-  }
-
-  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @param featureID
