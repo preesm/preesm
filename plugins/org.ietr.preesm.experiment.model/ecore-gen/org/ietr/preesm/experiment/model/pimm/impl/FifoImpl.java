@@ -341,10 +341,10 @@ public class FifoImpl extends EObjectImpl implements Fifo {
     if (newDelay != this.delay) {
       NotificationChain msgs = null;
       if (this.delay != null) {
-        msgs = ((InternalEObject) this.delay).eInverseRemove(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.FIFO__DELAY, null, msgs);
+        msgs = ((InternalEObject) this.delay).eInverseRemove(this, PiMMPackage.DELAY__CONTAINING_FIFO, Delay.class, msgs);
       }
       if (newDelay != null) {
-        msgs = ((InternalEObject) newDelay).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.FIFO__DELAY, null, msgs);
+        msgs = ((InternalEObject) newDelay).eInverseAdd(this, PiMMPackage.DELAY__CONTAINING_FIFO, Delay.class, msgs);
       }
       msgs = basicSetDelay(newDelay, msgs);
       if (msgs != null) {
@@ -441,6 +441,11 @@ public class FifoImpl extends EObjectImpl implements Fifo {
           msgs = ((InternalEObject) this.targetPort).eInverseRemove(this, PiMMPackage.DATA_INPUT_PORT__INCOMING_FIFO, DataInputPort.class, msgs);
         }
         return basicSetTargetPort((DataInputPort) otherEnd, msgs);
+      case PiMMPackage.FIFO__DELAY:
+        if (this.delay != null) {
+          msgs = ((InternalEObject) this.delay).eInverseRemove(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.FIFO__DELAY, null, msgs);
+        }
+        return basicSetDelay((Delay) otherEnd, msgs);
     }
     return super.eInverseAdd(otherEnd, featureID, msgs);
   }
