@@ -252,7 +252,15 @@ public class Buffer {
 
   final int nbTokens;
 
+  public int getNbTokens() {
+    return nbTokens;
+  }
+
   final int tokenSize;
+
+  public int getTokenSize() {
+    return tokenSize;
+  }
 
   final DAGVertex dagVertex;
 
@@ -337,7 +345,7 @@ public class Buffer {
   /**
    * Cf. {@link Buffer#matchWith(int, Buffer, int, int)} with size = 1
    */
-  Match matchWith(int localIdx, Buffer buffer, int remoteIdx) {
+  public Match matchWith(int localIdx, Buffer buffer, int remoteIdx) {
     return matchWith(localIdx, buffer, remoteIdx, 1);
   }
 
@@ -345,7 +353,9 @@ public class Buffer {
    * {@link Match} part of the current {@link Buffer} with part of another {@link Buffer}. Example: <code>a.matchWith(3,b,7,5)</code> matches a[3..7] with
    * b[7..11]. Matching two {@link Buffer buffers} means that the matched ranges may be merged, i.e. they may be allocated in the same memory space.<br>
    * The localIdx, remoteIdx and size represent a number of token. (cf. production and consumption rate from the SDF graph).
-   *
+   * <p>
+   * May be called from a BeanShell memory script.
+   * 
    * @exception Exception
    *              may be thrown if the matched ranges both have elements outside of their {@link Buffer} indexes ({@link #_maxIndex} and {@link #_minIndex}).
    *
@@ -360,7 +370,7 @@ public class Buffer {
    *          the size of the matched range
    * @return the created local {@link Match}
    */
-  Match matchWith(int localIdx, Buffer buffer, int remoteIdx, int size) {
+  public Match matchWith(int localIdx, Buffer buffer, int remoteIdx, int size) {
 
     if (tokenSize != buffer.tokenSize) {
       throw new RuntimeException("Cannot match " + dagVertex.getName() + "." + name + "with " + buffer.dagVertex.getName() + "." + buffer.name
@@ -394,7 +404,7 @@ public class Buffer {
     // or local range begins with less real tokens than the number of virtual tokens beginning remote range
     boolean bLocalVirtual = localIdx >= 0 && ((nbTokens - localIdx) <= -Math.min(0, remoteIdx));
     // or remote range begins with less real tokens than the number of virtual tokens beginning local range
-    boolean bRemoteVirtual = remoteIdx >= 0 && ((nbTokens - remoteIdx) <= -Math.min(0, localIdx));
+    boolean bRemoteVirtual = remoteIdx >= 0 && ((buffer.nbTokens - remoteIdx) <= -Math.min(0, localIdx));
     if (bIndexes || bTokens || bLocalVirtual || bRemoteVirtual) {
       throw new RuntimeException(
           "Cannot match " + dagVertex.getName() + "." + name + "[" + localIdx + ".." + maxLocal + "] and " + buffer.dagVertex.getName() + "." + buffer.name
@@ -405,11 +415,29 @@ public class Buffer {
     return byteMatchWith(localIdx * tokenSize, buffer, remoteIdx * tokenSize, size * tokenSize);
   }
 
-  Match byteMatchWith(int localByteIdx, Buffer buffer, int remoteByteIdx, int byteSize) {
+  /**
+   * Cf. {@link Buffer#byteMatchWith(int, Buffer, int, int, boolean)} with check = true
+   */
+  public Match byteMatchWith(int localByteIdx, Buffer buffer, int remoteByteIdx, int byteSize) {
     return byteMatchWith(localByteIdx, buffer, remoteByteIdx, byteSize, true);
   }
 
-  Match byteMatchWith(int localByteIdx, Buffer buffer, int remoteByteIdx, int byteSize, boolean check) {
+  /**
+   * May be called from a BeanShell memory script.
+   * 
+   * @param localByteIdx
+   *          start index of the matched range for the local {@link Buffer}.
+   * @param buffer
+   *          remote {@link Buffer}
+   * @param remoteByteIdx
+   *          start index of the matched range for the remote {@link Buffer}
+   * @param byteSize
+   *          the size of the matched range
+   * @param check
+   *          whether or not the match feasibility (e.g. with virtual ranges) must be checked
+   * @return the created local {@link Match}
+   */
+  public Match byteMatchWith(int localByteIdx, Buffer buffer, int remoteByteIdx, int byteSize, boolean check) {
     int byteLMax = localByteIdx + byteSize - 1;
     int byteRMax = remoteByteIdx + byteSize - 1;
 
