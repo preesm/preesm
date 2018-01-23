@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PREESM Command Line Interface
 Bundle-SymbolicName: org.ietr.preesm.cli;singleton:=true
-Bundle-Version: 2.6.2
+Bundle-Version: 2.6.2.qualifier
 Require-Bundle: org.apache.commons.cli;bundle-version="1.2.0",
  org.apache.commons.lang;bundle-version="2.6.0",
  org.ietr.preesm.ui,
