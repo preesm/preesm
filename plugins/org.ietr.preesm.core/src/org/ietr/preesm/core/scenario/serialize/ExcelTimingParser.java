@@ -56,13 +56,12 @@ import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
+import org.ietr.preesm.utils.files.WorkspaceUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * Importing timings in a scenario from an excel file. task names are rows while operator types are columns
  *
@@ -93,15 +92,13 @@ public class ExcelTimingParser {
    *          the op def ids
    * @throws InvalidModelException
    *           the invalid model exception
-   * @throws FileNotFoundException
-   *           the file not found exception
    */
   public void parse(final String url, final Set<String> opDefIds) throws InvalidModelException, FileNotFoundException {
     WorkflowLogger.getLogger().log(Level.INFO, "Importing timings from an excel sheet. Non precised timings are kept unmodified.");
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-    Activator.updateWorkspace();
+    WorkspaceUtils.updateWorkspace();
 
     final Path path = new Path(url);
     final IFile file = workspace.getRoot().getFile(path);
@@ -115,11 +112,7 @@ public class ExcelTimingParser {
 
       parseTimings(w, opDefIds, missingVertices, missingOperatorTypes);
 
-    } catch (final BiffException e) {
-      e.printStackTrace();
-    } catch (final IOException e) {
-      e.printStackTrace();
-    } catch (final CoreException e) {
+    } catch (final BiffException | IOException | CoreException e) {
       e.printStackTrace();
     }
   }
@@ -135,15 +128,13 @@ public class ExcelTimingParser {
    *          the missing vertices
    * @param missingOperatorTypes
    *          the missing operator types
-   * @throws FileNotFoundException
-   *           the file not found exception
    * @throws InvalidModelException
    *           the invalid model exception
    * @throws CoreException
    *           the core exception
    */
   private void parseTimings(final Workbook w, final Set<String> opDefIds, final Set<String> missingVertices, final Set<String> missingOperatorTypes)
-      throws FileNotFoundException, InvalidModelException, CoreException {
+      throws InvalidModelException, CoreException {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
     if (this.scenario.isIBSDFScenario()) {

@@ -109,6 +109,7 @@ public class CreateDataInputInterfaceFeature extends AbstractCreateFeature {
     // create SourceInterface
     final DataInputInterface newSrcInterface = PiMMUserFactory.instance.createDataInputInterface();
     newSrcInterface.setName(newSrcName);
+    newSrcInterface.getDataPort().setName(newSrcName);
 
     // Add new sourceInterface to the graph.
     if (graph.getActors().add(newSrcInterface)) {

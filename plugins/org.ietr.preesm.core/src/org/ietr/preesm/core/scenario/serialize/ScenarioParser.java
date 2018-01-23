@@ -84,7 +84,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-// TODO: Auto-generated Javadoc
 /**
  * An xml parser retrieving scenario data.
  *
@@ -144,13 +143,7 @@ public class ScenarioParser {
 
       // parse using builder to get DOM representation of the XML file
       this.dom = db.parse(file.getContents());
-    } catch (final ParserConfigurationException pce) {
-      pce.printStackTrace();
-    } catch (final SAXException e) {
-      e.printStackTrace();
-    } catch (final IOException e) {
-      e.printStackTrace();
-    } catch (final CoreException e) {
+    } catch (final ParserConfigurationException | SAXException | IOException | CoreException e) {
       e.printStackTrace();
     }
 
@@ -524,7 +517,7 @@ public class ScenarioParser {
    * @throws CoreException
    *           the core exception
    */
-  private void parseFileNames(final Element filesElt) throws InvalidModelException, FileNotFoundException, CoreException {
+  private void parseFileNames(final Element filesElt) throws InvalidModelException, CoreException {
 
     Node node = filesElt.getFirstChild();
 

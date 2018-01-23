@@ -39,21 +39,13 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
+import org.ietr.preesm.experiment.model.pimm.util.RefinementResolver;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
@@ -208,43 +200,6 @@ public class PiSDFRefinementImpl extends EObjectImpl implements PiSDFRefinement 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
-   * @return the abstract actor
-   */
-  @Override
-  public AbstractActor getAbstractActor() {
-
-    if ((getFilePath() != null) && this.filePath.getFileExtension().equals("pi")) {
-      final URI refinementURI = URI.createPlatformResourceURI(getFilePath().makeRelative().toString(), true);
-
-      // Check if the file exists
-      if (refinementURI != null) {
-        final ResourceSet rSet = new ResourceSetImpl();
-        Resource resourceRefinement;
-        try {
-          resourceRefinement = rSet.getResource(refinementURI, true);
-          if (resourceRefinement != null) {
-            // does resource contain a graph as root object?
-            final EList<EObject> contents = resourceRefinement.getContents();
-            for (final EObject object : contents) {
-              if (object instanceof PiGraph) {
-                final AbstractActor actor = (AbstractActor) object;
-                actor.setName(((Actor) this.eContainer).getName());
-                return actor;
-              }
-            }
-          }
-        } catch (final WrappedException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-
-    return null;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
    * @return the file name
    * @generated
    */
@@ -261,6 +216,16 @@ public class PiSDFRefinementImpl extends EObjectImpl implements PiSDFRefinement 
   @Override
   public boolean isHierarchical() {
     return (getFilePath() != null) && !getFilePath().isEmpty();
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public AbstractActor getAbstractActor() {
+    return RefinementResolver.resolveAbstractActor(this);
   }
 
   /**

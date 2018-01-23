@@ -51,11 +51,10 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.mapper.model.MapperDAG;
+import org.ietr.preesm.utils.files.WorkspaceUtils;
 import org.ietr.preesm.utils.paths.PathTools;
 
-// TODO: Auto-generated Javadoc
 /**
  * Block in workflow exporting a DAG that contains all information of an implementation.
  *
@@ -83,7 +82,7 @@ public class ImplExportTransform extends AbstractTaskImplementation {
       exportGraphML(dag, graphmlPath);
     }
 
-    Activator.updateWorkspace();
+    WorkspaceUtils.updateWorkspace();
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
     outputs.put("xml", sGraphmlPath);

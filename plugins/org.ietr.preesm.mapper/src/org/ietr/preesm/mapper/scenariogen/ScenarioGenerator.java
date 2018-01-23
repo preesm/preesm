@@ -53,13 +53,12 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
+import org.ietr.preesm.utils.files.WorkspaceUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class defines a method to load a new scenario and optionally change some constraints from an output DAG.
  *
@@ -164,7 +163,7 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
         final Path relativePath = new Path(dagFileName);
         final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
 
-        Activator.updateWorkspace();
+        WorkspaceUtils.updateWorkspace();
         SDFGraph graph = importer.parse(file.getContents(), dagFileName);
         graph = importer.parse(file.getContents(), dagFileName);
 

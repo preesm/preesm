@@ -115,7 +115,8 @@ public interface Fifo extends PiMMVisitable {
   void setTargetPort(DataInputPort value);
 
   /**
-   * Returns the value of the '<em><b>Delay</b></em>' containment reference. <!-- begin-user-doc -->
+   * Returns the value of the '<em><b>Delay</b></em>' containment reference. It is bidirectional and its opposite is
+   * '{@link org.ietr.preesm.experiment.model.pimm.Delay#getContainingFifo <em>Containing Fifo</em>}'. <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Delay</em>' containment reference isn't clear, there really should be more of a description here...
    * </p>
@@ -124,7 +125,8 @@ public interface Fifo extends PiMMVisitable {
    * @return the value of the '<em>Delay</em>' containment reference.
    * @see #setDelay(Delay)
    * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getFifo_Delay()
-   * @model containment="true"
+   * @see org.ietr.preesm.experiment.model.pimm.Delay#getContainingFifo
+   * @model opposite="containingFifo" containment="true"
    * @generated
    */
   Delay getDelay();

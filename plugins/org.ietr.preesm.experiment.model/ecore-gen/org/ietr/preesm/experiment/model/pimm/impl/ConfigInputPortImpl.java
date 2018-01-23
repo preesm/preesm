@@ -46,8 +46,6 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.ISetter;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.PortKind;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
@@ -398,25 +396,6 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
   @Override
   public void accept(final PiMMVisitor v) {
     v.visitConfigInputPort(this);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.PortImpl#getName()
-   */
-  @Override
-  public String getName() {
-    if ((this.name == null) && (this.incomingDependency != null)) {
-      final ISetter setter = this.incomingDependency.getSetter();
-      if (setter instanceof Parameter) {
-        return ((Parameter) setter).getName();
-      } else {
-        return this.name;
-      }
-    } else {
-      return this.name;
-    }
   }
 
 } // ConfigInputPortImpl

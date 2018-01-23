@@ -36,7 +36,6 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm.impl;
 
-import java.util.List;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -44,17 +43,11 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
-import org.ietr.preesm.experiment.model.pimm.Direction;
-import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.util.RefinementResolver;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 // TODO: Auto-generated Javadoc
@@ -208,58 +201,6 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.RefinementImpl#getAbstractActor()
-   */
-  @Override
-  public AbstractActor getAbstractActor() {
-    if (getLoopPrototype() != null) {
-      // Create the actor returned by the function
-      final AbstractActor result = PiMMUserFactory.instance.createActor();
-
-      // Create all its ports corresponding to parameters of the
-      // prototype
-      final FunctionPrototype loopProto = getLoopPrototype();
-      final List<FunctionParameter> loopParameters = loopProto.getParameters();
-      for (final FunctionParameter param : loopParameters) {
-        if (!param.isIsConfigurationParameter()) {
-          // Data Port
-          if (param.getDirection().equals(Direction.IN)) {
-            // Data Input
-            final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
-            port.setName(param.getName());
-            result.getDataInputPorts().add(port);
-          } else {
-            // Data Output
-            final DataOutputPort port = PiMMUserFactory.instance.createDataOutputPort();
-            port.setName(param.getName());
-            result.getDataOutputPorts().add(port);
-          }
-        } else {
-          // Config Port
-          if (param.getDirection().equals(Direction.IN)) {
-            // Config Input
-            final ConfigInputPort port = PiMMUserFactory.instance.createConfigInputPort();
-            port.setName(param.getName());
-            result.getConfigInputPorts().add(port);
-          } else {
-            // Config Output
-            final ConfigOutputPort port = PiMMUserFactory.instance.createConfigOutputPort();
-            port.setName(param.getName());
-            result.getConfigOutputPorts().add(port);
-          }
-        }
-      }
-
-      return result;
-    } else {
-      return null;
-    }
-
-  }
-
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -279,6 +220,16 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
   public boolean isHierarchical() {
     // C Header Refinement means it is obviously not a subgraph
     return false;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public AbstractActor getAbstractActor() {
+    return RefinementResolver.resolveAbstractActor(this);
   }
 
   /**

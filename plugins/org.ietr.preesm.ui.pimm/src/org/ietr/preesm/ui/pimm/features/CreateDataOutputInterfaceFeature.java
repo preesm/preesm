@@ -109,6 +109,7 @@ public class CreateDataOutputInterfaceFeature extends AbstractCreateFeature {
     // create SinkInterface
     final DataOutputInterface newSinkInterface = PiMMUserFactory.instance.createDataOutputInterface();
     newSinkInterface.setName(newSnkName);
+    newSinkInterface.getDataPort().setName(newSnkName);
 
     // Add new SinkInterface to the graph.
     if (graph.getActors().add(newSinkInterface)) {
