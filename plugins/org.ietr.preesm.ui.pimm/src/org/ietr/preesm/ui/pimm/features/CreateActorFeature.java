@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
@@ -85,6 +85,8 @@ public class CreateActorFeature extends AbstractCreateFeature {
     return context.getTargetContainer() instanceof Diagram;
   }
 
+  private Object[] objects;
+
   /*
    * (non-Javadoc)
    *
@@ -118,7 +120,8 @@ public class CreateActorFeature extends AbstractCreateFeature {
     addGraphicalRepresentation(context, newActor);
 
     // return newly created business object(s)
-    return new Object[] { newActor };
+    setObjects(new Object[] { newActor });
+    return getObjects();
   }
 
   /*
@@ -129,6 +132,14 @@ public class CreateActorFeature extends AbstractCreateFeature {
   @Override
   public boolean hasDoneChanges() {
     return this.hasDoneChanges;
+  }
+
+  public Object[] getObjects() {
+    return objects;
+  }
+
+  public void setObjects(Object[] objects) {
+    this.objects = objects;
   }
 
 }

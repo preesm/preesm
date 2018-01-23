@@ -983,6 +983,16 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EReference getDelay_ContainingFifo() {
+    return (EReference) this.delayEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @return the expression
@@ -1402,6 +1412,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     this.delayEClass = createEClass(PiMMPackage.DELAY);
     createEReference(this.delayEClass, PiMMPackage.DELAY__SIZE_EXPRESSION);
+    createEReference(this.delayEClass, PiMMPackage.DELAY__CONTAINING_FIFO);
 
     this.expressionEClass = createEClass(PiMMPackage.EXPRESSION);
     createEAttribute(this.expressionEClass, PiMMPackage.EXPRESSION__EXPRESSION_STRING);
@@ -1626,7 +1637,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
 
     initEClass(this.portEClass, Port.class, "Port", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getPort_Name(), this.ecorePackage.getEString(), "name", null, 0, 1, Port.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
+    initEAttribute(getPort_Name(), this.ecorePackage.getEString(), "name", null, 1, 1, Port.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
         EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
         EPackageImpl.IS_ORDERED);
 
@@ -1673,9 +1684,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     initEReference(getFifo_TargetPort(), getDataInputPort(), getDataInputPort_IncomingFifo(), "targetPort", null, 1, 1, Fifo.class, !EPackageImpl.IS_TRANSIENT,
         !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getFifo_Delay(), getDelay(), null, "delay", null, 0, 1, Fifo.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-        EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getFifo_Delay(), getDelay(), getDelay_ContainingFifo(), "delay", null, 0, 1, Fifo.class, !EPackageImpl.IS_TRANSIENT,
+        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
+        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
     initEAttribute(getFifo_Type(), this.ecorePackage.getEString(), "type", "void", 1, 1, Fifo.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
         EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
         EPackageImpl.IS_ORDERED);
@@ -1780,6 +1791,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     initEClass(this.delayEClass, Delay.class, "Delay", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
     initEReference(getDelay_SizeExpression(), getExpression(), null, "sizeExpression", null, 1, 1, Delay.class, !EPackageImpl.IS_TRANSIENT,
         !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
+        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getDelay_ContainingFifo(), getFifo(), getFifo_Delay(), "containingFifo", null, 1, 1, Delay.class, !EPackageImpl.IS_TRANSIENT,
+        !EPackageImpl.IS_VOLATILE, !EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
     initEClass(this.expressionEClass, Expression.class, "Expression", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,

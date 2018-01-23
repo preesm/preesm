@@ -49,11 +49,10 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.utils.files.ContainersManager;
+import org.ietr.preesm.utils.files.WorkspaceUtils;
 import org.ietr.preesm.utils.paths.PathTools;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SDFExporter.
  */
@@ -87,7 +86,7 @@ public class SDFExporter extends AbstractTaskImplementation {
     final SDF2GraphmlExporter exporter = new SDF2GraphmlExporter();
     exporter.export(algorithm, xmlPath);
 
-    Activator.updateWorkspace();
+    WorkspaceUtils.updateWorkspace();
 
     return new LinkedHashMap<>();
   }

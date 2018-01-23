@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
@@ -109,6 +109,7 @@ public class CreateDataInputInterfaceFeature extends AbstractCreateFeature {
     // create SourceInterface
     final DataInputInterface newSrcInterface = PiMMUserFactory.instance.createDataInputInterface();
     newSrcInterface.setName(newSrcName);
+    newSrcInterface.getDataPort().setName(newSrcName);
 
     // Add new sourceInterface to the graph.
     if (graph.getActors().add(newSrcInterface)) {

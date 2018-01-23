@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2014)
@@ -334,7 +334,8 @@ public class PiParser {
     final ConfigInputInterface param = PiMMUserFactory.instance.createConfigInputInterface();
 
     // Get the actor properties
-    param.setName(nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME));
+    final String attribute = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
+    param.setName(attribute);
 
     // Add the actor to the parsed graph
     graph.getParameters().add(param);
@@ -751,7 +752,9 @@ public class PiParser {
     final ConfigOutputInterface cfgOutIf = PiMMUserFactory.instance.createConfigOutputInterface();
 
     // Set the Interface properties
-    cfgOutIf.setName(nodeElt.getAttribute(PiIdentifiers.CONFIGURATION_OUTPUT_INTERFACE_NAME));
+    final String name = nodeElt.getAttribute(PiIdentifiers.CONFIGURATION_OUTPUT_INTERFACE_NAME);
+    cfgOutIf.setName(name);
+    cfgOutIf.getDataPort().setName(name);
 
     // Add the actor to the parsed graph
     graph.getActors().add(cfgOutIf);
@@ -773,7 +776,9 @@ public class PiParser {
     final DataOutputInterface snkInterface = PiMMUserFactory.instance.createDataOutputInterface();
 
     // Set the sourceInterface properties
-    snkInterface.setName(nodeElt.getAttribute(PiIdentifiers.DATA_OUTPUT_INTERFACE_NAME));
+    final String name = nodeElt.getAttribute(PiIdentifiers.DATA_OUTPUT_INTERFACE_NAME);
+    snkInterface.setName(name);
+    snkInterface.getDataPort().setName(name);
 
     // Add the actor to the parsed graph
     graph.getActors().add(snkInterface);
@@ -795,7 +800,9 @@ public class PiParser {
     final DataInputInterface srcInterface = PiMMUserFactory.instance.createDataInputInterface();
 
     // Set the sourceInterface properties
-    srcInterface.setName(nodeElt.getAttribute(PiIdentifiers.DATA_INPUT_INTERFACE_NAME));
+    final String name = nodeElt.getAttribute(PiIdentifiers.DATA_INPUT_INTERFACE_NAME);
+    srcInterface.setName(name);
+    srcInterface.getDataPort().setName(name);
 
     // Add the actor to the parsed graph
     graph.getActors().add(srcInterface);

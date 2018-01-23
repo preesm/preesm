@@ -43,6 +43,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
+import org.ietr.preesm.experiment.model.PiGraphException;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
@@ -53,7 +54,6 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Fifo</b></em>'. <!-- end-user-doc -->
  * <p>
@@ -341,10 +341,10 @@ public class FifoImpl extends EObjectImpl implements Fifo {
     if (newDelay != this.delay) {
       NotificationChain msgs = null;
       if (this.delay != null) {
-        msgs = ((InternalEObject) this.delay).eInverseRemove(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.FIFO__DELAY, null, msgs);
+        msgs = ((InternalEObject) this.delay).eInverseRemove(this, PiMMPackage.DELAY__CONTAINING_FIFO, Delay.class, msgs);
       }
       if (newDelay != null) {
-        msgs = ((InternalEObject) newDelay).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.FIFO__DELAY, null, msgs);
+        msgs = ((InternalEObject) newDelay).eInverseAdd(this, PiMMPackage.DELAY__CONTAINING_FIFO, Delay.class, msgs);
       }
       msgs = basicSetDelay(newDelay, msgs);
       if (msgs != null) {
@@ -371,7 +371,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
     final DataPort tgtPort = getTargetPort();
 
     if ((srcPort == null) || (tgtPort == null)) {
-      throw new RuntimeException("Fifo has no source or no target port.");
+      throw new PiGraphException("Fifo has no source or no target port.");
     }
 
     final AbstractActor src = srcPort.getContainingActor();
@@ -441,6 +441,11 @@ public class FifoImpl extends EObjectImpl implements Fifo {
           msgs = ((InternalEObject) this.targetPort).eInverseRemove(this, PiMMPackage.DATA_INPUT_PORT__INCOMING_FIFO, DataInputPort.class, msgs);
         }
         return basicSetTargetPort((DataInputPort) otherEnd, msgs);
+      case PiMMPackage.FIFO__DELAY:
+        if (this.delay != null) {
+          msgs = ((InternalEObject) this.delay).eInverseRemove(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.FIFO__DELAY, null, msgs);
+        }
+        return basicSetDelay((Delay) otherEnd, msgs);
     }
     return super.eInverseAdd(otherEnd, featureID, msgs);
   }
@@ -555,26 +560,6 @@ public class FifoImpl extends EObjectImpl implements Fifo {
         return;
     }
     super.eUnset(featureID);
-  }
-
-  /**
-   * Two {@link Fifo} are equals if they have the same {@link #getId()}.
-   *
-   * @param obj
-   *          the obj
-   * @return true, if successful
-   */
-  @Override
-  public boolean equals(final Object obj) {
-    if (obj instanceof Fifo) {
-      try {
-        return getId().equals(((Fifo) obj).getId());
-      } catch (final RuntimeException e) {
-        return super.equals(obj);
-      }
-    } else {
-      return false;
-    }
   }
 
   /**

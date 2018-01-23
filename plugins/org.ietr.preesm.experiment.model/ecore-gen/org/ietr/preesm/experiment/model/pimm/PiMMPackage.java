@@ -1699,12 +1699,20 @@ public interface PiMMPackage extends EPackage {
   int DELAY__SIZE_EXPRESSION = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 0;
 
   /**
+   * The feature id for the '<em><b>Containing Fifo</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int DELAY__CONTAINING_FIFO = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 1;
+
+  /**
    * The number of structural features of the '<em>Delay</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    * @ordered
    */
-  int DELAY_FEATURE_COUNT = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 1;
+  int DELAY_FEATURE_COUNT = PiMMPackage.CONFIGURABLE_FEATURE_COUNT + 2;
 
   /**
    * The feature id for the '<em><b>Expression String</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2365,6 +2373,17 @@ public interface PiMMPackage extends EPackage {
    * @generated
    */
   EReference getDelay_SizeExpression();
+
+  /**
+   * Returns the meta object for the container reference '{@link org.ietr.preesm.experiment.model.pimm.Delay#getContainingFifo <em>Containing Fifo</em>}'. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @return the meta object for the container reference '<em>Containing Fifo</em>'.
+   * @see org.ietr.preesm.experiment.model.pimm.Delay#getContainingFifo()
+   * @see #getDelay()
+   * @generated
+   */
+  EReference getDelay_ContainingFifo();
 
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Expression <em>Expression</em>}'. <!-- begin-user-doc --> <!-- end-user-doc
@@ -3100,6 +3119,13 @@ public interface PiMMPackage extends EPackage {
      * @generated
      */
     EReference DELAY__SIZE_EXPRESSION = PiMMPackage.eINSTANCE.getDelay_SizeExpression();
+
+    /**
+     * The meta object literal for the '<em><b>Containing Fifo</b></em>' container reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
+     * @generated
+     */
+    EReference DELAY__CONTAINING_FIFO = PiMMPackage.eINSTANCE.getDelay_ContainingFifo();
 
     /**
      * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl <em>Expression</em>}' class. <!-- begin-user-doc -->

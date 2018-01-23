@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Hugo Miomandre <hugo.miomandre@insa-rennes.fr> (2017)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2015 - 2017)
@@ -221,7 +221,7 @@ public class SpiderCodegen {
 
     /* Declare the addGraph method */
     append("#define N_FCT_" + pg.getName().toUpperCase() + " " + this.functionMap.size() + "\n");
-    append("extern lrtFct " + pg.getName().toLowerCase() + "_fcts[N_FCT_" + pg.getName().toUpperCase() + "];\n");
+    append("extern lrtFct " + pg.getName() + "_fcts[N_FCT_" + pg.getName().toUpperCase() + "];\n");
     append("\n");
 
     /* Declare Fcts */

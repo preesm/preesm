@@ -45,6 +45,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
+import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
@@ -56,6 +57,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
  * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DelayImpl#getSizeExpression <em>Size Expression</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DelayImpl#getContainingFifo <em>Containing Fifo</em>}</li>
  * </ul>
  *
  * @generated
@@ -149,6 +151,36 @@ public class DelayImpl extends ConfigurableImpl implements Delay {
   }
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public Fifo getContainingFifo() {
+    if (eContainerFeatureID() != PiMMPackage.DELAY__CONTAINING_FIFO) {
+      return null;
+    }
+    return (Fifo) eInternalContainer();
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, NotificationChain msgs) {
+    switch (featureID) {
+      case PiMMPackage.DELAY__CONTAINING_FIFO:
+        if (eInternalContainer() != null) {
+          msgs = eBasicRemoveFromContainer(msgs);
+        }
+        return eBasicSetContainer(otherEnd, PiMMPackage.DELAY__CONTAINING_FIFO, msgs);
+    }
+    return super.eInverseAdd(otherEnd, featureID, msgs);
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @param otherEnd
@@ -165,8 +197,24 @@ public class DelayImpl extends ConfigurableImpl implements Delay {
     switch (featureID) {
       case PiMMPackage.DELAY__SIZE_EXPRESSION:
         return basicSetSizeExpression(null, msgs);
+      case PiMMPackage.DELAY__CONTAINING_FIFO:
+        return eBasicSetContainer(null, PiMMPackage.DELAY__CONTAINING_FIFO, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public NotificationChain eBasicRemoveFromContainerFeature(final NotificationChain msgs) {
+    switch (eContainerFeatureID()) {
+      case PiMMPackage.DELAY__CONTAINING_FIFO:
+        return eInternalContainer().eInverseRemove(this, PiMMPackage.FIFO__DELAY, Fifo.class, msgs);
+    }
+    return super.eBasicRemoveFromContainerFeature(msgs);
   }
 
   /**
@@ -186,6 +234,8 @@ public class DelayImpl extends ConfigurableImpl implements Delay {
     switch (featureID) {
       case PiMMPackage.DELAY__SIZE_EXPRESSION:
         return getSizeExpression();
+      case PiMMPackage.DELAY__CONTAINING_FIFO:
+        return getContainingFifo();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -239,6 +289,8 @@ public class DelayImpl extends ConfigurableImpl implements Delay {
     switch (featureID) {
       case PiMMPackage.DELAY__SIZE_EXPRESSION:
         return this.sizeExpression != null;
+      case PiMMPackage.DELAY__CONTAINING_FIFO:
+        return getContainingFifo() != null;
     }
     return super.eIsSet(featureID);
   }

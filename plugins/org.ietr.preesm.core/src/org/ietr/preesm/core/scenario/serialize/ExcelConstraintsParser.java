@@ -37,7 +37,6 @@
  */
 package org.ietr.preesm.core.scenario.serialize;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -55,14 +54,13 @@ import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
+import org.ietr.preesm.utils.files.WorkspaceUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * Importing constraints in a scenario from an excel file. The existing timings mean that the task can be mapped on the given operator. Task names are rows
  * while operator types are columns.
@@ -94,25 +92,14 @@ public class ExcelConstraintsParser {
    *          the all operator ids
    * @throws InvalidModelException
    *           the invalid model exception
-   * @throws FileNotFoundException
-   *           the file not found exception
    * @throws CoreException
    *           the core exception
    */
-  public void parse(final String url, final Set<String> allOperatorIds) throws InvalidModelException, FileNotFoundException, CoreException {
+  public void parse(final String url, final Set<String> allOperatorIds) throws InvalidModelException, CoreException {
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-    Activator.updateWorkspace();
-
-    SDFGraph currentIBSDFGraph = null;
-    PiGraph currentPiGraph = null;
-
-    if (this.scenario.isIBSDFScenario()) {
-      currentIBSDFGraph = ScenarioParser.getSDFGraph(this.scenario.getAlgorithmURL());
-    } else if (this.scenario.isPISDFScenario()) {
-      currentPiGraph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
-    }
+    WorkspaceUtils.updateWorkspace();
 
     final Path path = new Path(url);
     final IFile file = workspace.getRoot().getFile(path);
@@ -129,8 +116,8 @@ public class ExcelConstraintsParser {
       final Set<String> missingOperators = new LinkedHashSet<>();
 
       if (this.scenario.isIBSDFScenario()) {
+        final SDFGraph currentIBSDFGraph = ScenarioParser.getSDFGraph(this.scenario.getAlgorithmURL());
         for (final SDFAbstractVertex vertex : currentIBSDFGraph.getHierarchicalVertexSet()) {
-
           if (vertex.getKind().equalsIgnoreCase("vertex")) {
             for (final String operatorId : allOperatorIds) {
               checkOpIBSDFConstraint(w, operatorId, vertex, missingVertices, missingOperators);
@@ -138,8 +125,8 @@ public class ExcelConstraintsParser {
           }
         }
       } else if (this.scenario.isPISDFScenario()) {
+        final PiGraph currentPiGraph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
         for (final AbstractActor vertex : currentPiGraph.getAllActors()) {
-
           if (vertex instanceof Actor) {
             for (final String operatorId : allOperatorIds) {
               checkOpPiConstraint(w, operatorId, (Actor) vertex, missingVertices, missingOperators);
@@ -147,10 +134,10 @@ public class ExcelConstraintsParser {
           }
         }
       }
-
     } catch (BiffException | IOException | CoreException e) {
       e.printStackTrace();
     }
+
   }
 
   /**

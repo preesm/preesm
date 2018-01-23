@@ -1,9 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Clément Guy <clement.guy@insa-rennes.fr> (2015)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,47 +32,31 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.memory;
+package org.ietr.preesm.utils.files;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.NullProgressMonitor;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class Activator.
+ *
+ * @author anmorvan
+ *
  */
-public class Activator implements BundleActivator {
-
-  /** The context. */
-  private static BundleContext context;
+public class WorkspaceUtils {
 
   /**
-   * Gets the context.
-   *
-   * @return the context
+   * Update workspace.
    */
-  static BundleContext getContext() {
-    return Activator.context;
-  }
+  public static final void updateWorkspace() {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
-   */
-  @Override
-  public void start(final BundleContext bundleContext) throws Exception {
-    Activator.context = bundleContext;
-  }
+    try {
+      final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
-   */
-  @Override
-  public void stop(final BundleContext bundleContext) throws Exception {
-    Activator.context = null;
+      workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+    } catch (final Exception e) {
+      e.printStackTrace();
+    }
   }
-
 }

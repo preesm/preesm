@@ -1,8 +1,8 @@
 <!--
 
-    Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2017) :
+    Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) :
 
-    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
     Julien Heulot <julien.heulot@insa-rennes.fr> (2015 - 2016)
     Karol Desnos <karol.desnos@insa-rennes.fr> (2015 - 2016)
 
@@ -45,7 +45,7 @@
   <parent>
     <groupId>org.ietr.preesm</groupId>
     <artifactId>org.ietr.preesm.releng</artifactId>
-    <version>2.6.1</version>
+    <version>2.6.2</version>
     <relativePath>..</relativePath>
   </parent>
 </project>

@@ -37,7 +37,6 @@
 package org.ietr.preesm.core.scenario.serialize;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
@@ -51,11 +50,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
+import org.ietr.preesm.utils.files.WorkspaceUtils;
 
 /**
  * Importing timings in a scenario from a csv file. task names are rows while operator types are columns
@@ -87,15 +86,13 @@ public class CsvTimingParser {
    *          the op def ids
    * @throws InvalidModelException
    *           the invalid model exception
-   * @throws FileNotFoundException
-   *           the file not found exception
    */
-  public void parse(final String url, final Set<String> opDefIds) throws InvalidModelException, FileNotFoundException {
+  public void parse(final String url, final Set<String> opDefIds) throws InvalidModelException {
     WorkflowLogger.getLogger().log(Level.INFO, "Importing timings from a csv sheet. Non precised timings are kept unmodified.");
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-    Activator.updateWorkspace();
+    WorkspaceUtils.updateWorkspace();
 
     final Path path = new Path(url);
     final IFile file = workspace.getRoot().getFile(path);
@@ -132,9 +129,7 @@ public class CsvTimingParser {
       } else {
         throw new IllegalArgumentException("Given URL points to an empty file");
       }
-    } catch (final IOException e) {
-      e.printStackTrace();
-    } catch (final CoreException e) {
+    } catch (final IOException | CoreException e) {
       e.printStackTrace();
     }
   }
@@ -146,15 +141,12 @@ public class CsvTimingParser {
    *          the timings
    * @param opDefIds
    *          the op def ids
-   * @throws FileNotFoundException
-   *           the file not found exception
    * @throws InvalidModelException
    *           the invalid model exception
    * @throws CoreException
    *           the core exception
    */
-  private void parseTimings(final Map<String, Map<String, String>> timings, final Set<String> opDefIds)
-      throws FileNotFoundException, InvalidModelException, CoreException {
+  private void parseTimings(final Map<String, Map<String, String>> timings, final Set<String> opDefIds) throws InvalidModelException, CoreException {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
     if (this.scenario.isIBSDFScenario()) {
@@ -205,10 +197,10 @@ public class CsvTimingParser {
 
           this.scenario.getTimingManager().addTiming(timing);
 
-          WorkflowLogger.getLogger().log(Level.INFO, "Importing timing: " + timing.toString());
+          WorkflowLogger.getLogger().log(Level.INFO, "Importing timing: {0}", timing.toString());
 
         } catch (final Exception e) {
-          WorkflowLogger.getLogger().log(Level.INFO, "Cannot retreive timing for (" + vertexName + ", " + opDefId + ")");
+          WorkflowLogger.getLogger().log(Level.INFO, "Cannot retreive timing for ({0}, {1})", new Object[] { vertexName, opDefId });
         }
       }
     }

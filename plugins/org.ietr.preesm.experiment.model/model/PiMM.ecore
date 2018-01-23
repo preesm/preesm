@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+    Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
 
-    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
     Clément Guy <clement.guy@insa-rennes.fr> (2014)
     Julien Heulot <julien.heulot@insa-rennes.fr> (2013 - 2014)
     Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
@@ -211,7 +211,7 @@
   <eClassifiers xsi:type="ecore:EClass" name="RoundBufferActor" eSuperTypes="#//ExecutableActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="Port" abstract="true" eSuperTypes="#//visitor/PiMMVisitable">
     <eOperations name="getKind" lowerBound="1" eType="#//PortKind"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DataInputPort" eSuperTypes="#//DataPort">
     <eOperations name="getKind" lowerBound="1" eType="#//PortKind">
@@ -261,7 +261,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetPort" lowerBound="1"
         eType="#//DataInputPort" eOpposite="#//DataInputPort/incomingFifo"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="delay" eType="#//Delay"
-        containment="true"/>
+        containment="true" eOpposite="#//Delay/containingFifo"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         defaultValueLiteral="void"/>
   </eClassifiers>
@@ -313,7 +313,11 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Refinement" abstract="true" interface="true"
       eSuperTypes="#//visitor/PiMMVisitable">
-    <eOperations name="getAbstractActor" eType="#//AbstractActor"/>
+    <eOperations name="getAbstractActor" eType="#//AbstractActor">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return RefinementResolver.resolveAbstractActor(this);"/>
+      </eAnnotations>
+    </eOperations>
     <eOperations name="getFileName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
         <details key="body" value="return (this.getFilePath() == null) ? null : this.getFilePath().lastSegment();"/>
@@ -375,6 +379,8 @@
   <eClassifiers xsi:type="ecore:EClass" name="Delay" eSuperTypes="#//Configurable">
     <eStructuralFeatures xsi:type="ecore:EReference" name="sizeExpression" lowerBound="1"
         eType="#//Expression" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="containingFifo" lowerBound="1"
+        eType="#//Fifo" changeable="false" eOpposite="#//Fifo/delay"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Expression" eSuperTypes="#//visitor/PiMMVisitable">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="expressionString" lowerBound="1"
