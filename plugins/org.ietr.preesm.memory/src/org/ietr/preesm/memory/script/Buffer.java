@@ -37,6 +37,7 @@
 package org.ietr.preesm.memory.script;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -564,7 +565,7 @@ public class Buffer {
   void applyMatches(List<Match> matches) {
 
     // Check that all match have the current buffer as local
-    if (matches.stream().anyMatch(it -> it.getLocalBuffer() != this)) {
+    if (matches.stream().anyMatch(it -> !it.getLocalBuffer().equals(this))) {
       throw new RuntimeException("Incorrect call to applyMatches method.\n " + "One of the given matches does not belong to the this Buffer.");
     }
 
@@ -645,29 +646,30 @@ public class Buffer {
       updateConflictCandidates(match);
 
       // Move all third-party matches from the matched range of the merged buffer
-      match.getLocalBuffer().matchTable.values().stream().flatMap(it -> it.stream())
-          .filter(it -> !it.equals(match) && Range.hasOverlap(it.getLocalRange(), match.getLocalIndivisibleRange())).forEach(movedMatch -> {
-            // Remove old match from original match list
-            List<Match> localList = match.getLocalBuffer().matchTable.get(movedMatch.getLocalIndex());
-            localList.remove(movedMatch);
-            if (localList.isEmpty()) {
-              match.getLocalBuffer().matchTable.remove(movedMatch.getLocalIndex());
-            }
-            // Change the match local buffer and index
-            // Length and remoteBuffer are unchanged
-            movedMatch.setLocalBuffer(match.getRemoteBuffer());
-            movedMatch.setLocalIndex(movedMatch.getLocalIndex() - (match.getLocalIndex() - match.getRemoteIndex()));
-            // Update the reciprocate
-            movedMatch.getReciprocate().setRemoteBuffer(movedMatch.getLocalBuffer());
-            movedMatch.getReciprocate().setRemoteIndex(movedMatch.getLocalIndex());
-            // Put the moved match in its new host matchTable
-            List<Match> matchList = match.getRemoteBuffer().matchTable.get(movedMatch.getLocalIndex());
-            if (matchList == null) {
-              matchList = new ArrayList<>();
-              match.getRemoteBuffer().matchTable.put(movedMatch.getLocalIndex(), matchList);
-            }
-            matchList.add(movedMatch);
-          });
+      List<Match> ze = match.getLocalBuffer().matchTable.values().stream().flatMap(it -> it.stream())
+          .filter(it -> !it.equals(match) && Range.hasOverlap(it.getLocalRange(), match.getLocalIndivisibleRange())).collect(Collectors.toList());
+      for (Match movedMatch : ze) {
+        // Remove old match from original match list
+        List<Match> localList = match.getLocalBuffer().matchTable.get(movedMatch.getLocalIndex());
+        localList.remove(movedMatch);
+        if (localList.isEmpty()) {
+          match.getLocalBuffer().matchTable.remove(movedMatch.getLocalIndex());
+        }
+        // Change the match local buffer and index
+        // Length and remoteBuffer are unchanged
+        movedMatch.setLocalBuffer(match.getRemoteBuffer());
+        movedMatch.setLocalIndex(movedMatch.getLocalIndex() - (match.getLocalIndex() - match.getRemoteIndex()));
+        // Update the reciprocate
+        movedMatch.getReciprocate().setRemoteBuffer(movedMatch.getLocalBuffer());
+        movedMatch.getReciprocate().setRemoteIndex(movedMatch.getLocalIndex());
+        // Put the moved match in its new host matchTable
+        List<Match> matchList = match.getRemoteBuffer().matchTable.get(movedMatch.getLocalIndex());
+        if (matchList == null) {
+          matchList = new ArrayList<>();
+          match.getRemoteBuffer().matchTable.put(movedMatch.getLocalIndex(), matchList);
+        }
+        matchList.add(movedMatch);
+      }
 
       // Update the min and max index of the remoteBuffer (if necessary)
       // Must be called before updateRemoteMergeableRange(match)
@@ -704,6 +706,7 @@ public class Buffer {
 
     // Mark the buffer as Matched
     matched = matchesCopy;
+
   }
 
   private void unionForwardMatchConflictCandidatesRanges(Match forwardMatch, List<Match> matches) {
@@ -715,8 +718,7 @@ public class Buffer {
     }
   }
 
-  private void unionBackwardMatchConflictCandidatesRanges(List<Range> remoteMergeableRange, List<Range> forbiddenRanges, Match backwardMatch,
-      List<Match> matches) {
+  private void unionBackwardMatchConflictCandidatesRanges(List<Range> remoteMergeableRange, List<Range> forbiddenRanges, List<Match> matches) {
     for (Match conflictMatch : matches) {
       List<Range> newMergeableRanges = remoteMergeableRange.stream().map(it -> (Range) it.clone()).collect(Collectors.toList());
       List<Range> newForbiddenRanges = forbiddenRanges.stream().map(it -> (Range) it.clone()).collect(Collectors.toList());
@@ -754,14 +756,14 @@ public class Buffer {
     // No need to remove forbidden ranges from it. Indeed, if there are such
     // range, the match couldn't have been applied
     // Compute forbidden ranges
-    List<Range> forbiddenRanges = Range.difference(remoteMergeableRange, impactedRange);
+    List<Range> forbiddenRanges = Range.difference(Arrays.asList(impactedRange), remoteMergeableRange);
 
     // translate it back to source indexes
     Range.translate(remoteMergeableRange, backwardMatch.getRemoteIndex() - backwardMatch.getLocalIndex());
     Range.translate(forbiddenRanges, backwardMatch.getRemoteIndex() - backwardMatch.getLocalIndex());
 
-    unionBackwardMatchConflictCandidatesRanges(remoteMergeableRange, forbiddenRanges, backwardMatch, backwardMatch.getConflictCandidates());
-    unionBackwardMatchConflictCandidatesRanges(remoteMergeableRange, forbiddenRanges, backwardMatch, backwardMatch.getConflictingMatches());
+    unionBackwardMatchConflictCandidatesRanges(remoteMergeableRange, forbiddenRanges, backwardMatch.getConflictCandidates());
+    unionBackwardMatchConflictCandidatesRanges(remoteMergeableRange, forbiddenRanges, backwardMatch.getConflictingMatches());
   }
 
   static void updateMatches(Match match) {
@@ -907,7 +909,7 @@ public class Buffer {
               forwardMatch = currentMatch.getReciprocate();
             }
             Match redundantForwardMatch = redundantMatch;
-            if (redundantMatch.getType() == MatchType.FORWARD) {
+            if (redundantMatch.getType() != MatchType.FORWARD) {
               redundantForwardMatch = redundantMatch.getReciprocate();
             }
             forwardMatch.setForbiddenLocalRanges(Range.intersection(forwardMatch.getForbiddenLocalRanges(), redundantForwardMatch.getForbiddenLocalRanges()));
