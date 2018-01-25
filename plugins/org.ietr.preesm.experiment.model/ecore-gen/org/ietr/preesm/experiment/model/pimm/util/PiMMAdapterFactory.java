@@ -79,7 +79,6 @@ import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -295,11 +294,6 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
     @Override
     public Adapter caseDataPort(final DataPort object) {
       return createDataPortAdapter();
-    }
-
-    @Override
-    public Adapter casePiMMVisitable(final PiMMVisitable object) {
-      return createPiMMVisitableAdapter();
     }
 
     @Override
@@ -734,19 +728,6 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * @generated
    */
   public Adapter createExecutableActorAdapter() {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable <em>Pi MM Visitable</em>}'. <!--
-   * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
-   * all the cases anyway. <!-- end-user-doc -->
-   *
-   * @return the new adapter.
-   * @see org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable
-   * @generated
-   */
-  public Adapter createPiMMVisitableAdapter() {
     return null;
   }
 

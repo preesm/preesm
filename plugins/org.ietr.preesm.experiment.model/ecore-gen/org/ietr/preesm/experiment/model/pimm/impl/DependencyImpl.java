@@ -47,9 +47,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Dependency</b></em>'. <!-- end-user-doc -->
  * <p>
@@ -401,16 +399,6 @@ public class DependencyImpl extends EObjectImpl implements Dependency {
         return this.getter != null;
     }
     return super.eIsSet(featureID);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
-   */
-  @Override
-  public void accept(final PiMMVisitor v) {
-    v.visitDependency(this);
   }
 
 } // DependencyImpl

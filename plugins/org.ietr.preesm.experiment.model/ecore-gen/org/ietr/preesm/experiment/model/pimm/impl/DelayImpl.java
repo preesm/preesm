@@ -47,9 +47,7 @@ import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Delay</b></em>'. <!-- end-user-doc -->
  * <p>
@@ -293,16 +291,6 @@ public class DelayImpl extends ConfigurableImpl implements Delay {
         return getContainingFifo() != null;
     }
     return super.eIsSet(featureID);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.ParameterizableImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
-   */
-  @Override
-  public void accept(final PiMMVisitor v) {
-    v.visitDelay(this);
   }
 
 } // DelayImpl

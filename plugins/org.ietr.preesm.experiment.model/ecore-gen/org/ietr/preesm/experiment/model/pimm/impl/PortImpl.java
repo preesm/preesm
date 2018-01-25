@@ -44,9 +44,7 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.PortKind;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Port</b></em>'. <!-- end-user-doc -->
  * <p>
@@ -230,13 +228,4 @@ public abstract class PortImpl extends EObjectImpl implements Port {
     return result.toString();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
-   */
-  @Override
-  public void accept(final PiMMVisitor v) {
-    v.visitPort(this);
-  }
 } // PortImpl

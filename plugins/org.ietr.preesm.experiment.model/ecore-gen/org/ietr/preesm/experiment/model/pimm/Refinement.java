@@ -3,7 +3,7 @@
 package org.ietr.preesm.experiment.model.pimm;
 
 import org.eclipse.core.runtime.IPath;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
+import org.eclipse.emf.ecore.EObject;
 
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Refinement</b></em>'. <!-- end-user-doc -->
@@ -19,7 +19,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
  * @model interface="true" abstract="true"
  * @generated
  */
-public interface Refinement extends PiMMVisitable {
+public interface Refinement extends EObject {
   /**
    * Returns the value of the '<em><b>File Path</b></em>' attribute. <!-- begin-user-doc -->
    * <p>

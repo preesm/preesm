@@ -44,9 +44,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Expression</b></em>'. <!-- end-user-doc -->
  * <p>
@@ -216,16 +214,6 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
     result.append(this.expressionString);
     result.append(')');
     return result.toString();
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
-   */
-  @Override
-  public void accept(final PiMMVisitor v) {
-    v.visitExpression(this);
   }
 
 } // ExpressionImpl

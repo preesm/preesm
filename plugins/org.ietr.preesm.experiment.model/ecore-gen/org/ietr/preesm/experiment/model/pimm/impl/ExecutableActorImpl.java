@@ -38,9 +38,7 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 import org.eclipse.emf.ecore.EClass;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Executable Actor</b></em>'. <!-- end-user-doc -->
  *
@@ -67,15 +65,4 @@ public abstract class ExecutableActorImpl extends AbstractActorImpl implements E
   protected EClass eStaticClass() {
     return PiMMPackage.Literals.EXECUTABLE_ACTOR;
   }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
-   */
-  @Override
-  public void accept(final PiMMVisitor v) {
-    v.visitExecutableActor(this);
-  }
-
 } // ExecutableActorImpl

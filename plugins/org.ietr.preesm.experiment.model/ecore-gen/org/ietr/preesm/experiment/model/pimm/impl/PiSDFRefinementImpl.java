@@ -46,9 +46,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.util.RefinementResolver;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Refinement</b></em>'. <!-- end-user-doc -->
  * <p>
@@ -245,16 +243,6 @@ public class PiSDFRefinementImpl extends EObjectImpl implements PiSDFRefinement 
     result.append(this.filePath);
     result.append(')');
     return result.toString();
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
-   */
-  @Override
-  public void accept(final PiMMVisitor v) {
-    v.visitRefinement(this);
   }
 
 } // RefinementImpl

@@ -38,7 +38,7 @@
 package org.ietr.preesm.experiment.model.pimm;
 
 import org.eclipse.emf.common.util.EList;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
+import org.eclipse.emf.ecore.EObject;
 
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Parameterizable</b></em>'. <!-- end-user-doc -->
@@ -48,7 +48,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
  * @model interface="true" abstract="true"
  * @generated
  */
-public interface Parameterizable extends PiMMVisitable {
+public interface Parameterizable extends EObject {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *

@@ -57,7 +57,6 @@ import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Abstract Vertex</b></em>'. <!-- end-user-doc -->
@@ -432,16 +431,6 @@ public abstract class AbstractActorImpl extends ConfigurableImpl implements Abst
         return basicSetContainingGraph((PiGraph) otherEnd, msgs);
     }
     return super.eInverseAdd(otherEnd, featureID, msgs);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
-   */
-  @Override
-  public void accept(final PiMMVisitor v) {
-    v.visitAbstractActor(this);
   }
 
 } // AbstractActoImpl

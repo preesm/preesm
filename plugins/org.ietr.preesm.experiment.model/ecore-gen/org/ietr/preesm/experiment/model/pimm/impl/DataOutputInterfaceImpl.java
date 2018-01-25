@@ -45,7 +45,6 @@ import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Sink Interface</b></em>'. <!-- end-user-doc -->
@@ -211,16 +210,6 @@ public class DataOutputInterfaceImpl extends AbstractActorImpl implements DataOu
         return this.graphPort != null;
     }
     return super.eIsSet(featureID);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
-   */
-  @Override
-  public void accept(final PiMMVisitor v) {
-    v.visitDataOutputInterface(this);
   }
 
 } // SinkInterfaceImpl

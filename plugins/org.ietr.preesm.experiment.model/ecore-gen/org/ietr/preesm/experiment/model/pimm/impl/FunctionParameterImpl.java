@@ -42,9 +42,7 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.ietr.preesm.experiment.model.pimm.Direction;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Function Parameter</b></em>'. <!-- end-user-doc -->
  * <p>
@@ -390,16 +388,6 @@ public class FunctionParameterImpl extends EObjectImpl implements FunctionParame
     result.append(this.isConfigurationParameter);
     result.append(')');
     return result.toString();
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
-   */
-  @Override
-  public void accept(final PiMMVisitor v) {
-    v.visitFunctionParameter(this);
   }
 
 } // FunctionParameterImpl

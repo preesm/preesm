@@ -50,9 +50,7 @@ import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.PortKind;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Config Output Port</b></em>'. <!-- end-user-doc -->
  * <p>
@@ -293,16 +291,6 @@ public class ConfigOutputPortImpl extends DataOutputPortImpl implements ConfigOu
   @Override
   public PortKind getKind() {
     return PortKind.CFG_OUTPUT;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.DataOutputPortImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
-   */
-  @Override
-  public void accept(final PiMMVisitor v) {
-    v.visitConfigOutputPort(this);
   }
 
 } // ConfigOutputPortImpl

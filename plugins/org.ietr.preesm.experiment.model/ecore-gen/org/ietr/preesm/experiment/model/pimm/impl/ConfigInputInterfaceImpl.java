@@ -44,9 +44,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Config Input Interface</b></em>'. <!-- end-user-doc -->
  * <p>
@@ -212,16 +210,6 @@ public class ConfigInputInterfaceImpl extends ParameterImpl implements ConfigInp
         return this.graphPort != null;
     }
     return super.eIsSet(featureID);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
-   */
-  @Override
-  public void accept(final PiMMVisitor v) {
-    v.visitConfigInputInterface(this);
   }
 
 } // ConfigInputInterfaceImpl

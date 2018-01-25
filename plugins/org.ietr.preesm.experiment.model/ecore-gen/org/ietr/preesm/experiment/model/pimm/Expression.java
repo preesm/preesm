@@ -37,7 +37,7 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
+import org.eclipse.emf.ecore.EObject;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -54,7 +54,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
  * @model
  * @generated
  */
-public interface Expression extends PiMMVisitable {
+public interface Expression extends EObject {
 
   /**
    * Returns the value of the '<em><b>Expression String</b></em>' attribute. The default value is <code>"0"</code>. <!-- begin-user-doc -->

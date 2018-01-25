@@ -46,7 +46,6 @@ import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Config Output Interface</b></em>'. <!-- end-user-doc -->
@@ -212,16 +211,6 @@ public class ConfigOutputInterfaceImpl extends AbstractActorImpl implements Conf
         return this.graphPort != null;
     }
     return super.eIsSet(featureID);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
-   */
-  @Override
-  public void accept(final PiMMVisitor v) {
-    v.visitConfigOutputInterface(this);
   }
 
 } // ConfigOutputInterfaceImpl

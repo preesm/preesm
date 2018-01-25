@@ -56,9 +56,7 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Graph</b></em>'. <!-- end-user-doc -->
  * <p>
@@ -436,16 +434,6 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
           PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH);
     }
     return this.actors;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
-   */
-  @Override
-  public void accept(final PiMMVisitor v) {
-    v.visitPiGraph(this);
   }
 
 } // GraphImpl

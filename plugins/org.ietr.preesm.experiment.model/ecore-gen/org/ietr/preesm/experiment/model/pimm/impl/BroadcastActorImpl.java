@@ -38,9 +38,7 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 import org.eclipse.emf.ecore.EClass;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Broadcast Actor</b></em>'. <!-- end-user-doc -->
  *
@@ -66,16 +64,6 @@ public class BroadcastActorImpl extends ExecutableActorImpl implements Broadcast
   @Override
   protected EClass eStaticClass() {
     return PiMMPackage.Literals.BROADCAST_ACTOR;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.ExecutableActorImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
-   */
-  @Override
-  public void accept(final PiMMVisitor v) {
-    v.visitBroadcastActor(this);
   }
 
 } // BroadcastActorImpl

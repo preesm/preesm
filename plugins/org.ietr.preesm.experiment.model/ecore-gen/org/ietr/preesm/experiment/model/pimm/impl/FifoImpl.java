@@ -52,7 +52,6 @@ import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Fifo</b></em>'. <!-- end-user-doc -->
@@ -602,16 +601,6 @@ public class FifoImpl extends EObjectImpl implements Fifo {
     result.append(this.type);
     result.append(')');
     return result.toString();
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
-   */
-  @Override
-  public void accept(final PiMMVisitor v) {
-    v.visitFifo(this);
   }
 
 } // FifoImpl

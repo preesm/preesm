@@ -37,7 +37,7 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
+import org.eclipse.emf.ecore.EObject;
 
 /**
  * <!-- begin-user-doc --> A representation of the model object '<em><b>Dependency</b></em>'. <!-- end-user-doc -->
@@ -54,7 +54,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
  * @model
  * @generated
  */
-public interface Dependency extends PiMMVisitable {
+public interface Dependency extends EObject {
   /**
    * Returns the value of the '<em><b>Setter</b></em>' reference. It is bidirectional and its opposite is
    * '{@link org.ietr.preesm.experiment.model.pimm.ISetter#getOutgoingDependencies <em>Outgoing Dependencies</em>}'. <!-- begin-user-doc -->

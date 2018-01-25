@@ -45,7 +45,6 @@ import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
-import org.ietr.preesm.experiment.model.pimm.visitor.VisitorPackage;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -107,7 +106,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int PARAMETERIZABLE_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 0;
+  int PARAMETERIZABLE_FEATURE_COUNT = 0;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigurableImpl <em>Configurable</em>}' class. <!-- begin-user-doc --> <!--
@@ -135,7 +134,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int ABSTRACT_VERTEX__NAME = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 0;
+  int ABSTRACT_VERTEX__NAME = 0;
 
   /**
    * The number of structural features of the '<em>Abstract Vertex</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -143,7 +142,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int ABSTRACT_VERTEX_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 1;
+  int ABSTRACT_VERTEX_FEATURE_COUNT = 1;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -968,7 +967,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int PORT__NAME = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 0;
+  int PORT__NAME = 0;
 
   /**
    * The number of structural features of the '<em>Port</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -976,7 +975,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int PORT_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 1;
+  int PORT_FEATURE_COUNT = 1;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1176,7 +1175,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int FIFO__SOURCE_PORT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 0;
+  int FIFO__SOURCE_PORT = 0;
 
   /**
    * The feature id for the '<em><b>Target Port</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1184,7 +1183,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int FIFO__TARGET_PORT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 1;
+  int FIFO__TARGET_PORT = 1;
 
   /**
    * The feature id for the '<em><b>Delay</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1192,7 +1191,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int FIFO__DELAY = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 2;
+  int FIFO__DELAY = 2;
 
   /**
    * The feature id for the '<em><b>Type</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1200,7 +1199,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int FIFO__TYPE = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 3;
+  int FIFO__TYPE = 3;
 
   /**
    * The number of structural features of the '<em>Fifo</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1208,7 +1207,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int FIFO_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 4;
+  int FIFO_FEATURE_COUNT = 4;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1576,7 +1575,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int REFINEMENT__FILE_PATH = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 0;
+  int REFINEMENT__FILE_PATH = 0;
 
   /**
    * The number of structural features of the '<em>Refinement</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1584,7 +1583,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int REFINEMENT_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 1;
+  int REFINEMENT_FEATURE_COUNT = 1;
 
   /**
    * The feature id for the '<em><b>File Path</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1640,7 +1639,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int DEPENDENCY__SETTER = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 0;
+  int DEPENDENCY__SETTER = 0;
 
   /**
    * The feature id for the '<em><b>Getter</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1648,7 +1647,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int DEPENDENCY__GETTER = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 1;
+  int DEPENDENCY__GETTER = 1;
 
   /**
    * The number of structural features of the '<em>Dependency</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1656,7 +1655,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int DEPENDENCY_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 2;
+  int DEPENDENCY_FEATURE_COUNT = 2;
 
   /**
    * The feature id for the '<em><b>Outgoing Dependencies</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1720,7 +1719,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int EXPRESSION__EXPRESSION_STRING = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 0;
+  int EXPRESSION__EXPRESSION_STRING = 0;
 
   /**
    * The number of structural features of the '<em>Expression</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1728,7 +1727,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int EXPRESSION_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 1;
+  int EXPRESSION_FEATURE_COUNT = 1;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1736,7 +1735,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int FUNCTION_PROTOTYPE__NAME = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 0;
+  int FUNCTION_PROTOTYPE__NAME = 0;
 
   /**
    * The feature id for the '<em><b>Parameters</b></em>' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1744,7 +1743,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int FUNCTION_PROTOTYPE__PARAMETERS = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 1;
+  int FUNCTION_PROTOTYPE__PARAMETERS = 1;
 
   /**
    * The number of structural features of the '<em>Function Prototype</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1752,7 +1751,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int FUNCTION_PROTOTYPE_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 2;
+  int FUNCTION_PROTOTYPE_FEATURE_COUNT = 2;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1760,7 +1759,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int FUNCTION_PARAMETER__NAME = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 0;
+  int FUNCTION_PARAMETER__NAME = 0;
 
   /**
    * The feature id for the '<em><b>Direction</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1768,7 +1767,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int FUNCTION_PARAMETER__DIRECTION = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 1;
+  int FUNCTION_PARAMETER__DIRECTION = 1;
 
   /**
    * The feature id for the '<em><b>Type</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1776,7 +1775,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int FUNCTION_PARAMETER__TYPE = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 2;
+  int FUNCTION_PARAMETER__TYPE = 2;
 
   /**
    * The feature id for the '<em><b>Is Configuration Parameter</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1784,7 +1783,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int FUNCTION_PARAMETER__IS_CONFIGURATION_PARAMETER = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 3;
+  int FUNCTION_PARAMETER__IS_CONFIGURATION_PARAMETER = 3;
 
   /**
    * The number of structural features of the '<em>Function Parameter</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1792,7 +1791,7 @@ public interface PiMMPackage extends EPackage {
    * @generated
    * @ordered
    */
-  int FUNCTION_PARAMETER_FEATURE_COUNT = VisitorPackage.PI_MM_VISITABLE_FEATURE_COUNT + 4;
+  int FUNCTION_PARAMETER_FEATURE_COUNT = 4;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.Direction <em>Direction</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc -->

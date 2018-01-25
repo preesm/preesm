@@ -37,7 +37,7 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
+import org.eclipse.emf.ecore.EObject;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -57,7 +57,7 @@ import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
  * @model
  * @generated
  */
-public interface Fifo extends PiMMVisitable {
+public interface Fifo extends EObject {
   /**
    * Returns the value of the '<em><b>Source Port</b></em>' reference. It is bidirectional and its opposite is
    * '{@link org.ietr.preesm.experiment.model.pimm.DataOutputPort#getOutgoingFifo <em>Outgoing Fifo</em>}'. <!-- begin-user-doc -->

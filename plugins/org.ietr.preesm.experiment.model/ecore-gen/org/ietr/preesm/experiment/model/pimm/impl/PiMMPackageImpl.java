@@ -87,10 +87,7 @@ import org.ietr.preesm.experiment.model.pimm.PortKind;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
-import org.ietr.preesm.experiment.model.pimm.visitor.VisitorPackage;
-import org.ietr.preesm.experiment.model.pimm.visitor.impl.VisitorPackageImpl;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Package</b>. <!-- end-user-doc -->
  *
@@ -411,18 +408,11 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     PiMMPackageImpl.isInited = true;
 
-    // Obtain or create and register interdependencies
-    final VisitorPackageImpl theVisitorPackage = (VisitorPackageImpl) (EPackage.Registry.INSTANCE
-        .getEPackage(VisitorPackage.eNS_URI) instanceof VisitorPackageImpl ? EPackage.Registry.INSTANCE.getEPackage(VisitorPackage.eNS_URI)
-            : VisitorPackage.eINSTANCE);
-
     // Create package meta-data objects
     thePiMMPackage.createPackageContents();
-    theVisitorPackage.createPackageContents();
 
     // Initialize created meta-data
     thePiMMPackage.initializePackageContents();
-    theVisitorPackage.initializePackageContents();
 
     // Mark meta-data to indicate it can't be changed
     thePiMMPackage.freeze();
@@ -1465,19 +1455,11 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     setNsPrefix(PiMMPackage.eNS_PREFIX);
     setNsURI(PiMMPackage.eNS_URI);
 
-    // Obtain other dependent packages
-    final VisitorPackage theVisitorPackage = (VisitorPackage) EPackage.Registry.INSTANCE.getEPackage(VisitorPackage.eNS_URI);
-
-    // Add subpackages
-    getESubpackages().add(theVisitorPackage);
-
     // Create type parameters
 
     // Set bounds for type parameters
 
     // Add supertypes to classes
-    this.parameterizableEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
-    this.abstractVertexEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.configurableEClass.getESuperTypes().add(getAbstractVertex());
     this.configurableEClass.getESuperTypes().add(getParameterizable());
     this.abstractActorEClass.getESuperTypes().add(getConfigurable());
@@ -1488,28 +1470,21 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     this.joinActorEClass.getESuperTypes().add(getExecutableActor());
     this.forkActorEClass.getESuperTypes().add(getExecutableActor());
     this.roundBufferActorEClass.getESuperTypes().add(getExecutableActor());
-    this.portEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.dataInputPortEClass.getESuperTypes().add(getDataPort());
     this.dataOutputPortEClass.getESuperTypes().add(getDataPort());
     this.configInputPortEClass.getESuperTypes().add(getPort());
     this.configOutputPortEClass.getESuperTypes().add(getDataOutputPort());
     this.configOutputPortEClass.getESuperTypes().add(getISetter());
-    this.fifoEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.interfaceActorEClass.getESuperTypes().add(getAbstractActor());
     this.dataInputInterfaceEClass.getESuperTypes().add(getInterfaceActor());
     this.dataOutputInterfaceEClass.getESuperTypes().add(getInterfaceActor());
     this.configInputInterfaceEClass.getESuperTypes().add(getParameter());
     this.configOutputInterfaceEClass.getESuperTypes().add(getInterfaceActor());
-    this.refinementEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.piSDFRefinementEClass.getESuperTypes().add(getRefinement());
     this.cHeaderRefinementEClass.getESuperTypes().add(getRefinement());
     this.parameterEClass.getESuperTypes().add(getConfigurable());
     this.parameterEClass.getESuperTypes().add(getISetter());
-    this.dependencyEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.delayEClass.getESuperTypes().add(getConfigurable());
-    this.expressionEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
-    this.functionPrototypeEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
-    this.functionParameterEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.dataPortEClass.getESuperTypes().add(getPort());
 
     // Initialize classes and features; add operations and parameters
