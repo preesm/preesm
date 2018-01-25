@@ -1,42 +1,5 @@
-/*******************************************************************************
- * Copyright or © or Copr. 2012 - 2017 IETR/INSA:
- *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
- * Maxime Pelcat <Maxime.Pelcat@insa-rennes.fr> (2013)
- * Romina Racca <romina.racca@gmail.com> (2013)
- *
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
- *
- * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use
- * modify and/ or redistribute the software under the terms of the CeCILL-C
- * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info".
- *
- * As a counterpart to the access to the source code and  rights to copy,
- * modify and redistribute granted by the license, users are provided only
- * with a limited warranty  and the software's author,  the holder of the
- * economic rights,  and the successive licensors  have only  limited
- * liability.
- *
- * In this respect, the user's attention is drawn to the risks associated
- * with loading,  using,  modifying and/or developing or reproducing the
- * software by the user in light of its specific status of free software,
- * that may mean  that it is complicated to manipulate,  and  that  also
- * therefore means  that it is reserved for developers  and  experienced
- * professionals having in-depth computer knowledge. Users are therefore
- * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or
- * data to be ensured and,  more generally, to use and operate it in the
- * same conditions as regards security.
- *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- *******************************************************************************/
+/**
+ */
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.core.runtime.IPath;
@@ -76,14 +39,12 @@ import org.ietr.preesm.experiment.model.pimm.PortKind;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!-- end-user-doc -->
  *
  * @generated
  */
 public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
-
   /**
    * Creates the default factory implementation. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -111,11 +72,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param eClass
-   *          the e class
-   * @return the e object
    * @generated
    */
   @Override
@@ -173,13 +131,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param eDataType
-   *          the e data type
-   * @param initialValue
-   *          the initial value
-   * @return the object
    * @generated
    */
   @Override
@@ -201,13 +154,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param eDataType
-   *          the e data type
-   * @param instanceValue
-   *          the instance value
-   * @return the string
    * @generated
    */
   @Override
@@ -229,9 +177,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the pi graph
    * @generated
    */
   @Override
@@ -241,9 +188,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the actor
    * @generated
    */
   @Override
@@ -253,9 +199,52 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the data input port
+   * @generated
+   */
+  @Override
+  public BroadcastActor createBroadcastActor() {
+    final BroadcastActorImpl broadcastActor = new BroadcastActorImpl();
+    return broadcastActor;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public JoinActor createJoinActor() {
+    final JoinActorImpl joinActor = new JoinActorImpl();
+    return joinActor;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public ForkActor createForkActor() {
+    final ForkActorImpl forkActor = new ForkActorImpl();
+    return forkActor;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public RoundBufferActor createRoundBufferActor() {
+    final RoundBufferActorImpl roundBufferActor = new RoundBufferActorImpl();
+    return roundBufferActor;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @generated
    */
   @Override
@@ -265,9 +254,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the data output port
    * @generated
    */
   @Override
@@ -277,9 +265,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the config input port
    * @generated
    */
   @Override
@@ -289,9 +276,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the config output port
    * @generated
    */
   @Override
@@ -301,9 +287,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the fifo
    * @generated
    */
   @Override
@@ -313,9 +298,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the data input interface
    * @generated
    */
   @Override
@@ -325,9 +309,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the data output interface
    * @generated
    */
   @Override
@@ -337,9 +320,19 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the config output interface
+   * @generated
+   */
+  @Override
+  public ConfigInputInterface createConfigInputInterface() {
+    final ConfigInputInterfaceImpl configInputInterface = new ConfigInputInterfaceImpl();
+    return configInputInterface;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @generated
    */
   @Override
@@ -360,9 +353,19 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the parameter
+   * @generated
+   */
+  @Override
+  public CHeaderRefinement createCHeaderRefinement() {
+    final CHeaderRefinementImpl cHeaderRefinement = new CHeaderRefinementImpl();
+    return cHeaderRefinement;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @generated
    */
   @Override
@@ -372,9 +375,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the dependency
    * @generated
    */
   @Override
@@ -384,9 +386,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the delay
    * @generated
    */
   @Override
@@ -396,9 +397,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the expression
    * @generated
    */
   @Override
@@ -413,27 +413,14 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
    * @generated
    */
   @Override
-  public CHeaderRefinement createCHeaderRefinement() {
-    final CHeaderRefinementImpl cHeaderRefinement = new CHeaderRefinementImpl();
-    return cHeaderRefinement;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the function prototype
-   * @generated
-   */
-  @Override
   public FunctionPrototype createFunctionPrototype() {
     final FunctionPrototypeImpl functionPrototype = new FunctionPrototypeImpl();
     return functionPrototype;
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the function parameter
    * @generated
    */
   @Override
@@ -443,59 +430,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the broadcast actor
-   * @generated
-   */
-  @Override
-  public BroadcastActor createBroadcastActor() {
-    final BroadcastActorImpl broadcastActor = new BroadcastActorImpl();
-    return broadcastActor;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the join actor
-   * @generated
-   */
-  @Override
-  public JoinActor createJoinActor() {
-    final JoinActorImpl joinActor = new JoinActorImpl();
-    return joinActor;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the fork actor
-   * @generated
-   */
-  @Override
-  public ForkActor createForkActor() {
-    final ForkActorImpl forkActor = new ForkActorImpl();
-    return forkActor;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the round buffer actor
-   * @generated
-   */
-  @Override
-  public RoundBufferActor createRoundBufferActor() {
-    final RoundBufferActorImpl roundBufferActor = new RoundBufferActorImpl();
-    return roundBufferActor;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @param literal
-   *          the literal
-   * @return the direction
    * @generated
    */
   @Override
@@ -508,13 +444,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param eDataType
-   *          the e data type
-   * @param initialValue
-   *          the initial value
-   * @return the direction
    * @generated
    */
   public Direction createDirectionFromString(final EDataType eDataType, final String initialValue) {
@@ -522,11 +453,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param instanceValue
-   *          the instance value
-   * @return the string
    * @generated
    */
   @Override
@@ -535,13 +463,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param eDataType
-   *          the e data type
-   * @param instanceValue
-   *          the instance value
-   * @return the string
    * @generated
    */
   public String convertDirectionToString(final EDataType eDataType, final Object instanceValue) {
@@ -549,11 +472,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param literal
-   *          the literal
-   * @return the port memory annotation
    * @generated
    */
   @Override
@@ -567,13 +487,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param eDataType
-   *          the e data type
-   * @param initialValue
-   *          the initial value
-   * @return the port memory annotation
    * @generated
    */
   public PortMemoryAnnotation createPortMemoryAnnotationFromString(final EDataType eDataType, final String initialValue) {
@@ -581,11 +496,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param instanceValue
-   *          the instance value
-   * @return the string
    * @generated
    */
   @Override
@@ -594,13 +506,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param eDataType
-   *          the e data type
-   * @param instanceValue
-   *          the instance value
-   * @return the string
    * @generated
    */
   public String convertPortMemoryAnnotationToString(final EDataType eDataType, final Object instanceValue) {
@@ -692,11 +599,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param literal
-   *          the literal
-   * @return the i path
    * @generated
    */
   @Override
@@ -705,13 +609,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param eDataType
-   *          the e data type
-   * @param initialValue
-   *          the initial value
-   * @return the i path
    * @generated
    */
   public IPath createIPathFromString(final EDataType eDataType, final String initialValue) {
@@ -719,11 +618,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param instanceValue
-   *          the instance value
-   * @return the string
    * @generated
    */
   @Override
@@ -732,13 +628,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param eDataType
-   *          the e data type
-   * @param instanceValue
-   *          the instance value
-   * @return the string
    * @generated
    */
   public String convertIPathToString(final EDataType eDataType, final Object instanceValue) {
@@ -746,21 +637,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the config input interface
-   * @generated
-   */
-  @Override
-  public ConfigInputInterface createConfigInputInterface() {
-    final ConfigInputInterfaceImpl configInputInterface = new ConfigInputInterfaceImpl();
-    return configInputInterface;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the pi MM package
    * @generated
    */
   @Override
@@ -769,9 +647,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the package
    * @deprecated
    * @generated
    */

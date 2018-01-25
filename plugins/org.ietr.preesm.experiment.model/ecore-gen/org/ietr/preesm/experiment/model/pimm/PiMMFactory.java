@@ -1,48 +1,10 @@
-/*******************************************************************************
- * Copyright or © or Copr. 2012 - 2017 IETR/INSA:
- *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
- * Maxime Pelcat <Maxime.Pelcat@insa-rennes.fr> (2013)
- * Romina Racca <romina.racca@gmail.com> (2013)
- *
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
- *
- * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use
- * modify and/ or redistribute the software under the terms of the CeCILL-C
- * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info".
- *
- * As a counterpart to the access to the source code and  rights to copy,
- * modify and redistribute granted by the license, users are provided only
- * with a limited warranty  and the software's author,  the holder of the
- * economic rights,  and the successive licensors  have only  limited
- * liability.
- *
- * In this respect, the user's attention is drawn to the risks associated
- * with loading,  using,  modifying and/or developing or reproducing the
- * software by the user in light of its specific status of free software,
- * that may mean  that it is complicated to manipulate,  and  that  also
- * therefore means  that it is reserved for developers  and  experienced
- * professionals having in-depth computer knowledge. Users are therefore
- * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or
- * data to be ensured and,  more generally, to use and operate it in the
- * same conditions as regards security.
- *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- *******************************************************************************/
+/**
+ */
 package org.ietr.preesm.experiment.model.pimm;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.ecore.EFactory;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> The <b>Factory</b> for the model. It provides a create method for each non-abstract class of the model. <!-- end-user-doc -->
  *
@@ -72,6 +34,38 @@ public interface PiMMFactory extends EFactory {
    * @generated
    */
   Actor createActor();
+
+  /**
+   * Returns a new object of class '<em>Broadcast Actor</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @return a new object of class '<em>Broadcast Actor</em>'.
+   * @generated
+   */
+  BroadcastActor createBroadcastActor();
+
+  /**
+   * Returns a new object of class '<em>Join Actor</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @return a new object of class '<em>Join Actor</em>'.
+   * @generated
+   */
+  JoinActor createJoinActor();
+
+  /**
+   * Returns a new object of class '<em>Fork Actor</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @return a new object of class '<em>Fork Actor</em>'.
+   * @generated
+   */
+  ForkActor createForkActor();
+
+  /**
+   * Returns a new object of class '<em>Round Buffer Actor</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @return a new object of class '<em>Round Buffer Actor</em>'.
+   * @generated
+   */
+  RoundBufferActor createRoundBufferActor();
 
   /**
    * Returns a new object of class '<em>Data Input Port</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -130,6 +124,14 @@ public interface PiMMFactory extends EFactory {
   DataOutputInterface createDataOutputInterface();
 
   /**
+   * Returns a new object of class '<em>Config Input Interface</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @return a new object of class '<em>Config Input Interface</em>'.
+   * @generated
+   */
+  ConfigInputInterface createConfigInputInterface();
+
+  /**
    * Returns a new object of class '<em>Config Output Interface</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return a new object of class '<em>Config Output Interface</em>'.
@@ -144,6 +146,14 @@ public interface PiMMFactory extends EFactory {
    * @generated
    */
   PiSDFRefinement createPiSDFRefinement();
+
+  /**
+   * Returns a new object of class '<em>CHeader Refinement</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @return a new object of class '<em>CHeader Refinement</em>'.
+   * @generated
+   */
+  CHeaderRefinement createCHeaderRefinement();
 
   /**
    * Returns a new object of class '<em>Parameter</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -178,14 +188,6 @@ public interface PiMMFactory extends EFactory {
   Expression createExpression();
 
   /**
-   * Returns a new object of class '<em>CHeader Refinement</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @return a new object of class '<em>CHeader Refinement</em>'.
-   * @generated
-   */
-  CHeaderRefinement createCHeaderRefinement();
-
-  /**
    * Returns a new object of class '<em>Function Prototype</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return a new object of class '<em>Function Prototype</em>'.
@@ -200,38 +202,6 @@ public interface PiMMFactory extends EFactory {
    * @generated
    */
   FunctionParameter createFunctionParameter();
-
-  /**
-   * Returns a new object of class '<em>Broadcast Actor</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @return a new object of class '<em>Broadcast Actor</em>'.
-   * @generated
-   */
-  BroadcastActor createBroadcastActor();
-
-  /**
-   * Returns a new object of class '<em>Join Actor</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @return a new object of class '<em>Join Actor</em>'.
-   * @generated
-   */
-  JoinActor createJoinActor();
-
-  /**
-   * Returns a new object of class '<em>Fork Actor</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @return a new object of class '<em>Fork Actor</em>'.
-   * @generated
-   */
-  ForkActor createForkActor();
-
-  /**
-   * Returns a new object of class '<em>Round Buffer Actor</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @return a new object of class '<em>Round Buffer Actor</em>'.
-   * @generated
-   */
-  RoundBufferActor createRoundBufferActor();
 
   /**
    * Returns an instance of data type '<em>Direction</em>' corresponding the given literal. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -332,14 +302,6 @@ public interface PiMMFactory extends EFactory {
    * @generated
    */
   String convertIPath(IPath instanceValue);
-
-  /**
-   * Returns a new object of class '<em>Config Input Interface</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @return a new object of class '<em>Config Input Interface</em>'.
-   * @generated
-   */
-  ConfigInputInterface createConfigInputInterface();
 
   /**
    * Returns the package supported by this factory. <!-- begin-user-doc --> <!-- end-user-doc -->

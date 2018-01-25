@@ -1,39 +1,5 @@
-/*******************************************************************************
- * Copyright or © or Copr. 2014 - 2017 IETR/INSA:
- *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2014)
- *
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
- *
- * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use
- * modify and/ or redistribute the software under the terms of the CeCILL-C
- * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info".
- *
- * As a counterpart to the access to the source code and  rights to copy,
- * modify and redistribute granted by the license, users are provided only
- * with a limited warranty  and the software's author,  the holder of the
- * economic rights,  and the successive licensors  have only  limited
- * liability.
- *
- * In this respect, the user's attention is drawn to the risks associated
- * with loading,  using,  modifying and/or developing or reproducing the
- * software by the user in light of its specific status of free software,
- * that may mean  that it is complicated to manipulate,  and  that  also
- * therefore means  that it is reserved for developers  and  experienced
- * professionals having in-depth computer knowledge. Users are therefore
- * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or
- * data to be ensured and,  more generally, to use and operate it in the
- * same conditions as regards security.
- *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- *******************************************************************************/
+/**
+ */
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.core.runtime.IPath;
@@ -50,7 +16,7 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.RefinementResolver;
 
 /**
- * <!-- begin-user-doc --> An implementation of the model object '<em><b>HRefinement</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>CHeader Refinement</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
@@ -71,6 +37,7 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
    * @ordered
    */
   protected static final IPath FILE_PATH_EDEFAULT = null;
+
   /**
    * The cached value of the '{@link #getFilePath() <em>File Path</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -78,7 +45,8 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
    * @generated
    * @ordered
    */
-  protected IPath              filePath           = CHeaderRefinementImpl.FILE_PATH_EDEFAULT;
+  protected IPath filePath = CHeaderRefinementImpl.FILE_PATH_EDEFAULT;
+
   /**
    * The cached value of the '{@link #getLoopPrototype() <em>Loop Prototype</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -86,7 +54,8 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
    * @generated
    * @ordered
    */
-  protected FunctionPrototype  loopPrototype;
+  protected FunctionPrototype loopPrototype;
+
   /**
    * The cached value of the '{@link #getInitPrototype() <em>Init Prototype</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
@@ -94,10 +63,10 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
    * @generated
    * @ordered
    */
-  protected FunctionPrototype  initPrototype;
+  protected FunctionPrototype initPrototype;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
@@ -106,9 +75,8 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the e class
    * @generated
    */
   @Override
@@ -141,9 +109,8 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the loop prototype
    * @generated
    */
   @Override
@@ -172,10 +139,8 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param newLoopPrototype
-   *          the new loop prototype
    * @generated
    */
   @Override
@@ -205,38 +170,6 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
    * @generated
    */
   @Override
-  public String getFileName() {
-    return (getFilePath() == null) ? null : getFilePath().lastSegment();
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   */
-  @Override
-  public boolean isHierarchical() {
-    // C Header Refinement means it is obviously not a subgraph
-    return false;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   */
-  @Override
-  public AbstractActor getAbstractActor() {
-    return RefinementResolver.resolveAbstractActor(this);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the inits the prototype
-   * @generated
-   */
-  @Override
   public FunctionPrototype getInitPrototype() {
     return this.initPrototype;
   }
@@ -262,10 +195,8 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param newInitPrototype
-   *          the new inits the prototype
    * @generated
    */
   @Override
@@ -295,6 +226,37 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
    * @generated
    */
   @Override
+  public boolean isHierarchical() {
+    // C Header Refinement means it is obviously not a subgraph
+    return false;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public AbstractActor getAbstractActor() {
+    return RefinementResolver.resolveAbstractActor(this);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public String getFileName() {
+    return (getFilePath() == null) ? null : getFilePath().lastSegment();
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
   public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
     switch (featureID) {
       case PiMMPackage.CHEADER_REFINEMENT__LOOP_PROTOTYPE:
@@ -306,15 +268,8 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param featureID
-   *          the feature ID
-   * @param resolve
-   *          the resolve
-   * @param coreType
-   *          the core type
-   * @return the object
    * @generated
    */
   @Override
@@ -331,12 +286,8 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param featureID
-   *          the feature ID
-   * @param newValue
-   *          the new value
    * @generated
    */
   @Override
@@ -356,10 +307,8 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param featureID
-   *          the feature ID
    * @generated
    */
   @Override
@@ -379,11 +328,8 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param featureID
-   *          the feature ID
-   * @return true, if successful
    * @generated
    */
   @Override
@@ -417,4 +363,4 @@ public class CHeaderRefinementImpl extends EObjectImpl implements CHeaderRefinem
     return result.toString();
   }
 
-} // HRefinementImpl
+} // CHeaderRefinementImpl

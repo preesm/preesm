@@ -1,42 +1,5 @@
-/*******************************************************************************
- * Copyright or © or Copr. 2012 - 2017 IETR/INSA:
- *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
- * Maxime Pelcat <Maxime.Pelcat@insa-rennes.fr> (2013)
- * Romina Racca <romina.racca@gmail.com> (2013)
- *
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
- *
- * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use
- * modify and/ or redistribute the software under the terms of the CeCILL-C
- * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info".
- *
- * As a counterpart to the access to the source code and  rights to copy,
- * modify and redistribute granted by the license, users are provided only
- * with a limited warranty  and the software's author,  the holder of the
- * economic rights,  and the successive licensors  have only  limited
- * liability.
- *
- * In this respect, the user's attention is drawn to the risks associated
- * with loading,  using,  modifying and/or developing or reproducing the
- * software by the user in light of its specific status of free software,
- * that may mean  that it is complicated to manipulate,  and  that  also
- * therefore means  that it is reserved for developers  and  experienced
- * professionals having in-depth computer knowledge. Users are therefore
- * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or
- * data to be ensured and,  more generally, to use and operate it in the
- * same conditions as regards security.
- *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- *******************************************************************************/
+/**
+ */
 package org.ietr.preesm.experiment.model.pimm.util;
 
 import org.eclipse.emf.ecore.EObject;
@@ -77,7 +40,6 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> The <b>Switch</b> for the model's inheritance hierarchy. It supports the call {@link #doSwitch(EObject) doSwitch(object)} to invoke
  * the <code>caseXXX</code> method for each class of the model, starting with the actual class of the object and proceeding up the inheritance hierarchy until a
@@ -87,9 +49,8 @@ import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
  * @generated
  */
 public class PiMMSwitch<T> extends Switch<T> {
-
   /**
-   * The cached model package <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * The cached model package <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
@@ -656,20 +617,6 @@ public class PiMMSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Configurable</em>'. <!-- begin-user-doc --> This implementation returns null;
-   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
-   * @param object
-   *          the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Configurable</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseConfigurable(final Configurable object) {
-    return null;
-  }
-
-  /**
    * Returns the result of interpreting the object as an instance of '<em>Abstract Vertex</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
    *
@@ -680,6 +627,20 @@ public class PiMMSwitch<T> extends Switch<T> {
    * @generated
    */
   public T caseAbstractVertex(final AbstractVertex object) {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Configurable</em>'. <!-- begin-user-doc --> This implementation returns null;
+   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   *
+   * @param object
+   *          the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Configurable</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseConfigurable(final Configurable object) {
     return null;
   }
 
@@ -712,6 +673,20 @@ public class PiMMSwitch<T> extends Switch<T> {
   }
 
   /**
+   * Returns the result of interpreting the object as an instance of '<em>Executable Actor</em>'. <!-- begin-user-doc --> This implementation returns null;
+   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   *
+   * @param object
+   *          the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Executable Actor</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseExecutableActor(final ExecutableActor object) {
+    return null;
+  }
+
+  /**
    * Returns the result of interpreting the object as an instance of '<em>Actor</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
    * non-null result will terminate the switch. <!-- end-user-doc -->
    *
@@ -722,6 +697,62 @@ public class PiMMSwitch<T> extends Switch<T> {
    * @generated
    */
   public T caseActor(final Actor object) {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Broadcast Actor</em>'. <!-- begin-user-doc --> This implementation returns null;
+   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   *
+   * @param object
+   *          the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Broadcast Actor</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseBroadcastActor(final BroadcastActor object) {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Join Actor</em>'. <!-- begin-user-doc --> This implementation returns null; returning
+   * a non-null result will terminate the switch. <!-- end-user-doc -->
+   *
+   * @param object
+   *          the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Join Actor</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseJoinActor(final JoinActor object) {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Fork Actor</em>'. <!-- begin-user-doc --> This implementation returns null; returning
+   * a non-null result will terminate the switch. <!-- end-user-doc -->
+   *
+   * @param object
+   *          the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Fork Actor</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseForkActor(final ForkActor object) {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Round Buffer Actor</em>'. <!-- begin-user-doc --> This implementation returns null;
+   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   *
+   * @param object
+   *          the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Round Buffer Actor</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseRoundBufferActor(final RoundBufferActor object) {
     return null;
   }
 
@@ -852,6 +883,20 @@ public class PiMMSwitch<T> extends Switch<T> {
   }
 
   /**
+   * Returns the result of interpreting the object as an instance of '<em>Config Input Interface</em>'. <!-- begin-user-doc --> This implementation returns
+   * null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   *
+   * @param object
+   *          the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Config Input Interface</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseConfigInputInterface(final ConfigInputInterface object) {
+    return null;
+  }
+
+  /**
    * Returns the result of interpreting the object as an instance of '<em>Config Output Interface</em>'. <!-- begin-user-doc --> This implementation returns
    * null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    *
@@ -890,6 +935,20 @@ public class PiMMSwitch<T> extends Switch<T> {
    * @generated
    */
   public T casePiSDFRefinement(final PiSDFRefinement object) {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>CHeader Refinement</em>'. <!-- begin-user-doc --> This implementation returns null;
+   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   *
+   * @param object
+   *          the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>CHeader Refinement</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseCHeaderRefinement(final CHeaderRefinement object) {
     return null;
   }
 
@@ -964,20 +1023,6 @@ public class PiMMSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>CHeader Refinement</em>'. <!-- begin-user-doc --> This implementation returns null;
-   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
-   * @param object
-   *          the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>CHeader Refinement</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseCHeaderRefinement(final CHeaderRefinement object) {
-    return null;
-  }
-
-  /**
    * Returns the result of interpreting the object as an instance of '<em>Function Prototype</em>'. <!-- begin-user-doc --> This implementation returns null;
    * returning a non-null result will terminate the switch. <!-- end-user-doc -->
    *
@@ -1016,90 +1061,6 @@ public class PiMMSwitch<T> extends Switch<T> {
    * @generated
    */
   public T caseDataPort(final DataPort object) {
-    return null;
-  }
-
-  /**
-   * Returns the result of interpreting the object as an instance of '<em>Broadcast Actor</em>'. <!-- begin-user-doc --> This implementation returns null;
-   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
-   * @param object
-   *          the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Broadcast Actor</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseBroadcastActor(final BroadcastActor object) {
-    return null;
-  }
-
-  /**
-   * Returns the result of interpreting the object as an instance of '<em>Join Actor</em>'. <!-- begin-user-doc --> This implementation returns null; returning
-   * a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
-   * @param object
-   *          the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Join Actor</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseJoinActor(final JoinActor object) {
-    return null;
-  }
-
-  /**
-   * Returns the result of interpreting the object as an instance of '<em>Fork Actor</em>'. <!-- begin-user-doc --> This implementation returns null; returning
-   * a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
-   * @param object
-   *          the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Fork Actor</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseForkActor(final ForkActor object) {
-    return null;
-  }
-
-  /**
-   * Returns the result of interpreting the object as an instance of '<em>Round Buffer Actor</em>'. <!-- begin-user-doc --> This implementation returns null;
-   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
-   * @param object
-   *          the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Round Buffer Actor</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseRoundBufferActor(final RoundBufferActor object) {
-    return null;
-  }
-
-  /**
-   * Returns the result of interpreting the object as an instance of '<em>Executable Actor</em>'. <!-- begin-user-doc --> This implementation returns null;
-   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
-   * @param object
-   *          the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Executable Actor</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseExecutableActor(final ExecutableActor object) {
-    return null;
-  }
-
-  /**
-   * Returns the result of interpreting the object as an instance of '<em>Config Input Interface</em>'. <!-- begin-user-doc --> This implementation returns
-   * null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
-   * @param object
-   *          the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Config Input Interface</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseConfigInputInterface(final ConfigInputInterface object) {
     return null;
   }
 
