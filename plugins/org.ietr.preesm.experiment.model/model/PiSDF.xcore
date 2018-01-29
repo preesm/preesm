@@ -1,0 +1,362 @@
+
+@GenModel(
+	modelName="PiMM", prefix="PiMM",
+
+	modelDirectory="/org.ietr.preesm.experiment.model/ecore-gen",
+//	editDirectory="/org.ietr.preesm.model.edit/ecore-gen",
+//	editorDirectory="/org.ietr.preesm.model.editor/ecore-gen",
+//	testsDirectory="/org.ietr.preesm.model.tests/ecore-gen",
+
+//	redirection="",
+//	classNamePattern="",
+
+//	codeFormatting="true",
+//	cleanup="true",
+
+	importerID="org.eclipse.emf.importer.ecore",
+
+	//!! if true a instrs.ecore is generated in .impl and is used by xxpackage.init() to
+	// load the intrs packages (by default this false unless the generated XyzPackage might
+	// exceed Java's byte code limit of 64k)
+	loadInitialization="false",
+	creationCommands="false",
+	creationIcons="false",
+	dataTypeConverters="false",
+	operationReflection="false"
+)
+
+@Ecore(nsURI="http://org.ietr.preesm/model/pimm")
+
+package org.ietr.preesm.experiment.model.pimm
+
+//import org.eclipse.emf.common.util.EList
+import org.eclipse.emf.common.util.ECollections
+import org.eclipse.emf.common.util.BasicEList
+import java.util.Optional
+import org.ietr.preesm.experiment.model.pimm.util.RefinementResolver
+import org.ietr.preesm.experiment.model.PiGraphException
+
+
+//type IPath wraps org.eclipse.core.runtime.IPath
+
+//!!! This is needed as of the current versions of xcore/xtext
+// For some reason when using the default String/... (i.e. without the following)
+// the corresponding EPackage attributes/... are resolved to type java.lang.Object
+// instead of java.lang.String.
+// This causes a problem for Tom mapping generation for instance.
+// The following fixes this problem.
+type String wraps String
+type int wraps int
+type long wraps long
+type double wraps double
+
+interface Parameterizable {
+	op unique Parameter[] getInputParameters()
+	op boolean isLocallyStatic() {
+		// a Parameterizable is static if all its parameters are static (or it has no parameter)
+		return inputParameters.filterNull.forall[isLocallyStatic]
+	}
+}
+
+abstract class AbstractVertex {
+	String name
+	op unique Port[] getAllPorts() {
+		var BasicEList<Port> result = ECollections.newBasicEList();
+		return ECollections.unmodifiableEList(result);
+	}
+	op Port lookupPort(String portName) {
+		return getAllPorts().filterNull.findFirst[(it.getName() === null) && (portName === null) || (it.getName() !== null) && it.getName().equals(portName)]
+	}
+}
+
+abstract class Configurable extends AbstractVertex , Parameterizable {
+	contains ConfigInputPort[] configInputPorts opposite configurable
+	op unique Parameter[] getInputParameters() {
+		configInputPorts.filterNull.map[incomingDependency].filterNull.map[getter].filter(Parameter).toEList.unmodifiableView
+	}
+	op Port lookupPortConnectedWithParameter(Parameter parameter) {
+		Optional.ofNullable(configInputPorts.filterNull.map[incomingDependency].filterNull.findFirst[it.setter === parameter]).map[getter].orElse(null)
+	}
+	op unique Port[] getAllConfigPorts() {
+		configInputPorts.unmodifiableView
+	}
+	op unique Port[] getAllPorts() {
+		(super.allPorts + allConfigPorts).toEList.unmodifiableView
+	}
+}
+
+abstract class AbstractActor extends Configurable {
+	contains DataInputPort[] dataInputPorts
+	contains DataOutputPort[] dataOutputPorts
+	contains ConfigOutputPort[] configOutputPorts
+	container PiGraph containingGraph opposite actors
+	op unique DataPort[] getAllDataPorts() {
+		(dataInputPorts + dataOutputPorts).toEList.unmodifiableView
+	}
+	op unique Port[] getAllConfigPorts() {
+		(super.allConfigPorts + configOutputPorts).toEList.unmodifiableView
+	}
+	op unique Port[] getAllPorts() {
+		(allConfigPorts + allDataPorts).toEList.unmodifiableView
+	}
+	@GenModel(body="if (getContainingGraph() != null) {\n  return getContainingGraph().getActorPath() + \"/\" + getName();\n}\nreturn getName();")
+	op String getActorPath()
+}
+
+class PiGraph extends AbstractActor {
+	contains AbstractActor[] actors opposite containingGraph
+	contains Fifo[] fifos
+	contains Parameter[] parameters opposite containingGraph
+	contains Dependency[] dependencies
+	op unique String[] getActorsNames() {
+		return actors.map[name].unmodifiableView
+	}
+	op unique String[] getParametersNames() {
+		return parameters.map[name].unmodifiableView
+	}
+	op unique Actor[] getActorsWithRefinement() {
+		return actors.filter(Actor).toEList.unmodifiableView
+	}
+	op unique Parameter[] getAllParameters() {
+		(parameters + childrenGraphs.map[allParameters].flatten).toEList.unmodifiableView
+	}
+	op unique PiGraph[] getChildrenGraphs() {
+		(actors.filter(PiGraph) + actorsWithRefinement.filter[isHierarchical].map[subGraph]).toEList.unmodifiableView
+	}
+	op unique AbstractActor[] getAllActors() {
+		(actors + childrenGraphs.map[allActors].flatten).toEList.unmodifiableView
+	}
+	@GenModel(body="return getAllParameters().stream().filter(p -> p.getName().equals(parameterName) && p.getContainingGraph().getName().equals(graphName)).findFirst().orElse(null);")
+	op Parameter lookupParameterGivenGraph(String parameterName , String graphName)
+	op AbstractVertex lookupVertex(String vertexName) {
+		(actors + parameters).findFirst[it.name == vertexName]
+	}
+	@GenModel(body="return getFifos().stream().filter(f -> f.getId().equals(fifoId)).findFirst().orElse(null);")
+	op Fifo lookupFifo(String fifoId)
+}
+
+abstract class ExecutableActor extends AbstractActor {
+}
+
+class Actor extends ExecutableActor {
+	contains Refinement refinement
+	IPath memoryScriptPath
+	op boolean isConfigurationActor() {
+		configOutputPorts.map[outgoingDependencies].filter[!it.isEmpty].map[it.get(0)].map[getter].exists[true]
+	}
+	@GenModel(body="return getRefinement().isHierarchical();")
+	op boolean isHierarchical()
+	op AbstractActor getChildAbstractActor() {
+		if (refinement === null) {
+			return null;
+		} else {
+			return refinement.abstractActor
+		}
+	}
+	@GenModel(body="if (isHierarchical()) {\n\treturn (PiGraph) getChildAbstractActor();\n} else {\n\tthrow new UnsupportedOperationException(\"Cannot get the subgraph of a non hierarchical actor.\");\n}")
+	op PiGraph getSubGraph()
+}
+
+class BroadcastActor extends ExecutableActor {
+}
+
+class JoinActor extends ExecutableActor {
+}
+
+class ForkActor extends ExecutableActor {
+}
+
+class RoundBufferActor extends ExecutableActor {
+}
+
+abstract class Port {
+	String name
+	op PortKind getKind()
+}
+
+class DataInputPort extends DataPort {
+	refers Fifo incomingFifo opposite targetPort
+	@GenModel(body="return PortKind.DATA_INPUT;")
+	op PortKind getKind()
+}
+
+class DataOutputPort extends DataPort {
+	refers Fifo outgoingFifo opposite sourcePort
+	@GenModel(body="return PortKind.DATA_OUTPUT;")
+	op PortKind getKind()
+}
+
+class ConfigInputPort extends Port {
+	refers Dependency incomingDependency opposite getter
+	container Configurable configurable opposite configInputPorts
+	@GenModel(body="return PortKind.CFG_INPUT;")
+	op PortKind getKind()
+}
+
+class ConfigOutputPort extends DataOutputPort , ISetter {
+	@GenModel(body="// config output ports are never considered static\nreturn false;")
+	op boolean isLocallyStatic()
+	@GenModel(body="return PortKind.CFG_OUTPUT;")
+	op PortKind getKind()
+}
+
+class Fifo {
+	refers DataOutputPort sourcePort opposite outgoingFifo
+	refers DataInputPort targetPort opposite incomingFifo
+	contains Delay delay opposite containingFifo
+	String ^type = "void"
+	op String getId() {
+		return Optional.of(sourcePort).map[id].orElseThrow[new PiGraphException("Fifo has no source port.")]
+			+ "-"
+			+ Optional.of(targetPort).map[id].orElseThrow[new PiGraphException("Fifo has no target port.")]
+	}
+}
+
+interface InterfaceActor extends AbstractActor {
+	refers Port graphPort
+	@GenModel(body="// Data in/out interfaces have only one data port\nreturn getAllDataPorts().get(0);")
+	op DataPort getDataPort()
+	op InterfaceKind getKind()
+}
+
+class DataInputInterface extends InterfaceActor {
+	op InterfaceKind getKind() {
+		return InterfaceKind.DATA_INPUT
+	}
+}
+
+class DataOutputInterface extends InterfaceActor {
+	op InterfaceKind getKind() {
+		return InterfaceKind.DATA_OUTPUT
+	}
+}
+
+class ConfigInputInterface extends Parameter {
+	refers ConfigInputPort graphPort
+	op boolean isLocallyStatic() {
+		// a ConfigInputInterface gets its value from the parent graph once per execution
+		// during one iteration, its value does not change, thus is locally static
+		return true
+	}
+	op boolean isConfigurationInterface() {
+		return true
+	}
+}
+
+class ConfigOutputInterface extends InterfaceActor {
+	@GenModel(body="return InterfaceKind.CFG_OUTPUT;")
+	op InterfaceKind getKind()
+}
+
+interface Refinement {
+	IPath filePath
+	op AbstractActor getAbstractActor() {
+		return RefinementResolver.resolveAbstractActor(this)
+	}
+	@GenModel(body="return (this.getFilePath() == null) ? null : this.getFilePath().lastSegment();")
+	op String getFileName()
+	op boolean isHierarchical()
+}
+
+class PiSDFRefinement extends Refinement {
+	op boolean isHierarchical() {
+		return (getFilePath() !== null) && !getFilePath().isEmpty()
+	}
+}
+
+class CHeaderRefinement extends Refinement {
+	contains FunctionPrototype loopPrototype
+	contains FunctionPrototype initPrototype
+	op boolean isHierarchical() {
+		//C Header Refinement means it is obviously not a subgraph
+		return false
+	}
+}
+
+class Parameter extends Configurable , ISetter {
+	contains Expression valueExpression
+	container PiGraph containingGraph opposite parameters
+	op boolean isLocallyStatic() {
+		// a parameter is static if all its setters are static (or it has no setter)
+		return getConfigInputPorts().map[incomingDependency].map[setter].forall[isLocallyStatic]
+	}
+	@GenModel(body="return !getConfigInputPorts().isEmpty();")
+	op boolean isDependent()
+	@GenModel(body="return false;")
+	op boolean isConfigurationInterface()
+}
+
+class Dependency {
+	refers ISetter setter opposite outgoingDependencies
+	refers ConfigInputPort getter opposite incomingDependency
+}
+
+interface ISetter {
+	refers Dependency[] outgoingDependencies opposite setter
+	op boolean isLocallyStatic()
+}
+
+class Delay extends Configurable {
+	contains Expression sizeExpression
+	container readonly Fifo containingFifo opposite delay
+}
+
+class Expression {
+	String expressionString = "0"
+}
+
+class FunctionPrototype {
+	String name
+	contains FunctionParameter[] parameters
+}
+
+class FunctionParameter {
+	String name
+	Direction direction
+	String ^type
+	boolean isConfigurationParameter
+}
+
+enum Direction {
+	IN = 0
+	OUT = 1
+}
+
+abstract class DataPort extends Port {
+	contains Expression portRateExpression
+	PortMemoryAnnotation ^annotation
+	op AbstractActor getContainingActor() {
+		if (eContainer() instanceof AbstractActor) {
+			return eContainer() as AbstractActor;
+		}
+		return null;
+	}
+	op String getId() {
+	    val String actorName = Optional.ofNullable(getContainingActor()).map[name].orElseThrow[new PiGraphException("Data port " + this + " is not contained in an AbstracytActor.")];
+	    val String portName = Optional.ofNullable(name).filter[!it.isEmpty()].map["." + it].orElse("");
+	    return actorName + portName;
+	}
+}
+
+enum PortMemoryAnnotation {
+	NONE = 0
+	READ_ONLY = 1
+	WRITE_ONLY = 2
+	UNUSED = 3
+}
+
+type IPath wraps org.eclipse.core.runtime.IPath
+
+enum PortKind {
+	CFG_INPUT as "cfg_input" = 0
+	DATA_INPUT as "input" = 1
+	DATA_OUTPUT as "output" = 2
+	CFG_OUTPUT as "cfg_output" = 3
+}
+
+enum InterfaceKind {
+	DATA_INPUT as "src" = 0
+	DATA_OUTPUT as "snk" = 1
+	CFG_OUTPUT as "cfg_out_iface" = 2
+	CFG_INPUT as "cfg_in_iface" = 3
+}
