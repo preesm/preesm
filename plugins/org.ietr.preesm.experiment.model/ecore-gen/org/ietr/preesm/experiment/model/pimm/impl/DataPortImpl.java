@@ -2,12 +2,15 @@
  */
 package org.ietr.preesm.experiment.model.pimm.impl;
 
+import java.util.Optional;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.ietr.preesm.experiment.model.PiGraphException;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
@@ -164,6 +167,19 @@ public abstract class DataPortImpl extends PortImpl implements DataPort {
       return (AbstractActor) eContainer();
     }
     return null;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public String getId() {
+    final String actorName = Optional.ofNullable(getContainingActor()).map(AbstractVertex::getName)
+        .orElseThrow(() -> new PiGraphException("Data port " + this + " is not contained in an AbstracytActor."));
+    final String portName = Optional.ofNullable(getName()).filter(s -> !s.isEmpty()).map(s -> "." + s).orElse("");
+    return actorName + portName;
   }
 
   /**

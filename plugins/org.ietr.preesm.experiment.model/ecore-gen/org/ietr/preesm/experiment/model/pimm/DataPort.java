@@ -82,4 +82,15 @@ public interface DataPort extends Port {
    */
   AbstractActor getContainingActor();
 
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @model kind="operation" required="true" annotation="http://www.eclipse.org/emf/2002/GenModel body='final String actorName =
+   *        Optional.ofNullable(getContainingActor()).map(AbstractVertex::getName).orElseThrow(() -&gt; new PiGraphException(\"Data port \" + this + \" is not
+   *        contained in an AbstracytActor.\"));\nfinal String portName = Optional.ofNullable(getName()).filter(s -&gt; !s.isEmpty()).map(s -&gt; \".\" +
+   *        s).orElse(\"\");\nreturn actorName + portName;'"
+   * @generated
+   */
+  String getId();
+
 } // DataPort

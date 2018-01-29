@@ -1712,6 +1712,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     addEOperation(this.dataPortEClass, getAbstractActor(), "getContainingActor", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
+    addEOperation(this.dataPortEClass, this.ecorePackage.getEString(), "getId", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
     // Initialize enums and add enum literals
     initEEnum(this.directionEEnum, Direction.class, "Direction");
     addEEnumLiteral(this.directionEEnum, Direction.IN);
