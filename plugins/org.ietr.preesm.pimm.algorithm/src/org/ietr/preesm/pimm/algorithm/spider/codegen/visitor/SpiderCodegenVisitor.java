@@ -84,7 +84,7 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMDefaultVisitor;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
 import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderNameGenerator;
 import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderTypeConverter;
 import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderTypeConverter.PiSDFSubType;
@@ -100,7 +100,7 @@ import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderTypeConverter.P
  * PiMM models visitor generating C++ code for COMPA Runtime currentGraph: The most outer graph of the PiMM model currentMethod: The StringBuilder used to write
  * the C++ code
  */
-public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
+public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
   private final SpiderPreProcessVisitor preprocessor;
 
   private final SpiderCodegen callerSpiderCodegen;
@@ -164,11 +164,11 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
    * When visiting a PiGraph (either the most outer graph or an hierarchical actor), we should generate a new C++ method
    */
   @Override
-  public void visitPiGraph(final PiGraph pg) {
+  public Boolean casePiGraph(final PiGraph pg) {
     // We should first generate the C++ code as for any Actor in the outer
     // graph
 
-    visitAbstractActor(pg);
+    caseAbstractActor(pg);
 
     // We add pg as a subgraph of the current graph
     if (this.currentSubGraphs == null) {
@@ -215,6 +215,7 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
       this.currentSubGraphs = this.graph2subgraphs.get(currentOuterGraph);
     }
     this.currentGraph = currentOuterGraph;
+    return true;
   }
 
   /**
@@ -335,18 +336,18 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
     final List<Parameter> sortedParams = ps.sortParameters(params);
 
     for (final Parameter p : sortedParams) {
-      p.accept(this);
+      doSwitch(p);
     }
 
     // Generating vertices
     append("\n\t/* Vertices */\n");
     for (final AbstractActor v : pg.getActors()) {
-      v.accept(this);
+      doSwitch(v);
     }
     // Generating edges
     append("\n\t/* Edges */\n");
     for (final Fifo f : pg.getFifos()) {
-      f.accept(this);
+      doSwitch(f);
     }
 
     append("\treturn graph;");
@@ -435,7 +436,7 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
    * Generic visit method for all AbstractActors (Actors, PiGraph)
    */
   @Override
-  public void visitAbstractActor(final AbstractActor aa) {
+  public Boolean caseAbstractActor(final AbstractActor aa) {
     String vertexName;
 
     if ((aa instanceof Actor) && ((Actor) aa).isConfigurationActor()) {
@@ -443,8 +444,8 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
     } else if (aa instanceof PiGraph) {
       vertexName = generateHierarchicalVertex(aa);
     } else if (aa.getName() == "end") {
-      visitEndActor(aa);
-      return;
+      caseEndActor(aa);
+      return true;
     } else {
       vertexName = generateBodyVertex(aa);
     }
@@ -501,15 +502,17 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
     }
 
     append("\n");
+    return true;
   }
 
   @Override
-  public void visitActor(final Actor a) {
-    visitAbstractActor(a);
+  public Boolean caseActor(final Actor a) {
+    caseAbstractActor(a);
+    return true;
   }
 
   @Override
-  public void visitDataInputInterface(final DataInputInterface dii) {
+  public Boolean caseDataInputInterface(final DataInputInterface dii) {
     final String vertexName = SpiderNameGenerator.getVertexName(dii);
 
     append("\tPiSDFVertex* " + vertexName);
@@ -527,10 +530,11 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
       append(");\n");
     }
     append("\n");
+    return true;
   }
 
   @Override
-  public void visitDataOutputInterface(final DataOutputInterface doi) {
+  public Boolean caseDataOutputInterface(final DataOutputInterface doi) {
     final String vertexName = SpiderNameGenerator.getVertexName(doi);
 
     append("\tPiSDFVertex* " + vertexName);
@@ -548,13 +552,14 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
       append(");\n");
     }
     append("\n");
+    return true;
   }
 
   /**
    * When visiting a FIFO we should add an edge to the current graph
    */
   @Override
-  public void visitFifo(final Fifo f) {
+  public Boolean caseFifo(final Fifo f) {
     // Call the addEdge method on the current graph
     append("\tSpider::connect(\n");
     append("\t\t/*Graph*/   graph,\n");
@@ -609,13 +614,14 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
     } else {
       append("\t\t/*Delay*/ \"0\",0);\n\n");
     }
+    return true;
   }
 
   /**
    * When visiting a parameter, we should add a parameter to the current graph
    */
   @Override
-  public void visitParameter(final Parameter p) {
+  public Boolean caseParameter(final Parameter p) {
     final String paramName = SpiderNameGenerator.getParameterName(p);
 
     if (!p.isLocallyStatic()) {
@@ -639,10 +645,11 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
       append("\tPiSDFParam *" + paramName + " = Spider::addStaticDependentParam(graph, " + "\"" + p.getName() + "\", \""
           + p.getValueExpression().getExpressionString() + "\");\n");
     }
+    return true;
   }
 
   @Override
-  public void visitBroadcastActor(final BroadcastActor ba) {
+  public Boolean caseBroadcastActor(final BroadcastActor ba) {
     append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(ba));
     append(" = Spider::addSpecialVertex(\n");
     append("\t\t/*Graph*/   graph,\n");
@@ -660,12 +667,13 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
       append(");\n");
     }
     append("\n");
+    return true;
   }
 
   /**
    *
    */
-  public void visitEndActor(final AbstractActor aa) {
+  public Boolean caseEndActor(final AbstractActor aa) {
     append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(aa));
     append(" = Spider::addSpecialVertex(\n");
     append("\t\t/*Graph*/   graph,\n");
@@ -683,10 +691,11 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
       append(");\n");
     }
     append("\n");
+    return true;
   }
 
   @Override
-  public void visitJoinActor(final JoinActor ja) {
+  public Boolean caseJoinActor(final JoinActor ja) {
     append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(ja));
     append(" = Spider::addSpecialVertex(\n");
     append("\t\t/*Graph*/   graph,\n");
@@ -704,10 +713,11 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
       append(");\n");
     }
     append("\n");
+    return true;
   }
 
   @Override
-  public void visitForkActor(final ForkActor fa) {
+  public Boolean caseForkActor(final ForkActor fa) {
     append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(fa));
     append(" = Spider::addSpecialVertex(\n");
     append("\t\t/*Graph*/   graph,\n");
@@ -725,10 +735,11 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
       append(");\n");
     }
     append("\n");
+    return true;
   }
 
   @Override
-  public void visitRoundBufferActor(final RoundBufferActor rba) {
+  public Boolean caseRoundBufferActor(final RoundBufferActor rba) {
     append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(rba));
     append(" = Spider::addSpecialVertex(\n");
     append("\t\t/*Graph*/   graph,\n");
@@ -746,105 +757,106 @@ public class SpiderCodegenVisitor extends PiMMDefaultVisitor {
       append(");\n");
     }
     append("\n");
+    return true;
   }
 
   @Override
-  public void visitConfigOutputInterface(final ConfigOutputInterface coi) {
+  public Boolean caseConfigOutputInterface(final ConfigOutputInterface coi) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void visitDataInputPort(final DataInputPort dip) {
+  public Boolean caseDataInputPort(final DataInputPort dip) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void visitAbstractVertex(final AbstractVertex av) {
+  public Boolean caseAbstractVertex(final AbstractVertex av) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void visitConfigInputInterface(final ConfigInputInterface cii) {
+  public Boolean caseConfigInputInterface(final ConfigInputInterface cii) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void visitConfigInputPort(final ConfigInputPort cip) {
+  public Boolean caseConfigInputPort(final ConfigInputPort cip) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void visitConfigOutputPort(final ConfigOutputPort cop) {
+  public Boolean caseConfigOutputPort(final ConfigOutputPort cop) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void visitDataOutputPort(final DataOutputPort dop) {
+  public Boolean caseDataOutputPort(final DataOutputPort dop) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void visitDelay(final Delay d) {
+  public Boolean caseDelay(final Delay d) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void visitDependency(final Dependency d) {
+  public Boolean caseDependency(final Dependency d) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void visitExpression(final Expression e) {
+  public Boolean caseExpression(final Expression e) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void visitInterfaceActor(final InterfaceActor ia) {
+  public Boolean caseInterfaceActor(final InterfaceActor ia) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void visitISetter(final ISetter is) {
+  public Boolean caseISetter(final ISetter is) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void visitParameterizable(final Parameterizable p) {
+  public Boolean caseParameterizable(final Parameterizable p) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void visitPort(final Port p) {
+  public Boolean casePort(final Port p) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void visitDataPort(final DataPort p) {
+  public Boolean caseDataPort(final DataPort p) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void visitRefinement(final PiSDFRefinement r) {
+  public Boolean casePiSDFRefinement(final PiSDFRefinement r) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void visitFunctionParameter(final FunctionParameter functionParameter) {
+  public Boolean caseFunctionParameter(final FunctionParameter functionParameter) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void visitFunctionPrototype(final FunctionPrototype functionPrototype) {
+  public Boolean caseFunctionPrototype(final FunctionPrototype functionPrototype) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void visitHRefinement(final CHeaderRefinement hRefinement) {
+  public Boolean caseCHeaderRefinement(final CHeaderRefinement hRefinement) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void visitExecutableActor(final ExecutableActor ea) {
+  public Boolean caseExecutableActor(final ExecutableActor ea) {
     throw new UnsupportedOperationException();
   }
 

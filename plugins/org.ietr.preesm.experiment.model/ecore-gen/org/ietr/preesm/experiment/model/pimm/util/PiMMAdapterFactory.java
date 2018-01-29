@@ -1,42 +1,3 @@
-/*******************************************************************************
- * Copyright or © or Copr. 2012 - 2017 IETR/INSA:
- *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
- * Maxime Pelcat <Maxime.Pelcat@insa-rennes.fr> (2013)
- * Romina Racca <romina.racca@gmail.com> (2013)
- *
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
- *
- * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use
- * modify and/ or redistribute the software under the terms of the CeCILL-C
- * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info".
- *
- * As a counterpart to the access to the source code and  rights to copy,
- * modify and redistribute granted by the license, users are provided only
- * with a limited warranty  and the software's author,  the holder of the
- * economic rights,  and the successive licensors  have only  limited
- * liability.
- *
- * In this respect, the user's attention is drawn to the risks associated
- * with loading,  using,  modifying and/or developing or reproducing the
- * software by the user in light of its specific status of free software,
- * that may mean  that it is complicated to manipulate,  and  that  also
- * therefore means  that it is reserved for developers  and  experienced
- * professionals having in-depth computer knowledge. Users are therefore
- * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or
- * data to be ensured and,  more generally, to use and operate it in the
- * same conditions as regards security.
- *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- *******************************************************************************/
 /**
  */
 package org.ietr.preesm.experiment.model.pimm.util;
@@ -79,9 +40,7 @@ import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> The <b>Adapter Factory</b> for the model. It provides an adapter <code>createXXX</code> method for each class of the model. <!--
  * end-user-doc -->
@@ -298,11 +257,6 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
     }
 
     @Override
-    public Adapter casePiMMVisitable(final PiMMVisitable object) {
-      return createPiMMVisitableAdapter();
-    }
-
-    @Override
     public Adapter defaultCase(final EObject object) {
       return createEObjectAdapter();
     }
@@ -335,19 +289,6 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.Configurable <em>Configurable</em>}'. <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
-   *
-   * @return the new adapter.
-   * @see org.ietr.preesm.experiment.model.pimm.Configurable
-   * @generated
-   */
-  public Adapter createConfigurableAdapter() {
-    return null;
-  }
-
-  /**
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.AbstractVertex <em>Abstract Vertex</em>}'. <!-- begin-user-doc
    * --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases
    * anyway. <!-- end-user-doc -->
@@ -357,6 +298,19 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * @generated
    */
   public Adapter createAbstractVertexAdapter() {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.Configurable <em>Configurable</em>}'. <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   *
+   * @return the new adapter.
+   * @see org.ietr.preesm.experiment.model.pimm.Configurable
+   * @generated
+   */
+  public Adapter createConfigurableAdapter() {
     return null;
   }
 
@@ -387,6 +341,19 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.ExecutableActor <em>Executable Actor</em>}'. <!-- begin-user-doc
+   * --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases
+   * anyway. <!-- end-user-doc -->
+   *
+   * @return the new adapter.
+   * @see org.ietr.preesm.experiment.model.pimm.ExecutableActor
+   * @generated
+   */
+  public Adapter createExecutableActorAdapter() {
+    return null;
+  }
+
+  /**
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.Actor <em>Actor</em>}'. <!-- begin-user-doc --> This default
    * implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
    * end-user-doc -->
@@ -396,6 +363,58 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * @generated
    */
   public Adapter createActorAdapter() {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.BroadcastActor <em>Broadcast Actor</em>}'. <!-- begin-user-doc
+   * --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases
+   * anyway. <!-- end-user-doc -->
+   *
+   * @return the new adapter.
+   * @see org.ietr.preesm.experiment.model.pimm.BroadcastActor
+   * @generated
+   */
+  public Adapter createBroadcastActorAdapter() {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.JoinActor <em>Join Actor</em>}'. <!-- begin-user-doc --> This
+   * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
+   * end-user-doc -->
+   *
+   * @return the new adapter.
+   * @see org.ietr.preesm.experiment.model.pimm.JoinActor
+   * @generated
+   */
+  public Adapter createJoinActorAdapter() {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.ForkActor <em>Fork Actor</em>}'. <!-- begin-user-doc --> This
+   * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
+   * end-user-doc -->
+   *
+   * @return the new adapter.
+   * @see org.ietr.preesm.experiment.model.pimm.ForkActor
+   * @generated
+   */
+  public Adapter createForkActorAdapter() {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.RoundBufferActor <em>Round Buffer Actor</em>}'. <!--
+   * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
+   * all the cases anyway. <!-- end-user-doc -->
+   *
+   * @return the new adapter.
+   * @see org.ietr.preesm.experiment.model.pimm.RoundBufferActor
+   * @generated
+   */
+  public Adapter createRoundBufferActorAdapter() {
     return null;
   }
 
@@ -517,6 +536,19 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.ConfigInputInterface <em>Config Input Interface</em>}'. <!--
+   * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
+   * all the cases anyway. <!-- end-user-doc -->
+   *
+   * @return the new adapter.
+   * @see org.ietr.preesm.experiment.model.pimm.ConfigInputInterface
+   * @generated
+   */
+  public Adapter createConfigInputInterfaceAdapter() {
+    return null;
+  }
+
+  /**
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface <em>Config Output Interface</em>}'. <!--
    * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
    * all the cases anyway. <!-- end-user-doc -->
@@ -552,6 +584,19 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * @generated
    */
   public Adapter createPiSDFRefinementAdapter() {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.CHeaderRefinement <em>CHeader Refinement</em>}'. <!--
+   * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
+   * all the cases anyway. <!-- end-user-doc -->
+   *
+   * @return the new adapter.
+   * @see org.ietr.preesm.experiment.model.pimm.CHeaderRefinement
+   * @generated
+   */
+  public Adapter createCHeaderRefinementAdapter() {
     return null;
   }
 
@@ -621,19 +666,6 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.CHeaderRefinement <em>CHeader Refinement</em>}'. <!--
-   * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
-   * all the cases anyway. <!-- end-user-doc -->
-   *
-   * @return the new adapter.
-   * @see org.ietr.preesm.experiment.model.pimm.CHeaderRefinement
-   * @generated
-   */
-  public Adapter createCHeaderRefinementAdapter() {
-    return null;
-  }
-
-  /**
    * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.FunctionPrototype <em>Function Prototype</em>}'. <!--
    * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
    * all the cases anyway. <!-- end-user-doc -->
@@ -669,97 +701,6 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
    * @generated
    */
   public Adapter createDataPortAdapter() {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.BroadcastActor <em>Broadcast Actor</em>}'. <!-- begin-user-doc
-   * --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases
-   * anyway. <!-- end-user-doc -->
-   *
-   * @return the new adapter.
-   * @see org.ietr.preesm.experiment.model.pimm.BroadcastActor
-   * @generated
-   */
-  public Adapter createBroadcastActorAdapter() {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.JoinActor <em>Join Actor</em>}'. <!-- begin-user-doc --> This
-   * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
-   * end-user-doc -->
-   *
-   * @return the new adapter.
-   * @see org.ietr.preesm.experiment.model.pimm.JoinActor
-   * @generated
-   */
-  public Adapter createJoinActorAdapter() {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.ForkActor <em>Fork Actor</em>}'. <!-- begin-user-doc --> This
-   * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
-   * end-user-doc -->
-   *
-   * @return the new adapter.
-   * @see org.ietr.preesm.experiment.model.pimm.ForkActor
-   * @generated
-   */
-  public Adapter createForkActorAdapter() {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.RoundBufferActor <em>Round Buffer Actor</em>}'. <!--
-   * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
-   * all the cases anyway. <!-- end-user-doc -->
-   *
-   * @return the new adapter.
-   * @see org.ietr.preesm.experiment.model.pimm.RoundBufferActor
-   * @generated
-   */
-  public Adapter createRoundBufferActorAdapter() {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.ExecutableActor <em>Executable Actor</em>}'. <!-- begin-user-doc
-   * --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases
-   * anyway. <!-- end-user-doc -->
-   *
-   * @return the new adapter.
-   * @see org.ietr.preesm.experiment.model.pimm.ExecutableActor
-   * @generated
-   */
-  public Adapter createExecutableActorAdapter() {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable <em>Pi MM Visitable</em>}'. <!--
-   * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
-   * all the cases anyway. <!-- end-user-doc -->
-   *
-   * @return the new adapter.
-   * @see org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable
-   * @generated
-   */
-  public Adapter createPiMMVisitableAdapter() {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.ConfigInputInterface <em>Config Input Interface</em>}'. <!--
-   * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
-   * all the cases anyway. <!-- end-user-doc -->
-   *
-   * @return the new adapter.
-   * @see org.ietr.preesm.experiment.model.pimm.ConfigInputInterface
-   * @generated
-   */
-  public Adapter createConfigInputInterfaceAdapter() {
     return null;
   }
 

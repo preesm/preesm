@@ -1,42 +1,8 @@
-/*******************************************************************************
- * Copyright or © or Copr. 2012 - 2017 IETR/INSA:
- *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2015)
- *
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
- *
- * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use
- * modify and/ or redistribute the software under the terms of the CeCILL-C
- * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info".
- *
- * As a counterpart to the access to the source code and  rights to copy,
- * modify and redistribute granted by the license, users are provided only
- * with a limited warranty  and the software's author,  the holder of the
- * economic rights,  and the successive licensors  have only  limited
- * liability.
- *
- * In this respect, the user's attention is drawn to the risks associated
- * with loading,  using,  modifying and/or developing or reproducing the
- * software by the user in light of its specific status of free software,
- * that may mean  that it is complicated to manipulate,  and  that  also
- * therefore means  that it is reserved for developers  and  experienced
- * professionals having in-depth computer knowledge. Users are therefore
- * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or
- * data to be ensured and,  more generally, to use and operate it in the
- * same conditions as regards security.
- *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- *******************************************************************************/
+/**
+ */
 package org.ietr.preesm.experiment.model.pimm.impl;
 
+import java.util.Optional;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
@@ -44,18 +10,15 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.ietr.preesm.experiment.model.PiGraphException;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 /**
- * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Fifo</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>Fifo</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
@@ -115,7 +78,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   protected String type = FifoImpl.TYPE_EDEFAULT;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
@@ -124,9 +87,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the e class
    * @generated
    */
   @Override
@@ -135,9 +97,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the source port
    * @generated
    */
   @Override
@@ -155,9 +116,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the data output port
    * @generated
    */
   public DataOutputPort basicGetSourcePort() {
@@ -165,13 +125,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param newSourcePort
-   *          the new source port
-   * @param msgs
-   *          the msgs
-   * @return the notification chain
    * @generated
    */
   public NotificationChain basicSetSourcePort(final DataOutputPort newSourcePort, NotificationChain msgs) {
@@ -189,10 +144,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param newSourcePort
-   *          the new source port
    * @generated
    */
   @Override
@@ -215,9 +168,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the target port
    * @generated
    */
   @Override
@@ -235,9 +187,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the data input port
    * @generated
    */
   public DataInputPort basicGetTargetPort() {
@@ -245,13 +196,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param newTargetPort
-   *          the new target port
-   * @param msgs
-   *          the msgs
-   * @return the notification chain
    * @generated
    */
   public NotificationChain basicSetTargetPort(final DataInputPort newTargetPort, NotificationChain msgs) {
@@ -269,10 +215,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param newTargetPort
-   *          the new target port
    * @generated
    */
   @Override
@@ -295,9 +239,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the delay
    * @generated
    */
   @Override
@@ -306,13 +249,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param newDelay
-   *          the new delay
-   * @param msgs
-   *          the msgs
-   * @return the notification chain
    * @generated
    */
   public NotificationChain basicSetDelay(final Delay newDelay, NotificationChain msgs) {
@@ -330,10 +268,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param newDelay
-   *          the new delay
    * @generated
    */
   @Override
@@ -356,43 +292,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> Return a {@link String} composed as follow:<br>
-   * "&ltSourceName&gt[.&ltSourcePortName&gt]-&ltTargetName&gt[.&ltTargetPortName&gt]" <br>
-   * <br>
-   * This ID should be unique since each {@link Port} can only have one {@link Fifo} connected to them. Moreover, a {@link Port} with no name is always the
-   * unique data {@link Port} of its owner. <!-- end-user-doc -->
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the id
-   */
-  @Override
-  public String getId() {
-
-    final DataPort srcPort = getSourcePort();
-    final DataPort tgtPort = getTargetPort();
-
-    if ((srcPort == null) || (tgtPort == null)) {
-      throw new PiGraphException("Fifo has no source or no target port.");
-    }
-
-    final AbstractActor src = srcPort.getContainingActor();
-    final AbstractActor tgt = tgtPort.getContainingActor();
-
-    String id = src.getName();
-    if ((srcPort.getName() != null) && !srcPort.getName().isEmpty()) {
-      id += "." + srcPort.getName();
-    }
-    id += "-" + tgt.getName();
-    if ((tgtPort.getName() != null) && !tgtPort.getName().isEmpty()) {
-      id += "." + tgtPort.getName();
-    }
-
-    return id;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the type
    * @generated
    */
   @Override
@@ -401,10 +302,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param newType
-   *          the new type
    * @generated
    */
   @Override
@@ -417,15 +316,23 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> Return a {@link String} composed as follow:<br>
+   * "&ltSourceName&gt[.&ltSourcePortName&gt]-&ltTargetName&gt[.&ltTargetPortName&gt]" <br>
+   * <br>
+   * This ID should be unique since each {@link Port} can only have one {@link Fifo} connected to them. Moreover, a {@link Port} with no name is always the
+   * unique data {@link Port} of its owner. <!-- end-user-doc --> <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param otherEnd
-   *          the other end
-   * @param featureID
-   *          the feature ID
-   * @param msgs
-   *          the msgs
-   * @return the notification chain
+   * @generated
+   */
+  @Override
+  public String getId() {
+    return Optional.of(getSourcePort()).map(DataPort::getId).orElseThrow(() -> new PiGraphException("Fifo has no source port.")) + "-"
+        + Optional.of(getTargetPort()).map(DataPort::getId).orElseThrow(() -> new PiGraphException("Fifo has no target port."));
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @generated
    */
   @Override
@@ -451,15 +358,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param otherEnd
-   *          the other end
-   * @param featureID
-   *          the feature ID
-   * @param msgs
-   *          the msgs
-   * @return the notification chain
    * @generated
    */
   @Override
@@ -476,15 +376,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param featureID
-   *          the feature ID
-   * @param resolve
-   *          the resolve
-   * @param coreType
-   *          the core type
-   * @return the object
    * @generated
    */
   @Override
@@ -509,12 +402,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param featureID
-   *          the feature ID
-   * @param newValue
-   *          the new value
    * @generated
    */
   @Override
@@ -537,10 +426,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param featureID
-   *          the feature ID
    * @generated
    */
   @Override
@@ -563,11 +450,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param featureID
-   *          the feature ID
-   * @return true, if successful
    * @generated
    */
   @Override
@@ -586,9 +470,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the string
    * @generated
    */
   @Override
@@ -602,16 +485,6 @@ public class FifoImpl extends EObjectImpl implements Fifo {
     result.append(this.type);
     result.append(')');
     return result.toString();
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
-   */
-  @Override
-  public void accept(final PiMMVisitor v) {
-    v.visitFifo(this);
   }
 
 } // FifoImpl

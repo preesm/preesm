@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Refactor PiSDF Model;
 
 ### Bug fix
 

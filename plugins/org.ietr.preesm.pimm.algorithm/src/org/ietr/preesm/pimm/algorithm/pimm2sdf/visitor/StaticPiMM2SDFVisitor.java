@@ -98,13 +98,13 @@ import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMDefaultVisitor;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
 import org.ietr.preesm.pimm.algorithm.pimm2sdf.PiGraphExecution;
 
 /**
  * The Class StaticPiMM2SDFVisitor.
  */
-public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
+public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
 
   /** The result. */
   // SDFGraph created from the outer graph
@@ -181,7 +181,7 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
    *          the p
    */
   @Override
-  public void visitParameter(final Parameter p) {
+  public Boolean caseParameter(Parameter p) {
     if (p.isConfigurationInterface()) {
       final ConfigInputInterface cii = (ConfigInputInterface) p;
       final ConfigInputPort graphPort = cii.getGraphPort();
@@ -205,6 +205,7 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
         p.setValueExpression(pExp);
       }
     }
+    return true;
   }
 
   /*
@@ -213,7 +214,7 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigInputInterface(org.ietr.preesm.experiment.model.pimm.ConfigInputInterface)
    */
   @Override
-  public void visitConfigInputInterface(final ConfigInputInterface cii) {
+  public Boolean caseConfigInputInterface(final ConfigInputInterface cii) {
     final ConfigInputPort graphPort = cii.getGraphPort();
     final Dependency incomingDependency = graphPort.getIncomingDependency();
     final ISetter setter = incomingDependency.getSetter();
@@ -224,6 +225,7 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
       pExp.setExpressionString(((Parameter) setter).getValueExpression().getExpressionString());
       cii.setValueExpression(pExp);
     }
+    return true;
   }
 
   /**
@@ -255,10 +257,10 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitAbstractActor(org.ietr.preesm.experiment.model.pimm.AbstractActor)
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#caseAbstractActor(org.ietr.preesm.experiment.model.pimm.AbstractActor)
    */
   @Override
-  public void visitAbstractActor(final AbstractActor aa) {
+  public Boolean caseAbstractActor(final AbstractActor aa) {
     // Handle the target ports (DataInputPort in PISDF,
     // SDFSourceInterfaceVertex in IBSDF) keeping the order
     for (final DataInputPort dip : aa.getDataInputPorts()) {
@@ -300,7 +302,8 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
     for (final ConfigOutputPort cop : aa.getConfigOutputPorts()) {
       this.piPort2Vx.put(cop, aa);
     }
-    visitConfigurable(aa);
+    caseConfigurable(aa);
+    return true;
   }
 
   /*
@@ -309,7 +312,7 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitActor(org.ietr.preesm.experiment.model.pimm.Actor)
    */
   @Override
-  public void visitActor(final Actor a) {
+  public Boolean caseActor(final Actor a) {
     final SDFVertex v = new SDFVertex();
     this.piVx2SDFVx.put(a, v);
     // Handle vertex's name
@@ -321,7 +324,7 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
     // Handle vertex's refinement (description of the vertex's behavior:
     // function prototypes or subgraphs)
     final Refinement piRef = a.getRefinement();
-    piRef.accept(this);
+    doSwitch(piRef);
     v.setRefinement(this.currentSDFRefinement);
     // Handle path to memory script of the vertex
     if (a.getMemoryScriptPath() != null) {
@@ -338,9 +341,10 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
       }
     }
 
-    visitAbstractActor(a);
+    caseAbstractActor(a);
 
     this.result.addVertex(v);
+    return true;
   }
 
   /*
@@ -349,7 +353,7 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitFifo(org.ietr.preesm.experiment.model.pimm.Fifo)
    */
   @Override
-  public void visitFifo(final Fifo f) {
+  public Boolean caseFifo(final Fifo f) {
     final DataOutputPort piOutputPort = f.getSourcePort();
     final DataInputPort piInputPort = f.getTargetPort();
 
@@ -361,10 +365,10 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
       final SDFAbstractVertex sdfSource = this.piVx2SDFVx.get(source);
       final SDFAbstractVertex sdfTarget = this.piVx2SDFVx.get(target);
 
-      // Get the source port created in visitAbstractActor
+      // Get the source port created in caseAbstractActor
       final SDFSinkInterfaceVertex sdfOutputPort = (SDFSinkInterfaceVertex) this.piPort2SDFPort.get(piOutputPort);
 
-      // Get the target port created in visitAbstractActor
+      // Get the target port created in caseAbstractActor
       final SDFSourceInterfaceVertex sdfInputPort = (SDFSourceInterfaceVertex) this.piPort2SDFPort.get(piInputPort);
 
       // Handle Delay, Consumption and Production rates
@@ -393,6 +397,7 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
       convertAnnotationsFromTo(piOutputPort, edge, SDFEdge.SOURCE_PORT_MODIFIER);
       convertAnnotationsFromTo(piInputPort, edge, SDFEdge.TARGET_PORT_MODIFIER);
     }
+    return true;
   }
 
   /**
@@ -420,136 +425,97 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitParameterizable(org.ietr.preesm.experiment.model.pimm.Parameterizable)
-   */
   @Override
-  public void visitConfigurable(final Configurable p) {
+  public Boolean caseConfigurable(final Configurable p) {
     for (final ConfigInputPort cip : p.getConfigInputPorts()) {
       this.piPort2Vx.put(cip, p);
     }
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitInterfaceActor(org.ietr.preesm.experiment.model.pimm.InterfaceActor)
-   */
   @Override
-  public void visitInterfaceActor(final InterfaceActor ia) {
+  public Boolean caseInterfaceActor(final InterfaceActor ia) {
     // DO NOTHING
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigOutputInterface(org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface)
-   */
   @Override
-  public void visitConfigOutputInterface(final ConfigOutputInterface coi) {
-    visitInterfaceActor(coi);
+  public Boolean caseConfigOutputInterface(final ConfigOutputInterface coi) {
+    caseInterfaceActor(coi);
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataInputInterface(org.ietr.preesm.experiment.model.pimm.DataInputInterface)
-   */
   @Override
-  public void visitDataInputInterface(final DataInputInterface dii) {
+  public Boolean caseDataInputInterface(final DataInputInterface dii) {
     final SDFSourceInterfaceVertex v = new SDFSourceInterfaceVertex();
     this.piVx2SDFVx.put(dii, v);
     v.setName(dii.getName());
 
-    visitAbstractActor(dii);
+    caseAbstractActor(dii);
 
     this.result.addVertex(v);
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataOutputInterface(org.ietr.preesm.experiment.model.pimm.DataOutputInterface)
-   */
   @Override
-  public void visitDataOutputInterface(final DataOutputInterface doi) {
+  public Boolean caseDataOutputInterface(final DataOutputInterface doi) {
     final SDFSinkInterfaceVertex v = new SDFSinkInterfaceVertex();
     this.piVx2SDFVx.put(doi, v);
     v.setName(doi.getName());
 
-    visitAbstractActor(doi);
+    caseAbstractActor(doi);
 
     this.result.addVertex(v);
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitRefinement(org.ietr.preesm.experiment.model.pimm.Refinement)
-   */
   @Override
-  public void visitRefinement(final PiSDFRefinement r) {
+  public Boolean casePiSDFRefinement(final PiSDFRefinement r) {
     this.currentSDFRefinement = new CodeRefinement(r.getFilePath());
+    return true;
   }
 
   /** The current prototype. */
-  // Current Prototype
   protected Prototype currentPrototype;
 
-  /** The current argument. */
-  // Current Argument and Parameter
+  /** The current Argument and Parameter. */
   protected CodeGenArgument currentArgument;
 
   /** The current parameter. */
   protected CodeGenParameter currentParameter;
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitHRefinement(org.ietr.preesm.experiment.model.pimm.HRefinement)
-   */
   @Override
-  public void visitHRefinement(final CHeaderRefinement h) {
+  public Boolean caseCHeaderRefinement(final CHeaderRefinement h) {
     final ActorPrototypes actorPrototype = new ActorPrototypes(h.getFilePath().toOSString());
 
-    h.getLoopPrototype().accept(this);
+    doSwitch(h.getLoopPrototype());
     actorPrototype.setLoopPrototype(this.currentPrototype);
 
     if (h.getInitPrototype() != null) {
-      h.getInitPrototype().accept(this);
+      doSwitch(h.getInitPrototype());
       actorPrototype.setInitPrototype(this.currentPrototype);
     }
 
     this.currentSDFRefinement = actorPrototype;
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitFunctionPrototype(org.ietr.preesm.experiment.model.pimm.FunctionPrototype)
-   */
   @Override
-  public void visitFunctionPrototype(final FunctionPrototype f) {
+  public Boolean caseFunctionPrototype(final FunctionPrototype f) {
     this.currentPrototype = new Prototype(f.getName());
     for (final FunctionParameter p : f.getParameters()) {
-      p.accept(this);
+      doSwitch(p);
       if (p.isIsConfigurationParameter()) {
         this.currentPrototype.addParameter(this.currentParameter);
       } else {
         this.currentPrototype.addArgument(this.currentArgument);
       }
     }
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitFunctionParameter(org.ietr.preesm.experiment.model.pimm.FunctionParameter)
-   */
   @Override
-  public void visitFunctionParameter(final FunctionParameter f) {
+  public Boolean caseFunctionParameter(final FunctionParameter f) {
     if (f.isIsConfigurationParameter()) {
       int direction = 0;
       switch (f.getDirection()) {
@@ -576,15 +542,11 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
       this.currentArgument = new CodeGenArgument(f.getName(), direction);
       this.currentArgument.setType(f.getType());
     }
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitBroadcastActor(org.ietr.preesm.experiment.model.pimm.BroadcastActor)
-   */
   @Override
-  public void visitBroadcastActor(final BroadcastActor ba) {
+  public Boolean caseBroadcastActor(final BroadcastActor ba) {
     final SDFBroadcastVertex bv = new SDFBroadcastVertex();
     this.piVx2SDFVx.put(ba, bv);
     // Handle vertex's name
@@ -603,18 +565,14 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
       }
     }
 
-    visitAbstractActor(ba);
+    caseAbstractActor(ba);
 
     this.result.addVertex(bv);
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitJoinActor(org.ietr.preesm.experiment.model.pimm.JoinActor)
-   */
   @Override
-  public void visitJoinActor(final JoinActor ja) {
+  public Boolean caseJoinActor(final JoinActor ja) {
     final SDFJoinVertex jv = new SDFJoinVertex();
     this.piVx2SDFVx.put(ja, jv);
     // Handle vertex's name
@@ -633,18 +591,14 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
       }
     }
 
-    visitAbstractActor(ja);
+    caseAbstractActor(ja);
 
     this.result.addVertex(jv);
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitForkActor(org.ietr.preesm.experiment.model.pimm.ForkActor)
-   */
   @Override
-  public void visitForkActor(final ForkActor fa) {
+  public Boolean caseForkActor(final ForkActor fa) {
     final SDFForkVertex fv = new SDFForkVertex();
     this.piVx2SDFVx.put(fa, fv);
     // Handle vertex's name
@@ -663,18 +617,14 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
       }
     }
 
-    visitAbstractActor(fa);
+    caseAbstractActor(fa);
 
     this.result.addVertex(fv);
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitRoundBufferActor(org.ietr.preesm.experiment.model.pimm.RoundBufferActor)
-   */
   @Override
-  public void visitRoundBufferActor(final RoundBufferActor rba) {
+  public Boolean caseRoundBufferActor(final RoundBufferActor rba) {
     final SDFRoundBufferVertex rbv = new SDFRoundBufferVertex();
     this.piVx2SDFVx.put(rba, rbv);
     // Handle vertex's name
@@ -693,9 +643,10 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
       }
     }
 
-    visitAbstractActor(rba);
+    caseAbstractActor(rba);
 
     this.result.addVertex(rbv);
+    return true;
   }
 
   /**
@@ -715,117 +666,62 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
    */
 
   @Override
-  public void visitDataOutputPort(final DataOutputPort dop) {
+  public Boolean caseDataOutputPort(final DataOutputPort dop) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDelay(org.ietr.preesm.experiment.model.pimm.Delay)
-   */
   @Override
-  public void visitDelay(final Delay d) {
+  public Boolean caseDelay(final Delay d) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataInputPort(org.ietr.preesm.experiment.model.pimm.DataInputPort)
-   */
   @Override
-  public void visitDataInputPort(final DataInputPort dip) {
+  public Boolean caseDataInputPort(final DataInputPort dip) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitExpression(org.ietr.preesm.experiment.model.pimm.Expression)
-   */
   @Override
-  public void visitExpression(final Expression e) {
+  public Boolean caseExpression(final Expression e) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigInputPort(org.ietr.preesm.experiment.model.pimm.ConfigInputPort)
-   */
   @Override
-  public void visitConfigInputPort(final ConfigInputPort cip) {
+  public Boolean caseConfigInputPort(final ConfigInputPort cip) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigOutputPort(org.ietr.preesm.experiment.model.pimm.ConfigOutputPort)
-   */
   @Override
-  public void visitConfigOutputPort(final ConfigOutputPort cop) {
+  public Boolean caseConfigOutputPort(final ConfigOutputPort cop) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDependency(org.ietr.preesm.experiment.model.pimm.Dependency)
-   */
   @Override
-  public void visitDependency(final Dependency d) {
+  public Boolean caseDependency(final Dependency d) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitISetter(org.ietr.preesm.experiment.model.pimm.ISetter)
-   */
   @Override
-  public void visitISetter(final ISetter is) {
+  public Boolean caseISetter(final ISetter is) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitPort(org.ietr.preesm.experiment.model.pimm.Port)
-   */
   @Override
-  public void visitPort(final Port p) {
+  public Boolean casePort(final Port p) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataPort(org.ietr.preesm.experiment.model.pimm.DataPort)
-   */
   @Override
-  public void visitDataPort(final DataPort p) {
+  public Boolean caseDataPort(final DataPort p) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitExecutableActor(org.ietr.preesm.experiment.model.pimm.ExecutableActor)
-   */
   @Override
-  public void visitExecutableActor(final ExecutableActor ea) {
+  public Boolean caseExecutableActor(final ExecutableActor ea) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.pimm.algorithm.pimm2sdf.visitor.AbstractPiMM2SDFVisitor#visitPiGraph(org.ietr.preesm.experiment.model.pimm.PiGraph)
-   */
   @Override
-  public void visitPiGraph(final PiGraph pg) {
+  public Boolean casePiGraph(final PiGraph pg) {
     // If result == null, then pg is the first PiGraph we encounter
     if (this.result == null) {
       this.result = new SDFGraph();
@@ -837,7 +733,7 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
 
       // Set the values into the parameters of pg when possible
       for (final Parameter p : pg.getParameters()) {
-        p.accept(this);
+        doSwitch(p);
       }
       computeDerivedParameterValues(pg, this.execution);
       // Once the values are set, use them to put parameters as graph
@@ -846,11 +742,11 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
 
       // Visit each of the vertices of pg with the values set
       for (final AbstractActor aa : pg.getActors()) {
-        aa.accept(this);
+        doSwitch(aa);
       }
       // And each of the data edges of pg with the values set
       for (final Fifo f : pg.getFifos()) {
-        f.accept(this);
+        doSwitch(f);
       }
 
       // Make sure all ports of special actors are indexed and ordered
@@ -869,11 +765,11 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
       // Handle ID
       v.setId(pg.getName());
 
-      visitAbstractActor(pg);
+      caseAbstractActor(pg);
 
       // Visit the subgraph
       final StaticPiMM2SDFVisitor innerVisitor = new StaticPiMM2SDFVisitor(this.execution);
-      pg.accept(innerVisitor);
+      innerVisitor.doSwitch(pg);
       // Set the obtained SDFGraph as refinement for v
       final SDFGraph sdf = innerVisitor.getResult();
       sdf.setName(sdf.getName() + this.execution.getExecutionLabel());
@@ -881,6 +777,7 @@ public class StaticPiMM2SDFVisitor extends PiMMDefaultVisitor {
 
       this.result.addVertex(v);
     }
+    return true;
   }
 
 }

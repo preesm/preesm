@@ -1,40 +1,5 @@
-/*******************************************************************************
- * Copyright or © or Copr. 2012 - 2017 IETR/INSA:
- *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
- *
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
- *
- * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use
- * modify and/ or redistribute the software under the terms of the CeCILL-C
- * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info".
- *
- * As a counterpart to the access to the source code and  rights to copy,
- * modify and redistribute granted by the license, users are provided only
- * with a limited warranty  and the software's author,  the holder of the
- * economic rights,  and the successive licensors  have only  limited
- * liability.
- *
- * In this respect, the user's attention is drawn to the risks associated
- * with loading,  using,  modifying and/or developing or reproducing the
- * software by the user in light of its specific status of free software,
- * that may mean  that it is complicated to manipulate,  and  that  also
- * therefore means  that it is reserved for developers  and  experienced
- * professionals having in-depth computer knowledge. Users are therefore
- * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or
- * data to be ensured and,  more generally, to use and operate it in the
- * same conditions as regards security.
- *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- *******************************************************************************/
+/**
+ */
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import java.util.Collection;
@@ -57,10 +22,9 @@ import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitor;
 
 /**
- * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Abstract Vertex</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>Abstract Actor</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
@@ -104,7 +68,7 @@ public abstract class AbstractActorImpl extends ConfigurableImpl implements Abst
   protected EList<ConfigOutputPort> configOutputPorts;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
@@ -113,132 +77,8 @@ public abstract class AbstractActorImpl extends ConfigurableImpl implements Abst
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @param featureID
-   *          the feature ID
-   * @param resolve
-   *          the resolve
-   * @param coreType
-   *          the core type
-   * @return the object
-   * @generated
-   */
-  @Override
-  public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
-    switch (featureID) {
-      case PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS:
-        return getDataInputPorts();
-      case PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS:
-        return getDataOutputPorts();
-      case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
-        return getConfigOutputPorts();
-      case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
-        return getContainingGraph();
-    }
-    return super.eGet(featureID, resolve, coreType);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @param otherEnd
-   *          the other end
-   * @param featureID
-   *          the feature ID
-   * @param msgs
-   *          the msgs
-   * @return the notification chain
-   * @generated
-   */
-  @Override
-  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
-    switch (featureID) {
-      case PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS:
-        return ((InternalEList<?>) getDataInputPorts()).basicRemove(otherEnd, msgs);
-      case PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS:
-        return ((InternalEList<?>) getDataOutputPorts()).basicRemove(otherEnd, msgs);
-      case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
-        return ((InternalEList<?>) getConfigOutputPorts()).basicRemove(otherEnd, msgs);
-      case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
-        return basicSetContainingGraph(null, msgs);
-    }
-    return super.eInverseRemove(otherEnd, featureID, msgs);
-  }
-
-  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @generated
-   */
-  @Override
-  public NotificationChain eBasicRemoveFromContainerFeature(final NotificationChain msgs) {
-    switch (eContainerFeatureID()) {
-      case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
-        return eInternalContainer().eInverseRemove(this, PiMMPackage.PI_GRAPH__ACTORS, PiGraph.class, msgs);
-    }
-    return super.eBasicRemoveFromContainerFeature(msgs);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @param featureID
-   *          the feature ID
-   * @return true, if successful
-   * @generated
-   */
-  @Override
-  public boolean eIsSet(final int featureID) {
-    switch (featureID) {
-      case PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS:
-        return (this.dataInputPorts != null) && !this.dataInputPorts.isEmpty();
-      case PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS:
-        return (this.dataOutputPorts != null) && !this.dataOutputPorts.isEmpty();
-      case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
-        return (this.configOutputPorts != null) && !this.configOutputPorts.isEmpty();
-      case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
-        return getContainingGraph() != null;
-    }
-    return super.eIsSet(featureID);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @param featureID
-   *          the feature ID
-   * @param newValue
-   *          the new value
-   * @generated
-   */
-  @SuppressWarnings("unchecked")
-  @Override
-  public void eSet(final int featureID, final Object newValue) {
-    switch (featureID) {
-      case PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS:
-        getDataInputPorts().clear();
-        getDataInputPorts().addAll((Collection<? extends DataInputPort>) newValue);
-        return;
-      case PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS:
-        getDataOutputPorts().clear();
-        getDataOutputPorts().addAll((Collection<? extends DataOutputPort>) newValue);
-        return;
-      case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
-        getConfigOutputPorts().clear();
-        getConfigOutputPorts().addAll((Collection<? extends ConfigOutputPort>) newValue);
-        return;
-      case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
-        setContainingGraph((PiGraph) newValue);
-        return;
-    }
-    super.eSet(featureID, newValue);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the e class
    * @generated
    */
   @Override
@@ -247,9 +87,8 @@ public abstract class AbstractActorImpl extends ConfigurableImpl implements Abst
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the data input ports
    * @generated
    */
   @Override
@@ -261,9 +100,8 @@ public abstract class AbstractActorImpl extends ConfigurableImpl implements Abst
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the data output ports
    * @generated
    */
   @Override
@@ -275,35 +113,8 @@ public abstract class AbstractActorImpl extends ConfigurableImpl implements Abst
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @param featureID
-   *          the feature ID
-   * @generated
-   */
-  @Override
-  public void eUnset(final int featureID) {
-    switch (featureID) {
-      case PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS:
-        getDataInputPorts().clear();
-        return;
-      case PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS:
-        getDataOutputPorts().clear();
-        return;
-      case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
-        getConfigOutputPorts().clear();
-        return;
-      case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
-        setContainingGraph((PiGraph) null);
-        return;
-    }
-    super.eUnset(featureID);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the config output ports
    * @generated
    */
   @Override
@@ -434,14 +245,130 @@ public abstract class AbstractActorImpl extends ConfigurableImpl implements Abst
     return super.eInverseAdd(otherEnd, featureID, msgs);
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
+   * @generated
    */
   @Override
-  public void accept(final PiMMVisitor v) {
-    v.visitAbstractActor(this);
+  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+    switch (featureID) {
+      case PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS:
+        return ((InternalEList<?>) getDataInputPorts()).basicRemove(otherEnd, msgs);
+      case PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS:
+        return ((InternalEList<?>) getDataOutputPorts()).basicRemove(otherEnd, msgs);
+      case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
+        return ((InternalEList<?>) getConfigOutputPorts()).basicRemove(otherEnd, msgs);
+      case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
+        return basicSetContainingGraph(null, msgs);
+    }
+    return super.eInverseRemove(otherEnd, featureID, msgs);
   }
 
-} // AbstractActoImpl
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public NotificationChain eBasicRemoveFromContainerFeature(final NotificationChain msgs) {
+    switch (eContainerFeatureID()) {
+      case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
+        return eInternalContainer().eInverseRemove(this, PiMMPackage.PI_GRAPH__ACTORS, PiGraph.class, msgs);
+    }
+    return super.eBasicRemoveFromContainerFeature(msgs);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
+    switch (featureID) {
+      case PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS:
+        return getDataInputPorts();
+      case PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS:
+        return getDataOutputPorts();
+      case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
+        return getConfigOutputPorts();
+      case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
+        return getContainingGraph();
+    }
+    return super.eGet(featureID, resolve, coreType);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  public void eSet(final int featureID, final Object newValue) {
+    switch (featureID) {
+      case PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS:
+        getDataInputPorts().clear();
+        getDataInputPorts().addAll((Collection<? extends DataInputPort>) newValue);
+        return;
+      case PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS:
+        getDataOutputPorts().clear();
+        getDataOutputPorts().addAll((Collection<? extends DataOutputPort>) newValue);
+        return;
+      case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
+        getConfigOutputPorts().clear();
+        getConfigOutputPorts().addAll((Collection<? extends ConfigOutputPort>) newValue);
+        return;
+      case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
+        setContainingGraph((PiGraph) newValue);
+        return;
+    }
+    super.eSet(featureID, newValue);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public void eUnset(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS:
+        getDataInputPorts().clear();
+        return;
+      case PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS:
+        getDataOutputPorts().clear();
+        return;
+      case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
+        getConfigOutputPorts().clear();
+        return;
+      case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
+        setContainingGraph((PiGraph) null);
+        return;
+    }
+    super.eUnset(featureID);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public boolean eIsSet(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS:
+        return (this.dataInputPorts != null) && !this.dataInputPorts.isEmpty();
+      case PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS:
+        return (this.dataOutputPorts != null) && !this.dataOutputPorts.isEmpty();
+      case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
+        return (this.configOutputPorts != null) && !this.configOutputPorts.isEmpty();
+      case PiMMPackage.ABSTRACT_ACTOR__CONTAINING_GRAPH:
+        return getContainingGraph() != null;
+    }
+    return super.eIsSet(featureID);
+  }
+
+} // AbstractActorImpl

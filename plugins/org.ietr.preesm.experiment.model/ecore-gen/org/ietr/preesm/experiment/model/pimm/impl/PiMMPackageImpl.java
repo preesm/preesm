@@ -1,42 +1,5 @@
-/*******************************************************************************
- * Copyright or © or Copr. 2012 - 2017 IETR/INSA:
- *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
- * Maxime Pelcat <Maxime.Pelcat@insa-rennes.fr> (2013)
- * Romina Racca <romina.racca@gmail.com> (2013)
- *
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
- *
- * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use
- * modify and/ or redistribute the software under the terms of the CeCILL-C
- * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info".
- *
- * As a counterpart to the access to the source code and  rights to copy,
- * modify and redistribute granted by the license, users are provided only
- * with a limited warranty  and the software's author,  the holder of the
- * economic rights,  and the successive licensors  have only  limited
- * liability.
- *
- * In this respect, the user's attention is drawn to the risks associated
- * with loading,  using,  modifying and/or developing or reproducing the
- * software by the user in light of its specific status of free software,
- * that may mean  that it is complicated to manipulate,  and  that  also
- * therefore means  that it is reserved for developers  and  experienced
- * professionals having in-depth computer knowledge. Users are therefore
- * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or
- * data to be ensured and,  more generally, to use and operate it in the
- * same conditions as regards security.
- *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- *******************************************************************************/
+/**
+ */
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.core.runtime.IPath;
@@ -87,19 +50,15 @@ import org.ietr.preesm.experiment.model.pimm.PortKind;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
-import org.ietr.preesm.experiment.model.pimm.visitor.VisitorPackage;
-import org.ietr.preesm.experiment.model.pimm.visitor.impl.VisitorPackageImpl;
 
-// TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Package</b>. <!-- end-user-doc -->
  *
  * @generated
  */
 public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
-
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
@@ -110,101 +69,143 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
    *
    * @generated
    */
-  private EClass configurableEClass = null;
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @generated
-   */
   private EClass abstractVertexEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  private EClass configurableEClass = null;
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   private EClass abstractActorEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   private EClass piGraphEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  private EClass executableActorEClass = null;
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   private EClass actorEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  private EClass broadcastActorEClass = null;
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  private EClass joinActorEClass = null;
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  private EClass forkActorEClass = null;
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  private EClass roundBufferActorEClass = null;
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   private EClass portEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   private EClass dataInputPortEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   private EClass dataOutputPortEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   private EClass configInputPortEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   private EClass configOutputPortEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   private EClass fifoEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   private EClass interfaceActorEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   private EClass dataInputInterfaceEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   private EClass dataOutputInterfaceEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  private EClass configInputInterfaceEClass = null;
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
@@ -225,35 +226,42 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   private EClass piSDFRefinementEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  private EClass cHeaderRefinementEClass = null;
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   private EClass parameterEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   private EClass dependencyEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   private EClass iSetterEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   private EClass delayEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
@@ -264,73 +272,31 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
    *
    * @generated
    */
-  private EClass cHeaderRefinementEClass = null;
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @generated
-   */
   private EClass functionPrototypeEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   private EClass functionParameterEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   private EClass dataPortEClass = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @generated
-   */
-  private EClass broadcastActorEClass = null;
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @generated
-   */
-  private EClass joinActorEClass = null;
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @generated
-   */
-  private EClass forkActorEClass = null;
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @generated
-   */
-  private EClass roundBufferActorEClass = null;
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @generated
-   */
-  private EClass executableActorEClass = null;
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   private EEnum directionEEnum = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
@@ -351,18 +317,11 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   private EEnum interfaceKindEEnum = null;
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
   private EDataType iPathEDataType = null;
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @generated
-   */
-  private EClass configInputInterfaceEClass = null;
 
   /**
    * Creates an instance of the model <b>Package</b>, registered with {@link org.eclipse.emf.ecore.EPackage.Registry EPackage.Registry} by the package package
@@ -381,7 +340,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
@@ -411,18 +370,11 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
     PiMMPackageImpl.isInited = true;
 
-    // Obtain or create and register interdependencies
-    final VisitorPackageImpl theVisitorPackage = (VisitorPackageImpl) (EPackage.Registry.INSTANCE
-        .getEPackage(VisitorPackage.eNS_URI) instanceof VisitorPackageImpl ? EPackage.Registry.INSTANCE.getEPackage(VisitorPackage.eNS_URI)
-            : VisitorPackage.eINSTANCE);
-
     // Create package meta-data objects
     thePiMMPackage.createPackageContents();
-    theVisitorPackage.createPackageContents();
 
     // Initialize created meta-data
     thePiMMPackage.initializePackageContents();
-    theVisitorPackage.initializePackageContents();
 
     // Mark meta-data to indicate it can't be changed
     thePiMMPackage.freeze();
@@ -433,14 +385,33 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the parameterizable
    * @generated
    */
   @Override
   public EClass getParameterizable() {
     return this.parameterizableEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EClass getAbstractVertex() {
+    return this.abstractVertexEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EAttribute getAbstractVertex_Name() {
+    return (EAttribute) this.abstractVertexEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -464,31 +435,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the abstract vertex
-   * @generated
-   */
-  @Override
-  public EClass getAbstractVertex() {
-    return this.abstractVertexEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the abstract vertex name
-   * @generated
-   */
-  @Override
-  public EAttribute getAbstractVertex_Name() {
-    return (EAttribute) this.abstractVertexEClass.getEStructuralFeatures().get(0);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the abstract actor
    * @generated
    */
   @Override
@@ -497,9 +445,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the abstract actor data input ports
    * @generated
    */
   @Override
@@ -508,9 +455,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the abstract actor data output ports
    * @generated
    */
   @Override
@@ -519,9 +465,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the abstract actor config output ports
    * @generated
    */
   @Override
@@ -540,9 +485,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the pi graph
    * @generated
    */
   @Override
@@ -561,9 +505,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the pi graph fifos
    * @generated
    */
   @Override
@@ -572,9 +515,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the pi graph parameters
    * @generated
    */
   @Override
@@ -583,9 +525,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the pi graph dependencies
    * @generated
    */
   @Override
@@ -594,9 +535,18 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the actor
+   * @generated
+   */
+  @Override
+  public EClass getExecutableActor() {
+    return this.executableActorEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @generated
    */
   @Override
@@ -605,9 +555,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the actor refinement
    * @generated
    */
   @Override
@@ -616,9 +565,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the actor memory script path
    * @generated
    */
   @Override
@@ -627,9 +575,48 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the port
+   * @generated
+   */
+  @Override
+  public EClass getBroadcastActor() {
+    return this.broadcastActorEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EClass getJoinActor() {
+    return this.joinActorEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EClass getForkActor() {
+    return this.forkActorEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EClass getRoundBufferActor() {
+    return this.roundBufferActorEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @generated
    */
   @Override
@@ -638,9 +625,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the port name
    * @generated
    */
   @Override
@@ -649,9 +635,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the data input port
    * @generated
    */
   @Override
@@ -660,9 +645,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the data input port incoming fifo
    * @generated
    */
   @Override
@@ -671,9 +655,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the data output port
    * @generated
    */
   @Override
@@ -682,9 +665,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the data output port outgoing fifo
    * @generated
    */
   @Override
@@ -693,9 +675,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the config input port
    * @generated
    */
   @Override
@@ -704,9 +685,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the config input port incoming dependency
    * @generated
    */
   @Override
@@ -725,9 +705,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the config output port
    * @generated
    */
   @Override
@@ -736,9 +715,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the fifo
    * @generated
    */
   @Override
@@ -747,9 +725,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the fifo source port
    * @generated
    */
   @Override
@@ -758,9 +735,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the fifo target port
    * @generated
    */
   @Override
@@ -769,9 +745,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the fifo delay
    * @generated
    */
   @Override
@@ -780,9 +755,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the fifo type
    * @generated
    */
   @Override
@@ -791,9 +765,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the interface actor
    * @generated
    */
   @Override
@@ -802,9 +775,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the interface actor graph port
    * @generated
    */
   @Override
@@ -813,9 +785,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the data input interface
    * @generated
    */
   @Override
@@ -824,9 +795,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the data output interface
    * @generated
    */
   @Override
@@ -835,9 +805,28 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the config output interface
+   * @generated
+   */
+  @Override
+  public EClass getConfigInputInterface() {
+    return this.configInputInterfaceEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EReference getConfigInputInterface_GraphPort() {
+    return (EReference) this.configInputInterfaceEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @generated
    */
   @Override
@@ -876,144 +865,6 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the parameter
-   * @generated
-   */
-  @Override
-  public EClass getParameter() {
-    return this.parameterEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   */
-  @Override
-  public EReference getParameter_ValueExpression() {
-    return (EReference) this.parameterEClass.getEStructuralFeatures().get(0);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   */
-  @Override
-  public EReference getParameter_ContainingGraph() {
-    return (EReference) this.parameterEClass.getEStructuralFeatures().get(1);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the dependency
-   * @generated
-   */
-  @Override
-  public EClass getDependency() {
-    return this.dependencyEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the dependency setter
-   * @generated
-   */
-  @Override
-  public EReference getDependency_Setter() {
-    return (EReference) this.dependencyEClass.getEStructuralFeatures().get(0);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the dependency getter
-   * @generated
-   */
-  @Override
-  public EReference getDependency_Getter() {
-    return (EReference) this.dependencyEClass.getEStructuralFeatures().get(1);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the i setter
-   * @generated
-   */
-  @Override
-  public EClass getISetter() {
-    return this.iSetterEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the i setter outgoing dependencies
-   * @generated
-   */
-  @Override
-  public EReference getISetter_OutgoingDependencies() {
-    return (EReference) this.iSetterEClass.getEStructuralFeatures().get(0);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the delay
-   * @generated
-   */
-  @Override
-  public EClass getDelay() {
-    return this.delayEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   */
-  @Override
-  public EReference getDelay_SizeExpression() {
-    return (EReference) this.delayEClass.getEStructuralFeatures().get(0);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   */
-  @Override
-  public EReference getDelay_ContainingFifo() {
-    return (EReference) this.delayEClass.getEStructuralFeatures().get(1);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the expression
-   * @generated
-   */
-  @Override
-  public EClass getExpression() {
-    return this.expressionEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
-   * @generated
-   */
-  @Override
-  public EAttribute getExpression_ExpressionString() {
-    return (EAttribute) this.expressionEClass.getEStructuralFeatures().get(0);
-  }
-
-  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
@@ -1044,9 +895,138 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the function prototype
+   * @generated
+   */
+  @Override
+  public EClass getParameter() {
+    return this.parameterEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EReference getParameter_ValueExpression() {
+    return (EReference) this.parameterEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EReference getParameter_ContainingGraph() {
+    return (EReference) this.parameterEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EClass getDependency() {
+    return this.dependencyEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EReference getDependency_Setter() {
+    return (EReference) this.dependencyEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EReference getDependency_Getter() {
+    return (EReference) this.dependencyEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EClass getISetter() {
+    return this.iSetterEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EReference getISetter_OutgoingDependencies() {
+    return (EReference) this.iSetterEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EClass getDelay() {
+    return this.delayEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EReference getDelay_SizeExpression() {
+    return (EReference) this.delayEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EReference getDelay_ContainingFifo() {
+    return (EReference) this.delayEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EClass getExpression() {
+    return this.expressionEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EAttribute getExpression_ExpressionString() {
+    return (EAttribute) this.expressionEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @generated
    */
   @Override
@@ -1055,9 +1035,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the function prototype name
    * @generated
    */
   @Override
@@ -1066,9 +1045,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the function prototype parameters
    * @generated
    */
   @Override
@@ -1077,9 +1055,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the function parameter
    * @generated
    */
   @Override
@@ -1088,9 +1065,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the function parameter name
    * @generated
    */
   @Override
@@ -1099,9 +1075,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the function parameter direction
    * @generated
    */
   @Override
@@ -1110,9 +1085,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the function parameter type
    * @generated
    */
   @Override
@@ -1121,9 +1095,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the function parameter is configuration parameter
    * @generated
    */
   @Override
@@ -1132,9 +1105,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the data port
    * @generated
    */
   @Override
@@ -1153,9 +1125,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the data port annotation
    * @generated
    */
   @Override
@@ -1164,64 +1135,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the broadcast actor
-   * @generated
-   */
-  @Override
-  public EClass getBroadcastActor() {
-    return this.broadcastActorEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the join actor
-   * @generated
-   */
-  @Override
-  public EClass getJoinActor() {
-    return this.joinActorEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the fork actor
-   * @generated
-   */
-  @Override
-  public EClass getForkActor() {
-    return this.forkActorEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the round buffer actor
-   * @generated
-   */
-  @Override
-  public EClass getRoundBufferActor() {
-    return this.roundBufferActorEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the executable actor
-   * @generated
-   */
-  @Override
-  public EClass getExecutableActor() {
-    return this.executableActorEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the direction
    * @generated
    */
   @Override
@@ -1230,9 +1145,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the port memory annotation
    * @generated
    */
   @Override
@@ -1261,9 +1175,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the i path
    * @generated
    */
   @Override
@@ -1272,30 +1185,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the config input interface
-   * @generated
-   */
-  @Override
-  public EClass getConfigInputInterface() {
-    return this.configInputInterfaceEClass;
-  }
-
-  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @generated
-   */
-  @Override
-  public EReference getConfigInputInterface_GraphPort() {
-    return (EReference) this.configInputInterfaceEClass.getEStructuralFeatures().get(0);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
-   *
-   * @return the pi MM factory
    * @generated
    */
   @Override
@@ -1304,7 +1195,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
@@ -1442,7 +1333,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
   }
 
   /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
@@ -1465,19 +1356,11 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     setNsPrefix(PiMMPackage.eNS_PREFIX);
     setNsURI(PiMMPackage.eNS_URI);
 
-    // Obtain other dependent packages
-    final VisitorPackage theVisitorPackage = (VisitorPackage) EPackage.Registry.INSTANCE.getEPackage(VisitorPackage.eNS_URI);
-
-    // Add subpackages
-    getESubpackages().add(theVisitorPackage);
-
     // Create type parameters
 
     // Set bounds for type parameters
 
     // Add supertypes to classes
-    this.parameterizableEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
-    this.abstractVertexEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.configurableEClass.getESuperTypes().add(getAbstractVertex());
     this.configurableEClass.getESuperTypes().add(getParameterizable());
     this.abstractActorEClass.getESuperTypes().add(getConfigurable());
@@ -1488,28 +1371,21 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
     this.joinActorEClass.getESuperTypes().add(getExecutableActor());
     this.forkActorEClass.getESuperTypes().add(getExecutableActor());
     this.roundBufferActorEClass.getESuperTypes().add(getExecutableActor());
-    this.portEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.dataInputPortEClass.getESuperTypes().add(getDataPort());
     this.dataOutputPortEClass.getESuperTypes().add(getDataPort());
     this.configInputPortEClass.getESuperTypes().add(getPort());
     this.configOutputPortEClass.getESuperTypes().add(getDataOutputPort());
     this.configOutputPortEClass.getESuperTypes().add(getISetter());
-    this.fifoEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.interfaceActorEClass.getESuperTypes().add(getAbstractActor());
     this.dataInputInterfaceEClass.getESuperTypes().add(getInterfaceActor());
     this.dataOutputInterfaceEClass.getESuperTypes().add(getInterfaceActor());
     this.configInputInterfaceEClass.getESuperTypes().add(getParameter());
     this.configOutputInterfaceEClass.getESuperTypes().add(getInterfaceActor());
-    this.refinementEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.piSDFRefinementEClass.getESuperTypes().add(getRefinement());
     this.cHeaderRefinementEClass.getESuperTypes().add(getRefinement());
     this.parameterEClass.getESuperTypes().add(getConfigurable());
     this.parameterEClass.getESuperTypes().add(getISetter());
-    this.dependencyEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.delayEClass.getESuperTypes().add(getConfigurable());
-    this.expressionEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
-    this.functionPrototypeEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
-    this.functionParameterEClass.getESuperTypes().add(theVisitorPackage.getPiMMVisitable());
     this.dataPortEClass.getESuperTypes().add(getPort());
 
     // Initialize classes and features; add operations and parameters
@@ -1835,6 +1711,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
         !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
     addEOperation(this.dataPortEClass, getAbstractActor(), "getContainingActor", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
+    addEOperation(this.dataPortEClass, this.ecorePackage.getEString(), "getId", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     // Initialize enums and add enum literals
     initEEnum(this.directionEEnum, Direction.class, "Direction");

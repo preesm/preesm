@@ -19,10 +19,7 @@ Export-Package: org.ietr.preesm.experiment.model.expression,
  org.ietr.preesm.experiment.model.pimm.adapter,
  org.ietr.preesm.experiment.model.pimm.impl,
  org.ietr.preesm.experiment.model.pimm.serialize,
- org.ietr.preesm.experiment.model.pimm.util,
- org.ietr.preesm.experiment.model.pimm.visitor,
- org.ietr.preesm.experiment.model.pimm.visitor.impl,
- org.ietr.preesm.experiment.model.pimm.visitor.util
+ org.ietr.preesm.experiment.model.pimm.util
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-Vendor: IETR/INSA Rennes
