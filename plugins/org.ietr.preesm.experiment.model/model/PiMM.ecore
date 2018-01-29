@@ -213,7 +213,11 @@
     </eOperations>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Fifo">
-    <eOperations name="getId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eOperations name="getId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return Optional.of(getSourcePort()).map(DataPort::getId).orElseThrow(() -> new PiGraphException(&quot;Fifo has no source port.&quot;)) + &quot;-&quot; + Optional.of(getTargetPort()).map(DataPort::getId).orElseThrow(() -> new PiGraphException(&quot;Fifo has no target port.&quot;));"/>
+      </eAnnotations>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="sourcePort" lowerBound="1"
         eType="#//DataOutputPort" eOpposite="#//DataOutputPort/outgoingFifo"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetPort" lowerBound="1"

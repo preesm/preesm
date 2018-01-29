@@ -2,6 +2,7 @@
  */
 package org.ietr.preesm.experiment.model.pimm.impl;
 
+import java.util.Optional;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
@@ -321,22 +322,12 @@ public class FifoImpl extends EObjectImpl implements Fifo {
    * This ID should be unique since each {@link Port} can only have one {@link Fifo} connected to them. Moreover, a {@link Port} with no name is always the
    * unique data {@link Port} of its owner. <!-- end-user-doc --> <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @return the id
+   * @generated
    */
   @Override
   public String getId() {
-
-    final DataPort srcPort = getSourcePort();
-    final DataPort tgtPort = getTargetPort();
-
-    if ((srcPort == null) || (tgtPort == null)) {
-      throw new PiGraphException("Fifo has no source or no target port.");
-    }
-
-    String id = srcPort.getId();
-    id += "-" + tgtPort.getId();
-
-    return id;
+    return Optional.of(getSourcePort()).map(DataPort::getId).orElseThrow(() -> new PiGraphException("Fifo has no source port.")) + "-"
+        + Optional.of(getTargetPort()).map(DataPort::getId).orElseThrow(() -> new PiGraphException("Fifo has no target port."));
   }
 
   /**

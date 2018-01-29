@@ -134,7 +134,9 @@ public interface Fifo extends EObject {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    *
-   * @model kind="operation"
+   * @model kind="operation" annotation="http://www.eclipse.org/emf/2002/GenModel body='return Optional.of(getSourcePort()).map(DataPort::getId).orElseThrow(()
+   *        -&gt; new PiGraphException(\"Fifo has no source port.\")) + \"-\" + Optional.of(getTargetPort()).map(DataPort::getId).orElseThrow(() -&gt; new
+   *        PiGraphException(\"Fifo has no target port.\"));'"
    * @generated
    */
   String getId();
