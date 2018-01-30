@@ -300,10 +300,12 @@ class Parameter extends Configurable , ISetter {
 		// a parameter is static if all its setters are static (or it has no setter)
 		return getConfigInputPorts().map[incomingDependency].map[setter].forall[isLocallyStatic]
 	}
-	@GenModel(body="return !getConfigInputPorts().isEmpty();")
-	op boolean isDependent()
-	@GenModel(body="return false;")
-	op boolean isConfigurationInterface()
+	op boolean isDependent() {
+		return !(configInputPorts.empty)
+	}
+	op boolean isConfigurationInterface() {
+		return false
+	}
 }
 
 class Dependency {
