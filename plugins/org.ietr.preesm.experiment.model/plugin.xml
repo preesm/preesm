@@ -44,7 +44,7 @@
       <package
             uri="http://org.ietr.preesm/experiment/model/pimm"
             class="org.ietr.preesm.experiment.model.pimm.PiMMPackage"
-            genModel="model/PiMM.genmodel"/>
+            />
    </extension>
 
    <extension
