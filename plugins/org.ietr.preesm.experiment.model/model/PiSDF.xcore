@@ -99,8 +99,10 @@ abstract class AbstractActor extends Configurable {
 	op unique Port[] getAllPorts() {
 		(allConfigPorts + allDataPorts).toEList.unmodifiableView
 	}
-	@GenModel(body="if (getContainingGraph() != null) {\n  return getContainingGraph().getActorPath() + \"/\" + getName();\n}\nreturn getName();")
-	op String getActorPath()
+	op String getActorPath() {
+		val actorName = name;
+		Optional.ofNullable(containingGraph).map[actorPath + "/" + actorName].orElse(actorName)
+	}
 }
 
 class PiGraph extends AbstractActor {
