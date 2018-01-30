@@ -222,9 +222,9 @@ class Fifo {
 	contains Delay delay opposite containingFifo
 	String ^type = "void"
 	op String getId() {
-		return Optional.of(sourcePort).map[id].orElseThrow[new PiGraphException("Fifo has no source port.")]
+		return Optional.ofNullable(sourcePort).map[id].orElseThrow[new PiGraphException("Fifo has no source port.")]
 			+ "-"
-			+ Optional.of(targetPort).map[id].orElseThrow[new PiGraphException("Fifo has no target port.")]
+			+ Optional.ofNullable(targetPort).map[id].orElseThrow[new PiGraphException("Fifo has no target port.")]
 	}
 }
 
@@ -272,8 +272,9 @@ interface Refinement {
 	op AbstractActor getAbstractActor() {
 		return RefinementResolver.resolveAbstractActor(this)
 	}
-	@GenModel(body="return (this.getFilePath() == null) ? null : this.getFilePath().lastSegment();")
-	op String getFileName()
+	op String getFileName() {
+		return Optional.ofNullable(filePath).map[lastSegment].orElse(null)
+	}
 	op boolean isHierarchical()
 }
 
