@@ -1,21 +1,20 @@
 
 @GenModel(
 	modelName="PiMM", prefix="PiMM",
-
 	modelDirectory="/org.ietr.preesm.experiment.model/ecore-gen",
-//	editDirectory="/org.ietr.preesm.model.edit/ecore-gen",
-//	editorDirectory="/org.ietr.preesm.model.editor/ecore-gen",
-//	testsDirectory="/org.ietr.preesm.model.tests/ecore-gen",
+	// editDirectory="/org.ietr.preesm.model.edit/ecore-gen",
+	// editorDirectory="/org.ietr.preesm.model.editor/ecore-gen",
+	// testsDirectory="/org.ietr.preesm.model.tests/ecore-gen",
 
-//	redirection="",
-//	classNamePattern="",
+	// redirection="",
+	// classNamePattern="",
 
-//	codeFormatting="true",
-//	cleanup="true",
+	// codeFormatting="true",
+	// cleanup="true",
 
 	importerID="org.eclipse.emf.importer.ecore",
 
-	//!! if true a instrs.ecore is generated in .impl and is used by xxpackage.init() to
+	// !! if true a instrs.ecore is generated in .impl and is used by xxpackage.init() to
 	// load the intrs packages (by default this false unless the generated XyzPackage might
 	// exceed Java's byte code limit of 64k)
 	loadInitialization="false",
@@ -26,7 +25,6 @@
 )
 
 @Ecore(nsURI="http://org.ietr.preesm/model/pimm")
-
 package org.ietr.preesm.experiment.model.pimm
 
 //import org.eclipse.emf.common.util.EList
@@ -36,10 +34,8 @@ import java.util.Optional
 import org.ietr.preesm.experiment.model.pimm.util.RefinementResolver
 import org.ietr.preesm.experiment.model.PiGraphException
 
-
-//type IPath wraps org.eclipse.core.runtime.IPath
-
-//!!! This is needed as of the current versions of xcore/xtext
+// type IPath wraps org.eclipse.core.runtime.IPath
+// !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
 // the corresponding EPackage attributes/... are resolved to type java.lang.Object
 // instead of java.lang.String.
@@ -65,17 +61,22 @@ abstract class AbstractVertex {
 		return ECollections.unmodifiableEList(result);
 	}
 	op Port lookupPort(String portName) {
-		return getAllPorts().filterNull.findFirst[(it.getName() === null) && (portName === null) || (it.getName() !== null) && it.getName().equals(portName)]
+		return getAllPorts().filterNull.findFirst [
+			(it.getName() === null) && (portName === null) || (it.getName() !== null) && it.getName().equals(portName)
+		]
 	}
 }
 
 abstract class Configurable extends AbstractVertex , Parameterizable {
 	contains ConfigInputPort[] configInputPorts opposite configurable
 	op unique Parameter[] getInputParameters() {
-		return configInputPorts.filterNull.map[incomingDependency].filterNull.map[getter].filter(Parameter).toEList.unmodifiableView
+		return configInputPorts.filterNull.map[incomingDependency].filterNull.map[getter].filter(Parameter).toEList.
+			unmodifiableView
 	}
 	op Port lookupPortConnectedWithParameter(Parameter parameter) {
-		return Optional.ofNullable(configInputPorts.filterNull.map[incomingDependency].filterNull.findFirst[it.setter === parameter]).map[getter].orElse(null)
+		return Optional.ofNullable(configInputPorts.filterNull.map[incomingDependency].filterNull.findFirst [
+			it.setter === parameter
+		]).map[getter].orElse(null)
 	}
 	op unique Port[] getAllConfigPorts() {
 		return configInputPorts.unmodifiableView
@@ -123,7 +124,8 @@ class PiGraph extends AbstractActor {
 		return (parameters + childrenGraphs.map[allParameters].flatten).toEList.unmodifiableView
 	}
 	op unique PiGraph[] getChildrenGraphs() {
-		return (actors.filter(PiGraph) + actorsWithRefinement.filter[isHierarchical].map[subGraph]).toEList.unmodifiableView
+		return (actors.filter(PiGraph) + actorsWithRefinement.filter[isHierarchical].map[subGraph]).toEList.
+			unmodifiableView
 	}
 	op unique AbstractActor[] getAllActors() {
 		return (actors + childrenGraphs.map[allActors].flatten).toEList.unmodifiableView
@@ -134,7 +136,7 @@ class PiGraph extends AbstractActor {
 	op AbstractVertex lookupVertex(String vertexName) {
 		return (actors + parameters).findFirst[it.name == vertexName]
 	}
-	op Fifo lookupFifo(String fifoId){
+	op Fifo lookupFifo(String fifoId) {
 		return fifos.findFirst[it.id == fifoId]
 	}
 }
@@ -146,7 +148,7 @@ class Actor extends ExecutableActor {
 	contains Refinement refinement
 	IPath memoryScriptPath
 	op boolean isConfigurationActor() {
-		return  configOutputPorts.map[outgoingDependencies].filter[!it.isEmpty].map[it.get(0)].map[getter].exists[true]
+		return configOutputPorts.map[outgoingDependencies].filter[!it.isEmpty].map[it.get(0)].map[getter].exists[true]
 	}
 	op boolean isHierarchical() {
 		return refinement.isHierarchical
@@ -221,10 +223,10 @@ class Fifo {
 	refers DataInputPort targetPort opposite incomingFifo
 	contains Delay delay opposite containingFifo
 	String ^type = "void"
+
 	op String getId() {
-		return Optional.ofNullable(sourcePort).map[id].orElseThrow[new PiGraphException("Fifo has no source port.")]
-			+ "-"
-			+ Optional.ofNullable(targetPort).map[id].orElseThrow[new PiGraphException("Fifo has no target port.")]
+		return Optional.ofNullable(sourcePort).map[id].orElseThrow[new PiGraphException("Fifo has no source port.")] +
+			"-" + Optional.ofNullable(targetPort).map[id].orElseThrow[new PiGraphException("Fifo has no target port.")]
 	}
 }
 
@@ -288,7 +290,7 @@ class CHeaderRefinement extends Refinement {
 	contains FunctionPrototype loopPrototype
 	contains FunctionPrototype initPrototype
 	op boolean isHierarchical() {
-		//C Header Refinement means it is obviously not a subgraph
+		// C Header Refinement means it is obviously not a subgraph
 		return false
 	}
 }
@@ -354,9 +356,11 @@ abstract class DataPort extends Port {
 		return null;
 	}
 	op String getId() {
-	    val String actorName = Optional.ofNullable(getContainingActor()).map[name].orElseThrow[new PiGraphException("Data port " + this + " is not contained in an AbstracytActor.")];
-	    val String portName = Optional.ofNullable(name).filter[!it.isEmpty()].map["." + it].orElse("");
-	    return actorName + portName;
+		val String actorName = Optional.ofNullable(getContainingActor()).map[name].orElseThrow [
+			new PiGraphException("Data port " + this + " is not contained in an AbstracytActor.")
+		];
+		val String portName = Optional.ofNullable(name).filter[!it.isEmpty()].map["." + it].orElse("");
+		return actorName + portName;
 	}
 }
 
