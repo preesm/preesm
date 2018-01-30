@@ -186,28 +186,34 @@ abstract class Port {
 
 class DataInputPort extends DataPort {
 	refers Fifo incomingFifo opposite targetPort
-	@GenModel(body="return PortKind.DATA_INPUT;")
-	op PortKind getKind()
+	op PortKind getKind() {
+		return PortKind.DATA_INPUT
+	}
 }
 
 class DataOutputPort extends DataPort {
 	refers Fifo outgoingFifo opposite sourcePort
-	@GenModel(body="return PortKind.DATA_OUTPUT;")
-	op PortKind getKind()
+	op PortKind getKind() {
+		return PortKind.DATA_OUTPUT
+	}
 }
 
 class ConfigInputPort extends Port {
 	refers Dependency incomingDependency opposite getter
 	container Configurable configurable opposite configInputPorts
-	@GenModel(body="return PortKind.CFG_INPUT;")
-	op PortKind getKind()
+	op PortKind getKind() {
+		return PortKind.CFG_INPUT
+	}
 }
 
 class ConfigOutputPort extends DataOutputPort , ISetter {
-	@GenModel(body="// config output ports are never considered static\nreturn false;")
-	op boolean isLocallyStatic()
-	@GenModel(body="return PortKind.CFG_OUTPUT;")
-	op PortKind getKind()
+	op boolean isLocallyStatic() {
+		// config output ports are never considered static
+		return false
+	}
+	op PortKind getKind() {
+		return PortKind.CFG_OUTPUT
+	}
 }
 
 class Fifo {
