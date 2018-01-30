@@ -230,8 +230,10 @@ class Fifo {
 
 interface InterfaceActor extends AbstractActor {
 	refers Port graphPort
-	@GenModel(body="// Data in/out interfaces have only one data port\nreturn getAllDataPorts().get(0);")
-	op DataPort getDataPort()
+	op DataPort getDataPort() {
+		// Data in/out interfaces have only one data port
+		return allDataPorts.get(0)
+	}
 	op InterfaceKind getKind()
 }
 
@@ -260,8 +262,9 @@ class ConfigInputInterface extends Parameter {
 }
 
 class ConfigOutputInterface extends InterfaceActor {
-	@GenModel(body="return InterfaceKind.CFG_OUTPUT;")
-	op InterfaceKind getKind()
+	op InterfaceKind getKind() {
+		return InterfaceKind.CFG_OUTPUT
+	}
 }
 
 interface Refinement {
