@@ -224,6 +224,13 @@ class Fifo {
 	contains Delay delay opposite containingFifo
 	String ^type = "void"
 
+	/*
+	 * Return a {@link String} composed as follow:<br>
+	 * "&ltSourceName&gt[.&ltSourcePortName&gt]-&ltTargetName&gt[.&ltTargetPortName&gt]" <br>
+	 * <br>
+	 * This ID should be unique since each {@link Port} can only have one {@link Fifo} connected to them. Moreover, a {@link Port} with no name is always the
+	 * unique data {@link Port} of its owner.
+	 */
 	op String getId() {
 		return Optional.ofNullable(sourcePort).map[id].orElseThrow[new PiGraphException("Fifo has no source port.")] +
 			"-" + Optional.ofNullable(targetPort).map[id].orElseThrow[new PiGraphException("Fifo has no target port.")]
