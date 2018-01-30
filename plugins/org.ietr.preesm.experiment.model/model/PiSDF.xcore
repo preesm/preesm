@@ -128,13 +128,15 @@ class PiGraph extends AbstractActor {
 	op unique AbstractActor[] getAllActors() {
 		(actors + childrenGraphs.map[allActors].flatten).toEList.unmodifiableView
 	}
-	@GenModel(body="return getAllParameters().stream().filter(p -> p.getName().equals(parameterName) && p.getContainingGraph().getName().equals(graphName)).findFirst().orElse(null);")
-	op Parameter lookupParameterGivenGraph(String parameterName , String graphName)
+	op Parameter lookupParameterGivenGraph(String parameterName , String graphName) {
+		allParameters.findFirst[it.name == parameterName && it.containingGraph.name == graphName]
+	}
 	op AbstractVertex lookupVertex(String vertexName) {
 		(actors + parameters).findFirst[it.name == vertexName]
 	}
-	@GenModel(body="return getFifos().stream().filter(f -> f.getId().equals(fifoId)).findFirst().orElse(null);")
-	op Fifo lookupFifo(String fifoId)
+	op Fifo lookupFifo(String fifoId){
+		fifos.findFirst[it.id == fifoId]
+	}
 }
 
 abstract class ExecutableActor extends AbstractActor {
