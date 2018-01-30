@@ -72,16 +72,16 @@ abstract class AbstractVertex {
 abstract class Configurable extends AbstractVertex , Parameterizable {
 	contains ConfigInputPort[] configInputPorts opposite configurable
 	op unique Parameter[] getInputParameters() {
-		configInputPorts.filterNull.map[incomingDependency].filterNull.map[getter].filter(Parameter).toEList.unmodifiableView
+		return configInputPorts.filterNull.map[incomingDependency].filterNull.map[getter].filter(Parameter).toEList.unmodifiableView
 	}
 	op Port lookupPortConnectedWithParameter(Parameter parameter) {
-		Optional.ofNullable(configInputPorts.filterNull.map[incomingDependency].filterNull.findFirst[it.setter === parameter]).map[getter].orElse(null)
+		return Optional.ofNullable(configInputPorts.filterNull.map[incomingDependency].filterNull.findFirst[it.setter === parameter]).map[getter].orElse(null)
 	}
 	op unique Port[] getAllConfigPorts() {
-		configInputPorts.unmodifiableView
+		return configInputPorts.unmodifiableView
 	}
 	op unique Port[] getAllPorts() {
-		(super.allPorts + allConfigPorts).toEList.unmodifiableView
+		return (super.allPorts + allConfigPorts).toEList.unmodifiableView
 	}
 }
 
@@ -91,17 +91,17 @@ abstract class AbstractActor extends Configurable {
 	contains ConfigOutputPort[] configOutputPorts
 	container PiGraph containingGraph opposite actors
 	op unique DataPort[] getAllDataPorts() {
-		(dataInputPorts + dataOutputPorts).toEList.unmodifiableView
+		return (dataInputPorts + dataOutputPorts).toEList.unmodifiableView
 	}
 	op unique Port[] getAllConfigPorts() {
-		(super.allConfigPorts + configOutputPorts).toEList.unmodifiableView
+		return (super.allConfigPorts + configOutputPorts).toEList.unmodifiableView
 	}
 	op unique Port[] getAllPorts() {
-		(allConfigPorts + allDataPorts).toEList.unmodifiableView
+		return (allConfigPorts + allDataPorts).toEList.unmodifiableView
 	}
 	op String getActorPath() {
 		val actorName = name;
-		Optional.ofNullable(containingGraph).map[actorPath + "/" + actorName].orElse(actorName)
+		return Optional.ofNullable(containingGraph).map[actorPath + "/" + actorName].orElse(actorName)
 	}
 }
 
@@ -120,22 +120,22 @@ class PiGraph extends AbstractActor {
 		return actors.filter(Actor).toEList.unmodifiableView
 	}
 	op unique Parameter[] getAllParameters() {
-		(parameters + childrenGraphs.map[allParameters].flatten).toEList.unmodifiableView
+		return (parameters + childrenGraphs.map[allParameters].flatten).toEList.unmodifiableView
 	}
 	op unique PiGraph[] getChildrenGraphs() {
-		(actors.filter(PiGraph) + actorsWithRefinement.filter[isHierarchical].map[subGraph]).toEList.unmodifiableView
+		return (actors.filter(PiGraph) + actorsWithRefinement.filter[isHierarchical].map[subGraph]).toEList.unmodifiableView
 	}
 	op unique AbstractActor[] getAllActors() {
-		(actors + childrenGraphs.map[allActors].flatten).toEList.unmodifiableView
+		return (actors + childrenGraphs.map[allActors].flatten).toEList.unmodifiableView
 	}
 	op Parameter lookupParameterGivenGraph(String parameterName , String graphName) {
-		allParameters.findFirst[it.name == parameterName && it.containingGraph.name == graphName]
+		return allParameters.findFirst[it.name == parameterName && it.containingGraph.name == graphName]
 	}
 	op AbstractVertex lookupVertex(String vertexName) {
-		(actors + parameters).findFirst[it.name == vertexName]
+		return (actors + parameters).findFirst[it.name == vertexName]
 	}
 	op Fifo lookupFifo(String fifoId){
-		fifos.findFirst[it.id == fifoId]
+		return fifos.findFirst[it.id == fifoId]
 	}
 }
 
@@ -146,10 +146,11 @@ class Actor extends ExecutableActor {
 	contains Refinement refinement
 	IPath memoryScriptPath
 	op boolean isConfigurationActor() {
-		configOutputPorts.map[outgoingDependencies].filter[!it.isEmpty].map[it.get(0)].map[getter].exists[true]
+		return  configOutputPorts.map[outgoingDependencies].filter[!it.isEmpty].map[it.get(0)].map[getter].exists[true]
 	}
-	@GenModel(body="return getRefinement().isHierarchical();")
-	op boolean isHierarchical()
+	op boolean isHierarchical() {
+		return refinement.isHierarchical
+	}
 	op AbstractActor getChildAbstractActor() {
 		if (refinement === null) {
 			return null;
@@ -157,8 +158,13 @@ class Actor extends ExecutableActor {
 			return refinement.abstractActor
 		}
 	}
-	@GenModel(body="if (isHierarchical()) {\n\treturn (PiGraph) getChildAbstractActor();\n} else {\n\tthrow new UnsupportedOperationException(\"Cannot get the subgraph of a non hierarchical actor.\");\n}")
-	op PiGraph getSubGraph()
+	op PiGraph getSubGraph() {
+		if (hierarchical) {
+			return childAbstractActor as PiGraph
+		} else {
+			throw new UnsupportedOperationException("Cannot get the subgraph of a non hierarchical actor.")
+		}
+	}
 }
 
 class BroadcastActor extends ExecutableActor {
