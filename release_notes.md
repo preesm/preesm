@@ -8,6 +8,8 @@ PREESM Changelog
 
 ### Changes
 * Refactor PiSDF Model;
+* PiSDF: Replace Ecore/Genmodel with XCore;
+* PiSDF: Remove XCore generated code from git;
 
 ### Bug fix
 
