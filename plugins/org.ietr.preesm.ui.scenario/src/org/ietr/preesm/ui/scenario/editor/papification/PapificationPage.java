@@ -38,6 +38,7 @@ package org.ietr.preesm.ui.scenario.editor.papification;
 
 import java.io.FileNotFoundException;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -55,7 +56,6 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
-import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -202,7 +202,7 @@ public class PapificationPage extends FormPage implements IPropertyListener {
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
     final Section section = createSection(managedForm, title, desc, 2);
-    section.setLayout(new ColumnLayout());
+    section.setLayout(new TableLayout());
 
     this.checkStateListener = new PapificationCheckStateListener(section, this.scenario);
 
