@@ -23,7 +23,7 @@ import org.ietr.preesm.throughput.tools.transformers.SrSDFTransformer;
  * @author hderoui
  *
  */
-public class LatencyEvaluationPlugin extends AbstractTaskImplementation {
+public class LatencyEvaluationTask extends AbstractTaskImplementation {
 
   /**
    * @author hderoui

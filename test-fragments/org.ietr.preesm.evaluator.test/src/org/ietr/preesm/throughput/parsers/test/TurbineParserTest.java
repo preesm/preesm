@@ -5,7 +5,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.deadlock.IBSDFConsistency;
 import org.ietr.preesm.latency.LatencyEvaluationEngine;
-import org.ietr.preesm.latency.LatencyEvaluationPlugin.LatencyMethod;
+import org.ietr.preesm.latency.LatencyEvaluationTask.LatencyMethod;
 import org.ietr.preesm.schedule.ASAPScheduler_DAG;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;

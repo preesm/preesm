@@ -57,7 +57,7 @@ import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
  *
  *         Throughput plug-in for the evaluation of IBSDF and SDF graphs throughput
  */
-public class ThroughputPlugin extends AbstractTaskImplementation {
+public class ThroughputEvaluationTask extends AbstractTaskImplementation {
 
   /**
    * @author hderoui
