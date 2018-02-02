@@ -40,7 +40,7 @@ package org.ietr.preesm.evaluator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.Plugin;
-import org.ietr.preesm.mathematicalModels.PeriodicScheduleModel_GLPK;
+import org.ietr.preesm.mathematicalModels.PeriodicScheduleModel_ojAlgo;
 import org.ietr.preesm.mathematicalModels.SolverMethod;
 import org.ietr.preesm.schedule.PeriodicScheduler_SDF.Method;
 import org.osgi.framework.BundleContext;
@@ -73,7 +73,7 @@ public class Activator extends Plugin {
   @Override
   public void start(final BundleContext bundleContext) throws Exception {
     Activator.context = bundleContext;
-    Activator.solverMethodRegistry.put(Method.LinearProgram_GLPK, new PeriodicScheduleModel_GLPK());
+    Activator.solverMethodRegistry.put(Method.LinearProgram_ojAlgo, new PeriodicScheduleModel_ojAlgo());
     super.start(bundleContext);
   }
 
@@ -87,7 +87,7 @@ public class Activator extends Plugin {
     super.stop(bundleContext);
     Activator.context = null;
 
-    Activator.solverMethodRegistry.remove(Method.LinearProgram_GLPK, new PeriodicScheduleModel_GLPK());
+    Activator.solverMethodRegistry.remove(Method.LinearProgram_ojAlgo, new PeriodicScheduleModel_ojAlgo());
   }
 
 }

@@ -45,10 +45,10 @@ public class TurbineParserTest {
     //
     // System.out.println("Latency = " + latency + " computed in " + timer.toString());
 
-    LatencyMethod inputMethod = LatencyMethod.fast;
+    LatencyMethod inputMethod = LatencyMethod.FAST;
 
     switch (inputMethod) {
-      case flat_LP:
+      case FLAT_LP:
         // Based on flattening the hierarchy into a Flat srSDF graph
         timer.start();
 
@@ -61,7 +61,7 @@ public class TurbineParserTest {
         timer.stop();
         break;
 
-      case flat_SE:
+      case FLAT_SE:
         // Based on flattening the hierarchy into a Flat srSDF graph
         timer.start();
 
@@ -75,7 +75,7 @@ public class TurbineParserTest {
         timer.stop();
         break;
 
-      case fast:
+      case FAST:
         // Based on a hierarchical evaluation of the latency (evaluate-replace)
         LatencyEvaluationEngine evaluator = new LatencyEvaluationEngine();
         latency = evaluator.getMinLatencyMultiCore(inputGraph, null, false);

@@ -31,14 +31,14 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
    *         The supported methods
    */
   public static enum LatencyMethod {
-    fast, // Hierarchical method
-    flat_LP, // Based on Flattening the hierarchy
-    flat_SE, // Based on Flattening the hierarchy
+    FAST, // Hierarchical method
+    FLAT_LP, // Based on Flattening the hierarchy
+    FLAT_SE, // Based on Flattening the hierarchy
   }
 
   // Plug-in parameters
   public static final String PARAM_METHOD               = "method";
-  public static final String PARAM_METHOD_DEFAULT_VALUE = "fast";
+  public static final String PARAM_METHOD_DEFAULT_VALUE = "FAST";
   public Stopwatch           timer;
 
   @Override
@@ -62,7 +62,7 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
       if (multicore) {
 
         switch (inputMethod) {
-          case flat_LP:
+          case FLAT_LP:
             // Based on flattening the hierarchy into a Flat srSDF graph
             timer.start();
 
@@ -75,7 +75,7 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
             timer.stop();
             break;
 
-          case flat_SE:
+          case FLAT_SE:
             // Based on flattening the hierarchy into a Flat srSDF graph
             timer.start();
 
@@ -89,7 +89,7 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
             timer.stop();
             break;
 
-          case fast:
+          case FAST:
             // Based on a hierarchical evaluation of the latency (evaluate-replace)
             LatencyEvaluationEngine evaluator = new LatencyEvaluationEngine();
             latency = evaluator.getMinLatencyMultiCore(inputGraph, null, false);

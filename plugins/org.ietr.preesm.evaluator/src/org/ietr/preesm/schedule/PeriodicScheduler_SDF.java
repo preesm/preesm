@@ -7,7 +7,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.evaluator.Activator;
-import org.ietr.preesm.mathematicalModels.PeriodicScheduleModel_GLPK;
+import org.ietr.preesm.mathematicalModels.PeriodicScheduleModel_ojAlgo;
 import org.ietr.preesm.mathematicalModels.SolverMethod;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.tools.helpers.MathFunctionsHelper;
@@ -34,8 +34,10 @@ public class PeriodicScheduler_SDF {
    * 
    */
   public static enum Method {
-    Algorithm, LinearProgram_Gurobi, LinearProgram_GLPK
+    Algorithm, LinearProgram_Gurobi, LinearProgram_GLPK, LinearProgram_ojAlgo
   }
+
+  public static final Method METHOD_DEFAULT_VALUE = Method.LinearProgram_ojAlgo;
 
   /**
    * tests if a periodic schedule exists for an SDF graph using the same sufficient condition of liveness of SDF graphs.
@@ -259,11 +261,11 @@ public class PeriodicScheduler_SDF {
       period = solverMethod.computeNormalizedPeriod(graph);
     } else {
       // use the default method : GLPK
-      System.err.println(method.toString() + " method is not available ! \nTrying to use " + Method.LinearProgram_GLPK.toString() + " ...");
-      SolverMethod solverMethod = Activator.solverMethodRegistry.get(Method.LinearProgram_GLPK);
+      System.err.println(method.toString() + " method is not available ! \nTrying to use " + METHOD_DEFAULT_VALUE.toString() + " ...");
+      SolverMethod solverMethod = Activator.solverMethodRegistry.get(METHOD_DEFAULT_VALUE);
       // if the activator have not been executed yet, then instantiate the solverMethod manually ()
       if (solverMethod == null) {
-        solverMethod = new PeriodicScheduleModel_GLPK();
+        solverMethod = new PeriodicScheduleModel_ojAlgo();
       }
       period = solverMethod.computeNormalizedPeriod(graph);
     }
