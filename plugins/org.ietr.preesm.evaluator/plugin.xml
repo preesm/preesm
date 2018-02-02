@@ -66,9 +66,6 @@
             </output>
          </outputs>
       </task>
-   </extension>
-   <extension
-         point="org.ietr.dftools.workflow.tasks">
       <task
             id="org.ietr.preesm.throughput.ThroughputPlugin"
             name="Throughput Evaluation"
@@ -97,6 +94,40 @@
                   object="java.lang.Double">
             </output>
          </outputs>
+      </task>
+      <task
+            id="org.ietr.preesm.latency.LatencyEvaluationPlugin"
+            name="Latency Evaluation"
+            type="org.ietr.preesm.latency.LatencyEvaluationPlugin">
+         <inputs>
+            <input
+                  id="SDF"
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="SDF"
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+            </output>
+            <output
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </output>
+            <output
+                  id="latency"
+                  object="java.lang.Double">
+            </output>
+         </outputs>
+      </task>
+      <task
+            id="org.ietr.preesm.latency.LatencyExplorationPlugin"
+            name="Latency Exploration"
+            type="org.ietr.preesm.latency.LatencyExplorationPlugin">
       </task>
    </extension>
 

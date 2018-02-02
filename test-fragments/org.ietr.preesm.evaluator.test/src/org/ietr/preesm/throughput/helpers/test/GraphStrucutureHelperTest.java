@@ -1,5 +1,6 @@
 package org.ietr.preesm.throughput.helpers.test;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
@@ -8,6 +9,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.preesm.deadlock.IBSDFConsistency;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
+import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -318,6 +320,59 @@ public class GraphStrucutureHelperTest {
 
     IBSDFConsistency.computeRV(topgraph);
     return topgraph;
+  }
+
+  @Test
+  public void testTopologicalSorting() {
+    // create the DAG to sort
+    SDFGraph dag = new SDFGraph();
+    dag.setName("dag");
+    GraphStructureHelper.addActor(dag, "0", null, 1, 1., null, null);
+    GraphStructureHelper.addActor(dag, "1", null, 1, 1., null, null);
+    GraphStructureHelper.addActor(dag, "2", null, 1, 1., null, null);
+    GraphStructureHelper.addActor(dag, "3", null, 1, 1., null, null);
+    GraphStructureHelper.addActor(dag, "4", null, 1, 1., null, null);
+    GraphStructureHelper.addActor(dag, "5", null, 1, 1., null, null);
+
+    GraphStructureHelper.addEdge(dag, "5", null, "2", null, 1, 1, 0, null);
+    GraphStructureHelper.addEdge(dag, "5", null, "0", null, 1, 1, 0, null);
+    GraphStructureHelper.addEdge(dag, "4", null, "0", null, 1, 1, 0, null);
+    GraphStructureHelper.addEdge(dag, "4", null, "1", null, 1, 1, 0, null);
+    GraphStructureHelper.addEdge(dag, "2", null, "3", null, 1, 1, 0, null);
+    GraphStructureHelper.addEdge(dag, "3", null, "1", null, 1, 1, 0, null);
+
+    // expected result of the topological sorting
+    ArrayList<SDFAbstractVertex> expectedList = new ArrayList<>();
+    expectedList.add(0, dag.getVertex("5"));
+    expectedList.add(1, dag.getVertex("4"));
+    expectedList.add(2, dag.getVertex("2"));
+    expectedList.add(3, dag.getVertex("3"));
+    expectedList.add(4, dag.getVertex("1"));
+    expectedList.add(5, dag.getVertex("0"));
+
+    // topological sorting
+    Stopwatch timer = new Stopwatch();
+    timer.start();
+    ArrayList<SDFAbstractVertex> topologicalSorting = GraphStructureHelper.topologicalSorting(dag);
+    timer.stop();
+
+    System.out.println("topological sorting computed in " + timer.toString() + ", the ordered actors: ");
+
+    // check the results
+    Assert.assertNotNull(topologicalSorting);
+    Assert.assertEquals(dag.vertexSet().size(), topologicalSorting.size());
+
+    for (int i = 0; i < topologicalSorting.size(); i++) {
+      System.out.print(topologicalSorting.get(i).getName() + " ");
+      Assert.assertEquals(expectedList.get(i).getName(), topologicalSorting.get(i).getName());
+    }
+
+    System.out.println("\nPartial topological sorting computed in " + timer.toString() + ", the ordered actors: ");
+    ArrayList<SDFAbstractVertex> partialTopologicalSorting = GraphStructureHelper.partialTopologicalSorting(dag.getVertex("5"));
+    for (int i = 0; i < partialTopologicalSorting.size(); i++) {
+      System.out.print(partialTopologicalSorting.get(i).getName() + " ");
+    }
+
   }
 
 }

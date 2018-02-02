@@ -3,20 +3,16 @@ package org.ietr.preesm.throughput;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
-import java.util.Map.Entry;
 import org.apache.commons.lang3.math.Fraction;
 import org.ietr.dftools.algorithm.model.IInterface;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 import org.ietr.preesm.schedule.ALAPScheduler_DAG;
 import org.ietr.preesm.schedule.ASAPScheduler_DAG;
 import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
-import org.ietr.preesm.throughput.tools.helpers.GraphSimulationHelper;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.ietr.preesm.throughput.tools.parsers.Identifier;
@@ -51,7 +47,7 @@ public class EvaluateScheduleReplace {
   public double evaluate(SDFGraph inputGraph) {
     // this.preesmScenario = scenario;
     // Re-timing the IBSDF graph
-    this.retime(inputGraph);
+    GraphStructureHelper.retime(inputGraph);
 
     System.out.println("Computing the throughput of the graph using Evaluate-Schedule-Replace (ESR) method ...");
     this.timer = new Stopwatch();
@@ -296,77 +292,6 @@ public class EvaluateScheduleReplace {
     }
 
     return subgraphExecutionModel;
-  }
-
-  /**
-   * re-time the IBSDF graph to reveal the hidden delays
-   * 
-   * @param graph
-   *          IBSDF graph
-   */
-  public void retime(SDFGraph graph) {
-    // reveal the hidden delays of each hierarchical actor in the top graph
-    for (SDFAbstractVertex actor : graph.vertexSet()) {
-      if (actor.getGraphDescription() != null) {
-        revealHiddenDelays(actor);
-      }
-    }
-  }
-
-  /***
-   * reveal the hidden delays of the hierarchical actor subgraph
-   * 
-   * @param h
-   *          hierarchical actor
-   */
-  public void revealHiddenDelays(SDFAbstractVertex h) {
-    // get the subgraph of the hierarchical actor
-    SDFGraph subgraph = (SDFGraph) h.getGraphDescription();
-
-    // reveal the hidden delays of each hierarchical actor in the subgraph
-    for (SDFAbstractVertex actor : subgraph.vertexSet()) {
-      if (actor.getGraphDescription() != null) {
-        revealHiddenDelays(actor);
-      }
-    }
-
-    // execute the subgraph to reveal the hidden delays
-    // Step 1: add an empty loop edge for each actor with no inputs (including inputInterfaces)
-    ArrayList<SDFEdge> emptyLoopsList = new ArrayList<SDFEdge>();
-    for (SDFAbstractVertex actor : subgraph.vertexSet()) {
-      if (actor.getSources().isEmpty()) {
-        SDFEdge e = GraphStructureHelper.addEdge(subgraph, actor.getName(), null, actor.getName(), null, 1, 1, 0, null);
-        emptyLoopsList.add(e);
-      }
-    }
-
-    // Step 2: execute actor as long as they are ready
-    GraphSimulationHelper simulator = new GraphSimulationHelper(subgraph);
-    Hashtable<SDFAbstractVertex, Integer> readyActors = simulator.getReadyActorsNbExecutions();
-    while (!readyActors.isEmpty()) {
-      for (Entry<SDFAbstractVertex, Integer> e : readyActors.entrySet()) {
-        simulator.execute(e.getKey(), e.getValue());
-      }
-      readyActors = simulator.getReadyActorsNbExecutions();
-    }
-
-    // Step3: remove the empty loops
-    for (SDFEdge e : emptyLoopsList) {
-      subgraph.removeEdge(e);
-    }
-
-    // for each output interface add RV(h)*n*prod delays on its output edge
-    for (SDFAbstractVertex actor : subgraph.vertexSet()) {
-      if (actor instanceof SDFSinkInterfaceVertex) {
-        SDFEdge e = h.getAssociatedEdge(h.getInterface(actor.getName()));
-        int oldMarking = e.getDelay().intValue();
-        int newMarking = oldMarking + h.getNbRepeatAsInteger() * (simulator.getExecutionCounter(actor) * e.getProd().intValue());
-        e.setDelay(new SDFIntEdgePropertyType(newMarking));
-      }
-    }
-
-    // save the current state as the initial state
-    simulator.resetExecutionCounter();
   }
 
 }

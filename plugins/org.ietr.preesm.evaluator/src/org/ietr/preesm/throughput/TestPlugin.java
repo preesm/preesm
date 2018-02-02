@@ -17,6 +17,7 @@ import org.ietr.preesm.schedule.ALAPScheduler_DAG;
 import org.ietr.preesm.schedule.ASAPScheduler_DAG;
 import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
+import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.ietr.preesm.throughput.tools.transformers.IBSDFTransformer;
 import org.ietr.preesm.throughput.tools.transformers.SDFTransformer;
 
@@ -60,7 +61,11 @@ public class TestPlugin {
     // testIterationDurationShouldBeComputed();
 
     // test IBSDF to srSDF
-    testIBSDFGraphShouldBeTranformedToFlatSrSDFGraph();
+    // testIBSDFGraphShouldBeTranformedToFlatSrSDFGraph();
+
+    // test critical path
+    testCriticalPath();
+
   }
 
   /**
@@ -614,6 +619,30 @@ public class TestPlugin {
     // flatten the hierarchy with the execution rules
     ibsdf = generateIBSDFGraph();
     flatSrSDF = IBSDFTransformer.convertToSrSDF(ibsdf, true);
+
+  }
+
+  /**
+   * 
+   */
+  private static void testCriticalPath() {
+    Stopwatch timer = new Stopwatch();
+
+    // generate an IBSDF graph
+    SDFGraph ibsdf = generateIBSDFGraph();
+
+    // flatten the hierarchy
+    SDFGraph flatSrSDF = IBSDFTransformer.convertToSrSDF(ibsdf, false);
+
+    // topological sorting
+    timer.start();
+    ArrayList<SDFAbstractVertex> topologicalSorting = GraphStructureHelper.topologicalSorting(flatSrSDF);
+    timer.stop();
+
+    System.out.println("topological sorting computed in " + timer.toString() + ", the ordered actors: ");
+    for (SDFAbstractVertex actor : topologicalSorting) {
+      System.out.println(actor.getName() + " ");
+    }
 
   }
 
