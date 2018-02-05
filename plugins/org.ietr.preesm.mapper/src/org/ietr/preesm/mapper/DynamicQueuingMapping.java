@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2008 - 2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015 - 2017)
@@ -189,7 +189,7 @@ public class DynamicQueuingMapping extends AbstractMapping {
 
     final AbcParameters abcParameters = new AbcParameters(parameters);
 
-    final MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario, false);
+    final MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario);
 
     // Repeating the graph to simulate several calls.
     if (iterationNr != 0) {

@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
+ * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2015)
@@ -200,7 +201,7 @@ public class MemoryScriptEngine {
       // Display a message for each divided buffers
       for (final List<Buffer> group : this.sr.bufferGroups) {
         for (final Buffer buffer : group) {
-          if ((buffer.getMatched() != null) && (buffer.getMatched().size() > 1)) {
+          if ((buffer.matched != null) && (buffer.matched.size() > 1)) {
             this.logger.log(Level.WARNING, "Buffer " + buffer + " was divided and will be replaced by a NULL pointer in the generated code.");
           }
         }

@@ -132,7 +132,7 @@ public class SpiderCodegen {
     /* Preprocessor visitor */
     /* Initialize functions, dataports and dependency maps */
     this.preprocessor = new SpiderPreProcessVisitor();
-    pg.accept(this.preprocessor);
+    this.preprocessor.doSwitch(pg);
 
     this.portMap = this.preprocessor.getPortMap();
     this.functionMap = this.preprocessor.getFunctionMap();
@@ -297,7 +297,7 @@ public class SpiderCodegen {
         this.scenario.getSimulationManager().getDataTypes());
     // Generate C++ code for the whole PiGraph, at the end, tmp will contain
     // the vertex declaration for pg
-    pg.accept(codeGenerator);
+    codeGenerator.doSwitch(pg);
 
     // /Generate the header (license, includes and constants)
     append(getLicense());

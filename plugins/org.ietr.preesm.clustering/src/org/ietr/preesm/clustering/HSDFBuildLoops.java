@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -651,7 +651,7 @@ public class HSDFBuildLoops {
 
   MemoryExclusionGraph getMemEx(final SDFGraph srGraph) {
     // Build DAG
-    final MapperDAG dag = SdfToDagConverter.convert(srGraph, this.architecture, this.scenario, false);
+    final MapperDAG dag = SdfToDagConverter.convert(srGraph, this.architecture, this.scenario);
 
     // Build MEG
     final MemoryExclusionGraph memEx = new MemoryExclusionGraph();

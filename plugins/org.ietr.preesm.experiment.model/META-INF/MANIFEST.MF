@@ -2,16 +2,18 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm PiSDF metamodel
 Bundle-SymbolicName: org.ietr.preesm.experiment.model;singleton:=true
-Bundle-Version: 2.6.2
+Bundle-Version: 2.7.0
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.emf.ecore.xcore.lib,
  org.eclipse.ui;bundle-version="3.7.0",
  org.eclipse.core.resources;bundle-version="3.7.100",
  org.eclipse.emf.ecore.xmi;bundle-version="2.7.0",
  jep;bundle-version="2.40.0",
- org.ietr.dftools.architecture;bundle-version="1.2.10";visibility:=reexport,
- org.ietr.dftools.algorithm;bundle-version="1.2.10";visibility:=reexport,
- org.ietr.dftools.workflow;bundle-version="1.2.10";visibility:=reexport
+ org.ietr.dftools.architecture;bundle-version="1.3.0";visibility:=reexport,
+ org.ietr.dftools.algorithm;bundle-version="1.3.0";visibility:=reexport,
+ org.ietr.dftools.workflow;bundle-version="1.3.0";visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.ietr.preesm.experiment.model.expression,
  org.ietr.preesm.experiment.model.factory,
@@ -19,10 +21,7 @@ Export-Package: org.ietr.preesm.experiment.model.expression,
  org.ietr.preesm.experiment.model.pimm.adapter,
  org.ietr.preesm.experiment.model.pimm.impl,
  org.ietr.preesm.experiment.model.pimm.serialize,
- org.ietr.preesm.experiment.model.pimm.util,
- org.ietr.preesm.experiment.model.pimm.visitor,
- org.ietr.preesm.experiment.model.pimm.visitor.impl,
- org.ietr.preesm.experiment.model.pimm.visitor.util
+ org.ietr.preesm.experiment.model.pimm.util
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-Vendor: IETR/INSA Rennes

@@ -42,7 +42,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ietr.preesm</groupId>
   <artifactId>org.ietr.preesm.parent</artifactId>
-  <version>2.6.2</version>
+  <version>2.7.0</version>
   <packaging>pom</packaging>
 
   <!-- More Project Information -->
@@ -643,8 +643,7 @@
                         <ignore />
                       </action>
                     </pluginExecution>
-                    <!-- Disable directory maven plugin (unsupported and
-                      unused -->
+                    <!-- Disable RCPTT maven plugin (unsupported) -->
                     <pluginExecution>
                       <pluginExecutionFilter>
                         <groupId>org.eclipse.rcptt</groupId>
@@ -653,6 +652,20 @@
                         <goals>
                           <goal>execute</goal>
                           <goal>resources</goal>
+                        </goals>
+                      </pluginExecutionFilter>
+                      <action>
+                        <ignore />
+                      </action>
+                    </pluginExecution>
+                    <!-- Disable XText maven plugin (unsupported) -->
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>org.eclipse.xtext</groupId>
+                        <artifactId>xtext-maven-plugin</artifactId>
+                        <versionRange>[0.0.0,)</versionRange>
+                        <goals>
+                          <goal>generate</goal>
                         </goals>
                       </pluginExecutionFilter>
                       <action>

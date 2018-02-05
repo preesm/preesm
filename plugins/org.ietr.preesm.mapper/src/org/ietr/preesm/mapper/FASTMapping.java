@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Jonathan Piat <jpiat@laas.fr> (2008 - 2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2017)
@@ -113,7 +113,7 @@ public class FASTMapping extends AbstractMapping {
     final FastAlgoParameters fastParams = new FastAlgoParameters(parameters);
     final AbcParameters abcParams = new AbcParameters(parameters);
 
-    MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario, false);
+    MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario);
 
     if (dag == null) {
       throw (new WorkflowException(" graph can't be scheduled, check console messages"));

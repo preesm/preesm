@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2014 - 2016)
  *
@@ -71,6 +71,7 @@ import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 
 /**
@@ -79,7 +80,7 @@ import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
  * @author cguy
  * @author kdesnos
  */
-public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
+public class SubgraphConnectorVisitor extends PiMMSwitch<Boolean> {
 
   /** The current actor. */
   // Actor in the outer graph corresponding to the currently visited graph
@@ -107,7 +108,7 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
    *          the graph process
    */
   public void connectSubgraphs(final PiGraph pg) {
-    pg.accept(this);
+    doSwitch(pg);
     // Replace Actors with refinement by PiGraphs in pg and all its
     // subgraphs
 
@@ -120,31 +121,22 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitPiGraph(org.ietr.preesm.experiment.model.pimm.PiGraph)
-   */
   @Override
-  public void visitPiGraph(final PiGraph pg) {
+  public Boolean casePiGraph(PiGraph pg) {
     final PiGraph oldGraph = this.currentGraph;
     this.currentGraph = pg;
     for (final AbstractActor v : pg.getActors()) {
-      v.accept(this);
+      doSwitch(v);
     }
     for (final Parameter p : pg.getParameters()) {
-      p.accept(this);
+      doSwitch(p);
     }
     this.currentGraph = oldGraph;
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitActor(org.ietr.preesm.experiment.model.pimm.Actor)
-   */
   @Override
-  public void visitActor(final Actor a) {
+  public Boolean caseActor(Actor a) {
     // If the refinement of the Actor a points to the description of
     // PiGraph, visit it to connect the subgraph to its supergraph
     if (a.isHierarchical()) {
@@ -155,7 +147,7 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
       SubgraphReconnector.reconnectPiGraph(a, innerGraph);
 
       this.currentActor = innerGraph;
-      innerGraph.accept(this);
+      doSwitch(innerGraph);
 
       final ActorByGraphReplacement replacement = new ActorByGraphReplacement(a, innerGraph);
       if (!this.graphReplacements.containsKey(this.currentGraph)) {
@@ -163,15 +155,11 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
       }
       this.graphReplacements.get(this.currentGraph).add(replacement);
     }
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataInputInterface(org.ietr.preesm.experiment.model.pimm.DataInputInterface)
-   */
   @Override
-  public void visitDataInputInterface(final DataInputInterface dii) {
+  public Boolean caseDataInputInterface(DataInputInterface dii) {
     // Connect the interface to the incoming fifo from the outer graph, if
     // any
     if (this.currentActor != null) {
@@ -186,15 +174,11 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
         dii.setGraphPort(correspondingPort);
       }
     }
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataOutputInterface(org.ietr.preesm.experiment.model.pimm.DataOutputInterface)
-   */
   @Override
-  public void visitDataOutputInterface(final DataOutputInterface doi) {
+  public Boolean caseDataOutputInterface(DataOutputInterface doi) {
     // Connect the interface to the outgoing fifo to the outer graph, if any
     if (this.currentActor != null) {
       DataOutputPort correspondingPort = null;
@@ -208,15 +192,11 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
         doi.setGraphPort(correspondingPort);
       }
     }
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigInputInterface(org.ietr.preesm.experiment.model.pimm.ConfigInputInterface)
-   */
   @Override
-  public void visitConfigInputInterface(final ConfigInputInterface cii) {
+  public Boolean caseConfigInputInterface(ConfigInputInterface cii) {
     // only reconnects if we parse a hierarchical actor and the current actor is the one containing the interface
     if (this.currentActor != null && cii.getContainingGraph() == this.currentActor) {
       // Connect the interface to the incoming dependencies from the outer
@@ -232,15 +212,11 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
         cii.setGraphPort(correspondingPort);
       }
     }
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigOutputInterface(org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface)
-   */
   @Override
-  public void visitConfigOutputInterface(final ConfigOutputInterface coi) {
+  public Boolean caseConfigOutputInterface(ConfigOutputInterface coi) {
     // Connect the interface to the outgoing dependencies to the outer graph
     ConfigOutputPort correspondingPort = null;
     for (final ConfigOutputPort cop : this.currentActor.getConfigOutputPorts()) {
@@ -252,257 +228,142 @@ public class SubgraphConnectorVisitor extends PiMMDefaultVisitor {
     if (correspondingPort != null) {
       coi.setGraphPort(correspondingPort);
     }
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitParameter(org.ietr.preesm.experiment.model.pimm.Parameter)
-   */
   @Override
-  public void visitParameter(final Parameter p) {
+  public Boolean caseParameter(Parameter p) {
     // We only do something for ConfigInputInterface (subclass of
     // Parameter), other parameters are visited but nothing should be done
     // DO NOTHING
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitAbstractActor(org.ietr.preesm.experiment.model.pimm.AbstractActor)
-   */
   @Override
-  public void visitAbstractActor(final AbstractActor aa) {
+  public Boolean caseAbstractActor(AbstractActor aa) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitAbstractVertex(org.ietr.preesm.experiment.model.pimm.AbstractVertex)
-   */
   @Override
-  public void visitAbstractVertex(final AbstractVertex av) {
+  public Boolean caseAbstractVertex(AbstractVertex av) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigInputPort(org.ietr.preesm.experiment.model.pimm.ConfigInputPort)
-   */
   @Override
-  public void visitConfigInputPort(final ConfigInputPort cip) {
+  public Boolean caseConfigInputPort(final ConfigInputPort cip) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigOutputPort(org.ietr.preesm.experiment.model.pimm.ConfigOutputPort)
-   */
   @Override
-  public void visitConfigOutputPort(final ConfigOutputPort cop) {
+  public Boolean caseConfigOutputPort(final ConfigOutputPort cop) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataPort(org.ietr.preesm.experiment.model.pimm.DataPort)
-   */
   @Override
-  public void visitDataPort(final DataPort p) {
+  public Boolean caseDataPort(final DataPort p) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataInputPort(org.ietr.preesm.experiment.model.pimm.DataInputPort)
-   */
   @Override
-  public void visitDataInputPort(final DataInputPort dip) {
+  public Boolean caseDataInputPort(final DataInputPort dip) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataOutputPort(org.ietr.preesm.experiment.model.pimm.DataOutputPort)
-   */
   @Override
-  public void visitDataOutputPort(final DataOutputPort dop) {
+  public Boolean caseDataOutputPort(final DataOutputPort dop) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDelay(org.ietr.preesm.experiment.model.pimm.Delay)
-   */
   @Override
-  public void visitDelay(final Delay d) {
+  public Boolean caseDelay(final Delay d) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDependency(org.ietr.preesm.experiment.model.pimm.Dependency)
-   */
   @Override
-  public void visitDependency(final Dependency d) {
+  public Boolean caseDependency(final Dependency d) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitExpression(org.ietr.preesm.experiment.model.pimm.Expression)
-   */
   @Override
-  public void visitExpression(final Expression e) {
+  public Boolean caseExpression(final Expression e) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitFifo(org.ietr.preesm.experiment.model.pimm.Fifo)
-   */
   @Override
-  public void visitFifo(final Fifo f) {
+  public Boolean caseFifo(final Fifo f) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitInterfaceActor(org.ietr.preesm.experiment.model.pimm.InterfaceActor)
-   */
   @Override
-  public void visitInterfaceActor(final InterfaceActor ia) {
+  public Boolean caseInterfaceActor(final InterfaceActor ia) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitISetter(org.ietr.preesm.experiment.model.pimm.ISetter)
-   */
   @Override
-  public void visitISetter(final ISetter is) {
+  public Boolean caseISetter(final ISetter is) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitParameterizable(org.ietr.preesm.experiment.model.pimm.Parameterizable)
-   */
   @Override
-  public void visitParameterizable(final Parameterizable p) {
+  public Boolean caseParameterizable(final Parameterizable p) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitPort(org.ietr.preesm.experiment.model.pimm.Port)
-   */
   @Override
-  public void visitPort(final Port p) {
+  public Boolean casePort(final Port p) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitRefinement(org.ietr.preesm.experiment.model.pimm.Refinement)
-   */
   @Override
-  public void visitRefinement(final PiSDFRefinement r) {
+  public Boolean caseRefinement(final Refinement r) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitFunctionParameter(org.ietr.preesm.experiment.model.pimm.FunctionParameter)
-   */
   @Override
-  public void visitFunctionParameter(final FunctionParameter functionParameter) {
+  public Boolean casePiSDFRefinement(PiSDFRefinement r) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitFunctionPrototype(org.ietr.preesm.experiment.model.pimm.FunctionPrototype)
-   */
   @Override
-  public void visitFunctionPrototype(final FunctionPrototype functionPrototype) {
+  public Boolean caseFunctionParameter(final FunctionParameter functionParameter) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitBroadcastActor(org.ietr.preesm.experiment.model.pimm.BroadcastActor)
-   */
   @Override
-  public void visitBroadcastActor(final BroadcastActor ba) {
+  public Boolean caseFunctionPrototype(final FunctionPrototype functionPrototype) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Boolean caseBroadcastActor(final BroadcastActor ba) {
     // Do nothing
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitJoinActor(org.ietr.preesm.experiment.model.pimm.JoinActor)
-   */
   @Override
-  public void visitJoinActor(final JoinActor ja) {
+  public Boolean caseJoinActor(final JoinActor ja) {
+    return true;
+  }
+
+  @Override
+  public Boolean caseForkActor(final ForkActor fa) {
     // Do nothing
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitForkActor(org.ietr.preesm.experiment.model.pimm.ForkActor)
-   */
   @Override
-  public void visitForkActor(final ForkActor fa) {
+  public Boolean caseRoundBufferActor(final RoundBufferActor rba) {
     // Do nothing
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitRoundBufferActor(org.ietr.preesm.experiment.model.pimm.RoundBufferActor)
-   */
   @Override
-  public void visitRoundBufferActor(final RoundBufferActor rba) {
-    // Do nothing
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitExecutableActor(org.ietr.preesm.experiment.model.pimm.ExecutableActor)
-   */
-  @Override
-  public void visitExecutableActor(final ExecutableActor ea) {
+  public Boolean caseExecutableActor(final ExecutableActor ea) {
     throw new UnsupportedOperationException();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitHRefinement(org.ietr.preesm.experiment.model.pimm.HRefinement)
-   */
   @Override
-  public void visitHRefinement(final CHeaderRefinement hRefinement) {
+  public Boolean caseCHeaderRefinement(final CHeaderRefinement hRefinement) {
     throw new UnsupportedOperationException();
   }
 

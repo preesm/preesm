@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2008 - 2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
@@ -48,8 +48,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import org.ietr.dftools.algorithm.demo.SDFAdapterDemo;
-import org.ietr.dftools.algorithm.demo.SDFtoDAGDemo;
 import org.ietr.dftools.algorithm.model.AbstractEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
@@ -97,11 +95,9 @@ public class SdfToDagConverter {
    *          the architecture
    * @param scenario
    *          the scenario
-   * @param display
-   *          the display
    * @return the mapper DAG
    */
-  public static MapperDAG convert(final SDFGraph sdfIn, final Design architecture, final PreesmScenario scenario, final boolean display) {
+  public static MapperDAG convert(final SDFGraph sdfIn, final Design architecture, final PreesmScenario scenario) {
 
     WorkflowLogger.getLogger().log(Level.INFO, "Converting from SDF to DAG.");
 
@@ -133,15 +129,7 @@ public class SdfToDagConverter {
     // Adds the necessary properties to vertices and edges
     SdfToDagConverter.addInitialProperties(dag, architecture, scenario);
 
-    // Displays the DAG
-    if (display) {
-      final SDFAdapterDemo applet1 = new SDFAdapterDemo();
-      applet1.init(sdf);
-      final SDFtoDAGDemo applet2 = new SDFtoDAGDemo();
-      applet2.init(dag);
-    }
-
-    if (dag.vertexSet().size() == 0) {
+    if (dag.vertexSet().isEmpty()) {
       WorkflowLogger.getLogger().log(Level.SEVERE, "Can not map a DAG with no vertex.");
     } else {
       WorkflowLogger.getLogger().log(Level.INFO, "Conversion finished.");

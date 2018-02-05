@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,6 +34,7 @@
  */
 package org.ietr.preesm.experiment.model.factory;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
@@ -52,7 +53,6 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.adapter.GraphInterfaceObserver;
 import org.ietr.preesm.experiment.model.pimm.impl.PiMMFactoryImpl;
-import org.ietr.preesm.experiment.model.pimm.visitor.PiMMVisitable;
 
 /**
  *
@@ -72,7 +72,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   /**
    * Copy an existing PiMM node
    */
-  public final <T extends PiMMVisitable> T copy(final T vertex) {
+  public final <T extends EObject> T copy(final T vertex) {
     @SuppressWarnings("unchecked")
     final T copy = (T) PiMMUserFactory.copier.copy(vertex);
     return copy;

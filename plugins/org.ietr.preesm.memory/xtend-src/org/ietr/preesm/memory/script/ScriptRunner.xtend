@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
+ * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
@@ -71,12 +72,12 @@ import org.ietr.dftools.workflow.WorkflowException
 import org.ietr.dftools.workflow.tools.WorkflowLogger
 import org.ietr.preesm.core.scenario.PreesmScenario
 import org.ietr.preesm.core.types.DataType
+import org.ietr.preesm.memory.script.Buffer
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex
 import org.ietr.preesm.utils.files.ContainersManager
 import org.ietr.preesm.utils.files.FilesManager
 
-import static extension org.ietr.preesm.memory.script.Buffer.*
 import static extension org.ietr.preesm.memory.script.Range.*
 
 enum CheckPolicy {
@@ -555,8 +556,8 @@ class ScriptRunner {
 		// except the given match, we create a fake match with the current
 		// buffer as a remote buffer
 		val fakeMatch = new Match(null, 0, buffer, 0, 0)
-		updateMatches(fakeMatch)
-		updateConflictingMatches(buffer.matchTable.values.flatten.toList)
+		Buffer.updateMatches(fakeMatch)
+		Buffer.updateConflictingMatches(buffer.matchTable.values.flatten.toList)
 	}
 
 	/**
@@ -677,8 +678,8 @@ class ScriptRunner {
 		for (buffer : #{inputs, outputs}.flatten) {
 
 			// for Each match
-			val matchList = buffer.matchTable.values.flatten
-			Buffer::updateConflictingMatches(matchList)
+			val matchList = buffer.matchTable.values.flatten.toList
+			Buffer.updateConflictingMatches(matchList)
 		}
 	}
 
@@ -1012,7 +1013,7 @@ class ScriptRunner {
 			while (iterType.hasNext && !test) {
 				val currentType = iterType.next
 
-				val matches = candidate.matchTable.values.flatten.filter[it.type == currentType]
+				val matches = candidate.matchTable.values.flatten.filter[it.type == currentType].toList
 
 				// Returns true if:
 				// Has a several matches
@@ -1026,7 +1027,7 @@ class ScriptRunner {
 					it.conflictingMatches.size == 0 && it.applicable && it.reciprocate.applicable]
 
 				// Matches have no multiple match Range.
-				test = test && matches.overlappingRanges.size == 0
+				test = test && Buffer.getOverlappingRanges(matches).size == 0
 
 				// Check divisibilityRequiredMatches
 				test = test && candidate.doesCompleteRequiredMatches(matches)
@@ -1154,7 +1155,7 @@ class ScriptRunner {
 		val candidates = newArrayList
 
 		for (candidate : buffers) {
-			val matches = candidate.matchTable.values.flatten.filter[it.type == MatchType::BACKWARD]
+			val matches = candidate.matchTable.values.flatten.filter[it.type == MatchType::BACKWARD].toList
 
 			// Returns true if:
 			// Has a several matches
@@ -1178,7 +1179,7 @@ class ScriptRunner {
 			}
 
 			// Matches have no multiple match Range (on the local buffer side).
-			test = test && matches.overlappingRanges.size == 0
+			test = test && Buffer.getOverlappingRanges(matches).size == 0
 
 			// Check divisibilityRequiredMatches
 			test = test && candidate.doesCompleteRequiredMatches(matches)
@@ -1356,7 +1357,7 @@ class ScriptRunner {
 				])
 
 				// Matches have no multiple match Range (on the local buffer side).
-				test = test && matches.overlappingRanges.size == 0
+				test = test && Buffer.getOverlappingRanges(matches).size == 0
 
 				// Check divisibilityRequiredMatches
 				test = test && candidate.doesCompleteRequiredMatches(matches)

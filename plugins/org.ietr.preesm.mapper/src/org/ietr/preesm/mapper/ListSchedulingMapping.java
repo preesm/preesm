@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Jonathan Piat <jpiat@laas.fr> (2008 - 2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2017)
@@ -101,7 +101,7 @@ public class ListSchedulingMapping extends AbstractMapping {
 
     final AbcParameters abcParameters = new AbcParameters(parameters);
 
-    final MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario, false);
+    final MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario);
 
     // calculates the DAG span length on the architecture main operator (the
     // tasks that can not be executed by the main operator are deported

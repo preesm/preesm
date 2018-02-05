@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Hascoet <jhascoet@kalray.eu> (2016)
  * Jonathan Piat <jpiat@laas.fr> (2009 - 2011)
@@ -56,7 +56,6 @@ import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.algorithm.optimization.clean.joinfork.JoinForkCleaner;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class used to transform a SDF graph into a HSDF graph. Actually into a single rate graph (close enough :->)
  *

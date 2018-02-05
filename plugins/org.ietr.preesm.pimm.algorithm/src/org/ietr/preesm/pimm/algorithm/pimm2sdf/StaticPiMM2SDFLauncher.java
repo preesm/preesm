@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2016)
  *
@@ -88,7 +88,7 @@ public class StaticPiMM2SDFLauncher {
     StaticPiMM2SDFVisitor visitor;
     final PiGraphExecution execution = new PiGraphExecution(parametersValues);
     visitor = new StaticPiMM2SDFVisitor(execution);
-    this.graph.accept(visitor);
+    visitor.doSwitch(this.graph);
 
     result = visitor.getResult();
     return result;
