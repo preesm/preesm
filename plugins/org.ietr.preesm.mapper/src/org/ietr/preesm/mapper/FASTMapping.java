@@ -113,7 +113,7 @@ public class FASTMapping extends AbstractMapping {
     final FastAlgoParameters fastParams = new FastAlgoParameters(parameters);
     final AbcParameters abcParams = new AbcParameters(parameters);
 
-    MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario, false);
+    MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario);
 
     if (dag == null) {
       throw (new WorkflowException(" graph can't be scheduled, check console messages"));

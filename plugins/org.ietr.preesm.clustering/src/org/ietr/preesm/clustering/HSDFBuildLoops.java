@@ -651,7 +651,7 @@ public class HSDFBuildLoops {
 
   MemoryExclusionGraph getMemEx(final SDFGraph srGraph) {
     // Build DAG
-    final MapperDAG dag = SdfToDagConverter.convert(srGraph, this.architecture, this.scenario, false);
+    final MapperDAG dag = SdfToDagConverter.convert(srGraph, this.architecture, this.scenario);
 
     // Build MEG
     final MemoryExclusionGraph memEx = new MemoryExclusionGraph();

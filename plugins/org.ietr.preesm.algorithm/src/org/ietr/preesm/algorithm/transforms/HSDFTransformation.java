@@ -56,7 +56,6 @@ import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.algorithm.optimization.clean.joinfork.JoinForkCleaner;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class used to transform a SDF graph into a HSDF graph. Actually into a single rate graph (close enough :->)
  *
