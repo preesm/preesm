@@ -189,7 +189,7 @@ public class DynamicQueuingMapping extends AbstractMapping {
 
     final AbcParameters abcParameters = new AbcParameters(parameters);
 
-    final MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario, false);
+    final MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario);
 
     // Repeating the graph to simulate several calls.
     if (iterationNr != 0) {

@@ -39,9 +39,9 @@ package org.ietr.preesm.mapper.tools;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.preesm.mapper.model.MapperDAG;
-import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.jgrapht.traverse.AbstractGraphIterator;
 
@@ -51,7 +51,7 @@ import org.jgrapht.traverse.AbstractGraphIterator;
  *
  * @author mpelcat
  */
-public class CustomTopologicalIterator extends AbstractGraphIterator<MapperDAGVertex, MapperDAGEdge> {
+public class CustomTopologicalIterator extends AbstractGraphIterator<DAGVertex, DAGEdge> {
 
   /** The direct order. */
   protected boolean directOrder;
@@ -71,6 +71,7 @@ public class CustomTopologicalIterator extends AbstractGraphIterator<MapperDAGVe
    *          the direct order
    */
   public CustomTopologicalIterator(final MapperDAG dag, final boolean directOrder) {
+    super(dag);
     this.directOrder = directOrder;
     this.dag = dag;
     this.visitedVertices = new LinkedHashSet<>();

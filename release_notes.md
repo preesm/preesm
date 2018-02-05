@@ -10,7 +10,9 @@ PREESM Changelog
 * Refactor PiSDF Model;
 * PiSDF: Replace Ecore/Genmodel with XCore;
 * PiSDF: Remove XCore generated code from git;
-* Force external deps to 1.4.1+;
+* Update JGrapht to 1.1.0;
+* Force DFTools to 1.3.0+;
+* Force external deps to 2.0.0+;
 
 ### Bug fix
 

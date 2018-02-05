@@ -42,10 +42,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.model.MapperDAG;
-import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.jgrapht.traverse.AbstractGraphIterator;
 
@@ -56,7 +56,7 @@ import org.jgrapht.traverse.AbstractGraphIterator;
  *
  * @author mpelcat
  */
-public abstract class ImplementationIterator extends AbstractGraphIterator<MapperDAGVertex, MapperDAGEdge> implements Comparator<MapperDAGVertex> {
+public abstract class ImplementationIterator extends AbstractGraphIterator<DAGVertex, DAGEdge> implements Comparator<MapperDAGVertex> {
 
   /** Ordered vertex list parsed by the iterator. */
   private int currentIndex = -1;
@@ -72,13 +72,6 @@ public abstract class ImplementationIterator extends AbstractGraphIterator<Mappe
 
   /**
    * Instantiates a new implementation iterator.
-   */
-  public ImplementationIterator() {
-    super();
-  }
-
-  /**
-   * Instantiates a new implementation iterator.
    *
    * @param abc
    *          the abc
@@ -88,21 +81,7 @@ public abstract class ImplementationIterator extends AbstractGraphIterator<Mappe
    *          the direct order
    */
   public ImplementationIterator(final IAbc abc, final MapperDAG dag, final boolean directOrder) {
-    super();
-    initParams(abc, dag, directOrder);
-  }
-
-  /**
-   * Inits the params.
-   *
-   * @param abc
-   *          the abc
-   * @param dag
-   *          the dag
-   * @param directOrder
-   *          the direct order
-   */
-  public void initParams(final IAbc abc, final MapperDAG dag, final boolean directOrder) {
+    super(dag);
     this.directOrder = directOrder;
     this.abc = abc;
     createOrderedList(dag);

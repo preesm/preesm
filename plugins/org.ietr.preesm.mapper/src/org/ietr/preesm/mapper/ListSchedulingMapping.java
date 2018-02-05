@@ -101,7 +101,7 @@ public class ListSchedulingMapping extends AbstractMapping {
 
     final AbcParameters abcParameters = new AbcParameters(parameters);
 
-    final MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario, false);
+    final MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario);
 
     // calculates the DAG span length on the architecture main operator (the
     // tasks that can not be executed by the main operator are deported

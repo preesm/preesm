@@ -114,7 +114,7 @@ public class PFASTMapping extends AbstractMapping {
     final PFastAlgoParameters pFastParams = new PFastAlgoParameters(parameters);
     final AbcParameters abcParameters = new AbcParameters(parameters);
 
-    MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario, false);
+    MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario);
 
     // calculates the DAG span length on the architecture main operator (the
     // tasks that can
