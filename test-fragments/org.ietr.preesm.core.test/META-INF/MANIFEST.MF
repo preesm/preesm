@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm core plug-in Tests
 Bundle-SymbolicName: org.ietr.preesm.core.test
-Bundle-Version: 2.7.0
+Bundle-Version: 2.7.0.qualifier
 Bundle-Vendor: IETR/INSA Rennes
 Fragment-Host: org.ietr.preesm.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
