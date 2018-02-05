@@ -91,7 +91,7 @@ if [ $NBCHANGES -ne 0 ]; then
 fi
 
 # make sure integration works before deploying and pushing
-git stash apply
+git stash pop
 ./releng/build_and_test.sh
 
 #commit new version in develop
