@@ -56,6 +56,7 @@ import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.core.scenario.ParameterValue;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
+import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
@@ -126,9 +127,25 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
 
   private void applyScenarioParameterValues(final PreesmScenario scenario, final PiGraph piAlgorithm) {
     for (final ParameterValue paramValue : scenario.getParameterValueManager().getParameterValues()) {
+
       final String variableName = paramValue.getName();
       final String newValue = paramValue.getValue();
-      ((Parameter) piAlgorithm.lookupVertex(variableName)).getValueExpression().setExpressionString(newValue);
+      final String expression = paramValue.getExpression();
+      final String parentVertex = paramValue.getParentVertex();
+
+      if (newValue != null) {
+        // note: need to lookup since graph reconnector may have changed Paramter objects
+        final Parameter lookupParameterGivenGraph = piAlgorithm.lookupParameterGivenGraph(variableName, parentVertex);
+        final Expression valueExpression = lookupParameterGivenGraph.getValueExpression();
+        valueExpression.setExpressionString(newValue);
+      } else if (expression != null) {
+        // note: need to lookup since graph reconnector may have changed Paramter objects
+        final Parameter lookupParameterGivenGraph = piAlgorithm.lookupParameterGivenGraph(variableName, parentVertex);
+        final Expression valueExpression = lookupParameterGivenGraph.getValueExpression();
+        valueExpression.setExpressionString(expression);
+      } else {
+        // keep value from PiSDF graph
+      }
     }
   }
 
