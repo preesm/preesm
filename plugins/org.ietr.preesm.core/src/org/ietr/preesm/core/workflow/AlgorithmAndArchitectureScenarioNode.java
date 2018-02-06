@@ -53,12 +53,13 @@ import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.implement.AbstractScenarioImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
+import org.ietr.preesm.core.scenario.ParameterValue;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 
-// TODO: Auto-generated Javadoc
 /**
  * Implementing the new DFTools scenario node behavior for Preesm. This version generates an architecture with the S-LAM2 meta-model type and an algorithm with
  * the IBSDF type
@@ -79,7 +80,7 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
    *           the workflow exception
    */
   @Override
-  public Map<String, Object> extractData(final String path) throws WorkflowException {
+  public Map<String, Object> extractData(final String path) {
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
 
@@ -103,24 +104,16 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
         // Add indexes to all its special actor ports
         SpecialActorPortsIndexer.addIndexes(sdfAlgorithm);
         SpecialActorPortsIndexer.sortIndexedPorts(sdfAlgorithm);
+
+        applyScenarioVariableValues(scenario, sdfAlgorithm);
       } else if (scenario.isPISDFScenario()) {
         piAlgorithm = PiParser.getPiGraph(url);
+        applyScenarioParameterValues(scenario, piAlgorithm);
       }
     } catch (FileNotFoundException | InvalidModelException | CoreException e) {
       throw new WorkflowException(e.getMessage());
     }
 
-    // Apply to the algorithm the values of variables
-    // defined in the scenario
-    if (scenario.isIBSDFScenario()) {
-      final VariableSet variablesGraph = sdfAlgorithm.getVariables();
-      final VariableSet variablesScenario = scenario.getVariablesManager().getVariables();
-
-      for (final String variableName : variablesScenario.keySet()) {
-        final String newValue = variablesScenario.get(variableName).getValue();
-        variablesGraph.getVariable(variableName).setValue(newValue);
-      }
-    }
     // Retrieving the architecture
     final Design slamDesign = ScenarioParser.parseSlamDesign(scenario.getArchitectureURL());
 
@@ -129,6 +122,26 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
     outputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, piAlgorithm);
     outputs.put(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, slamDesign);
     return outputs;
+  }
+
+  private void applyScenarioParameterValues(final PreesmScenario scenario, final PiGraph piAlgorithm) {
+    for (final ParameterValue paramValue : scenario.getParameterValueManager().getParameterValues()) {
+      final String variableName = paramValue.getName();
+      final String newValue = paramValue.getValue();
+      ((Parameter) piAlgorithm.lookupVertex(variableName)).getValueExpression().setExpressionString(newValue);
+    }
+  }
+
+  private void applyScenarioVariableValues(final PreesmScenario scenario, final SDFGraph sdfAlgorithm) {
+    // Apply to the algorithm the values of variables
+    // defined in the scenario
+    final VariableSet variablesScenario = scenario.getVariablesManager().getVariables();
+    final VariableSet variablesGraph = sdfAlgorithm.getVariables();
+
+    for (final String variableName : variablesScenario.keySet()) {
+      final String newValue = variablesScenario.get(variableName).getValue();
+      variablesGraph.getVariable(variableName).setValue(newValue);
+    }
   }
 
   /*
