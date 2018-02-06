@@ -5,6 +5,7 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* Add throughput evaluation for PiSDF;
 
 ### Changes
 * Change default flattening depth to -1 (infinite);
