@@ -1,0 +1,17 @@
+#TopGraph_name
+SDF_test SDF
+#Number_of_tasks number_of_arcs
+4 5
+#TASKS
+#Id repetition_factor phase_duration
+A 15 12.0
+B 5 11.0
+C 6 17.0
+D 2 20.0
+#ARCS
+#(source,target) initial_marking production_vector consumption_vector
+(A,B) 6.0 1.0 3.0
+(B,C) 0.0 6.0 5.0
+(B,D) 0.0 2.0 5.0
+(D,C) 0.0 3.0 1.0
+(C,A) 0.0 5.0 2.0
