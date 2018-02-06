@@ -37,17 +37,24 @@
  */
 package org.ietr.preesm.evaluator;
 
-import org.osgi.framework.BundleActivator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import org.eclipse.core.runtime.Plugin;
+import org.ietr.preesm.mathematicalModels.PeriodicScheduleModel_ojAlgo;
+import org.ietr.preesm.mathematicalModels.SolverMethod;
+import org.ietr.preesm.schedule.PeriodicScheduler_SDF.Method;
 import org.osgi.framework.BundleContext;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class Activator.
  */
-public class Activator implements BundleActivator {
+public class Activator extends Plugin {
 
   /** The context. */
   private static BundleContext context;
+
+  public static final Map<Method, SolverMethod> solverMethodRegistry = new LinkedHashMap<>();
 
   /**
    * Gets the context.
@@ -66,6 +73,8 @@ public class Activator implements BundleActivator {
   @Override
   public void start(final BundleContext bundleContext) throws Exception {
     Activator.context = bundleContext;
+    Activator.solverMethodRegistry.put(Method.LinearProgram_ojAlgo, new PeriodicScheduleModel_ojAlgo());
+    super.start(bundleContext);
   }
 
   /*
@@ -75,7 +84,10 @@ public class Activator implements BundleActivator {
    */
   @Override
   public void stop(final BundleContext bundleContext) throws Exception {
+    super.stop(bundleContext);
     Activator.context = null;
+
+    Activator.solverMethodRegistry.remove(Method.LinearProgram_ojAlgo, new PeriodicScheduleModel_ojAlgo());
   }
 
 }

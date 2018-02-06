@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">ABC_top</data>
+        <node id="B" kind="actor">
+            <data key="graph_desc">Algo/DEF_sub.pi</data>
+            <port annotation="NONE" expr="2" kind="input" name="a"/>
+            <port annotation="NONE" expr="1" kind="output" name="c"/>
+        </node>
+        <node id="A" kind="actor">
+            <port annotation="NONE" expr="3" kind="input" name="c"/>
+            <port annotation="NONE" expr="3" kind="output" name="b"/>
+        </node>
+        <node id="C" kind="actor">
+            <port annotation="NONE" expr="1" kind="input" name="b"/>
+            <port annotation="NONE" expr="2" kind="output" name="a"/>
+        </node>
+        <edge expr="3" kind="fifo" source="A" sourceport="b" target="B"
+            targetport="a" type="int">
+            <data key="delay"/>
+        </edge>
+        <edge kind="fifo" source="B" sourceport="c" target="C"
+            targetport="b" type="int"/>
+        <edge expr="3" kind="fifo" source="C" sourceport="a" target="A"
+            targetport="c" type="int">
+            <data key="delay"/>
+        </edge>
+    </graph>
+</graphml>

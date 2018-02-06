@@ -35,25 +35,18 @@
  */
 package org.ietr.preesm.evaluator;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import org.gnu.glpk.GLPK;
-import org.gnu.glpk.GLPKConstants;
-import org.gnu.glpk.SWIGTYPE_p_double;
-import org.gnu.glpk.SWIGTYPE_p_int;
-import org.gnu.glpk.glp_prob;
-import org.gnu.glpk.glp_smcp;
 import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.ietr.preesm.mathematicalModels.PeriodicScheduleModel_ojAlgo;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -102,101 +95,104 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator {
    *           the invalid expression exception
    */
   private double period_computation(final SDFGraph sdf) throws InvalidExpressionException {
-    // Map to associate each edge with an index
-    final ArrayList<SDFEdge> edges = new ArrayList<>(sdf.edgeSet());
-    double H;
-    int r;
-    int k;
-    long L;
+    // // Map to associate each edge with an index
+    // final ArrayList<SDFEdge> edges = new ArrayList<>(sdf.edgeSet());
+    // double H;
+    // int r;
+    // int k;
+    // long L;
+    //
+    // // Now we create the model for the problem and for GLPK
+    // glp_prob prob;
+    //
+    // prob = GLPK.glp_create_prob();
+    // GLPK.glp_set_prob_name(prob, "Max_Cycle_L/H");
+    // GLPK.glp_set_obj_dir(prob, GLPKConstants.GLP_MAX); // maximization problem
+    //
+    // // Number of constraints nbvertex+1
+    // GLPK.glp_add_rows(prob, sdf.vertexSet().size() + 1);
+    // // Number of variables nbedge
+    // GLPK.glp_add_cols(prob, sdf.edgeSet().size());
+    //
+    // for (int j = 1; j <= edges.size(); j++) {
+    // // Bounds on the variables : >=0
+    // GLPK.glp_set_col_bnds(prob, j, GLPKConstants.GLP_LO, 0.0, 0.0);
+    // // Continuous variables
+    // GLPK.glp_set_col_kind(prob, j, GLPKConstants.GLP_CV);
+    // // Retrieve timing of the actor (coef in obj function)
+    // if (edges.get(j - 1).getSource() instanceof SDFSourceInterfaceVertex) {
+    // L = 0;
+    // } else {
+    // L = this.scenar.getTimingManager().getTimingOrDefault(edges.get(j - 1).getTarget().getId(), "x86").getTime();
+    // }
+    // GLPK.glp_set_obj_coef(prob, j, L);
+    // }
+    //
+    // // Set the bounds on constraints
+    // for (int j = 1; j <= sdf.vertexSet().size(); j++) {
+    // GLPK.glp_set_row_bnds(prob, j, GLPKConstants.GLP_FX, 0.0, 0.0);
+    // }
+    // GLPK.glp_set_row_bnds(prob, sdf.vertexSet().size() + 1, GLPKConstants.GLP_FX, 1, 1);
+    //
+    // SWIGTYPE_p_int ind = GLPK.new_intArray(edges.size() + 1);
+    // SWIGTYPE_p_double val = GLPK.new_doubleArray(edges.size() + 1);
+    //
+    // // First constraint
+    // int n = 1;
+    // for (final SDFAbstractVertex vertex : sdf.vertexSet()) {
+    // k = 1;
+    // for (final SDFInterfaceVertex in : vertex.getSources()) {
+    // r = edges.indexOf(vertex.getAssociatedEdge(in));
+    // // check that the edge does not loop on the actor
+    // // (if that is the case, the variable is ignored in the constraint)
+    // if (edges.get(r).getSource() != vertex) {
+    // GLPK.intArray_setitem(ind, k, r + 1);
+    // GLPK.doubleArray_setitem(val, k, 1.0);
+    // k++;
+    // }
+    // }
+    // for (final SDFInterfaceVertex out : vertex.getSinks()) {
+    // r = edges.indexOf(vertex.getAssociatedEdge(out));
+    // if (edges.get(r).getTarget() != vertex) {
+    // GLPK.intArray_setitem(ind, k, r + 1);
+    // GLPK.doubleArray_setitem(val, k, -1.0);
+    // k++;
+    // }
+    // }
+    // GLPK.glp_set_mat_row(prob, n, k - 1, ind, val);
+    // n++;
+    // ind = GLPK.new_intArray(edges.size() + 1);
+    // val = GLPK.new_doubleArray(edges.size() + 1);
+    // }
+    //
+    // // Second constraint : sum of H.x = 1
+    // for (int j = 1; j <= edges.size(); j++) {
+    // GLPK.intArray_setitem(ind, j, j);
+    // H = ((double) (edges.get(j - 1).getDelay().getValue())
+    // + SDFMathD.gcd((double) (edges.get(j - 1).getCons().getValue()), (double) (edges.get(j - 1).getProd().getValue())))
+    // - (double) (edges.get(j - 1).getCons().getValue());
+    // GLPK.doubleArray_setitem(val, j, H);
+    // }
+    //
+    // GLPK.glp_set_mat_row(prob, sdf.vertexSet().size() + 1, edges.size(), ind, val);
+    //
+    // final glp_smcp parm = new glp_smcp();
+    // GLPK.glp_init_smcp(parm);
+    // parm.setMsg_lev(GLPKConstants.GLP_MSG_OFF);
+    // // Launch the resolution
+    // GLPK.glp_simplex(prob, parm);
+    //
+    // // Write the complete model in a file (optional)
+    // // GLPK.glp_write_lp(prob, null, "model.lp");
+    //
+    // // The objective value gives us the normalized period
+    // final double period = GLPK.glp_get_obj_val(prob);
+    // GLPK.glp_delete_prob(prob);
+    // GLPK.glp_free_env();
 
-    // Now we create the model for the problem and for GLPK
-    glp_prob prob;
-
-    prob = GLPK.glp_create_prob();
-    GLPK.glp_set_prob_name(prob, "Max_Cycle_L/H");
-    GLPK.glp_set_obj_dir(prob, GLPKConstants.GLP_MAX); // maximization problem
-
-    // Number of constraints nbvertex+1
-    GLPK.glp_add_rows(prob, sdf.vertexSet().size() + 1);
-    // Number of variables nbedge
-    GLPK.glp_add_cols(prob, sdf.edgeSet().size());
-
-    for (int j = 1; j <= edges.size(); j++) {
-      // Bounds on the variables : >=0
-      GLPK.glp_set_col_bnds(prob, j, GLPKConstants.GLP_LO, 0.0, 0.0);
-      // Continuous variables
-      GLPK.glp_set_col_kind(prob, j, GLPKConstants.GLP_CV);
-      // Retrieve timing of the actor (coef in obj function)
-      if (edges.get(j - 1).getSource() instanceof SDFSourceInterfaceVertex) {
-        L = 0;
-      } else {
-        L = this.scenar.getTimingManager().getTimingOrDefault(edges.get(j - 1).getTarget().getId(), "x86").getTime();
-      }
-      GLPK.glp_set_obj_coef(prob, j, L);
-    }
-
-    // Set the bounds on constraints
-    for (int j = 1; j <= sdf.vertexSet().size(); j++) {
-      GLPK.glp_set_row_bnds(prob, j, GLPKConstants.GLP_FX, 0.0, 0.0);
-    }
-    GLPK.glp_set_row_bnds(prob, sdf.vertexSet().size() + 1, GLPKConstants.GLP_FX, 1, 1);
-
-    SWIGTYPE_p_int ind = GLPK.new_intArray(edges.size() + 1);
-    SWIGTYPE_p_double val = GLPK.new_doubleArray(edges.size() + 1);
-
-    // First constraint
-    int n = 1;
-    for (final SDFAbstractVertex vertex : sdf.vertexSet()) {
-      k = 1;
-      for (final SDFInterfaceVertex in : vertex.getSources()) {
-        r = edges.indexOf(vertex.getAssociatedEdge(in));
-        // check that the edge does not loop on the actor
-        // (if that is the case, the variable is ignored in the constraint)
-        if (edges.get(r).getSource() != vertex) {
-          GLPK.intArray_setitem(ind, k, r + 1);
-          GLPK.doubleArray_setitem(val, k, 1.0);
-          k++;
-        }
-      }
-      for (final SDFInterfaceVertex out : vertex.getSinks()) {
-        r = edges.indexOf(vertex.getAssociatedEdge(out));
-        if (edges.get(r).getTarget() != vertex) {
-          GLPK.intArray_setitem(ind, k, r + 1);
-          GLPK.doubleArray_setitem(val, k, -1.0);
-          k++;
-        }
-      }
-      GLPK.glp_set_mat_row(prob, n, k - 1, ind, val);
-      n++;
-      ind = GLPK.new_intArray(edges.size() + 1);
-      val = GLPK.new_doubleArray(edges.size() + 1);
-    }
-
-    // Second constraint : sum of H.x = 1
-    for (int j = 1; j <= edges.size(); j++) {
-      GLPK.intArray_setitem(ind, j, j);
-      H = ((double) (edges.get(j - 1).getDelay().getValue())
-          + SDFMathD.gcd((double) (edges.get(j - 1).getCons().getValue()), (double) (edges.get(j - 1).getProd().getValue())))
-          - (double) (edges.get(j - 1).getCons().getValue());
-      GLPK.doubleArray_setitem(val, j, H);
-    }
-
-    GLPK.glp_set_mat_row(prob, sdf.vertexSet().size() + 1, edges.size(), ind, val);
-
-    final glp_smcp parm = new glp_smcp();
-    GLPK.glp_init_smcp(parm);
-    parm.setMsg_lev(GLPKConstants.GLP_MSG_OFF);
-    // Launch the resolution
-    GLPK.glp_simplex(prob, parm);
-
-    // Write the complete model in a file (optional)
-    // GLPK.glp_write_lp(prob, null, "model.lp");
-
-    // The objective value gives us the normalized period
-    final double period = GLPK.glp_get_obj_val(prob);
-    GLPK.glp_delete_prob(prob);
-    GLPK.glp_free_env();
-    return period;
+    // return period;
+    PeriodicScheduleModel_ojAlgo method = new PeriodicScheduleModel_ojAlgo();
+    return method.computeNormalizedPeriod(sdf).doubleValue();
   }
 
   /**
