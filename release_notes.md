@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Change default flattening depth to -1 (infinite);
 
 ### Bug fix
 

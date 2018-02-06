@@ -140,7 +140,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
 
-    parameters.put("depth", "1");
+    parameters.put("depth", "-1");
     return parameters;
   }
 
