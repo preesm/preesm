@@ -10,7 +10,8 @@ PREESM Changelog
 * Change default flattening depth to -1 (infinite);
 
 ### Bug fix
-
+* Fix issue #53
+* Fix a crash that occured when opening a scenario with a parameter value whose parameter do not exists in the graph anymore;
 
 ## Release version 2.7.0
 *2018.02.05*
