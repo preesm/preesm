@@ -55,12 +55,16 @@ interface Parameterizable {
 
 interface AbstractVertex {
 	String name
-	op PiGraph getcontainingGraph()
+	op PiGraph getContainingGraph()
 	op unique Port[] getAllPorts()
 	op Port lookupPort(String portName) {
 		return getAllPorts().filterNull.findFirst [
 			(it.getName() === null) && (portName === null) || (it.getName() !== null) && it.getName().equals(portName)
 		]
+	}
+	op String getVertexPath() {
+		val actorName = name;
+		return Optional.ofNullable(containingGraph).map[vertexPath + "/" + actorName].orElse(actorName)
 	}
 }
 
@@ -97,9 +101,11 @@ abstract class AbstractActor extends Configurable {
 	op unique Port[] getAllPorts() {
 		return (allConfigPorts + allDataPorts).toEList.unmodifiableView
 	}
+	/*
+	 * @deprecated use getVertexPath() instead;
+	 */
 	op String getActorPath() {
-		val actorName = name;
-		return Optional.ofNullable(containingGraph).map[actorPath + "/" + actorName].orElse(actorName)
+		return vertexPath
 	}
 }
 
