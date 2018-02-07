@@ -114,7 +114,7 @@
             hasPages="true"
             icon="icons/graphiti.gif"
             id="org.ietr.preesm.ui.wizards.graphml"
-            name="Preesm Algorithm (IBSDF)"
+            name="Preesm Algorithm (IBSDF - deprecated)"
             project="false">
          <description>
             Create a new IBSDF algorithm.
