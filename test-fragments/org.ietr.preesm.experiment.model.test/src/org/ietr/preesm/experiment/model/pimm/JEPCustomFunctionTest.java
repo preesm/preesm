@@ -109,4 +109,14 @@ public class JEPCustomFunctionTest {
 
   }
 
+  @Test
+  public void jepMinTest() {
+    testEvaluation("min(min(1,-3),-2)", -3);
+  }
+
+  @Test
+  public void jepMaxTest() {
+    testEvaluation("max(10, max(1,-3))", 10);
+  }
+
 }

@@ -34,6 +34,7 @@
  */
 package org.ietr.preesm.experiment.model.expression;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
@@ -96,9 +97,22 @@ public class ExpressionEvaluator {
 
     jep.addFunction("floor", new FloorFunction());
     jep.addFunction("ceil", new CeilFunction());
+    jep.addFunction("min", new MinFunction());
+    jep.addFunction("max", new MaxFunction());
 
     return jep;
 
+  }
+
+  /**
+   * 
+   * @param args
+   *          oiaj
+   */
+  public static void main(String[] args) {
+    Map<String, Number> map = new HashMap<>();
+    JEP jep = initJep(map);
+    System.out.println(jep.getFunctionTable().toString().replace(",", "\n"));
   }
 
   private static long parse(final String allExpression, final JEP jep) throws ParseException {

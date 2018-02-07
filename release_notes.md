@@ -6,6 +6,7 @@ PREESM Changelog
 
 ### New Feature
 * Add throughput evaluation for PiSDF;
+* Add min and max function in JEP
 
 ### Changes
 * Change default flattening depth to -1 (infinite);

@@ -49,7 +49,7 @@ public class CeilFunction extends PostfixMathCommand {
    * Instantiates a new ceil function.
    */
   public CeilFunction() {
-    this.numberOfParameters = -1;
+    this.numberOfParameters = 1;
   }
 
   /**
@@ -62,8 +62,14 @@ public class CeilFunction extends PostfixMathCommand {
    */
   @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
-  public void run(final Stack stack) throws ParseException {
-    stack.push(Math.ceil((Double) (stack.pop())));
+  public void run(Stack stack) throws ParseException {
+    Object aObj = stack.pop();
+    if (!(aObj instanceof Number)) {
+      throw new ParseException("Ceil: argument must be double. It is " + aObj + "(" + aObj.getClass().getName() + ")");
+    }
+    double aDouble = ((Number) aObj).doubleValue();
+
+    stack.push(Math.ceil(aDouble));
   }
 
 }
