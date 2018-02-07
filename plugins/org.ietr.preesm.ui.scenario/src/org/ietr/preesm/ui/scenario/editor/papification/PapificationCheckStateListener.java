@@ -39,6 +39,7 @@ package org.ietr.preesm.ui.scenario.editor.papification;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
@@ -433,6 +434,11 @@ public class PapificationCheckStateListener implements ISDFCheckStateListener {
   @Override
   public void paintControl(final PaintEvent e) {
     updateCheck();
+
+  }
+
+  public void setTableViewer(CheckboxTableViewer tableviewer, PreesmAlgorithmTreeContentProvider contentProvider2, IPropertyListener listener) {
+    // TODO Auto-generated method stub
 
   }
 }
