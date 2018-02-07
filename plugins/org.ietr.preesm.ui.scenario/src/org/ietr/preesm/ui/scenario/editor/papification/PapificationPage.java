@@ -40,11 +40,14 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -54,6 +57,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
@@ -73,15 +77,16 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.serialize.PapificationComponentListContentProvider;
 import org.ietr.preesm.core.scenario.serialize.PreesmAlgorithmListContentProvider;
 import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 import org.ietr.preesm.ui.scenario.editor.timings.TimingsTableLabelProvider;
 
 /**
- * Constraint editor within the implementation editor.
+ * Papification editor within the implementation editor.
  *
- * @author mpelcat
+ * @author dmadronal
  */
 public class PapificationPage extends FormPage implements IPropertyListener {
 
@@ -94,7 +99,8 @@ public class PapificationPage extends FormPage implements IPropertyListener {
   /** The table viewer. */
 
   // DM added this
-  TableViewer tableViewer = null;
+  CheckboxTableViewer componentTableViewer = null;
+  TableViewer         eventTableViewer     = null;
   // CheckboxTableViewer checkTableViewer = null;
 
   /** Architecture. */
@@ -233,7 +239,10 @@ public class PapificationPage extends FormPage implements IPropertyListener {
 
     // DM added this
     final FormToolkit toolkit = managedForm.getToolkit();
-    addPapificationTable(container, toolkit);
+    final Combo coreCombo = addCoreSelector(container, toolkit);
+
+    addComponentSelectionTable(container, toolkit, coreCombo);
+    addEventSelectionTable(container, toolkit, coreCombo);
 
   }
 
@@ -352,50 +361,46 @@ public class PapificationPage extends FormPage implements IPropertyListener {
   }
 
   /**
-   * Adds a table to edit instace association.
+   * Adds a table to edit component association.
    *
    * @param parent
    *          the parent
    * @param toolkit
    *          the toolkit
    */
-  private void addPapificationTable(final Composite parent, final FormToolkit toolkit) {
+  private void addComponentSelectionTable(final Composite parent, final FormToolkit toolkit, final Combo coreCombo) {
 
     final Composite tablecps = toolkit.createComposite(parent);
     tablecps.setVisible(true);
 
-    // this.checkTableViewer = CheckboxTableViewer.newCheckList(tablecps, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.HIDE_SELECTION | SWT.CHECK);
+    this.componentTableViewer = CheckboxTableViewer.newCheckList(tablecps, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.SINGLE | SWT.FULL_SELECTION);
 
-    // this.tableViewer = new TableViewer(tablecps, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.CHECK);
-    this.tableViewer = new TableViewer(tablecps, SWT.NONE);
-
-    final Table table = this.tableViewer.getTable();
+    final Table table = this.componentTableViewer.getTable();
     table.setLayout(new GridLayout());
     table.setLayoutData(new GridData(GridData.FILL_BOTH));
     table.setHeaderVisible(true);
     table.setLinesVisible(true);
 
-    this.tableViewer.setContentProvider(new PreesmAlgorithmListContentProvider());
+    this.componentTableViewer.setContentProvider(new PapificationComponentListContentProvider());
 
-    final TimingsTableLabelProvider labelProvider = new TimingsTableLabelProvider(this.scenario, this.tableViewer, this);
-    this.tableViewer.setLabelProvider(labelProvider);
+    final PapificationComponentLabelProvider labelProvider = new PapificationComponentLabelProvider(this.scenario, this.componentTableViewer, this);
+    this.componentTableViewer.setLabelProvider(labelProvider);
+    coreCombo.addSelectionListener(labelProvider);
 
     // Create columns
     // DM added this
-    // TODO: Read the file and add PAPI component names
-    String[] COLUMN_NAMES = { "Architecture Instances", "perf-events (CPU)", "Artico3 (FPGA)" };
+    String[] componentSelectionColumnNames = { "PAPI components", "Component type" };
 
     final List<TableColumn> columns = new ArrayList<>();
-    for (int i = 0; i < COLUMN_NAMES.length; i++) {
-      // final TableColumn column = new TableColumn(table, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.CHECK, i);
+    for (int i = 0; i < componentSelectionColumnNames.length; i++) {
       final TableColumn column = new TableColumn(table, SWT.NONE, i);
-      column.setText(COLUMN_NAMES[i]);
+      column.setText(componentSelectionColumnNames[i]);
       columns.add(column);
     }
 
     // Make the last column (Expression) editable
     // XXX: Through an other way than double clicking (direct editing)
-    this.tableViewer.addDoubleClickListener(e -> labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection()));
+    // this.componentTableViewer.addDoubleClickListener(e -> labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection()));
 
     final Table tref = table;
     final Composite comp = tablecps;
@@ -428,11 +433,137 @@ public class PapificationPage extends FormPage implements IPropertyListener {
       }
     });
 
-    this.tableViewer.setInput(this.scenario);
+    this.componentTableViewer.setInput(this.scenario);
     final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
-    gd.heightHint = 400;
+    gd.heightHint = 150;
     gd.widthHint = 400;
     tablecps.setLayoutData(gd);
+  }
+
+  /**
+   * Adds a table to edit event association.
+   *
+   * @param parent
+   *          the parent
+   * @param toolkit
+   *          the toolkit
+   */
+  private void addEventSelectionTable(final Composite parent, final FormToolkit toolkit, final Combo coreCombo) {
+
+    final Composite tablecps = toolkit.createComposite(parent);
+    tablecps.setVisible(true);
+
+    this.eventTableViewer = new TableViewer(tablecps, SWT.NONE);
+
+    final Table table = this.eventTableViewer.getTable();
+    // table.setLayout(new GridLayout());
+    table.setLayoutData(new GridData(GridData.FILL_BOTH));
+    table.setHeaderVisible(true);
+    table.setLinesVisible(true);
+
+    this.eventTableViewer.setContentProvider(new PreesmAlgorithmListContentProvider());
+
+    final TimingsTableLabelProvider labelProvider = new TimingsTableLabelProvider(this.scenario, this.eventTableViewer, this);
+    this.eventTableViewer.setLabelProvider(labelProvider);
+
+    // Create columns
+    // DM added this
+    String[] eventSelectionColumnNames = { "Monitor", "Event Name", "Short Description" };
+
+    final List<TableColumn> columns = new ArrayList<>();
+    for (int i = 0; i < eventSelectionColumnNames.length; i++) {
+      final TableColumn column = new TableColumn(table, SWT.NONE, i);
+      column.setText(eventSelectionColumnNames[i]);
+      columns.add(column);
+    }
+
+    // Make the last column (Expression) editable
+    // XXX: Through an other way than double clicking (direct editing)
+    this.eventTableViewer.addDoubleClickListener(e -> labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection()));
+
+    final Table tref = table;
+    final Composite comp = tablecps;
+    final List<TableColumn> fColumns = columns;
+
+    // Setting the column width
+    tablecps.addControlListener(new ControlAdapter() {
+      @Override
+      public void controlResized(final ControlEvent e) {
+        final Rectangle area = comp.getClientArea();
+        final Point size = tref.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+        final ScrollBar vBar = tref.getVerticalBar();
+        int width = area.width - tref.computeTrim(0, 0, 0, 0).width - 2;
+        if (size.y > (area.height + tref.getHeaderHeight())) {
+          final Point vBarSize = vBar.getSize();
+          width -= vBarSize.x;
+        }
+        final Point oldSize = tref.getSize();
+        if (oldSize.x > area.width) {
+          for (final TableColumn col : fColumns) {
+            col.setWidth((width / 5) - 1);
+          }
+          tref.setSize(area.width, area.height);
+        } else {
+          tref.setSize(area.width, area.height);
+          for (final TableColumn col : fColumns) {
+            col.setWidth((width / 5) - 1);
+          }
+        }
+      }
+    });
+
+    this.eventTableViewer.setInput(this.scenario);
+    final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
+    gd.heightHint = 200;
+    gd.widthHint = 400;
+    tablecps.setLayoutData(gd);
+  }
+
+  /**
+   * Adds a combo box for the core selection.
+   *
+   * @param parent
+   *          the parent
+   * @param toolkit
+   *          the toolkit
+   * @return the combo
+   */
+  private Combo addCoreSelector(final Composite parent, final FormToolkit toolkit) {
+    final Composite combocps = toolkit.createComposite(parent);
+    combocps.setLayout(new FillLayout());
+    combocps.setVisible(true);
+    final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
+    combo.setVisibleItemCount(20);
+    combo.setToolTipText(Messages.getString("Papification.coreSelectionTooltip"));
+    comboDataInit(combo);
+    combo.addFocusListener(new FocusListener() {
+
+      @Override
+      public void focusGained(final FocusEvent e) {
+        comboDataInit((Combo) e.getSource());
+
+      }
+
+      @Override
+      public void focusLost(final FocusEvent e) {
+      }
+
+    });
+    return combo;
+  }
+
+  /**
+   * Combo data init.
+   *
+   * @param combo
+   *          the combo
+   */
+  private void comboDataInit(final Combo combo) {
+
+    combo.removeAll();
+    for (final String id : this.scenario.getOrderedOperatorIds()) {
+      combo.add(id);
+    }
   }
 
 }
