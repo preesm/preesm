@@ -34,6 +34,8 @@ import java.util.Optional
 import org.ietr.preesm.experiment.model.pimm.util.RefinementResolver
 import org.ietr.preesm.experiment.model.PiGraphException
 
+type IPath wraps org.eclipse.core.runtime.IPath
+
 // type IPath wraps org.eclipse.core.runtime.IPath
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -377,8 +379,6 @@ enum PortMemoryAnnotation {
 	WRITE_ONLY = 2
 	UNUSED = 3
 }
-
-type IPath wraps org.eclipse.core.runtime.IPath
 
 enum PortKind {
 	CFG_INPUT as "cfg_input" = 0
