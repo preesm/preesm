@@ -27,12 +27,9 @@
 @Ecore(nsURI="http://org.ietr.preesm/model/pimm")
 package org.ietr.preesm.experiment.model.pimm
 
-//import org.eclipse.emf.common.util.EList
-import org.eclipse.emf.common.util.ECollections
-import org.eclipse.emf.common.util.BasicEList
 import java.util.Optional
-import org.ietr.preesm.experiment.model.pimm.util.RefinementResolver
 import org.ietr.preesm.experiment.model.PiGraphException
+import org.ietr.preesm.experiment.model.pimm.util.RefinementResolver
 
 type IPath wraps org.eclipse.core.runtime.IPath
 
@@ -58,6 +55,7 @@ interface Parameterizable {
 
 interface AbstractVertex {
 	String name
+	op PiGraph getcontainingGraph()
 	op unique Port[] getAllPorts()
 	op Port lookupPort(String portName) {
 		return getAllPorts().filterNull.findFirst [
@@ -107,7 +105,7 @@ abstract class AbstractActor extends Configurable {
 
 class PiGraph extends AbstractActor {
 	contains AbstractActor[] actors opposite containingGraph
-	contains Fifo[] fifos
+	contains Fifo[] fifos opposite containingGraph
 	contains Parameter[] parameters opposite containingGraph
 	contains Dependency[] dependencies
 	op unique String[] getActorsNames() {
@@ -220,6 +218,7 @@ class ConfigOutputPort extends DataOutputPort , ISetter {
 class Fifo {
 	refers DataOutputPort sourcePort opposite outgoingFifo
 	refers DataInputPort targetPort opposite incomingFifo
+	container PiGraph containingGraph opposite fifos
 	contains Delay delay opposite containingFifo
 	String ^type = "void"
 
@@ -329,6 +328,10 @@ interface ISetter {
 class Delay extends Configurable {
 	contains Expression sizeExpression
 	container readonly Fifo containingFifo opposite delay
+
+	op PiGraph getContainingGraph() {
+		return containingFifo.containingGraph
+	}
 }
 
 class Expression {
