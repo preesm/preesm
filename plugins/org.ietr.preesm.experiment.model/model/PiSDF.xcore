@@ -189,6 +189,27 @@ interface Port {
 	op PortKind getKind()
 }
 
+abstract class DataPort extends Port, Parameterizable {
+	contains Expression portRateExpression
+	PortMemoryAnnotation ^annotation
+	op AbstractActor getContainingActor() {
+		if (eContainer() instanceof AbstractActor) {
+			return eContainer() as AbstractActor;
+		}
+		return null;
+	}
+	op Parameter[] getInputParameters() {
+		return containingActor.inputParameters.unmodifiableView
+	}
+	op String getId() {
+		val String actorName = Optional.ofNullable(getContainingActor()).map[name].orElseThrow [
+			new PiGraphException("Data port " + this + " is not contained in an AbstracytActor.")
+		];
+		val String portName = Optional.ofNullable(name).filter[!it.isEmpty()].map["." + it].orElse("");
+		return actorName + portName;
+	}
+}
+
 class DataInputPort extends DataPort {
 	refers Fifo incomingFifo opposite targetPort
 	op PortKind getKind() {
@@ -359,24 +380,6 @@ class FunctionParameter {
 enum Direction {
 	IN = 0
 	OUT = 1
-}
-
-abstract class DataPort extends Port {
-	contains Expression portRateExpression
-	PortMemoryAnnotation ^annotation
-	op AbstractActor getContainingActor() {
-		if (eContainer() instanceof AbstractActor) {
-			return eContainer() as AbstractActor;
-		}
-		return null;
-	}
-	op String getId() {
-		val String actorName = Optional.ofNullable(getContainingActor()).map[name].orElseThrow [
-			new PiGraphException("Data port " + this + " is not contained in an AbstracytActor.")
-		];
-		val String portName = Optional.ofNullable(name).filter[!it.isEmpty()].map["." + it].orElse("");
-		return actorName + portName;
-	}
 }
 
 enum PortMemoryAnnotation {

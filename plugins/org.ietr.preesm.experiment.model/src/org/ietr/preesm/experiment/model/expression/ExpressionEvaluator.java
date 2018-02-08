@@ -34,7 +34,6 @@
  */
 package org.ietr.preesm.experiment.model.expression;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
@@ -43,7 +42,6 @@ import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
@@ -104,17 +102,6 @@ public class ExpressionEvaluator {
 
   }
 
-  /**
-   * 
-   * @param args
-   *          oiaj
-   */
-  public static void main(String[] args) {
-    Map<String, Number> map = new HashMap<>();
-    JEP jep = initJep(map);
-    System.out.println(jep.getFunctionTable().toString().replace(",", "\n"));
-  }
-
   private static long parse(final String allExpression, final JEP jep) throws ParseException {
     final Node parse = jep.parse(allExpression);
     final Object result = jep.evaluate(parse);
@@ -130,9 +117,9 @@ public class ExpressionEvaluator {
 
   private static Configurable lookUpParameters(final Expression expression) {
     Configurable parameterizableObj;
-    if (expression.eContainer() instanceof Parameterizable) {
+    if (expression.eContainer() instanceof Configurable) {
       parameterizableObj = (Configurable) expression.eContainer();
-    } else if (expression.eContainer().eContainer() instanceof Parameterizable) {
+    } else if (expression.eContainer().eContainer() instanceof Configurable) {
       parameterizableObj = (Configurable) expression.eContainer().eContainer();
     } else {
       throw new ExpressionEvaluationException("Neither a child of Parameterizable nor a child of a child of Parameterizable");
