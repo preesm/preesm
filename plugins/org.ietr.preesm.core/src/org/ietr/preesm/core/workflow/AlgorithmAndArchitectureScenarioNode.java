@@ -136,12 +136,12 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
       if (newValue != null) {
         // note: need to lookup since graph reconnector may have changed Paramter objects
         final Parameter lookupParameterGivenGraph = piAlgorithm.lookupParameterGivenGraph(variableName, parentVertex);
-        final Expression valueExpression = lookupParameterGivenGraph.getValueExpression();
+        final Expression valueExpression = lookupParameterGivenGraph.getExpression();
         valueExpression.setExpressionString(newValue);
       } else if (expression != null) {
         // note: need to lookup since graph reconnector may have changed Paramter objects
         final Parameter lookupParameterGivenGraph = piAlgorithm.lookupParameterGivenGraph(variableName, parentVertex);
-        final Expression valueExpression = lookupParameterGivenGraph.getValueExpression();
+        final Expression valueExpression = lookupParameterGivenGraph.getExpression();
         valueExpression.setExpressionString(expression);
       } else {
         // keep value from PiSDF graph

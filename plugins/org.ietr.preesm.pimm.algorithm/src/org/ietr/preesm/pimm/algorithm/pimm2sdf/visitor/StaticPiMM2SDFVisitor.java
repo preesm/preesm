@@ -193,7 +193,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
         final Expression setterParam = ((Parameter) setter).getValueExpression();
         final Expression pExp = PiMMUserFactory.instance.createExpression();
         pExp.setExpressionString(setterParam.getExpressionString());
-        cii.setValueExpression(pExp);
+        cii.setExpression(pExp);
       }
     } else {
       // If there is only one value available for Parameter p, we can set
@@ -202,7 +202,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
         final Integer value = this.execution.getValue(p);
         final Expression pExp = PiMMUserFactory.instance.createExpression();
         pExp.setExpressionString(value.toString());
-        p.setValueExpression(pExp);
+        p.setExpression(pExp);
       }
     }
     return true;
@@ -223,7 +223,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     if (setter instanceof Parameter) {
       final Expression pExp = PiMMUserFactory.instance.createExpression();
       pExp.setExpressionString(((Parameter) setter).getValueExpression().getExpressionString());
-      cii.setValueExpression(pExp);
+      cii.setExpression(pExp);
     }
     return true;
   }
@@ -249,7 +249,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
         final Expression valueExpression = p.getValueExpression();
         final long evaluate = ExpressionEvaluator.evaluate(valueExpression);
         pExp.setExpressionString(Long.toString(evaluate));
-        p.setValueExpression(pExp);
+        p.setExpression(pExp);
       }
     }
   }

@@ -103,7 +103,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   public ConfigInputInterface createConfigInputInterface() {
     final ConfigInputInterface res = super.createConfigInputInterface();
     final Expression createExpression = createExpression();
-    res.setValueExpression(createExpression);
+    res.setExpression(createExpression);
     return res;
   }
 
@@ -111,35 +111,35 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   public Parameter createParameter() {
     final Parameter createParameter = super.createParameter();
     final Expression createExpression = createExpression();
-    createParameter.setValueExpression(createExpression);
+    createParameter.setExpression(createExpression);
     return createParameter;
   }
 
   @Override
   public DataInputPort createDataInputPort() {
     final DataInputPort res = super.createDataInputPort();
-    res.setPortRateExpression(createExpression());
+    res.setExpression(createExpression());
     return res;
   }
 
   @Override
   public DataOutputPort createDataOutputPort() {
     final DataOutputPort res = super.createDataOutputPort();
-    res.setPortRateExpression(createExpression());
+    res.setExpression(createExpression());
     return res;
   }
 
   @Override
   public ConfigOutputPort createConfigOutputPort() {
     final ConfigOutputPort res = super.createConfigOutputPort();
-    res.setPortRateExpression(createExpression());
+    res.setExpression(createExpression());
     return res;
   }
 
   @Override
   public Delay createDelay() {
     final Delay res = super.createDelay();
-    res.setSizeExpression(createExpression());
+    res.setExpression(createExpression());
     return res;
   }
 

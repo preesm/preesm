@@ -53,6 +53,15 @@ interface Parameterizable {
 	}
 }
 
+class Expression {
+	refers ExpresionHolder holder opposite expression
+	String expressionString = "0"
+}
+
+interface ExpresionHolder extends Parameterizable {
+	contains Expression expression opposite holder
+}
+
 interface AbstractVertex {
 	String name
 	op PiGraph getContainingGraph()
@@ -189,8 +198,10 @@ interface Port {
 	op PortKind getKind()
 }
 
-abstract class DataPort extends Port, Parameterizable {
-	contains Expression portRateExpression
+abstract class DataPort extends Port, ExpresionHolder {
+	op Expression getPortRateExpression() {
+		return expression
+	}
 	PortMemoryAnnotation ^annotation
 	op AbstractActor getContainingActor() {
 		if (eContainer() instanceof AbstractActor) {
@@ -327,8 +338,10 @@ class CHeaderRefinement extends Refinement {
 	}
 }
 
-class Parameter extends Configurable , ISetter {
-	contains Expression valueExpression
+class Parameter extends Configurable, ISetter, ExpresionHolder {
+	op Expression getValueExpression() {
+		return expression
+	}
 	container PiGraph containingGraph opposite parameters
 	op boolean isLocallyStatic() {
 		// a parameter is static if all its setters are static (or it has no setter)
@@ -352,17 +365,15 @@ interface ISetter {
 	op boolean isLocallyStatic()
 }
 
-class Delay extends Configurable {
-	contains Expression sizeExpression
+class Delay extends Configurable, ExpresionHolder {
+	op Expression getSizeExpression() {
+		return expression
+	}
 	container readonly Fifo containingFifo opposite delay
 
 	op PiGraph getContainingGraph() {
 		return containingFifo.containingGraph
 	}
-}
-
-class Expression {
-	String expressionString = "0"
 }
 
 class FunctionPrototype {
