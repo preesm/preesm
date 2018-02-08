@@ -70,7 +70,7 @@ abstract class AbstractVertex {
 abstract class Configurable extends AbstractVertex , Parameterizable {
 	contains ConfigInputPort[] configInputPorts opposite configurable
 	op unique Parameter[] getInputParameters() {
-		return configInputPorts.filterNull.map[incomingDependency].filterNull.map[getter].filter(Parameter).toEList.
+		return configInputPorts.filterNull.map[incomingDependency].filterNull.map[setter].filter(Parameter).toEList.
 			unmodifiableView
 	}
 	op Port lookupPortConnectedWithParameter(Parameter parameter) {
