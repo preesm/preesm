@@ -34,16 +34,21 @@
  */
 package org.ietr.preesm.experiment.model.expression;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.Configurable;
+import org.eclipse.emf.common.util.EList;
+import org.ietr.preesm.experiment.model.expression.functions.CeilFunction;
+import org.ietr.preesm.experiment.model.expression.functions.FloorFunction;
+import org.ietr.preesm.experiment.model.expression.functions.MaxFunction;
+import org.ietr.preesm.experiment.model.expression.functions.MinFunction;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.ExpresionHolder;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.Parameterizable;
+import org.ietr.preesm.experiment.model.pimm.Port;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
@@ -64,8 +69,7 @@ public class ExpressionEvaluator {
    *
    */
   public static final long evaluate(final Expression expression) {
-    final Configurable parameterizableObj = ExpressionEvaluator.lookUpParameters(expression);
-    final Map<String, Number> addInputParameterValues = ExpressionEvaluator.addInputParameterValues(parameterizableObj);
+    final Map<String, Number> addInputParameterValues = ExpressionEvaluator.addInputParameterValues(expression);
     return ExpressionEvaluator.evaluate(expression.getExpressionString(), addInputParameterValues);
   }
 
@@ -92,27 +96,16 @@ public class ExpressionEvaluator {
     if (addInputParameterValues != null) {
       addInputParameterValues.forEach(jep::addVariable);
     }
+
     jep.addStandardConstants();
     jep.addStandardFunctions();
 
-    jep.addFunction("floor", new FloorFunction());
-    jep.addFunction("ceil", new CeilFunction());
-    jep.addFunction("min", new MinFunction());
-    jep.addFunction("max", new MaxFunction());
+    new FloorFunction().integrateWithin(jep);
+    new CeilFunction().integrateWithin(jep);
+    new MinFunction().integrateWithin(jep);
+    new MaxFunction().integrateWithin(jep);
 
     return jep;
-
-  }
-
-  /**
-   * 
-   * @param args
-   *          oiaj
-   */
-  public static void main(String[] args) {
-    Map<String, Number> map = new HashMap<>();
-    JEP jep = initJep(map);
-    System.out.println(jep.getFunctionTable().toString().replace(",", "\n"));
   }
 
   private static long parse(final String allExpression, final JEP jep) throws ParseException {
@@ -123,39 +116,32 @@ public class ExpressionEvaluator {
     }
     final Double dResult = (Double) result;
     if (Double.isInfinite(dResult)) {
-      throw new ExpressionEvaluationException("Expression " + allExpression + " evaluated to infinity.");
+      throw new ExpressionEvaluationException("Expression '" + allExpression + "' evaluated to infinity.");
     }
     return Math.round(dResult);
   }
 
-  private static Configurable lookUpParameters(final Expression expression) {
-    Configurable parameterizableObj;
-    if (expression.eContainer() instanceof Parameterizable) {
-      parameterizableObj = (Configurable) expression.eContainer();
-    } else if (expression.eContainer().eContainer() instanceof Parameterizable) {
-      parameterizableObj = (Configurable) expression.eContainer().eContainer();
-    } else {
-      throw new ExpressionEvaluationException("Neither a child of Parameterizable nor a child of a child of Parameterizable");
-    }
-    return parameterizableObj;
-  }
-
-  private static Map<String, Number> addInputParameterValues(final Configurable parameterizableObj) {
+  private static Map<String, Number> addInputParameterValues(final Expression expression) {
     final Map<String, Number> result = new LinkedHashMap<>();
-    for (final ConfigInputPort port : parameterizableObj.getConfigInputPorts()) {
-      if ((port.getIncomingDependency() != null) && (port.getIncomingDependency().getSetter() instanceof Parameter)) {
-        final Parameter p = (Parameter) port.getIncomingDependency().getSetter();
+    final ExpresionHolder holder = expression.getHolder();
+    final EList<Parameter> inputParameters = holder.getInputParameters();
+    for (final Parameter param : inputParameters) {
+      final Expression valueExpression = param.getValueExpression();
+      final double value = ExpressionEvaluator.evaluate(valueExpression);
 
-        String parameterName;
-        if ((parameterizableObj instanceof Parameter) || (parameterizableObj instanceof Delay) || (parameterizableObj instanceof InterfaceActor)) {
-          parameterName = p.getName();
+      if ((holder instanceof Parameter) || (holder instanceof Delay) || (holder instanceof InterfaceActor)) {
+        result.put(param.getName(), value);
+      } else if (holder instanceof DataPort) {
+        final AbstractActor containingActor = ((DataPort) holder).getContainingActor();
+        if (containingActor instanceof InterfaceActor) {
+          result.put(param.getName(), value);
         } else {
-          parameterName = port.getName();
+          final Port configInputPort = containingActor.lookupPortConnectedWithParameter(param);
+          final String name = configInputPort.getName();
+          result.put(name, value);
         }
-
-        final Expression valueExpression = p.getValueExpression();
-        final double parseDouble = ExpressionEvaluator.evaluate(valueExpression);
-        result.put(parameterName, parseDouble);
+      } else {
+        throw new ExpressionEvaluationException("Could not compute proper parameter name");
       }
     }
     return result;

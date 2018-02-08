@@ -193,7 +193,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
         final Expression setterParam = ((Parameter) setter).getValueExpression();
         final Expression pExp = PiMMUserFactory.instance.createExpression();
         pExp.setExpressionString(setterParam.getExpressionString());
-        cii.setValueExpression(pExp);
+        cii.setExpression(pExp);
       }
     } else {
       // If there is only one value available for Parameter p, we can set
@@ -202,7 +202,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
         final Integer value = this.execution.getValue(p);
         final Expression pExp = PiMMUserFactory.instance.createExpression();
         pExp.setExpressionString(value.toString());
-        p.setValueExpression(pExp);
+        p.setExpression(pExp);
       }
     }
     return true;
@@ -223,7 +223,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     if (setter instanceof Parameter) {
       final Expression pExp = PiMMUserFactory.instance.createExpression();
       pExp.setExpressionString(((Parameter) setter).getValueExpression().getExpressionString());
-      cii.setValueExpression(pExp);
+      cii.setExpression(pExp);
     }
     return true;
   }
@@ -249,7 +249,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
         final Expression valueExpression = p.getValueExpression();
         final long evaluate = ExpressionEvaluator.evaluate(valueExpression);
         pExp.setExpressionString(Long.toString(evaluate));
-        p.setValueExpression(pExp);
+        p.setExpression(pExp);
       }
     }
   }
@@ -318,7 +318,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     // Handle vertex's name
     v.setName(a.getName());
     // Handle vertex's path inside the graph hierarchy
-    v.setInfo(a.getActorPath());
+    v.setInfo(a.getVertexPath());
     // Handle ID
     v.setId(a.getName());
     // Handle vertex's refinement (description of the vertex's behavior:
@@ -552,7 +552,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     // Handle vertex's name
     bv.setName(ba.getName());
     // Handle vertex's path inside the graph hierarchy
-    bv.setInfo(ba.getActorPath());
+    bv.setInfo(ba.getVertexPath());
 
     // Handle input parameters as instance arguments
     for (final ConfigInputPort p : ba.getConfigInputPorts()) {
@@ -578,7 +578,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     // Handle vertex's name
     jv.setName(ja.getName());
     // Handle vertex's path inside the graph hierarchy
-    jv.setInfo(ja.getActorPath());
+    jv.setInfo(ja.getVertexPath());
 
     // Handle input parameters as instance arguments
     for (final ConfigInputPort p : ja.getConfigInputPorts()) {
@@ -604,7 +604,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     // Handle vertex's name
     fv.setName(fa.getName());
     // Handle vertex's path inside the graph hierarchy
-    fv.setInfo(fa.getActorPath());
+    fv.setInfo(fa.getVertexPath());
 
     // Handle input parameters as instance arguments
     for (final ConfigInputPort p : fa.getConfigInputPorts()) {
@@ -630,7 +630,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     // Handle vertex's name
     rbv.setName(rba.getName());
     // Handle vertex's path inside the graph hierarchy
-    rbv.setInfo(rba.getActorPath());
+    rbv.setInfo(rba.getVertexPath());
 
     // Handle input parameters as instance arguments
     for (final ConfigInputPort p : rba.getConfigInputPorts()) {
@@ -761,7 +761,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
       // Handle vertex's name
       v.setName(pg.getName());
       // Handle vertex's path inside the graph hierarchy
-      v.setInfo(pg.getActorPath());
+      v.setInfo(pg.getVertexPath());
       // Handle ID
       v.setId(pg.getName());
 

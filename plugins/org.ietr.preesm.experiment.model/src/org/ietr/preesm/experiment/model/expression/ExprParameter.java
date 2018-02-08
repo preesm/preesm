@@ -2,6 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
@@ -36,72 +37,91 @@
  */
 package org.ietr.preesm.experiment.model.expression;
 
-import java.util.UUID;
-import org.nfunk.jep.ASTVarNode;
-import org.nfunk.jep.JEP;
-import org.nfunk.jep.Node;
-import org.nfunk.jep.ParseException;
+import org.nfunk.jep.Variable;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class ExprParser.
+ * The Class Parameter.
  */
-public class ExprParser {
+public class ExprParameter extends Variable implements Cloneable {
 
-  /** The to parse. */
-  protected String toParse;
+  /** The sdx index. */
+  public int sdxIndex;
 
   /**
-   * Instantiates a new expr parser.
+   * Instantiates a new parameter.
    *
-   * @param val
-   *          the val
+   * @param name
+   *          the name
    */
-  public ExprParser(final String val) {
-    this.toParse = val;
+  public ExprParameter(final String name) {
+    super(name);
+    // TODO Auto-generated constructor stub
   }
 
   /**
-   * Start parser.
+   * Instantiates a new parameter.
    *
-   * @return the node
+   * @param name
+   *          the name
+   * @param value
+   *          the value
    */
-  public Node startParser() {
-    try {
-      final JEP jep = new JEP();
-      jep.setAllowUndeclared(true);
-      try {
-        jep.addStandardFunctions();
-        jep.addStandardConstants();
-        if (this.toParse.contains("\"")) {
-          this.toParse = this.toParse.replace("\"", "");
-          final ASTVarNode var = new ASTVarNode(UUID.randomUUID().hashCode());
-          var.setVar(new Parameter(this.toParse));
-          return var;
-        }
-
-        System.out.println("Chain to parse : " + this.toParse);
-        this.toParse = this.toParse.replace(" ", "");
-        if (this.toParse.charAt(0) == '%') {
-          this.toParse = "ceil(" + this.toParse.substring(1) + ")";
-        }
-        for (int i = 1; i < this.toParse.length(); i++) {
-          if ((this.toParse.charAt(i) == '%') && ((this.toParse.charAt(i - 1) == '*') || (this.toParse.charAt(i - 1) == '/')
-              || (this.toParse.charAt(i - 1) == '+') || (this.toParse.charAt(i - 1) == '-') || (this.toParse.charAt(i - 1) == '('))) {
-            this.toParse = this.toParse.substring(0, i) + "ceil" + this.toParse.substring(i + 1);
-          }
-        }
-        System.out.println("Chain to parse : " + this.toParse);
-        jep.addFunction("ceil", new CeilFunction());
-        final Node mainNode = jep.parse(this.toParse);
-        return mainNode;
-
-      } catch (final ParseException e) {
-        e.printStackTrace();
-      }
-    } catch (final Exception e) {
-      e.printStackTrace();
-    }
-    return null;
+  public ExprParameter(final String name, final Object value) {
+    super(name, value);
+    // TODO Auto-generated constructor stub
   }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#clone()
+   */
+  @Override
+  public ExprParameter clone() {
+    final ExprParameter newParam = new ExprParameter(this.name);
+    newParam.setValue(getValue());
+    newParam.setSdxIndex(getSdxIndex());
+    return newParam;
+  }
+
+  /**
+   * Gets the sdx index.
+   *
+   * @return the sdx index
+   */
+  public int getSdxIndex() {
+    return this.sdxIndex;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.nfunk.jep.Variable#getValue()
+   */
+  @Override
+  public Object getValue() {
+    return super.getValue();
+  }
+
+  /**
+   * Sets the sdx index.
+   *
+   * @param index
+   *          the new sdx index
+   */
+  public void setSdxIndex(final int index) {
+    this.sdxIndex = index;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.nfunk.jep.Variable#setValue(java.lang.Object)
+   */
+  @Override
+  public boolean setValue(final Object value) {
+    return super.setValue(value);
+  }
+
 }

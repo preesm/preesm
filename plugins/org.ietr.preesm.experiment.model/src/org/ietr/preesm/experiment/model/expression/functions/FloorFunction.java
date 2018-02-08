@@ -34,42 +34,26 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.experiment.model.expression;
-
-import java.util.Stack;
-import org.nfunk.jep.ParseException;
-import org.nfunk.jep.function.PostfixMathCommand;
+package org.ietr.preesm.experiment.model.expression.functions;
 
 /**
  * The Class FloorFunction.
  */
-public class FloorFunction extends PostfixMathCommand {
+public class FloorFunction extends AbstractPreesmMathFunction {
 
-  /**
-   * Instantiates a new floor function.
-   */
-  public FloorFunction() {
-    this.numberOfParameters = 1;
+  @Override
+  protected String getName() {
+    return "floor";
   }
 
-  /**
-   * Calculates the result of applying the floor function to the top of the stack and pushes it back on the stack.
-   *
-   * @param stack
-   *          the stack
-   * @throws ParseException
-   *           the parse exception
-   */
-  @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
-  public void run(Stack stack) throws ParseException {
-    Object aObj = stack.pop();
-    if (!(aObj instanceof Number)) {
-      throw new ParseException("Floor: argument must be double. It is " + aObj + "(" + aObj.getClass().getName() + ")");
-    }
-    double aDouble = ((Number) aObj).doubleValue();
+  protected int getArgCount() {
+    return 1;
+  }
 
-    stack.push(Math.floor(aDouble));
+  @Override
+  protected double compute(double... args) {
+    return Math.floor(args[0]);
   }
 
 }

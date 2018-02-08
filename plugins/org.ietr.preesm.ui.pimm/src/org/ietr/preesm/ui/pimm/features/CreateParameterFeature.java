@@ -113,7 +113,7 @@ public class CreateParameterFeature extends AbstractCreateFeature {
     // create Parameter
     final Parameter newParameter = PiMMUserFactory.instance.createParameter();
     final Expression expr = PiMMUserFactory.instance.createExpression();
-    newParameter.setValueExpression(expr);
+    newParameter.setExpression(expr);
     newParameter.setName(newParameterName);
     // this parameter
 
