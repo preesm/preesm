@@ -43,7 +43,7 @@ import org.nfunk.jep.Variable;
 /**
  * The Class Parameter.
  */
-public class Parameter extends Variable implements Cloneable {
+public class ExprParameter extends Variable implements Cloneable {
 
   /** The sdx index. */
   public int sdxIndex;
@@ -54,7 +54,7 @@ public class Parameter extends Variable implements Cloneable {
    * @param name
    *          the name
    */
-  public Parameter(final String name) {
+  public ExprParameter(final String name) {
     super(name);
     // TODO Auto-generated constructor stub
   }
@@ -67,7 +67,7 @@ public class Parameter extends Variable implements Cloneable {
    * @param value
    *          the value
    */
-  public Parameter(final String name, final Object value) {
+  public ExprParameter(final String name, final Object value) {
     super(name, value);
     // TODO Auto-generated constructor stub
   }
@@ -78,8 +78,8 @@ public class Parameter extends Variable implements Cloneable {
    * @see java.lang.Object#clone()
    */
   @Override
-  public Parameter clone() {
-    final Parameter newParam = new Parameter(this.name);
+  public ExprParameter clone() {
+    final ExprParameter newParam = new ExprParameter(this.name);
     newParam.setValue(getValue());
     newParam.setSdxIndex(getSdxIndex());
     return newParam;

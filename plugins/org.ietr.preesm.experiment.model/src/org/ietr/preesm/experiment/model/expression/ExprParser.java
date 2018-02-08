@@ -76,7 +76,7 @@ public class ExprParser {
         if (this.toParse.contains("\"")) {
           this.toParse = this.toParse.replace("\"", "");
           final ASTVarNode var = new ASTVarNode(UUID.randomUUID().hashCode());
-          var.setVar(new Parameter(this.toParse));
+          var.setVar(new ExprParameter(this.toParse));
           return var;
         }
 
