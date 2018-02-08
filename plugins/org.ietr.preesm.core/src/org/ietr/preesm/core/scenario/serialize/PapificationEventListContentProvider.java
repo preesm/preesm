@@ -42,11 +42,11 @@ import org.eclipse.jface.viewers.Viewer;
 
 // TODO: Auto-generated Javadoc
 /**
- * Provides the elements contained in the papification editor.
+ * Provides the events contained in the papification component.
  *
  * @author dmadronal
  */
-public class PapificationComponentListContentProvider implements IStructuredContentProvider {
+public class PapificationEventListContentProvider implements IStructuredContentProvider {
 
   /*
    * (non-Javadoc)
@@ -56,7 +56,7 @@ public class PapificationComponentListContentProvider implements IStructuredCont
   @Override
   public Object[] getElements(final Object inputElement) {
 
-    String[] elementTable = { "perf_events", "ARTICO3" };
+    String[] elementTable = { "Timing", "Event1", "Event2", "Event3", "Event4", "Event5" };
     return elementTable;
   }
 

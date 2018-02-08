@@ -41,8 +41,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -78,10 +76,9 @@ import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.PapificationComponentListContentProvider;
-import org.ietr.preesm.core.scenario.serialize.PreesmAlgorithmListContentProvider;
+import org.ietr.preesm.core.scenario.serialize.PapificationEventListContentProvider;
 import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.ui.scenario.editor.Messages;
-import org.ietr.preesm.ui.scenario.editor.timings.TimingsTableLabelProvider;
 
 /**
  * Papification editor within the implementation editor.
@@ -100,7 +97,7 @@ public class PapificationPage extends FormPage implements IPropertyListener {
 
   // DM added this
   CheckboxTableViewer componentTableViewer = null;
-  TableViewer         eventTableViewer     = null;
+  CheckboxTableViewer eventTableViewer     = null;
   // CheckboxTableViewer checkTableViewer = null;
 
   /** Architecture. */
@@ -388,7 +385,6 @@ public class PapificationPage extends FormPage implements IPropertyListener {
     coreCombo.addSelectionListener(labelProvider);
 
     // Create columns
-    // DM added this
     String[] componentSelectionColumnNames = { "PAPI components", "Component type" };
 
     final List<TableColumn> columns = new ArrayList<>();
@@ -435,7 +431,7 @@ public class PapificationPage extends FormPage implements IPropertyListener {
 
     this.componentTableViewer.setInput(this.scenario);
     final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
-    gd.heightHint = 150;
+    gd.heightHint = 100;
     gd.widthHint = 400;
     tablecps.setLayoutData(gd);
   }
@@ -453,22 +449,21 @@ public class PapificationPage extends FormPage implements IPropertyListener {
     final Composite tablecps = toolkit.createComposite(parent);
     tablecps.setVisible(true);
 
-    this.eventTableViewer = new TableViewer(tablecps, SWT.NONE);
+    this.eventTableViewer = CheckboxTableViewer.newCheckList(tablecps, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
 
     final Table table = this.eventTableViewer.getTable();
-    // table.setLayout(new GridLayout());
+    table.setLayout(new GridLayout());
     table.setLayoutData(new GridData(GridData.FILL_BOTH));
     table.setHeaderVisible(true);
     table.setLinesVisible(true);
 
-    this.eventTableViewer.setContentProvider(new PreesmAlgorithmListContentProvider());
+    this.eventTableViewer.setContentProvider(new PapificationEventListContentProvider());
 
-    final TimingsTableLabelProvider labelProvider = new TimingsTableLabelProvider(this.scenario, this.eventTableViewer, this);
+    final PapificationEventLabelProvider labelProvider = new PapificationEventLabelProvider(this.scenario, this.eventTableViewer, this);
     this.eventTableViewer.setLabelProvider(labelProvider);
 
     // Create columns
-    // DM added this
-    String[] eventSelectionColumnNames = { "Monitor", "Event Name", "Short Description" };
+    String[] eventSelectionColumnNames = { "Event Name", "Short Description" };
 
     final List<TableColumn> columns = new ArrayList<>();
     for (int i = 0; i < eventSelectionColumnNames.length; i++) {
@@ -479,7 +474,7 @@ public class PapificationPage extends FormPage implements IPropertyListener {
 
     // Make the last column (Expression) editable
     // XXX: Through an other way than double clicking (direct editing)
-    this.eventTableViewer.addDoubleClickListener(e -> labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection()));
+    // this.eventTableViewer.addDoubleClickListener(e -> labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection()));
 
     final Table tref = table;
     final Composite comp = tablecps;

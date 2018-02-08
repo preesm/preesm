@@ -42,17 +42,16 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.ui.IPropertyListener;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
 // TODO: Auto-generated Javadoc
 /**
- * Displays the available PAPI components.
+ * Displays the available PAPI events.
  *
  * @author dmadronal
  */
-public class PapificationComponentLabelProvider implements ITableLabelProvider, SelectionListener {
+public class PapificationEventLabelProvider implements ITableLabelProvider, SelectionListener {
 
   /** The scenario. */
   private PreesmScenario scenario = null;
@@ -66,8 +65,8 @@ public class PapificationComponentLabelProvider implements ITableLabelProvider, 
   /** Constraints page used as a property listener to change the dirty state. */
   private IPropertyListener propertyListener = null;
 
-  String[] componentNames = { "perf_events", "ARTICO3" };
-  String[] componentTypes = { "CPU", "FPGA" };
+  String[] eventNames = { "Timing", "Event1", "Event2", "Event3", "Event4", "Event5" };
+  String[] eventDescr = { "Time", "Event1 Descr", "Event2 Descr", "Event3 Descr", "Event4 Descr", "Event5 Descr" };
 
   /**
    * Instantiates a new timings table label provider.
@@ -79,7 +78,7 @@ public class PapificationComponentLabelProvider implements ITableLabelProvider, 
    * @param propertyListener
    *          the property listener
    */
-  public PapificationComponentLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer, final IPropertyListener propertyListener) {
+  public PapificationEventLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer, final IPropertyListener propertyListener) {
     super();
     this.scenario = scenario;
     this.tableViewer = tableViewer;
@@ -98,16 +97,16 @@ public class PapificationComponentLabelProvider implements ITableLabelProvider, 
 
     String elementName = (String) element;
 
-    for (int i = 0; i < componentNames.length; i++) {
-      if (elementName.equals(componentNames[i])) {
+    for (int i = 0; i < eventNames.length; i++) {
+      if (elementName.equals(eventNames[i])) {
         component = i;
       }
     }
     switch (columnIndex) {
       case 0:// Parsing column
-        return componentNames[component];
+        return eventNames[component];
       case 1:// Evaluation column
-        return componentTypes[component];
+        return eventDescr[component];
       default:// Others
         break;
     }
@@ -176,14 +175,6 @@ public class PapificationComponentLabelProvider implements ITableLabelProvider, 
    */
   @Override
   public void widgetSelected(final SelectionEvent e) {
-    if (e.getSource() instanceof Combo) {
-      final Combo combo = ((Combo) e.getSource());
-      final String item = combo.getItem(combo.getSelectionIndex());
-
-      this.currentOpDefId = item;
-      this.tableViewer.refresh();
-    }
-
   }
 
   @Override
