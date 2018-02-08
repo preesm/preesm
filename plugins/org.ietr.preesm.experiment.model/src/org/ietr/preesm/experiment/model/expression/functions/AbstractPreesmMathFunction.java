@@ -6,10 +6,13 @@ import org.nfunk.jep.ParseException;
 import org.nfunk.jep.function.PostfixMathCommand;
 
 /**
- *
+ * Abstract class to wrap simple postfix math functions for JEP.
  */
 public abstract class AbstractPreesmMathFunction extends PostfixMathCommand {
 
+  /**
+   * Properly initialize number of argument with abstract method
+   */
   public AbstractPreesmMathFunction() {
     super();
     this.numberOfParameters = getArgCount();
@@ -20,12 +23,8 @@ public abstract class AbstractPreesmMathFunction extends PostfixMathCommand {
   }
 
   /**
-   * Calculates the result of applying the floor function to the top of the stack and pushes it back on the stack.
-   *
-   * @param stack
-   *          the stack
-   * @throws ParseException
-   *           the parse exception
+   * Gets the {@link #getArgCount()} peek elements of the stack and put them in order in an array of double, then call the {@link #compute(double...)} method to
+   * compute the result.
    */
   @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
@@ -43,6 +42,9 @@ public abstract class AbstractPreesmMathFunction extends PostfixMathCommand {
     stack.push(result);
   }
 
+  /**
+   * returns the name of the function that will be used in the math expressions
+   */
   protected abstract String getName();
 
   protected abstract int getArgCount();
