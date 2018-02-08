@@ -291,6 +291,41 @@
             </input>
          </inputs>
       </task>
+
+      <!-- Activity / LSLA related tasks -->
+      <task
+            id="org.ietr.preesm.algorithm.moa.activity.ActivityExporter"
+            name="Activity Exporter of Tokens and Quanta"
+            type="org.ietr.preesm.algorithm.moa.activity.ActivityExporter">
+         <inputs>
+            <input
+                  id="ABCs"
+                  object="java.util.Set">
+            </input>
+         </inputs>
+      </task>
+      <task
+            id="org.ietr.preesm.algorithm.moa.activity.CustomQuantaExporter"
+            name="Activity Exporter of Custom Quanta"
+            type="org.ietr.preesm.algorithm.moa.activity.CustomQuantaExporter">
+         <inputs>
+            <input
+                  id="ABCs"
+                  object="java.util.Set">
+            </input>
+         </inputs>
+      </task>
+      <task
+            id="org.ietr.preesm.algorithm.moa.activity.MonoActivityExporter"
+            name="Activity Exporter of Tokens and Quanta for a single ABC"
+            type="org.ietr.preesm.algorithm.moa.activity.MonoActivityExporter">
+         <inputs>
+            <input
+                  id="ABC"
+                  object="org.ietr.preesm.mapper.abc.IAbc">
+            </input>
+         </inputs>
+      </task>
    </extension>
 
 </plugin>
