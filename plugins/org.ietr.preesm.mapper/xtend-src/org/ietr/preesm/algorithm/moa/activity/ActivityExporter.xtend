@@ -106,8 +106,7 @@ class ActivityExporter extends AbstractTaskImplementation {
 		val filePath = parameters.get(PATH)
 		val human_readable = (parameters.get(HUMAN_READABLE) == "Yes")
 		// The abc contains all information on the implemented system
-		var abcs = inputs.get(KEY_SDF_ABC_SET) as Set<IAbc>
-		var abc = abcs.get(0) as LatencyAbc
+		var abc = inputs.get(KEY_SDF_ABC) as LatencyAbc
 
 		if (abc != null) {
 			writeActivity(abc, filePath, workflow, human_readable)
