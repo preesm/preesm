@@ -36,17 +36,19 @@ package org.ietr.preesm.experiment.model.expression;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.eclipse.emf.common.util.EList;
 import org.ietr.preesm.experiment.model.expression.functions.CeilFunction;
 import org.ietr.preesm.experiment.model.expression.functions.FloorFunction;
 import org.ietr.preesm.experiment.model.expression.functions.MaxFunction;
 import org.ietr.preesm.experiment.model.expression.functions.MinFunction;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.Configurable;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.ExpresionHolder;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.Parameterizable;
+import org.ietr.preesm.experiment.model.pimm.Port;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
@@ -94,6 +96,7 @@ public class ExpressionEvaluator {
     if (addInputParameterValues != null) {
       addInputParameterValues.forEach(jep::addVariable);
     }
+
     jep.addStandardConstants();
     jep.addStandardFunctions();
 
@@ -103,7 +106,6 @@ public class ExpressionEvaluator {
     new MaxFunction().integrateWithin(jep);
 
     return jep;
-
   }
 
   private static long parse(final String allExpression, final JEP jep) throws ParseException {
@@ -120,30 +122,26 @@ public class ExpressionEvaluator {
   }
 
   private static Map<String, Number> addInputParameterValues(final Expression expression) {
-    final Configurable parameterizableObj;
-    final Parameterizable eContainer = expression.getHolder();
-    if (eContainer instanceof Configurable) {
-      parameterizableObj = (Configurable) eContainer;
-    } else if (eContainer.eContainer() instanceof Configurable) {
-      parameterizableObj = (Configurable) eContainer.eContainer();
-    } else {
-      throw new ExpressionEvaluationException("Neither a child of Configurable nor a child of a child of Configurable");
-    }
     final Map<String, Number> result = new LinkedHashMap<>();
-    for (final ConfigInputPort port : parameterizableObj.getConfigInputPorts()) {
-      if ((port.getIncomingDependency() != null) && (port.getIncomingDependency().getSetter() instanceof Parameter)) {
-        final Parameter p = (Parameter) port.getIncomingDependency().getSetter();
+    final ExpresionHolder holder = expression.getHolder();
+    final EList<Parameter> inputParameters = holder.getInputParameters();
+    for (final Parameter param : inputParameters) {
+      final Expression valueExpression = param.getValueExpression();
+      final double value = ExpressionEvaluator.evaluate(valueExpression);
 
-        String parameterName;
-        if ((parameterizableObj instanceof Parameter) || (parameterizableObj instanceof Delay) || (parameterizableObj instanceof InterfaceActor)) {
-          parameterName = p.getName();
+      if ((holder instanceof Parameter) || (holder instanceof Delay) || (holder instanceof InterfaceActor)) {
+        result.put(param.getName(), value);
+      } else if (holder instanceof DataPort) {
+        final AbstractActor containingActor = ((DataPort) holder).getContainingActor();
+        if (containingActor instanceof InterfaceActor) {
+          result.put(param.getName(), value);
         } else {
-          parameterName = port.getName();
+          final Port configInputPort = containingActor.lookupPortConnectedWithParameter(param);
+          final String name = configInputPort.getName();
+          result.put(name, value);
         }
-
-        final Expression valueExpression = p.getValueExpression();
-        final double parseDouble = ExpressionEvaluator.evaluate(valueExpression);
-        result.put(parameterName, parseDouble);
+      } else {
+        throw new ExpressionEvaluationException("Could not compute proper parameter name");
       }
     }
     return result;
