@@ -1,26 +1,24 @@
-package org.ietr.preesm.experiment.model.expression;
+package org.ietr.preesm.experiment.model.expression.functions;
 
 import java.util.Stack;
 import org.nfunk.jep.ParseException;
 import org.nfunk.jep.function.PostfixMathCommand;
 
 /**
- * Min function (for two double numbers)
+ * Max function (for two double numbers)
  * 
  * @author ahonorat
+ *
  */
-public class MinFunction extends PostfixMathCommand {
+public class MaxFunction extends PostfixMathCommand {
 
-  /**
-   * Instantiates a new ceil function.
-   */
-  public MinFunction() {
+  public MaxFunction() {
     super();
     numberOfParameters = 2;
   }
 
   /**
-   * Evaluate the min expression for two parameters.
+   * Evaluate the max expression for two parameters.
    */
   @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
@@ -29,11 +27,11 @@ public class MinFunction extends PostfixMathCommand {
     Object bObj = s.pop();
     if ((!(aObj instanceof Number)) || (!(bObj instanceof Number))) {
       throw new ParseException(
-          "Min: both arguments must be doubles. They are " + bObj + "(" + bObj.getClass().getName() + ") and " + aObj + "(" + bObj.getClass().getName() + ")");
+          "Max: both arguments must be doubles. They are " + bObj + "(" + bObj.getClass().getName() + ") and " + aObj + "(" + bObj.getClass().getName() + ")");
     }
     double aDouble = ((Number) aObj).doubleValue();
     double bDouble = ((Number) bObj).doubleValue();
-    s.push(new Double(Math.min(aDouble, bDouble)));
+    s.push(new Double(Math.max(aDouble, bDouble)));
   }
 
 }

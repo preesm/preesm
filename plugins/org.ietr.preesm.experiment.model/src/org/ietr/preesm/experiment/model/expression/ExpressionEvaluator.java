@@ -36,6 +36,10 @@ package org.ietr.preesm.experiment.model.expression;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.ietr.preesm.experiment.model.expression.functions.CeilFunction;
+import org.ietr.preesm.experiment.model.expression.functions.FloorFunction;
+import org.ietr.preesm.experiment.model.expression.functions.MaxFunction;
+import org.ietr.preesm.experiment.model.expression.functions.MinFunction;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.Delay;
@@ -110,7 +114,7 @@ public class ExpressionEvaluator {
     }
     final Double dResult = (Double) result;
     if (Double.isInfinite(dResult)) {
-      throw new ExpressionEvaluationException("Expression " + allExpression + " evaluated to infinity.");
+      throw new ExpressionEvaluationException("Expression '" + allExpression + "' evaluated to infinity.");
     }
     return Math.round(dResult);
   }

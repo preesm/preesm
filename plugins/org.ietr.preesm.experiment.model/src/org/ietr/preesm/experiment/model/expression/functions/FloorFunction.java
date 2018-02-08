@@ -34,26 +34,26 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.experiment.model.expression;
+package org.ietr.preesm.experiment.model.expression.functions;
 
 import java.util.Stack;
 import org.nfunk.jep.ParseException;
 import org.nfunk.jep.function.PostfixMathCommand;
 
 /**
- * The Class CeilFunction.
+ * The Class FloorFunction.
  */
-public class CeilFunction extends PostfixMathCommand {
+public class FloorFunction extends PostfixMathCommand {
 
   /**
-   * Instantiates a new ceil function.
+   * Instantiates a new floor function.
    */
-  public CeilFunction() {
+  public FloorFunction() {
     this.numberOfParameters = 1;
   }
 
   /**
-   * Calculates the result of applying the ceil function to the top of the stack and pushes it back on the stack.
+   * Calculates the result of applying the floor function to the top of the stack and pushes it back on the stack.
    *
    * @param stack
    *          the stack
@@ -65,11 +65,11 @@ public class CeilFunction extends PostfixMathCommand {
   public void run(Stack stack) throws ParseException {
     Object aObj = stack.pop();
     if (!(aObj instanceof Number)) {
-      throw new ParseException("Ceil: argument must be double. It is " + aObj + "(" + aObj.getClass().getName() + ")");
+      throw new ParseException("Floor: argument must be double. It is " + aObj + "(" + aObj.getClass().getName() + ")");
     }
     double aDouble = ((Number) aObj).doubleValue();
 
-    stack.push(Math.ceil(aDouble));
+    stack.push(Math.floor(aDouble));
   }
 
 }
