@@ -36,40 +36,24 @@
  */
 package org.ietr.preesm.experiment.model.expression.functions;
 
-import java.util.Stack;
-import org.nfunk.jep.ParseException;
-import org.nfunk.jep.function.PostfixMathCommand;
-
 /**
  * The Class CeilFunction.
  */
-public class CeilFunction extends PostfixMathCommand {
+public class CeilFunction extends AbstractPreesmMathFunction {
 
-  /**
-   * Instantiates a new ceil function.
-   */
-  public CeilFunction() {
-    this.numberOfParameters = 1;
+  @Override
+  protected String getName() {
+    return "ceil";
   }
 
-  /**
-   * Calculates the result of applying the ceil function to the top of the stack and pushes it back on the stack.
-   *
-   * @param stack
-   *          the stack
-   * @throws ParseException
-   *           the parse exception
-   */
-  @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
-  public void run(Stack stack) throws ParseException {
-    Object aObj = stack.pop();
-    if (!(aObj instanceof Number)) {
-      throw new ParseException("Ceil: argument must be double. It is " + aObj + "(" + aObj.getClass().getName() + ")");
-    }
-    double aDouble = ((Number) aObj).doubleValue();
+  protected int getArgCount() {
+    return 1;
+  }
 
-    stack.push(Math.ceil(aDouble));
+  @Override
+  protected double compute(double... args) {
+    return Math.ceil(args[0]);
   }
 
 }

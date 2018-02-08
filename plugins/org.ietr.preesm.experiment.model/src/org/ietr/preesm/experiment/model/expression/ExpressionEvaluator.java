@@ -97,10 +97,10 @@ public class ExpressionEvaluator {
     jep.addStandardConstants();
     jep.addStandardFunctions();
 
-    jep.addFunction("floor", new FloorFunction());
-    jep.addFunction("ceil", new CeilFunction());
-    jep.addFunction("min", new MinFunction());
-    jep.addFunction("max", new MaxFunction());
+    new FloorFunction().integrateWithin(jep);
+    new CeilFunction().integrateWithin(jep);
+    new MinFunction().integrateWithin(jep);
+    new MaxFunction().integrateWithin(jep);
 
     return jep;
 
@@ -121,7 +121,7 @@ public class ExpressionEvaluator {
 
   private static Map<String, Number> addInputParameterValues(final Expression expression) {
     final Configurable parameterizableObj;
-    Parameterizable eContainer = expression.getHolder();
+    final Parameterizable eContainer = expression.getHolder();
     if (eContainer instanceof Configurable) {
       parameterizableObj = (Configurable) eContainer;
     } else if (eContainer.eContainer() instanceof Configurable) {
