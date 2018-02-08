@@ -42,6 +42,7 @@ import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
@@ -62,8 +63,7 @@ public class ExpressionEvaluator {
    *
    */
   public static final long evaluate(final Expression expression) {
-    final Configurable parameterizableObj = ExpressionEvaluator.lookUpParameters(expression);
-    final Map<String, Number> addInputParameterValues = ExpressionEvaluator.addInputParameterValues(parameterizableObj);
+    final Map<String, Number> addInputParameterValues = ExpressionEvaluator.addInputParameterValues(expression);
     return ExpressionEvaluator.evaluate(expression.getExpressionString(), addInputParameterValues);
   }
 
@@ -115,19 +115,16 @@ public class ExpressionEvaluator {
     return Math.round(dResult);
   }
 
-  private static Configurable lookUpParameters(final Expression expression) {
-    Configurable parameterizableObj;
-    if (expression.eContainer() instanceof Configurable) {
-      parameterizableObj = (Configurable) expression.eContainer();
-    } else if (expression.eContainer().eContainer() instanceof Configurable) {
-      parameterizableObj = (Configurable) expression.eContainer().eContainer();
+  private static Map<String, Number> addInputParameterValues(final Expression expression) {
+    final Configurable parameterizableObj;
+    Parameterizable eContainer = expression.getHolder();
+    if (eContainer instanceof Configurable) {
+      parameterizableObj = (Configurable) eContainer;
+    } else if (eContainer.eContainer() instanceof Configurable) {
+      parameterizableObj = (Configurable) eContainer.eContainer();
     } else {
-      throw new ExpressionEvaluationException("Neither a child of Parameterizable nor a child of a child of Parameterizable");
+      throw new ExpressionEvaluationException("Neither a child of Configurable nor a child of a child of Configurable");
     }
-    return parameterizableObj;
-  }
-
-  private static Map<String, Number> addInputParameterValues(final Configurable parameterizableObj) {
     final Map<String, Number> result = new LinkedHashMap<>();
     for (final ConfigInputPort port : parameterizableObj.getConfigInputPorts()) {
       if ((port.getIncomingDependency() != null) && (port.getIncomingDependency().getSetter() instanceof Parameter)) {
