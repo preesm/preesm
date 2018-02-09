@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2008 - 2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
@@ -269,45 +269,47 @@ public class ScenarioParser {
     String stringValue = paramValueElt.getAttribute("value");
 
     currentParameter = graph.lookupParameterGivenGraph(name, parent);
+    if (currentParameter == null) {
+      WorkflowLogger.getLogger().log(Level.WARNING, "Parameter with name '" + name + "' cannot be found in PiGraph '" + parent + "'.");
+    } else {
+      switch (type) {
+        case "INDEPENDENT":
+        case "STATIC": // Retro-compatibility
+          this.scenario.getParameterValueManager().addIndependentParameterValue(currentParameter, stringValue, parent);
+          break;
+        case "ACTOR_DEPENDENT":
+        case "DYNAMIC": // Retro-compatibility
+          if ((stringValue.charAt(0) == '[') && (stringValue.charAt(stringValue.length() - 1) == ']')) {
+            stringValue = stringValue.substring(1, stringValue.length() - 1);
+            final String[] values = stringValue.split(",");
 
-    switch (type) {
-      case "INDEPENDENT":
-      case "STATIC": // Retro-compatibility
-        this.scenario.getParameterValueManager().addIndependentParameterValue(currentParameter, stringValue, parent);
-        break;
-      case "ACTOR_DEPENDENT":
-      case "DYNAMIC": // Retro-compatibility
-        if ((stringValue.charAt(0) == '[') && (stringValue.charAt(stringValue.length() - 1) == ']')) {
-          stringValue = stringValue.substring(1, stringValue.length() - 1);
-          final String[] values = stringValue.split(",");
+            final Set<Integer> newValues = new LinkedHashSet<>();
 
-          final Set<Integer> newValues = new LinkedHashSet<>();
-
-          try {
-            for (final String val : values) {
-              newValues.add(Integer.parseInt(val.trim()));
+            try {
+              for (final String val : values) {
+                newValues.add(Integer.parseInt(val.trim()));
+              }
+            } catch (final NumberFormatException e) {
+              // TODO: Do smthg?
             }
-          } catch (final NumberFormatException e) {
-            // TODO: Do smthg?
+            this.scenario.getParameterValueManager().addActorDependentParameterValue(currentParameter, newValues, parent);
           }
-          this.scenario.getParameterValueManager().addActorDependentParameterValue(currentParameter, newValues, parent);
-        }
-        break;
-      case "PARAMETER_DEPENDENT":
-      case "DEPENDENT": // Retro-compatibility
-        final Set<String> inputParameters = new LinkedHashSet<>();
-        if (graph != null) {
+          break;
+        case "PARAMETER_DEPENDENT":
+        case "DEPENDENT": // Retro-compatibility
+          final Set<String> inputParameters = new LinkedHashSet<>();
+          if (graph != null) {
 
-          for (final Parameter input : currentParameter.getInputParameters()) {
-            inputParameters.add(input.getName());
+            for (final Parameter input : currentParameter.getInputParameters()) {
+              inputParameters.add(input.getName());
+            }
           }
-        }
-        this.scenario.getParameterValueManager().addParameterDependentParameterValue(currentParameter, stringValue, inputParameters, parent);
-        break;
-      default:
-        throw new RuntimeException("Unknown Parameter type: " + type + " for Parameter: " + name);
+          this.scenario.getParameterValueManager().addParameterDependentParameterValue(currentParameter, stringValue, inputParameters, parent);
+          break;
+        default:
+          throw new RuntimeException("Unknown Parameter type: " + type + " for Parameter: " + name);
+      }
     }
-
     return currentParameter;
   }
 

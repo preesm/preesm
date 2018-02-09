@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
@@ -113,7 +113,7 @@ public class CreateParameterFeature extends AbstractCreateFeature {
     // create Parameter
     final Parameter newParameter = PiMMUserFactory.instance.createParameter();
     final Expression expr = PiMMUserFactory.instance.createExpression();
-    newParameter.setValueExpression(expr);
+    newParameter.setExpression(expr);
     newParameter.setName(newParameterName);
     // this parameter
 

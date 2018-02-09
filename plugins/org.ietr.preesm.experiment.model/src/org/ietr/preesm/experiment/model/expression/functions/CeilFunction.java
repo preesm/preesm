@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Clément Guy <clement.guy@insa-rennes.fr> (2015)
+ * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
@@ -35,93 +35,26 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.experiment.model.expression;
+package org.ietr.preesm.experiment.model.expression.functions;
 
-import org.nfunk.jep.Variable;
-
-// TODO: Auto-generated Javadoc
 /**
- * The Class Parameter.
+ * The Class CeilFunction.
  */
-public class Parameter extends Variable implements Cloneable {
+public class CeilFunction extends AbstractPreesmMathFunction {
 
-  /** The sdx index. */
-  public int sdxIndex;
-
-  /**
-   * Instantiates a new parameter.
-   *
-   * @param name
-   *          the name
-   */
-  public Parameter(final String name) {
-    super(name);
-    // TODO Auto-generated constructor stub
-  }
-
-  /**
-   * Instantiates a new parameter.
-   *
-   * @param name
-   *          the name
-   * @param value
-   *          the value
-   */
-  public Parameter(final String name, final Object value) {
-    super(name, value);
-    // TODO Auto-generated constructor stub
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#clone()
-   */
   @Override
-  public Parameter clone() {
-    final Parameter newParam = new Parameter(this.name);
-    newParam.setValue(getValue());
-    newParam.setSdxIndex(getSdxIndex());
-    return newParam;
+  protected String getName() {
+    return "ceil";
   }
 
-  /**
-   * Gets the sdx index.
-   *
-   * @return the sdx index
-   */
-  public int getSdxIndex() {
-    return this.sdxIndex;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.nfunk.jep.Variable#getValue()
-   */
   @Override
-  public Object getValue() {
-    return super.getValue();
+  protected int getArgCount() {
+    return 1;
   }
 
-  /**
-   * Sets the sdx index.
-   *
-   * @param index
-   *          the new sdx index
-   */
-  public void setSdxIndex(final int index) {
-    this.sdxIndex = index;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.nfunk.jep.Variable#setValue(java.lang.Object)
-   */
   @Override
-  public boolean setValue(final Object value) {
-    return super.setValue(value);
+  protected double compute(double... args) {
+    return Math.ceil(args[0]);
   }
 
 }

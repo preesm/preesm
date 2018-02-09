@@ -27,12 +27,11 @@
 @Ecore(nsURI="http://org.ietr.preesm/model/pimm")
 package org.ietr.preesm.experiment.model.pimm
 
-//import org.eclipse.emf.common.util.EList
-import org.eclipse.emf.common.util.ECollections
-import org.eclipse.emf.common.util.BasicEList
 import java.util.Optional
-import org.ietr.preesm.experiment.model.pimm.util.RefinementResolver
 import org.ietr.preesm.experiment.model.PiGraphException
+import org.ietr.preesm.experiment.model.pimm.util.RefinementResolver
+
+type IPath wraps org.eclipse.core.runtime.IPath
 
 // type IPath wraps org.eclipse.core.runtime.IPath
 // !!! This is needed as of the current versions of xcore/xtext
@@ -54,23 +53,34 @@ interface Parameterizable {
 	}
 }
 
-abstract class AbstractVertex {
+class Expression {
+	refers ExpresionHolder holder opposite expression
+	String expressionString = "0"
+}
+
+interface ExpresionHolder extends Parameterizable {
+	contains Expression expression opposite holder
+}
+
+interface AbstractVertex {
 	String name
-	op unique Port[] getAllPorts() {
-		var BasicEList<Port> result = ECollections.newBasicEList();
-		return ECollections.unmodifiableEList(result);
-	}
+	op PiGraph getContainingGraph()
+	op unique Port[] getAllPorts()
 	op Port lookupPort(String portName) {
 		return getAllPorts().filterNull.findFirst [
 			(it.getName() === null) && (portName === null) || (it.getName() !== null) && it.getName().equals(portName)
 		]
 	}
+	op String getVertexPath() {
+		val actorName = name;
+		return Optional.ofNullable(containingGraph).map[vertexPath + "/" + actorName].orElse(actorName)
+	}
 }
 
-abstract class Configurable extends AbstractVertex , Parameterizable {
+abstract class Configurable extends AbstractVertex, Parameterizable {
 	contains ConfigInputPort[] configInputPorts opposite configurable
 	op unique Parameter[] getInputParameters() {
-		return configInputPorts.filterNull.map[incomingDependency].filterNull.map[getter].filter(Parameter).toEList.
+		return configInputPorts.filterNull.map[incomingDependency].filterNull.map[setter].filter(Parameter).toEList.
 			unmodifiableView
 	}
 	op Port lookupPortConnectedWithParameter(Parameter parameter) {
@@ -82,7 +92,7 @@ abstract class Configurable extends AbstractVertex , Parameterizable {
 		return configInputPorts.unmodifiableView
 	}
 	op unique Port[] getAllPorts() {
-		return (super.allPorts + allConfigPorts).toEList.unmodifiableView
+		return allConfigPorts.unmodifiableView
 	}
 }
 
@@ -100,15 +110,17 @@ abstract class AbstractActor extends Configurable {
 	op unique Port[] getAllPorts() {
 		return (allConfigPorts + allDataPorts).toEList.unmodifiableView
 	}
+	/*
+	 * @deprecated use getVertexPath() instead;
+	 */
 	op String getActorPath() {
-		val actorName = name;
-		return Optional.ofNullable(containingGraph).map[actorPath + "/" + actorName].orElse(actorName)
+		return vertexPath
 	}
 }
 
 class PiGraph extends AbstractActor {
 	contains AbstractActor[] actors opposite containingGraph
-	contains Fifo[] fifos
+	contains Fifo[] fifos opposite containingGraph
 	contains Parameter[] parameters opposite containingGraph
 	contains Dependency[] dependencies
 	op unique String[] getActorsNames() {
@@ -181,9 +193,32 @@ class ForkActor extends ExecutableActor {
 class RoundBufferActor extends ExecutableActor {
 }
 
-abstract class Port {
+interface Port {
 	String name
 	op PortKind getKind()
+}
+
+abstract class DataPort extends Port, ExpresionHolder {
+	op Expression getPortRateExpression() {
+		return expression
+	}
+	PortMemoryAnnotation ^annotation
+	op AbstractActor getContainingActor() {
+		if (eContainer() instanceof AbstractActor) {
+			return eContainer() as AbstractActor;
+		}
+		return null;
+	}
+	op Parameter[] getInputParameters() {
+		return containingActor.inputParameters.unmodifiableView
+	}
+	op String getId() {
+		val String actorName = Optional.ofNullable(getContainingActor()).map[name].orElseThrow [
+			new PiGraphException("Data port " + this + " is not contained in an AbstracytActor.")
+		];
+		val String portName = Optional.ofNullable(name).filter[!it.isEmpty()].map["." + it].orElse("");
+		return actorName + portName;
+	}
 }
 
 class DataInputPort extends DataPort {
@@ -221,6 +256,7 @@ class ConfigOutputPort extends DataOutputPort , ISetter {
 class Fifo {
 	refers DataOutputPort sourcePort opposite outgoingFifo
 	refers DataInputPort targetPort opposite incomingFifo
+	container PiGraph containingGraph opposite fifos
 	contains Delay delay opposite containingFifo
 	String ^type = "void"
 
@@ -302,8 +338,10 @@ class CHeaderRefinement extends Refinement {
 	}
 }
 
-class Parameter extends Configurable , ISetter {
-	contains Expression valueExpression
+class Parameter extends Configurable, ISetter, ExpresionHolder {
+	op Expression getValueExpression() {
+		return expression
+	}
 	container PiGraph containingGraph opposite parameters
 	op boolean isLocallyStatic() {
 		// a parameter is static if all its setters are static (or it has no setter)
@@ -327,13 +365,15 @@ interface ISetter {
 	op boolean isLocallyStatic()
 }
 
-class Delay extends Configurable {
-	contains Expression sizeExpression
+class Delay extends Configurable, ExpresionHolder {
+	op Expression getSizeExpression() {
+		return expression
+	}
 	container readonly Fifo containingFifo opposite delay
-}
 
-class Expression {
-	String expressionString = "0"
+	op PiGraph getContainingGraph() {
+		return containingFifo.containingGraph
+	}
 }
 
 class FunctionPrototype {
@@ -353,32 +393,12 @@ enum Direction {
 	OUT = 1
 }
 
-abstract class DataPort extends Port {
-	contains Expression portRateExpression
-	PortMemoryAnnotation ^annotation
-	op AbstractActor getContainingActor() {
-		if (eContainer() instanceof AbstractActor) {
-			return eContainer() as AbstractActor;
-		}
-		return null;
-	}
-	op String getId() {
-		val String actorName = Optional.ofNullable(getContainingActor()).map[name].orElseThrow [
-			new PiGraphException("Data port " + this + " is not contained in an AbstracytActor.")
-		];
-		val String portName = Optional.ofNullable(name).filter[!it.isEmpty()].map["." + it].orElse("");
-		return actorName + portName;
-	}
-}
-
 enum PortMemoryAnnotation {
 	NONE = 0
 	READ_ONLY = 1
 	WRITE_ONLY = 2
 	UNUSED = 3
 }
-
-type IPath wraps org.eclipse.core.runtime.IPath
 
 enum PortKind {
 	CFG_INPUT as "cfg_input" = 0

@@ -2,14 +2,19 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Evaluator plug-in
 Bundle-SymbolicName: org.ietr.preesm.evaluator;singleton:=true
-Bundle-Version: 2.7.0
+Bundle-Version: 2.8.0
 Bundle-Activator: org.ietr.preesm.evaluator.Activator
 Require-Bundle: org.eclipse.core.runtime,
- org.gnu.glpk.java;bundle-version="1.0.32",
+ org.apache.commons.lang3;bundle-version="3.5.0",
  org.ietr.preesm.core,
- org.ietr.preesm.algorithm
+ org.ietr.preesm.algorithm,
+ org.ojalgo;bundle-version="44.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Export-Package: org.ietr.preesm.evaluator
+Export-Package: org.ietr.preesm.evaluator,
+ org.ietr.preesm.mathematicalModels,
+ org.ietr.preesm.schedule,
+ org.ietr.preesm.throughput.tools.helpers,
+ org.ietr.preesm.throughput.tools.transformers
 Bundle-Vendor: IETR/INSA Rennes
+Bundle-ActivationPolicy: lazy

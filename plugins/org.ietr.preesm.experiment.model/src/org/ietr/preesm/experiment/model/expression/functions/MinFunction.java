@@ -1,9 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
+ * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,36 +33,28 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.experiment.model.expression;
-
-import java.util.Stack;
-import org.nfunk.jep.ParseException;
-import org.nfunk.jep.function.PostfixMathCommand;
+package org.ietr.preesm.experiment.model.expression.functions;
 
 /**
- * The Class FloorFunction.
+ * Min function (for two double numbers)
+ *
+ * @author ahonorat
  */
-public class FloorFunction extends PostfixMathCommand {
+public class MinFunction extends AbstractPreesmMathFunction {
 
-  /**
-   * Instantiates a new floor function.
-   */
-  public FloorFunction() {
-    this.numberOfParameters = -1;
+  @Override
+  protected String getName() {
+    return "min";
   }
 
-  /**
-   * Calculates the result of applying the floor function to the top of the stack and pushes it back on the stack.
-   *
-   * @param stack
-   *          the stack
-   * @throws ParseException
-   *           the parse exception
-   */
-  @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
-  public void run(final Stack stack) throws ParseException {
-    stack.push(Math.floor((Double) (stack.pop())));
+  protected int getArgCount() {
+    return 2;
+  }
+
+  @Override
+  protected double compute(double... args) {
+    return Math.min(args[0], args[1]);
   }
 
 }

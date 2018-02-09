@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
+ * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -107,6 +108,16 @@ public class JEPCustomFunctionTest {
   @Test
   public void jepCeilTest() {
 
+  }
+
+  @Test
+  public void jepMinTest() {
+    testEvaluation("min(min(1,-3),-2)", -3);
+  }
+
+  @Test
+  public void jepMaxTest() {
+    testEvaluation("max(10, max(1,-3))", 10);
   }
 
 }

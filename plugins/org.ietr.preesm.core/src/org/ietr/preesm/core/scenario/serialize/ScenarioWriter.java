@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2013)
@@ -148,7 +148,7 @@ public class ScenarioWriter {
     switch (value.getType()) {
       case INDEPENDENT:
         valueToPrint = "" + value.getValue();
-        if (!value.getParameter().getValueExpression().getExpressionString().equals(valueToPrint)) {
+        if (!value.getParameter().getExpression().getExpressionString().equals(valueToPrint)) {
           needToBeSerialized = true;
         }
         break;
@@ -158,7 +158,7 @@ public class ScenarioWriter {
         break;
       case PARAMETER_DEPENDENT:
         valueToPrint = value.getExpression();
-        if (!value.getParameter().getValueExpression().getExpressionString().equals(valueToPrint)) {
+        if (!value.getParameter().getExpression().getExpressionString().equals(valueToPrint)) {
           needToBeSerialized = true;
         }
         break;

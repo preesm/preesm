@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
@@ -117,10 +117,10 @@ public class ConstraintGroupManager {
     if (cgSet.isEmpty()) {
       final ConstraintGroup cg = new ConstraintGroup();
       cg.addOperatorId(opId);
-      cg.addActorPath(vertex.getActorPath());
+      cg.addActorPath(vertex.getVertexPath());
       this.constraintgroups.add(cg);
     } else {
-      ((ConstraintGroup) cgSet.toArray()[0]).addActorPath(vertex.getActorPath());
+      ((ConstraintGroup) cgSet.toArray()[0]).addActorPath(vertex.getVertexPath());
     }
   }
 
@@ -178,7 +178,7 @@ public class ConstraintGroupManager {
 
     if (!cgSet.isEmpty()) {
       for (final ConstraintGroup cg : cgSet) {
-        cg.removeVertexPath(vertex.getActorPath());
+        cg.removeVertexPath(vertex.getVertexPath());
       }
     }
   }

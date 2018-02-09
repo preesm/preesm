@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
@@ -54,10 +54,9 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.tools.BLevelIterator;
-import org.jgrapht.DirectedGraph;
-import org.jgrapht.alg.DirectedNeighborIndex;
+import org.jgrapht.Graph;
+import org.jgrapht.alg.util.NeighborCache;
 
-// TODO: Auto-generated Javadoc
 /**
  * Creates the CPN dominant list.
  *
@@ -156,14 +155,14 @@ public class InitialLists implements Cloneable {
 
     MapperDAGVertex cpnvertex = null;
 
-    final DirectedGraph<DAGVertex, DAGEdge> castDag = dag;
-    final DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex = new DirectedNeighborIndex<>(castDag);
+    final Graph<DAGVertex, DAGEdge> castDag = dag;
+    final NeighborCache<DAGVertex, DAGEdge> neighborindex = new NeighborCache<>(castDag);
 
     final Set<DAGVertex> predset = new LinkedHashSet<>();
 
     // check the parents of the current vertex
     cpnvertex = currentvertex;
-    predset.addAll(neighborindex.predecessorListOf(currentvertex));
+    predset.addAll(neighborindex.predecessorsOf(currentvertex));
 
     // Run backward in the DAG to find the node with its parents in the
     // CPNdominantlist and with the maximum b-level
@@ -172,7 +171,7 @@ public class InitialLists implements Cloneable {
       predset.clear();
 
       if (cpnvertex != null) {
-        predset.addAll(neighborindex.predecessorListOf(cpnvertex));
+        predset.addAll(neighborindex.predecessorsOf(cpnvertex));
       } else {
         WorkflowLogger.getLogger().log(Level.SEVERE, "Predecessor not found");
         return false;
@@ -268,8 +267,8 @@ public class InitialLists implements Cloneable {
       currentvertex = iterator.next();
     }
 
-    final DirectedGraph<DAGVertex, DAGEdge> castDag = dag;
-    final DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex = new DirectedNeighborIndex<>(castDag);
+    final Graph<DAGVertex, DAGEdge> castDag = dag;
+    final NeighborCache<DAGVertex, DAGEdge> neighborindex = new NeighborCache<>(castDag);
 
     final Set<DAGVertex> succset = new LinkedHashSet<>();
 
@@ -281,7 +280,7 @@ public class InitialLists implements Cloneable {
     final MapperDAG base = (MapperDAG) currentvertex.getBase();
 
     // Find the successor of the first CPN (Critical Path Node)
-    succset.addAll(neighborindex.successorListOf(cpnvertex));
+    succset.addAll(neighborindex.successorsOf(cpnvertex));
 
     WorkflowLogger.getLogger().log(Level.INFO, "Building CPN list.");
 
@@ -312,7 +311,7 @@ public class InitialLists implements Cloneable {
       currentvertex = tempvertex;
       criticalPath.add(currentvertex);
       succset.clear();
-      succset.addAll(neighborindex.successorListOf(currentvertex));
+      succset.addAll(neighborindex.successorsOf(currentvertex));
       /*
        * Search for the predecessor of the final critical path nodes because they must be mapped before their successors
        */

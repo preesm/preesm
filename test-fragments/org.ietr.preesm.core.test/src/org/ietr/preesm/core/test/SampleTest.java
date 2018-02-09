@@ -1,9 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,36 +32,19 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.experiment.model.expression;
+package org.ietr.preesm.core.test;
 
-import java.util.Stack;
-import org.nfunk.jep.ParseException;
-import org.nfunk.jep.function.PostfixMathCommand;
+import org.junit.Test;
 
 /**
- * The Class CeilFunction.
+ *
+ * @author anmorvan
+ *
  */
-public class CeilFunction extends PostfixMathCommand {
+public class SampleTest {
 
-  /**
-   * Instantiates a new ceil function.
-   */
-  public CeilFunction() {
-    this.numberOfParameters = -1;
+  @Test
+  public void testSample() {
+    // just works
   }
-
-  /**
-   * Calculates the result of applying the ceil function to the top of the stack and pushes it back on the stack.
-   *
-   * @param stack
-   *          the stack
-   * @throws ParseException
-   *           the parse exception
-   */
-  @SuppressWarnings({ "rawtypes", "unchecked" })
-  @Override
-  public void run(final Stack stack) throws ParseException {
-    stack.push(Math.ceil((Double) (stack.pop())));
-  }
-
 }

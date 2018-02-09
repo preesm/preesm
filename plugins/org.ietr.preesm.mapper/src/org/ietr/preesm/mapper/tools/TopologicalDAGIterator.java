@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
@@ -40,10 +40,9 @@ package org.ietr.preesm.mapper.tools;
 
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.jgrapht.DirectedGraph;
+import org.jgrapht.Graph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
-// TODO: Auto-generated Javadoc
 /**
  * Topological DAG Iterator respecting synchronized vertices.
  *
@@ -57,7 +56,7 @@ public class TopologicalDAGIterator extends TopologicalOrderIterator<DAGVertex, 
    * @param dag
    *          the dag
    */
-  public TopologicalDAGIterator(final DirectedGraph<DAGVertex, DAGEdge> dag) {
+  public TopologicalDAGIterator(final Graph<DAGVertex, DAGEdge> dag) {
 
     super(dag);
   }

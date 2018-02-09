@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
  *
@@ -133,14 +133,14 @@ public class PiMMAlgorithmChecker {
     if (!refinementChecker.checkRefinements(graph)) {
       this.errors = true;
       for (final Actor a : refinementChecker.getActorsWithoutRefinement()) {
-        this.errorMsgs.put("Actor " + a.getActorPath() + " does not have a refinement", a);
+        this.errorMsgs.put("Actor " + a.getVertexPath() + " does not have a refinement", a);
       }
       for (final Actor a : refinementChecker.getActorsWithInvalidExtensionRefinement()) {
         this.errorMsgs
-            .put("Refinement " + a.getRefinement().getFilePath() + " of Actor " + a.getActorPath() + " does not have a valid extension (.h, .idl, or .pi)", a);
+            .put("Refinement " + a.getRefinement().getFilePath() + " of Actor " + a.getVertexPath() + " does not have a valid extension (.h, .idl, or .pi)", a);
       }
       for (final Actor a : refinementChecker.getActorsWithNonExistingRefinement()) {
-        this.errorMsgs.put("Refinement  " + a.getRefinement().getFilePath() + " of Actor " + a.getActorPath() + " does not reference an existing file", a);
+        this.errorMsgs.put("Refinement  " + a.getRefinement().getFilePath() + " of Actor " + a.getVertexPath() + " does not reference an existing file", a);
       }
     }
   }

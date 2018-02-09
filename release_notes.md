@@ -1,6 +1,23 @@
 PREESM Changelog
 ================
 
+## Release version 2.8.0
+*2018.02.09*
+
+### New Feature
+* Add throughput evaluation for PiSDF;
+* Add min and max function in JEP
+* Add a first prototype of the Activity Exporter;
+
+### Changes
+* Refactor PISDF;
+* Change default flattening depth to -1 (infinite);
+* Add missing icon in scenario UI;
+
+### Bug fix
+* Fix issue #53
+* Fix a crash that occured when opening a scenario with a parameter value whose parameter do not exists in the graph anymore;
+
 ## Release version 2.7.0
 *2018.02.05*
 

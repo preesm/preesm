@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -139,7 +139,7 @@ public class ParameterValueManager {
       inputParametersNames.add(p.getName());
     }
 
-    addParameterDependentParameterValue(param, param.getValueExpression().getExpressionString(), inputParametersNames, parent);
+    addParameterDependentParameterValue(param, param.getExpression().getExpressionString(), inputParametersNames, parent);
   }
 
   /**
@@ -182,7 +182,7 @@ public class ParameterValueManager {
         addParameterDependentParameterValue(param, parent);
       } else {
         // Add an independent parameter value
-        addIndependentParameterValue(param, param.getValueExpression().getExpressionString(), parent);
+        addIndependentParameterValue(param, param.getExpression().getExpressionString(), parent);
       }
     } else {
       final boolean isActorDependent = inputParameters.size() < param.getConfigInputPorts().size();
