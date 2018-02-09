@@ -1,5 +1,7 @@
 package org.ietr.preesm.core.scenario.papi;
 
+import java.util.List;
+
 /**
  *
  * @author anmorvan
@@ -7,9 +9,10 @@ package org.ietr.preesm.core.scenario.papi;
  */
 public class PapiComponent {
 
-  private final String            id;
-  private final PapiComponentType type;
-  private final int               index;
+  String             id;
+  PapiComponentType  type;
+  int                index;
+  List<PapiEventSet> eventSets;
 
   /**
    *
@@ -25,8 +28,10 @@ public class PapiComponent {
     final StringBuilder b = new StringBuilder();
     final String string = this.type.toString();
     b.append(String.format("  <component id=\"%s\" index=\"%d\" type=\"%s\">%n", this.id, this.index, string));
-    b.append("todo\n");
-    String.format("  </component>%n");
+    for (PapiEventSet eventSet : eventSets) {
+      b.append(eventSet.toString());
+    }
+    b.append(String.format("  </component>%n"));
     return b.toString();
   }
 }

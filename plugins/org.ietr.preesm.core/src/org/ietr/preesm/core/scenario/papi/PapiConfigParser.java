@@ -40,9 +40,12 @@ public class PapiConfigParser {
     }
   }
 
-  private PapiCpuID           cpuId;
-  private PapiHardware        hardware;
-  private List<PapiComponent> components;
+  private PapiCpuID               cpuId;
+  private PapiHardware            hardware;
+  private List<PapiComponent>     components;
+  private List<PapiEvent>         events;
+  private List<PapiEventSet>      eventSets;
+  private List<PapiEventModifier> modifiers;
 
   /**
    * @return
@@ -79,9 +82,72 @@ public class PapiConfigParser {
         visitComponent(node);
         break;
       default:
-        System.out.println("other : " + node.getNodeName());
-        break;
+        throw new UnsupportedOperationException();
     }
+  }
+
+  private void switchComponentChildren(final Node node) {
+    switch (node.getNodeName()) {
+      case "eventset":
+        visitEventSet(node);
+        break;
+      default:
+        throw new UnsupportedOperationException();
+    }
+  }
+
+  private void switchEventSetChildren(final Node node) {
+    switch (node.getNodeName()) {
+      case "event":
+        visitEvent(node);
+        break;
+      default:
+        throw new UnsupportedOperationException();
+    }
+  }
+
+  private void switchEventChildren(final Node node) {
+    switch (node.getNodeName()) {
+      case "modifier":
+        visitModifier(node);
+        break;
+      default:
+        throw new UnsupportedOperationException();
+    }
+  }
+
+  private void visitModifier(Node node) {
+    final PapiEventModifier papiEventModifier = new PapiEventModifier();
+    final String name = Optional.ofNullable(node.getAttributes().getNamedItem("name")).map(Node::getTextContent).orElse(null);
+    final String desc = Optional.ofNullable(node.getAttributes().getNamedItem("desc")).map(Node::getTextContent).orElse(null);
+    papiEventModifier.name = name;
+    papiEventModifier.description = desc;
+    modifiers.add(papiEventModifier);
+  }
+
+  private void visitEvent(Node node) {
+    final int index = Optional.ofNullable(node.getAttributes().getNamedItem("index")).map(Node::getTextContent).map(Integer::valueOf).orElse(null);
+    final String name = Optional.ofNullable(node.getAttributes().getNamedItem("name")).map(Node::getTextContent).orElse(null);
+    final String desc = Optional.ofNullable(node.getAttributes().getNamedItem("desc")).map(Node::getTextContent).orElse(null);
+    modifiers = new ArrayList<>();
+    visitChildrenSkippingTexts(node, this::switchEventChildren);
+    PapiEvent event = new PapiEvent();
+    event.index = index;
+    event.name = name;
+    event.desciption = desc;
+    event.modifiers = modifiers;
+    events.add(event);
+  }
+
+  private void visitEventSet(Node node) {
+    events = new ArrayList<>();
+    visitChildrenSkippingTexts(node, this::switchEventSetChildren);
+    final PapiEventSet eventSet = new PapiEventSet();
+    final PapiEventSetType type = Optional.ofNullable(node.getAttributes().getNamedItem("type")).map(Node::getTextContent).map(PapiEventSetType::valueOf)
+        .orElse(null);
+    eventSet.type = type;
+    eventSet.events = events;
+    eventSets.add(eventSet);
   }
 
   private void switchHWChildren(final Node node) {
@@ -129,8 +195,7 @@ public class PapiConfigParser {
         visitTotalCPUs(node);
         break;
       default:
-        System.out.println("other : " + node.getNodeName());
-        break;
+        throw new UnsupportedOperationException();
     }
   }
 
@@ -146,8 +211,7 @@ public class PapiConfigParser {
         visitCpuIDStepping(node);
         break;
       default:
-        System.out.println("other : " + node.getNodeName());
-        break;
+        throw new UnsupportedOperationException();
     }
   }
 
@@ -242,7 +306,12 @@ public class PapiConfigParser {
     final String componentID = Optional.ofNullable(attributes.getNamedItem("id")).map(Node::getTextContent).orElse(null);
     final String componentIndex = Optional.ofNullable(attributes.getNamedItem("index")).map(Node::getTextContent).orElse(null);
     final String componentType = Optional.ofNullable(attributes.getNamedItem("type")).map(Node::getTextContent).orElse(null);
-    this.components.add(new PapiComponent(componentID, componentIndex, componentType));
+    final PapiComponent component = new PapiComponent(componentID, componentIndex, componentType);
+    eventSets = new ArrayList<>();
+    visitChildrenSkippingTexts(componentNode, this::switchComponentChildren);
+    component.eventSets = eventSets;
+    this.components.add(component);
+
   }
 
   private void visitHardware(final Node hardwareNode) {
