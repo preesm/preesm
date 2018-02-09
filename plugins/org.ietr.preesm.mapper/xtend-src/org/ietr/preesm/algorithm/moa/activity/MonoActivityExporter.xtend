@@ -1,15 +1,14 @@
-/*********************************************************
- * Copyright or c or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
- * Maxime Pelcat, Jean-Francois Nezan
+/**
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
  *
- * [mwipliez,jpiat,mpelcat,jnezan]@insa-rennes.fr
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
  *
- * This software is a computer program whose purpose is to prototype
- * parallel applications.
+ * This software is a computer program whose purpose is to help prototyping
+ * parallel applications using dataflow formalism.
  *
- * This software is governed by the CeCILL-C license under French law and
+ * This software is governed by the CeCILL  license under French law and
  * abiding by the rules of distribution of free software.  You can  use,
- * modify and/ or redistribute the software under the terms of the CeCILL-C
+ * modify and/ or redistribute the software under the terms of the CeCILL
  * license as circulated by CEA, CNRS and INRIA at the following URL
  * "http://www.cecill.info".
  *
@@ -31,8 +30,8 @@
  * same conditions as regards security.
  *
  * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- *********************************************************/
+ * knowledge of the CeCILL license and that you accept its terms.
+ */
 package org.ietr.preesm.algorithm.moa.activity
 
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
