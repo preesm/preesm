@@ -9,7 +9,9 @@ PREESM Changelog
 * Add min and max function in JEP
 
 ### Changes
+* Refactor PISDF;
 * Change default flattening depth to -1 (infinite);
+* Add missing icon in scenario UI;
 
 ### Bug fix
 * Fix issue #53
