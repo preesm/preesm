@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 * Add throughput evaluation for PiSDF;
 * Add min and max function in JEP
+* Add a first prototype of the Activity Exporter;
 
 ### Changes
 * Refactor PISDF;
