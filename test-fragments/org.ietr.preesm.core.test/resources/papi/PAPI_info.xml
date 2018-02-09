@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eventinfo>
+<hardware>
+  <vendor string="ARM"/>
+  <vendorCode value="7"/>
+  <model string=""/>
+  <modelCode value="4"/>
+  <cpuRevision value="4.000000"/>
+  <cpuID>
+    <family value="0"/>
+    <model value="3331"/>
+    <stepping value="0"/>
+  </cpuID>
+  <cpuMaxMegahertz value="1199"/>
+  <cpuMinMegahertz value="299"/>
+  <threads value="1"/>
+  <cores value="4"/>
+  <sockets value="1"/>
+  <nodes value="0"/>
+  <cpuPerNode value="4"/>
+  <totalCPUs value="4"/>
+</hardware>
+<component index="0" type="CPU" id="perf_event">
+  <eventset type="NATIVE">
+    <event index="24" name="perf::PERF_COUNT_SW_CPU_CLOCK" desc="PERF_COUNT_SW_CPU_CLOCK">
+        <modifier name="perf::PERF_COUNT_SW_CPU_CLOCK:u=0" desc="PERF_COUNT_SW_CPU_CLOCK, masks:monitor at user level"> </modifier>
+        <modifier name="perf::PERF_COUNT_SW_CPU_CLOCK:k=0" desc="PERF_COUNT_SW_CPU_CLOCK, masks:monitor at kernel level"> </modifier>
+    </event>
+    <event index="25" name="perf::CPU-CLOCK" desc="PERF_COUNT_SW_CPU_CLOCK">
+        <modifier name="perf::CPU-CLOCK:u=0" desc="PERF_COUNT_SW_CPU_CLOCK, masks:monitor at user level"> </modifier>
+        <modifier name="perf::CPU-CLOCK:k=0" desc="PERF_COUNT_SW_CPU_CLOCK, masks:monitor at kernel level"> </modifier>
+    </event>
+    <event index="26" name="perf::PERF_COUNT_SW_TASK_CLOCK" desc="PERF_COUNT_SW_TASK_CLOCK">
+        <modifier name="perf::PERF_COUNT_SW_TASK_CLOCK:u=0" desc="PERF_COUNT_SW_TASK_CLOCK, masks:monitor at user level"> </modifier>
+        <modifier name="perf::PERF_COUNT_SW_TASK_CLOCK:k=0" desc="PERF_COUNT_SW_TASK_CLOCK, masks:monitor at kernel level"> </modifier>
+    </event>
+    <event index="27" name="perf::TASK-CLOCK" desc="PERF_COUNT_SW_TASK_CLOCK">
+        <modifier name="perf::TASK-CLOCK:u=0" desc="PERF_COUNT_SW_TASK_CLOCK, masks:monitor at user level"> </modifier>
+        <modifier name="perf::TASK-CLOCK:k=0" desc="PERF_COUNT_SW_TASK_CLOCK, masks:monitor at kernel level"> </modifier>
+    </event>
+    <event index="28" name="perf::PERF_COUNT_SW_PAGE_FAULTS" desc="PERF_COUNT_SW_PAGE_FAULTS">
+        <modifier name="perf::PERF_COUNT_SW_PAGE_FAULTS:u=0" desc="PERF_COUNT_SW_PAGE_FAULTS, masks:monitor at user level"> </modifier>
+        <modifier name="perf::PERF_COUNT_SW_PAGE_FAULTS:k=0" desc="PERF_COUNT_SW_PAGE_FAULTS, masks:monitor at kernel level"> </modifier>
+    </event>
+    <event index="29" name="perf::PAGE-FAULTS" desc="PERF_COUNT_SW_PAGE_FAULTS">
+        <modifier name="perf::PAGE-FAULTS:u=0" desc="PERF_COUNT_SW_PAGE_FAULTS, masks:monitor at user level"> </modifier>
+        <modifier name="perf::PAGE-FAULTS:k=0" desc="PERF_COUNT_SW_PAGE_FAULTS, masks:monitor at kernel level"> </modifier>
+    </event>
+    <event index="30" name="perf::FAULTS" desc="PERF_COUNT_SW_PAGE_FAULTS">
+        <modifier name="perf::FAULTS:u=0" desc="PERF_COUNT_SW_PAGE_FAULTS, masks:monitor at user level"> </modifier>
+        <modifier name="perf::FAULTS:k=0" desc="PERF_COUNT_SW_PAGE_FAULTS, masks:monitor at kernel level"> </modifier>
+    </event>
+    <event index="31" name="perf::PERF_COUNT_SW_CONTEXT_SWITCHES" desc="PERF_COUNT_SW_CONTEXT_SWITCHES">
+        <modifier name="perf::PERF_COUNT_SW_CONTEXT_SWITCHES:u=0" desc="PERF_COUNT_SW_CONTEXT_SWITCHES, masks:monitor at user level"> </modifier>
+        <modifier name="perf::PERF_COUNT_SW_CONTEXT_SWITCHES:k=0" desc="PERF_COUNT_SW_CONTEXT_SWITCHES, masks:monitor at kernel level"> </modifier>
+    </event>
+    <event index="32" name="perf::CONTEXT-SWITCHES" desc="PERF_COUNT_SW_CONTEXT_SWITCHES">
+        <modifier name="perf::CONTEXT-SWITCHES:u=0" desc="PERF_COUNT_SW_CONTEXT_SWITCHES, masks:monitor at user level"> </modifier>
+        <modifier name="perf::CONTEXT-SWITCHES:k=0" desc="PERF_COUNT_SW_CONTEXT_SWITCHES, masks:monitor at kernel level"> </modifier>
+    </event>
+    <event index="33" name="perf::CS" desc="PERF_COUNT_SW_CONTEXT_SWITCHES">
+        <modifier name="perf::CS:u=0" desc="PERF_COUNT_SW_CONTEXT_SWITCHES, masks:monitor at user level"> </modifier>
+        <modifier name="perf::CS:k=0" desc="PERF_COUNT_SW_CONTEXT_SWITCHES, masks:monitor at kernel level"> </modifier>
+    </event>
+    <event index="34" name="perf::PERF_COUNT_SW_CPU_MIGRATIONS" desc="PERF_COUNT_SW_CPU_MIGRATIONS">
+        <modifier name="perf::PERF_COUNT_SW_CPU_MIGRATIONS:u=0" desc="PERF_COUNT_SW_CPU_MIGRATIONS, masks:monitor at user level"> </modifier>
+        <modifier name="perf::PERF_COUNT_SW_CPU_MIGRATIONS:k=0" desc="PERF_COUNT_SW_CPU_MIGRATIONS, masks:monitor at kernel level"> </modifier>
+    </event>
+    <event index="35" name="perf::CPU-MIGRATIONS" desc="PERF_COUNT_SW_CPU_MIGRATIONS">
+        <modifier name="perf::CPU-MIGRATIONS:u=0" desc="PERF_COUNT_SW_CPU_MIGRATIONS, masks:monitor at user level"> </modifier>
+        <modifier name="perf::CPU-MIGRATIONS:k=0" desc="PERF_COUNT_SW_CPU_MIGRATIONS, masks:monitor at kernel level"> </modifier>
+    </event>
+    <event index="36" name="perf::MIGRATIONS" desc="PERF_COUNT_SW_CPU_MIGRATIONS">
+        <modifier name="perf::MIGRATIONS:u=0" desc="PERF_COUNT_SW_CPU_MIGRATIONS, masks:monitor at user level"> </modifier>
+        <modifier name="perf::MIGRATIONS:k=0" desc="PERF_COUNT_SW_CPU_MIGRATIONS, masks:monitor at kernel level"> </modifier>
+    </event>
+    <event index="37" name="perf::PERF_COUNT_SW_PAGE_FAULTS_MIN" desc="PERF_COUNT_SW_PAGE_FAULTS_MIN">
+        <modifier name="perf::PERF_COUNT_SW_PAGE_FAULTS_MIN:u=0" desc="PERF_COUNT_SW_PAGE_FAULTS_MIN, masks:monitor at user level"> </modifier>
+        <modifier name="perf::PERF_COUNT_SW_PAGE_FAULTS_MIN:k=0" desc="PERF_COUNT_SW_PAGE_FAULTS_MIN, masks:monitor at kernel level"> </modifier>
+    </event>
+    <event index="38" name="perf::MINOR-FAULTS" desc="PERF_COUNT_SW_PAGE_FAULTS_MIN">
+        <modifier name="perf::MINOR-FAULTS:u=0" desc="PERF_COUNT_SW_PAGE_FAULTS_MIN, masks:monitor at user level"> </modifier>
+        <modifier name="perf::MINOR-FAULTS:k=0" desc="PERF_COUNT_SW_PAGE_FAULTS_MIN, masks:monitor at kernel level"> </modifier>
+    </event>
+    <event index="39" name="perf::PERF_COUNT_SW_PAGE_FAULTS_MAJ" desc="PERF_COUNT_SW_PAGE_FAULTS_MAJ">
+        <modifier name="perf::PERF_COUNT_SW_PAGE_FAULTS_MAJ:u=0" desc="PERF_COUNT_SW_PAGE_FAULTS_MAJ, masks:monitor at user level"> </modifier>
+        <modifier name="perf::PERF_COUNT_SW_PAGE_FAULTS_MAJ:k=0" desc="PERF_COUNT_SW_PAGE_FAULTS_MAJ, masks:monitor at kernel level"> </modifier>
+    </event>
+    <event index="40" name="perf::MAJOR-FAULTS" desc="PERF_COUNT_SW_PAGE_FAULTS_MAJ">
+        <modifier name="perf::MAJOR-FAULTS:u=0" desc="PERF_COUNT_SW_PAGE_FAULTS_MAJ, masks:monitor at user level"> </modifier>
+        <modifier name="perf::MAJOR-FAULTS:k=0" desc="PERF_COUNT_SW_PAGE_FAULTS_MAJ, masks:monitor at kernel level"> </modifier>
+    </event>
+    <event index="41" name="perf::PERF_COUNT_HW_CACHE_L1D" desc="L1 data cache">
+        <modifier name="perf::PERF_COUNT_HW_CACHE_L1D:READ" desc="L1 data cache, masks:read access"> </modifier>
+        <modifier name="perf::PERF_COUNT_HW_CACHE_L1D:WRITE" desc="L1 data cache, masks:write access"> </modifier>
+    </event>
+    <event index="48" name="perf::PERF_COUNT_HW_CACHE_L1I" desc="L1 instruction cache">
+        <modifier name="perf::PERF_COUNT_HW_CACHE_L1I:READ" desc="L1 instruction cache, masks:read access"> </modifier>
+    </event>
+    <event index="60" name="perf::PERF_COUNT_HW_CACHE_DTLB" desc="Data Translation Lookaside Buffer">
+        <modifier name="perf::PERF_COUNT_HW_CACHE_DTLB:READ" desc="Data Translation Lookaside Buffer, masks:read access"> </modifier>
+    </event>
+    <event index="67" name="perf::PERF_COUNT_HW_CACHE_ITLB" desc="Instruction Translation Lookaside Buffer">
+        <modifier name="perf::PERF_COUNT_HW_CACHE_ITLB:READ" desc="Instruction Translation Lookaside Buffer, masks:read access"> </modifier>
+    </event>
+    <event index="70" name="perf::PERF_COUNT_HW_CACHE_BPU" desc="Branch Prediction Unit">
+        <modifier name="perf::PERF_COUNT_HW_CACHE_BPU:READ" desc="Branch Prediction Unit, masks:read access"> </modifier>
+        <modifier name="perf::PERF_COUNT_HW_CACHE_BPU:ACCESS" desc="Branch Prediction Unit, masks:hit access"> </modifier>
+        <modifier name="perf::PERF_COUNT_HW_CACHE_BPU:MISS" desc="Branch Prediction Unit, masks:miss access"> </modifier>
+    </event>
+    <event index="80" name="perf_raw::r0000" desc="perf_events raw event syntax: r[0-9a-fA-F]+">
+        <modifier name="perf_raw::r0000:u=0" desc="perf_events raw event syntax: r[0-9a-fA-F]+, masks:monitor at user level"> </modifier>
+        <modifier name="perf_raw::r0000:k=0" desc="perf_events raw event syntax: r[0-9a-fA-F]+, masks:monitor at kernel level"> </modifier>
+        <modifier name="perf_raw::r0000:h=0" desc="perf_events raw event syntax: r[0-9a-fA-F]+, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="81" name="SW_INCR" desc="Instruction architecturally executed (condition check pass) Software increment">
+        <modifier name="SW_INCR:u=0" desc="Instruction architecturally executed (condition check pass) Software increment, masks:monitor at user level"> </modifier>
+        <modifier name="SW_INCR:k=0" desc="Instruction architecturally executed (condition check pass) Software increment, masks:monitor at kernel level"> </modifier>
+        <modifier name="SW_INCR:h=0" desc="Instruction architecturally executed (condition check pass) Software increment, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="82" name="L1I_CACHE_REFILL" desc="Level 1 instruction cache refill">
+        <modifier name="L1I_CACHE_REFILL:u=0" desc="Level 1 instruction cache refill, masks:monitor at user level"> </modifier>
+        <modifier name="L1I_CACHE_REFILL:k=0" desc="Level 1 instruction cache refill, masks:monitor at kernel level"> </modifier>
+        <modifier name="L1I_CACHE_REFILL:h=0" desc="Level 1 instruction cache refill, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="83" name="L1I_TLB_REFILL" desc="Level 1 instruction TLB refill">
+        <modifier name="L1I_TLB_REFILL:u=0" desc="Level 1 instruction TLB refill, masks:monitor at user level"> </modifier>
+        <modifier name="L1I_TLB_REFILL:k=0" desc="Level 1 instruction TLB refill, masks:monitor at kernel level"> </modifier>
+        <modifier name="L1I_TLB_REFILL:h=0" desc="Level 1 instruction TLB refill, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="84" name="L1D_CACHE_REFILL" desc="Level 1 data cache refill">
+        <modifier name="L1D_CACHE_REFILL:u=0" desc="Level 1 data cache refill, masks:monitor at user level"> </modifier>
+        <modifier name="L1D_CACHE_REFILL:k=0" desc="Level 1 data cache refill, masks:monitor at kernel level"> </modifier>
+        <modifier name="L1D_CACHE_REFILL:h=0" desc="Level 1 data cache refill, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="85" name="L1D_CACHE_ACCESS" desc="Level 1 data cache access">
+        <modifier name="L1D_CACHE_ACCESS:u=0" desc="Level 1 data cache access, masks:monitor at user level"> </modifier>
+        <modifier name="L1D_CACHE_ACCESS:k=0" desc="Level 1 data cache access, masks:monitor at kernel level"> </modifier>
+        <modifier name="L1D_CACHE_ACCESS:h=0" desc="Level 1 data cache access, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="86" name="L1D_TLB_REFILL" desc="Level 1 data TLB refill">
+        <modifier name="L1D_TLB_REFILL:u=0" desc="Level 1 data TLB refill, masks:monitor at user level"> </modifier>
+        <modifier name="L1D_TLB_REFILL:k=0" desc="Level 1 data TLB refill, masks:monitor at kernel level"> </modifier>
+        <modifier name="L1D_TLB_REFILL:h=0" desc="Level 1 data TLB refill, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="87" name="LD_RETIRED" desc="Load Instruction architecturally executed, condition check">
+        <modifier name="LD_RETIRED:u=0" desc="Load Instruction architecturally executed, condition check, masks:monitor at user level"> </modifier>
+        <modifier name="LD_RETIRED:k=0" desc="Load Instruction architecturally executed, condition check, masks:monitor at kernel level"> </modifier>
+        <modifier name="LD_RETIRED:h=0" desc="Load Instruction architecturally executed, condition check, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="88" name="ST_RETIRED" desc="Store Instruction architecturally executed, condition check">
+        <modifier name="ST_RETIRED:u=0" desc="Store Instruction architecturally executed, condition check, masks:monitor at user level"> </modifier>
+        <modifier name="ST_RETIRED:k=0" desc="Store Instruction architecturally executed, condition check, masks:monitor at kernel level"> </modifier>
+        <modifier name="ST_RETIRED:h=0" desc="Store Instruction architecturally executed, condition check, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="89" name="INST_RETIRED" desc="Instruction architecturally executed">
+        <modifier name="INST_RETIRED:u=0" desc="Instruction architecturally executed, masks:monitor at user level"> </modifier>
+        <modifier name="INST_RETIRED:k=0" desc="Instruction architecturally executed, masks:monitor at kernel level"> </modifier>
+        <modifier name="INST_RETIRED:h=0" desc="Instruction architecturally executed, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="90" name="EXCEPTION_TAKEN" desc="Exception taken">
+        <modifier name="EXCEPTION_TAKEN:u=0" desc="Exception taken, masks:monitor at user level"> </modifier>
+        <modifier name="EXCEPTION_TAKEN:k=0" desc="Exception taken, masks:monitor at kernel level"> </modifier>
+        <modifier name="EXCEPTION_TAKEN:h=0" desc="Exception taken, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="91" name="EXCEPTION_RETURN" desc="Instruction architecturally executed (condition check pass) Exception return">
+        <modifier name="EXCEPTION_RETURN:u=0" desc="Instruction architecturally executed (condition check pass) Exception return, masks:monitor at user level"> </modifier>
+        <modifier name="EXCEPTION_RETURN:k=0" desc="Instruction architecturally executed (condition check pass) Exception return, masks:monitor at kernel level"> </modifier>
+        <modifier name="EXCEPTION_RETURN:h=0" desc="Instruction architecturally executed (condition check pass) Exception return, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="92" name="CID_WRITE_RETIRED" desc="Change to Context ID retired">
+        <modifier name="CID_WRITE_RETIRED:u=0" desc="Change to Context ID retired, masks:monitor at user level"> </modifier>
+        <modifier name="CID_WRITE_RETIRED:k=0" desc="Change to Context ID retired, masks:monitor at kernel level"> </modifier>
+        <modifier name="CID_WRITE_RETIRED:h=0" desc="Change to Context ID retired, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="93" name="PC_WRITE_RETIRED" desc="Write to CONTEXTIDR, instruction architecturally executed, condition check pass">
+        <modifier name="PC_WRITE_RETIRED:u=0" desc="Write to CONTEXTIDR, instruction architecturally executed, condition check pass, masks:monitor at user level"> </modifier>
+        <modifier name="PC_WRITE_RETIRED:k=0" desc="Write to CONTEXTIDR, instruction architecturally executed, condition check pass, masks:monitor at kernel level"> </modifier>
+        <modifier name="PC_WRITE_RETIRED:h=0" desc="Write to CONTEXTIDR, instruction architecturally executed, condition check pass, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="94" name="BR_IMMED_RETIRED" desc="Software change of the PC, instruction architecturally executed, condition check pass">
+        <modifier name="BR_IMMED_RETIRED:u=0" desc="Software change of the PC, instruction architecturally executed, condition check pass, masks:monitor at user level"> </modifier>
+        <modifier name="BR_IMMED_RETIRED:k=0" desc="Software change of the PC, instruction architecturally executed, condition check pass, masks:monitor at kernel level"> </modifier>
+        <modifier name="BR_IMMED_RETIRED:h=0" desc="Software change of the PC, instruction architecturally executed, condition check pass, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="95" name="UNALIGNED_LDST_RETIRED" desc="Procedure return, instruction architecturally executed, condition check pass">
+        <modifier name="UNALIGNED_LDST_RETIRED:u=0" desc="Procedure return, instruction architecturally executed, condition check pass, masks:monitor at user level"> </modifier>
+        <modifier name="UNALIGNED_LDST_RETIRED:k=0" desc="Procedure return, instruction architecturally executed, condition check pass, masks:monitor at kernel level"> </modifier>
+        <modifier name="UNALIGNED_LDST_RETIRED:h=0" desc="Procedure return, instruction architecturally executed, condition check pass, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="96" name="BRANCH_MISPRED" desc="Mispredicted or not predicted branch speculatively executed">
+        <modifier name="BRANCH_MISPRED:u=0" desc="Mispredicted or not predicted branch speculatively executed, masks:monitor at user level"> </modifier>
+        <modifier name="BRANCH_MISPRED:k=0" desc="Mispredicted or not predicted branch speculatively executed, masks:monitor at kernel level"> </modifier>
+        <modifier name="BRANCH_MISPRED:h=0" desc="Mispredicted or not predicted branch speculatively executed, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="97" name="CPU_CYCLES" desc="Cycles">
+        <modifier name="CPU_CYCLES:u=0" desc="Cycles, masks:monitor at user level"> </modifier>
+        <modifier name="CPU_CYCLES:k=0" desc="Cycles, masks:monitor at kernel level"> </modifier>
+        <modifier name="CPU_CYCLES:h=0" desc="Cycles, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="98" name="BRANCH_PRED" desc="Predictable branch speculatively executed">
+        <modifier name="BRANCH_PRED:u=0" desc="Predictable branch speculatively executed, masks:monitor at user level"> </modifier>
+        <modifier name="BRANCH_PRED:k=0" desc="Predictable branch speculatively executed, masks:monitor at kernel level"> </modifier>
+        <modifier name="BRANCH_PRED:h=0" desc="Predictable branch speculatively executed, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="99" name="DATA_MEM_ACCESS" desc="Data memory access">
+        <modifier name="DATA_MEM_ACCESS:u=0" desc="Data memory access, masks:monitor at user level"> </modifier>
+        <modifier name="DATA_MEM_ACCESS:k=0" desc="Data memory access, masks:monitor at kernel level"> </modifier>
+        <modifier name="DATA_MEM_ACCESS:h=0" desc="Data memory access, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="100" name="L1I_CACHE_ACCESS" desc="Level 1 instruction cache access">
+        <modifier name="L1I_CACHE_ACCESS:u=0" desc="Level 1 instruction cache access, masks:monitor at user level"> </modifier>
+        <modifier name="L1I_CACHE_ACCESS:k=0" desc="Level 1 instruction cache access, masks:monitor at kernel level"> </modifier>
+        <modifier name="L1I_CACHE_ACCESS:h=0" desc="Level 1 instruction cache access, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="101" name="L1D_CACHE_WB" desc="Level 1 data cache WriteBack">
+        <modifier name="L1D_CACHE_WB:u=0" desc="Level 1 data cache WriteBack, masks:monitor at user level"> </modifier>
+        <modifier name="L1D_CACHE_WB:k=0" desc="Level 1 data cache WriteBack, masks:monitor at kernel level"> </modifier>
+        <modifier name="L1D_CACHE_WB:h=0" desc="Level 1 data cache WriteBack, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="102" name="L2D_CACHE_ACCESS" desc="Level 2 data cache access">
+        <modifier name="L2D_CACHE_ACCESS:u=0" desc="Level 2 data cache access, masks:monitor at user level"> </modifier>
+        <modifier name="L2D_CACHE_ACCESS:k=0" desc="Level 2 data cache access, masks:monitor at kernel level"> </modifier>
+        <modifier name="L2D_CACHE_ACCESS:h=0" desc="Level 2 data cache access, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="103" name="L2D_CACHE_REFILL" desc="Level 2 data cache refill">
+        <modifier name="L2D_CACHE_REFILL:u=0" desc="Level 2 data cache refill, masks:monitor at user level"> </modifier>
+        <modifier name="L2D_CACHE_REFILL:k=0" desc="Level 2 data cache refill, masks:monitor at kernel level"> </modifier>
+        <modifier name="L2D_CACHE_REFILL:h=0" desc="Level 2 data cache refill, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="104" name="L2D_CACHE_WB" desc="Level 2 data cache WriteBack">
+        <modifier name="L2D_CACHE_WB:u=0" desc="Level 2 data cache WriteBack, masks:monitor at user level"> </modifier>
+        <modifier name="L2D_CACHE_WB:k=0" desc="Level 2 data cache WriteBack, masks:monitor at kernel level"> </modifier>
+        <modifier name="L2D_CACHE_WB:h=0" desc="Level 2 data cache WriteBack, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="105" name="BUS_ACCESS" desc="Bus access">
+        <modifier name="BUS_ACCESS:u=0" desc="Bus access, masks:monitor at user level"> </modifier>
+        <modifier name="BUS_ACCESS:k=0" desc="Bus access, masks:monitor at kernel level"> </modifier>
+        <modifier name="BUS_ACCESS:h=0" desc="Bus access, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="106" name="LOCAL_MEMORY_ERROR" desc="Local memory error">
+        <modifier name="LOCAL_MEMORY_ERROR:u=0" desc="Local memory error, masks:monitor at user level"> </modifier>
+        <modifier name="LOCAL_MEMORY_ERROR:k=0" desc="Local memory error, masks:monitor at kernel level"> </modifier>
+        <modifier name="LOCAL_MEMORY_ERROR:h=0" desc="Local memory error, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="107" name="BUS_CYCLES" desc="Bus cycle">
+        <modifier name="BUS_CYCLES:u=0" desc="Bus cycle, masks:monitor at user level"> </modifier>
+        <modifier name="BUS_CYCLES:k=0" desc="Bus cycle, masks:monitor at kernel level"> </modifier>
+        <modifier name="BUS_CYCLES:h=0" desc="Bus cycle, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="108" name="BUS_READ_ACCESS" desc="Bus read access">
+        <modifier name="BUS_READ_ACCESS:u=0" desc="Bus read access, masks:monitor at user level"> </modifier>
+        <modifier name="BUS_READ_ACCESS:k=0" desc="Bus read access, masks:monitor at kernel level"> </modifier>
+        <modifier name="BUS_READ_ACCESS:h=0" desc="Bus read access, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="109" name="BUS_WRITE_ACCESS" desc="Bus write access">
+        <modifier name="BUS_WRITE_ACCESS:u=0" desc="Bus write access, masks:monitor at user level"> </modifier>
+        <modifier name="BUS_WRITE_ACCESS:k=0" desc="Bus write access, masks:monitor at kernel level"> </modifier>
+        <modifier name="BUS_WRITE_ACCESS:h=0" desc="Bus write access, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="110" name="BRANCH_SPEC_EXEC_IND" desc="Indirect branch speculatively executed">
+        <modifier name="BRANCH_SPEC_EXEC_IND:u=0" desc="Indirect branch speculatively executed, masks:monitor at user level"> </modifier>
+        <modifier name="BRANCH_SPEC_EXEC_IND:k=0" desc="Indirect branch speculatively executed, masks:monitor at kernel level"> </modifier>
+        <modifier name="BRANCH_SPEC_EXEC_IND:h=0" desc="Indirect branch speculatively executed, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="111" name="EXCEPTION_IRQ" desc="Exception taken, irq">
+        <modifier name="EXCEPTION_IRQ:u=0" desc="Exception taken, irq, masks:monitor at user level"> </modifier>
+        <modifier name="EXCEPTION_IRQ:k=0" desc="Exception taken, irq, masks:monitor at kernel level"> </modifier>
+        <modifier name="EXCEPTION_IRQ:h=0" desc="Exception taken, irq, masks:monitor at hypervisor level"> </modifier>
+    </event>
+    <event index="112" name="EXCEPTION_FIQ" desc="Exception taken, irq">
+        <modifier name="EXCEPTION_FIQ:u=0" desc="Exception taken, irq, masks:monitor at user level"> </modifier>
+        <modifier name="EXCEPTION_FIQ:k=0" desc="Exception taken, irq, masks:monitor at kernel level"> </modifier>
+        <modifier name="EXCEPTION_FIQ:h=0" desc="Exception taken, irq, masks:monitor at hypervisor level"> </modifier>
+    </event>
+  </eventset>
+  <eventset type="PRESET">
+    <event index="0" name="PAPI_L1_DCM" desc="Level 1 data cache misses">
+    </event>
+    <event index="1" name="PAPI_L1_ICM" desc="Level 1 instruction cache misses">
+    </event>
+    <event index="2" name="PAPI_L2_DCM" desc="Level 2 data cache misses">
+    </event>
+    <event index="20" name="PAPI_TLB_DM" desc="Data translation lookaside buffer misses">
+    </event>
+    <event index="21" name="PAPI_TLB_IM" desc="Instruction translation lookaside buffer misses">
+    </event>
+    <event index="41" name="PAPI_HW_INT" desc="Hardware interrupts">
+    </event>
+    <event index="46" name="PAPI_BR_MSP" desc="Conditional branch instructions mispredicted">
+    </event>
+    <event index="50" name="PAPI_TOT_INS" desc="Instructions completed">
+    </event>
+    <event index="53" name="PAPI_LD_INS" desc="Load instructions">
+    </event>
+    <event index="54" name="PAPI_SR_INS" desc="Store instructions">
+    </event>
+    <event index="55" name="PAPI_BR_INS" desc="Branch instructions">
+    </event>
+    <event index="59" name="PAPI_TOT_CYC" desc="Total cycles">
+    </event>
+    <event index="64" name="PAPI_L1_DCA" desc="Level 1 data cache accesses">
+    </event>
+    <event index="65" name="PAPI_L2_DCA" desc="Level 2 data cache accesses">
+    </event>
+  </eventset>
+</component>
+<component index="1" type="Unknown" id="perf_event_uncore">
+  <eventset type="NATIVE">
+  </eventset>
+  <eventset type="PRESET">
+  </eventset>
+</component>
+<component index="2" type="Unknown" id="artico3_errors">
+  <eventset type="NATIVE">
+    <event index="0" name="artico3_errors:::ARTICO3_ERRORS_ZERO" desc="This is an artico3_errors counter, that always returns 0">
+    </event>
+    <event index="1" name="artico3_errors:::ARTICO3_ERRORS_CONSTANT" desc="This is an artico3_errors counter, that always returns a constant value of 42">
+    </event>
+    <event index="2" name="artico3_errors:::ARTICO3_ERRORS_AUTOINC" desc="This is an artico3_errors counter, that reports a per-thread  auto-incrementing value">
+    </event>
+    <event index="3" name="artico3_errors:::ARTICO3_ERRORS_GLOBAL_AUTOINC" desc="This is an artico3_errors counter, that reports a global auto-incrementing value">
+    </event>
+    <event index="4" name="artico3_errors:::ARTICO3_ERRORS_SLOT_0" desc="This is an artico3_errors counter, that reports how many errors occurs in the slot 0">
+    </event>
+    <event index="5" name="artico3_errors:::ARTICO3_CYCLES_SLOT_0" desc="This is an artico3_errors counter, that reports how many clock cycles were necessary to execute a kernel in the slot 0">
+    </event>
+  </eventset>
+  <eventset type="PRESET">
+  </eventset>
+</component>
+</eventinfo>
