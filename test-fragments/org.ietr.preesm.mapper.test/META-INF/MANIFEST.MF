@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm mapper Plug-in Tests
 Bundle-SymbolicName: org.ietr.preesm.mapper.test
-Bundle-Version: 2.7.0.qualifier
+Bundle-Version: 2.8.0
 Bundle-Vendor: IETR/INSA Rennes
 Fragment-Host: org.ietr.preesm.mapper
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 2.8.0
+*2018.02.09*
 
 ### New Feature
 * Add throughput evaluation for PiSDF;
