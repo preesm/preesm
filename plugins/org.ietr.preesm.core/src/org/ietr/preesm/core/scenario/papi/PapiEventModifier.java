@@ -5,8 +5,25 @@ package org.ietr.preesm.core.scenario.papi;
  */
 public class PapiEventModifier {
 
-  String name;
-  String description;
+  private String name;
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  private String description;
 
   @Override
   public String toString() {

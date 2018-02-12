@@ -9,10 +9,42 @@ import java.util.List;
  */
 public class PapiEvent {
 
-  int                     index;
-  String                  name;
-  String                  desciption;
-  List<PapiEventModifier> modifiers;
+  private int                     index;
+  private String                  name;
+  private String                  desciption;
+  private List<PapiEventModifier> modifiers;
+
+  public int getIndex() {
+    return index;
+  }
+
+  public void setIndex(int index) {
+    this.index = index;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getDesciption() {
+    return desciption;
+  }
+
+  public void setDesciption(String desciption) {
+    this.desciption = desciption;
+  }
+
+  public List<PapiEventModifier> getModifiers() {
+    return modifiers;
+  }
+
+  public void setModifiers(List<PapiEventModifier> modifiers) {
+    this.modifiers = modifiers;
+  }
 
   @Override
   public String toString() {

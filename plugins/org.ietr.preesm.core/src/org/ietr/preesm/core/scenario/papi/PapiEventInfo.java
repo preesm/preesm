@@ -20,6 +20,14 @@ public class PapiEventInfo {
     this.components = components;
   }
 
+  public PapiHardware getHardware() {
+    return hardware;
+  }
+
+  public List<PapiComponent> getComponents() {
+    return components;
+  }
+
   @Override
   public String toString() {
     final StringBuilder b = new StringBuilder();

@@ -8,20 +8,133 @@ import java.util.Locale;
  */
 public class PapiHardware {
 
-  String    vendor;
-  int       vendorCode;
-  String    model;
-  int       modelCode;
-  double    cpuRevision;
-  PapiCpuID cpuID;
-  int       cpuMaxMegahertz;
-  int       cpuMinMegahertz;
-  int       threads;
-  int       cores;
-  int       sockets;
-  int       nodes;
-  int       cpuPerNode;
-  int       totalCPUs;
+  private String    vendor;
+  private int       vendorCode;
+  private String    model;
+  private int       modelCode;
+  private double    cpuRevision;
+  private PapiCpuID cpuID;
+  private int       cpuMaxMegahertz;
+  private int       cpuMinMegahertz;
+
+  public String getVendor() {
+    return vendor;
+  }
+
+  public void setVendor(String vendor) {
+    this.vendor = vendor;
+  }
+
+  public int getVendorCode() {
+    return vendorCode;
+  }
+
+  public void setVendorCode(int vendorCode) {
+    this.vendorCode = vendorCode;
+  }
+
+  public String getModel() {
+    return model;
+  }
+
+  public void setModel(String model) {
+    this.model = model;
+  }
+
+  public int getModelCode() {
+    return modelCode;
+  }
+
+  public void setModelCode(int modelCode) {
+    this.modelCode = modelCode;
+  }
+
+  public double getCpuRevision() {
+    return cpuRevision;
+  }
+
+  public void setCpuRevision(double cpuRevision) {
+    this.cpuRevision = cpuRevision;
+  }
+
+  public PapiCpuID getCpuID() {
+    return cpuID;
+  }
+
+  public void setCpuID(PapiCpuID cpuID) {
+    this.cpuID = cpuID;
+  }
+
+  public int getCpuMaxMegahertz() {
+    return cpuMaxMegahertz;
+  }
+
+  public void setCpuMaxMegahertz(int cpuMaxMegahertz) {
+    this.cpuMaxMegahertz = cpuMaxMegahertz;
+  }
+
+  public int getCpuMinMegahertz() {
+    return cpuMinMegahertz;
+  }
+
+  public void setCpuMinMegahertz(int cpuMinMegahertz) {
+    this.cpuMinMegahertz = cpuMinMegahertz;
+  }
+
+  public int getThreads() {
+    return threads;
+  }
+
+  public void setThreads(int threads) {
+    this.threads = threads;
+  }
+
+  public int getCores() {
+    return cores;
+  }
+
+  public void setCores(int cores) {
+    this.cores = cores;
+  }
+
+  public int getSockets() {
+    return sockets;
+  }
+
+  public void setSockets(int sockets) {
+    this.sockets = sockets;
+  }
+
+  public int getNodes() {
+    return nodes;
+  }
+
+  public void setNodes(int nodes) {
+    this.nodes = nodes;
+  }
+
+  public int getCpuPerNode() {
+    return cpuPerNode;
+  }
+
+  public void setCpuPerNode(int cpuPerNode) {
+    this.cpuPerNode = cpuPerNode;
+  }
+
+  public int getTotalCPUs() {
+    return totalCPUs;
+  }
+
+  public void setTotalCPUs(int totalCPUs) {
+    this.totalCPUs = totalCPUs;
+  }
+
+  private int threads;
+  private int cores;
+  private int sockets;
+  private int nodes;
+  private int cpuPerNode;
+  private int totalCPUs;
 
   @Override
   public String toString() {

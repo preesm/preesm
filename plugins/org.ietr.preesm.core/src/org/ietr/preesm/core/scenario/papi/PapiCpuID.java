@@ -6,9 +6,34 @@ package org.ietr.preesm.core.scenario.papi;
  *
  */
 public class PapiCpuID {
-  int family;
-  int model;
-  int stepping;
+  private int family;
+  private int model;
+
+  public int getFamily() {
+    return family;
+  }
+
+  public void setFamily(int family) {
+    this.family = family;
+  }
+
+  public int getModel() {
+    return model;
+  }
+
+  public void setModel(int model) {
+    this.model = model;
+  }
+
+  public int getStepping() {
+    return stepping;
+  }
+
+  public void setStepping(int stepping) {
+    this.stepping = stepping;
+  }
+
+  private int stepping;
 
   @Override
   public String toString() {

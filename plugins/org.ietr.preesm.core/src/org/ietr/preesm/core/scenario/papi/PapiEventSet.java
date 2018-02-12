@@ -7,8 +7,25 @@ import java.util.List;
  */
 public class PapiEventSet {
 
-  PapiEventSetType type;
-  List<PapiEvent>  events;
+  private PapiEventSetType type;
+
+  public PapiEventSetType getType() {
+    return type;
+  }
+
+  public void setType(PapiEventSetType type) {
+    this.type = type;
+  }
+
+  public List<PapiEvent> getEvents() {
+    return events;
+  }
+
+  public void setEvents(List<PapiEvent> events) {
+    this.events = events;
+  }
+
+  private List<PapiEvent> events;
 
   @Override
   public String toString() {
