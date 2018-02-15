@@ -7,6 +7,8 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* update mailmap file
+* disable RCPTT fetch when loading projects in Eclipse
 
 ### Bug fix
 
