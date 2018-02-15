@@ -60,19 +60,36 @@
       <version>${project.version}</version>
       <type>pom</type>
     </dependency>
-    <!-- for safe go-offline execution -->
-    <dependency>
-      <groupId>org.jacoco</groupId>
-      <artifactId>jacoco-maven-plugin</artifactId>
-      <version>${jacoco-version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.rcptt.runner</groupId>
-      <artifactId>rcptt.runner</artifactId>
-      <version>${rcptt-maven-version}</version>
-      <type>zip</type>
-    </dependency>
   </dependencies>
+
+  <profiles>
+    <!--
+      Specific profile for Eclipse to skip downloading the RCPTT
+      runner related configuration.
+    -->
+    <profile>
+      <id>not-eclipse</id>
+      <activation>
+        <property>
+          <name>!m2e.version</name>
+        </property>
+      </activation>
+      <dependencies>
+        <!-- for safe go-offline execution -->
+        <dependency>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco-version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.eclipse.rcptt.runner</groupId>
+          <artifactId>rcptt.runner</artifactId>
+          <version>${rcptt-maven-version}</version>
+          <type>zip</type>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 
   <build>
     <plugins>
