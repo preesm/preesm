@@ -1,5 +1,5 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+ * Copyright or © or Copr. Åbo Akademi University (2017), IETR/INSA - Rennes (2017):
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Sudeep Kanur <skanur@abo.fi> (2017)
