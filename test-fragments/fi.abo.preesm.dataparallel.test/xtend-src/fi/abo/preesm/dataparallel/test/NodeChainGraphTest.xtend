@@ -36,44 +36,44 @@
  */
 package fi.abo.preesm.dataparallel.test
 
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
-import java.util.Collection
-import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
+import fi.abo.preesm.dataparallel.DAGComputationBug
+import fi.abo.preesm.dataparallel.DAGUtils
 import fi.abo.preesm.dataparallel.NodeChainGraph
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.junit.Assert
-import org.ietr.dftools.algorithm.model.sdf.SDFVertex
-import org.jgrapht.alg.DijkstraShortestPath
 import fi.abo.preesm.dataparallel.SDF2DAG
 import fi.abo.preesm.dataparallel.operations.RootExitOperations
-import fi.abo.preesm.dataparallel.DAGUtils
+import fi.abo.preesm.dataparallel.test.util.Util
+import java.util.Collection
 import java.util.HashMap
 import java.util.List
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import fi.abo.preesm.dataparallel.DAGComputationBug
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import org.ietr.dftools.algorithm.model.sdf.SDFVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex
-import fi.abo.preesm.dataparallel.test.util.Util
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
+import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath
+import org.junit.Assert
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
 
 /**
- * Parameteric test for {@link NodeChainGraph}s 
- * 
+ * Parameteric test for {@link NodeChainGraph}s
+ *
  * @author Sudeep Kanur
  */
 @RunWith(Parameterized)
 class NodeChainGraphTest {
 	val SDFGraph sdf
-	
+
 	val SDFGraph srsdf
-	
+
 	val NodeChainGraph nodechain
-	
+
 	val boolean hasImplodes
-	
+
 	val boolean hasExplodes
-	
+
 	/**
 	 * Has the following parameters with {@link Util#provideAllGraphs}:
 	 * <ol>
@@ -91,7 +91,7 @@ class NodeChainGraphTest {
 		this.hasImplodes = hasImplodes
 		this.hasExplodes = hasExplodes
 	}
-	
+
 	/**
 	 * Generates following parameters with {@link Util#provideAllGraphs}:
 	 * <ol>
@@ -106,12 +106,12 @@ class NodeChainGraphTest {
 	public static def Collection<Object[]> instancesToTest() {
 		val parameters = newArrayList
 		Util.provideAllGraphs.forEach[sdf |
-			//[SDF graph, 
-			// SrSDF graph, 
-			// nodechain graph, 
+			//[SDF graph,
+			// SrSDF graph,
+			// nodechain graph,
 			// has user specified implode,
 			// has user specified explode]
-			
+
 			// Check if sdf graph has any implodes
 			val hasImplodes = sdf.vertexSet.exists[vertex |
 				vertex instanceof SDFJoinVertex
@@ -125,10 +125,10 @@ class NodeChainGraphTest {
 			val nodeChainGraph = new NodeChainGraph(srsdf)
 			parameters.add(#[sdf, srsdf, nodeChainGraph, hasImplodes, hasExplodes])
 		]
-		
+
 		return parameters
 	}
-	
+
 	/**
 	 * If the SDF graph has user defined implodes and explodes,
 	 * then test that nodechain also has them
@@ -141,19 +141,19 @@ class NodeChainGraphTest {
 				vertex instanceof SDFJoinVertex
 			])
 		}
-		
+
 		if(hasExplodes) {
 			Assert.assertTrue(nodechain.nodechains.keySet.exists[vertex |
 				vertex instanceof SDFForkVertex
 			])
 		}
 	}
-	
+
 	/**
 	 * If the SDF graph has no user defined implodes and explodes, then
 	 * each node vertex is of type SDFVertex
 	 * <p>
-	 * Somewhat <i>strong test</i> 
+	 * Somewhat <i>strong test</i>
 	 */
 	@org.junit.Test def void testNodechainVertexIsProperType() {
 		if(!hasImplodes && !hasExplodes) {
@@ -162,12 +162,12 @@ class NodeChainGraphTest {
 			])
 		}
 	}
-	
+
 	/**
 	 * <ol>
 	 * 	<li> Each implode of the node chain is actually the previous node
-	 * of the associated vertex. 
-	 * 	<li> Each explode node is actually successive node of the associated vertex. 
+	 * of the associated vertex.
+	 * 	<li> Each explode node is actually successive node of the associated vertex.
 	 * This works on graphs that have no user defined fork and join actors
 	 * <p>
 	 * <i>Strong test</i>
@@ -175,7 +175,7 @@ class NodeChainGraphTest {
 	@org.junit.Test def void testImplodesExplodesAreProperlyAssociated() {
 		if(!hasImplodes && !hasExplodes) {
 			srsdf.vertexSet.forEach[vertex |
-				
+
 				//1. Each implode of the node chain is actually the previous node
 				if(vertex instanceof SDFJoinVertex) {
 					Assert.assertTrue(srsdf.outgoingEdgesOf(vertex).size == 1)
@@ -194,9 +194,9 @@ class NodeChainGraphTest {
 			]
 		}
 	}
-	
+
 	/**
-	 * {@link NodeChainGraph#getPreviousNodes} creates previous nodes with edges to the current 
+	 * {@link NodeChainGraph#getPreviousNodes} creates previous nodes with edges to the current
 	 * node in an appropriate way.
 	 * <p>
 	 * <i>Strong test</i>
@@ -204,20 +204,28 @@ class NodeChainGraphTest {
 	@org.junit.Test def void testAppropriateEdgeExistsBetweenNodes() {
 		nodechain.nodechains.forEach[vertex, chain |
 			val prevNodes = nodechain.getPreviousNodes(vertex)
-			
+
 			// Source nodes have no previous nodes
 			if(srsdf.incomingEdgesOf(vertex).empty) {
 				Assert.assertTrue(prevNodes === null)
 			} else {
 				// There exists a shortest path between each previous node and current node
+				// jgrapht 0.8.2
+				// prevNodes.forEach[prevNode |
+				//  	val pathDetector = new DijkstraShortestPath(srsdf, prevNode.vertex, vertex)
+				//   	Assert.assertTrue(pathDetector.pathLength != 0)
+				// ]
+				// jgrapht 1.1.0
 				prevNodes.forEach[prevNode |
-					val pathDetector = new DijkstraShortestPath(srsdf, prevNode.vertex, vertex)
-					Assert.assertTrue(pathDetector.pathLength != 0)	
+					val pathDetector = new DijkstraShortestPath(srsdf);
+					//, prevNode.vertex, vertex)
+					val path = pathDetector.getPath(prevNode.vertex, vertex)
+					Assert.assertTrue(path.length != 0)
 				]
 			}
 		]
 	}
-	
+
 	/**
 	 * Helper function to fetch root nodes from SrSDF graph that are not source nodes. Thus, it
 	 * is guaranteed that these instances will have delay behind them.
@@ -229,23 +237,23 @@ class NodeChainGraphTest {
 		val rootVisitor = new RootExitOperations
 		dagGen.accept(rootVisitor)
 		val rootNodes = rootVisitor.rootInstances
-		
+
 		val srsdfRootNodes = newArrayList
 		rootNodes.forEach[root |
 			val srsdfRoot = DAGUtils.findVertex(root, dagGen.outputGraph, srsdf)
 			if(srsdfRoot === null) {
 				throw new DAGComputationBug("Could not find DAG node: " + root + " in SrSDF graph")
 			}
-			
+
 			if(!srsdf.incomingEdgesOf(srsdfRoot).empty) {
 				// This is not a source node. So there is delay behind it
 				srsdfRootNodes.add(srsdfRoot)
 			}
 		]
-		
+
 		return srsdfRootNodes
 	}
-	
+
 	/**
 	 * Fetching of input delays using {@link NodeChainGraph#getEdgewiseInputDelays} work well
 	 * <p>
@@ -256,7 +264,7 @@ class NodeChainGraphTest {
 	 */
 	@org.junit.Test def void testFetchingInputDelays() {
 		val srsdfRootNodes = nonSourceRootNodes
-		
+
 		// Now each srsdf root nodes (that is not source node) must have
 		// delay equal or greater than consumption rate of its edge
 		srsdfRootNodes.forEach[root |
@@ -269,7 +277,7 @@ class NodeChainGraphTest {
 			]
 		]
 	}
-	
+
 	/**
 	 * Fetching of output delays using {@link NodeChainGraph#getEdgewiseOutputDelays} work well
 	 * <p>
@@ -281,7 +289,7 @@ class NodeChainGraphTest {
 	 */
 	@org.junit.Test def void testFetchingOutputDelays() {
 		val srsdfRootNodes = nonSourceRootNodes
-		
+
 		srsdfRootNodes.forEach[root |
 			// Get previous nodes of srsdf root nodes
 			val prevNodes = nodechain.getPreviousNodes(root)
@@ -290,18 +298,19 @@ class NodeChainGraphTest {
 			//equal to that of its production rate
 			prevNodes.forEach[node |
 				val outEdgeDelay = nodechain.getEdgewiseOutputDelays(node.vertex)
-				val pathDetector = new DijkstraShortestPath(srsdf, node.vertex, root)
+				val pathDetector = new DijkstraShortestPath(srsdf)
+				val path = pathDetector.getPath(node.vertex, root)
 				srsdf.outgoingEdgesOf(node.vertex).forEach[outEdge |
-					if(pathDetector.pathEdgeList.contains(outEdge)) {						
+					if(path.edgeList.contains(outEdge)) {
 						val delay = outEdgeDelay.get(outEdge)
 						Assert.assertTrue(delay !== null)
 						Assert.assertTrue(delay > 0)
-					} 	
+					}
 				]
-			]	
+			]
 		]
 	}
-	
+
 	/**
 	 * Setting of delays at input of a node using {@link NodeChainGraph#setEdgewiseInputDelays}
 	 * <p>
@@ -315,28 +324,28 @@ class NodeChainGraphTest {
 	 */
 	@org.junit.Test def void testSettingInputDelays() {
 		val srsdfRootNodes = nonSourceRootNodes
-		
+
 		srsdfRootNodes.forEach[root |
 			val inEdgeDelay = nodechain.getEdgewiseInputDelays(root)
 			val copyInEdgeDelay = new HashMap(inEdgeDelay)
 			val newEdgeDelay = new HashMap(inEdgeDelay)
 			newEdgeDelay.keySet.forEach[key | newEdgeDelay.put(key, 0)]
 			nodechain.setEdgewiseInputDelays(root, newEdgeDelay)
-		
+
 			nodechain.getEdgewiseInputDelays(root).forEach[node, delay |
 				Assert.assertTrue(delay !== null)
 				Assert.assertTrue(delay == 0)
 			]
-			
+
 			newEdgeDelay.keySet.forEach[key | newEdgeDelay.put(key, -100)]
 			nodechain.setEdgewiseInputDelays(root, newEdgeDelay)
 			nodechain.getEdgewiseInputDelays(root).forEach[node, delay |
 				Assert.assertTrue(delay !== null)
 				Assert.assertTrue(delay == -100)
 			]
-			
+
 			nodechain.setEdgewiseInputDelays(root, copyInEdgeDelay)
-			
+
 			nodechain.getEdgewiseInputDelays(root).forEach[node, delay |
 				val oldDelay = copyInEdgeDelay.get(node)
 				Assert.assertTrue(oldDelay !== null)
@@ -344,13 +353,13 @@ class NodeChainGraphTest {
 			]
 		]
 	}
-	
+
 	/**
 	 * Setting of delays at output of a node using {@link NodeChainGraph#setEdgewiseOutputDelays}
 	 * <p>
 	 * The test is similar to {@link #testSettingInputDelays}
 	 * <p>
-	 * The test modifies the values of SrSDF graph: first it sets all delays of preceding nodes of 
+	 * The test modifies the values of SrSDF graph: first it sets all delays of preceding nodes of
 	 * non-source root nodes to 0, then to a large negative value and finally back to the initial value
 	 * <p>
 	 * <b>Warning!</b> This tests changes the delay state of the SrSDF graph and hence it is crucial that
@@ -360,13 +369,13 @@ class NodeChainGraphTest {
 	 */
 	@org.junit.Test def void testSettingOutputDelays() {
 		val srsdfRootNodes = nonSourceRootNodes
-		
+
 		srsdfRootNodes.forEach[root |
 			val prevNodes = nodechain.getPreviousNodes(root)
-			
+
 			prevNodes.forEach[node |
 				val outEdgeDelay = nodechain.getEdgewiseOutputDelays(node.vertex)
-				
+
 				val copyOutEdgeDelay = new HashMap(outEdgeDelay)
 				val newOutEdgeDelay = new HashMap(outEdgeDelay)
 				newOutEdgeDelay.keySet.forEach[key | newOutEdgeDelay.put(key, 0)]
@@ -375,14 +384,14 @@ class NodeChainGraphTest {
 					Assert.assertTrue(delay !== null)
 					Assert.assertTrue(delay == 0)
 				]
-				
+
 				newOutEdgeDelay.keySet.forEach[key | newOutEdgeDelay.put(key, -100)]
 				nodechain.setEdgewiseOutputDelays(node.vertex, newOutEdgeDelay)
 				nodechain.getEdgewiseOutputDelays(node.vertex).forEach[n, delay |
 					Assert.assertTrue(delay !== null)
 					Assert.assertTrue(delay == -100)
 				]
-				
+
 				nodechain.setEdgewiseOutputDelays(node.vertex, copyOutEdgeDelay)
 				nodechain.getEdgewiseOutputDelays(node.vertex).forEach[n, delay |
 					val oldDelay = copyOutEdgeDelay.get(n)
