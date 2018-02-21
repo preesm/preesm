@@ -1,4 +1,5 @@
-Copyright or © or Copr. IETR/INSA - Rennes (%%DATE%%) :
+Copyright or © or Copr. Åbo Akademi University (%%DATE%%),
+IETR/INSA - Rennes (%%DATE%%) :
 
 %%AUTHORS%%
 
@@ -6,7 +7,7 @@ This software is a computer program whose purpose is to help prototyping
 parallel applications using dataflow formalism.
 
 This software is governed by the CeCILL  license under French law and
-abiding by the rules of distribution of free software.  You can  use,
+abiding by the rules of distribution of free software.  You can  use, 
 modify and/ or redistribute the software under the terms of the CeCILL
 license as circulated by CEA, CNRS and INRIA at the following URL
 "http://www.cecill.info".
