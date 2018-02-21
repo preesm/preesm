@@ -40,6 +40,7 @@ import java.util.Map;
 import org.eclipse.emf.common.util.EList;
 import org.ietr.preesm.experiment.model.expression.functions.CeilFunction;
 import org.ietr.preesm.experiment.model.expression.functions.FloorFunction;
+import org.ietr.preesm.experiment.model.expression.functions.GeometricSum;
 import org.ietr.preesm.experiment.model.expression.functions.MaxFunction;
 import org.ietr.preesm.experiment.model.expression.functions.MinFunction;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
@@ -105,6 +106,7 @@ public class ExpressionEvaluator {
     new CeilFunction().integrateWithin(jep);
     new MinFunction().integrateWithin(jep);
     new MaxFunction().integrateWithin(jep);
+    new GeometricSum().integrateWithin(jep);
 
     return jep;
   }

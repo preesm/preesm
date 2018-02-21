@@ -83,6 +83,6 @@ public abstract class AbstractPreesmMathFunction extends PostfixMathCommand {
 
   protected abstract int getArgCount();
 
-  protected abstract double compute(double... args);
+  protected abstract double compute(double... args) throws ParseException;
 
 }
