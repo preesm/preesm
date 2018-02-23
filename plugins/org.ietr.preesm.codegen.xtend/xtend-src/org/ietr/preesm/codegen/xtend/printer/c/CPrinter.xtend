@@ -386,7 +386,19 @@ class CPrinter extends DefaultPrinter {
 		
 		pthread_barrier_t iter_barrier;
 		int stopThreads;
-		
+    
+		// setting a setting core affinity
+    int set_affinity_to_core(pthread_t* thread, int core_id) {
+       int num_cores = sysconf(_SC_NPROCESSORS_ONLN);
+       if (core_id < 0 || core_id >= num_cores)
+          printf("Wrong core number %d\n", core_id);
+
+       cpu_set_t cpuset;
+       CPU_ZERO(&cpuset);
+       CPU_SET(core_id, &cpuset);
+
+       return pthread_setaffinity_np(*thread, sizeof(cpu_set_t), &cpuset);
+    }
 		
 		int main(void)
 		{
@@ -409,6 +421,7 @@ class CPrinter extends DefaultPrinter {
 		  // Creating threads
 		  «FOR coreBlock : printerBlocks»
 		    pthread_create(&threadCore«(coreBlock as CoreBlock).coreID», NULL, computationThread_Core«(coreBlock as CoreBlock).coreID», NULL);
+        set_affinity_to_core(&threadCore«(coreBlock as CoreBlock).coreID»,«(coreBlock as CoreBlock).coreID»);
 		  «ENDFOR»
 		
 		  // Waiting for thread terminations
