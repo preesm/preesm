@@ -48,7 +48,7 @@
   <!-- More Project Information -->
   <name>PREESM</name>
   <description>PREESM is an open source rapid prototyping tool targetting heterogeneous multi/many-core embedded systems from and using dataflow language.</description>
-  <url>http://preesm.sourceforge.net/</url>
+  <url>http://preesm.org/</url>
 
   <licenses>
     <license>
@@ -83,7 +83,7 @@
     <preesm.coding.policy.version>1.0.1</preesm.coding.policy.version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <preesm.p2.repo>http://preesm.sourceforge.net/gensite/update-site/complete/</preesm.p2.repo>
+    <preesm.p2.repo>http://preesm.insa-rennes.fr/repo/complete/</preesm.p2.repo>
 
     <!-- ############### -->
     <!-- ECLIPSE MIRRORS -->
