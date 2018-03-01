@@ -5,6 +5,7 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* Add geometric sum function in expressions;
 
 ### Changes
 * update mailmap file

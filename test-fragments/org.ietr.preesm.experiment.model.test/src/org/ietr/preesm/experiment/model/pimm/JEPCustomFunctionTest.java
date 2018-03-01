@@ -120,4 +120,19 @@ public class JEPCustomFunctionTest {
     testEvaluation("max(10, max(1,-3))", 10);
   }
 
+  @Test
+  public void jepGeoSumTest1() {
+    testEvaluation("1000*geo_sum(3,1/2,4)", 5625);
+  }
+
+  @Test
+  public void jepGeoSumTest2() {
+    testEvaluation("geo_sum(3,2,4)", 45);
+  }
+
+  @Test
+  public void jepGeoSumTest3() {
+    testEvaluation("geo_sum(512000,0.25,7)", 682625);
+  }
+
 }
