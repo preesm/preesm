@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">acyclic_two_actors</data>
+        <node expr="3" id="par_A" kind="param"/>
+        <node expr="5" id="par_B" kind="param"/>
+        <node id="A" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="A">
+                <param direction="OUT" isConfig="false" name="output" type="char "/>
+            </loop>
+            <port kind="cfg_input" name="par_A"/>
+            <port annotation="NONE" expr="par_A" kind="output" name="output"/>
+        </node>
+        <node id="B" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="B">
+                <param direction="IN" isConfig="false" name="input" type="char "/>
+            </loop>
+            <port kind="cfg_input" name="par_B"/>
+            <port annotation="NONE" expr="par_B" kind="input" name="input"/>
+        </node>
+        <edge expr="6" kind="fifo" source="A" sourceport="output"
+            target="B" targetport="input" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge kind="dependency" source="par_A" target="A" targetport="par_A"/>
+        <edge kind="dependency" source="par_B" target="B" targetport="par_B"/>
+    </graph>
+</graphml>

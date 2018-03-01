@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">h263encoder</data>
+        <node id="motion_compensation" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="motion_compensation">
+                <param direction="IN" isConfig="false" name="p2" type="char "/>
+                <param direction="IN" isConfig="false" name="p0" type="char "/>
+                <param direction="OUT" isConfig="false" name="p1" type="char "/>
+                <param direction="OUT" isConfig="false" name="p3" type="char "/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="p2"/>
+            <port annotation="NONE" expr="99" kind="input" name="p0"/>
+            <port annotation="NONE" expr="1" kind="output" name="p1"/>
+            <port annotation="NONE" expr="1" kind="output" name="p3"/>
+        </node>
+        <node id="motion_estimation" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="motion_estimation">
+                <param direction="IN" isConfig="false" name="p0" type="char "/>
+                <param direction="OUT" isConfig="false" name="p1" type="char "/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="p0"/>
+            <port annotation="NONE" expr="99" kind="output" name="p1"/>
+        </node>
+        <node id="mb_encoding" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="mb_encoding">
+                <param direction="IN" isConfig="false" name="p0" type="char "/>
+                <param direction="OUT" isConfig="false" name="p1" type="char "/>
+                <param direction="OUT" isConfig="false" name="p2" type="char "/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="p0"/>
+            <port annotation="NONE" expr="1" kind="output" name="p1"/>
+            <port annotation="NONE" expr="1" kind="output" name="p2"/>
+        </node>
+        <node id="vlc" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="vlc">
+                <param direction="IN" isConfig="false" name="p0" type="char "/>
+                <param direction="IN" isConfig="false" name="p1" type="char "/>
+                <param direction="OUT" isConfig="false" name="p2" type="char "/>
+            </loop>
+            <port annotation="NONE" expr="99" kind="input" name="p0"/>
+            <port annotation="NONE" expr="1" kind="input" name="p1"/>
+            <port annotation="NONE" expr="1" kind="output" name="p2"/>
+        </node>
+        <node id="mb_decoding" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="mb_decoding">
+                <param direction="IN" isConfig="false" name="p0" type="char "/>
+                <param direction="OUT" isConfig="false" name="p1" type="char "/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="p0"/>
+            <port annotation="NONE" expr="1" kind="output" name="p1"/>
+        </node>
+        <edge expr="1" kind="fifo" source="motion_compensation"
+            sourceport="p1" target="motion_estimation" targetport="p0" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge expr="1" kind="fifo" source="motion_compensation"
+            sourceport="p3" target="motion_compensation" targetport="p2" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge kind="fifo" source="motion_estimation" sourceport="p1"
+            target="mb_encoding" targetport="p0" type="void"/>
+        <edge kind="fifo" source="mb_encoding" sourceport="p1"
+            target="vlc" targetport="p0" type="char"/>
+        <edge kind="fifo" source="mb_encoding" sourceport="p2"
+            target="mb_decoding" targetport="p0" type="char"/>
+        <edge kind="fifo" source="mb_decoding" sourceport="p1"
+            target="motion_compensation" targetport="p0" type="char"/>
+        <edge expr="1" kind="fifo" source="vlc" sourceport="p2"
+            target="vlc" targetport="p1" type="char">
+            <data key="delay"/>
+        </edge>
+    </graph>
+</graphml>

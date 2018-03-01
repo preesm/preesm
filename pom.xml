@@ -377,6 +377,7 @@
           <useDefaultExcludes>true</useDefaultExcludes>
           <!-- Custom excludes -->
           <excludes>
+            <exclude>**/fi.abo*/**</exclude>
             <exclude>LICENSE</exclude>
             <exclude>**/README.md</exclude>
             <exclude>**/resources/**</exclude>
@@ -472,6 +473,8 @@
     <module>plugins/org.ietr.preesm.mapper</module>
     <module>plugins/org.ietr.preesm.memory</module>
     <module>plugins/org.ietr.preesm.pimm.algorithm</module>
+
+    <module>plugins/fi.abo.preesm.dataparallel</module>
 
     <module>plugins/org.ietr.preesm.ui</module>
     <module>plugins/org.ietr.preesm.ui.pimm</module>

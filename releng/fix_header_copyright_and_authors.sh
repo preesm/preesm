@@ -1,3 +1,4 @@
+
 #!/bin/bash -eu
 
 echo ""
@@ -100,7 +101,7 @@ DATEPATTERN="%%DATE%%"
 AUTHORSPATTERN="%%AUTHORS%%"
 
 TMPFILE=`mktemp --suffix=biglisttosed`
-grep "%%AUTHORS%%" -R | cut -d':' -f1 | sort -u | grep -v "copyright_template.txt" | grep -v "fix_header_copyright_and_authors.sh" | grep -v "VAADER_eclipse_preferences.epf" | grep -v "README" > $TMPFILE
+grep "%%AUTHORS%%" -R | cut -d':' -f1 | sort -u | grep -v "copyright_template" | grep -v "fix_header_copyright_and_authors.sh" | grep -v "VAADER_eclipse_preferences.epf" | grep -v "README" > $TMPFILE
 
 echo ""
 echo " Header template applied."

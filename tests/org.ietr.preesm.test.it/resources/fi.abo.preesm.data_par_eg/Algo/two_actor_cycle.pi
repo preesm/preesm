@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">two_actor_cycle</data>
+        <node expr="3" id="par_a" kind="param"/>
+        <node expr="5" id="par_b" kind="param"/>
+        <node id="C_A" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="C_A">
+                <param direction="IN" isConfig="false" name="input" type="char "/>
+                <param direction="OUT" isConfig="false" name="output" type="char "/>
+            </loop>
+            <port kind="cfg_input" name="par_a"/>
+            <port annotation="NONE" expr="par_a" kind="input" name="input"/>
+            <port annotation="NONE" expr="par_a" kind="output" name="output"/>
+        </node>
+        <node id="C_B" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="C_B">
+                <param direction="IN" isConfig="false" name="input" type="char "/>
+                <param direction="OUT" isConfig="false" name="output" type="char "/>
+            </loop>
+            <port kind="cfg_input" name="par_b"/>
+            <port annotation="NONE" expr="par_b" kind="input" name="input"/>
+            <port annotation="NONE" expr="par_b" kind="output" name="output"/>
+        </node>
+        <edge kind="fifo" source="C_A" sourceport="output" target="C_B"
+            targetport="input" type="char"/>
+        <edge expr="7" kind="fifo" source="C_B" sourceport="output"
+            target="C_A" targetport="input" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge kind="dependency" source="par_a" target="C_A" targetport="par_a"/>
+        <edge kind="dependency" source="par_b" target="C_B" targetport="par_b"/>
+    </graph>
+</graphml>

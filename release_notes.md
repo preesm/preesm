@@ -6,10 +6,12 @@ PREESM Changelog
 
 ### New Feature
 * Add geometric sum function in expressions;
+* Front-end SDF graph analysis plugin that checks if the given SDF graph can be executed in data-parallel fashion i.e. for each actor of the graph, run all its instances in parallel;
 
 ### Changes
 * update mailmap file
 * disable RCPTT fetch when loading projects in Eclipse
+* Add custom license/copyright headers for fi.abo* plugins;
 
 ### Bug fix
 
