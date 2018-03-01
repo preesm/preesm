@@ -12,6 +12,7 @@ PREESM Changelog
 * update mailmap file
 * disable RCPTT fetch when loading projects in Eclipse
 * Add custom license/copyright headers for fi.abo* plugins;
+* Update codegen C printer to set thread to core affinity;
 
 ### Bug fix
 
