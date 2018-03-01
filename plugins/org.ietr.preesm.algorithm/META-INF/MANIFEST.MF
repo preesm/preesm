@@ -7,7 +7,7 @@ Bundle-Activator: org.ietr.preesm.algorithm.transforms.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources;bundle-version="3.4.0",
  org.eclipse.xtend.lib,
- org.ietr.preesm.core
+ org.ietr.preesm.core;visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: IETR/INSA Rennes
 Export-Package: org.ietr.preesm.algorithm.exportDif,
