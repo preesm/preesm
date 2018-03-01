@@ -11,6 +11,7 @@ PREESM Changelog
 ### Changes
 * update mailmap file
 * disable RCPTT fetch when loading projects in Eclipse
+* Add custom license/copyright headers for fi.abo* plugins;
 
 ### Bug fix
 
