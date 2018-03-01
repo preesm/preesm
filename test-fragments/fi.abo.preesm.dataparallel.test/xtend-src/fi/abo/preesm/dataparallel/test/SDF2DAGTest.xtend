@@ -45,13 +45,13 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
 import org.jgrapht.alg.CycleDetector
 import org.jgrapht.graph.AbstractGraph
-import org.jgrapht.graph.DirectedSubgraph
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import fi.abo.preesm.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
 import fi.abo.preesm.dataparallel.test.util.ExampleGraphs
+import org.jgrapht.alg.KosarajuStrongConnectivityInspector
+import org.jgrapht.graph.AsSubgraph
 
 /**
  * Manual test for {@link SDF2DAG}
@@ -91,7 +91,7 @@ class SDF2DAGTest {
 		if(isSDF) {
 			dagGen = new SDF2DAG(sdf as SDFGraph)
 		} else {
-			dagGen = new SDF2DAG(sdf as DirectedSubgraph<SDFAbstractVertex, SDFEdge>)
+			dagGen = new SDF2DAG(sdf as AsSubgraph<SDFAbstractVertex, SDFEdge>)
 		}
 		this.explodeInstanceCount = explodeInstanceCount
 		this.implodeInstanceCount = implodeInstanceCount
@@ -141,7 +141,7 @@ class SDF2DAGTest {
 			// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
 			strongCompDetector.stronglyConnectedComponents.forEach[ subgraph |
 				val cycleDetector = new CycleDetector(subgraph as
-					DirectedSubgraph<SDFAbstractVertex, SDFEdge>) 
+					AsSubgraph<SDFAbstractVertex, SDFEdge>) 
 				if(cycleDetector.detectCycles) {
 					// ASSUMPTION: Strongly connected component of a directed graph contains atleast
 					// one loop

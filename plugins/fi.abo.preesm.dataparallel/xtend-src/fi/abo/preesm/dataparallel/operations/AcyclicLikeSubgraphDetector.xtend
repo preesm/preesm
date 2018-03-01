@@ -145,7 +145,9 @@ class AcyclicLikeSubgraphDetector implements IGraphVisitor<SDFGraph, SDFAbstract
 			]
 			
 			removableEdges.forEach[edge |
-				sdfSubgraph.removeEdge(edge)
+				if(sdfSubgraph.edgeSet.contains(edge)) {
+					sdfSubgraph.removeEdge(edge)	
+				}
 			]
 			removableVertices.forEach[vertex |
 				sdfSubgraph.removeVertex(vertex)

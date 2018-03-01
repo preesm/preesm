@@ -58,8 +58,8 @@ import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.alg.CycleDetector
 import org.jgrapht.graph.AbstractGraph
-import org.jgrapht.graph.DirectedSubgraph
 import java.util.logging.Level
+import org.jgrapht.graph.AsSubgraph
 
 /**
  * Construct DAG from a SDF Graph
@@ -149,7 +149,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 				actorPredecessor.put(vertex, predecessorList)
 			]
 		} else { // Its a subgraph of SDFGraph
-			val subgraph = graph as DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+			val subgraph = graph as AsSubgraph<SDFAbstractVertex, SDFEdge>
 			val cycleDetector = new CycleDetector(subgraph)
 			cycleActors.addAll(cycleDetector.findCycles)
 			
@@ -194,7 +194,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	 * DAG is created
 	 * @param logger log messages to console
 	 */
-	new(DirectedSubgraph<SDFAbstractVertex, SDFEdge> subgraph, Logger logger) {
+	new(AsSubgraph<SDFAbstractVertex, SDFEdge> subgraph, Logger logger) {
 		this(subgraph, logger, false)
 	}
 	
@@ -214,7 +214,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	 * 
 	 * @param subgraph The {@link DirectedSubgraph<SDFAbstractVertex, SDFEdge>} instance of SDFGraph
 	 */
-	new(DirectedSubgraph<SDFAbstractVertex, SDFEdge> subgraph) {
+	new(AsSubgraph<SDFAbstractVertex, SDFEdge> subgraph) {
 		this(subgraph as AbstractGraph<SDFAbstractVertex, SDFEdge>, null, false)
 	}
 	

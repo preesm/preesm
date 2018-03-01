@@ -47,7 +47,6 @@ import fi.abo.preesm.dataparallel.SDF2DAG
 import fi.abo.preesm.dataparallel.iterator.DAGTopologicalIterator
 import fi.abo.preesm.dataparallel.iterator.DAGTopologicalIteratorInterface
 import fi.abo.preesm.dataparallel.iterator.SubsetTopologicalIterator
-import fi.abo.preesm.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
 import fi.abo.preesm.dataparallel.operations.DAGCommonOperations
 import fi.abo.preesm.dataparallel.operations.DAGOperations
 import fi.abo.preesm.dataparallel.operations.DependencyAnalysisOperations
@@ -60,11 +59,12 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
 import org.jgrapht.alg.CycleDetector
-import org.jgrapht.graph.DirectedSubgraph
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import org.jgrapht.alg.KosarajuStrongConnectivityInspector
+import org.jgrapht.graph.AsSubgraph
 
 /**
  * Perform property based tests for operations that derive from {@link DAGCommonOperations} 
@@ -202,8 +202,8 @@ class DAGCommonOperationsTest {
 				// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
 				strongCompDetector.stronglyConnectedComponents.forEach[ subgraph |
 					val cycleDetector = new CycleDetector(subgraph as
-						DirectedSubgraph<SDFAbstractVertex, SDFEdge>)
-					val subgraphDir = subgraph as DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+						AsSubgraph<SDFAbstractVertex, SDFEdge>)
+					val subgraphDir = subgraph as AsSubgraph<SDFAbstractVertex, SDFEdge>
 					if(cycleDetector.detectCycles) {
 						// ASSUMPTION: Strongly connected component of a directed graph contains atleast
 						// one loop

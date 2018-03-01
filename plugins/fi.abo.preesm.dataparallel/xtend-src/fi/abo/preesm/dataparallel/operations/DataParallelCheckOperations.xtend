@@ -41,7 +41,6 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import fi.abo.preesm.dataparallel.DAGComputationBug
 import fi.abo.preesm.dataparallel.SDF2DAG
-import fi.abo.preesm.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
 import fi.abo.preesm.dataparallel.pojo.RetimingInfo
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
@@ -51,8 +50,9 @@ import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
 import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.alg.CycleDetector
-import org.jgrapht.graph.DirectedSubgraph
 import fi.abo.preesm.dataparallel.CannotRearrange
+import org.jgrapht.alg.KosarajuStrongConnectivityInspector
+import org.jgrapht.graph.AsSubgraph
 
 /**
  * Isolate strongly connected components of the original
@@ -67,7 +67,7 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 	 * to contain at least one loop/cycle/strongly connected component
 	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
-	val List<DirectedSubgraph<SDFAbstractVertex, SDFEdge> > isolatedStronglyConnectedComponents
+	val List<AsSubgraph<SDFAbstractVertex, SDFEdge> > isolatedStronglyConnectedComponents
 	
 	/**
 	 * Output single rate graph. 
@@ -214,7 +214,7 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 			// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
 			strongCompDetector.getStronglyConnectedComponents.forEach[ subgraph |
 				val cycleDetector = new CycleDetector(subgraph as 
-					DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+					AsSubgraph<SDFAbstractVertex, SDFEdge>
 				) 
 				if(cycleDetector.detectCycles) {
 					// ASSUMPTION: Strongly connected component of a directed graph contains atleast
@@ -246,7 +246,7 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 					]
 					relevantVertices.addAll(subgraph.vertexSet)
 					relevantEdges.addAll(subgraph.edgeSet)
-					val subgraphInterfaceVertices = new DirectedSubgraph(sdf, relevantVertices, relevantEdges)
+					val subgraphInterfaceVertices = new AsSubgraph(sdf, relevantVertices, relevantEdges)
 
 					isolatedStronglyConnectedComponents.add(subgraphInterfaceVertices)
 				}
@@ -268,7 +268,7 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 					val sc = new KosarajuStrongConnectivityInspector(subgraph)
 					val neighInterfaceActors = sc.stronglyConnectedComponents.filter[sg |
 						val cycleDetector = new CycleDetector(sg as 
-							DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+							AsSubgraph<SDFAbstractVertex, SDFEdge>
 						)
 						!cycleDetector.detectCycles
 					].map[sg |

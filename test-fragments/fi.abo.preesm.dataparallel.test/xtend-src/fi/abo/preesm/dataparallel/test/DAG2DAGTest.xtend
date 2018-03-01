@@ -47,12 +47,12 @@ import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import fi.abo.preesm.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
-import org.jgrapht.graph.DirectedSubgraph
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import fi.abo.preesm.dataparallel.test.util.Util
+import org.jgrapht.alg.KosarajuStrongConnectivityInspector
+import org.jgrapht.graph.AsSubgraph
 
 /**
  * Property based test to check {@link DAG2DAG} construction
@@ -97,13 +97,13 @@ class DAG2DAGTest {
 			// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
 			strongCompDetector.stronglyConnectedComponents.forEach[ subgraph |
 				val cycleDetector = new CycleDetector(subgraph as 
-					DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+					AsSubgraph<SDFAbstractVertex, SDFEdge>
 				) 
 				if(cycleDetector.detectCycles) {
 					// ASSUMPTION: Strongly connected component of a directed graph contains atleast
 					// one loop
 					val dagGen = new SDF2DAG(subgraph as 
-						DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+						AsSubgraph<SDFAbstractVertex, SDFEdge>
 					)
 					parameters.add(#[dagGen])
 				}

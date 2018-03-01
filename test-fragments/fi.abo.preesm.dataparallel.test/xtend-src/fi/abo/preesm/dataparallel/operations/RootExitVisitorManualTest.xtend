@@ -47,11 +47,11 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import fi.abo.preesm.dataparallel.DAG2DAG
 import fi.abo.preesm.dataparallel.operations.RootExitOperations
 import org.junit.Assert
-import fi.abo.preesm.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
 import org.jgrapht.alg.CycleDetector
-import org.jgrapht.graph.DirectedSubgraph
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
+import org.jgrapht.alg.KosarajuStrongConnectivityInspector
+import org.jgrapht.graph.AsSubgraph
 
 /**
  * <b>Manual test</b> for verifying root and exit instances and actors of {@link RootExitOperations}
@@ -88,9 +88,9 @@ class RootExitVisitorManualTest {
 		boolean checkCounts
 	) {
 		this.dagGen = dagGen
-		this.rootNodeNames = rootNodeNames
-		this.exitNodeNames = exitNodeNames
-		this.actorNames = actorNames
+		this.rootNodeNames = rootNodeNames.sort()
+		this.exitNodeNames = exitNodeNames.sort()
+		this.actorNames = actorNames.sort()
 		this.checkCounts = checkCounts
 	}
 	
@@ -153,8 +153,8 @@ class RootExitVisitorManualTest {
 			// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
 			strongCompDetector.stronglyConnectedComponents.forEach[ subgraph |
 				val cycleDetector = new CycleDetector(subgraph as
-					DirectedSubgraph<SDFAbstractVertex, SDFEdge>)
-				val subgraphDir = subgraph as DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+					AsSubgraph<SDFAbstractVertex, SDFEdge>)
+				val subgraphDir = subgraph as AsSubgraph<SDFAbstractVertex, SDFEdge>
 				if(cycleDetector.detectCycles) {
 					// ASSUMPTION: Strongly connected component of a directed graph contains atleast
 					// one loop
@@ -214,7 +214,7 @@ class RootExitVisitorManualTest {
 		val rootOp = new RootExitOperations
 		dagGen.accept(rootOp)
 		if(checkCounts) {
-			Assert.assertEquals(rootNodeNames, rootOp.rootInstances.map[node | node.name])	
+			Assert.assertEquals(rootNodeNames, rootOp.rootInstances.map[node | node.name].sort)	
 		}
 	}
 	
@@ -226,7 +226,7 @@ class RootExitVisitorManualTest {
 		val exitOp = new RootExitOperations
 		dagGen.accept(exitOp)
 		if(checkCounts) {
-			Assert.assertEquals(exitNodeNames, exitOp.exitInstances.map[node | node.name])
+			Assert.assertEquals(exitNodeNames, exitOp.exitInstances.map[node | node.name].sort)
 		}
 	}
 	
@@ -238,12 +238,12 @@ class RootExitVisitorManualTest {
 		val actorOp = new RootExitOperations
 		dagGen.accept(actorOp)
 		if(checkCounts) {
-			Assert.assertEquals(actorNames, actorOp.rootActors.map[node | node.name])
+			Assert.assertEquals(actorNames, actorOp.rootActors.map[node | node.name].sort)
 		}
 		
 		// Make sure instances are not disturbed
 		if(checkCounts) {
-			Assert.assertEquals(rootNodeNames, actorOp.rootInstances.map[node | node.name])
+			Assert.assertEquals(rootNodeNames, actorOp.rootInstances.map[node | node.name].sort)
 		}
 	}
 }

@@ -40,7 +40,6 @@ import java.util.Collection
 import fi.abo.preesm.dataparallel.DAG2DAG
 import fi.abo.preesm.dataparallel.PureDAGConstructor
 import fi.abo.preesm.dataparallel.SDF2DAG
-import fi.abo.preesm.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
 import fi.abo.preesm.dataparallel.operations.AcyclicLikeSubgraphDetector
 import fi.abo.preesm.dataparallel.operations.MovableInstances
 import fi.abo.preesm.dataparallel.operations.OperationsUtils
@@ -52,11 +51,12 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
 import org.jgrapht.alg.CycleDetector
-import org.jgrapht.graph.DirectedSubgraph
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import org.jgrapht.alg.KosarajuStrongConnectivityInspector
+import org.jgrapht.graph.AsSubgraph
 
 /**
  * Property based tests for {@link MovableInstances}
@@ -134,7 +134,7 @@ class MovableInstancesTest {
 				// Collect strongly connected component that has loops in it
 				// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
 				strongCompDetector.getStronglyConnectedComponents.forEach[ subgraph |
-					val dirSubGraph = subgraph as DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+					val dirSubGraph = subgraph as AsSubgraph<SDFAbstractVertex, SDFEdge>
 					val cycleDetector = new CycleDetector(dirSubGraph) 
 					if(cycleDetector.detectCycles) {
 						// ASSUMPTION: Strongly connected component of a directed graph contains atleast
@@ -144,7 +144,7 @@ class MovableInstancesTest {
 						val sc = new KosarajuStrongConnectivityInspector(dirSubGraph)
 						val sourceActors = sc.stronglyConnectedComponents.filter[sg |
 							val cd = new CycleDetector(sg as 
-								DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+								AsSubgraph<SDFAbstractVertex, SDFEdge>
 							)
 							!cd.detectCycles
 						].map[sg |
@@ -215,7 +215,7 @@ class MovableInstancesTest {
 				// Collect strongly connected component that has loops in it
 				// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
 				strongCompDetector.getStronglyConnectedComponents.forEach[ subgraph |
-					val dirSubGraph = subgraph as DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+					val dirSubGraph = subgraph as AsSubgraph<SDFAbstractVertex, SDFEdge>
 					val cycleDetector = new CycleDetector(dirSubGraph) 
 					if(cycleDetector.detectCycles) {
 						// ASSUMPTION: Strongly connected component of a directed graph contains atleast
@@ -226,7 +226,7 @@ class MovableInstancesTest {
 						val sc = new KosarajuStrongConnectivityInspector(dirSubGraph)
 						val sourceActors = sc.stronglyConnectedComponents.filter[sg |
 							val cd = new CycleDetector(sg as 
-								DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+								AsSubgraph<SDFAbstractVertex, SDFEdge>
 							)
 							!cd.detectCycles
 						].map[sg |

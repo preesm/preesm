@@ -47,11 +47,11 @@ import org.junit.runners.Parameterized
 import fi.abo.preesm.dataparallel.iterator.SubsetTopologicalIterator
 import fi.abo.preesm.dataparallel.operations.RootExitOperations
 import org.jgrapht.alg.CycleDetector
-import fi.abo.preesm.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
-import org.jgrapht.graph.DirectedSubgraph
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import fi.abo.preesm.dataparallel.test.util.Util
+import org.jgrapht.alg.KosarajuStrongConnectivityInspector
+import org.jgrapht.graph.AsSubgraph
 
 /**
  * Property based test for {@link DAGSubset} instance
@@ -105,12 +105,12 @@ class DAGSubsetTest {
 			// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
 			strongCompDetector.stronglyConnectedComponents.forEach[ subgraph |
 				val cycleDetector = new CycleDetector(subgraph as 
-					DirectedSubgraph<SDFAbstractVertex, SDFEdge>) 
+					AsSubgraph<SDFAbstractVertex, SDFEdge>) 
 				if(cycleDetector.detectCycles) {
 					// ASSUMPTION: Strongly connected component of a directed graph contains atleast
 					// one loop
 					val dagGen = new SDF2DAG(subgraph as
-						DirectedSubgraph<SDFAbstractVertex, SDFEdge>)
+						AsSubgraph<SDFAbstractVertex, SDFEdge>)
 					
 					val rootOp = new RootExitOperations
 					dagGen.accept(rootOp)

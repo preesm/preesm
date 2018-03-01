@@ -39,7 +39,6 @@ package fi.abo.preesm.dataparallel.operations
 import java.util.Collection
 import fi.abo.preesm.dataparallel.SDF2DAG
 import fi.abo.preesm.dataparallel.SrSDFToSDF
-import fi.abo.preesm.dataparallel.operations.graph.KosarajuStrongConnectivityInspector
 import fi.abo.preesm.dataparallel.operations.AcyclicLikeSubgraphDetector
 import fi.abo.preesm.dataparallel.operations.RearrangeOperations
 import fi.abo.preesm.dataparallel.pojo.RetimingInfo
@@ -49,7 +48,6 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
 import org.jgrapht.alg.CycleDetector
-import org.jgrapht.graph.DirectedSubgraph
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -59,6 +57,8 @@ import fi.abo.preesm.dataparallel.fifo.FifoActor
 import fi.abo.preesm.dataparallel.fifo.FifoActorBeanKey
 import fi.abo.preesm.dataparallel.operations.MovableInstances
 import fi.abo.preesm.dataparallel.NodeChainGraph
+import org.jgrapht.alg.KosarajuStrongConnectivityInspector
+import org.jgrapht.graph.AsSubgraph
 
 /**
  * Property based test for {@link RearrangeOperations} on {@link SDFGraph}s
@@ -173,7 +173,7 @@ class SDFCommonOperationsTest {
 				// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
 				strongCompDetector.getStronglyConnectedComponents.forEach[ subgraph |
 					val cycleDetector = new CycleDetector(subgraph as 
-						DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+						AsSubgraph<SDFAbstractVertex, SDFEdge>
 					) 
 					if(cycleDetector.detectCycles) {
 						// ASSUMPTION: Strongly connected component of a directed graph contains atleast
@@ -207,14 +207,14 @@ class SDFCommonOperationsTest {
 						relevantVertices.addAll(subgraph.vertexSet)
 						relevantEdges.addAll(subgraph.edgeSet)
 						
-						val subgraphInterfaceVertices = new DirectedSubgraph(sdfSubgraph, relevantVertices, relevantEdges)
+						val subgraphInterfaceVertices = new AsSubgraph(sdfSubgraph, relevantVertices, relevantEdges)
 						
 						val subgraphDAGGen = new SDF2DAG(subgraphInterfaceVertices)
 						
 						val sc = new KosarajuStrongConnectivityInspector(sdfSubgraph)
 						val sourceActors = sc.stronglyConnectedComponents.filter[sg |
 							val cd = new CycleDetector(sg as 
-								DirectedSubgraph<SDFAbstractVertex, SDFEdge>
+								AsSubgraph<SDFAbstractVertex, SDFEdge>
 							)
 							!cd.detectCycles
 						].map[sg |
