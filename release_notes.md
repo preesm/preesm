@@ -13,6 +13,7 @@ PREESM Changelog
 * disable RCPTT fetch when loading projects in Eclipse
 * Add custom license/copyright headers for fi.abo* plugins;
 * Update codegen C printer to set thread to core affinity;
+* Allow diagram generation for multiple pi files at once;
 
 ### Bug fix
 
