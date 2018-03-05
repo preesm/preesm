@@ -36,23 +36,21 @@
  */
 package fi.abo.preesm.dataparallel.test
 
-import java.util.Collection
-import java.util.HashMap
 import fi.abo.preesm.dataparallel.DAG2DAG
 import fi.abo.preesm.dataparallel.SDF2DAG
 import fi.abo.preesm.dataparallel.operations.LevelsOperations
 import fi.abo.preesm.dataparallel.operations.OperationsUtils
+import fi.abo.preesm.dataparallel.test.util.Util
+import java.util.Collection
+import java.util.HashMap
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.jgrapht.alg.CycleDetector
+import org.jgrapht.alg.KosarajuStrongConnectivityInspector
+import org.jgrapht.graph.AsSubgraph
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import fi.abo.preesm.dataparallel.test.util.Util
-import org.jgrapht.alg.KosarajuStrongConnectivityInspector
-import org.jgrapht.graph.AsSubgraph
 
 /**
  * Property based test to check {@link DAG2DAG} construction
@@ -95,16 +93,13 @@ class DAG2DAGTest {
 					
 			// Collect strongly connected component that has loops in it
 			// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
-			strongCompDetector.stronglyConnectedComponents.forEach[ subgraph |
-				val cycleDetector = new CycleDetector(subgraph as 
-					AsSubgraph<SDFAbstractVertex, SDFEdge>
-				) 
+			strongCompDetector.stronglyConnectedSets.forEach[ subgraphSet |
+				val subgraph = new AsSubgraph(sdf.clone, subgraphSet)
+				val cycleDetector = new CycleDetector(subgraph) 
 				if(cycleDetector.detectCycles) {
 					// ASSUMPTION: Strongly connected component of a directed graph contains atleast
 					// one loop
-					val dagGen = new SDF2DAG(subgraph as 
-						AsSubgraph<SDFAbstractVertex, SDFEdge>
-					)
+					val dagGen = new SDF2DAG(subgraph)
 					parameters.add(#[dagGen])
 				}
 			]

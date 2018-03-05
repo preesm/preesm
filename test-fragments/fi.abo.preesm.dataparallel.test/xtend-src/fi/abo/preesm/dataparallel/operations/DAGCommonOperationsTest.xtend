@@ -36,8 +36,6 @@
  */
 package fi.abo.preesm.dataparallel.operations
 
-import java.util.ArrayList
-import java.util.Collection
 import fi.abo.preesm.dataparallel.DAG2DAG
 import fi.abo.preesm.dataparallel.DAGConstructor
 import fi.abo.preesm.dataparallel.DAGSubset
@@ -47,24 +45,21 @@ import fi.abo.preesm.dataparallel.SDF2DAG
 import fi.abo.preesm.dataparallel.iterator.DAGTopologicalIterator
 import fi.abo.preesm.dataparallel.iterator.DAGTopologicalIteratorInterface
 import fi.abo.preesm.dataparallel.iterator.SubsetTopologicalIterator
-import fi.abo.preesm.dataparallel.operations.DAGCommonOperations
-import fi.abo.preesm.dataparallel.operations.DAGOperations
-import fi.abo.preesm.dataparallel.operations.DependencyAnalysisOperations
-import fi.abo.preesm.dataparallel.operations.LevelsOperations
-import fi.abo.preesm.dataparallel.operations.OperationsUtils
-import fi.abo.preesm.dataparallel.operations.RootExitOperations
 import fi.abo.preesm.dataparallel.test.util.Util
+import java.util.ArrayList
+import java.util.Collection
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
 import org.jgrapht.alg.CycleDetector
-import org.junit.Assert
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
 import org.jgrapht.alg.KosarajuStrongConnectivityInspector
 import org.jgrapht.graph.AsSubgraph
+import org.junit.Assert
+import org.junit.FixMethodOrder
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.MethodSorters
+import org.junit.runners.Parameterized
 
 /**
  * Perform property based tests for operations that derive from {@link DAGCommonOperations} 
@@ -73,6 +68,7 @@ import org.jgrapht.graph.AsSubgraph
  * @author Sudeep Kanur
  */
 @RunWith(Parameterized)
+@FixMethodOrder(MethodSorters.DEFAULT)
 class DAGCommonOperationsTest {
 	protected val DAGConstructor dagGen
 	
@@ -191,44 +187,42 @@ class DAGCommonOperationsTest {
 				]
 			]
 			
-			// Test on subgraphs
-			Util.provideAllGraphsContext.forEach[sdfContext |
-				val sdf = sdfContext.graph
-					
-				// Get strongly connected components
-				val strongCompDetector = new KosarajuStrongConnectivityInspector(sdf)
+		// Test on subgraphs
+		Util.provideAllGraphsContext.forEach[sdfContext |
+			val sdf = sdfContext.graph
 				
-				// Collect strongly connected component that has loops in it
-				// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
-				strongCompDetector.stronglyConnectedComponents.forEach[ subgraph |
-					val cycleDetector = new CycleDetector(subgraph as
-						AsSubgraph<SDFAbstractVertex, SDFEdge>)
-					val subgraphDir = subgraph as AsSubgraph<SDFAbstractVertex, SDFEdge>
-					if(cycleDetector.detectCycles) {
-						// ASSUMPTION: Strongly connected component of a directed graph contains atleast
-						// one loop
-						val dagGen = new SDF2DAG(subgraphDir)
-						
-						// Test SDF2DAG
-						parameters.add(#[dagGen
-										, new DAGTopologicalIterator(dagGen)
-										, null
-										, sdfContext.isInstanceIndependent
-										, false
-										, sdfContext.isBranchSetCompatible
-						])
-						
-						// Test DAG2DAG
-						parameters.add(#[new DAG2DAG(dagGen)
-										, new DAGTopologicalIterator(dagGen)
-										, null
-										, sdfContext.isInstanceIndependent
-										, false
-										, sdfContext.isBranchSetCompatible
-						])
-					}
-				]
+			// Get strongly connected components
+			val strongCompDetector = new KosarajuStrongConnectivityInspector(sdf)
+			// Collect strongly connected component that has loops in it
+			// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
+			strongCompDetector.stronglyConnectedSets.forEach[ subgraphset |
+				val subgraphDir = new AsSubgraph(sdf.clone, subgraphset)
+				val cycleDetector = new CycleDetector(subgraphDir)
+				if(cycleDetector.detectCycles) {
+					// ASSUMPTION: Strongly connected component of a directed graph contains atleast
+					// one loop
+					val dagGen = new SDF2DAG(subgraphDir)
+
+					// Test SDF2DAG
+					parameters.add(#[dagGen
+									, new DAGTopologicalIterator(dagGen)
+									, null
+									, sdfContext.isInstanceIndependent
+									, false
+									, sdfContext.isBranchSetCompatible
+					])
+					
+					// Test DAG2DAG
+					parameters.add(#[new DAG2DAG(dagGen)
+									, new DAGTopologicalIterator(dagGen)
+									, null
+									, sdfContext.isInstanceIndependent
+									, false
+									, sdfContext.isBranchSetCompatible
+					])
+				}
 			]
+		]
 		
 		return parameters
 	}
@@ -568,7 +562,7 @@ class DAGCommonOperationsTest {
 	 * <p>
 	 * <i>Strong test</i>
 	 */
-	@org.junit.Test
+	@Test
 	public def void checkDAGisInstanceIndependent() {
 		if(isInstanceIndependent !== null && isInstanceIndependent) {
 			val depOp = new DependencyAnalysisOperations
