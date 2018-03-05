@@ -224,8 +224,8 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 					// connect to the rest of the graph. This is because, calculation of root
 					// and exit vertices also depends if there are enough delay tokens at the
 					// interface edges.
-					val relevantVertices = newHashSet
-					val relevantEdges = newHashSet
+					val relevantVertices = newLinkedHashSet
+					val relevantEdges = newLinkedHashSet
 					
 					sdf.vertexSet.forEach[vertex |
 						if(subgraph.vertexSet.contains(vertex)) {

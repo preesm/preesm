@@ -362,8 +362,8 @@ public class Buffer {
     this.name = name;
     this.nbTokens = nbTokens;
     this.tokenSize = tokenSize;
-    this.matchTable = CollectionLiterals.<Integer, List<Match>>newHashMap();
-    this.appliedMatches = CollectionLiterals.<Range, Pair<Buffer, Integer>>newHashMap();
+    this.matchTable = CollectionLiterals.<Integer, List<Match>>newLinkedHashMap();
+    this.appliedMatches = CollectionLiterals.<Range, Pair<Buffer, Integer>>newLinkedHashMap();
     this.minIndex = 0;
     this.maxIndex = (nbTokens * tokenSize);
     this.dagVertex = dagVertex;
@@ -1183,7 +1183,7 @@ public class Buffer {
     modifiedMatches.forEach(_function_2);
     List<Match> _list = IterableExtensions.<Match>toList(Iterables.<Match>concat(match.getRemoteBuffer().getMatchTable().values()));
     final ArrayList<Match> matches = new ArrayList<Match>(_list);
-    final Set<Integer> redundantMatches = CollectionLiterals.<Integer>newHashSet();
+    final Set<Integer> redundantMatches = CollectionLiterals.<Integer>newLinkedHashSet();
     int i = 0;
     while ((i < (matches.size() - 1))) {
       {

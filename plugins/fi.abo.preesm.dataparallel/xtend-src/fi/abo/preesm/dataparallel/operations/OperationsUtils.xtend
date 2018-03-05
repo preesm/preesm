@@ -159,10 +159,10 @@ class OperationsUtils {
 		}
 
 		val levelSets = getLevelSets(levels)
-		val seenActors = newHashSet
+		val seenActors = newLinkedHashSet
 		
 		for(levelSet: levelSets) {
-			val seenInLevel = newHashSet
+			val seenInLevel = newLinkedHashSet
 			for(instance: levelSet) {
 				val actor = dagGen.instance2Actor.get(instance)
 				if(actor === null) {
@@ -254,7 +254,7 @@ class OperationsUtils {
 		for(level: getLevelSets(levels)) {
 			val currentLevel = levels.get(level.get(0))
 			val origLevel = origLevelSets.filter[l | l.contains(level.get(0))].get(0)			
-			val actors = newHashSet
+			val actors = newLinkedHashSet
 			// Get all actors in the current level
 			level.forEach[instance | actors.add(dagGen.instance2Actor.get(instance))]
 			

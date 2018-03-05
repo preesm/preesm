@@ -454,8 +454,8 @@ class DAGCommonOperationsTest {
 		 	val levelOp = new LevelsOperations
 		 	acceptVisitor(dagGen, levelOp)
 		 	val allLevels = levelOp.levels
-		 	val instance2Paths = newHashMap // Holds the predecessors seen for each node
-		 	val newLevels = newHashMap // The new levels are stored here
+		 	val instance2Paths = newLinkedHashMap // Holds the predecessors seen for each node
+		 	val newLevels = newLinkedHashMap // The new levels are stored here
 		 	
 		 	// Compute levels seen at each node using maximum number of instances seen in
 		 	// previous paths
@@ -525,8 +525,8 @@ class DAGCommonOperationsTest {
 			acceptVisitor(dagGen, depOp)
 			val nonParallelActorsOrig = depOp.instanceDependentActors
 			val isDAGInd = depOp.isIndependent
-			val instance2Paths = newHashMap // Holds the predecessor levels of each node
-			val nonParallelActors = newHashSet // Holds non-parallel actors
+			val instance2Paths = newLinkedHashMap // Holds the predecessor levels of each node
+			val nonParallelActors = newLinkedHashSet // Holds non-parallel actors
 			val dagIndState = new ArrayList(#[true]) // Holds the state if DAG is instance independent
 			
 			iterator.forEach[node |

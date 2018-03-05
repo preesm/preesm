@@ -116,8 +116,8 @@ class NodeChainGraph {
 	 * @param graph The single rate graph
 	 */
 	new(SDFGraph graph) {
-		nodechains = newHashMap
-		explodeRelatedVertex = newHashMap
+		nodechains = newLinkedHashMap
+		explodeRelatedVertex = newLinkedHashMap
 		this.graph = graph
 		val localGraph = graph.clone
 		
@@ -328,7 +328,7 @@ class NodeChainGraph {
 				"construct this node-chain.")
 		}
 		
-		var delayMap = newHashMap
+		var delayMap = newLinkedHashMap
 		for(inEdge: graph.incomingEdgesOf(node.vertex)) {
 			// Check if this edge has an implode associated with this edge
 			if(node.implode !== null && node.implode.contains(inEdge.source)) {
@@ -365,7 +365,7 @@ class NodeChainGraph {
 				"construct this node-chain.")
 		}
 		
-		var delayMap = newHashMap
+		var delayMap = newLinkedHashMap
 		for(outEdge: graph.outgoingEdgesOf(node.vertex)) {
 			// Check if this edge has an explode instance associated with this edge
 			var delays = 0
@@ -416,7 +416,7 @@ class NodeChainGraph {
 	 * @return Lookup table of delegated edge and the final delay value at it
 	 */
 	private def Map<SDFEdge, Integer> implodeExplodeDelayCalculator(SDFEdge edge, int delay, boolean isInput) {
-		val edgeDelayMap = newHashMap
+		val edgeDelayMap = newLinkedHashMap
 		var remainingDelays = delay
 		
 		val edgeSet = if(isInput) {
@@ -486,7 +486,7 @@ class NodeChainGraph {
 				+ ") of the vertex " + node.vertex)
 		}
 		
-		val edgeDelayMap = newHashMap
+		val edgeDelayMap = newLinkedHashMap
 		
 		for(edge: edgeSet) {
 			if(delays.get(edge) === null) {

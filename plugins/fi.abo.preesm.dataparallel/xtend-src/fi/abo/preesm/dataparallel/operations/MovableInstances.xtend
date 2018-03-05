@@ -101,7 +101,7 @@ class MovableInstances implements DAGOperations {
 	val Logger logger
 		
 	new(List<SDFAbstractVertex> interfaceActors, Logger logger) {
-		rearrangedLevels = newHashMap
+		rearrangedLevels = newLinkedHashMap
 		movableInstances = newArrayList
 		movableRootInstances = newArrayList
 		movableExitInstances = newArrayList
@@ -286,7 +286,7 @@ class MovableInstances implements DAGOperations {
 				instancesInRoot.forEach[instance |
 					val sit = new SubsetTopologicalIterator(dagGen, instance)
 					val instanceSources = sit.instanceSources
-					val seenNodes = newHashSet // List of nodes that are not implode/explode but are seen during iteration
+					val seenNodes = newLinkedHashSet // List of nodes that are not implode/explode but are seen during iteration
 					while(sit.hasNext) {
 						val node = sit.next
 						var levelOfNode = 0

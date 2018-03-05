@@ -78,7 +78,7 @@ class DataParallel extends AbstractTaskImplementation {
 		val checker = new DataParallelCheckOperations(logger as Logger)
 		sdf.accept(checker)
 		
-		return newHashMap(KEY_INFO -> checker.info,
+		return newLinkedHashMap(KEY_INFO -> checker.info,
 						  KEY_CySDF -> checker.cyclicGraph
 		)
 	}
@@ -87,7 +87,7 @@ class DataParallel extends AbstractTaskImplementation {
 	 * No default parameters yet
 	 */
 	override getDefaultParameters() {
-		return newHashMap
+		return newLinkedHashMap
 	}
 	
 	/**

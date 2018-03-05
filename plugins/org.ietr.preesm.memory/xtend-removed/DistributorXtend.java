@@ -232,7 +232,7 @@ public class Distributor {
         int _size = mobjByBank.size();
         boolean _notEquals = (_size != 1);
         if (_notEquals) {
-          Distributor.splitMergedBuffers(mobjByBank, Collections.<String>unmodifiableSet(CollectionLiterals.<String>newHashSet(memory)), entry, meg, alignment);
+          Distributor.splitMergedBuffers(mobjByBank, Collections.<String>unmodifiableSet(CollectionLiterals.<String>newLinkedHashSet(memory)), entry, meg, alignment);
           final Function2<String, Set<MemoryExclusionVertex>, Boolean> _function = (String bank, Set<MemoryExclusionVertex> mObjects) -> {
             return Boolean.valueOf((!Objects.equal(bank, memory)));
           };
@@ -543,9 +543,9 @@ public class Distributor {
     if (_get != null) {
       _elvis = _get;
     } else {
-      _elvis = Collections.<MemoryExclusionVertex>unmodifiableSet(CollectionLiterals.<MemoryExclusionVertex>newHashSet());
+      _elvis = Collections.<MemoryExclusionVertex>unmodifiableSet(CollectionLiterals.<MemoryExclusionVertex>newLinkedHashSet());
     }
-    final Iterable<MemoryExclusionVertex> mObjAndHostedMObjs = Iterables.<MemoryExclusionVertex>concat(Collections.<MemoryExclusionVertex>unmodifiableSet(CollectionLiterals.<MemoryExclusionVertex>newHashSet(mObj)), _elvis);
+    final Iterable<MemoryExclusionVertex> mObjAndHostedMObjs = Iterables.<MemoryExclusionVertex>concat(Collections.<MemoryExclusionVertex>unmodifiableSet(CollectionLiterals.<MemoryExclusionVertex>newLinkedHashSet(mObj)), _elvis);
     for (final MemoryExclusionVertex curentMObj : mObjAndHostedMObjs) {
       {
         Object _value_1 = curentMObj.getPropertyBean().getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);

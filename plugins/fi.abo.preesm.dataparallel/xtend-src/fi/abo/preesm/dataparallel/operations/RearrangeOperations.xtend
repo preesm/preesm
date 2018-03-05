@@ -144,8 +144,8 @@ class RearrangeOperations implements DAGOperations {
 		this.srsdf = srsdf
 		this.info = info
 		this.logger = logger
-		this.edgeFifoActors = newHashMap
-		this.originalEdgeFifoActors = newHashMap
+		this.edgeFifoActors = newLinkedHashMap
+		this.originalEdgeFifoActors = newLinkedHashMap
 		this.transientGraph = new FifoActorGraph
 		this.interfaceActors = interfaceActors
 		this.dagGen = null
@@ -196,7 +196,7 @@ class RearrangeOperations implements DAGOperations {
 				// Add the delays to the FifoActor graph
 				addInputEdgesToFifoActorGraph(node, nodechains)
 				
-				val setEdgeDelayMap = newHashMap
+				val setEdgeDelayMap = newLinkedHashMap
 				
 				// Reduce delay tokens at all its input edges
 				val inEdgeDelayMap = nodechains.getEdgewiseInputDelays(node)
