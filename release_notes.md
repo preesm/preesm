@@ -11,6 +11,7 @@ PREESM Changelog
 ### Changes
 * update mailmap file
 * disable RCPTT fetch when loading projects in Eclipse
+* updated code generation of instrumentation: now time buffer are uint64_t instead of long.
 * Add custom license/copyright headers for fi.abo* plugins;
 * Update codegen C printer to set thread to core affinity;
 * Allow diagram generation for multiple pi files at once;
