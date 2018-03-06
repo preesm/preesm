@@ -1,6 +1,25 @@
 PREESM Changelog
 ================
 
+## Release version 2.9.0
+*2018.03.06*
+
+### New Feature
+* Add geometric sum function in expressions;
+* Front-end SDF graph analysis plugin that checks if the given SDF graph can be executed in data-parallel fashion i.e. for each actor of the graph, run all its instances in parallel;
+
+### Changes
+* Update mailmap file;
+* Disable RCPTT fetch when loading projects in Eclipse;
+* Add custom license/copyright headers for fi.abo* plugins;
+* Allow diagram generation for multiple pi files at once;
+* Updated code generation of instrumentation: now time buffer are uint64_t instead of long;
+* Update codegen C printer to set thread to core affinity;
+* Update codegen C printer: remove GCC warnings in generated CoreX.c code;
+
+### Bug fix
+
+
 ## Release version 2.8.0
 *2018.02.09*
 

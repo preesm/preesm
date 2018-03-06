@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2015)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -105,7 +106,7 @@ public class CsvTimingParser {
       /* Read header */
       line = br.readLine();
       if (line != null) {
-        final String[] opNames = line.split(",");
+        final String[] opNames = line.split(";");
         if ((opNames.length <= 1) || !opNames[0].equals("Actors")) {
           WorkflowLogger.getLogger().log(Level.WARNING, "Timing csv file must have an header line starting with \"Actors\"\nNothing done");
           return;
@@ -113,7 +114,7 @@ public class CsvTimingParser {
 
         /* Parse the whole file to create the timings Map */
         while ((line = br.readLine()) != null) {
-          final String[] cells = line.split(",");
+          final String[] cells = line.split(";");
           if (cells.length > 1) {
             final Map<String, String> timing = new LinkedHashMap<>();
 

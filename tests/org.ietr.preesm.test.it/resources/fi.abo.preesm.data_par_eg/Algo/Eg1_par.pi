@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">Eg1_par</data>
+        <node id="E1_A" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="E1_A">
+                <param direction="IN" isConfig="false" name="input" type="char "/>
+                <param direction="OUT" isConfig="false" name="output" type="char "/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="input"/>
+            <port annotation="NONE" expr="2" kind="output" name="output"/>
+        </node>
+        <node id="E1_B" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="E1_B">
+                <param direction="IN" isConfig="false" name="input" type="char "/>
+                <param direction="OUT" isConfig="false" name="output" type="char "/>
+            </loop>
+            <port annotation="NONE" expr="3" kind="input" name="input"/>
+            <port annotation="NONE" expr="3" kind="output" name="output"/>
+        </node>
+        <node id="E1_C" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="E1_C">
+                <param direction="IN" isConfig="false" name="input" type="char "/>
+                <param direction="OUT" isConfig="false" name="output" type="char "/>
+                <param direction="IN" isConfig="false" name="in_cycle" type="char "/>
+                <param direction="OUT" isConfig="false" name="out_cycle" type="char "/>
+            </loop>
+            <port annotation="NONE" expr="2" kind="input" name="in_cycle"/>
+            <port annotation="NONE" expr="6" kind="input" name="input"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_cycle"/>
+            <port annotation="NONE" expr="2" kind="output" name="output"/>
+        </node>
+        <node id="E1_Z" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="E1_Z">
+                <param direction="OUT" isConfig="false" name="output" type="char "/>
+            </loop>
+            <port annotation="NONE" expr="3" kind="output" name="output"/>
+        </node>
+        <node id="E1_D" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="E1_D">
+                <param direction="IN" isConfig="false" name="input" type="char "/>
+                <param direction="OUT" isConfig="false" name="output" type="char "/>
+            </loop>
+            <port annotation="NONE" expr="3" kind="input" name="input"/>
+            <port annotation="NONE" expr="3" kind="output" name="output"/>
+        </node>
+        <node id="E1_E" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="E1_E">
+                <param direction="IN" isConfig="false" name="input" type="char "/>
+            </loop>
+            <port annotation="NONE" expr="2" kind="input" name="input"/>
+        </node>
+        <edge expr="4" kind="fifo" source="E1_A" sourceport="output"
+            target="E1_B" targetport="input" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge expr="3" kind="fifo" source="E1_B" sourceport="output"
+            target="E1_C" targetport="in_cycle" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge kind="fifo" source="E1_C" sourceport="out_cycle"
+            target="E1_A" targetport="input" type="char"/>
+        <edge expr="7" kind="fifo" source="E1_Z" sourceport="output"
+            target="E1_C" targetport="input" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge kind="fifo" source="E1_C" sourceport="output"
+            target="E1_D" targetport="input" type="char"/>
+        <edge kind="fifo" source="E1_D" sourceport="output"
+            target="E1_E" targetport="input" type="char"/>
+    </graph>
+</graphml>

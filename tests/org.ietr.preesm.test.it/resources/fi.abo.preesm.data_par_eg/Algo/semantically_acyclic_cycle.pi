@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">semantically_acyclic_cycle</data>
+        <node expr="2" id="par_A_C" kind="param"/>
+        <node expr="3" id="par_B_D" kind="param"/>
+        <node id="S_A" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="S_A">
+                <param direction="IN" isConfig="false" name="input" type="char "/>
+                <param direction="OUT" isConfig="false" name="output" type="char "/>
+            </loop>
+            <port kind="cfg_input" name="par_A_C"/>
+            <port annotation="NONE" expr="par_A_C" kind="input" name="input"/>
+            <port annotation="NONE" expr="par_A_C" kind="output" name="output"/>
+        </node>
+        <node id="S_B" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="S_B">
+                <param direction="IN" isConfig="false" name="input" type="char "/>
+                <param direction="OUT" isConfig="false" name="output" type="char "/>
+            </loop>
+            <port kind="cfg_input" name="par_B_D"/>
+            <port annotation="NONE" expr="par_B_D" kind="input" name="input"/>
+            <port annotation="NONE" expr="par_B_D" kind="output" name="output"/>
+        </node>
+        <node id="S_C" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="S_C">
+                <param direction="IN" isConfig="false" name="input" type="char "/>
+                <param direction="OUT" isConfig="false" name="output" type="char "/>
+            </loop>
+            <port kind="cfg_input" name="par_A_C"/>
+            <port annotation="NONE" expr="par_A_C" kind="input" name="input"/>
+            <port annotation="NONE" expr="par_A_C" kind="output" name="output"/>
+        </node>
+        <node id="S_D" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="S_D">
+                <param direction="IN" isConfig="false" name="input" type="char "/>
+                <param direction="OUT" isConfig="false" name="output" type="char "/>
+            </loop>
+            <port kind="cfg_input" name="par_B_D"/>
+            <port annotation="NONE" expr="par_B_D" kind="input" name="input"/>
+            <port annotation="NONE" expr="par_B_D" kind="output" name="output"/>
+        </node>
+        <edge kind="fifo" source="S_A" sourceport="output" target="S_B"
+            targetport="input" type="char"/>
+        <edge expr="6" kind="fifo" source="S_B" sourceport="output"
+            target="S_C" targetport="input" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge expr="4" kind="fifo" source="S_C" sourceport="output"
+            target="S_D" targetport="input" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge kind="fifo" source="S_D" sourceport="output" target="S_A"
+            targetport="input" type="char"/>
+        <edge kind="dependency" source="par_A_C" target="S_A" targetport="par_A_C"/>
+        <edge kind="dependency" source="par_A_C" target="S_C" targetport="par_A_C"/>
+        <edge kind="dependency" source="par_B_D" target="S_B" targetport="par_B_D"/>
+        <edge kind="dependency" source="par_B_D" target="S_D" targetport="par_B_D"/>
+    </graph>
+</graphml>

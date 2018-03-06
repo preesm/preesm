@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -35,7 +35,7 @@
 package org.ietr.preesm.ui.pimm.popup.actions;
 
 import java.io.IOException;
-
+import java.util.Iterator;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -92,17 +92,29 @@ import org.ietr.preesm.ui.pimm.layout.AutoLayoutFeature;
  */
 public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
 
+  private static final IWorkbench     WORKBENCH      = PreesmUIPlugin.getDefault().getWorkbench();
+  private static final Shell          SHELL          = WORKBENCH.getModalDialogShellProvider().getShell();
   private static final IWorkspace     WORKSPACE      = ResourcesPlugin.getWorkspace();
   private static final IWorkspaceRoot WORKSPACE_ROOT = PiMM2DiagramGeneratorPopup.WORKSPACE.getRoot();
 
   @Override
   public Object execute(final ExecutionEvent event) throws ExecutionException {
 
-    final IWorkbench workbench = PreesmUIPlugin.getDefault().getWorkbench();
-    final Shell shell = workbench.getModalDialogShellProvider().getShell();
-    final IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
+    final IWorkbenchPage page = WORKBENCH.getActiveWorkbenchWindow().getActivePage();
     final TreeSelection selection = (TreeSelection) page.getSelection();
-    final IFile file = (IFile) selection.getFirstElement();
+
+    final Iterator<?> iterator = selection.iterator();
+    while (iterator.hasNext()) {
+      Object next = iterator.next();
+      if (next instanceof IFile) {
+        final IFile file = (IFile) next;
+        generateDiagramFile(file);
+      }
+    }
+    return null;
+  }
+
+  private void generateDiagramFile(final IFile file) throws ExecutionException {
     try {
       final IPath fullPath = file.getFullPath();
       final IPath diagramFilePath = fullPath.removeFileExtension().addFileExtension("diagram");
@@ -111,7 +123,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
 
       int userDecision = SWT.OK;
       if (diagramAlreadyExists) {
-        userDecision = askUserConfirmation(shell, diagramFilePath);
+        userDecision = askUserConfirmation(SHELL, diagramFilePath);
 
       }
       if (!diagramAlreadyExists || (userDecision == SWT.OK)) {
@@ -131,12 +143,10 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
       final String message = "Could not generate diagram from PiMM model file";
       throw new ExecutionException(message, cause);
     }
-
-    return null;
   }
 
   private void closeEditorIfOpen(final IPath diagramFilePath) {
-    final IWorkbench workbench = PreesmUIPlugin.getDefault().getWorkbench();
+    final IWorkbench workbench = WORKBENCH;
     final IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
     final IEditorPart activeEditor = page.getActiveEditor();
     if (activeEditor instanceof PiMMDiagramEditor) {
@@ -218,7 +228,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
   private void openAndPopulateDiagram(final IFile diagramFile) throws PartInitException {
 
     // open editor
-    final IWorkbench workbench = PreesmUIPlugin.getDefault().getWorkbench();
+    final IWorkbench workbench = WORKBENCH;
     final IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
     final IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(diagramFile.getName());
 

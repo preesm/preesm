@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/fi.abo.preesm.data_par_eg/Algo/nestedStrongGraph.pi"/>
+        <architecture url="/fi.abo.preesm.data_par_eg/Archi/1CoreX86.slam"/>
+        <codegenDirectory url=""/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="nestedStrongGraph/Z"/>
+            <task name="nestedStrongGraph/A"/>
+            <task name="nestedStrongGraph/B"/>
+            <task name="nestedStrongGraph/C"/>
+            <task name="nestedStrongGraph/D"/>
+        </constraintGroup>
+    </constraints>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl="">
+        <timing opname="x86" time="10000" vertexname="nestedStrongGraph/Z"/>
+        <timing opname="x86" time="10000" vertexname="nestedStrongGraph/A"/>
+        <timing opname="x86" time="10000" vertexname="nestedStrongGraph/B"/>
+        <timing opname="x86" time="10000" vertexname="nestedStrongGraph/C"/>
+        <timing opname="x86" time="10000" vertexname="nestedStrongGraph/D"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="uint" size="1"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+        <numberOfTopExecutions>1</numberOfTopExecutions>
+    </simuParams>
+    <variables excelUrl=""/>
+    <parameterValues/>
+</scenario>

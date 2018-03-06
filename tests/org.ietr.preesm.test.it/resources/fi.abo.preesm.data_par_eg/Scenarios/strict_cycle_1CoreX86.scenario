@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/fi.abo.preesm.data_par_eg/Algo/strict_cycle.pi"/>
+        <architecture url="/fi.abo.preesm.data_par_eg/Archi/1CoreX86.slam"/>
+        <codegenDirectory url=""/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="strict_cycle/S_A0"/>
+            <task name="strict_cycle/S_B0"/>
+            <task name="strict_cycle/S_C0"/>
+            <task name="strict_cycle/S_D0"/>
+            <task name="strict_cycle/S_E"/>
+            <task name="strict_cycle/S_B1"/>
+            <task name="strict_cycle/S_A1"/>
+            <task name="strict_cycle/S_F"/>
+            <task name="strict_cycle/S_C1"/>
+            <task name="strict_cycle/S_D1"/>
+        </constraintGroup>
+    </constraints>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl="">
+        <timing opname="x86" time="10000" vertexname="strict_cycle/S_A0"/>
+        <timing opname="x86" time="10000" vertexname="strict_cycle/S_B0"/>
+        <timing opname="x86" time="10000" vertexname="strict_cycle/S_C0"/>
+        <timing opname="x86" time="10000" vertexname="strict_cycle/S_D0"/>
+        <timing opname="x86" time="10000" vertexname="strict_cycle/S_E"/>
+        <timing opname="x86" time="10000" vertexname="strict_cycle/S_B1"/>
+        <timing opname="x86" time="10000" vertexname="strict_cycle/S_A1"/>
+        <timing opname="x86" time="10000" vertexname="strict_cycle/S_F"/>
+        <timing opname="x86" time="10000" vertexname="strict_cycle/S_C1"/>
+        <timing opname="x86" time="10000" vertexname="strict_cycle/S_D1"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="uint" size="1"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+        <numberOfTopExecutions>1</numberOfTopExecutions>
+    </simuParams>
+    <variables excelUrl=""/>
+    <parameterValues/>
+</scenario>

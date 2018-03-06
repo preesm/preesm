@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -110,8 +111,8 @@ class InstrumentedCPrinter extends CPrinter {
 		// Create the Buffers
 		dumpTimedBuffer = CodegenFactory::eINSTANCE.createBuffer
 		dumpTimedBuffer.name = "dumpedTimes"
-		dumpTimedBuffer.type = "long"
-		dumpTimedBuffer.typeSize = 4 // size of a long
+		dumpTimedBuffer.type = "uint64_t"
+		dumpTimedBuffer.typeSize = 8 // size of a long
 
 		nbExec = CodegenFactory::eINSTANCE.createBuffer
 		nbExec.name = "nbExec"

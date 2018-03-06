@@ -116,7 +116,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
 
           outputs.put("SDF", resultGraph);
         } else {
-          final String message = "Could not schedule the Graph because its model is not valid.";
+          final String message = "Could not compute a schedule, graph can't be flattened";
           throw (new WorkflowException(message));
         }
       } catch (final SDF4JException e) {

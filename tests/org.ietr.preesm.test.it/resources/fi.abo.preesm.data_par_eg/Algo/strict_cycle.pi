@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">strict_cycle</data>
+        <node expr="3" id="threes" kind="param"/>
+        <node expr="2" id="twos" kind="param"/>
+        <node id="S_A0" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="S_A">
+                <param direction="IN" isConfig="false" name="input" type="char "/>
+                <param direction="OUT" isConfig="false" name="output" type="char "/>
+            </loop>
+            <init name="initS_A">
+                <param direction="IN" isConfig="true" name="twos" type="int"/>
+            </init>
+            <port kind="cfg_input" name="twos"/>
+            <port annotation="NONE" expr="twos" kind="input" name="input"/>
+            <port annotation="NONE" expr="twos" kind="output" name="output"/>
+        </node>
+        <node id="S_B0" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="S_B">
+                <param direction="IN" isConfig="false" name="input" type="char "/>
+                <param direction="OUT" isConfig="false" name="output" type="char "/>
+            </loop>
+            <port kind="cfg_input" name="threes"/>
+            <port annotation="NONE" expr="threes" kind="input" name="input"/>
+            <port annotation="NONE" expr="threes" kind="output" name="output"/>
+        </node>
+        <node id="S_C0" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="S_C">
+                <param direction="IN" isConfig="false" name="input" type="char "/>
+                <param direction="OUT" isConfig="false" name="output" type="char "/>
+            </loop>
+            <port kind="cfg_input" name="twos"/>
+            <port annotation="NONE" expr="twos" kind="input" name="input"/>
+            <port annotation="NONE" expr="twos" kind="output" name="output"/>
+            <port annotation="NONE" expr="twos" kind="output" name="outputE"/>
+        </node>
+        <node id="S_D0" kind="actor">
+            <data key="graph_desc">Code/include/dummy.h</data>
+            <loop name="S_D">
+                <param direction="IN" isConfig="false" name="input" type="char "/>
+                <param direction="OUT" isConfig="false" name="output" type="char "/>
+            </loop>
+            <port kind="cfg_input" name="threes"/>
+            <port annotation="NONE" expr="threes" kind="input" name="input"/>
+            <port annotation="NONE" expr="threes" kind="output" name="output"/>
+        </node>
+        <node id="S_E" kind="actor">
+            <port kind="cfg_input" name="twos"/>
+            <port annotation="NONE" expr="twos" kind="input" name="input"/>
+            <port annotation="NONE" expr="twos" kind="output" name="output"/>
+        </node>
+        <node id="S_B1" kind="actor">
+            <port kind="cfg_input" name="threes"/>
+            <port annotation="NONE" expr="threes" kind="input" name="input"/>
+            <port annotation="NONE" expr="threes" kind="output" name="output"/>
+        </node>
+        <node id="S_A1" kind="actor">
+            <port kind="cfg_input" name="twos"/>
+            <port annotation="NONE" expr="twos" kind="input" name="input"/>
+            <port annotation="NONE" expr="twos" kind="output" name="output"/>
+        </node>
+        <node id="S_F" kind="actor">
+            <port kind="cfg_input" name="threes"/>
+            <port annotation="NONE" expr="threes" kind="input" name="input"/>
+            <port annotation="NONE" expr="threes" kind="output" name="outputi"/>
+        </node>
+        <node id="S_C1" kind="actor">
+            <port kind="cfg_input" name="twos"/>
+            <port annotation="NONE" expr="twos" kind="input" name="input"/>
+            <port annotation="NONE" expr="twos" kind="output" name="output"/>
+        </node>
+        <node id="S_D1" kind="actor">
+            <port kind="cfg_input" name="threes"/>
+            <port annotation="NONE" expr="threes" kind="input" name="inputF"/>
+            <port annotation="NONE" expr="threes" kind="input" name="input"/>
+            <port annotation="NONE" expr="threes" kind="output" name="output"/>
+        </node>
+        <edge expr="2" kind="fifo" source="S_A0" sourceport="output"
+            target="S_B0" targetport="input" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge expr="3" kind="fifo" source="S_B0" sourceport="output"
+            target="S_C0" targetport="input" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge expr="1" kind="fifo" source="S_C0" sourceport="output"
+            target="S_D0" targetport="input" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge expr="3" kind="fifo" source="S_D0" sourceport="output"
+            target="S_A0" targetport="input" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge kind="fifo" source="S_C0" sourceport="outputE"
+            target="S_E" targetport="input" type="char"/>
+        <edge kind="fifo" source="S_E" sourceport="output" target="S_F"
+            targetport="input" type="char"/>
+        <edge expr="1" kind="fifo" source="S_F" sourceport="outputi"
+            target="S_D1" targetport="inputF" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge expr="2" kind="fifo" source="S_A1" sourceport="output"
+            target="S_B1" targetport="input" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge expr="3" kind="fifo" source="S_B1" sourceport="output"
+            target="S_C1" targetport="input" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge expr="1" kind="fifo" source="S_C1" sourceport="output"
+            target="S_D1" targetport="input" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge expr="3" kind="fifo" source="S_D1" sourceport="output"
+            target="S_A1" targetport="input" type="char">
+            <data key="delay"/>
+        </edge>
+        <edge kind="dependency" source="threes" target="S_B0" targetport="threes"/>
+        <edge kind="dependency" source="threes" target="S_D0" targetport="threes"/>
+        <edge kind="dependency" source="twos" target="S_A0" targetport="twos"/>
+        <edge kind="dependency" source="twos" target="S_C0" targetport="twos"/>
+        <edge kind="dependency" source="twos" target="S_A1" targetport="twos"/>
+        <edge kind="dependency" source="twos" target="S_C1" targetport="twos"/>
+        <edge kind="dependency" source="threes" target="S_B1" targetport="threes"/>
+        <edge kind="dependency" source="threes" target="S_D1" targetport="threes"/>
+        <edge kind="dependency" source="twos" target="S_E" targetport="twos"/>
+        <edge kind="dependency" source="threes" target="S_F" targetport="threes"/>
+    </graph>
+</graphml>

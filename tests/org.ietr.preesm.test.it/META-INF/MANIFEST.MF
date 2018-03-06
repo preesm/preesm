@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm Integration Tests
 Bundle-SymbolicName: org.ietr.preesm.test.it
-Bundle-Version: 2.8.0
+Bundle-Version: 2.9.0
 Bundle-Vendor: IETR/INSA Rennes
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit;bundle-version="4.12.0",
@@ -21,4 +21,5 @@ Require-Bundle: org.junit;bundle-version="4.12.0",
  org.ietr.preesm.memory,
  org.ietr.preesm.pimm.algorithm,
  org.ietr.preesm.ui,
- org.ietr.preesm.utils
+ org.ietr.preesm.utils,
+ fi.abo.preesm.dataparallel

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/fi.abo.preesm.data_par_eg/Algo/costStrongComponent.pi"/>
+        <architecture url="/fi.abo.preesm.data_par_eg/Archi/1CoreX86.slam"/>
+        <codegenDirectory url=""/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="costStrongComponent/AggregateCost"/>
+            <task name="costStrongComponent/disparitySelect"/>
+            <task name="costStrongComponent/CostConstruction"/>
+            <task name="costStrongComponent/In"/>
+            <task name="costStrongComponent/Out"/>
+            <task name="costStrongComponent/Broadcast5"/>
+        </constraintGroup>
+    </constraints>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl="">
+        <timing opname="x86" time="10000" vertexname="costStrongComponent/AggregateCost"/>
+        <timing opname="x86" time="10000" vertexname="costStrongComponent/disparitySelect"/>
+        <timing opname="x86" time="10000" vertexname="costStrongComponent/CostConstruction"/>
+        <timing opname="x86" time="10000" vertexname="costStrongComponent/In"/>
+        <timing opname="x86" time="10000" vertexname="costStrongComponent/Out"/>
+        <timing opname="x86" time="10000" vertexname="costStrongComponent/Broadcast5"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="uint" size="1"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+        <numberOfTopExecutions>1</numberOfTopExecutions>
+    </simuParams>
+    <variables excelUrl=""/>
+    <parameterValues/>
+</scenario>

@@ -2,7 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
  * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -118,6 +118,21 @@ public class JEPCustomFunctionTest {
   @Test
   public void jepMaxTest() {
     testEvaluation("max(10, max(1,-3))", 10);
+  }
+
+  @Test
+  public void jepGeoSumTest1() {
+    testEvaluation("1000*geo_sum(3,1/2,4)", 5625);
+  }
+
+  @Test
+  public void jepGeoSumTest2() {
+    testEvaluation("geo_sum(3,2,4)", 45);
+  }
+
+  @Test
+  public void jepGeoSumTest3() {
+    testEvaluation("geo_sum(512000,0.25,7)", 682625);
   }
 
 }
