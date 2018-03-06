@@ -169,6 +169,9 @@ class CPrinter extends DefaultPrinter {
 
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
 	void *computationThread_Core«(callBlock.eContainer as CoreBlock).coreID»(void *arg){
+		if (arg != NULL) {
+			printf("Warning: expecting NULL arguments\n");
+		}
 		«IF !callBlock.codeElts.empty»// Initialisation(s)«"\n\n"»«ENDIF»
 	'''
 
@@ -189,6 +192,7 @@ class CPrinter extends DefaultPrinter {
 
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
 		}
+		return NULL;
 	}
 
 	«IF block2.codeElts.empty»
