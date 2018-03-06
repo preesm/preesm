@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 2.9.0
+*2018.03.06*
 
 ### New Feature
 * Add geometric sum function in expressions;
