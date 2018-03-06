@@ -9,12 +9,13 @@ PREESM Changelog
 * Front-end SDF graph analysis plugin that checks if the given SDF graph can be executed in data-parallel fashion i.e. for each actor of the graph, run all its instances in parallel;
 
 ### Changes
-* update mailmap file
-* disable RCPTT fetch when loading projects in Eclipse
-* updated code generation of instrumentation: now time buffer are uint64_t instead of long.
+* Update mailmap file;
+* Disable RCPTT fetch when loading projects in Eclipse;
 * Add custom license/copyright headers for fi.abo* plugins;
-* Update codegen C printer to set thread to core affinity;
 * Allow diagram generation for multiple pi files at once;
+* Updated code generation of instrumentation: now time buffer are uint64_t instead of long;
+* Update codegen C printer to set thread to core affinity;
+* Update codegen C printer: remove GCC warnings in generated CoreX.c code;
 
 ### Bug fix
 
