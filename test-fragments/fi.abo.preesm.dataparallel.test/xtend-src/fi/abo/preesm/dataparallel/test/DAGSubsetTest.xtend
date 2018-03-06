@@ -36,22 +36,21 @@
  */
 package fi.abo.preesm.dataparallel.test
 
-import java.util.Collection
 import fi.abo.preesm.dataparallel.DAGSubset
 import fi.abo.preesm.dataparallel.SDF2DAG
+import fi.abo.preesm.dataparallel.iterator.SubsetTopologicalIterator
+import fi.abo.preesm.dataparallel.operations.RootExitOperations
+import fi.abo.preesm.dataparallel.test.util.Util
+import java.util.Collection
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import org.jgrapht.alg.CycleDetector
+import org.jgrapht.alg.KosarajuStrongConnectivityInspector
+import org.jgrapht.graph.AsSubgraph
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import fi.abo.preesm.dataparallel.iterator.SubsetTopologicalIterator
-import fi.abo.preesm.dataparallel.operations.RootExitOperations
-import org.jgrapht.alg.CycleDetector
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import fi.abo.preesm.dataparallel.test.util.Util
-import org.jgrapht.alg.KosarajuStrongConnectivityInspector
-import org.jgrapht.graph.AsSubgraph
 
 /**
  * Property based test for {@link DAGSubset} instance
@@ -103,14 +102,13 @@ class DAGSubsetTest {
 					
 			// Collect strongly connected component that has loops in it
 			// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
-			strongCompDetector.stronglyConnectedComponents.forEach[ subgraph |
-				val cycleDetector = new CycleDetector(subgraph as 
-					AsSubgraph<SDFAbstractVertex, SDFEdge>) 
+			strongCompDetector.stronglyConnectedSets.forEach[ subgraphSet |
+				val subgraph = new AsSubgraph(sdf.clone, subgraphSet)
+				val cycleDetector = new CycleDetector(subgraph) 
 				if(cycleDetector.detectCycles) {
 					// ASSUMPTION: Strongly connected component of a directed graph contains atleast
 					// one loop
-					val dagGen = new SDF2DAG(subgraph as
-						AsSubgraph<SDFAbstractVertex, SDFEdge>)
+					val dagGen = new SDF2DAG(subgraph)
 					
 					val rootOp = new RootExitOperations
 					dagGen.accept(rootOp)
@@ -145,7 +143,7 @@ class DAGSubsetTest {
 				Assert.assertTrue(subsetActor2Instances.keySet.contains(actor))
 				Assert.assertEquals(filteredInstances, subsetActor2Instances.get(actor))
 			}
-		]	
+		]		
 	}
 	
 	/**
@@ -156,7 +154,7 @@ class DAGSubsetTest {
 	 */
 	@Test
 	public def void instancesHaveRightActors() {
-		val subsetInstance2Actor = new DAGSubset(dagGen, rootNode).instance2Actor
+		val subsetInstance2Actor = (new DAGSubset(dagGen, rootNode)).instance2Actor
 		val seenNodes = new SubsetTopologicalIterator(dagGen, rootNode).instanceSources.keySet
 		dagGen.instance2Actor.forEach[instance, actor |
 			// Consider only those instances that are in the subset (found by iterator)

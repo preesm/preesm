@@ -49,31 +49,31 @@ import fi.abo.preesm.dataparallel.PureDAGConstructor
  * A topological order iterator specialised to traverse a SDFGraph
  * In addition, also provides a lookup table of instances and its
  * sources.
- * 
+ *
  * @author Sudeep Kanur
  */
 class DAGTopologicalIterator extends TopologicalOrderIterator<SDFAbstractVertex, SDFEdge> implements DAGTopologicalIteratorInterface {
-	
+
 	protected val Map<SDFAbstractVertex, List<SDFAbstractVertex>> instanceSources
-	
+
 	/**
 	 * Constructor used for plugin
-	 * 
+	 *
 	 * @param dagGen A {@link PureDAGConstructor} instance
 	 * @param logger A Workflow logger instance
 	 */
 	new(PureDAGConstructor dagGen, Logger logger) {
 		super(dagGen.outputGraph)
-		
-		instanceSources = newHashMap
+
+		instanceSources = newLinkedHashMap
 		val inputGraph = dagGen.outputGraph
-				
+
 		// Iterate to get the nodes seen in the DAG
 		new TopologicalOrderIterator<SDFAbstractVertex, SDFEdge>(inputGraph)
-		.forEach[seenNode | 
+		.forEach[seenNode |
 			instanceSources.put(seenNode, newArrayList)
 		]
-		
+
 		// Now find the predecessor/source of relevant instances
 		instanceSources.forEach[node, sources |
 			sources.addAll(inputGraph.incomingEdgesOf(node)
@@ -82,23 +82,23 @@ class DAGTopologicalIterator extends TopologicalOrderIterator<SDFAbstractVertex,
 				.toList)
 		]
 	}
-	
+
 	/**
 	 * Constructor for testing purposes
-	 * 
+	 *
 	 * @param A {@link PureDAGConstructor} instance
 	 */
 	new(PureDAGConstructor dagGen) {
 		this(dagGen, null)
 	}
-	
+
 	/**
 	 * Get a look up table of instances and its associated sources
-	 * 
+	 *
 	 * @return Unmodifiable map of instances and a list of its sources
 	 */
 	override getInstanceSources() {
 		return Collections.unmodifiableMap(instanceSources)
 	}
-	
+
 }

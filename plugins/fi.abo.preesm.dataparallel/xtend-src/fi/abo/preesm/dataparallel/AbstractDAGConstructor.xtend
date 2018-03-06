@@ -94,12 +94,12 @@ public abstract class AbstractDAGConstructor implements DAGConstructor {
 
 	protected new(Logger logger){
 		this.logger = logger
-		this.actor2Instances = newHashMap
-		this.instance2Actor = newHashMap
-		this.explodeImplodeOrigInstances = newHashMap
+		this.actor2Instances = newLinkedHashMap
+		this.instance2Actor = newLinkedHashMap
+		this.explodeImplodeOrigInstances = newLinkedHashMap
 		this.sourceActors = newArrayList
 		this.sinkActors = newArrayList
-		this.actorPredecessor = newHashMap
+		this.actorPredecessor = newLinkedHashMap
 	}
 
 	protected new() {

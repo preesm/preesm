@@ -88,8 +88,8 @@ class SubsetTopologicalIteratorTest {
 	 */
 	@Test
 	public def void checkSuccBelongsNRootNodes() {
-		val occurence = newHashMap // The lookup table
-		val instanceTargets = newHashMap
+		val occurence = newLinkedHashMap // The lookup table
+		val instanceTargets = newLinkedHashMap
 		// Get the targets of each node
 		dagGen.outputGraph.vertexSet.forEach[node | 
 			instanceTargets.put(node, dagGen.outputGraph.outgoingEdgesOf(node).map[edge | edge.target].toList)
@@ -138,7 +138,7 @@ class SubsetTopologicalIteratorTest {
 		val rootInstances = rootOp.rootInstances
 		
 		rootInstances.forEach[ rootNode |
-			val instanceSources = newHashMap
+			val instanceSources = newLinkedHashMap
 			val sit = new SubsetTopologicalIterator(dagGen, rootNode)
 			sit.forEach[seenNode | instanceSources.put(seenNode, newArrayList())]
 			instanceSources.forEach[seenNode, sources |

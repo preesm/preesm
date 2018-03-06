@@ -124,7 +124,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 		}
 		
 		inputGraph = graph
-		actor2InstancesLocal = newHashMap
+		actor2InstancesLocal = newLinkedHashMap
 		cycleActors = newArrayList
 		
 		if(isSDF) { // Its an SDF graph

@@ -72,8 +72,8 @@ class LevelsOperations implements DAGCommonOperations {
 	val Map<SDFAbstractVertex, Integer> levels
 	
 	new() {
-		levels = newHashMap
-		instanceSources = newHashMap
+		levels = newLinkedHashMap
+		instanceSources = newLinkedHashMap
 	}
 	
 	/**

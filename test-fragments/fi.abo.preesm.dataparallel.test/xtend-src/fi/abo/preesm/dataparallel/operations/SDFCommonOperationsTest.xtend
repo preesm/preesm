@@ -185,8 +185,8 @@ class SDFCommonOperationsTest {
 						// and exit vertices also depends if there are enough delay tokens at the
 						// interface edges.
 						
-						val relevantVertices = newHashSet
-						val relevantEdges = newHashSet
+						val relevantVertices = newLinkedHashSet
+						val relevantEdges = newLinkedHashSet
 							sdfSubgraph.vertexSet.forEach[vertex |
 							if(subgraph.vertexSet.contains(vertex)) {
 								sdfSubgraph.incomingEdgesOf(vertex).forEach[edge |

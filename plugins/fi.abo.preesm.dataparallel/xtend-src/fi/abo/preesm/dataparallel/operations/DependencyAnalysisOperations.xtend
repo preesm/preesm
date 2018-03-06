@@ -62,7 +62,7 @@ class DependencyAnalysisOperations implements DAGCommonOperations {
 	
 	new() {
 		isIndependent = null
-		instanceDependentActors = newHashSet
+		instanceDependentActors = newLinkedHashSet
 	}
 	
 	/**
@@ -150,7 +150,7 @@ class DependencyAnalysisOperations implements DAGCommonOperations {
 	 * @param dagGen A {@link DAGSubset} instance
 	 */
 	override visit(DAGSubset dagGen) {
-		val actorsSeen = newHashSet
+		val actorsSeen = newLinkedHashSet
 		isIndependent = Boolean.TRUE
 		
 		// Get level sets
@@ -159,7 +159,7 @@ class DependencyAnalysisOperations implements DAGCommonOperations {
 		val levelSets = OperationsUtils.getLevelSets(levelOp.levels)
 		
 		levelSets.forEach[levelSet |
-			val Set<SDFAbstractVertex> actorsSeenInLevelSet = newHashSet
+			val Set<SDFAbstractVertex> actorsSeenInLevelSet = newLinkedHashSet
 			levelSet.forEach[ instance |
 				actorsSeenInLevelSet.add(dagGen.instance2Actor.get(instance)) 
 			]
@@ -173,7 +173,7 @@ class DependencyAnalysisOperations implements DAGCommonOperations {
 		]
 		
 		// Filter the instanceDependentActors according to the seen nodes
-		val realNonParallelActors = newHashSet
+		val realNonParallelActors = newLinkedHashSet
 		val forkJoinInstances = dagGen.explodeImplodeOrigInstances.keySet
 		
 		instanceDependentActors.forEach[actor | 

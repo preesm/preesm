@@ -80,7 +80,7 @@ class SubsetTopologicalIterator extends BreadthFirstIterator<SDFAbstractVertex, 
 	new(PureDAGConstructor dagGen, SDFAbstractVertex rootNode, Logger logger) throws NoSuchElementException {
 		super(dagGen.getOutputGraph, rootNode)
 		this.inputGraph = dagGen.getOutputGraph
-		this.instanceSources = newHashMap
+		this.instanceSources = newLinkedHashMap
 		this.instanceEncountered = newArrayList
 		
 		val rootInstances = inputGraph.vertexSet

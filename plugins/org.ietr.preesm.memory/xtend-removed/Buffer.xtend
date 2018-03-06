@@ -333,8 +333,8 @@ class Buffer {
 		this.name = name
 		this.nbTokens = nbTokens
 		this.tokenSize = tokenSize
-		this.matchTable = newHashMap()
-		this.appliedMatches = newHashMap()
+		this.matchTable = newLinkedHashMap()
+		this.appliedMatches = newLinkedHashMap()
 		this.minIndex = 0
 		this.maxIndex = nbTokens * tokenSize
 		this.dagVertex = dagVertex
@@ -848,7 +848,7 @@ class Buffer {
 
 		// Find redundant matches
 		val matches = new ArrayList(match.getRemoteBuffer.getMatchTable.values.flatten.toList)
-		val Set<Integer> redundantMatches = newHashSet
+		val Set<Integer> redundantMatches = newLinkedHashSet
 		var i = 0
 		while (i < matches.size - 1) {
 

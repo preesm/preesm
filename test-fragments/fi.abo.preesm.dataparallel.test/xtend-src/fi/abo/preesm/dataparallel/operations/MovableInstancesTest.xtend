@@ -157,7 +157,7 @@ class MovableInstancesTest {
 						val rearrangedLevels = moveInstanceVisitor.rearrangedLevels
 						
 						val moveableInstances = moveInstanceVisitor.movableInstances
-						val moveableActors = newHashSet
+						val moveableActors = newLinkedHashSet
 						moveableInstances.forEach[instance |
 							moveableActors.add(subgraphDAGGen.instance2Actor.get(instance))
 						]
