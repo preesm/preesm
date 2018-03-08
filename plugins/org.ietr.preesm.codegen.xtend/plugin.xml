@@ -153,9 +153,9 @@
          </printer>
       </printers>
    <printers
-         language="PapifiedC">
+         language="PapifyC">
       <printer
-            class="org.ietr.preesm.codegen.xtend.printer.c.instrumented.PapifiedCPrinter"
+            class="org.ietr.preesm.codegen.xtend.printer.c.instrumented.PapifyCPrinter"
             extension=".c">
          <core_type
                type="x86">
