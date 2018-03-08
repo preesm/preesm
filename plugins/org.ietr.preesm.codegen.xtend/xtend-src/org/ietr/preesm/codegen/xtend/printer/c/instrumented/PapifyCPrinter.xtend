@@ -57,17 +57,17 @@ import org.ietr.dftools.architecture.slam.ComponentInstance
  * @author dmadronal
  */
 
-class PapifiedCPrinter extends CPrinter {
+class PapifyCPrinter extends CPrinter {
 
 	new() {
 		super(true)
 	}
 
 	/**
-	 * Strings with the headers of the PAPI variables
+	 * Strings with the headers of the Papify variables
 	 */
 		String actor_name = "actor_name_";
-		String PAPI_actions = "PAPI_actions_";
+		String Papify_actions = "Papify_actions_";
 	/**
 	 * variables to configure the papification
 	 */			
@@ -78,7 +78,7 @@ class PapifiedCPrinter extends CPrinter {
 		var boolean papifying = false;
 
 	/**
-	 * Add a required library for PAPI utilization
+	 * Add a required library for Papify utilization
 	 *
 	 * @param blocks
 	 * 			List of the Coreblocks printed by the printer
@@ -91,7 +91,7 @@ class PapifiedCPrinter extends CPrinter {
 	'''
 
 	/**
-	 * Configure the PAPI instrumentation of each {@link Block blocks}.<br>
+	 * Configure the Papify instrumentation of each {@link Block blocks}.<br>
 	 * In the current version, the instrumentation could be configured in terms of:<br>
 	 * - Which cores are being monitored.<br>
 	 * - Monitoring only time or time and events.<br>
@@ -132,7 +132,7 @@ class PapifiedCPrinter extends CPrinter {
 			all_event_names = org.ietr.preesm.core.architecture.util.DesignTools.getParameter(pe, "PAPI_AVAIL_EVENTS");
 			timing_active = org.ietr.preesm.core.architecture.util.DesignTools.getParameter(pe, "PAPI_TIMING");
 						
-			// configure the papification
+			// configure Papify
 			if(all_event_names !== null && all_event_names != ""){					
 				event_names = all_event_names.split(",");	
 				code_set_size = event_names.length;
@@ -147,13 +147,13 @@ class PapifiedCPrinter extends CPrinter {
 				for(CodeElt elts : (block as CoreBlock).loopBlock.codeElts){	
 					//For all the FunctionCalls within the main code loop
 					if(elts.eClass.name.equals("FunctionCall")){
-						//Add PAPI action variable
+						//Add Papify action variable
 						block.definitions.add({
 							var const = CodegenFactory.eINSTANCE.createBuffer
-							const.name = PAPI_actions.concat((elts as FunctionCall).actorName)
+							const.name = Papify_actions.concat((elts as FunctionCall).actorName)
 							const.size = 1
-							const.type = "papi_action_s"
-							const.comment = "Papification configuration variable"
+							const.type = "Papify_action_s"
+							const.comment = "Papify configuration variable"
 							const
 						})
 						//Create a constant string with the instance name
@@ -184,13 +184,13 @@ class PapifiedCPrinter extends CPrinter {
 							var const = CodegenFactory.eINSTANCE.createConstantString
 							const.name = "all_event_names"
 							const.value = all_event_names
-							const.comment = "PAPI events"
+							const.comment = "Papify events"
 							const
 						})
 						//Create a function to configure the papification
 						(block as CoreBlock).initBlock.codeElts.add({
 							var func = CodegenFactory.eINSTANCE.createFunctionCall()
-							func.name = "configure_papification"
+							func.name = "configure_papify"
 							func.addParameter(block.definitions.get(block.definitions.length-5), PortDirection.OUTPUT)
 							func.addParameter(block.definitions.get(block.definitions.length-4), PortDirection.INPUT)
 							func.addParameter(block.definitions.get(block.definitions.length-3), PortDirection.INPUT)
@@ -225,7 +225,7 @@ class PapifiedCPrinter extends CPrinter {
 	}
 
 	/**
-	 * Add PAPI instrumentation code in the code generation.<br>
+	 * Add Papify instrumentation code in the code generation.<br>
 	 * In the current version, there are three possiblities for each core instance:<br>
 	 * - Monitoring timing (last parameter of the functionCall is Papified and its type is "int").<br>
 	 * - Monitoring timing and events (last parameter of the functionCall is Papified and its type is "boolean").<br>
@@ -240,20 +240,20 @@ class PapifiedCPrinter extends CPrinter {
 		«IF state == PrinterState::PRINTING_LOOP_BLOCK && functionCall.parameters.get(functionCall.parameters.length-1).name.equals("Papified")»
 			«IF functionCall.parameters.get(functionCall.parameters.length-1).type == "int"»
 				// Monitoring Start for «functionCall.actorName»
-				event_start_PAPI_timing(PAPI_actions_«functionCall.actorName»);
+				event_start_Papify_timing(Papify_actions_«functionCall.actorName»);
 				«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-1) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 				// Monitoring Stop for «functionCall.actorName»
-				event_stop_PAPI_timing(PAPI_actions_«functionCall.actorName»);
-				event_write_file(PAPI_actions_«functionCall.actorName»);
+				event_stop_Papify_timing(Papify_actions_«functionCall.actorName»);
+				event_write_file(Papify_actions_«functionCall.actorName»);
 			«ELSE»
 				// Monitoring Start for «functionCall.actorName»
-				event_start(PAPI_actions_«functionCall.actorName», 0);
-				event_start_PAPI_timing(PAPI_actions_«functionCall.actorName»);
+				event_start(Papify_actions_«functionCall.actorName», 0);
+				event_start_Papify_timing(Papify_actions_«functionCall.actorName»);
 				«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-1) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 				// Monitoring Stop for «functionCall.actorName»
-				event_stop_PAPI_timing(PAPI_actions_«functionCall.actorName»);
-				event_stop(PAPI_actions_«functionCall.actorName», 0);
-				event_write_file(PAPI_actions_«functionCall.actorName»);
+				event_stop_Papify_timing(Papify_actions_«functionCall.actorName»);
+				event_stop(Papify_actions_«functionCall.actorName», 0);
+				event_write_file(Papify_actions_«functionCall.actorName»);
 			«ENDIF»
 		«ELSE»
 			«super.printFunctionCall(functionCall)»
@@ -262,7 +262,7 @@ class PapifiedCPrinter extends CPrinter {
 
 	/**
 	 * Almost the same main as the default CPrinter one.
-	 * The only difference is the program beginning where we add Papi specific initialization (mkdir + event init).
+	 * The only difference is the program beginning where we add Papify specific initialization (mkdir + event init).
 	 */
 	override String printMain(List<Block> printerBlocks) '''
 		/**
@@ -287,7 +287,7 @@ class PapifiedCPrinter extends CPrinter {
 
 		int main(void)
 		{
-		  mkdir("papi-output", 0777);
+		  mkdir("Papify-output", 0777);
 
 		 event_init_multiplex();
 
