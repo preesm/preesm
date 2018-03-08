@@ -81,7 +81,7 @@ import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 
 /**
- * Papification editor within the implementation editor.
+ * Papify editor within the implementation editor.
  *
  * @author dmadronal
  */
@@ -104,7 +104,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
   private Design slamDesign = null;
 
   /**
-   * Instantiates a new papification page.
+   * Instantiates a new papify page.
    *
    * @param scenario
    *          the scenario
@@ -131,15 +131,14 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     super.createFormContent(managedForm);
 
     final ScrolledForm f = managedForm.getForm();
-    f.setText(Messages.getString("Papification.title"));
+    f.setText(Messages.getString("Papify.title"));
     f.getBody().setLayout(new GridLayout());
 
     // Constrints file chooser section
-    createFileSection(managedForm, Messages.getString("Papification.file"), Messages.getString("Papification.fileDescription"),
-        Messages.getString("Papification.fileEdit"), this.scenario.getConstraintGroupManager().getExcelFileURL(),
-        Messages.getString("Papification.fileBrowseTitle"), "xls");
+    createFileSection(managedForm, Messages.getString("Papify.file"), Messages.getString("Papify.fileDescription"), Messages.getString("Papify.fileEdit"),
+        this.scenario.getConstraintGroupManager().getExcelFileURL(), Messages.getString("Papify.fileBrowseTitle"), "xls");
 
-    createPapificationSection(managedForm, Messages.getString("Papification.title"), Messages.getString("Papification.description"));
+    createPapifySection(managedForm, Messages.getString("Papify.title"), Messages.getString("Papify.description"));
 
     managedForm.refresh();
     managedForm.reflow(true);
@@ -212,7 +211,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
   }
 
   /**
-   * Creates the section editing Papification.
+   * Creates the section editing Papify.
    *
    * @param managedForm
    *          the managed form
@@ -221,7 +220,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
    * @param desc
    *          the desc
    */
-  private void createPapificationSection(final IManagedForm managedForm, final String title, final String desc) {
+  private void createPapifySection(final IManagedForm managedForm, final String title, final String desc) {
 
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
@@ -229,7 +228,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     // section.setLayout(new GridLayout());
     // section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
 
-    // this.checkStateListener = new PapificationCheckStateListener(section, this.scenario);
+    // this.checkStateListener = new PapifyCheckStateListener(section, this.scenario);
 
     // Creates the section part containing the tree with SDF vertices
     // new SDFTreeSection(this.scenario, section, managedForm.getToolkit(), Section.DESCRIPTION, this, this.checkStateListener);
@@ -529,7 +528,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     combocps.setVisible(true);
     final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
     combo.setVisibleItemCount(20);
-    combo.setToolTipText(Messages.getString("Papification.coreSelectionTooltip"));
+    combo.setToolTipText(Messages.getString("Papify.coreSelectionTooltip"));
     comboDataInit(combo);
     combo.addFocusListener(new FocusListener() {
 
