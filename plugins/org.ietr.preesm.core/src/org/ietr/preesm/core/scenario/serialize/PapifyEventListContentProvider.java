@@ -42,11 +42,11 @@ import org.eclipse.jface.viewers.Viewer;
 
 // TODO: Auto-generated Javadoc
 /**
- * Provides the events contained in the papification component.
+ * Provides the events contained in the papify component.
  *
  * @author dmadronal
  */
-public class PapificationEventListContentProvider implements IStructuredContentProvider {
+public class PapifyEventListContentProvider implements IStructuredContentProvider {
 
   /*
    * (non-Javadoc)

@@ -75,8 +75,8 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.serialize.PapificationComponentListContentProvider;
-import org.ietr.preesm.core.scenario.serialize.PapificationEventListContentProvider;
+import org.ietr.preesm.core.scenario.serialize.PapifyComponentListContentProvider;
+import org.ietr.preesm.core.scenario.serialize.PapifyEventListContentProvider;
 import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 
@@ -378,7 +378,7 @@ public class PapificationPage extends FormPage implements IPropertyListener {
     table.setHeaderVisible(true);
     table.setLinesVisible(true);
 
-    this.componentTableViewer.setContentProvider(new PapificationComponentListContentProvider());
+    this.componentTableViewer.setContentProvider(new PapifyComponentListContentProvider());
 
     final PapificationComponentLabelProvider labelProvider = new PapificationComponentLabelProvider(this.scenario, this.componentTableViewer, this);
     this.componentTableViewer.setLabelProvider(labelProvider);
@@ -457,7 +457,7 @@ public class PapificationPage extends FormPage implements IPropertyListener {
     table.setHeaderVisible(true);
     table.setLinesVisible(true);
 
-    this.eventTableViewer.setContentProvider(new PapificationEventListContentProvider());
+    this.eventTableViewer.setContentProvider(new PapifyEventListContentProvider());
 
     final PapificationEventLabelProvider labelProvider = new PapificationEventLabelProvider(this.scenario, this.eventTableViewer, this);
     this.eventTableViewer.setLabelProvider(labelProvider);

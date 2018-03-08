@@ -42,11 +42,11 @@ import org.eclipse.jface.viewers.Viewer;
 
 // TODO: Auto-generated Javadoc
 /**
- * Provides the elements contained in the papification editor.
+ * Provides the elements contained in the papify editor.
  *
  * @author dmadronal
  */
-public class PapificationComponentListContentProvider implements IStructuredContentProvider {
+public class PapifyComponentListContentProvider implements IStructuredContentProvider {
 
   /*
    * (non-Javadoc)
