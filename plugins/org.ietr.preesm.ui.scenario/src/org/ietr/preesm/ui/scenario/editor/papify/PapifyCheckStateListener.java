@@ -34,7 +34,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.ui.scenario.editor.papification;
+package org.ietr.preesm.ui.scenario.editor.papify;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -76,7 +76,7 @@ import org.ietr.preesm.ui.scenario.editor.PreesmAlgorithmTreeContentProvider;
  *
  * @author mpelcat
  */
-public class PapificationCheckStateListener implements ISDFCheckStateListener {
+public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
   /** Currently edited scenario. */
   private PreesmScenario scenario = null;
@@ -104,7 +104,7 @@ public class PapificationCheckStateListener implements ISDFCheckStateListener {
    * @param scenario
    *          the scenario
    */
-  public PapificationCheckStateListener(final Section section, final PreesmScenario scenario) {
+  public PapifyCheckStateListener(final Section section, final PreesmScenario scenario) {
     super();
     this.scenario = scenario;
     this.section = section;
@@ -140,7 +140,7 @@ public class PapificationCheckStateListener implements ISDFCheckStateListener {
     final boolean isChecked = event.getChecked();
 
     BusyIndicator.showWhile(this.section.getDisplay(), () -> {
-      if (PapificationCheckStateListener.this.scenario.isIBSDFScenario()) {
+      if (PapifyCheckStateListener.this.scenario.isIBSDFScenario()) {
         if (element instanceof SDFGraph) {
           final SDFGraph graph1 = (SDFGraph) element;
           fireOnCheck(graph1, isChecked);
@@ -155,7 +155,7 @@ public class PapificationCheckStateListener implements ISDFCheckStateListener {
           updateCheck();
 
         }
-      } else if (PapificationCheckStateListener.this.scenario.isPISDFScenario()) {
+      } else if (PapifyCheckStateListener.this.scenario.isPISDFScenario()) {
         if (element instanceof PiGraph) {
           final PiGraph graph2 = (PiGraph) element;
           fireOnCheck(graph2, isChecked);

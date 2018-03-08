@@ -34,7 +34,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.ui.scenario.editor.papification;
+package org.ietr.preesm.ui.scenario.editor.papify;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -85,13 +85,13 @@ import org.ietr.preesm.ui.scenario.editor.Messages;
  *
  * @author dmadronal
  */
-public class PapificationPage extends FormPage implements IPropertyListener {
+public class PapifyPage extends FormPage implements IPropertyListener {
 
   /** Currently edited scenario. */
   private PreesmScenario scenario = null;
 
   /** The check state listener. */
-  private PapificationCheckStateListener checkStateListener = null;
+  private PapifyCheckStateListener checkStateListener = null;
 
   /** The table viewer. */
 
@@ -115,7 +115,7 @@ public class PapificationPage extends FormPage implements IPropertyListener {
    * @param title
    *          the title
    */
-  public PapificationPage(final PreesmScenario scenario, final FormEditor editor, final String id, final String title) {
+  public PapifyPage(final PreesmScenario scenario, final FormEditor editor, final String id, final String title) {
     super(editor, id, title);
     this.scenario = scenario;
   }
@@ -253,7 +253,7 @@ public class PapificationPage extends FormPage implements IPropertyListener {
    */
   @Override
   public void propertyChanged(final Object source, final int propId) {
-    if ((source instanceof PapificationCheckStateListener) && (propId == IEditorPart.PROP_DIRTY)) {
+    if ((source instanceof PapifyCheckStateListener) && (propId == IEditorPart.PROP_DIRTY)) {
       firePropertyChange(IEditorPart.PROP_DIRTY);
     }
 
@@ -380,7 +380,7 @@ public class PapificationPage extends FormPage implements IPropertyListener {
 
     this.componentTableViewer.setContentProvider(new PapifyComponentListContentProvider());
 
-    final PapificationComponentLabelProvider labelProvider = new PapificationComponentLabelProvider(this.scenario, this.componentTableViewer, this);
+    final PapifyComponentLabelProvider labelProvider = new PapifyComponentLabelProvider(this.scenario, this.componentTableViewer, this);
     this.componentTableViewer.setLabelProvider(labelProvider);
     coreCombo.addSelectionListener(labelProvider);
 
@@ -459,7 +459,7 @@ public class PapificationPage extends FormPage implements IPropertyListener {
 
     this.eventTableViewer.setContentProvider(new PapifyEventListContentProvider());
 
-    final PapificationEventLabelProvider labelProvider = new PapificationEventLabelProvider(this.scenario, this.eventTableViewer, this);
+    final PapifyEventLabelProvider labelProvider = new PapifyEventLabelProvider(this.scenario, this.eventTableViewer, this);
     this.eventTableViewer.setLabelProvider(labelProvider);
 
     // Create columns

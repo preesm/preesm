@@ -34,7 +34,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.ui.scenario.editor.papification;
+package org.ietr.preesm.ui.scenario.editor.papify;
 
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -52,7 +52,7 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
  *
  * @author dmadronal
  */
-public class PapificationComponentLabelProvider implements ITableLabelProvider, SelectionListener {
+public class PapifyComponentLabelProvider implements ITableLabelProvider, SelectionListener {
 
   /** The scenario. */
   private PreesmScenario scenario = null;
@@ -79,7 +79,7 @@ public class PapificationComponentLabelProvider implements ITableLabelProvider, 
    * @param propertyListener
    *          the property listener
    */
-  public PapificationComponentLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer, final IPropertyListener propertyListener) {
+  public PapifyComponentLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer, final IPropertyListener propertyListener) {
     super();
     this.scenario = scenario;
     this.tableViewer = tableViewer;

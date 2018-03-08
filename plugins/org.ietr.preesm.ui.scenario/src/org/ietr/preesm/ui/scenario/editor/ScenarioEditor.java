@@ -51,7 +51,7 @@ import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.core.scenario.serialize.ScenarioWriter;
 import org.ietr.preesm.ui.scenario.editor.codegen.CodegenPage;
 import org.ietr.preesm.ui.scenario.editor.constraints.ConstraintsPage;
-import org.ietr.preesm.ui.scenario.editor.papification.PapificationPage;
+import org.ietr.preesm.ui.scenario.editor.papify.PapifyPage;
 import org.ietr.preesm.ui.scenario.editor.parametervalues.PiParametersPage;
 import org.ietr.preesm.ui.scenario.editor.relativeconstraints.RelativeConstraintsPage;
 import org.ietr.preesm.ui.scenario.editor.simulation.SimulationPage;
@@ -140,8 +140,8 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
     final PiParametersPage paramPage = new PiParametersPage(this.scenario, this, "Parameters", "Parameters");
     paramPage.addPropertyListener(this);
 
-    final IFormPage papificactionPage = new PapificationPage(this.scenario, this, "Papification", "Papification");
-    papificactionPage.addPropertyListener(this);
+    final IFormPage papifyPage = new PapifyPage(this.scenario, this, "Papify", "Papify");
+    papifyPage.addPropertyListener(this);
 
     try {
       addPage(overviewPage);
@@ -152,7 +152,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
       addPage(codegenPage);
       addPage(variablesPage);
       addPage(paramPage);
-      addPage(papificactionPage);
+      addPage(papifyPage);
     } catch (final PartInitException e) {
       ErrorWithExceptionDialog.errorDialogWithStackTrace("Could not open scenario", e);
       close(false);
