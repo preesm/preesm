@@ -67,7 +67,7 @@ class PapifyCPrinter extends CPrinter {
 	 * Strings with the headers of the Papify variables
 	 */
 		String actor_name = "actor_name_";
-		String Papify_actions = "Papify_actions_";
+		String papify_actions = "papify_actions_";
 	/**
 	 * variables to configure the papification
 	 */			
@@ -150,10 +150,10 @@ class PapifyCPrinter extends CPrinter {
 						//Add Papify action variable
 						block.definitions.add({
 							var const = CodegenFactory.eINSTANCE.createBuffer
-							const.name = Papify_actions.concat((elts as FunctionCall).actorName)
+							const.name = papify_actions.concat((elts as FunctionCall).actorName)
 							const.size = 1
-							const.type = "Papify_action_s"
-							const.comment = "Papify configuration variable"
+							const.type = "papify_action_s"
+							const.comment = "papify configuration variable"
 							const
 						})
 						//Create a constant string with the instance name
@@ -240,20 +240,20 @@ class PapifyCPrinter extends CPrinter {
 		«IF state == PrinterState::PRINTING_LOOP_BLOCK && functionCall.parameters.get(functionCall.parameters.length-1).name.equals("Papified")»
 			«IF functionCall.parameters.get(functionCall.parameters.length-1).type == "int"»
 				// Monitoring Start for «functionCall.actorName»
-				event_start_Papify_timing(Papify_actions_«functionCall.actorName»);
+				event_start_papify_timing(papify_actions_«functionCall.actorName»);
 				«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-1) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 				// Monitoring Stop for «functionCall.actorName»
-				event_stop_Papify_timing(Papify_actions_«functionCall.actorName»);
-				event_write_file(Papify_actions_«functionCall.actorName»);
+				event_stop_papify_timing(papify_actions_«functionCall.actorName»);
+				event_write_file(papify_actions_«functionCall.actorName»);
 			«ELSE»
 				// Monitoring Start for «functionCall.actorName»
-				event_start(Papify_actions_«functionCall.actorName», 0);
-				event_start_Papify_timing(Papify_actions_«functionCall.actorName»);
+				event_start(papify_actions_«functionCall.actorName», 0);
+				event_start_papify_timing(papify_actions_«functionCall.actorName»);
 				«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-1) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 				// Monitoring Stop for «functionCall.actorName»
-				event_stop_Papify_timing(Papify_actions_«functionCall.actorName»);
-				event_stop(Papify_actions_«functionCall.actorName», 0);
-				event_write_file(Papify_actions_«functionCall.actorName»);
+				event_stop_papify_timing(papify_actions_«functionCall.actorName»);
+				event_stop(papify_actions_«functionCall.actorName», 0);
+				event_write_file(papify_actions_«functionCall.actorName»);
 			«ENDIF»
 		«ELSE»
 			«super.printFunctionCall(functionCall)»
@@ -287,7 +287,7 @@ class PapifyCPrinter extends CPrinter {
 
 		int main(void)
 		{
-		  mkdir("Papify-output", 0777);
+		  mkdir("papify-output", 0777);
 
 		 event_init_multiplex();
 
