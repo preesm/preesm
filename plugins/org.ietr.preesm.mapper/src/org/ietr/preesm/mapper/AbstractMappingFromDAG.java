@@ -54,6 +54,7 @@ import org.ietr.preesm.mapper.abc.impl.latency.SpanLengthCalculator;
 import org.ietr.preesm.mapper.abc.route.calcul.RouteCalculator;
 import org.ietr.preesm.mapper.checker.CommunicationOrderChecker;
 import org.ietr.preesm.mapper.model.MapperDAG;
+import org.ietr.preesm.mapper.optimizer.RedundantSynchronizationCleaner;
 import org.ietr.preesm.mapper.params.AbcParameters;
 
 /**
@@ -68,11 +69,14 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
   /** The Constant PARAM_CHECK. */
   public static final String PARAM_CHECK = "Check";
 
+  /** The Constant PARAM_OPTIMIZE. */
+  public static final String PARAM_OPTIMIZE = "Optimize synchronization";
+
   /** The Constant VALUE_CHECK_FALSE. */
-  public static final String VALUE_CHECK_FALSE = "False";
+  public static final String VALUE_FALSE = "False";
 
   /** The Constant VALUE_CHECK_TRUE. */
-  public static final String VALUE_CHECK_TRUE = "True";
+  public static final String VALUE_TRUE = "True";
 
   /*
    * (non-Javadoc)
@@ -122,6 +126,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     parameters.put("edgeSchedType", "Simple");
     parameters.put("balanceLoads", "false");
     parameters.put(AbstractMappingFromDAG.PARAM_CHECK, AbstractMappingFromDAG.VALUE_CHECK_TRUE);
+    parameters.put(AbstractMapping.PARAM_OPTIMIZE, AbstractMapping.VALUE_FALSE);
     return parameters;
   }
 
@@ -149,6 +154,20 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
   protected void checkSchedulingResult(final Map<String, String> parameters, final DirectedAcyclicGraph dag) {
     if (parameters.get(AbstractMappingFromDAG.PARAM_CHECK).equals(AbstractMappingFromDAG.VALUE_CHECK_TRUE)) {
       CommunicationOrderChecker.checkCommunicationOrder(dag);
+    }
+  }
+
+  /**
+   * This method performs optional optimization of the communications generated in the schedule.
+   * 
+   * @param parameters
+   *          {@link Map} of parameters values that were given to the mapper workflow task.
+   * @param dag
+   *          Scheduled {@link DirectedAcyclicGraph}.
+   */
+  protected void removeRedundantSynchronization(final Map<String, String> parameters, final DirectedAcyclicGraph dag) {
+    if (parameters.get(AbstractMapping.PARAM_OPTIMIZE).equals(AbstractMapping.VALUE_TRUE)) {
+      RedundantSynchronizationCleaner.cleanRedundantSynchronization(dag);
     }
   }
 

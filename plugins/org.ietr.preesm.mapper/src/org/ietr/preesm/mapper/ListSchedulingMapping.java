@@ -73,6 +73,7 @@ public class ListSchedulingMapping extends ListSchedulingMappingFromDAG {
     inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
 
     return super.execute(inputs, parameters, monitor, nodeName, workflow);
+    removeRedundantSynchronization(parameters, dag);
   }
 
 }
