@@ -34,7 +34,17 @@
  */
 package org.ietr.preesm.mapper.optimizer;
 
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+import org.ietr.dftools.algorithm.iterators.DAGIterator;
+import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import org.ietr.dftools.architecture.slam.ComponentInstance;
+import org.ietr.preesm.core.types.ImplementationPropertyNames;
 
 /**
  * The purpose of this class is to remove redundant synchronization created during the scheduling of an application. <br>
@@ -59,6 +69,53 @@ public class RedundantSynchronizationCleaner {
    *          The {@link DirectedAcyclicGraph} whose synchronizations are optimized. The DAG is modified during call to the function.
    */
   public static void cleanRedundantSynchronization(DirectedAcyclicGraph dag) {
+    // This Map associates to each component a Deque of all its received communications.
+    // Received communications are stored as a Deque of Set where each set represents a group of consecutive receive communication primitive that is not
+    // "interrupted" by any other computation.
+    Map<ComponentInstance, Deque<Set<DAGVertex>>> receiveGroups = new HashMap<>();
 
+    // Fill the receiveGroups with an empty list for each component
+    final DAGIterator iterDAGVertices = new DAGIterator(dag); // Iterator on DAG vertices
+    // Store if the type of the last DAGVertex scheduled on each core (during the scan of the DAG) is receive or not (to identify groups)
+    final Map<ComponentInstance, Boolean> lastVertexScheduled = new HashMap<>();
+    while (iterDAGVertices.hasNext()) {
+      final DAGVertex currentVertex = iterDAGVertices.next();
+
+      // Get vertex type
+      final String vertexType = currentVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).toString();
+      final boolean isReceive = vertexType.equals("receive");
+
+      // Get component
+      final ComponentInstance component = (ComponentInstance) currentVertex.getPropertyBean().getValue("Operator");
+
+      // If the currentVertex is a receive communication, store it in the receiveGroups
+      if (isReceive) {
+        // Get or create the appropriate receive group
+        Set<DAGVertex> receiveGroup;
+        if (!receiveGroups.containsKey(component) || lastVertexScheduled.get(component)) {
+          // If the component still has no receive group OR if its last scheduled vertex is not a receive.
+          // Create a new group
+          receiveGroup = new LinkedHashSet<DAGVertex>();
+        } else {
+          // The component is associated with a group of receive AND the last scheduled vertex was a receive.
+          receiveGroup = receiveGroups.get(component).getLast();
+        }
+        receiveGroup.add(currentVertex);
+
+        // Store the receiveGroup (if needed) with the appropriate component.
+        if (!receiveGroups.containsKey(component)) {
+          // Create first receive group of the component
+          Deque<Set<DAGVertex>> componentDeque = new LinkedList<>();
+          receiveGroups.put(component, componentDeque);
+          componentDeque.add(receiveGroup);
+        } else if (lastVertexScheduled.get(component)) {
+          // Add the new receive group to the component
+          receiveGroups.get(component).add(receiveGroup);
+        } // Else to both ifs, the vertex was directly added to an existing receive group in previous if statement.
+      }
+
+      // Save last vertex (replace previously saved type)
+      lastVertexScheduled.put(component, isReceive);
+    }
   }
 }
