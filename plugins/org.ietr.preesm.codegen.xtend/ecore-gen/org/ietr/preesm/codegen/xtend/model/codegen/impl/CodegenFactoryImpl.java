@@ -75,14 +75,14 @@ import org.ietr.preesm.memory.script.Range;
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!-- end-user-doc -->
- *
+ * 
  * @generated
  */
 public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
   /**
    * Creates the default factory implementation. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   public static CodegenFactory init() {
@@ -99,7 +99,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
   /**
    * Creates an instance of the factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   public CodegenFactoryImpl() {
@@ -430,7 +430,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -441,7 +441,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -452,7 +452,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override

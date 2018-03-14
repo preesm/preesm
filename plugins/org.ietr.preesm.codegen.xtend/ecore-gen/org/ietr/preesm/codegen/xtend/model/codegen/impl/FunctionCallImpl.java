@@ -57,7 +57,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
 public class FunctionCallImpl extends CallImpl implements FunctionCall {
   /**
    * The default value of the '{@link #getActorName() <em>Actor Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getActorName()
    * @generated
    * @ordered
@@ -65,7 +65,7 @@ public class FunctionCallImpl extends CallImpl implements FunctionCall {
   protected static final String ACTOR_NAME_EDEFAULT = null;
   /**
    * The cached value of the '{@link #getActorName() <em>Actor Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getActorName()
    * @generated
    * @ordered

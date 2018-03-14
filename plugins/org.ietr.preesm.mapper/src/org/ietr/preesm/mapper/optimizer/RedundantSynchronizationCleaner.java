@@ -111,7 +111,7 @@ public class RedundantSynchronizationCleaner {
     Map<ReceiveVertex, SyncIndex> registeredSenderSyncIndex = new HashMap<>();
 
     // Along the scan: register the receive vertex of synchronization to Be Removed
-    Set<ReceiveVertex> toBeRemoved = new LinkedHashSet<>();
+    Set<TransferVertex> toBeRemoved = new LinkedHashSet<>();
 
     final DAGIterator iterDAGVertices = new DAGIterator(dag); // Iterator on DAG vertices
     while (iterDAGVertices.hasNext()) {
@@ -145,7 +145,10 @@ public class RedundantSynchronizationCleaner {
             // Is the receive vertex already covered (either by the currentSyncIndex of the core, OR by another receive of the group.
             if (registeredSenderSyncIndex.get(syncVertex).strictlySmallerOrEqual(coveredIdx)) {
               // If it is covered: it should be removed
-              toBeRemoved.add((ReceiveVertex) syncVertex);
+              toBeRemoved.add((TransferVertex) syncVertex);
+              // Also add the corresponding SendVertex
+              // there is only one incoming edge for each receive vertex. Use it to retrieve the corresponding sender
+              toBeRemoved.add((TransferVertex) syncVertex.incomingEdges().iterator().next().getSource());
             } else {
               // It is not covered, keep it and update the list of covered idx
               coveredIdx.max(registeredSenderSyncIndex.get(syncVertex));
@@ -164,6 +167,12 @@ public class RedundantSynchronizationCleaner {
         lastSyncedPerComp.put(component, coveredIdx);
       }
     }
+
+    // Do the removal
+    // dag.removeAllVertices(toBeRemoved);
+    toBeRemoved.forEach(transferVertex -> {
+      transferVertex.setPropertyValue("Redundant", Boolean.valueOf(true));
+    });
 
     debugList(syncGroups);
   }

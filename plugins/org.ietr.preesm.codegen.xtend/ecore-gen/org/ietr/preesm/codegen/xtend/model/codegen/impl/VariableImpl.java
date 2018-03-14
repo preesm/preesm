@@ -67,7 +67,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
 public abstract class VariableImpl extends CommentableImpl implements Variable {
   /**
    * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getName()
    * @generated
    * @ordered
@@ -76,7 +76,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 
   /**
    * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getName()
    * @generated
    * @ordered
@@ -85,7 +85,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 
   /**
    * The default value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getType()
    * @generated
    * @ordered
@@ -94,7 +94,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 
   /**
    * The cached value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getType()
    * @generated
    * @ordered
@@ -103,7 +103,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 
   /**
    * The cached value of the '{@link #getUsers() <em>Users</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getUsers()
    * @generated
    * @ordered
@@ -251,7 +251,8 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
   @Override
   public EList<Block> getUsers() {
     if (this.users == null) {
-      this.users = new EObjectWithInverseResolvingEList.ManyInverse<>(Block.class, this, CodegenPackage.VARIABLE__USERS, CodegenPackage.BLOCK__DECLARATIONS);
+      this.users = new EObjectWithInverseResolvingEList.ManyInverse<>(Block.class, this, CodegenPackage.VARIABLE__USERS,
+          CodegenPackage.BLOCK__DECLARATIONS);
     }
     return this.users;
   }

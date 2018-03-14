@@ -40,21 +40,21 @@ import org.eclipse.emf.ecore.EFactory;
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> The <b>Factory</b> for the model. It provides a create method for each non-abstract class of the model. <!-- end-user-doc -->
- *
+ * 
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage
  * @generated
  */
 public interface CodegenFactory extends EFactory {
   /**
    * The singleton instance of the factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   CodegenFactory eINSTANCE = org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenFactoryImpl.init();
 
   /**
    * Returns a new object of class '<em>Block</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Block</em>'.
    * @generated
    */
@@ -62,7 +62,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns a new object of class '<em>Buffer</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Buffer</em>'.
    * @generated
    */
@@ -70,7 +70,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns a new object of class '<em>Sub Buffer</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Sub Buffer</em>'.
    * @generated
    */
@@ -78,7 +78,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns a new object of class '<em>Constant</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Constant</em>'.
    * @generated
    */
@@ -86,7 +86,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns a new object of class '<em>Function Call</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Function Call</em>'.
    * @generated
    */
@@ -94,7 +94,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns a new object of class '<em>Communication</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Communication</em>'.
    * @generated
    */
@@ -102,7 +102,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns a new object of class '<em>Core Block</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Core Block</em>'.
    * @generated
    */
@@ -110,7 +110,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns a new object of class '<em>Actor Block</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Actor Block</em>'.
    * @generated
    */
@@ -118,7 +118,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns a new object of class '<em>Loop Block</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Loop Block</em>'.
    * @generated
    */
@@ -126,7 +126,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns a new object of class '<em>Actor Call</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Actor Call</em>'.
    * @generated
    */
@@ -134,7 +134,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns a new object of class '<em>Call Block</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Call Block</em>'.
    * @generated
    */
@@ -142,7 +142,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns a new object of class '<em>Special Call</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Special Call</em>'.
    * @generated
    */
@@ -150,7 +150,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns a new object of class '<em>Fifo Call</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Fifo Call</em>'.
    * @generated
    */
@@ -158,7 +158,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns a new object of class '<em>Communication Node</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Communication Node</em>'.
    * @generated
    */
@@ -166,7 +166,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns a new object of class '<em>Shared Memory Communication</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Shared Memory Communication</em>'.
    * @generated
    */
@@ -174,7 +174,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns a new object of class '<em>Constant String</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Constant String</em>'.
    * @generated
    */
@@ -182,7 +182,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns a new object of class '<em>Null Buffer</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Null Buffer</em>'.
    * @generated
    */
@@ -190,7 +190,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns a new object of class '<em>Finite Loop Block</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Finite Loop Block</em>'.
    * @generated
    */
@@ -198,7 +198,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns a new object of class '<em>Int Var</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Int Var</em>'.
    * @generated
    */
@@ -206,7 +206,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns a new object of class '<em>Buffer Iterator</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Buffer Iterator</em>'.
    * @generated
    */
@@ -222,7 +222,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns the package supported by this factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return the package supported by this factory.
    * @generated
    */

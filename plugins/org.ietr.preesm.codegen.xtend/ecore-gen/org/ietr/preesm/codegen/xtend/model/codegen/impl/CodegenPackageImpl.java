@@ -82,7 +82,7 @@ import org.ietr.preesm.memory.script.Range;
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Package</b>. <!-- end-user-doc -->
- *
+ * 
  * @generated
  */
 public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
@@ -236,21 +236,21 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   private EClass finiteLoopBlockEClass = null;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   private EClass intVarEClass = null;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   private EClass bufferIteratorEClass = null;
@@ -310,7 +310,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
    * <p>
    * Note: the correct way to create the package is via the static factory method {@link #init init()}, which also performs initialization of the package, or
    * returns the registered package, if one already exists. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see org.eclipse.emf.ecore.EPackage.Registry
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#eNS_URI
    * @see #init()
@@ -333,7 +333,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
    * <p>
    * This method is used to initialize {@link CodegenPackage#eINSTANCE} when that field is accessed. Clients should not invoke it directly. Instead, they should
    * simply access that field to obtain the package. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #eNS_URI
    * @see #createPackageContents()
    * @see #initializePackageContents()
@@ -817,6 +817,16 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
   }
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   */
+  @Override
+  public EAttribute getCommunication_Redundant() {
+    return (EAttribute) this.communicationEClass.getEStructuralFeatures().get(11);
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @return the core block
@@ -862,7 +872,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -1147,7 +1157,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -1157,7 +1167,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -1167,7 +1177,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -1177,7 +1187,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -1187,7 +1197,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -1197,7 +1207,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -1207,7 +1217,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -1217,7 +1227,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -1227,7 +1237,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -1332,7 +1342,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
   /**
    * Creates the meta-model objects for the package. This method is guarded to have no affect on any invocation but its first. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   *
+   * 
    * @generated
    */
   public void createPackageContents() {
@@ -1391,6 +1401,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
     createEReference(this.communicationEClass, CodegenPackage.COMMUNICATION__NODES);
     createEReference(this.communicationEClass, CodegenPackage.COMMUNICATION__RECEIVE_RELEASE);
     createEReference(this.communicationEClass, CodegenPackage.COMMUNICATION__SEND_RESERVE);
+    createEAttribute(this.communicationEClass, CodegenPackage.COMMUNICATION__REDUNDANT);
 
     this.coreBlockEClass = createEClass(CodegenPackage.CORE_BLOCK);
     createEReference(this.coreBlockEClass, CodegenPackage.CORE_BLOCK__LOOP_BLOCK);
@@ -1639,6 +1650,9 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
     initEReference(getCommunication_SendReserve(), getCommunication(), null, "sendReserve", null, 0, 1, Communication.class, EPackageImpl.IS_TRANSIENT,
         !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEAttribute(getCommunication_Redundant(), this.ecorePackage.getEBoolean(), "redundant", "false", 0, 1, Communication.class, !EPackageImpl.IS_TRANSIENT,
+        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
+        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
     addEOperation(this.communicationEClass, getCoreBlock(), "getCoreContainer", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 

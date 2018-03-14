@@ -45,7 +45,7 @@ import org.eclipse.emf.common.util.Enumerator;
 /**
  * <!-- begin-user-doc --> A representation of the literals of the enumeration ' <em><b>Port Direction</b></em>', and utility methods for working with them.
  * <!-- end-user-doc -->
- *
+ * 
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getPortDirection()
  * @model
  * @generated
@@ -53,7 +53,7 @@ import org.eclipse.emf.common.util.Enumerator;
 public enum PortDirection implements Enumerator {
   /**
    * The '<em><b>INPUT</b></em>' literal object. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #INPUT_VALUE
    * @generated
    * @ordered
@@ -62,7 +62,7 @@ public enum PortDirection implements Enumerator {
 
   /**
    * The '<em><b>OUTPUT</b></em>' literal object. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #OUTPUT_VALUE
    * @generated
    * @ordered
@@ -71,7 +71,7 @@ public enum PortDirection implements Enumerator {
 
   /**
    * The '<em><b>NONE</b></em>' literal object. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #NONE_VALUE
    * @generated
    * @ordered
@@ -84,7 +84,7 @@ public enum PortDirection implements Enumerator {
    * If the meaning of '<em><b>INPUT</b></em>' literal object isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @see #INPUT
    * @model
    * @generated
@@ -98,7 +98,7 @@ public enum PortDirection implements Enumerator {
    * If the meaning of '<em><b>OUTPUT</b></em>' literal object isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @see #OUTPUT
    * @model
    * @generated
@@ -112,7 +112,7 @@ public enum PortDirection implements Enumerator {
    * If the meaning of '<em><b>NONE</b></em>' literal object isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @see #NONE
    * @model
    * @generated
@@ -122,21 +122,21 @@ public enum PortDirection implements Enumerator {
 
   /**
    * An array of all the '<em><b>Port Direction</b></em>' enumerators. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   private static final PortDirection[] VALUES_ARRAY = new PortDirection[] { INPUT, OUTPUT, NONE, };
 
   /**
    * A public read-only list of all the '<em><b>Port Direction</b></em>' enumerators. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   public static final List<PortDirection> VALUES = Collections.unmodifiableList(Arrays.asList(PortDirection.VALUES_ARRAY));
 
   /**
    * Returns the '<em><b>Port Direction</b></em>' literal with the specified literal value. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @param literal
    *          the literal.
    * @return the matching enumerator or <code>null</code>.
@@ -153,7 +153,7 @@ public enum PortDirection implements Enumerator {
 
   /**
    * Returns the '<em><b>Port Direction</b></em>' literal with the specified name. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @param name
    *          the name.
    * @return the matching enumerator or <code>null</code>.
@@ -170,7 +170,7 @@ public enum PortDirection implements Enumerator {
 
   /**
    * Returns the '<em><b>Port Direction</b></em>' literal with the specified integer value. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @param value
    *          the integer value.
    * @return the matching enumerator or <code>null</code>.
@@ -211,7 +211,7 @@ public enum PortDirection implements Enumerator {
 
   /**
    * Only this class can construct instances. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   private PortDirection(final int value, final String name, final String literal) {
@@ -255,7 +255,7 @@ public enum PortDirection implements Enumerator {
 
   /**
    * Returns the literal value of the enumerator, which is its string representation. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
