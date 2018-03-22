@@ -215,8 +215,20 @@ public class PiIdentifiers {
   // DELAY
   public static final String DELAY = "delay";
 
+  /** The Constant DELAY_NAME. */
+  public static final String DELAY_NAME = PiIdentifiers.ID;
+
   /** The Constant DELAY_EXPRESSION. */
   public static final String DELAY_EXPRESSION = PiIdentifiers.EXPR;
+
+  /** The Constant DELAY_REFINEMENT_INIT */
+  public static final String DELAY_REFINEMENT_INIT = PiIdentifiers.REFINEMENT_INIT;
+
+  /** The Constant DELAY_SETTER */
+  public static final String DELAY_SETTER = PiIdentifiers.SOURCE;
+
+  /** The Constant DELAY_GETTER */
+  public static final String DELAY_GETTER = PiIdentifiers.TARGET;
 
   /** The Constant DEPENDENCY. */
   // DEPENDENCIES

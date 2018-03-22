@@ -213,7 +213,7 @@ class PiGraph extends AbstractActor, Graph {
 		return (actors + childrenGraphs.map[allActors].flatten).toEList.unmodifiableView
 	}
 	op Parameter lookupParameterGivenGraph(String parameterName , String graphName) {
-		return allParameters.findFirst[it.name == parameterName && (it.containingGraph as PiGraph).name == graphName]
+		return allParameters.findFirst[it.name == parameterName && (it.containingPiGraph).name == graphName]
 	}
 
     /*
@@ -229,6 +229,9 @@ class PiGraph extends AbstractActor, Graph {
 	}
 	op Fifo lookupFifo(String fifoId) {
 		return fifos.findFirst[it.id == fifoId]
+	}
+	op Delay lookupDelay(String delayId) {
+		return delays.findFirst[it.name == delayId]
 	}
 }
 
@@ -345,7 +348,7 @@ class ConfigOutputPort extends DataOutputPort , ISetter {
 class Fifo extends Edge {
 	refers DataOutputPort sourcePort opposite outgoingFifo
 	refers DataInputPort targetPort opposite incomingFifo
-	contains Delay delay opposite containingFifo
+	refers Delay delay opposite containingFifo
 	String ^type = "void"
 
 	/*

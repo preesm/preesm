@@ -490,16 +490,53 @@ public class PiParser {
     fifo.setTargetPort(iPort);
 
     // Check if the fifo has a delay
-    if (PiParser.getProperty(edgeElt, PiIdentifiers.DELAY) != null) {
-      // TODO replace with a parse Delay if delay have their own element
-      // in the future
-      final Delay delay = PiMMUserFactory.instance.createDelay();
-      delay.getSizeExpression().setExpressionString(edgeElt.getAttribute(PiIdentifiers.DELAY_EXPRESSION));
+
+    final String fifoDelay = PiParser.getProperty(edgeElt, PiIdentifiers.DELAY);
+    if ((fifoDelay != null) && !fifoDelay.isEmpty()) {
+      // Find the delay of the FIFO
+      final Delay delay = graph.lookupDelay(fifoDelay);
+      if (delay == null) {
+        throw new PiGraphException("Edge delay " + fifoDelay + " does not exist.");
+      }
+      // Adds the delay to the FIFO (and sets the FIFO of the delay at the same time)
       fifo.setDelay(delay);
     }
 
+    // if (PiParser.getProperty(edgeElt, PiIdentifiers.DELAY) != null) {
+    // final Delay delay = PiMMUserFactory.instance.createDelay();
+    // delay.getSizeExpression().setExpressionString(edgeElt.getAttribute(PiIdentifiers.DELAY_EXPRESSION));
+    // fifo.setDelay(delay);
+    // }
+
     // Add the new Fifo to the graph
     graph.addFifo(fifo);
+  }
+
+  /**
+   * Parse a node {@link Element} with kind "delay".
+   *
+   * @param nodeElt
+   *          the {@link Element} to parse
+   * @param graph
+   *          the deserialized {@link PiGraph}
+   * @return the created delay
+   */
+  protected Delay parseDelay(final Element nodeElt, final PiGraph graph) {
+    // Instantiate the new actor
+    final Delay delay = PiMMUserFactory.instance.createDelay();
+
+    // Get the delay properties
+    delay.setName(nodeElt.getAttribute(PiIdentifiers.DELAY_NAME));
+
+    // Set the delay expression
+    delay.getSizeExpression().setExpressionString(nodeElt.getAttribute(PiIdentifiers.DELAY_EXPRESSION));
+
+    // Add the actor to the parsed graph
+    graph.getDelays().add(delay);
+
+    // parseRefinement(nodeElt, actor);
+
+    return delay;
   }
 
   /**
@@ -602,6 +639,9 @@ public class PiParser {
           break;
         case PiIdentifiers.PARAMETER:
           vertex = parseParameter(nodeElt, graph);
+          break;
+        case PiIdentifiers.DELAY:
+          vertex = parseDelay(nodeElt, graph);
           break;
         default:
           throw new PiGraphException("Parsed node " + nodeElt.getNodeName() + " has an unknown kind: " + nodeKind);

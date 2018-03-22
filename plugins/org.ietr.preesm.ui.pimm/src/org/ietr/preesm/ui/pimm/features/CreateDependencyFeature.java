@@ -152,7 +152,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
     // False if target is a config input/output interface
     if (((targetObj instanceof Parameter) && ((Parameter) targetObj).isConfigurationInterface()) || (targetObj instanceof ConfigOutputInterface)) {
       PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetPictogramElement().getGraphicsAlgorithm(), getDiagramBehavior(),
-          "Configuration Interfaces cannot be the getter of a dependency.\nCheck the inerface port instead.");
+          "Configuration Interfaces cannot be the getter of a dependency.\nCheck the interface port instead.");
       return false;
     }
 
