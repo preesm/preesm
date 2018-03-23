@@ -538,7 +538,7 @@ public class PiParser {
       if (setter == null) {
         throw new PiGraphException("Delay setter vertex " + setterName + " does not exist.");
       }
-      delay.setHasSetterActor(true);
+      delay.setSetterActor(setter.getName());
     }
     final String getterName = nodeElt.getAttribute(PiIdentifiers.DELAY_GETTER);
     if (getterName != null && !getterName.isEmpty()) {
@@ -546,7 +546,7 @@ public class PiParser {
       if (getter == null) {
         throw new PiGraphException("Delay getter vertex " + getterName + " does not exist.");
       }
-      delay.setHasGetterActor(true);
+      delay.setGetterActor(getter.getName());
     }
 
     // Add the refinement for the INIT of the delay (if it exists)

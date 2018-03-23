@@ -290,10 +290,7 @@ public class PiWriter {
       writeSpecialActor(vertexElt, abstractActor);
     } else if (abstractActor instanceof InterfaceActor) {
       writeInterfaceVertex(vertexElt, (InterfaceActor) abstractActor);
-    } else if (abstractActor instanceof Delay) {
-      writeDelayVertex(vertexElt, (Delay) abstractActor);
     }
-
     // TODO addProperties() of the vertex
   }
 
@@ -352,9 +349,12 @@ public class PiWriter {
    * @param delay
    *          the {@link Delay} to serialize
    */
-  protected void writeDelayVertex(final Element vertexElt, final Delay delay) {
-    // writeDataElt(vertexElt, "kind", "actor");
-    // Write ports of the actor
+  protected void writeDelayVertex(final Element graphElt, final Delay delay) {
+    // Add the node to the document
+    final Element vertexElt = appendChild(graphElt, PiIdentifiers.NODE);
+
+    // Set the unique ID of the node (equal to the vertex name)
+    vertexElt.setAttribute(PiIdentifiers.DELAY_NAME, delay.getName());
 
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.DELAY);
     final String setterName = delay.isInitializedWithActor() ? delay.getSetterActor() : "";
@@ -362,6 +362,9 @@ public class PiWriter {
     final String getterName = delay.hasGetterActor() ? delay.getGetterActor() : "";
     vertexElt.setAttribute(PiIdentifiers.DELAY_GETTER, getterName);
     vertexElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, delay.getSizeExpression().getExpressionString());
+
+    delay.getDataInputPort().getPortRateExpression().setExpressionString(delay.getSizeExpression().getExpressionString());
+    delay.getDataOutputPort().getPortRateExpression().setExpressionString(delay.getSizeExpression().getExpressionString());
 
     writePorts(vertexElt, delay.getDataInputPorts());
     writePorts(vertexElt, delay.getDataOutputPorts());
@@ -480,6 +483,10 @@ public class PiWriter {
     // Write the vertices of the graph
     for (final AbstractActor actor : graph.getActors()) {
       writeAbstractActor(graphElt, actor);
+    }
+
+    for (final Delay delay : graph.getDelays()) {
+      writeDelayVertex(graphElt, delay);
     }
 
     for (final Fifo fifo : graph.getFifos()) {
