@@ -450,7 +450,7 @@ public class PiParser {
    *          the deserialized {@link PiGraph}
    */
   protected void parseFifo(final Element edgeElt, final PiGraph graph) {
-    // Instantiate the new Fifo
+    // Instantiate the new FIFO
     final Fifo fifo = PiMMUserFactory.instance.createFifo();
 
     // Find the source and target of the fifo
@@ -462,7 +462,7 @@ public class PiParser {
       throw new PiGraphException("Edge source vertex " + sourceName + " does not exist.");
     }
     if (target == null) {
-      throw new PiGraphException("Edge target vertex " + sourceName + " does not exist.");
+      throw new PiGraphException("Edge target vertex " + targetName + " does not exist.");
     }
     // Get the type
     String type = edgeElt.getAttribute(PiIdentifiers.FIFO_TYPE);
@@ -531,7 +531,53 @@ public class PiParser {
     // Set the delay expression
     delay.getSizeExpression().setExpressionString(nodeElt.getAttribute(PiIdentifiers.DELAY_EXPRESSION));
 
-    // Add the actor to the parsed graph
+    // Adds Setter / Getter actors to the delay
+    final String setterName = nodeElt.getAttribute(PiIdentifiers.DELAY_SETTER);
+    if (setterName != null && !setterName.isEmpty()) {
+      final AbstractActor setter = (AbstractActor) graph.lookupVertex(setterName);
+      if (setter == null) {
+        throw new PiGraphException("Delay setter vertex " + setterName + " does not exist.");
+      }
+      delay.setHasSetterActor(true);
+    }
+    final String getterName = nodeElt.getAttribute(PiIdentifiers.DELAY_GETTER);
+    if (getterName != null && !getterName.isEmpty()) {
+      final AbstractActor getter = (AbstractActor) graph.lookupVertex(getterName);
+      if (getter == null) {
+        throw new PiGraphException("Delay getter vertex " + getterName + " does not exist.");
+      }
+      delay.setHasGetterActor(true);
+    }
+
+    // Add the refinement for the INIT of the delay (if it exists)
+    // Any refinement is ignored if the delay is already connected to a setter actor
+    if (!delay.isInitializedWithActor()) {
+      final String refinement = PiParser.getProperty(nodeElt, PiIdentifiers.DELAY_REFINEMENT_INIT);
+      if ((refinement != null) && !refinement.isEmpty()) {
+        final IPath path = getWorkspaceRelativePathFrom(new Path(refinement));
+
+        // If the refinement is a .h file, then we need to create a
+        // HRefinement
+        if (path.getFileExtension().equals("h")) {
+          // The delay may have an INIT
+          // element
+          final NodeList childList = nodeElt.getChildNodes();
+          for (int i = 0; i < childList.getLength(); i++) {
+            final Node elt = childList.item(i);
+            final String eltName = elt.getNodeName();
+            Element elmt;
+            if (eltName == PiIdentifiers.REFINEMENT_INIT) {
+              elmt = (Element) elt;
+              delay.setInitPrototype(parseFunctionPrototype(elmt, elmt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
+              final String delayPrototype = "Delay INIT function used: " + delay.checkInit();
+              WorkflowLogger.getLogger().log(Level.FINE, delayPrototype);
+            }
+          }
+        }
+      }
+    }
+
+    // Add the delay to the parsed graph
     graph.getDelays().add(delay);
 
     // parseRefinement(nodeElt, actor);
@@ -727,7 +773,8 @@ public class PiParser {
 
         // Do not create data ports for InterfaceActor since the unique port
         // is automatically created when the vertex is instantiated
-        if (!(vertex instanceof InterfaceActor)) {
+        // same for delays
+        if (!(vertex instanceof InterfaceActor) && !(vertex instanceof Delay)) {
           iPort = PiMMUserFactory.instance.createDataInputPort();
           ((AbstractActor) vertex).getDataInputPorts().add(iPort);
           iPort.setName(portName);
@@ -747,7 +794,8 @@ public class PiParser {
 
         // Do not create data ports for InterfaceActor since the unique port
         // is automatically created when the vertex is instantiated
-        if (!(vertex instanceof InterfaceActor)) {
+        // same for delays
+        if (!(vertex instanceof InterfaceActor) && !(vertex instanceof Delay)) {
           oPort = PiMMUserFactory.instance.createDataOutputPort();
           ((AbstractActor) vertex).getDataOutputPorts().add(oPort);
           oPort.setName(portName);

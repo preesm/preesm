@@ -225,10 +225,10 @@ public class PiIdentifiers {
   public static final String DELAY_REFINEMENT_INIT = PiIdentifiers.REFINEMENT_INIT;
 
   /** The Constant DELAY_SETTER */
-  public static final String DELAY_SETTER = PiIdentifiers.SOURCE;
+  public static final String DELAY_SETTER = "setter";
 
   /** The Constant DELAY_GETTER */
-  public static final String DELAY_GETTER = PiIdentifiers.TARGET;
+  public static final String DELAY_GETTER = "getter";
 
   /** The Constant DEPENDENCY. */
   // DEPENDENCIES
