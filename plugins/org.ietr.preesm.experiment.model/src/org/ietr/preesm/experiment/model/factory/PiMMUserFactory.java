@@ -139,6 +139,16 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   @Override
   public Delay createDelay() {
     final Delay res = super.createDelay();
+    // Create ports here and force their name
+    final DataOutputPort getter = PiMMUserFactory.instance.createDataOutputPort();
+    final DataInputPort setter = PiMMUserFactory.instance.createDataInputPort();
+    res.getDataInputPorts().add(setter);
+    res.getDataOutputPorts().add(getter);
+    res.getDataInputPort().setName("set");
+    res.getDataOutputPort().setName("get");
+    res.setHasGetterActor(false);
+    res.setHasSetterActor(false);
+
     res.setExpression(createExpression());
     return res;
   }
