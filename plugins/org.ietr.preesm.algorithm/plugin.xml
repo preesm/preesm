@@ -228,5 +228,16 @@
             </input>
          </inputs>
       </task>
+      <task
+            id="org.ietr.preesm.algorithm.exportXml.pimm2xml"
+            name="PiSDFExporter"
+            type="org.ietr.preesm.algorithm.exportXml.PiSDFExporter">
+         <inputs>
+            <input
+                  id="PiMM"
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+            </input>
+         </inputs>
+      </task>
    </extension>
 </plugin>

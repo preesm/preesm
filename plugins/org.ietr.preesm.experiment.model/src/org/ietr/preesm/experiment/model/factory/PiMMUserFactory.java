@@ -146,8 +146,6 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
     res.getDataOutputPorts().add(getter);
     res.getDataInputPort().setName("set");
     res.getDataOutputPort().setName("get");
-    res.setHasGetterActor(false);
-    res.setHasSetterActor(false);
 
     res.setExpression(createExpression());
     return res;

@@ -290,6 +290,8 @@ public class PiWriter {
       writeSpecialActor(vertexElt, abstractActor);
     } else if (abstractActor instanceof InterfaceActor) {
       writeInterfaceVertex(vertexElt, (InterfaceActor) abstractActor);
+    } else if (abstractActor instanceof Delay) {
+      writeDelayVertex(vertexElt, (Delay) abstractActor);
     }
 
     // TODO addProperties() of the vertex
@@ -350,9 +352,20 @@ public class PiWriter {
    * @param delay
    *          the {@link Delay} to serialize
    */
-  protected void writeDelay(final Element fifoElt, final Delay delay) {
-    writeDataElt(fifoElt, PiIdentifiers.DELAY, null);
-    fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, delay.getSizeExpression().getExpressionString());
+  protected void writeDelayVertex(final Element vertexElt, final Delay delay) {
+    // writeDataElt(vertexElt, "kind", "actor");
+    // Write ports of the actor
+
+    vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.DELAY);
+    final String setterName = delay.isInitializedWithActor() ? delay.getSetterActor() : "";
+    vertexElt.setAttribute(PiIdentifiers.DELAY_SETTER, setterName);
+    final String getterName = delay.hasGetterActor() ? delay.getGetterActor() : "";
+    vertexElt.setAttribute(PiIdentifiers.DELAY_GETTER, getterName);
+    vertexElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, delay.getSizeExpression().getExpressionString());
+
+    writePorts(vertexElt, delay.getDataInputPorts());
+    writePorts(vertexElt, delay.getDataOutputPorts());
+
     // TODO when delay class will be updated, modify the writer/parser.
     // Maybe a specific element will be needed to store the Expression
     // associated to a delay as well as it .h file storing the default value
@@ -439,7 +452,8 @@ public class PiWriter {
     fifoElt.setAttribute(PiIdentifiers.FIFO_TARGET_PORT, fifo.getTargetPort().getName());
 
     if (fifo.getDelay() != null) {
-      writeDelay(fifoElt, fifo.getDelay());
+      writeDataElt(fifoElt, PiIdentifiers.DELAY, fifo.getDelay().getName());
+      fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, fifo.getDelay().getSizeExpression().getExpressionString());
     }
     // TODO other Fifo properties (if any)
   }
