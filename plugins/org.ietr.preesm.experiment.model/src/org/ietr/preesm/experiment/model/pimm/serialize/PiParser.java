@@ -82,9 +82,11 @@ import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.PortKind;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
+import org.ietr.preesm.experiment.model.pimm.RefinementActor;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.ietr.preesm.experiment.model.pimm.util.SubgraphConnectorVisitor;
 import org.w3c.dom.Document;
@@ -237,7 +239,7 @@ public class PiParser {
    * @param actor
    *          the actor
    */
-  private void parseRefinement(final Element nodeElt, final Actor actor) {
+  private void parseRefinement(final Element nodeElt, final RefinementActor actor) {
     actor.setRefinement(PiMMUserFactory.instance.createPiSDFRefinement());
     final String refinement = PiParser.getProperty(nodeElt, PiIdentifiers.REFINEMENT);
     if ((refinement != null) && !refinement.isEmpty()) {
@@ -498,6 +500,7 @@ public class PiParser {
       if (delay == null) {
         throw new PiGraphException("Edge delay " + fifoDelay + " does not exist.");
       }
+
       // Adds the delay to the FIFO (and sets the FIFO of the delay at the same time)
       fifo.setDelay(delay);
     }
@@ -525,11 +528,11 @@ public class PiParser {
     // Instantiate the new actor
     final Delay delay = PiMMUserFactory.instance.createDelay();
 
-    // Get the delay properties
-    delay.setName(nodeElt.getAttribute(PiIdentifiers.DELAY_NAME));
-
     // Set the delay expression
     delay.getSizeExpression().setExpressionString(nodeElt.getAttribute(PiIdentifiers.DELAY_EXPRESSION));
+
+    // Get the delay properties
+    delay.setName(nodeElt.getAttribute(PiIdentifiers.DELAY_NAME));
 
     // Adds Setter / Getter actors to the delay
     final String setterName = nodeElt.getAttribute(PiIdentifiers.DELAY_SETTER);
@@ -551,29 +554,21 @@ public class PiParser {
 
     // Add the refinement for the INIT of the delay (if it exists)
     // Any refinement is ignored if the delay is already connected to a setter actor
-    if (!delay.isInitializedWithActor()) {
-      final String refinement = PiParser.getProperty(nodeElt, PiIdentifiers.DELAY_REFINEMENT_INIT);
-      if ((refinement != null) && !refinement.isEmpty()) {
-        final IPath path = getWorkspaceRelativePathFrom(new Path(refinement));
-
-        // If the refinement is a .h file, then we need to create a
-        // HRefinement
-        if (path.getFileExtension().equals("h")) {
-          // The delay may have an INIT
-          // element
-          final NodeList childList = nodeElt.getChildNodes();
-          for (int i = 0; i < childList.getLength(); i++) {
-            final Node elt = childList.item(i);
-            final String eltName = elt.getNodeName();
-            Element elmt;
-            if (eltName == PiIdentifiers.REFINEMENT_INIT) {
-              elmt = (Element) elt;
-              delay.setInitPrototype(parseFunctionPrototype(elmt, elmt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
-              final String delayPrototype = "Delay INIT function used: " + delay.checkInit();
-              WorkflowLogger.getLogger().log(Level.FINE, delayPrototype);
-            }
-          }
+    if (!delay.hasSetterActor()) {
+      parseRefinement(nodeElt, delay);
+      // Checks the validity of the H refinement of the delay
+      if (delay.getRefinement() instanceof CHeaderRefinement) {
+        CHeaderRefinement hrefinement = (CHeaderRefinement) delay.getRefinement();
+        if (hrefinement.getLoopPrototype() != null) {
+          throw new PiGraphException("A delay can not have a loop refinement.");
         }
+        if (!delay.isValidRefinement(hrefinement)) {
+          throw new PiGraphException("Delay INIT prototype must match following prototype: void init(IN int size, OUT <type>* fifo)");
+        }
+        final String delayInitPrototype = "Delay INIT function used: " + hrefinement.getInitPrototype().getName();
+        WorkflowLogger.getLogger().log(Level.FINE, delayInitPrototype);
+      } else if (delay.getRefinement() instanceof PiSDFRefinement) {
+        throw new PiGraphException("A delay can not have a PiSDF refinement.");
       }
     }
 

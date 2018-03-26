@@ -356,23 +356,31 @@ public class PiWriter {
     // Set the unique ID of the node (equal to the vertex name)
     vertexElt.setAttribute(PiIdentifiers.DELAY_NAME, delay.getName());
 
+    // Set the delay attribute to the node
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.DELAY);
-    final String setterName = delay.isInitializedWithActor() ? delay.getSetterActor() : "";
+
+    // Write setter and getter names if delay has any
+    final String setterName = delay.hasSetterActor() ? delay.getSetterActor() : "";
     vertexElt.setAttribute(PiIdentifiers.DELAY_SETTER, setterName);
     final String getterName = delay.hasGetterActor() ? delay.getGetterActor() : "";
     vertexElt.setAttribute(PiIdentifiers.DELAY_GETTER, getterName);
     vertexElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, delay.getSizeExpression().getExpressionString());
+
+    // Checks if the delay has refinement in case of no setter is provided
+    if (!delay.hasSetterActor()) {
+      final Refinement refinement = delay.getRefinement();
+      if (refinement != null) {
+        writeRefinement(vertexElt, refinement);
+      }
+      // TODO Handle default initializer
+      // void defaultDelayInit(IN int size, OUT <type> *buffer);
+    }
 
     delay.getDataInputPort().getPortRateExpression().setExpressionString(delay.getSizeExpression().getExpressionString());
     delay.getDataOutputPort().getPortRateExpression().setExpressionString(delay.getSizeExpression().getExpressionString());
 
     writePorts(vertexElt, delay.getDataInputPorts());
     writePorts(vertexElt, delay.getDataOutputPorts());
-
-    // TODO when delay class will be updated, modify the writer/parser.
-    // Maybe a specific element will be needed to store the Expression
-    // associated to a delay as well as it .h file storing the default value
-    // of tokens.
   }
 
   /**
@@ -642,7 +650,10 @@ public class PiWriter {
       writeDataElt(vertexElt, PiIdentifiers.REFINEMENT, refinementPath.makeRelative().toPortableString());
       if (refinement instanceof CHeaderRefinement) {
         final CHeaderRefinement hrefinement = (CHeaderRefinement) refinement;
-        writeFunctionPrototype(vertexElt, hrefinement.getLoopPrototype(), PiIdentifiers.REFINEMENT_LOOP);
+        // Special case of the delay that only has an INIT refinement
+        if (hrefinement.getLoopPrototype() != null) {
+          writeFunctionPrototype(vertexElt, hrefinement.getLoopPrototype(), PiIdentifiers.REFINEMENT_LOOP);
+        }
         if (hrefinement.getInitPrototype() != null) {
           writeFunctionPrototype(vertexElt, hrefinement.getInitPrototype(), PiIdentifiers.REFINEMENT_INIT);
         }

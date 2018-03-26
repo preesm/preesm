@@ -222,7 +222,7 @@ public class PiIdentifiers {
   public static final String DELAY_EXPRESSION = PiIdentifiers.EXPR;
 
   /** The Constant DELAY_REFINEMENT_INIT */
-  public static final String DELAY_REFINEMENT_INIT = PiIdentifiers.REFINEMENT_INIT;
+  public static final String DELAY_REFINEMENT = PiIdentifiers.REFINEMENT;
 
   /** The Constant DELAY_SETTER */
   public static final String DELAY_SETTER = "setter";

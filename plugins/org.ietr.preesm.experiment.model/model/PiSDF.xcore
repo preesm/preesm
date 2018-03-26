@@ -238,8 +238,11 @@ class PiGraph extends AbstractActor, Graph {
 abstract class ExecutableActor extends AbstractActor {
 }
 
-class Actor extends ExecutableActor {
+abstract class RefinementActor extends ExecutableActor {
 	contains Refinement refinement
+}
+
+class Actor extends RefinementActor {	
 	IPath memoryScriptPath
 	op boolean isConfigurationActor() {
 		return configOutputPorts.map[outgoingDependencies].filter[!it.isEmpty].map[it.get(0)].map[getter].exists[true]
