@@ -82,7 +82,6 @@ import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.PortKind;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
@@ -567,8 +566,22 @@ public class PiParser {
         }
         final String delayInitPrototype = "Delay INIT function used: " + hrefinement.getInitPrototype().getName();
         WorkflowLogger.getLogger().log(Level.FINE, delayInitPrototype);
-      } else if (delay.getRefinement() instanceof PiSDFRefinement) {
-        throw new PiGraphException("A delay can not have a PiSDF refinement.");
+      } else {
+        final CHeaderRefinement hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
+        hrefinement.setLoopPrototype(null);
+        final FunctionPrototype proto = PiMMUserFactory.instance.createFunctionPrototype();
+        proto.setName("defaultDelayInit");
+        proto.getParameters().add(PiMMUserFactory.instance.createFunctionParameter());
+        proto.getParameters().add(PiMMUserFactory.instance.createFunctionParameter());
+        proto.getParameters().get(0).setName("size");
+        proto.getParameters().get(0).setType("int");
+        proto.getParameters().get(0).setDirection(Direction.IN);
+        proto.getParameters().get(1).setName("fifo");
+        proto.getParameters().get(1).setType(delay.getContainingFifo().getType() + "*");
+        proto.getParameters().get(1).setDirection(Direction.OUT);
+        hrefinement.setInitPrototype(proto);
+        hrefinement.setFilePath(getWorkspaceRelativePathFrom(new Path("include/memory.h")));
+        delay.setRefinement(hrefinement);
       }
     }
 
