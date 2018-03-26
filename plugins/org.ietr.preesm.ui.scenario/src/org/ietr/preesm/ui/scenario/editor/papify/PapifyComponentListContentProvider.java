@@ -35,10 +35,11 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.core.scenario.serialize;
+package org.ietr.preesm.ui.scenario.editor.papify;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.ietr.preesm.core.scenario.papi.PapiEventInfo;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -56,7 +57,13 @@ public class PapifyComponentListContentProvider implements IStructuredContentPro
   @Override
   public Object[] getElements(final Object inputElement) {
 
-    String[] elementTable = { "perf_events", "ARTICO3" };
+    Object[] elementTable = null;
+
+    if (inputElement instanceof PapiEventInfo) {
+      final PapiEventInfo inputPapiEventInfo = (PapiEventInfo) inputElement;
+      elementTable = inputPapiEventInfo.getComponents().toArray();
+    }
+
     return elementTable;
   }
 

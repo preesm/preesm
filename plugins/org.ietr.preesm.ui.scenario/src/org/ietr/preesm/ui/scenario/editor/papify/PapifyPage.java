@@ -75,8 +75,8 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.serialize.PapifyComponentListContentProvider;
-import org.ietr.preesm.core.scenario.serialize.PapifyEventListContentProvider;
+import org.ietr.preesm.core.scenario.papi.PapiConfigParser;
+import org.ietr.preesm.core.scenario.papi.PapiEventInfo;
 import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 
@@ -99,6 +99,8 @@ public class PapifyPage extends FormPage implements IPropertyListener {
   CheckboxTableViewer componentTableViewer = null;
   CheckboxTableViewer eventTableViewer     = null;
   // CheckboxTableViewer checkTableViewer = null;
+  PapiEventInfo    papiEvents = null;
+  PapiConfigParser papiParser = new PapiConfigParser();
 
   /** Architecture. */
   private Design slamDesign = null;
@@ -133,6 +135,8 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     final ScrolledForm f = managedForm.getForm();
     f.setText(Messages.getString("Papify.title"));
     f.getBody().setLayout(new GridLayout());
+
+    papiEvents = papiParser.parse("/home/dmadronal/workspace_PREESM_developer/org.ietr.preesm.sobel_parallel/Code/PAPI_info.xml");
 
     // Constrints file chooser section
     createFileSection(managedForm, Messages.getString("Papify.file"), Messages.getString("Papify.fileDescription"), Messages.getString("Papify.fileEdit"),
@@ -346,14 +350,18 @@ public class PapifyPage extends FormPage implements IPropertyListener {
    */
   private void importData(final Text text) throws InvalidModelException, FileNotFoundException, CoreException {
 
-    this.scenario.getConstraintGroupManager().setExcelFileURL(text.getText());
-    this.scenario.getConstraintGroupManager().importConstraints(this.scenario);
+    // this.scenario.getConstraintGroupManager().setExcelFileURL(text.getText());
+    // this.scenario.getConstraintGroupManager().importConstraints(this.scenario);
+
+    papiEvents = papiParser.parse(text.getText());
+
+    // System.out.println(papiEvents.getComponents().toString());
 
     firePropertyChange(IEditorPart.PROP_DIRTY);
 
-    if (this.checkStateListener != null) {
-      this.checkStateListener.updateCheck();
-    }
+    /*
+     * if (this.checkStateListener != null) { this.checkStateListener.updateCheck(); }
+     */
   }
 
   /**
@@ -379,7 +387,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     this.componentTableViewer.setContentProvider(new PapifyComponentListContentProvider());
 
-    final PapifyComponentLabelProvider labelProvider = new PapifyComponentLabelProvider(this.scenario, this.componentTableViewer, this);
+    final PapifyComponentLabelProvider labelProvider = new PapifyComponentLabelProvider(this.scenario, this.componentTableViewer, this, this.papiEvents);
     this.componentTableViewer.setLabelProvider(labelProvider);
     coreCombo.addSelectionListener(labelProvider);
 
@@ -428,7 +436,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
       }
     });
 
-    this.componentTableViewer.setInput(this.scenario);
+    this.componentTableViewer.setInput(this.papiEvents);
     final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
     gd.heightHint = 100;
     gd.widthHint = 400;

@@ -45,6 +45,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.ui.IPropertyListener;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.papi.PapiComponent;
+import org.ietr.preesm.core.scenario.papi.PapiEventInfo;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -63,6 +65,9 @@ public class PapifyComponentLabelProvider implements ITableLabelProvider, Select
   /** The table viewer. */
   private TableViewer tableViewer = null;
 
+  /** The events from the xml file. */
+  private PapiEventInfo papiEvents = null;
+
   /** Constraints page used as a property listener to change the dirty state. */
   private IPropertyListener propertyListener = null;
 
@@ -78,12 +83,16 @@ public class PapifyComponentLabelProvider implements ITableLabelProvider, Select
    *          the table viewer
    * @param propertyListener
    *          the property listener
+   * @param papiEvents
+   *          the papi events from the xml file
    */
-  public PapifyComponentLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer, final IPropertyListener propertyListener) {
+  public PapifyComponentLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer, final IPropertyListener propertyListener,
+      final PapiEventInfo papiEvents) {
     super();
     this.scenario = scenario;
     this.tableViewer = tableViewer;
     this.propertyListener = propertyListener;
+    this.papiEvents = papiEvents;
   }
 
   /*
@@ -94,20 +103,21 @@ public class PapifyComponentLabelProvider implements ITableLabelProvider, Select
   @Override
   public String getColumnText(final Object element, final int columnIndex) {
 
-    int component = 0;
+    /*
+     * int component = 0;
+     * 
+     * String elementName = (String) element;
+     * 
+     * for (int i = 0; i < componentNames.length; i++) { if (elementName.equals(componentNames[i])) { component = i; } } switch (columnIndex) { case 0://
+     * Parsing column return componentNames[component]; case 1:// Evaluation column return componentTypes[component]; default:// Others break; }
+     */
 
-    String elementName = (String) element;
-
-    for (int i = 0; i < componentNames.length; i++) {
-      if (elementName.equals(componentNames[i])) {
-        component = i;
-      }
-    }
+    PapiComponent elementParsed = (PapiComponent) element;
     switch (columnIndex) {
       case 0:// Parsing column
-        return componentNames[component];
+        return elementParsed.getId();
       case 1:// Evaluation column
-        return componentTypes[component];
+        return elementParsed.getType().toString();
       default:// Others
         break;
     }
