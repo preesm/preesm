@@ -46,7 +46,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.ui.IPropertyListener;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.papi.PapiComponent;
-import org.ietr.preesm.core.scenario.papi.PapiEventInfo;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -65,14 +64,8 @@ public class PapifyComponentLabelProvider implements ITableLabelProvider, Select
   /** The table viewer. */
   private TableViewer tableViewer = null;
 
-  /** The events from the xml file. */
-  private PapiEventInfo papiEvents = null;
-
   /** Constraints page used as a property listener to change the dirty state. */
   private IPropertyListener propertyListener = null;
-
-  String[] componentNames = { "perf_events", "ARTICO3" };
-  String[] componentTypes = { "CPU", "FPGA" };
 
   /**
    * Instantiates a new timings table label provider.
@@ -83,16 +76,12 @@ public class PapifyComponentLabelProvider implements ITableLabelProvider, Select
    *          the table viewer
    * @param propertyListener
    *          the property listener
-   * @param papiEvents
-   *          the papi events from the xml file
    */
-  public PapifyComponentLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer, final IPropertyListener propertyListener,
-      final PapiEventInfo papiEvents) {
+  public PapifyComponentLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer, final IPropertyListener propertyListener) {
     super();
     this.scenario = scenario;
     this.tableViewer = tableViewer;
     this.propertyListener = propertyListener;
-    this.papiEvents = papiEvents;
   }
 
   /*

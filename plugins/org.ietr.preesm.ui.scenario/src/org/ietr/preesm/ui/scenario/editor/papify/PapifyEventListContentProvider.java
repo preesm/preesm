@@ -37,8 +37,14 @@
  */
 package org.ietr.preesm.ui.scenario.editor.papify;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.ietr.preesm.core.scenario.papi.PapiComponent;
+import org.ietr.preesm.core.scenario.papi.PapiEvent;
+import org.ietr.preesm.core.scenario.papi.PapiEventInfo;
+import org.ietr.preesm.core.scenario.papi.PapiEventSet;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -56,7 +62,29 @@ public class PapifyEventListContentProvider implements IStructuredContentProvide
   @Override
   public Object[] getElements(final Object inputElement) {
 
-    String[] elementTable = { "Timing", "Event1", "Event2", "Event3", "Event4", "Event5" };
+    // String[] elementTable = { "Timing", "Event1", "Event2", "Event3", "Event4", "Event5" };
+
+    Object[] elementTable = null;
+
+    if (inputElement instanceof PapiEventInfo) {
+      final PapiEventInfo inputPapiEventInfo = (PapiEventInfo) inputElement;
+      final PapiEvent timingEvent = new PapiEvent();
+      PapiComponent compAux = null;
+      PapiEventSet eventSetAux = null;
+      List<PapiEvent> eventList = new ArrayList<>();
+      timingEvent.setName("Timing");
+      timingEvent.setDesciption("Event to time through PAPI_get_time()");
+      eventList.add(timingEvent);
+      for (int i = 0; i < inputPapiEventInfo.getComponents().size(); i++) {
+        compAux = inputPapiEventInfo.getComponents().get(i);
+        for (int j = 0; j < compAux.getEventSets().size(); j++) {
+          eventSetAux = compAux.getEventSets().get(j);
+          eventList.addAll(eventSetAux.getEvents());
+        }
+      }
+      elementTable = eventList.toArray();
+    }
+
     return elementTable;
   }
 

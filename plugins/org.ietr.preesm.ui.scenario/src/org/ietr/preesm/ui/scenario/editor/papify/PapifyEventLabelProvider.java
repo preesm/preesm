@@ -44,6 +44,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IPropertyListener;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.papi.PapiEvent;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -93,23 +94,25 @@ public class PapifyEventLabelProvider implements ITableLabelProvider, SelectionL
   @Override
   public String getColumnText(final Object element, final int columnIndex) {
 
-    int component = 0;
+    /*
+     * int component = 0;
+     * 
+     * String elementName = (String) element;
+     * 
+     * for (int i = 0; i < eventNames.length; i++) { if (elementName.equals(eventNames[i])) { component = i; } } switch (columnIndex) { case 0:// Parsing column
+     * return eventNames[component]; case 1:// Evaluation column return eventDescr[component]; default:// Others break; }
+     */
 
-    String elementName = (String) element;
-
-    for (int i = 0; i < eventNames.length; i++) {
-      if (elementName.equals(eventNames[i])) {
-        component = i;
-      }
-    }
+    PapiEvent elementParsed = (PapiEvent) element;
     switch (columnIndex) {
       case 0:// Parsing column
-        return eventNames[component];
+        return elementParsed.getName();
       case 1:// Evaluation column
-        return eventDescr[component];
+        return elementParsed.getDesciption();
       default:// Others
         break;
     }
+
     return null;
   }
 

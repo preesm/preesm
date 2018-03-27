@@ -387,7 +387,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     this.componentTableViewer.setContentProvider(new PapifyComponentListContentProvider());
 
-    final PapifyComponentLabelProvider labelProvider = new PapifyComponentLabelProvider(this.scenario, this.componentTableViewer, this, this.papiEvents);
+    final PapifyComponentLabelProvider labelProvider = new PapifyComponentLabelProvider(this.scenario, this.componentTableViewer, this);
     this.componentTableViewer.setLabelProvider(labelProvider);
     coreCombo.addSelectionListener(labelProvider);
 
@@ -514,7 +514,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
       }
     });
 
-    this.eventTableViewer.setInput(this.scenario);
+    this.eventTableViewer.setInput(this.papiEvents);
     final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
     gd.heightHint = 200;
     gd.widthHint = 400;
