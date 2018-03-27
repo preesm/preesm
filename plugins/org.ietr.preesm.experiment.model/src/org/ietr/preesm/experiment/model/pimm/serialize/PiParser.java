@@ -239,7 +239,9 @@ public class PiParser {
    *          the actor
    */
   private void parseRefinement(final Element nodeElt, final RefinementActor actor) {
-    actor.setRefinement(PiMMUserFactory.instance.createPiSDFRefinement());
+    if (!(actor instanceof Delay)) {
+      actor.setRefinement(PiMMUserFactory.instance.createPiSDFRefinement());
+    }
     final String refinement = PiParser.getProperty(nodeElt, PiIdentifiers.REFINEMENT);
     if ((refinement != null) && !refinement.isEmpty()) {
       final IPath path = getWorkspaceRelativePathFrom(new Path(refinement));
@@ -247,7 +249,13 @@ public class PiParser {
       // If the refinement is a .h file, then we need to create a
       // HRefinement
       if (path.getFileExtension().equals("h")) {
-        final CHeaderRefinement hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
+        final CHeaderRefinement hrefinement;
+        // Delays already have a default refinement by default at creation time
+        if (actor instanceof Delay) {
+          hrefinement = (CHeaderRefinement) actor.getRefinement();
+        } else {
+          hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
+        }
         // The nodeElt should have a loop element, and may have an init
         // element
         final NodeList childList = nodeElt.getChildNodes();
@@ -566,22 +574,6 @@ public class PiParser {
         }
         final String delayInitPrototype = "Delay INIT function used: " + hrefinement.getInitPrototype().getName();
         WorkflowLogger.getLogger().log(Level.FINE, delayInitPrototype);
-      } else {
-        final CHeaderRefinement hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
-        hrefinement.setLoopPrototype(null);
-        final FunctionPrototype proto = PiMMUserFactory.instance.createFunctionPrototype();
-        proto.setName("defaultDelayInit");
-        proto.getParameters().add(PiMMUserFactory.instance.createFunctionParameter());
-        proto.getParameters().add(PiMMUserFactory.instance.createFunctionParameter());
-        proto.getParameters().get(0).setName("size");
-        proto.getParameters().get(0).setType("int");
-        proto.getParameters().get(0).setDirection(Direction.IN);
-        proto.getParameters().get(1).setName("fifo");
-        proto.getParameters().get(1).setType(delay.getContainingFifo().getType() + "*");
-        proto.getParameters().get(1).setDirection(Direction.OUT);
-        hrefinement.setInitPrototype(proto);
-        hrefinement.setFilePath(getWorkspaceRelativePathFrom(new Path("include/memory.h")));
-        delay.setRefinement(hrefinement);
       }
     }
 

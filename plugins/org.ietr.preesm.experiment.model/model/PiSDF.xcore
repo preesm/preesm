@@ -467,24 +467,6 @@ class Delay extends Configurable, ExpressionHolder {
 	op PiGraph getContainingGraph() {
 		return containingFifo.containingGraph as PiGraph
 	}
-	
-//	op void setDefaultRefinement() {
-//		var CHeaderRefinement hrefinement
-//		hrefinement.setLoopPrototype(null)
-//		var FunctionPrototype proto
-//		proto.setName("defaultDelayInit")
-//        proto.getParameters().add(PiMMUserFactory.instance.createFunctionParameter())
-//        proto.getParameters().add()
-//        proto.getParameters().get(0).setName("size")
-//        proto.getParameters().get(0).setType("int")
-//        proto.getParameters().get(0).setDirection(Direction.IN)
-//        proto.getParameters().get(1).setName("fifo")
-//        proto.getParameters().get(1).setType(getContainingFifo().getType() + "*")
-//        proto.getParameters().get(1).setDirection(Direction.OUT)
-//        hrefinement.setInitPrototype(proto)
-//        hrefinement.setFilePath(("include/memory.h"))
-//		setRefinement(hrefinement)
-//	}
 }
 
 class FunctionPrototype {

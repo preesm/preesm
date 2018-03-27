@@ -54,7 +54,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.ietr.dftools.algorithm.exporter.Key;
 import org.ietr.dftools.architecture.utils.DomUtil;
-import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
@@ -65,7 +64,6 @@ import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.Direction;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
@@ -373,24 +371,6 @@ public class PiWriter {
       final Refinement refinement = delay.getRefinement();
       if (refinement != null && refinement instanceof CHeaderRefinement) {
         writeRefinement(vertexElt, refinement);
-      } else {
-        // TODO Handle default initializer
-        // void defaultDelayInit(IN int size, OUT <type> *fifo);
-        final CHeaderRefinement hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
-        hrefinement.setLoopPrototype(null);
-        final FunctionPrototype proto = PiMMUserFactory.instance.createFunctionPrototype();
-        proto.setName("defaultDelayInit");
-        proto.getParameters().add(PiMMUserFactory.instance.createFunctionParameter());
-        proto.getParameters().add(PiMMUserFactory.instance.createFunctionParameter());
-        proto.getParameters().get(0).setName("size");
-        proto.getParameters().get(0).setType("int");
-        proto.getParameters().get(0).setDirection(Direction.IN);
-        proto.getParameters().get(1).setName("fifo");
-        proto.getParameters().get(1).setType(delay.getContainingFifo().getType() + "*");
-        proto.getParameters().get(1).setDirection(Direction.OUT);
-        hrefinement.setInitPrototype(proto);
-        hrefinement.setFilePath(getProjectRelativePathFrom(new Path("include/memory.h")));
-        writeRefinement(vertexElt, hrefinement);
       }
     }
 
