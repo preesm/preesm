@@ -44,6 +44,8 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -76,7 +78,6 @@ public class PiSDFExporter extends AbstractTaskImplementation {
 
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
-    // + PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
     final String sXmlPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName()) + "/Algo/generated";
 
     IPath xmlPath = new Path(sXmlPath);
@@ -92,13 +93,15 @@ public class PiSDFExporter extends AbstractTaskImplementation {
       throw new WorkflowException("Path " + sXmlPath + " is not a valid path for export.\n" + e.getMessage());
     }
 
-    // Write the Graph to the OutputStream using the Pi format
-    final URI uri = URI.createPlatformResourceURI(xmlPath.toString(), true);
-
-    OutputStream file;
+    OutputStream outStream;
     try {
-      file = new FileOutputStream("/home/farresti/Documents/thesis/dev/preesm-apps/org.ietr.preesm.reinforcement_learning/Algo/generated/delayTop.xml");
-      new PiWriter(uri).write(graph, file);
+      // Write the Graph to the OutputStream using the Pi format
+      final URI uri = URI.createPlatformResourceURI(xmlPath.toString(), true);
+      // Get the project
+      final String platformString = uri.toPlatformString(true);
+      final IFile documentFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(platformString));
+      outStream = new FileOutputStream(documentFile.getLocation().toOSString());
+      new PiWriter(uri).write(graph, outStream);
     } catch (FileNotFoundException e) {
       // TODO Auto-generated catch block
       throw new WorkflowException("Could not open outputstream file " + xmlPath.toString());
