@@ -46,6 +46,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -245,7 +246,9 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
     // and the PiGraph from this diagram to get consistent links
     final PiGraph graph = (PiGraph) diagram.getLink().getBusinessObjects().get(0);
 
-    editingDomain.getCommandStack().execute(new PopulateDiagramCommand(editor, editingDomain, graph));
+    PopulateDiagramCommand command = new PopulateDiagramCommand(editor, editingDomain, graph);
+    CommandStack commandStack = editingDomain.getCommandStack();
+    commandStack.execute(command);
 
     // save the .diagram file
     editor.doSave(null);

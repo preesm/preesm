@@ -155,6 +155,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
     res.setExpression(createExpression());
 
     // Creates the default refinement
+    // TODO try to find better solution
     final CHeaderRefinement hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
     hrefinement.setLoopPrototype(null);
     final FunctionPrototype proto = PiMMUserFactory.instance.createFunctionPrototype();

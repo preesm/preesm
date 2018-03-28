@@ -85,7 +85,7 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.PortKind;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
-import org.ietr.preesm.experiment.model.pimm.RefinementActor;
+import org.ietr.preesm.experiment.model.pimm.RefinementContainer;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.ietr.preesm.experiment.model.pimm.util.SubgraphConnectorVisitor;
 import org.w3c.dom.Document;
@@ -238,7 +238,7 @@ public class PiParser {
    * @param actor
    *          the actor
    */
-  private void parseRefinement(final Element nodeElt, final RefinementActor actor) {
+  private void parseRefinement(final Element nodeElt, final RefinementContainer actor) {
     if (!(actor instanceof Delay)) {
       actor.setRefinement(PiMMUserFactory.instance.createPiSDFRefinement());
     }
@@ -548,15 +548,14 @@ public class PiParser {
       if (setter == null) {
         throw new PiGraphException("Delay setter vertex " + setterName + " does not exist.");
       }
-      delay.setSetterActor(setter.getName());
     }
+
     final String getterName = nodeElt.getAttribute(PiIdentifiers.DELAY_GETTER);
     if (getterName != null && !getterName.isEmpty()) {
       final AbstractActor getter = (AbstractActor) graph.lookupVertex(getterName);
       if (getter == null) {
         throw new PiGraphException("Delay getter vertex " + getterName + " does not exist.");
       }
-      delay.setGetterActor(getter.getName());
     }
 
     // Add the refinement for the INIT of the delay (if it exists)

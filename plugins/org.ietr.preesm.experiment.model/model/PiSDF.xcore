@@ -310,6 +310,12 @@ abstract class DataPort extends Port, ExpressionHolder {
 	op Fifo getFifo()
 }
 
+class DelayPort extends Port, ExpressionHolder {
+	op Expression getPortRateExpression() {
+		return getExpression
+	}
+}
+
 class DataInputPort extends DataPort {
 	refers Fifo incomingFifo opposite targetPort
 	op PortKind getKind() {
@@ -434,7 +440,7 @@ class CHeaderRefinement extends Refinement {
 
 class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 	op Expression getValueExpression() {
-		return expression
+		return getExpression
 	}
 	op boolean isLocallyStatic() {
 		// a parameter is static if all its setters are static (or it has no setter)

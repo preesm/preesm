@@ -360,9 +360,9 @@ public class PiWriter {
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.DELAY);
 
     // Write setter and getter names if delay has any
-    final String setterName = delay.hasSetterActor() ? delay.getSetterActor() : "";
+    final String setterName = delay.hasSetterActor() ? delay.getSetterActor().getName() : "";
     vertexElt.setAttribute(PiIdentifiers.DELAY_SETTER, setterName);
-    final String getterName = delay.hasGetterActor() ? delay.getGetterActor() : "";
+    final String getterName = delay.hasGetterActor() ? delay.getGetterActor().getName() : "";
     vertexElt.setAttribute(PiIdentifiers.DELAY_GETTER, getterName);
     vertexElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, delay.getSizeExpression().getExpressionString());
 
