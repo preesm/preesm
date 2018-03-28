@@ -465,8 +465,9 @@ public class PiParser {
     // Find the source and target of the fifo
     final String sourceName = edgeElt.getAttribute(PiIdentifiers.FIFO_SOURCE);
     final String targetName = edgeElt.getAttribute(PiIdentifiers.FIFO_TARGET);
-    final AbstractActor source = (AbstractActor) graph.lookupVertex(sourceName);
-    final AbstractActor target = (AbstractActor) graph.lookupVertex(targetName);
+    final AbstractVertex source = graph.lookupVertex(sourceName);
+    final AbstractVertex target = graph.lookupVertex(targetName);
+
     if (source == null) {
       throw new PiGraphException("Edge source vertex " + sourceName + " does not exist.");
     }
@@ -543,24 +544,19 @@ public class PiParser {
 
     // Adds Setter / Getter actors to the delay
     final String setterName = nodeElt.getAttribute(PiIdentifiers.DELAY_SETTER);
-    if (setterName != null && !setterName.isEmpty()) {
-      final AbstractActor setter = (AbstractActor) graph.lookupVertex(setterName);
-      if (setter == null) {
-        throw new PiGraphException("Delay setter vertex " + setterName + " does not exist.");
-      }
-    }
-
+    final AbstractActor setter = (AbstractActor) graph.lookupVertex(setterName);
     final String getterName = nodeElt.getAttribute(PiIdentifiers.DELAY_GETTER);
-    if (getterName != null && !getterName.isEmpty()) {
-      final AbstractActor getter = (AbstractActor) graph.lookupVertex(getterName);
-      if (getter == null) {
-        throw new PiGraphException("Delay getter vertex " + getterName + " does not exist.");
-      }
+    final AbstractActor getter = (AbstractActor) graph.lookupVertex(getterName);
+    if (setter == null && !setterName.isEmpty()) {
+      throw new PiGraphException("Delay setter vertex " + setterName + " does not exist.");
+    }
+    if (getter == null && !getterName.isEmpty()) {
+      throw new PiGraphException("Delay getter vertex " + getterName + " does not exist.");
     }
 
     // Add the refinement for the INIT of the delay (if it exists)
     // Any refinement is ignored if the delay is already connected to a setter actor
-    if (!delay.hasSetterActor()) {
+    if (setter == null) {
       parseRefinement(nodeElt, delay);
       // Checks the validity of the H refinement of the delay
       if (delay.getRefinement() instanceof CHeaderRefinement) {
@@ -687,7 +683,9 @@ public class PiParser {
           break;
         case PiIdentifiers.DELAY:
           vertex = parseDelay(nodeElt, graph);
-          break;
+          // Ignore parsing of ports
+          // Delays have pre-defined ports created at delay instantiation
+          return;
         default:
           throw new PiGraphException("Parsed node " + nodeElt.getNodeName() + " has an unknown kind: " + nodeKind);
       }
@@ -761,6 +759,9 @@ public class PiParser {
     final String portKind = elt.getAttribute(PiIdentifiers.PORT_KIND);
 
     final String attribute = elt.getAttribute(PiIdentifiers.PORT_EXPRESSION);
+    final String annotation = elt.getAttribute(PiIdentifiers.PORT_MEMORY_ANNOTATION);
+    final PortMemoryAnnotation portMemoryAnnotation = PortMemoryAnnotation.get(annotation);
+    final Expression portRateExpression;
     switch (PortKind.get(portKind)) {
       case DATA_INPUT:
         // Throw an error if the parsed vertex is not an actor
@@ -773,15 +774,16 @@ public class PiParser {
         // Do not create data ports for InterfaceActor since the unique port
         // is automatically created when the vertex is instantiated
         // same for delays
-        if (!(vertex instanceof InterfaceActor) && !(vertex instanceof Delay)) {
+        if (!(vertex instanceof InterfaceActor)) {
           iPort = PiMMUserFactory.instance.createDataInputPort();
           ((AbstractActor) vertex).getDataInputPorts().add(iPort);
           iPort.setName(portName);
         } else {
           iPort = ((AbstractActor) vertex).getDataInputPorts().get(0);
         }
-        iPort.getPortRateExpression().setExpressionString(attribute);
-        iPort.setAnnotation(PortMemoryAnnotation.get(elt.getAttribute(PiIdentifiers.PORT_MEMORY_ANNOTATION)));
+        portRateExpression = iPort.getPortRateExpression();
+        portRateExpression.setExpressionString(attribute);
+        iPort.setAnnotation(portMemoryAnnotation);
         break;
       case DATA_OUTPUT:
         // Throw an error if the parsed vertex is not an actor
@@ -794,16 +796,16 @@ public class PiParser {
         // Do not create data ports for InterfaceActor since the unique port
         // is automatically created when the vertex is instantiated
         // same for delays
-        if (!(vertex instanceof InterfaceActor) && !(vertex instanceof Delay)) {
+        if (!(vertex instanceof InterfaceActor)) {
           oPort = PiMMUserFactory.instance.createDataOutputPort();
           ((AbstractActor) vertex).getDataOutputPorts().add(oPort);
           oPort.setName(portName);
         } else {
           oPort = ((AbstractActor) vertex).getDataOutputPorts().get(0);
         }
-        final Expression portRateExpression = oPort.getPortRateExpression();
+        portRateExpression = oPort.getPortRateExpression();
         portRateExpression.setExpressionString(attribute);
-        oPort.setAnnotation(PortMemoryAnnotation.get(elt.getAttribute(PiIdentifiers.PORT_MEMORY_ANNOTATION)));
+        oPort.setAnnotation(portMemoryAnnotation);
         break;
       case CFG_INPUT:
         final ConfigInputPort iCfgPort = PiMMUserFactory.instance.createConfigInputPort();

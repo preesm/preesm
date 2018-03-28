@@ -374,11 +374,12 @@ public class PiWriter {
       }
     }
 
-    delay.getDataInputPort().getPortRateExpression().setExpressionString(delay.getSizeExpression().getExpressionString());
-    delay.getDataOutputPort().getPortRateExpression().setExpressionString(delay.getSizeExpression().getExpressionString());
-
-    writePorts(vertexElt, delay.getDataInputPorts());
-    writePorts(vertexElt, delay.getDataOutputPorts());
+    // delay.getDataInputPort().getPortRateExpression().setExpressionString(delay.getSizeExpression().getExpressionString());
+    // delay.getDataOutputPort().getPortRateExpression().setExpressionString(delay.getSizeExpression().getExpressionString());
+    //
+    writePorts(vertexElt, delay.getAllDelayPorts());
+    // writePorts(vertexElt, delay.getDataInputPorts());
+    // writePorts(vertexElt, delay.getDataOutputPorts());
   }
 
   /**
@@ -451,8 +452,8 @@ public class PiWriter {
     final Element fifoElt = appendChild(graphElt, PiIdentifiers.EDGE);
 
     // Set the source and target attributes
-    final AbstractActor source = (AbstractActor) fifo.getSourcePort().eContainer();
-    final AbstractActor target = (AbstractActor) fifo.getTargetPort().eContainer();
+    final AbstractVertex source = (AbstractVertex) fifo.getSourcePort().eContainer();
+    final AbstractVertex target = (AbstractVertex) fifo.getTargetPort().eContainer();
     fifoElt.setAttribute(PiIdentifiers.EDGE_KIND, PiIdentifiers.FIFO);
     fifoElt.setAttribute(PiIdentifiers.FIFO_TYPE, fifo.getType());
     fifoElt.setAttribute(PiIdentifiers.FIFO_SOURCE, source.getName());

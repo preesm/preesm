@@ -302,7 +302,7 @@ abstract class DataPort extends Port, ExpressionHolder {
 	}
 	op String getId() {
 		val String actorName = Optional.ofNullable(getContainingActor()).map[name].orElseThrow [
-			new PiGraphException("Data port " + this + " is not contained in an AbstracytActor.")
+			new PiGraphException("Data port " + this + " is not contained in an AbstractActor.")
 		];
 		val String portName = Optional.ofNullable(name).filter[!it.isEmpty()].map["." + it].orElse("");
 		return actorName + portName;

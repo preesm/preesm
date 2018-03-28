@@ -47,6 +47,8 @@ import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayGetterPort;
+import org.ietr.preesm.experiment.model.pimm.DelaySetterPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Direction;
 import org.ietr.preesm.experiment.model.pimm.Expression;
@@ -134,6 +136,20 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   }
 
   @Override
+  public DelaySetterPort createDelaySetterPort() {
+    final DelaySetterPort res = super.createDelaySetterPort();
+    res.setExpression(createExpression());
+    return res;
+  }
+
+  @Override
+  public DelayGetterPort createDelayGetterPort() {
+    final DelayGetterPort res = super.createDelayGetterPort();
+    res.setExpression(createExpression());
+    return res;
+  }
+
+  @Override
   public ConfigOutputPort createConfigOutputPort() {
     final ConfigOutputPort res = super.createConfigOutputPort();
     res.setExpression(createExpression());
@@ -144,12 +160,12 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   public Delay createDelay() {
     final Delay res = super.createDelay();
     // Create ports here and force their name
-    final DataOutputPort getter = PiMMUserFactory.instance.createDataOutputPort();
-    final DataInputPort setter = PiMMUserFactory.instance.createDataInputPort();
-    res.getDataInputPorts().add(setter);
-    res.getDataOutputPorts().add(getter);
-    res.getDataInputPort().setName("set");
-    res.getDataOutputPort().setName("get");
+    final DelaySetterPort setter = PiMMUserFactory.instance.createDelaySetterPort();
+    final DelayGetterPort getter = PiMMUserFactory.instance.createDelayGetterPort();
+    res.getAllDelayPorts().add(setter);
+    res.getAllDelayPorts().add(getter);
+    res.getSetterPort().setName("set");
+    res.getGetterPort().setName("get");
 
     // Set default expression
     res.setExpression(createExpression());
