@@ -180,7 +180,6 @@
               <serverHost>preesm.insa-rennes.fr</serverHost>
               <serverPort>8022</serverPort>
               <strictHostKeyChecking>false</strictHostKeyChecking>
-              <transferThreadCount>12</transferThreadCount>
               <mode>send</mode>
               <localPath>${project.build.directory}/gensite/update-site/</localPath>
               <remotePath>/repo/</remotePath>
