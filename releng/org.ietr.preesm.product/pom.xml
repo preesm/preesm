@@ -114,23 +114,23 @@
         </executions>
       </plugin>
 
-      <!-- Deploy product -->
+      <!-- Finally deploy product -->
       <plugin>
         <groupId>org.preesm.maven</groupId>
         <artifactId>sftp-maven-plugin</artifactId>
         <version>1.0.0</version>
         <executions>
           <execution>
-            <id>upload-product</id>
+            <id>upload-repo</id>
             <phase>deploy</phase>
             <configuration>
-              <serverId>sf-preesm-update-site</serverId>
-              <serverHost>frs.sourceforge.net</serverHost>
+              <serverId>preesm-insa-rennes</serverId>
+              <serverHost>preesm.insa-rennes.fr</serverHost>
+              <serverPort>8022</serverPort>
               <strictHostKeyChecking>false</strictHostKeyChecking>
-              <transferThreadCount>1</transferThreadCount>
               <mode>send</mode>
-              <remotePath>/home/pfs/project/preesm/Releases/${project.version}/</remotePath>
               <localPath>${project.build.directory}/deploy/${project.version}/</localPath>
+              <remotePath>/releases/</remotePath>
             </configuration>
             <goals>
               <goal>sftp-transfert</goal>

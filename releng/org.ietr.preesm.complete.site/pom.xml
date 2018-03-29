@@ -176,13 +176,13 @@
             <id>upload-repo</id>
             <phase>deploy</phase>
             <configuration>
-              <serverId>sf-preesm-update-site</serverId>
-              <serverHost>web.sourceforge.net</serverHost>
+              <serverId>preesm-insa-rennes</serverId>
+              <serverHost>preesm.insa-rennes.fr</serverHost>
+              <serverPort>8022</serverPort>
               <strictHostKeyChecking>false</strictHostKeyChecking>
-              <transferThreadCount>12</transferThreadCount>
               <mode>send</mode>
-              <remotePath>/home/project-web/preesm/htdocs/gensite/</remotePath>
-              <localPath>${project.build.directory}/gensite/</localPath>
+              <localPath>${project.build.directory}/gensite/update-site/</localPath>
+              <remotePath>/repo/</remotePath>
             </configuration>
             <goals>
               <goal>sftp-transfert</goal>

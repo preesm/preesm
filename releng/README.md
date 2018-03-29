@@ -1,6 +1,8 @@
 Preesm Maintainer Documentation
 ===============================
 
+**NOTE: part of this documentation is outdated.**
+
 This document explains the build process of Preesm and its components (Graphiti, DFTools and their dependencies), and all the configuration of the release and deploy procedures.
 
 Old documentation is available in the [HowToRelease.md](HowToRelease.md) file.

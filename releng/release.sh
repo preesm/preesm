@@ -4,15 +4,18 @@
 DEV_BRANCH=develop
 MAIN_BRANCH=master
 
-CURRENT_VERSION=`mvn -B -Dtycho.mode=maven help:evaluate -Dexpression=project.version | grep -v 'INFO'`
-[ "$#" -ne "1" ] && echo -e "usage: $0 <new version>\nNote: current version = ${CURRENT_VERSION}" && exit 1
+if [ "$#" -ne "1" ]; then
+  CURRENT_VERSION=`mvn -B -Dtycho.mode=maven help:evaluate -Dexpression=project.version | grep -v 'INFO'`
+  echo -e "usage: $0 <new version>\nNote: current version = ${CURRENT_VERSION}"
+  exit 1
+fi
 
 # First check access on git (will exit on error)
 echo "Testing Github permission"
 git ls-remote git@github.com:preesm/preesm.git > /dev/null
 # then on SF with maven settings
 TMPDIR=`mktemp -d`
-cat > $TMPDIR/pom.xml << "EOF"
+cat > $TMPDIR/pom.xml << EOF
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -22,6 +25,7 @@ cat > $TMPDIR/pom.xml << "EOF"
   <packaging>pom</packaging>
   <build>
     <plugins>
+      <!-- Finally upload merged metadata and new content -->
       <plugin>
         <groupId>org.preesm.maven</groupId>
         <artifactId>sftp-maven-plugin</artifactId>
@@ -31,13 +35,14 @@ cat > $TMPDIR/pom.xml << "EOF"
             <id>upload-repo</id>
             <phase>verify</phase>
             <configuration>
-              <serverId>sf-preesm-update-site</serverId>
-              <serverHost>web.sourceforge.net</serverHost>
+              <serverId>preesm-insa-rennes</serverId>
+              <serverHost>preesm.insa-rennes.fr</serverHost>
+              <serverPort>8022</serverPort>
               <strictHostKeyChecking>false</strictHostKeyChecking>
               <transferThreadCount>1</transferThreadCount>
               <mode>receive</mode>
-              <remotePath>/home/project-web/preesm/htdocs/index.php</remotePath>
-              <localPath>/tmp/to_delete</localPath>
+              <remotePath>/repo/README</remotePath>
+              <localPath>${TMPDIR}/to_delete</localPath>
             </configuration>
             <goals>
               <goal>sftp-transfert</goal>
@@ -49,7 +54,7 @@ cat > $TMPDIR/pom.xml << "EOF"
   </build>
 </project>
 EOF
-echo "Testing SourceForge permission using Maven Sftp plugin"
+echo "Testing Insa server permission using Maven Sftp plugin"
 (cd $TMPDIR && mvn -q verify)
 rm -rf $TMPDIR
 

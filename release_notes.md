@@ -7,6 +7,11 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Force DFTools to 1.4.0+;
+* Force Graphiti to 1.6.0+;
+* Force external deps to 3.0.0+;
+* Move deploy server to preesm.insa-rennes.fr;
+* Update project info (URL);
 
 ### Bug fix
 
