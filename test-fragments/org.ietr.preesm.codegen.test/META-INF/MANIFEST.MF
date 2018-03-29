@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm code generation plug-in Tests
 Bundle-SymbolicName: org.ietr.preesm.codegen.test
-Bundle-Version: 2.9.0.qualifier
+Bundle-Version: 2.10.0
 Bundle-Vendor: IETR/INSA Rennes
 Fragment-Host: org.ietr.preesm.codegen
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
