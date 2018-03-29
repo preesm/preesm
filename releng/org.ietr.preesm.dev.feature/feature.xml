@@ -40,7 +40,7 @@
       label="PREESM Developper Requirements (Meta Feature)"
       version="2.9.0.qualifier">
 
-   <description url="http://preesm.sourceforge.net/website/">
+   <description url="http://org/">
       This feature embeds all required Eclipse plugins for developping PREESM. That includes XTend, GEF, EMF, Graphiti (Eclipse) Plus SDKs, along with Checkstyle integration for Eclipse, Maven integration for Eclipse (and appropriate extension), and other IETR dependencies (third party libraries, DFTools and Graphiti).
    </description>
 
@@ -589,7 +589,7 @@ Version 1.0 dated 2006-09-05.]]>
       <discovery label="Sonarlint" url="http://eclipse.sonarlint.org/"/>
 
       <!-- Preesm Repo -->
-      <discovery label="Preesm" url="http://preesm.sourceforge.net/gensite/update-site/complete/"/>
+      <discovery label="Preesm" url="http://preesm.insa-rennes.fr/repo/complete/"/>
    </url>
 
    <!-- This section defines what features are required -->

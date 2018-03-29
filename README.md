@@ -13,14 +13,14 @@ PREESM (the Parallel and Real-time Embedded Executives Scheduling Method) is an 
 
 ## Documentation
 
-Documentation is available online at http://preesm.sourceforge.net/website/
+Documentation is available online at http://preesm.org/website/
 
 ## Install
 
 Releases are available online:
 
-*   On the [SourceForge File Release Service](https://sourceforge.net/projects/preesm/files/Releases/) to get Eclipse products;
-*   From the [Eclipse update site](http://preesm.sourceforge.net/eclipse/update-site/) to complement an already setup Eclipse;
+*   On the [GitHub Releases Page](https://github.com/preesm/preesm/releases/) to get Eclipse products;
+*   From the [Eclipse Update Site](http://preesm.insa-rennes.fr/repo/complete/) to complement an already setup Eclipse;
 
 ## Changelog
 
