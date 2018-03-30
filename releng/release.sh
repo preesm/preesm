@@ -3,7 +3,7 @@
 ### Config
 DEV_BRANCH=develop
 MAIN_BRANCH=master
-REPO=antoine-morvan/preesm
+REPO=preesm/preesm
 
 if [ "$#" -ne "1" ]; then
   CURRENT_VERSION=`mvn -B -Dtycho.mode=maven help:evaluate -Dexpression=project.version | grep -v 'INFO'`
