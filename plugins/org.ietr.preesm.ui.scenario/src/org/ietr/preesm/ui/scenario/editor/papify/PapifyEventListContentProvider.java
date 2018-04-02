@@ -62,8 +62,6 @@ public class PapifyEventListContentProvider implements IStructuredContentProvide
   @Override
   public Object[] getElements(final Object inputElement) {
 
-    // String[] elementTable = { "Timing", "Event1", "Event2", "Event3", "Event4", "Event5" };
-
     Object[] elementTable = null;
 
     if (inputElement instanceof PapiEventInfo) {

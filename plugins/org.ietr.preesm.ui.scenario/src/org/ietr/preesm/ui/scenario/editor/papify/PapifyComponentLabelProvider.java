@@ -92,15 +92,6 @@ public class PapifyComponentLabelProvider implements ITableLabelProvider, Select
   @Override
   public String getColumnText(final Object element, final int columnIndex) {
 
-    /*
-     * int component = 0;
-     * 
-     * String elementName = (String) element;
-     * 
-     * for (int i = 0; i < componentNames.length; i++) { if (elementName.equals(componentNames[i])) { component = i; } } switch (columnIndex) { case 0://
-     * Parsing column return componentNames[component]; case 1:// Evaluation column return componentTypes[component]; default:// Others break; }
-     */
-
     PapiComponent elementParsed = (PapiComponent) element;
     switch (columnIndex) {
       case 0:// Parsing column

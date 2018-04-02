@@ -37,9 +37,13 @@
  */
 package org.ietr.preesm.ui.scenario.editor.papify;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.ietr.preesm.core.scenario.papi.PapiComponent;
 import org.ietr.preesm.core.scenario.papi.PapiEventInfo;
+import org.ietr.preesm.core.scenario.papi.PapiEventSet;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -61,7 +65,28 @@ public class PapifyComponentListContentProvider implements IStructuredContentPro
 
     if (inputElement instanceof PapiEventInfo) {
       final PapiEventInfo inputPapiEventInfo = (PapiEventInfo) inputElement;
-      elementTable = inputPapiEventInfo.getComponents().toArray();
+      PapiComponent compAux = null;
+      List<PapiComponent> componentList = new ArrayList<>();
+      PapiEventSet eventSetAux = null;
+
+      boolean checkingEvents = false;
+      boolean componentAdded = false;
+
+      for (int i = 0; i < inputPapiEventInfo.getComponents().size(); i++) {
+        compAux = inputPapiEventInfo.getComponents().get(i);
+        for (int j = 0; j < compAux.getEventSets().size(); j++) {
+          eventSetAux = compAux.getEventSets().get(j);
+          checkingEvents = eventSetAux.getEvents().isEmpty();
+          if (!checkingEvents) {
+            componentAdded = true;
+          }
+        }
+        if (componentAdded) {
+          componentAdded = false;
+          componentList.add(compAux);
+        }
+      }
+      elementTable = componentList.toArray();
     }
 
     return elementTable;

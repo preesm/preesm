@@ -94,15 +94,6 @@ public class PapifyEventLabelProvider implements ITableLabelProvider, SelectionL
   @Override
   public String getColumnText(final Object element, final int columnIndex) {
 
-    /*
-     * int component = 0;
-     * 
-     * String elementName = (String) element;
-     * 
-     * for (int i = 0; i < eventNames.length; i++) { if (elementName.equals(eventNames[i])) { component = i; } } switch (columnIndex) { case 0:// Parsing column
-     * return eventNames[component]; case 1:// Evaluation column return eventDescr[component]; default:// Others break; }
-     */
-
     PapiEvent elementParsed = (PapiEvent) element;
     switch (columnIndex) {
       case 0:// Parsing column
