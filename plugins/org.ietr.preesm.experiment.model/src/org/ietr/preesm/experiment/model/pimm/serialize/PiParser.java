@@ -465,8 +465,8 @@ public class PiParser {
     // Find the source and target of the fifo
     final String sourceName = edgeElt.getAttribute(PiIdentifiers.FIFO_SOURCE);
     final String targetName = edgeElt.getAttribute(PiIdentifiers.FIFO_TARGET);
-    final AbstractVertex source = graph.lookupVertex(sourceName);
-    final AbstractVertex target = graph.lookupVertex(targetName);
+    final AbstractActor source = (AbstractActor) graph.lookupVertex(sourceName);
+    final AbstractActor target = (AbstractActor) graph.lookupVertex(targetName);
 
     if (source == null) {
       throw new PiGraphException("Edge source vertex " + sourceName + " does not exist.");

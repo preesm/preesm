@@ -162,7 +162,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
       return true;
     }
 
-    // False if the target is an outputPort
+    // False if the target is a data port
     if ((target != null) && ((target instanceof DataOutputPort) || (target instanceof DataInputPort))) {
       // Create tooltip message
       PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),

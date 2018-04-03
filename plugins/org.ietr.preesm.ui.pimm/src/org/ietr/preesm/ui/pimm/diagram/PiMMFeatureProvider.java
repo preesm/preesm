@@ -405,6 +405,14 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       features.add(new SetFifoTypeFeature(this));
     }
 
+    if (obj instanceof Delay) {
+      final ICustomFeature[] delayFeatures = new ICustomFeature[] { new SetActorRefinementFeature(this), new ClearActorRefinementFeature(this),
+          new OpenRefinementFeature(this) };
+      for (final ICustomFeature feature : delayFeatures) {
+        features.add(feature);
+      }
+    }
+
     return features.toArray(new ICustomFeature[features.size()]);
 
   }

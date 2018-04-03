@@ -233,6 +233,14 @@ class PiGraph extends AbstractActor, Graph {
 	op Delay lookupDelay(String delayId) {
 		return delays.findFirst[it.name == delayId]
 	}
+	
+	op unique Fifo[] getFifosWithDelay() {
+		return (fifos.filter[delay !== null]).toEList.unmodifiableView
+	}
+	
+	op unique Fifo[] getFifosWithoutDelay() {
+		return (fifos.filter[delay === null]).toEList.unmodifiableView
+	}
 }
 
 abstract class ExecutableActor extends AbstractActor {

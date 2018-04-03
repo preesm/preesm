@@ -51,6 +51,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -92,11 +93,12 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     // connection.
     // We assume that the canStartConnection is already true
 
-    // Refresh to remove all remaining tooltip;
+    // Refresh to remove all remaining tooltip
     getDiagramBehavior().refresh();
 
     // True if the connection is created between an input and an output port
-    final Port target = getPort(context.getTargetAnchor());
+    final Port target = getTargetPort(context, context.getTargetAnchor());
+
     final boolean targetOK = ((target != null) && (target instanceof DataInputPort));
     if (targetOK) {
       // Check that no Fifo is connected to the ports
@@ -117,7 +119,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
       return false;
     }
 
-    // False if the target is an outputPort
+    // False if the target is a config input port
     if ((target != null) && (target instanceof ConfigInputPort)) {
       // Create tooltip message
       PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
@@ -190,6 +192,24 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     return null;
   }
 
+  protected Port getSourcePort(final ICreateConnectionContext context, Anchor sourceAnchor) {
+    final PictogramElement sourcePe = context.getSourcePictogramElement();
+    final Object obj = getBusinessObjectForPictogramElement(sourcePe);
+    if (obj instanceof Delay) {
+      return (Port) ((Delay) obj).getGetterPort();
+    }
+    return getPort(sourceAnchor);
+  }
+
+  protected Port getTargetPort(final ICreateConnectionContext context, Anchor targetAnchor) {
+    final PictogramElement targetPe = context.getTargetPictogramElement();
+    final Object obj = getBusinessObjectForPictogramElement(targetPe);
+    if (obj instanceof Delay) {
+      return (Port) ((Delay) obj).getSetterPort();
+    }
+    return getPort(targetAnchor);
+  }
+
   /*
    * (non-Javadoc)
    *
@@ -202,8 +222,8 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     // get Ports which should be connected
     Anchor sourceAnchor = context.getSourceAnchor();
     Anchor targetAnchor = context.getTargetAnchor();
-    Port source = getPort(sourceAnchor);
-    Port target = getPort(targetAnchor);
+    Port source = getSourcePort(context, sourceAnchor);
+    Port target = getTargetPort(context, targetAnchor);
 
     // Create the sourcePort if needed
     if (source == null) {
@@ -261,9 +281,11 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
    */
   @Override
   public boolean canStartConnection(final ICreateConnectionContext context) {
+
     // Return true if the connection starts at an output port (config or
     // not)
-    final Port source = getPort(context.getSourceAnchor());
+    Anchor sourceAnchor = context.getSourceAnchor();
+    final Port source = getSourcePort(context, sourceAnchor);
     if ((source != null) && (source instanceof DataOutputPort)) {
       // Check that no Fifo is connected to the ports
       if (((DataOutputPort) source).getOutgoingFifo() == null) {

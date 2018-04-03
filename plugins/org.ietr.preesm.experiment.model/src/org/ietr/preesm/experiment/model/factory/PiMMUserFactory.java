@@ -162,8 +162,8 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
     // Create ports here and force their name
     final DelaySetterPort setter = PiMMUserFactory.instance.createDelaySetterPort();
     final DelayGetterPort getter = PiMMUserFactory.instance.createDelayGetterPort();
-    res.getAllDelayPorts().add(setter);
-    res.getAllDelayPorts().add(getter);
+    res.getAllDataPorts().add(setter);
+    res.getAllDataPorts().add(getter);
     res.getSetterPort().setName("set");
     res.getGetterPort().setName("get");
 

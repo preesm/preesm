@@ -207,6 +207,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
       for (final AbstractVertex v : this.graph.getActors()) {
         pasteFeature.addGraphicalRepresentationForVertex(v, 0, 0);
       }
+
       for (final Fifo fifo : this.graph.getFifos()) {
         final FreeFormConnection pe = pasteFeature.addGraphicalRepresentationForFifo(fifo);
         final Delay delay = fifo.getDelay();

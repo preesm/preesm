@@ -449,7 +449,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     layoutActors(diagram);
 
     // Step 4 - Layout fifo connections
-    layoutFifos(diagram);
+    // layoutFifos(diagram);
 
     // Step 5 - Layout Parameters and dependencies
     layoutParameters(diagram);
