@@ -502,13 +502,20 @@ public class PiParser {
     // Check if the fifo has a delay
 
     final String fifoDelay = PiParser.getProperty(edgeElt, PiIdentifiers.DELAY);
-    if ((fifoDelay != null) && !fifoDelay.isEmpty()) {
-      // Find the delay of the FIFO
-      final Delay delay = graph.lookupDelay(fifoDelay);
-      if (delay == null) {
-        throw new PiGraphException("Edge delay " + fifoDelay + " does not exist.");
+    if ((fifoDelay != null)) {
+      Delay delay;
+      if (fifoDelay.isEmpty()) {
+        // Support for old ".pi" files
+        delay = PiMMUserFactory.instance.createDelay();
+        delay.getSizeExpression().setExpressionString(edgeElt.getAttribute(PiIdentifiers.DELAY_EXPRESSION));
+      } else {
+        // Find the delay of the FIFO
+        // Delays are now seen as nodes so the delay is already created and parsed by now
+        delay = graph.lookupDelay(fifoDelay);
+        if (delay == null) {
+          throw new PiGraphException("Edge delay " + fifoDelay + " does not exist.");
+        }
       }
-
       // Adds the delay to the FIFO (and sets the FIFO of the delay at the same time)
       fifo.setDelay(delay);
     }
