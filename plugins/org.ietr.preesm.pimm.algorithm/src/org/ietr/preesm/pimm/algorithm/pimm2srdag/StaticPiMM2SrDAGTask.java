@@ -7,7 +7,10 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.algorithm.model.visitors.VisitorOutput;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
@@ -16,6 +19,7 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.mapper.model.MapperDAG;
+import org.ietr.preesm.mapper.model.MapperEdgeFactory;
 import org.ietr.preesm.pimm.algorithm.pimm2srdag.StaticPiMM2SrDAGLauncher.StaticPiMM2SrDAGException;
 
 /**
@@ -38,22 +42,25 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
 
     final StaticPiMM2SrDAGLauncher launcher = new StaticPiMM2SrDAGLauncher(scenario, graph);
 
-    MapperDAG result = null;
+    MapperDAG result = new MapperDAG(new MapperEdgeFactory(), new SDFGraph());
+    final Logger logger = WorkflowLogger.getLogger();
+    VisitorOutput.setLogger(logger);
     try {
+      logger.setLevel(Level.FINEST);
+      logger.log(Level.FINER, "Computing Repetition Vector for graph " + graph.getName());
       // Check the consistency of the PiGraph and compute the associated Basic Repetition Vector
       final boolean consistent = launcher.computeBRV();
-      if (consistent) {
-        // Convert the PiGraph to the Single-Rate Directed Acyclic Graph
-        result = launcher.launch();
-      }
+      // if (consistent) {
+      // // Convert the PiGraph to the Single-Rate Directed Acyclic Graph
+      // result = launcher.launch();
+      // }
     } catch (final StaticPiMM2SrDAGException e) {
-      final WorkflowLogger logger = WorkflowLogger.getLogger();
       logger.log(Level.WARNING, e.getMessage());
     }
 
     final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, result);
-    return output;
+    return new LinkedHashMap<>();
   }
 
   /*

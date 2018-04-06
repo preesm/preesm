@@ -124,20 +124,9 @@
          </outputs>
       </task>
       <task
-            id="org.ietr.preesm.pimm.algorithm.PiMM2SrDaGTask"
-            name="PiMM2SrDaG"
-            type="org.ietr.preesm.pimm.algorithm.pimm2srdag">
-         <outputs>
-            <output
-                  id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
-            </output>
-         </outputs>
-         <outputs>
-            <output
-                  id="DAG">
-            </output>
-         </outputs>
+            id="org.ietr.preesm.experiment.pimm2srdag.StaticPiMM2SrDAGTask"
+            name="Static PiMM to Single-Rate DAG transformation"
+            type="org.ietr.preesm.pimm.algorithm.pimm2srdag.StaticPiMM2SrDAGTask">
          <inputs>
             <input
                   id="PiMM"
@@ -146,12 +135,6 @@
             <input
                   id="scenario"
                   object="org.ietr.preesm.core.scenario.PreesmScenario">
-            </input>
-         </inputs>
-         <inputs>
-            <input
-                  id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
             </input>
          </inputs>
       </task>

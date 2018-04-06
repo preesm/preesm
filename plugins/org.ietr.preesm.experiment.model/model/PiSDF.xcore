@@ -212,6 +212,15 @@ class PiGraph extends AbstractActor, Graph {
 	op unique AbstractActor[] getAllActors() {
 		return (actors + childrenGraphs.map[allActors].flatten).toEList.unmodifiableView
 	}
+	
+	op unique DataInputInterface[] getDataInputInterfaces() {
+		return actors.filter(DataInputInterface).toEList.unmodifiableView
+	}
+	
+	op unique DataOutputInterface[] getDataOutputInterfaces() {
+		return actors.filter(DataOutputInterface).toEList.unmodifiableView
+	}
+	
 	op Parameter lookupParameterGivenGraph(String parameterName , String graphName) {
 		return allParameters.findFirst[it.name == parameterName && (it.containingPiGraph).name == graphName]
 	}

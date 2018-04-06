@@ -11,7 +11,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtend.lib;bundle-version="2.11.0",
  org.ietr.preesm.core,
  org.ietr.preesm.codegen,
- org.ietr.preesm.evaluator
+ org.ietr.preesm.evaluator,
+ org.apache.commons.lang3
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.ietr.preesm.pimm.algorithm.checker,
