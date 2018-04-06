@@ -123,6 +123,38 @@
             </output>
          </outputs>
       </task>
+      <task
+            id="org.ietr.preesm.pimm.algorithm.PiMM2SrDaGTask"
+            name="PiMM2SrDaG"
+            type="org.ietr.preesm.pimm.algorithm.pimm2srdag">
+         <outputs>
+            <output
+                  id="DAG"
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </output>
+         </outputs>
+         <outputs>
+            <output
+                  id="DAG">
+            </output>
+         </outputs>
+         <inputs>
+            <input
+                  id="PiMM"
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+         </inputs>
+         <inputs>
+            <input
+                  id="PiMM"
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+            </input>
+         </inputs>
+      </task>
    </extension>
 
 </plugin>
