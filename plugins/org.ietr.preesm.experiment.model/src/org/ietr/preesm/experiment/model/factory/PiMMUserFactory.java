@@ -173,7 +173,6 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
     // Creates the default refinement
     // TODO try to find better solution
     final CHeaderRefinement hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
-    hrefinement.setLoopPrototype(null);
     final FunctionPrototype proto = PiMMUserFactory.instance.createFunctionPrototype();
     proto.setName("defaultDelayInit");
     proto.getParameters().add(PiMMUserFactory.instance.createFunctionParameter());
@@ -184,7 +183,8 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
     proto.getParameters().get(1).setName("fifo");
     proto.getParameters().get(1).setType("void*");
     proto.getParameters().get(1).setDirection(Direction.OUT);
-    hrefinement.setInitPrototype(proto);
+    hrefinement.setInitPrototype(null);
+    hrefinement.setLoopPrototype(proto);
     hrefinement.setFilePath(new Path("include/memory.h"));
     res.setRefinement(hrefinement);
     return res;

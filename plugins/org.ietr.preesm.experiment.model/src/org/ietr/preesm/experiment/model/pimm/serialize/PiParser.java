@@ -568,13 +568,13 @@ public class PiParser {
       // Checks the validity of the H refinement of the delay
       if (delay.getRefinement() instanceof CHeaderRefinement) {
         CHeaderRefinement hrefinement = (CHeaderRefinement) delay.getRefinement();
-        if (hrefinement.getLoopPrototype() != null) {
-          throw new PiGraphException("A delay can not have a loop refinement.");
-        }
+        // if (hrefinement.getLoopPrototype() != null) {
+        // throw new PiGraphException("A delay can not have a loop refinement.");
+        // }
         if (!delay.isValidRefinement(hrefinement)) {
           throw new PiGraphException("Delay INIT prototype must match following prototype: void init(IN int size, OUT <type>* fifo)");
         }
-        final String delayInitPrototype = "Delay INIT function used: " + hrefinement.getInitPrototype().getName();
+        final String delayInitPrototype = "Delay INIT function used: " + hrefinement.getLoopPrototype().getName();
         WorkflowLogger.getLogger().log(Level.FINE, delayInitPrototype);
       }
     }
