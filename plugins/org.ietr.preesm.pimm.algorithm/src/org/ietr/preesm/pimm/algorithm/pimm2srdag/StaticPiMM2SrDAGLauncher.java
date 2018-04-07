@@ -36,8 +36,10 @@
  */
 package org.ietr.preesm.pimm.algorithm.pimm2srdag;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -109,13 +111,13 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
    * @throws StaticPiMM2SrDAGException
    *           the static pi MM 2 SDF exception
    */
-  public boolean computeBRV() throws StaticPiMM2SrDAGException {
+  public boolean computeBRV(int method) throws StaticPiMM2SrDAGException {
     // Get all the available values for all the parameters
     this.parametersValues = getParametersValues();
     // Resolve all parameters
     resolveAllParameters(this.graph);
     // Compute Repetition Vector
-    doComputeBRV(this.graph, graphBRV);
+    doComputeBRV(this.graph, graphBRV, "");
     return true;
   }
 
@@ -252,24 +254,32 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
    * @throws StaticPiMM2SrDAGException
    *           the static pi MM 2 SDF exception
    */
-  protected void doComputeBRV(final PiGraph graph, Map<AbstractVertex, Integer> brv) throws StaticPiMM2SrDAGException {
+  protected void doComputeBRV(final PiGraph graph, Map<AbstractVertex, Integer> brv, final String hierarchyName) throws StaticPiMM2SrDAGException {
     Hashtable<String, Fraction> reps = new Hashtable<>();
+    List<AbstractActor> listActor = new ArrayList<>();
+
     // Initializes all reps to 0
-    for (final AbstractActor actor : graph.getAllActors()) {
+    // Starts with actors
+    for (final AbstractActor actor : graph.getActors()) {
       // Ignore interface actor
       if (actor instanceof InterfaceActor) {
         continue;
       }
       reps.put(actor.getName(), Fraction.getFraction(0));
+      listActor.add(actor);
+    }
+    // Do delays with connected actors
+    for (final Delay delay : graph.getDelays()) {
+      if (delay.hasGetterActor() || delay.hasSetterActor()) {
+        reps.put(delay.getName(), Fraction.getFraction(0));
+        listActor.add(delay);
+      }
     }
 
-    // Pick the first non interface actor and do a DFS to compute RV
-    AbstractActor firstActor = graph.getAllActors().get(0);
-    int i = 1;
-    while (firstActor instanceof InterfaceActor && i < graph.getAllActors().size()) {
-      firstActor = graph.getAllActors().get(i);
-      i++;
-    }
+    // Pick the first non interface actor and do a Depth First Search to compute RV
+    AbstractActor firstActor = listActor.get(0);
+    // TODO fix algorithm to use SPiDER implementation that uses FIFOs instead of Actors as tree search basis
+    // This will avoid failing consistency check on non fully connected graph
     SetReps(graph, firstActor, Fraction.getFraction(1), reps);
 
     // Computes the lcm of the denominators
@@ -279,11 +289,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     }
 
     // Set actors repetition factor
-    for (AbstractActor actor : graph.getAllActors()) {
-      // Ignore interface actor
-      if (actor instanceof InterfaceActor) {
-        continue;
-      }
+    for (AbstractActor actor : listActor) {
       final int num = reps.get(actor.getName()).getNumerator();
       final int denom = reps.get(actor.getName()).getDenominator();
       final int rv = (int) ((num * lcm) / denom);
@@ -296,14 +302,11 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
       int cons = (int) (ExpressionEvaluator.evaluate(f.getTargetPort().getPortRateExpression()));
       final AbstractActor sourceActor = f.getSourcePort().getContainingActor();
       final AbstractActor targetActor = f.getTargetPort().getContainingActor();
-      if (targetActor instanceof Delay || sourceActor instanceof Delay || targetActor instanceof InterfaceActor || sourceActor instanceof InterfaceActor) {
+      if (targetActor instanceof InterfaceActor || sourceActor instanceof InterfaceActor) {
         continue;
       }
       int sourceRV = this.graphBRV.get(sourceActor);
       int targetRV = this.graphBRV.get(targetActor);
-      if ((f.getSourcePort().getContainingActor() instanceof InterfaceActor) || (f.getTargetPort().getContainingActor() instanceof InterfaceActor)) {
-        continue;
-      }
       if (sourceRV * prod != targetRV * cons) {
         throw new StaticPiMM2SrDAGException(
             "Graph non consistent: edge source production " + Integer.toString(prod) + "!= edge target consumption " + Integer.toString(cons));
@@ -340,18 +343,21 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     final Logger logger = WorkflowLogger.getLogger();
     VisitorOutput.setLogger(logger);
     logger.setLevel(Level.FINER);
-    for (AbstractActor actor : graph.getAllActors()) {
+    for (AbstractActor actor : listActor) {
       // Ignore interface actor
       if (actor instanceof InterfaceActor) {
         continue;
       }
-      int rv = this.graphBRV.get(actor);
-      this.graphBRV.put(actor, rv * scaleFactor);
-      logger.log(Level.FINER, actor.getName() + "x" + Integer.toString(rv * scaleFactor));
+      int newRV = this.graphBRV.get(actor) * scaleFactor;
+      this.graphBRV.put(actor, newRV);
+      if ((actor instanceof Delay) && newRV != 1) {
+        throw new StaticPiMM2SrDAGException("Inconsistent graph. Delay [" + actor.getName() + "] with a repetition vector of " + Integer.toString(newRV));
+      }
+      logger.log(Level.INFO, hierarchyName + actor.getName() + " x" + Integer.toString(newRV));
     }
 
     for (final PiGraph g : graph.getChildrenGraphs()) {
-      doComputeBRV(g, brv);
+      doComputeBRV(g, brv, hierarchyName + g.getName() + "_");
     }
   }
 
@@ -362,6 +368,8 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     // DFS forward
     for (DataOutputPort output : a.getDataOutputPorts()) {
       Fifo fifo = output.getOutgoingFifo();
+      // TODO if FIFO is null and consumption / production of the port non null
+      // throw exception
       if (fifo == null) {
         continue;
       }
