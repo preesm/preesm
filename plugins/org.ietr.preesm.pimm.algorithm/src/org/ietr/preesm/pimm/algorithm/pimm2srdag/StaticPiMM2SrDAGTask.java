@@ -56,7 +56,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
     VisitorOutput.setLogger(logger);
     try {
       logger.setLevel(Level.FINEST);
-      logger.log(Level.INFO, "Computing Repetition Vector for graph " + graph.getName());
+      logger.log(Level.INFO, "Computing Repetition Vector for graph [" + graph.getName() + "]");
       // Check the consistency of the PiGraph and compute the associated Basic Repetition Vector
       // We use Topology-Matrix based method by default
       final String consistencyMethod = parameters.get(StaticPiMM2SrDAGTask.CONSISTENCY_METHOD);
@@ -72,7 +72,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
       // result = launcher.launch();
       // }
     } catch (final StaticPiMM2SrDAGException e) {
-      logger.log(Level.WARNING, e.getMessage());
+      logger.log(Level.SEVERE, e.getMessage());
     }
 
     final Map<String, Object> output = new LinkedHashMap<>();
