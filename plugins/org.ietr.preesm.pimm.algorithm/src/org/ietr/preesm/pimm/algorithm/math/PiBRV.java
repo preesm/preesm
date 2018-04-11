@@ -6,7 +6,6 @@ package org.ietr.preesm.pimm.algorithm.math;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
@@ -103,10 +102,21 @@ public abstract class PiBRV {
       final Fifo fifo = ((DataOutputPort) in.getDataPort()).getOutgoingFifo();
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
       if (!(targetActor instanceof InterfaceActor) && subgraph.contains(targetActor)) {
-        float prod = (float) (ExpressionEvaluator.evaluate(fifo.getSourcePort().getPortRateExpression()));
-        float cons = (float) (ExpressionEvaluator.evaluate(fifo.getTargetPort().getPortRateExpression()));
         int targetRV = this.graphBRV.get(targetActor);
-        scaleFactor = Math.max(scaleFactor, (int) Math.ceil(prod / (cons * targetRV)));
+        int prod = Integer.parseInt(fifo.getSourcePort().getPortRateExpression().getExpressionString());
+        int cons = Integer.parseInt(fifo.getTargetPort().getPortRateExpression().getExpressionString());
+        int tmp = scaleFactor * cons * targetRV;
+        if (tmp < prod) {
+          int scaleScaleFactor = prod / tmp;
+          if (scaleScaleFactor * tmp < prod) {
+            scaleFactor *= (scaleScaleFactor + 1);
+          } else {
+            scaleFactor *= scaleScaleFactor;
+          }
+        }
+        // float prod = Float.parseFloat(fifo.getSourcePort().getPortRateExpression().getExpressionString());
+        // float cons = Float.parseFloat(fifo.getTargetPort().getPortRateExpression().getExpressionString());
+        // scaleFactor = Math.max(scaleFactor, (int) Math.ceil(prod / (cons * targetRV)));
       }
     }
 
@@ -115,10 +125,21 @@ public abstract class PiBRV {
       final Fifo fifo = ((DataInputPort) out.getDataPort()).getIncomingFifo();
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
       if (!(sourceActor instanceof InterfaceActor) && subgraph.contains(sourceActor)) {
-        float prod = (float) (ExpressionEvaluator.evaluate(fifo.getSourcePort().getPortRateExpression()));
-        float cons = (float) (ExpressionEvaluator.evaluate(fifo.getTargetPort().getPortRateExpression()));
+        int prod = Integer.parseInt(fifo.getSourcePort().getPortRateExpression().getExpressionString());
+        int cons = Integer.parseInt(fifo.getTargetPort().getPortRateExpression().getExpressionString());
         int sourceRV = this.graphBRV.get(sourceActor);
-        scaleFactor = Math.max(scaleFactor, (int) Math.ceil(prod / (cons * sourceRV)));
+        int tmp = scaleFactor * prod * sourceRV;
+        if (tmp < cons) {
+          int scaleScaleFactor = cons / tmp;
+          if (scaleScaleFactor * tmp < cons) {
+            scaleFactor *= (scaleScaleFactor + 1);
+          } else {
+            scaleFactor *= scaleScaleFactor;
+          }
+        }
+        // float prod = Float.parseFloat(fifo.getSourcePort().getPortRateExpression().getExpressionString());
+        // float cons = Float.parseFloat(fifo.getTargetPort().getPortRateExpression().getExpressionString());
+        // scaleFactor = Math.max(scaleFactor, (int) Math.ceil(cons / (prod * sourceRV)));
       }
     }
 

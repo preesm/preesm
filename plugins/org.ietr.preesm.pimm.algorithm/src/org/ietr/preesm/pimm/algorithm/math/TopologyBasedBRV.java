@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.ietr.dftools.algorithm.Rational;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.pimm.algorithm.math.PiMMHandler.PiMMHandlerException;
@@ -40,10 +39,10 @@ public class TopologyBasedBRV extends PiBRV {
       return false;
     }
     // Get all sub graph composing the current graph
-    final List<List<AbstractActor>> subgraphsWOInterfaces = this.piHandler.getAllSubgraphsWOInterfaces();
+    final List<List<AbstractActor>> subgraphsWOInterfaces = this.piHandler.getAllConnectedComponentsWOInterfaces();
     for (final List<AbstractActor> subgraph : subgraphsWOInterfaces) {
       // Construct the list of Edges without interfaces
-      List<Fifo> listFifo = this.piHandler.getFifosFromSubgraphWOSelfLoop(subgraph);
+      List<Fifo> listFifo = this.piHandler.getFifosFromCCWOSelfLoop(subgraph);
 
       // Get the topology matrix
       if (subgraph.isEmpty()) {
@@ -77,17 +76,19 @@ public class TopologyBasedBRV extends PiBRV {
       topologyBRV.execute();
       this.graphBRV.putAll(topologyBRV.getBRV());
     }
-    WorkflowLogger.getLogger().log(Level.INFO, "Graph [" + this.piHandler.getReferenceGraph().getName() + "]consistent");
+    // WorkflowLogger.getLogger().log(Level.INFO, "Graph [" + this.piHandler.getReferenceGraph().getName() + "]consistent");
     return true;
   }
 
-  private double[][] getTopologyMatrix(final List<Fifo> listFifo, final List<AbstractActor> listActor) throws PiMMHandlerException {
-    double[][] topologyMatrix = new double[listFifo.size()][listActor.size()];
+  private double[][] getTopologyMatrix(final List<Fifo> listFifo, final List<AbstractActor> subgraph) throws PiMMHandlerException {
+    double[][] topologyMatrix = new double[listFifo.size()][subgraph.size()];
     for (final Fifo fifo : listFifo) {
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
-      int prod = (int) (ExpressionEvaluator.evaluate(fifo.getSourcePort().getPortRateExpression()));
-      int cons = (int) (ExpressionEvaluator.evaluate(fifo.getTargetPort().getPortRateExpression()));
+      // int prod = (int) (ExpressionEvaluator.evaluate(fifo.getSourcePort().getPortRateExpression()));
+      // int cons = (int) (ExpressionEvaluator.evaluate(fifo.getTargetPort().getPortRateExpression()));
+      int prod = Integer.parseInt(fifo.getSourcePort().getPortRateExpression().getExpressionString());
+      int cons = Integer.parseInt(fifo.getTargetPort().getPortRateExpression().getExpressionString());
       if (prod < 0 || cons < 0) {
         final String prodString = "Prod: " + Integer.toString(prod) + "\n";
         final String consString = "Cons: " + Integer.toString(cons) + "\n";
@@ -95,12 +96,12 @@ public class TopologyBasedBRV extends PiBRV {
         PiMMHandler hdl = new PiMMHandler();
         throw hdl.new PiMMHandlerException("Fifo [" + fifo.getId() + "]\n" + prodString + consString + errorString);
       }
-      final int sourceIndex = listActor.indexOf(sourceActor);
-      final int targetIndex = listActor.indexOf(targetActor);
+      final int sourceIndex = subgraph.indexOf(sourceActor);
+      final int targetIndex = subgraph.indexOf(targetActor);
       if (sourceIndex < 0 || targetIndex < 0) {
         PiMMHandler hdl = new PiMMHandler();
-        throw hdl.new PiMMHandlerException(
-            "Bad index error:\nSource actor index [" + sourceActor.getName() + "]\n" + "Target actor index [" + targetActor.getName() + "]\n");
+        throw hdl.new PiMMHandlerException("Bad index error:\nSource actor index [" + sourceActor.getName() + "]: " + Integer.toString(sourceIndex)
+            + "\nTarget actor index [" + targetActor.getName() + "]: " + Integer.toString(targetIndex));
       }
       topologyMatrix[listFifo.indexOf(fifo)][sourceIndex] = prod;
       topologyMatrix[listFifo.indexOf(fifo)][targetIndex] = -cons;

@@ -16,7 +16,6 @@ import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PortKind;
 import org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl;
 
 /**
@@ -32,11 +31,30 @@ public class PiMMHandler extends PiGraphImpl {
   /** List of children graph */
   private List<PiMMHandler> childrenList;
 
-  /** List of subgraphs contained in a graph */
-  private List<List<AbstractActor>> subgraphs;
+  /**
+   * List of connectedComponents contained in a graph
+   * 
+   * {@literal text
+   * A Connected Component (CC) is defined as fully connected list of vertex inside a graph.. 
+   * A PiSDF graph may contain multiple CCs not linked together.
+   * 
+   * Example of a given PiGraph:
+   *  ______________________________________
+   * |                                      |
+   * |    V - V0      Connected component 1 |
+   * |     \                                |
+   * |      V1                              |
+   * |                                      |
+   * |        C                             |
+   * |       / \                            |
+   * |  I - A - B     Connected component 2 |
+   * |______________________________________|
+   *  }
+   */
+  private List<List<AbstractActor>> listConnectedComponents;
 
-  /** List of subgraphs without interfaces contained in a graph */
-  private List<List<AbstractActor>> subgraphsWOInterfaces;
+  /** List of connectedComponents without interface actors contained in the PiGraph graph */
+  private List<List<AbstractActor>> listCCWOInterfaces;
 
   private static void generateChildren(final PiGraph graph, List<PiMMHandler> childrenList) {
     for (final PiGraph g : graph.getChildrenGraphs()) {
@@ -53,8 +71,8 @@ public class PiMMHandler extends PiGraphImpl {
   public PiMMHandler(final PiGraph graph) {
     this.graph = graph;
     this.childrenList = new ArrayList<PiMMHandler>();
-    this.subgraphs = new ArrayList<>();
-    this.subgraphsWOInterfaces = new ArrayList<>();
+    this.listConnectedComponents = new ArrayList<>();
+    this.listCCWOInterfaces = new ArrayList<>();
     generateChildren(this.graph, this.childrenList);
   }
 
@@ -109,139 +127,157 @@ public class PiMMHandler extends PiGraphImpl {
     } else {
       this.graph.getActors().add(actor);
     }
+    // TODO
     // Update properties
   }
 
   /**
-   * Returns the FIFOs of a given subgraph. The function is coherent with the type of subgraph passed as input. This means that if no interface actor are
-   * present in the subgraph, the function will not return any FIFO connected to an interface actor.
+   * Test if a given CC contains an interface actor or not.
    * 
-   * First access can be slow since the List of subgraph has to be computed.
    * 
-   * @return all FIFOs contained in the subgraph, null if the subgraph is empty
-   * @throws PiMMHandlerException
-   *           the PiMMHandlerException exception
+   * @param cc
+   *          the connected component to test
+   * @return true if an InterfaceActor has been found, false else
    */
-  public List<Fifo> getFifosFromSubgraph(List<AbstractActor> subgraph) throws PiMMHandlerException {
-    if (subgraph.isEmpty()) {
-      WorkflowLogger.getLogger().log(Level.INFO, "No FIFOs to extrac, empty subgraph.");
-      return Collections.<Fifo>emptyList();
-    }
-    boolean hasInterfaceActors = false;
-    for (final AbstractActor actor : subgraph) {
+  private static boolean containsInterfaceActors(final List<AbstractActor> cc) {
+    for (final AbstractActor actor : cc) {
       if (actor instanceof InterfaceActor) {
-        hasInterfaceActors = true;
-        break;
+        return true;
       }
     }
-    List<Fifo> fifos = new ArrayList<>();
-    for (final AbstractActor actor : subgraph) {
-      for (final DataPort port : actor.getAllDataPorts()) {
-        final Fifo fifo = port.getKind() == PortKind.DATA_INPUT ? ((DataInputPort) port).getIncomingFifo() : ((DataOutputPort) port).getOutgoingFifo();
-        if (fifo == null) {
-          throw new PiMMHandlerException(noFIFOExceptionMessage(actor, port));
-        }
-        final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
-        final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
-        if (!hasInterfaceActors && (sourceActor instanceof InterfaceActor || targetActor instanceof InterfaceActor)) {
-          continue;
-        }
-        if (!fifos.contains(fifo)) {
-          fifos.add(fifo);
-        }
-      }
-    }
-    return fifos;
+    return false;
   }
 
   /**
-   * Returns the FIFOs of a given subgraph. Self-loop FIFOs are ignored.
+   * Returns the FIFOs contained in a given connectedComponent.<br>
+   * The function is coherent with the type of connectedComponent passed as input. <br>
+   * This means that if no interface actor are present in the CC, the function will not return any FIFO connected to an interface actor.
    * 
-   * First access can be slow since the List of subgraph has to be computed.
+   * First call to the method will be slower as it needs to extract the FIFOs.<br>
+   * Subsequent calls will directly return the corresponding list.
    * 
-   * @return all FIFOs contained in the subgraph, null if the subgraph is empty
+   * @param cc
+   *          the connectedComponent to evaluate
+   * @return all FIFOs contained in the connectedComponent, null if the connectedComponent is empty
    * @throws PiMMHandlerException
    *           the PiMMHandlerException exception
    */
-  public List<Fifo> getFifosFromSubgraphWOSelfLoop(List<AbstractActor> subgraph) throws PiMMHandlerException {
-    if (subgraph.isEmpty()) {
-      WorkflowLogger.getLogger().log(Level.INFO, "No FIFOs to extrac, empty subgraph.");
+  public List<Fifo> getFifosFromCC(List<AbstractActor> cc) throws PiMMHandlerException {
+    if (cc.isEmpty()) {
+      WorkflowLogger.getLogger().log(Level.INFO, "No FIFOs to extrac, empty connectedComponent.");
       return Collections.<Fifo>emptyList();
     }
-    List<Fifo> fifos = getFifosFromSubgraph(subgraph);
-    fifos.removeIf(fifo -> (fifo.getSourcePort().getContainingActor() == fifo.getTargetPort().getContainingActor()));
-    // for (final Fifo fifo : fifos) {
-    // final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
-    // final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
-    // if ((sourceActor == targetActor)) {
-    // fifos.remove(fifo);
-    // }
-    // }
+    final boolean containsInterfaceActors = containsInterfaceActors(cc);
+    List<Fifo> fifos = new ArrayList<>();
+    for (final AbstractActor actor : cc) {
+      extractFifosFromActor(containsInterfaceActors, actor, fifos);
+    }
     return fifos;
   }
 
   /**
-   * This method returns the subgraphs contained in a PiSDF graph. A Subgraph is defined as fully connected components. A PiSDF graph may contain multiple
-   * subgraph not linked together. The subgraph return by this method contain also PiMM interface actors. Use getAllSubgraphsWOInterfaces to get subgraphs
-   * without interface actors.
+   * Extract the FIFOs connected to a given actor.
    * 
-   * First access can be slow since the List of subgraph has to be computed.
-   * 
-   * @return all subgraphs contained in the associated graph (read only access)
+   * @param containsInterfaceActors
+   *          this boolean ensures that only FIFO leading to actors contained in the CC list will be returned.
+   * @param actor
+   *          the actor to evaluate
+   * @param fifos
+   *          list of Fifo to update
    * @throws PiMMHandlerException
    *           the PiMMHandlerException exception
    */
-  public List<List<AbstractActor>> getAllSubgraphs() throws PiMMHandlerException {
-    if (this.subgraphs.isEmpty()) {
-      subgraphsFetcher(this.graph, this.subgraphs);
+  private void extractFifosFromActor(final boolean containsInterfaceActors, final AbstractActor actor, List<Fifo> fifos) throws PiMMHandlerException {
+    for (final DataPort port : actor.getAllDataPorts()) {
+      final Fifo fifo = port.getFifo();
+      if (fifo == null) {
+        throw new PiMMHandlerException(noFIFOExceptionMessage(actor, port));
+      }
+      final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
+      final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
+      if (!containsInterfaceActors && (sourceActor instanceof InterfaceActor || targetActor instanceof InterfaceActor)) {
+        continue;
+      }
+      if (!fifos.contains(fifo)) {
+        fifos.add(fifo);
+      }
     }
-    return Collections.unmodifiableList(this.subgraphs);
   }
 
   /**
-   * This method returns the subgraphs contained in a PiSDF graph. A Subgraph is defined as fully connected components. A PiSDF graph may contain multiple
-   * subgraph not linked together. The subgraph return by this method contain also PiMM interface actors. Use getAllSubgraphsWOInterfaces to get subgraphs
-   * without interface actors.
+   * Returns the FIFOs of a given connectedComponent. Self-loop FIFOs are ignored. *
    * 
-   * First access can be slow since the List of subgraph has to be computed.
-   * 
-   * @return all subgraphs contained in the associated graph (read only access)
+   * @param cc
+   *          the connectedComponent to evaluate
+   * @return all FIFOs contained in the connectedComponent, null if the subgraph is empty
    * @throws PiMMHandlerException
    *           the PiMMHandlerException exception
    */
-  public List<List<AbstractActor>> getAllSubgraphsWOInterfaces() throws PiMMHandlerException {
+  public List<Fifo> getFifosFromCCWOSelfLoop(List<AbstractActor> cc) throws PiMMHandlerException {
+    List<Fifo> fifos = getFifosFromCC(cc);
+    fifos.removeIf(fifo -> (fifo.getSourcePort().getContainingActor() == fifo.getTargetPort().getContainingActor()));
+    return fifos;
+  }
+
+  /**
+   * This method returns the CCs contained in the reference PiSDF graph.
+   * 
+   * The CCs returned by this method contain PiMM interface actors. <br>
+   * Use getAllCCWOInterfaces to get CCs without interface actors.
+   * 
+   * First access can be slow since the List of CCs has to be computed.
+   * 
+   * @return all CCs contained in the associated graph (read only access)
+   * @throws PiMMHandlerException
+   *           the PiMMHandlerException exception
+   */
+  public List<List<AbstractActor>> getAllConnectedComponents() throws PiMMHandlerException {
+    if (this.listConnectedComponents.isEmpty()) {
+      ccsFetcher(this.graph, this.listConnectedComponents);
+    }
+    return Collections.unmodifiableList(this.listConnectedComponents);
+  }
+
+  /**
+   * This method returns the CCs contained in the reference PiSDF graph. <br>
+   * The returned List does not contain any interface actors.
+   * 
+   * First access can be slow since the List of CCs has to be computed. <br>
+   * This method uses getAllConnectedComponents to extract connected components, i.e a call to getAllConnectedComponents afterward will be fast.
+   * 
+   * @return all CCs contained in the associated graph (read only access)
+   * @throws PiMMHandlerException
+   *           the PiMMHandlerException exception
+   */
+  public List<List<AbstractActor>> getAllConnectedComponentsWOInterfaces() throws PiMMHandlerException {
     // First fetch all subgraphs
-    if (this.subgraphs.isEmpty()) {
-      subgraphsFetcher(this.graph, this.subgraphs);
+    if (this.listConnectedComponents.isEmpty()) {
+      ccsFetcher(this.graph, this.listConnectedComponents);
     }
     // Now remove interfaces from subgraphs
-    if (this.subgraphsWOInterfaces.isEmpty()) {
-      subgraphsWOInterfacesFetcher(this.subgraphs, this.subgraphsWOInterfaces);
+    if (this.listCCWOInterfaces.isEmpty()) {
+      ccsWOInterfacesFetcher(this.listConnectedComponents, this.listCCWOInterfaces);
     }
-    return Collections.unmodifiableList(this.subgraphsWOInterfaces);
+    return Collections.unmodifiableList(this.listCCWOInterfaces);
   }
 
   /**
    * Fetch all subgraphs contained in a PiSDF graph. All subgraphs returned by this method do not contain interface actors.
    * 
-   * @param subgraphs
+   * @param listCCs
    *          the full subgraphs
-   * @param subgraphsWOInterfaces
+   * @param listCCsWOInterfaces
    *          list of subgraphs without interface actors to be updated
    */
-  private static void subgraphsWOInterfacesFetcher(final List<List<AbstractActor>> subgraphs, List<List<AbstractActor>> subgraphsWOInterfaces) {
-    if (subgraphs.isEmpty()) {
+  private static void ccsWOInterfacesFetcher(final List<List<AbstractActor>> listCCs, List<List<AbstractActor>> listCCsWOInterfaces) {
+    if (listCCs.isEmpty()) {
       return;
     }
-    for (List<AbstractActor> subgraph : subgraphs) {
-      List<AbstractActor> subgraphWOInterfaces = new ArrayList<>();
-      for (final AbstractActor actor : subgraph) {
-        if (!(actor instanceof InterfaceActor)) {
-          subgraphWOInterfaces.add(actor);
-        }
-      }
-      if (!subgraphWOInterfaces.isEmpty()) {
-        subgraphsWOInterfaces.add(subgraphWOInterfaces);
+    for (List<AbstractActor> cc : listCCs) {
+      List<AbstractActor> ccWOInterfaces = new ArrayList<>(cc);
+      ccWOInterfaces.removeIf(actor -> actor instanceof InterfaceActor);
+      if (!ccWOInterfaces.isEmpty()) {
+        listCCsWOInterfaces.add(ccWOInterfaces);
       }
     }
   }
@@ -251,50 +287,50 @@ public class PiMMHandler extends PiGraphImpl {
    * 
    * @param graph
    *          the graph to process
-   * @param subgraphs
+   * @param listCCs
    *          list of subgraphs to be updated
    * @throws PiMMHandlerException
    *           the PiMMHandlerException exception
    */
-  private static void subgraphsFetcher(final PiGraph graph, List<List<AbstractActor>> subgraphs) throws PiMMHandlerException {
+  private static void ccsFetcher(final PiGraph graph, List<List<AbstractActor>> listCCs) throws PiMMHandlerException {
     // Fetch all actors without interfaces in the PiGraph
-    List<AbstractActor> listActor = new ArrayList<>();
-    listActor.addAll(graph.getActors());
+    List<AbstractActor> fullActorList = new ArrayList<>();
+    fullActorList.addAll(graph.getActors());
     // Add delays with connected actors
     for (final Delay delay : graph.getDelays()) {
       if (delay.hasGetterActor() || delay.hasSetterActor()) {
-        listActor.add(delay);
+        fullActorList.add(delay);
       }
     }
-    for (final AbstractActor actor : listActor) {
+    for (final AbstractActor actor : fullActorList) {
       boolean alreadyContained = false;
-      for (List<AbstractActor> subgraph : subgraphs) {
-        if (subgraph.contains(actor)) {
+      for (List<AbstractActor> cc : listCCs) {
+        if (cc.contains(actor)) {
           alreadyContained = true;
           break;
         }
       }
       if (!alreadyContained) {
-        List<AbstractActor> subgraph = new ArrayList<>();
-        subgraph.add(actor);
-        iterativeSubgraphFetcher(actor, subgraph);
-        subgraphs.add(subgraph);
+        List<AbstractActor> cc = new ArrayList<>();
+        cc.add(actor);
+        iterativeCCFetcher(actor, cc);
+        listCCs.add(cc);
       }
 
     }
   }
 
   /**
-   * Iterative function of subgraphsFetcher.
+   * Iterative function of ccsFetcher.
    *
    * @param actor
    *          the current actor
-   * @param subgraph
-   *          the current subgraph
+   * @param cc
+   *          the current connected component
    * @throws PiMMHandlerException
    *           the PiMMHandlerException exception
    */
-  private static void iterativeSubgraphFetcher(final AbstractActor actor, List<AbstractActor> subgraph) throws PiMMHandlerException {
+  private static void iterativeCCFetcher(final AbstractActor actor, List<AbstractActor> cc) throws PiMMHandlerException {
     for (final DataOutputPort output : actor.getDataOutputPorts()) {
       final Fifo fifo = output.getOutgoingFifo();
       if (fifo == null) {
@@ -302,10 +338,9 @@ public class PiMMHandler extends PiGraphImpl {
         throw (hdl.new PiMMHandlerException(noFIFOExceptionMessage(actor, output)));
       }
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
-      // Since we go through the FIFO of an actor, it is possible to get interface actor as target
-      if (!subgraph.contains(targetActor)) {
-        subgraph.add(targetActor);
-        iterativeSubgraphFetcher(targetActor, subgraph);
+      if (!cc.contains(targetActor)) {
+        cc.add(targetActor);
+        iterativeCCFetcher(targetActor, cc);
       }
     }
     for (final DataInputPort input : actor.getDataInputPorts()) {
@@ -315,9 +350,9 @@ public class PiMMHandler extends PiGraphImpl {
         throw (hdl.new PiMMHandlerException(noFIFOExceptionMessage(actor, input)));
       }
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
-      if (!subgraph.contains(sourceActor)) {
-        subgraph.add(sourceActor);
-        iterativeSubgraphFetcher(sourceActor, subgraph);
+      if (!cc.contains(sourceActor)) {
+        cc.add(sourceActor);
+        iterativeCCFetcher(sourceActor, cc);
       }
     }
   }
@@ -327,7 +362,7 @@ public class PiMMHandler extends PiGraphImpl {
    * @return Formatted message for a no FIFO connected exception
    */
   private static String noFIFOExceptionMessage(final AbstractActor actor, final DataPort port) {
-    return "Actor [" + actor.getName() + "] has port [" + port.getName() + "] not connected to any FIFO.";
+    return "Actor [" + actor.getName() + "] data port [" + port.getName() + "] is not connected to a FIFO.";
   }
 
   /**

@@ -56,6 +56,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Expression;
+import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -131,6 +132,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     this.parametersValues = getParametersValues();
     // Resolve all parameters
     resolveAllParameters(this.graph);
+
     // Compute BRV following the chosen method
     PiBRV piBRVAlgo;
     if (method == 0) {
@@ -293,6 +295,14 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
       doSwitch(p);
     }
     computeDerivedParameterValues(graph);
+    // Resolve all dataport expression
+    for (final Fifo f : graph.getFifos()) {
+      int prod = (int) (ExpressionEvaluator.evaluate(f.getSourcePort().getPortRateExpression()));
+      int cons = (int) (ExpressionEvaluator.evaluate(f.getTargetPort().getPortRateExpression()));
+      f.getSourcePort().getExpression().setExpressionString(Integer.toString(prod));
+      f.getTargetPort().getExpression().setExpressionString(Integer.toString(cons));
+    }
+
     for (final PiGraph g : graph.getChildrenGraphs()) {
       resolveAllParameters(g);
     }

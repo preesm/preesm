@@ -3,12 +3,14 @@
  */
 package org.ietr.preesm.pimm.algorithm.math;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
-import org.apache.commons.lang3.math.Fraction;
+import org.ietr.dftools.algorithm.Rational;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
@@ -41,61 +43,76 @@ public class LCMBasedBRV extends PiBRV {
     }
 
     // Get all sub graph composing the current graph
-    final List<List<AbstractActor>> subgraphsWOInterfaces = this.piHandler.getAllSubgraphsWOInterfaces();
+    final List<List<AbstractActor>> subgraphsWOInterfaces = this.piHandler.getAllConnectedComponentsWOInterfaces();
 
     for (final List<AbstractActor> subgraph : subgraphsWOInterfaces) {
-      Hashtable<String, Fraction> reps = new Hashtable<>();
+      Hashtable<String, Rational> reps = new Hashtable<>();
       // Initializes all reps to 0
       for (final AbstractActor actor : subgraph) {
-        reps.put(actor.getName(), Fraction.getFraction(0));
+        reps.put(actor.getName(), new Rational(0, 1));
       }
 
-      // Pick the first non interface actor and do a Depth First Search to compute RV
-      SetReps(subgraph.get(0), Fraction.getFraction(1), reps);
-
-      // Computes the LCM of the denominators
-      double lcm = 1;
-      for (Fraction f : reps.values()) {
-        lcm = MathFunctionsHelper.lcm(lcm, f.getDenominator());
-      }
-
-      // Set actors repetition factor
-      for (AbstractActor actor : subgraph) {
-        final int num = reps.get(actor.getName()).getNumerator();
-        final int denom = reps.get(actor.getName()).getDenominator();
-        final int rv = (int) ((num * lcm) / denom);
-        this.graphBRV.put(actor, rv);
-      }
-
-      // Edge condition verification
-      for (final Fifo f : this.piHandler.getFifosFromSubgraph(subgraph)) {
-        final AbstractActor sourceActor = f.getSourcePort().getContainingActor();
-        final AbstractActor targetActor = f.getTargetPort().getContainingActor();
-        // TODO optimize this non sense.
-        // have one structure of subgraph containing FIFOs and actors
-        // if (!listActor.contains(sourceActor) || !listActor.contains(targetActor)) {
-        // continue;
-        // }
-        if (targetActor instanceof InterfaceActor || sourceActor instanceof InterfaceActor) {
-          continue;
+      // Construct the list of Edges without interfaces
+      List<Fifo> listFifos = this.piHandler.getFifosFromCC(subgraph);
+      // We have only one actor connected to Interface Actor
+      // The graph is consistent
+      // We just have to update the BRV
+      if (listFifos.isEmpty()) {
+        this.graphBRV.put(subgraph.get(0), 1);
+        continue;
+      } else {
+        // TODO not optimal to use List ?
+        final Map<Fifo, List<Integer>> fifoProperties = new LinkedHashMap<>();
+        // Evaluate prod / cons of FIFOs only once
+        for (final Fifo f : listFifos) {
+          List<Integer> fifoProp = new ArrayList<>();
+          int prod = Integer.parseInt(f.getSourcePort().getPortRateExpression().getExpressionString());
+          int cons = Integer.parseInt(f.getTargetPort().getPortRateExpression().getExpressionString());
+          fifoProp.add(prod);
+          fifoProp.add(cons);
+          fifoProperties.put(f, fifoProp);
         }
-        int prod = (int) (ExpressionEvaluator.evaluate(f.getSourcePort().getPortRateExpression()));
-        int cons = (int) (ExpressionEvaluator.evaluate(f.getTargetPort().getPortRateExpression()));
-        int sourceRV = this.graphBRV.get(sourceActor);
-        int targetRV = this.graphBRV.get(targetActor);
-        if (sourceRV * prod != targetRV * cons) {
-          PiMMHandler hdl = new PiMMHandler();
-          throw hdl.new PiMMHandlerException(
-              "Graph non consistent: edge source production " + Integer.toString(prod) + "!= edge target consumption " + Integer.toString(cons));
+        // Pick the first non interface actor and do a Depth First Search to compute RV
+        SetReps(subgraph.get(0), new Rational(1, 1), reps, fifoProperties);
+
+        // Computes the LCM of the denominators
+        long lcm = 1;
+        for (Rational r : reps.values()) {
+          lcm = MathFunctionsHelper.lcm(lcm, r.getDenum());
+        }
+
+        // Set actors repetition factor
+        for (AbstractActor actor : subgraph) {
+          final int num = reps.get(actor.getName()).getNum();
+          final int denom = reps.get(actor.getName()).getDenum();
+          final int rv = (int) ((num * lcm) / denom);
+          this.graphBRV.put(actor, rv);
+        }
+
+        // Edge condition verification
+        for (final Fifo f : this.piHandler.getFifosFromCC(subgraph)) {
+          final AbstractActor sourceActor = f.getSourcePort().getContainingActor();
+          final AbstractActor targetActor = f.getTargetPort().getContainingActor();
+          if (targetActor instanceof InterfaceActor || sourceActor instanceof InterfaceActor) {
+            continue;
+          }
+          int prod = fifoProperties.get(f).get(0);
+          int cons = fifoProperties.get(f).get(1);
+          int sourceRV = this.graphBRV.get(sourceActor);
+          int targetRV = this.graphBRV.get(targetActor);
+          if (sourceRV * prod != targetRV * cons) {
+            PiMMHandler hdl = new PiMMHandler();
+            throw hdl.new PiMMHandlerException("Graph non consistent: edge source production " + Integer.toString(prod * sourceRV)
+                + "!= edge target consumption " + Integer.toString(cons * targetRV));
+          }
         }
       }
-
       // Update BRV values with interfaces
       updateRVWithInterfaces(this.piHandler.getReferenceGraph(), subgraph);
     }
 
     // Recursively compute BRV of sub-graphs
-    // TODO maybe optimize this a recursive call to a secondary recursive method executeRec(final PiGraph graph)
+    // // TODO maybe optimize this a recursive call to a secondary recursive method executeRec(final PiGraph graph)
     for (final PiMMHandler g : this.piHandler.getChildrenGraphsHandler()) {
       LCMBasedBRV lcmBRV = new LCMBasedBRV(g);
       lcmBRV.execute();
@@ -116,7 +133,8 @@ public class LCMBasedBRV extends PiBRV {
    * @throws PiBRVException
    *           the PiBRV exception
    */
-  private static void SetReps(final AbstractActor actor, Fraction n, Hashtable<String, Fraction> reps) throws PiMMHandlerException {
+  private static void SetReps(final AbstractActor actor, Rational n, Hashtable<String, Rational> reps, final Map<Fifo, List<Integer>> fifoProperties)
+      throws PiMMHandlerException {
     // Update value in the hashtable
     reps.put(actor.getName(), n);
 
@@ -131,12 +149,13 @@ public class LCMBasedBRV extends PiBRV {
       if (targetActor instanceof InterfaceActor) {
         continue;
       }
-      Fraction fa = reps.get(targetActor.getName());
-      if (fa.getNumerator() == 0) {
-        int cons = (int) (ExpressionEvaluator.evaluate(fifo.getTargetPort().getPortRateExpression()));
-        int prod = (int) (ExpressionEvaluator.evaluate(fifo.getSourcePort().getPortRateExpression()));
-        Fraction f = Fraction.getFraction(n.getNumerator() * prod, n.getDenominator() * cons);
-        SetReps(targetActor, f.reduce(), reps);
+      Rational fa = reps.get(targetActor.getName());
+      if (fa.getNum() == 0) {
+        int prod = fifoProperties.get(fifo).get(0);
+        int cons = fifoProperties.get(fifo).get(1);
+        Rational edge = new Rational(prod, cons);
+        Rational r = Rational.prod(n, edge);
+        SetReps(targetActor, r, reps, fifoProperties);
       }
     }
 
@@ -151,12 +170,13 @@ public class LCMBasedBRV extends PiBRV {
       if (sourceActor instanceof InterfaceActor) {
         continue;
       }
-      Fraction fa = reps.get(sourceActor.getName());
-      if (fa.getNumerator() == 0) {
-        int cons = (int) (ExpressionEvaluator.evaluate(fifo.getTargetPort().getPortRateExpression()));
-        int prod = (int) (ExpressionEvaluator.evaluate(fifo.getSourcePort().getPortRateExpression()));
-        Fraction f = Fraction.getFraction(n.getNumerator() * cons, n.getDenominator() * prod);
-        SetReps(sourceActor, f.reduce(), reps);
+      Rational fa = reps.get(sourceActor.getName());
+      if (fa.getNum() == 0) {
+        int prod = fifoProperties.get(fifo).get(0);
+        int cons = fifoProperties.get(fifo).get(1);
+        Rational edge = new Rational(cons, prod);
+        Rational r = Rational.prod(n, edge);
+        SetReps(sourceActor, r, reps, fifoProperties);
       }
     }
   }
