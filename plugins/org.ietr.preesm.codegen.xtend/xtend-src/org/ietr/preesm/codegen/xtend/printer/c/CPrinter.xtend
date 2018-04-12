@@ -406,7 +406,7 @@ class CPrinter extends DefaultPrinter {
 		int stopThreads;
 
 
-		unsigned int launch(unsigned int core_id, pthread_t thread, void *(*start_routine) (void *)) {
+		unsigned int launch(unsigned int core_id, pthread_t * thread, void *(*start_routine) (void *)) {
 			// check CPU id is valid
 		#ifdef _WIN32
 			SYSTEM_INFO sysinfo;
@@ -426,7 +426,7 @@ class CPrinter extends DefaultPrinter {
 			pthread_attr_init(&attr);
 			pthread_attr_setaffinity_np(&attr, sizeof(cpuset), &cpuset);
 			// create thread
-			pthread_create(&thread, &attr, start_routine, NULL);
+			pthread_create(thread, &attr, start_routine, NULL);
 			return 0;
 		}
 
@@ -450,7 +450,7 @@ class CPrinter extends DefaultPrinter {
 
 			// Creating threads
 			for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
-				if(launch(i,coreThreads[i],coreThreadComputations[i])) {
+				if(launch(i,&coreThreads[i],coreThreadComputations[i])) {
 					printf("Error: could not launch thread %d\n",i);
 					return 1;
 				}
