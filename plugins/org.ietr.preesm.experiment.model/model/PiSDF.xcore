@@ -213,6 +213,10 @@ class PiGraph extends AbstractActor, Graph {
 		return (actors + childrenGraphs.map[allActors].flatten).toEList.unmodifiableView
 	}
 	
+	op unique ConfigInputInterface[] getConfigInputInterfaces() {
+		return parameters.filter(ConfigInputInterface).toEList.unmodifiableView
+	}
+	
 	op unique DataInputInterface[] getDataInputInterfaces() {
 		return actors.filter(DataInputInterface).toEList.unmodifiableView
 	}
@@ -371,7 +375,35 @@ class ConfigOutputPort extends DataOutputPort , ISetter {
 	}
 }
 
+<<<<<<< 414008ee12aaeb0416f2dc9ac25a3dc2155883da
 class Fifo extends Edge {
+=======
+interface DelayPort extends DataPort {
+	op Delay getContainingDelay() {
+		if (eContainer() instanceof Delay) {
+			return eContainer() as Delay;
+		}
+		return null;
+	}
+	op Expression getPortRateExpression() {
+		return Optional.ofNullable(getContainingDelay()).map[expression].orElseThrow[
+			new PiGraphException("Delay data port " + this + " is not contained in an Delay.")
+		]
+	}	
+	
+	op Expression getExpression() {
+		return portRateExpression
+	}
+}
+
+class DelaySetterPort extends DataInputPort, DelayPort {
+}
+
+class DelayGetterPort extends DataOutputPort, DelayPort {
+}
+
+class Fifo {
+>>>>>>> Optimized rate evaluations.
 	refers DataOutputPort sourcePort opposite outgoingFifo
 	refers DataInputPort targetPort opposite incomingFifo
 	refers Delay delay opposite containingFifo

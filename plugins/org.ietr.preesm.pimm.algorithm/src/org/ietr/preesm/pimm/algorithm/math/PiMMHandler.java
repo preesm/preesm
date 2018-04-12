@@ -5,18 +5,31 @@ package org.ietr.preesm.pimm.algorithm.math;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.logging.Level;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl;
+import org.nfunk.jep.JEP;
+import org.nfunk.jep.Node;
+import org.nfunk.jep.ParseException;
 
 /**
  * @author farresti
@@ -363,6 +376,233 @@ public class PiMMHandler extends PiGraphImpl {
    */
   private static String noFIFOExceptionMessage(final AbstractActor actor, final DataPort port) {
     return "Actor [" + actor.getName() + "] data port [" + port.getName() + "] is not connected to a FIFO.";
+  }
+
+  /**
+   * Resolve all parameter values of the reference PiGraph and its child sub-graph.
+   *
+   * @throws PiMMHandlerException
+   *           the PiMMHandlerException exception
+   */
+  public void resolveAllParameters() throws PiMMHandlerException {
+    final LinkedHashMap<Parameter, Long> parameterValues = new LinkedHashMap<>();
+
+    // First we evaluate constant values and check for dynamic parameters
+    for (final Parameter p : this.graph.getAllParameters()) {
+      if (p.isLocallyStatic()) {
+        if (p instanceof ConfigInputInterface) {
+          // We will deal with interfaces later
+          continue;
+        }
+        try {
+          final Expression expression = p.getExpression();
+          final long value = Long.parseLong(expression.getExpressionString());
+          parameterValues.put(p, value);
+        } catch (final NumberFormatException e) {
+          // The expression associated to the parameter is an
+          // expression (and not an constant int value).
+          // Leave it as it is, it will be solved later.
+        }
+      } else {
+        throw new PiMMHandlerException("Parameter " + p.getName() + " is depends on a configuration actor. It is thus impossible to use the"
+            + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF"
+            + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
+      }
+    }
+
+    // Evaluate remaining parameters of the top level graph.
+    // These parameters are defined by expression.
+    for (final Parameter p : this.graph.getParameters()) {
+      if (!parameterValues.containsKey(p)) {
+        // Evaluate the expression wrt. the current values of the
+        // parameters and set the result as new expression
+        final Expression valueExpression = p.getValueExpression();
+        final long value = ExpressionEvaluator.evaluate(valueExpression);
+        valueExpression.setExpressionString(Long.toString(value));
+        parameterValues.put(p, value);
+      }
+    }
+    // Now evaluate parameters for all hierarchy graphs
+    iterativeResolveAllParameters(this.graph, parameterValues);
+
+    // Data port rate evaluation
+    // TODO put that in other class ?
+    final LinkedHashMap<AbstractActor, JEP> actorParsers = initActorRateParsers(parameterValues);
+    iterativeResolveAllPortRates(this.graph, actorParsers);
+  }
+
+  /**
+   * Iterative function of resolveAllParameters.
+   *
+   * @param graph
+   *          the current graph
+   * @param parameterValues
+   *          map of all parameters and their resolved value
+   * @throws PiMMHandlerException
+   *           the PiMMHandlerException exception
+   */
+  private void iterativeResolveAllParameters(final PiGraph graph, final LinkedHashMap<Parameter, Long> parameterValues) throws PiMMHandlerException {
+    // We already resolved all static parameters we could.
+    // Now, we resolve interfaces
+    for (final ConfigInputInterface cii : graph.getConfigInputInterfaces()) {
+      final ConfigInputPort graphPort = cii.getGraphPort();
+      final Dependency incomingDependency = graphPort.getIncomingDependency();
+      final ISetter setter = incomingDependency.getSetter();
+      // Setter of an incoming dependency into a ConfigInputInterface must be
+      // a parameter
+      if (setter instanceof Parameter) {
+        final Expression pExp = PiMMUserFactory.instance.createExpression();
+        // When we arrive here all upper graphs have been processed.
+        // We can then directly evaluate parameter expression here.
+        final Expression valueExpression = ((Parameter) setter).getValueExpression();
+        final String expressionString = valueExpression.getExpressionString();
+        pExp.setExpressionString(expressionString);
+        cii.setExpression(pExp);
+        parameterValues.put((Parameter) cii, Long.parseLong(expressionString));
+      }
+    }
+    // Finally, we derive parameter values that have not already been processed
+    computeDerivedParameterValues(graph, parameterValues);
+
+    for (final PiGraph g : graph.getChildrenGraphs()) {
+      iterativeResolveAllParameters(g, parameterValues);
+    }
+  }
+
+  /**
+   * Iterative function for resolving data port rates.
+   *
+   * @param graph
+   *          the current graph
+   * @param actorParsers
+   *          map of actor and corresponding parsers
+   * @throws PiMMHandlerException
+   *           the PiMMHandlerException exception
+   */
+  private void iterativeResolveAllPortRates(final PiGraph graph, final LinkedHashMap<AbstractActor, JEP> actorParsers) throws PiMMHandlerException {
+    for (final Fifo f : graph.getFifos()) {
+      final DataOutputPort sourcePort = f.getSourcePort();
+      final Expression sourcePortRateExpression = sourcePort.getPortRateExpression();
+      final DataInputPort targetPort = f.getTargetPort();
+      final Expression targetPortRateExpression = targetPort.getPortRateExpression();
+      long prod = -1;
+      long cons = -1;
+      try {
+        // If port rate is constant it is much faster to just parse it
+        prod = Long.parseLong(sourcePortRateExpression.getExpressionString());
+        cons = Long.parseLong(targetPortRateExpression.getExpressionString());
+      } catch (final NumberFormatException e) {
+        // Deals with expressions
+        try {
+          prod = prod < 0 ? parsePortExpression(actorParsers.get(sourcePort.getContainingActor()), sourcePortRateExpression.getExpressionString()) : prod;
+          cons = cons < 0 ? parsePortExpression(actorParsers.get(targetPort.getContainingActor()), targetPortRateExpression.getExpressionString()) : cons;
+          // Set resolved port rate expression string
+          f.getSourcePort().getExpression().setExpressionString(Long.toString(prod));
+          f.getTargetPort().getExpression().setExpressionString(Long.toString(cons));
+        } catch (ParseException eparse) {
+          throw new PiMMHandlerException("failed to parse fifo [" + f.getId() + "] ports");
+        }
+      }
+    }
+    for (final PiGraph g : graph.getChildrenGraphs()) {
+      iterativeResolveAllPortRates(g, actorParsers);
+    }
+  }
+
+  /**
+   * Creates a map between all actors contained in the reference graph and its children and an associated parser for rate evaluation
+   *
+   * @param parameterValues
+   *          map of all parameters and their resolved value
+   * @return actorParsers
+   * @throws PiMMHandlerException
+   *           the PiMMHandlerException exception
+   */
+  private LinkedHashMap<AbstractActor, JEP> initActorRateParsers(final LinkedHashMap<Parameter, Long> parameterValues) {
+    LinkedHashMap<AbstractActor, JEP> actorParsers = new LinkedHashMap<>();
+    for (final AbstractActor actor : this.graph.getAllActors()) {
+      // Construct a Map that links actor port parameter to their real value in the graph
+      final LinkedHashMap<String, Long> portValues = new LinkedHashMap<>();
+      actorGraphParametersResolver(actor, parameterValues, portValues);
+      actorParsers.put(actor, initJep(portValues));
+    }
+    // Deals with delay
+    for (final Delay delay : this.graph.getDelays()) {
+      if (delay.hasSetterActor() || delay.hasGetterActor()) {
+        // Construct a Map that links actor port parameter to their real value in the graph
+        final LinkedHashMap<String, Long> portValues = new LinkedHashMap<>();
+        actorGraphParametersResolver(delay, parameterValues, portValues);
+        actorParsers.put((AbstractActor) delay, initJep(portValues));
+      }
+    }
+    return actorParsers;
+  }
+
+  private static void actorGraphParametersResolver(final AbstractActor actor, final LinkedHashMap<Parameter, Long> parameterValues,
+      final LinkedHashMap<String, Long> portValues) {
+    // Data interface actors do not have parameter ports, thus expression is directly graph parameter
+    // Same for delays
+    if (actor instanceof InterfaceActor || actor instanceof Delay) {
+      for (final Parameter p : actor.getInputParameters()) {
+        portValues.put(p.getName(), parameterValues.get(p));
+      }
+    } else {
+      // We have to fetch the corresponding parameter port for normal actors
+      for (final Parameter p : actor.getInputParameters()) {
+        final Port lookupPort = actor.lookupPortConnectedWithParameter(p);
+        portValues.put(lookupPort.getName(), parameterValues.get(p));
+      }
+    }
+
+  }
+
+  private static JEP initJep(final LinkedHashMap<String, Long> portValues) {
+    JEP jep = new JEP();
+    portValues.forEach(jep::addVariable);
+    return jep;
+  }
+
+  private static long parsePortExpression(final JEP jep, final String expressionString) throws ParseException {
+    final Node parse = jep.parse(expressionString);
+    final Object result = jep.evaluate(parse);
+    if (result instanceof Long) {
+      return (Long) result;
+    } else if (result instanceof Double) {
+      return Math.round((Double) result);
+    } else {
+      throw new ParseException("Unsupported result type " + result.getClass().getSimpleName());
+    }
+  }
+
+  /**
+   * Set the value of parameters of a PiGraph when possible (i.e., if we have currently only one available value, or if we can compute the value)
+   *
+   * @param graph
+   *          the PiGraph in which we want to set the values of parameters
+   */
+  private void computeDerivedParameterValues(final PiGraph graph, final LinkedHashMap<Parameter, Long> parameterValues) {
+    // If there is no value or list of values for one Parameter, the value
+    // of the parameter is derived (i.e., computed from other parameters
+    // values), we can evaluate it (after the values of other parameters
+    // have been fixed)
+    for (final Parameter p : graph.getParameters()) {
+      if (!parameterValues.containsKey(p)) {
+        // Evaluate the expression wrt. the current values of the
+        // parameters and set the result as new expression
+        final Expression pExp = PiMMUserFactory.instance.createExpression();
+        final Expression valueExpression = p.getValueExpression();
+        final long evaluate = ExpressionEvaluator.evaluate(valueExpression);
+        pExp.setExpressionString(Long.toString(evaluate));
+        p.setExpression(pExp);
+        try {
+          final long value = Long.parseLong(p.getExpression().getExpressionString());
+          parameterValues.put(p, value);
+        } catch (final NumberFormatException e) {
+          WorkflowLogger.getLogger().log(Level.INFO, "TROLOLOLOLOLOLOLO.");
+          break;
+        }
+      }
+    }
   }
 
   /**

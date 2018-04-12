@@ -128,11 +128,16 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
    *           the static pi MM 2 SDF exception
    */
   public MapperDAG launch(int method) throws StaticPiMM2SrDAGException, PiMMHandlerException {
-    // Get all the available values for all the parameters
-    this.parametersValues = getParametersValues();
-    // Resolve all parameters
-    resolveAllParameters(this.graph);
 
+    StopWatch timer = new StopWatch();
+    timer.start();
+    // // Get all the available values for all the parameters
+    // this.parametersValues = getParametersValues();
+    // // Resolve all parameters
+    // resolveAllParameters(this.graph);
+    this.piHandler.resolveAllParameters();
+    timer.stop();
+    WorkflowLogger.getLogger().log(Level.INFO, "Parameters and rates evaluations: " + timer.toString() + "s.");
     // Compute BRV following the chosen method
     PiBRV piBRVAlgo;
     if (method == 0) {
@@ -142,7 +147,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     } else {
       throw new StaticPiMM2SrDAGException("unexpected value for BRV method: [" + Integer.toString(method) + "]");
     }
-    StopWatch timer = new StopWatch();
+    timer.reset();
     timer.start();
     piBRVAlgo.execute();
     this.graphBRV = piBRVAlgo.getBRV();
@@ -160,6 +165,87 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     // }
 
     return null;// visitor.getResult();
+  }
+
+  private void newResolveAllParameters(final PiGraph graph) throws StaticPiMM2SrDAGException {
+    this.parametersValues = new LinkedHashMap<>();
+    final ParameterValueManager parameterValueManager = this.scenario.getParameterValueManager();
+    final Set<ParameterValue> parameterValues = parameterValueManager.getParameterValues();
+    for (final ParameterValue paramValue : parameterValues) {
+      switch (paramValue.getType()) {
+        case ACTOR_DEPENDENT:
+          throw new StaticPiMM2SrDAGException("Parameter " + paramValue.getName() + " is depends on a configuration actor. It is thus impossible to use the"
+              + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF"
+              + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
+        case INDEPENDENT:
+          try {
+            final int value = Integer.parseInt(paramValue.getValue());
+            this.parametersValues.put(paramValue.getParameter(), value);
+            break;
+          } catch (final NumberFormatException e) {
+            // The expression associated to the parameter is an
+            // expression (and not an constant int value).
+            // Leave it as it is, it will be solved later.
+            break;
+          }
+        default:
+          break;
+      }
+    }
+    // Evaluate remaining parameters of the top level graph.
+    // These parameters are defined by expression.
+    for (final Parameter p : graph.getParameters()) {
+      if (!this.parametersValues.containsKey(p)) {
+        // Evaluate the expression wrt. the current values of the
+        // parameters and set the result as new expression
+        final Expression pExp = PiMMUserFactory.instance.createExpression();
+        final Expression valueExpression = p.getValueExpression();
+        final long evaluate = ExpressionEvaluator.evaluate(valueExpression);
+        pExp.setExpressionString(Long.toString(evaluate));
+        p.setExpression(pExp);
+        this.parametersValues.put(p, Integer.parseInt(pExp.getExpressionString()));
+      }
+    }
+    // Now evaluate config input interfaces and data port rates for all hierarchy levels
+    iterativeComputeDerivedParameterValues(graph);
+  }
+
+  /**
+   * Gets the parameters values.
+   *
+   */
+  public void iterativeComputeDerivedParameterValues(final PiGraph graph) {
+    // We already resolved all static parameters we could.
+    // Now, we resolve interfaces
+    for (final ConfigInputInterface cii : graph.getConfigInputInterfaces()) {
+      final ConfigInputPort graphPort = cii.getGraphPort();
+      final Dependency incomingDependency = graphPort.getIncomingDependency();
+      final ISetter setter = incomingDependency.getSetter();
+      // Setter of an incoming dependency into a ConfigInputInterface must be
+      // a parameter
+      if (setter instanceof Parameter) {
+        final Expression pExp = PiMMUserFactory.instance.createExpression();
+        // When we arrive here all upper graphs have been processed.
+        // We can then directly evaluate parameter expression here.
+        final Expression valueExpression = ((Parameter) setter).getValueExpression();
+        final String expressionString = valueExpression.getExpressionString();
+        pExp.setExpressionString(expressionString);
+        cii.setExpression(pExp);
+        this.parametersValues.put((Parameter) cii, Integer.parseInt(expressionString));
+      }
+    }
+    // We finally derive parameter values that have not already been processed
+    computeDerivedParameterValues(graph);
+    // We compute data port associated rates
+    for (final Fifo f : graph.getFifos()) {
+      int prod = (int) (ExpressionEvaluator.evaluate(f.getSourcePort().getPortRateExpression()));
+      int cons = (int) (ExpressionEvaluator.evaluate(f.getTargetPort().getPortRateExpression()));
+      f.getSourcePort().getExpression().setExpressionString(Integer.toString(prod));
+      f.getTargetPort().getExpression().setExpressionString(Integer.toString(cons));
+    }
+    for (final PiGraph g : graph.getChildrenGraphs()) {
+      iterativeComputeDerivedParameterValues(g);
+    }
   }
 
   /**
@@ -222,8 +308,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
         cii.setExpression(pExp);
       }
     } else {
-      // If there is only one value available for Parameter p, we can set
-      // its
+      // If there is only one value available for Parameter p, we can set it
       if (this.parametersValues.containsKey(p)) {
         final Integer value = this.parametersValues.get(p);
         final Expression pExp = PiMMUserFactory.instance.createExpression();
@@ -261,7 +346,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
    *          the PiGraph in which we want to set the values of parameters
    */
   protected void computeDerivedParameterValues(final PiGraph graph) {
-    // If there is no value or list of valuse for one Parameter, the value
+    // If there is no value or list of values for one Parameter, the value
     // of the parameter is derived (i.e., computed from other parameters
     // values), we can evaluate it (after the values of other parameters
     // have been fixed)
@@ -278,6 +363,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
           final int value = Integer.parseInt(p.getExpression().getExpressionString());
           this.parametersValues.put(p, value);
         } catch (final NumberFormatException e) {
+          WorkflowLogger.getLogger().log(Level.INFO, "TROLOLOLOLOLOLOLO.");
           break;
         }
       }
@@ -291,10 +377,16 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
    *          the PiGraph in which we want to set the values of parameters
    */
   protected void resolveAllParameters(final PiGraph graph) {
+    StopWatch timer = new StopWatch();
+    timer.start();
     for (Parameter p : graph.getParameters()) {
       doSwitch(p);
     }
     computeDerivedParameterValues(graph);
+    timer.stop();
+    WorkflowLogger.getLogger().log(Level.INFO, "Parameter evaluation: " + timer.toString() + "s.");
+    timer.reset();
+    timer.start();
     // Resolve all dataport expression
     for (final Fifo f : graph.getFifos()) {
       int prod = (int) (ExpressionEvaluator.evaluate(f.getSourcePort().getPortRateExpression()));
@@ -302,6 +394,8 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
       f.getSourcePort().getExpression().setExpressionString(Integer.toString(prod));
       f.getTargetPort().getExpression().setExpressionString(Integer.toString(cons));
     }
+    timer.stop();
+    WorkflowLogger.getLogger().log(Level.INFO, "Rate evaluation: " + timer.toString() + "s.");
 
     for (final PiGraph g : graph.getChildrenGraphs()) {
       resolveAllParameters(g);

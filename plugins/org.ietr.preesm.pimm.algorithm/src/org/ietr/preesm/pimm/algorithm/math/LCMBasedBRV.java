@@ -59,7 +59,6 @@ public class LCMBasedBRV extends PiBRV {
       // We just have to update the BRV
       if (listFifos.isEmpty()) {
         this.graphBRV.put(subgraph.get(0), 1);
-        continue;
       } else {
         // TODO not optimal to use List ?
         final Map<Fifo, List<Integer>> fifoProperties = new LinkedHashMap<>();

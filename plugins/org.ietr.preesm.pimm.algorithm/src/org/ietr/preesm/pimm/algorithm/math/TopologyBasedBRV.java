@@ -54,7 +54,6 @@ public class TopologyBasedBRV extends PiBRV {
       // We just have to update the BRV
       if (listFifo.isEmpty()) {
         this.graphBRV.put(subgraph.get(0), 1);
-        continue;
       } else {
         double[][] topologyMatrix = getTopologyMatrix(listFifo, subgraph);
         int rank = LinearAlgebra.rank(topologyMatrix);
