@@ -41,27 +41,32 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import org.apache.commons.lang3.time.StopWatch;
+import org.ietr.dftools.algorithm.model.dag.DAGEdge;
+import org.ietr.dftools.algorithm.model.dag.DAGVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGBroadcastVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGJoinVertex;
+import org.ietr.dftools.algorithm.model.dag.types.DAGDefaultVertexPropertyType;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.core.scenario.ParameterValue;
-import org.ietr.preesm.core.scenario.ParameterValueManager;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
-import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.ISetter;
+import org.ietr.preesm.experiment.model.pimm.ForkActor;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
 import org.ietr.preesm.mapper.model.MapperDAG;
+import org.ietr.preesm.mapper.model.MapperDAGEdge;
+import org.ietr.preesm.mapper.model.MapperEdgeFactory;
 import org.ietr.preesm.pimm.algorithm.math.LCMBasedBRV;
 import org.ietr.preesm.pimm.algorithm.math.PiBRV;
 import org.ietr.preesm.pimm.algorithm.math.PiMMHandler;
@@ -127,17 +132,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
    * @throws StaticPiMM2SrDAGException
    *           the static pi MM 2 SDF exception
    */
-  public MapperDAG launch(int method) throws StaticPiMM2SrDAGException, PiMMHandlerException {
-
-    StopWatch timer = new StopWatch();
-    timer.start();
-    // // Get all the available values for all the parameters
-    // this.parametersValues = getParametersValues();
-    // // Resolve all parameters
-    // resolveAllParameters(this.graph);
-    this.piHandler.resolveAllParameters();
-    timer.stop();
-    WorkflowLogger.getLogger().log(Level.INFO, "Parameters and rates evaluations: " + timer.toString() + "s.");
+  public MapperDAG launch(int method) throws StaticPiMM2SrDAGException {
     // Compute BRV following the chosen method
     PiBRV piBRVAlgo;
     if (method == 0) {
@@ -147,12 +142,21 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     } else {
       throw new StaticPiMM2SrDAGException("unexpected value for BRV method: [" + Integer.toString(method) + "]");
     }
-    timer.reset();
-    timer.start();
-    piBRVAlgo.execute();
-    this.graphBRV = piBRVAlgo.getBRV();
-    timer.stop();
-    WorkflowLogger.getLogger().log(Level.INFO, "Repetition vector computed in " + timer.toString() + "s.");
+    try {
+      StopWatch timer = new StopWatch();
+      timer.start();
+      this.piHandler.resolveAllParameters();
+      timer.stop();
+      WorkflowLogger.getLogger().log(Level.INFO, "Parameters and rates evaluations: " + timer.toString() + "s.");
+      timer.reset();
+      timer.start();
+      piBRVAlgo.execute();
+      this.graphBRV = piBRVAlgo.getBRV();
+      timer.stop();
+      WorkflowLogger.getLogger().log(Level.INFO, "Repetition vector computed in " + timer.toString() + "s.");
+    } catch (PiMMHandlerException e) {
+      throw new StaticPiMM2SrDAGException(e.getMessage());
+    }
     printRV(this.graphBRV);
     // Visitor creating the SR-DAG
     // StaticPiMM2SrDAGVisitor visitor;
@@ -163,242 +167,275 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     // throw new StaticPiMM2SrDAGException("Cannot convert to Sr-DAG, top graph does not contain any actors.");
     // }
     // }
-
-    return null;// visitor.getResult();
+    return computeSRDag();
   }
 
-  private void newResolveAllParameters(final PiGraph graph) throws StaticPiMM2SrDAGException {
-    this.parametersValues = new LinkedHashMap<>();
-    final ParameterValueManager parameterValueManager = this.scenario.getParameterValueManager();
-    final Set<ParameterValue> parameterValues = parameterValueManager.getParameterValues();
-    for (final ParameterValue paramValue : parameterValues) {
-      switch (paramValue.getType()) {
-        case ACTOR_DEPENDENT:
-          throw new StaticPiMM2SrDAGException("Parameter " + paramValue.getName() + " is depends on a configuration actor. It is thus impossible to use the"
-              + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF"
-              + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
-        case INDEPENDENT:
-          try {
-            final int value = Integer.parseInt(paramValue.getValue());
-            this.parametersValues.put(paramValue.getParameter(), value);
-            break;
-          } catch (final NumberFormatException e) {
-            // The expression associated to the parameter is an
-            // expression (and not an constant int value).
-            // Leave it as it is, it will be solved later.
-            break;
-          }
-        default:
-          break;
-      }
-    }
-    // Evaluate remaining parameters of the top level graph.
-    // These parameters are defined by expression.
-    for (final Parameter p : graph.getParameters()) {
-      if (!this.parametersValues.containsKey(p)) {
-        // Evaluate the expression wrt. the current values of the
-        // parameters and set the result as new expression
-        final Expression pExp = PiMMUserFactory.instance.createExpression();
-        final Expression valueExpression = p.getValueExpression();
-        final long evaluate = ExpressionEvaluator.evaluate(valueExpression);
-        pExp.setExpressionString(Long.toString(evaluate));
-        p.setExpression(pExp);
-        this.parametersValues.put(p, Integer.parseInt(pExp.getExpressionString()));
-      }
-    }
-    // Now evaluate config input interfaces and data port rates for all hierarchy levels
-    iterativeComputeDerivedParameterValues(graph);
+  private MapperDAG computeSRDag() throws StaticPiMM2SrDAGException {
+    final MapperDAG mapperDAG = new MapperDAG(new MapperEdgeFactory(), this.graph);
+    iterativeComputeSRDag(mapperDAG, this.piHandler);
+    return mapperDAG;
   }
 
-  /**
-   * Gets the parameters values.
-   *
-   */
-  public void iterativeComputeDerivedParameterValues(final PiGraph graph) {
-    // We already resolved all static parameters we could.
-    // Now, we resolve interfaces
-    for (final ConfigInputInterface cii : graph.getConfigInputInterfaces()) {
-      final ConfigInputPort graphPort = cii.getGraphPort();
-      final Dependency incomingDependency = graphPort.getIncomingDependency();
-      final ISetter setter = incomingDependency.getSetter();
-      // Setter of an incoming dependency into a ConfigInputInterface must be
-      // a parameter
-      if (setter instanceof Parameter) {
-        final Expression pExp = PiMMUserFactory.instance.createExpression();
-        // When we arrive here all upper graphs have been processed.
-        // We can then directly evaluate parameter expression here.
-        final Expression valueExpression = ((Parameter) setter).getValueExpression();
-        final String expressionString = valueExpression.getExpressionString();
-        pExp.setExpressionString(expressionString);
-        cii.setExpression(pExp);
-        this.parametersValues.put((Parameter) cii, Integer.parseInt(expressionString));
+  private void iterativeComputeSRDag(final MapperDAG dag, final PiMMHandler piHandler) throws StaticPiMM2SrDAGException {
+    try {
+      // Add vertex for current hierarchical graph
+      for (final List<AbstractActor> connectedComponent : this.piHandler.getAllConnectedComponents()) {
+        for (final AbstractActor actor : connectedComponent) {
+          addSRVertex(actor, dag);
+        }
+        final List<Fifo> ccFifos = piHandler.getFifosFromCC(connectedComponent);
+        // Creates the edges and link vertices
+        linkSRVertices(dag, ccFifos);
       }
-    }
-    // We finally derive parameter values that have not already been processed
-    computeDerivedParameterValues(graph);
-    // We compute data port associated rates
-    for (final Fifo f : graph.getFifos()) {
-      int prod = (int) (ExpressionEvaluator.evaluate(f.getSourcePort().getPortRateExpression()));
-      int cons = (int) (ExpressionEvaluator.evaluate(f.getTargetPort().getPortRateExpression()));
-      f.getSourcePort().getExpression().setExpressionString(Integer.toString(prod));
-      f.getTargetPort().getExpression().setExpressionString(Integer.toString(cons));
-    }
-    for (final PiGraph g : graph.getChildrenGraphs()) {
-      iterativeComputeDerivedParameterValues(g);
+      // Recursive call for child graphs
+      for (final PiMMHandler ph : piHandler.getChildrenGraphsHandler()) {
+        iterativeComputeSRDag(dag, ph);
+      }
+    } catch (PiMMHandlerException e) {
+      throw new StaticPiMM2SrDAGException(e.getMessage());
     }
   }
 
-  /**
-   * Gets the parameters values.
-   *
-   * @return the parameters values
-   * @throws StaticPiMM2SrDAGException
-   *           the static pi MM 2 SDF exception
-   */
-  private Map<Parameter, Integer> getParametersValues() throws StaticPiMM2SrDAGException {
-    final Map<Parameter, Integer> result = new LinkedHashMap<>();
+  private void linkSRVertices(final MapperDAG dag, final List<Fifo> ccFifos) {
+    // link the single rate vertices
+    for (final Fifo fifo : ccFifos) {
+      // do stuff
+      final long nDelays = Long.parseLong(fifo.getDelay().getSizeExpression().getExpressionString());
 
-    final ParameterValueManager parameterValueManager = this.scenario.getParameterValueManager();
-    final Set<ParameterValue> parameterValues = parameterValueManager.getParameterValues();
-    for (final ParameterValue paramValue : parameterValues) {
-      switch (paramValue.getType()) {
-        case ACTOR_DEPENDENT:
-          throw new StaticPiMM2SrDAGException("Parameter " + paramValue.getName() + " is depends on a configuration actor. It is thus impossible to use the"
-              + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF"
-              + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
-        case INDEPENDENT:
-          try {
-            final int value = Integer.parseInt(paramValue.getValue());
-            result.put(paramValue.getParameter(), value);
-            break;
-          } catch (final NumberFormatException e) {
-            // The expression associated to the parameter is an
-            // expression (and not an constant int value).
-            // Leave it as it is, it will be solved later.
-            break;
-          }
-        default:
-          break;
+      // Evaluate source repetition vector
+      final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
+      int nbSourceRepetitions = 1;
+      if (!(sourceActor instanceof InterfaceActor)) {
+        nbSourceRepetitions = this.graphBRV.get(sourceActor);
       }
-    }
 
-    return result;
-  }
-
-  /**
-   * Parameters of a top graph must be visited before parameters of a subgraph, since the expression of ConfigurationInputInterface depends on the value of its
-   * connected Parameter.
-   *
-   * @param p
-   *          the p
-   */
-  @Override
-  public Boolean caseParameter(Parameter p) {
-    if (p.isConfigurationInterface()) {
-      final ConfigInputInterface cii = (ConfigInputInterface) p;
-      final ConfigInputPort graphPort = cii.getGraphPort();
-      final Dependency incomingDependency = graphPort.getIncomingDependency();
-      final ISetter setter = incomingDependency.getSetter();
-      // Setter of an incoming dependency into a ConfigInputInterface must
-      // be a parameter
-      if (setter instanceof Parameter) {
-        final Expression setterParam = ((Parameter) setter).getValueExpression();
-        final Expression pExp = PiMMUserFactory.instance.createExpression();
-        pExp.setExpressionString(setterParam.getExpressionString());
-        cii.setExpression(pExp);
+      // Evaluate target repetition vector
+      final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
+      int nbTargetRepetitions = 1;
+      if (!(targetActor instanceof InterfaceActor)) {
+        nbTargetRepetitions = this.graphBRV.get(targetActor);
       }
-    } else {
-      // If there is only one value available for Parameter p, we can set it
-      if (this.parametersValues.containsKey(p)) {
-        final Integer value = this.parametersValues.get(p);
-        final Expression pExp = PiMMUserFactory.instance.createExpression();
-        pExp.setExpressionString(value.toString());
-        p.setExpression(pExp);
-      }
-    }
-    return true;
-  }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigInputInterface(org.ietr.preesm.experiment.model.pimm.ConfigInputInterface)
-   */
-  @Override
-  public Boolean caseConfigInputInterface(final ConfigInputInterface cii) {
-    final ConfigInputPort graphPort = cii.getGraphPort();
-    final Dependency incomingDependency = graphPort.getIncomingDependency();
-    final ISetter setter = incomingDependency.getSetter();
-    // Setter of an incoming dependency into a ConfigInputInterface must be
-    // a parameter
-    if (setter instanceof Parameter) {
-      final Expression pExp = PiMMUserFactory.instance.createExpression();
-      pExp.setExpressionString(((Parameter) setter).getValueExpression().getExpressionString());
-      cii.setExpression(pExp);
-    }
-    return true;
-  }
+      final long sourceProduction = Long.parseLong(fifo.getSourcePort().getPortRateExpression().getExpressionString());
+      final long targetConsumption = Long.parseLong(fifo.getTargetPort().getPortRateExpression().getExpressionString());
+      // int piSrcIx = edge->getSrcPortIx();
 
-  /**
-   * Set the value of parameters of a PiGraph when possible (i.e., if we have currently only one available value, or if we can compute the value)
-   *
-   * @param graph
-   *          the PiGraph in which we want to set the values of parameters
-   */
-  protected void computeDerivedParameterValues(final PiGraph graph) {
-    // If there is no value or list of values for one Parameter, the value
-    // of the parameter is derived (i.e., computed from other parameters
-    // values), we can evaluate it (after the values of other parameters
-    // have been fixed)
-    for (final Parameter p : graph.getParameters()) {
-      if (!this.parametersValues.containsKey(p)) {
-        // Evaluate the expression wrt. the current values of the
-        // parameters and set the result as new expression
-        final Expression pExp = PiMMUserFactory.instance.createExpression();
-        final Expression valueExpression = p.getValueExpression();
-        final long evaluate = ExpressionEvaluator.evaluate(valueExpression);
-        pExp.setExpressionString(Long.toString(evaluate));
-        p.setExpression(pExp);
-        try {
-          final int value = Integer.parseInt(p.getExpression().getExpressionString());
-          this.parametersValues.put(p, value);
-        } catch (final NumberFormatException e) {
-          WorkflowLogger.getLogger().log(Level.INFO, "TROLOLOLOLOLOLOLO.");
-          break;
+      // int sourceIndex = 0, sinkIndex = 0;
+      // int curSourceToken, curSinkToken;
+
+      // typedef struct SrcConnection{
+      // SRDAGVertex* src;
+      // int prod;
+      // int portIx;
+      // } SrcConnection;
+      //
+      // typedef struct SnkConnection{
+      // SRDAGEdge* edge;
+      // int cons;
+      // } SnkConnection;
+      //
+      // SrcConnection* srcConnections = 0;
+      // SnkConnection* snkConnections = 0;
+      // bool sinkNeedEnd = false;
+
+      int forkIx = -1;
+      int joinIx = -1;
+
+      final List<SourceConnection> sourceConnections = new ArrayList<>();
+
+      MapperDAGEdge edge;
+
+      // Fill source/sink repetition list
+      if (sourceActor instanceof InterfaceActor) {
+        if (sourceProduction == targetConsumption * nbTargetRepetitions) {
+          // No need of Broadcast
+          // final DAGVertex sourceIF = new DAGVertex();
+          // pimm2DAGVertex(sourceActor, sourceIF);
+          // final SourceConnection sourceConnection = new SourceConnection();
+          // sourceConnection.setProd(sourceProduction);
+          // sourceConnection.setPortID(0);
+          // sourceConnection.addSource(sourceIF);
+          // sourceConnections.add(sourceConnection);
+
+          // if(srcConnections[0].src == 0){
+          // srcConnections[0].src = topSrdag->addRoundBuffer();
+          // job->inputIfs[edge->getSrc()->getTypeId()]->connectSnk(srcConnections[0].src, 0);
+          // srcConnections[0].portIx = 0;
+          // srcConnections[0].prod = sourceProduction;
+          // }else{
+          // srcConnections[0].portIx = job->inputIfs[edge->getSrc()->getTypeId()]->getSrcPortIx();
+          // srcConnections[0].prod = sourceProduction;
+          // }
+
+        } else {
+          // bool perfectBr = sinkConsumption*nbSinkRepetitions%sourceProduction == 0;
+          // int nBr = sinkConsumption*nbSinkRepetitions/sourceProduction;
+          // if(!perfectBr) nBr++;
+          //
+          // nbSourceRepetitions = nBr;
+          // sinkNeedEnd = !perfectBr;
+          //// lastCons = sourceProduction - sinkConsumption*nbSinkRepetitions;
+          //
+          // SRDAGVertex* broadcast = topSrdag->addBroadcast(MAX_IO_EDGES);
+          // job->inputIfs[edge->getSrc()->getTypeId()]->connectSnk(broadcast, 0);
+          //
+          // srcConnections = CREATE_MUL(TRANSFO_STACK, nBr, SrcConnection);
+          // for(int i=0; i<nBr; i++){
+          // srcConnections[i].src = broadcast;
+          // srcConnections[i].portIx = i;
+          // srcConnections[i].prod = sourceProduction;
+          // }
+        }
+      } else {
+        if (nDelays == 0) {
+          // srcConnections = CREATE_MUL(TRANSFO_STACK, nbSourceRepetitions, SrcConnection);
+          // for(int i=0; i<nbSourceRepetitions; i++){
+          // srcConnections[i].src = job->bodies[edge->getSrc()->getTypeId()][i];
+          // srcConnections[i].portIx = piSrcIx;
+          // srcConnections[i].prod = sourceProduction;
+          // }
+        } else {
+          // nbSourceRepetitions++;
+          // srcConnections = CREATE_MUL(TRANSFO_STACK, nbSourceRepetitions, SrcConnection);
+          //
+          // if(edge->getDelaySetter()){
+          // PiSDFVertex* ifDelaySetter = edge->getDelaySetter();
+          // SRDAGEdge* setterEdge = job->inputIfs[ifDelaySetter->getTypeId()];
+          // if(setterEdge->getRate() == nbDelays){
+          // srcConnections[0].src = setterEdge->getSrc();
+          // if(srcConnections[0].src == 0){
+          // srcConnections[0].src = topSrdag->addRoundBuffer();
+          // job->inputIfs[edge->getSrc()->getTypeId()]->connectSnk(srcConnections[0].src, 0);
+          // srcConnections[0].portIx = 0;
+          // }else{
+          // srcConnections[0].portIx = setterEdge->getSrcPortIx();
+          // }
+          // }else{
+          // throw "Setter of a delay must be of the same rate than delay";
+          // }
+          // }else{
+          // srcConnections[0].src = topSrdag->addInit();
+          // srcConnections[0].portIx = 0;
+          // }
+          // srcConnections[0].prod = nbDelays;
+          //
+          // for(int i=1; i<nbSourceRepetitions; i++){
+          // srcConnections[i].src = job->bodies[edge->getSrc()->getTypeId()][i-1];
+          // srcConnections[i].portIx = piSrcIx;
+          // srcConnections[i].prod = sourceProduction;
+          // }
         }
       }
     }
   }
 
   /**
-   * Set the value of parameters for a PiGraph and all of its sub-graph.
+   * Convert a PiMM AbstractActor to a DAGVertex.
    *
-   * @param graph
-   *          the PiGraph in which we want to set the values of parameters
+   * @param a
+   *          the AbstractActor
+   * @return the DAGVertex
    */
-  protected void resolveAllParameters(final PiGraph graph) {
-    StopWatch timer = new StopWatch();
-    timer.start();
-    for (Parameter p : graph.getParameters()) {
-      doSwitch(p);
-    }
-    computeDerivedParameterValues(graph);
-    timer.stop();
-    WorkflowLogger.getLogger().log(Level.INFO, "Parameter evaluation: " + timer.toString() + "s.");
-    timer.reset();
-    timer.start();
-    // Resolve all dataport expression
-    for (final Fifo f : graph.getFifos()) {
-      int prod = (int) (ExpressionEvaluator.evaluate(f.getSourcePort().getPortRateExpression()));
-      int cons = (int) (ExpressionEvaluator.evaluate(f.getTargetPort().getPortRateExpression()));
-      f.getSourcePort().getExpression().setExpressionString(Integer.toString(prod));
-      f.getTargetPort().getExpression().setExpressionString(Integer.toString(cons));
-    }
-    timer.stop();
-    WorkflowLogger.getLogger().log(Level.INFO, "Rate evaluation: " + timer.toString() + "s.");
+  private void pimm2DAGVertex(final AbstractActor a, final DAGVertex vertex) {
+    // Handle vertex's name
+    vertex.setName(a.getName());
+    // Handle vertex's path inside the graph hierarchy
+    vertex.setInfo(a.getVertexPath());
+    // Handle ID
+    vertex.setId(a.getName());
+    // Number of incoming edges
+    vertex.setNbRepeat(new DAGDefaultVertexPropertyType(this.graphBRV.get(a)));
+  }
 
-    for (final PiGraph g : graph.getChildrenGraphs()) {
-      resolveAllParameters(g);
+  private void addSRVertex(final AbstractActor vertex, final MapperDAG dag) {
+    final int brv = this.graphBRV.get(vertex);
+    if (vertex instanceof BroadcastActor) {
+      for (int i = 0; i < brv; ++i) {
+        // Creates a Broadcast DAG vertex
+        DAGVertex dagVertex = new DAGBroadcastVertex();
+        final DataInputPort dataInputPort = vertex.getDataInputPorts().get(0);
+        final Expression portRateExpression = dataInputPort.getPortRateExpression();
+        final long cons = Long.parseLong(portRateExpression.getExpressionString());
+        for (final DataOutputPort out : vertex.getDataOutputPorts()) {
+          final Expression outPortRateExpression = out.getPortRateExpression();
+          final long prod = Long.parseLong(outPortRateExpression.getExpressionString());
+          if (prod != cons) {
+            WorkflowLogger.getLogger()
+                .warning("Warning: Broadcast have different production/consumption: prod(" + Long.toString(prod) + ") != cons(" + Long.toString(cons) + ")");
+          }
+        }
+        // add a dag vertex to the single rate graph
+        pimm2DAGVertex(vertex, dagVertex);
+        dag.addVertex(dagVertex);
+      }
+    } else if (vertex instanceof ForkActor) {
+      for (int i = 0; i < brv; ++i) {
+        DAGVertex dagVertex = new DAGForkVertex();
+        // add a dag vertex to the single rate graph
+        pimm2DAGVertex(vertex, dagVertex);
+        dag.addVertex(dagVertex);
+      }
+    } else if (vertex instanceof JoinActor) {
+      for (int i = 0; i < brv; ++i) {
+        DAGVertex dagVertex = new DAGJoinVertex();
+        // add a dag vertex to the single rate graph
+        pimm2DAGVertex(vertex, dagVertex);
+        dag.addVertex(dagVertex);
+      }
+    } else {
+      // Default vertex type
+      for (int i = 0; i < brv; ++i) {
+        DAGVertex dagVertex = new DAGVertex();
+        // add a dag vertex to the single rate graph
+        pimm2DAGVertex(vertex, dagVertex);
+        dag.addVertex(dagVertex);
+      }
+    }
+  }
+
+  /**
+   * The Class SourceConnection.
+   */
+  private class SourceConnection {
+    private List<DAGVertex> sources;
+    private long            production;
+    private long            portID;
+
+    public SourceConnection() {
+      // Empty constructor
+    }
+
+    public void addSource(final DAGVertex vertex) {
+      sources.add(vertex);
+    }
+
+    public void setProd(final long p) {
+      this.production = p;
+    }
+
+    public void setPortID(final long pID) {
+      this.portID = pID;
+    }
+
+  }
+
+  /**
+   * The Class SourceConnection.
+   */
+  private class TargetConnection {
+    private List<DAGEdge> edges;
+    private long          consumption;
+
+    public TargetConnection() {
+      // Empty constructor
+    }
+
+    public void addEdge(final DAGEdge edge) {
+      edges.add(edge);
+    }
+
+    public void setCons(final long c) {
+      this.consumption = c;
     }
   }
 

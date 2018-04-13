@@ -20,7 +20,6 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperEdgeFactory;
-import org.ietr.preesm.pimm.algorithm.math.PiMMHandler.PiMMHandlerException;
 import org.ietr.preesm.pimm.algorithm.pimm2srdag.StaticPiMM2SrDAGLauncher.StaticPiMM2SrDAGException;
 
 /**
@@ -69,7 +68,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
       }
       // Convert the PiGraph to the Single-Rate Directed Acyclic Graph
       result = launcher.launch(method);
-    } catch (final StaticPiMM2SrDAGException | PiMMHandlerException e) {
+    } catch (final StaticPiMM2SrDAGException e) {
       logger.log(Level.SEVERE, e.getMessage());
     }
 

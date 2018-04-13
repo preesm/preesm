@@ -26,7 +26,6 @@ import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
@@ -37,7 +36,7 @@ import org.nfunk.jep.ParseException;
  *         This structure is wrapper around the PiGraph class that provides multiple useful methods for accessing special properties of a PiGraph rapidly
  *
  */
-public class PiMMHandler extends PiGraphImpl {
+public class PiMMHandler {
   /** The graph. */
   private PiGraph graph;
 
@@ -94,21 +93,6 @@ public class PiMMHandler extends PiGraphImpl {
    */
   public PiMMHandler() {
 
-  }
-
-  /**
-   * Set the associated PiGraph. If current BRV map was not empty, it is cleared.
-   * 
-   * @param graph
-   *          the graph to set
-   */
-  public void setReferenceGraph(final PiGraph graph) {
-    this.graph = graph;
-    // Resets all the info
-    if (!childrenList.isEmpty()) {
-      childrenList.clear();
-      generateChildren(this.graph, this.childrenList);
-    }
   }
 
   /**
@@ -240,7 +224,7 @@ public class PiMMHandler extends PiGraphImpl {
    * 
    * First access can be slow since the List of CCs has to be computed.
    * 
-   * @return all CCs contained in the associated graph (read only access)
+   * @return all CCs contained in the reference graph (read only access)
    * @throws PiMMHandlerException
    *           the PiMMHandlerException exception
    */
@@ -470,111 +454,6 @@ public class PiMMHandler extends PiGraphImpl {
   }
 
   /**
-   * Iterative function for resolving data port rates.
-   *
-   * @param graph
-   *          the current graph
-   * @param actorParsers
-   *          map of actor and corresponding parsers
-   * @throws PiMMHandlerException
-   *           the PiMMHandlerException exception
-   */
-  private void iterativeResolveAllPortRates(final PiGraph graph, final LinkedHashMap<AbstractActor, JEP> actorParsers) throws PiMMHandlerException {
-    for (final Fifo f : graph.getFifos()) {
-      final DataOutputPort sourcePort = f.getSourcePort();
-      final Expression sourcePortRateExpression = sourcePort.getPortRateExpression();
-      final DataInputPort targetPort = f.getTargetPort();
-      final Expression targetPortRateExpression = targetPort.getPortRateExpression();
-      long prod = -1;
-      long cons = -1;
-      try {
-        // If port rate is constant it is much faster to just parse it
-        prod = Long.parseLong(sourcePortRateExpression.getExpressionString());
-        cons = Long.parseLong(targetPortRateExpression.getExpressionString());
-      } catch (final NumberFormatException e) {
-        // Deals with expressions
-        try {
-          prod = prod < 0 ? parsePortExpression(actorParsers.get(sourcePort.getContainingActor()), sourcePortRateExpression.getExpressionString()) : prod;
-          cons = cons < 0 ? parsePortExpression(actorParsers.get(targetPort.getContainingActor()), targetPortRateExpression.getExpressionString()) : cons;
-          // Set resolved port rate expression string
-          f.getSourcePort().getExpression().setExpressionString(Long.toString(prod));
-          f.getTargetPort().getExpression().setExpressionString(Long.toString(cons));
-        } catch (ParseException eparse) {
-          throw new PiMMHandlerException("failed to parse fifo [" + f.getId() + "] ports");
-        }
-      }
-    }
-    for (final PiGraph g : graph.getChildrenGraphs()) {
-      iterativeResolveAllPortRates(g, actorParsers);
-    }
-  }
-
-  /**
-   * Creates a map between all actors contained in the reference graph and its children and an associated parser for rate evaluation
-   *
-   * @param parameterValues
-   *          map of all parameters and their resolved value
-   * @return actorParsers
-   * @throws PiMMHandlerException
-   *           the PiMMHandlerException exception
-   */
-  private LinkedHashMap<AbstractActor, JEP> initActorRateParsers(final LinkedHashMap<Parameter, Long> parameterValues) {
-    LinkedHashMap<AbstractActor, JEP> actorParsers = new LinkedHashMap<>();
-    for (final AbstractActor actor : this.graph.getAllActors()) {
-      // Construct a Map that links actor port parameter to their real value in the graph
-      final LinkedHashMap<String, Long> portValues = new LinkedHashMap<>();
-      actorGraphParametersResolver(actor, parameterValues, portValues);
-      actorParsers.put(actor, initJep(portValues));
-    }
-    // Deals with delay
-    for (final Delay delay : this.graph.getDelays()) {
-      if (delay.hasSetterActor() || delay.hasGetterActor()) {
-        // Construct a Map that links actor port parameter to their real value in the graph
-        final LinkedHashMap<String, Long> portValues = new LinkedHashMap<>();
-        actorGraphParametersResolver(delay, parameterValues, portValues);
-        actorParsers.put((AbstractActor) delay, initJep(portValues));
-      }
-    }
-    return actorParsers;
-  }
-
-  private static void actorGraphParametersResolver(final AbstractActor actor, final LinkedHashMap<Parameter, Long> parameterValues,
-      final LinkedHashMap<String, Long> portValues) {
-    // Data interface actors do not have parameter ports, thus expression is directly graph parameter
-    // Same for delays
-    if (actor instanceof InterfaceActor || actor instanceof Delay) {
-      for (final Parameter p : actor.getInputParameters()) {
-        portValues.put(p.getName(), parameterValues.get(p));
-      }
-    } else {
-      // We have to fetch the corresponding parameter port for normal actors
-      for (final Parameter p : actor.getInputParameters()) {
-        final Port lookupPort = actor.lookupPortConnectedWithParameter(p);
-        portValues.put(lookupPort.getName(), parameterValues.get(p));
-      }
-    }
-
-  }
-
-  private static JEP initJep(final LinkedHashMap<String, Long> portValues) {
-    JEP jep = new JEP();
-    portValues.forEach(jep::addVariable);
-    return jep;
-  }
-
-  private static long parsePortExpression(final JEP jep, final String expressionString) throws ParseException {
-    final Node parse = jep.parse(expressionString);
-    final Object result = jep.evaluate(parse);
-    if (result instanceof Long) {
-      return (Long) result;
-    } else if (result instanceof Double) {
-      return Math.round((Double) result);
-    } else {
-      throw new ParseException("Unsupported result type " + result.getClass().getSimpleName());
-    }
-  }
-
-  /**
    * Set the value of parameters of a PiGraph when possible (i.e., if we have currently only one available value, or if we can compute the value)
    *
    * @param graph
@@ -602,6 +481,136 @@ public class PiMMHandler extends PiGraphImpl {
           break;
         }
       }
+    }
+  }
+
+  /**
+   * Iterative function for resolving data port rates.
+   *
+   * @param graph
+   *          the current graph
+   * @param actorParsers
+   *          map of actor and corresponding parsers
+   * @throws PiMMHandlerException
+   *           the PiMMHandlerException exception
+   */
+  private void iterativeResolveAllPortRates(final PiGraph graph, final LinkedHashMap<AbstractActor, JEP> actorParsers) throws PiMMHandlerException {
+    for (final Fifo f : graph.getFifos()) {
+      final DataOutputPort sourcePort = f.getSourcePort();
+      final DataInputPort targetPort = f.getTargetPort();
+      resolvePortRate(sourcePort, actorParsers.get(sourcePort.getContainingActor()));
+      resolvePortRate(targetPort, actorParsers.get(targetPort.getContainingActor()));
+    }
+    for (final PiGraph g : graph.getChildrenGraphs()) {
+      iterativeResolveAllPortRates(g, actorParsers);
+    }
+  }
+
+  /**
+   * Fast evaluator for data port rate expression.<br>
+   * If rate expression is a constant, then parsing is ignored since it is already done. <br>
+   * This implementation uses benefit of the fact that the parser is initialized once for a given actor.
+   *
+   * @param port
+   *          the data port to evaluate
+   * @param actorParser
+   *          parser of the actor containing the port
+   * @throws PiMMHandlerException
+   *           the PiMMHandlerException exception
+   */
+  private void resolvePortRate(final DataPort port, final JEP actorParser) throws PiMMHandlerException {
+    final Expression portRateExpression = port.getPortRateExpression();
+    try {
+      // If we can parse it, then it is constant
+      Long.parseLong(portRateExpression.getExpressionString());
+    } catch (final NumberFormatException e) {
+      try {
+        // Now, we deal with expression
+        long rate = parsePortExpression(actorParser, portRateExpression.getExpressionString());
+        portRateExpression.setExpressionString(Long.toString(rate));
+      } catch (ParseException eparse) {
+        throw new PiMMHandlerException("failed to parse rate for [" + port.getId() + "] port");
+      }
+    }
+  }
+
+  /**
+   * Creates a map between all actors contained in the reference graph and its children and an associated parser for rate evaluation
+   *
+   * @param parameterValues
+   *          map of all parameters and their resolved value
+   * @return actorParsers
+   * @throws PiMMHandlerException
+   *           the PiMMHandlerException exception
+   */
+  private LinkedHashMap<AbstractActor, JEP> initActorRateParsers(final LinkedHashMap<Parameter, Long> parameterValues) {
+    LinkedHashMap<AbstractActor, JEP> actorParsers = new LinkedHashMap<>();
+    for (final AbstractActor actor : this.graph.getAllActors()) {
+      // Construct a Map that links actor port parameter to their real value in the graph
+      final LinkedHashMap<String, Long> portValues = new LinkedHashMap<>();
+      actorGraphParametersResolver(actor, parameterValues, portValues);
+      actorParsers.put(actor, initJep(portValues));
+    }
+    // Deals with delay
+    for (final Delay delay : this.graph.getAllDelays()) {
+      if (delay.hasSetterActor() || delay.hasGetterActor()) {
+        // Construct a Map that links actor port parameter to their real value in the graph
+        final LinkedHashMap<String, Long> portValues = new LinkedHashMap<>();
+        actorGraphParametersResolver(delay, parameterValues, portValues);
+        actorParsers.put((AbstractActor) delay, initJep(portValues));
+      }
+    }
+    return actorParsers;
+  }
+
+  /**
+   * Creates a map between all parameters of an actor and the parameters of the graph
+   *
+   * @param actor
+   *          the actor to evaluate
+   * @param parameterValues
+   *          map of all parameters and their resolved value
+   * @param portValues
+   *          map of all actor parameters and the value of the corresponding graph parameter
+   */
+  private static void actorGraphParametersResolver(final AbstractActor actor, final LinkedHashMap<Parameter, Long> parameterValues,
+      final LinkedHashMap<String, Long> portValues) {
+    // Data interface actors do not have parameter ports, thus expression is directly graph parameter
+    // Same for delays
+    if (actor instanceof InterfaceActor || actor instanceof Delay) {
+      for (final Parameter p : actor.getInputParameters()) {
+        portValues.put(p.getName(), parameterValues.get(p));
+      }
+    } else {
+      // We have to fetch the corresponding parameter port for normal actors
+      for (final Parameter p : actor.getInputParameters()) {
+        final Port lookupPort = actor.lookupPortConnectedWithParameter(p);
+        portValues.put(lookupPort.getName(), parameterValues.get(p));
+      }
+    }
+
+  }
+
+  private static JEP initJep(final LinkedHashMap<String, Long> portValues) {
+    JEP jep = new JEP();
+    if (portValues != null) {
+      portValues.forEach(jep::addVariable);
+    }
+    // TODO move to JEP 3 and get rid of these
+    jep.addStandardConstants();
+    jep.addStandardFunctions();
+    return jep;
+  }
+
+  private static long parsePortExpression(final JEP jep, final String expressionString) throws ParseException {
+    final Node parse = jep.parse(expressionString);
+    final Object result = jep.evaluate(parse);
+    if (result instanceof Long) {
+      return (Long) result;
+    } else if (result instanceof Double) {
+      return Math.round((Double) result);
+    } else {
+      throw new ParseException("Unsupported result type " + result.getClass().getSimpleName());
     }
   }
 
