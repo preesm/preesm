@@ -59,6 +59,7 @@ import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
@@ -75,6 +76,7 @@ import org.ietr.preesm.experiment.model.pimm.Direction;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
@@ -711,6 +713,12 @@ public class PiParser {
         default:
           // ignore #text and unknown children
       }
+    }
+    // Sanity check for special actors
+    if ((vertex instanceof BroadcastActor) && ((AbstractActor) vertex).getDataInputPorts().size() > 1) {
+      throw new PiGraphException("Broadcast with multiple input detected [" + vertex.getName() + "].\n Broadcast actors can only have one input!");
+    } else if ((vertex instanceof ForkActor) && ((AbstractActor) vertex).getDataInputPorts().size() > 1) {
+      throw new PiGraphException("ForkActor with multiple input detected [" + vertex.getName() + "].\n Fork actors can only have one input!");
     }
   }
 

@@ -213,6 +213,10 @@ class PiGraph extends AbstractActor, Graph {
 		return (actors + childrenGraphs.map[allActors].flatten).toEList.unmodifiableView
 	}
 	
+	op unique Delay[] getAllDelays() {
+		return (delays + childrenGraphs.map[allDelays].flatten).toEList.unmodifiableView
+	}
+	
 	op unique ConfigInputInterface[] getConfigInputInterfaces() {
 		return parameters.filter(ConfigInputInterface).toEList.unmodifiableView
 	}
