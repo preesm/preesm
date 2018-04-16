@@ -408,15 +408,6 @@ class CPrinter extends DefaultPrinter {
 
 		unsigned int launch(unsigned int core_id, pthread_t * thread, void *(*start_routine) (void *)) {
 			// check CPU id is valid
-		#ifdef _WIN32
-			SYSTEM_INFO sysinfo;
-			GetSystemInfo(&sysinfo);
-			unsigned int numCPU = sysinfo.dwNumberOfProcessors;
-			if (core_id >= numCPU) return 1;
-		#else
-			unsigned int numCPU = sysconf(_SC_NPROCESSORS_ONLN);
-			if (core_id >= numCPU) return 1;
-		#endif
 			// init cpuset struct
 			cpu_set_t cpuset;
 			CPU_ZERO(&cpuset);
@@ -424,7 +415,21 @@ class CPrinter extends DefaultPrinter {
 			// init pthread attributes with affinity
 			pthread_attr_t attr;
 			pthread_attr_init(&attr);
-			pthread_attr_setaffinity_np(&attr, sizeof(cpuset), &cpuset);
+
+		#ifdef _WIN32
+			SYSTEM_INFO sysinfo;
+			GetSystemInfo(&sysinfo);
+			unsigned int numCPU = sysinfo.dwNumberOfProcessors;
+		#else
+			unsigned int numCPU = sysconf(_SC_NPROCESSORS_ONLN);
+		#endif
+			if (core_id >= numCPU) {
+				// leave attribute uninitialized
+				printf("** Warning: thread %d will not be set with specific core affinity \n   due to the lack of available dedicated cores.\n",core_id);
+			} else {
+				pthread_attr_setaffinity_np(&attr, sizeof(cpuset), &cpuset);
+			}
+
 			// create thread
 			pthread_create(thread, &attr, start_routine, NULL);
 			return 0;
