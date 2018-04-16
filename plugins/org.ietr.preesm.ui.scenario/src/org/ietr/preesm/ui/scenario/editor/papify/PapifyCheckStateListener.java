@@ -1,9 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2017) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2012)
+ * Daniel Madroñal <daniel.madronal@upm.es> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -37,6 +35,7 @@
 package org.ietr.preesm.ui.scenario.editor.papify;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
@@ -54,27 +53,20 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.ietr.dftools.algorithm.model.IRefinement;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.util.ActorPath;
-import org.ietr.preesm.ui.scenario.editor.HierarchicalSDFVertex;
+import org.ietr.preesm.core.scenario.papi.PapiComponent;
+import org.ietr.preesm.core.scenario.papi.PapiEvent;
+import org.ietr.preesm.core.scenario.papi.PapifyConfig;
 import org.ietr.preesm.ui.scenario.editor.ISDFCheckStateListener;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 import org.ietr.preesm.ui.scenario.editor.PreesmAlgorithmTreeContentProvider;
 
 // TODO: Auto-generated Javadoc
 /**
- * Listener of the check state of the SDF tree but also of the selection modification of the current core definition. It updates the check state of the vertices
- * depending on the constraint groups in the scenario
+ * Listener of the check state of both the PAPI component and the PAPI event tables but also of the selection modification of the current core definition. It
+ * updates the check Papify configuration depending on the PapifyConf groups in the scenario
  *
- * @author mpelcat
+ * @author dmadronal
  */
 public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
@@ -87,11 +79,13 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   /** Current section (necessary to diplay busy status). */
   private Section section = null;
 
-  /** Tree viewer used to set the checked status. */
-  private CheckboxTreeViewer treeViewer = null;
+  /** Tables used to set the checked status. */
+  private CheckboxTableViewer componentTableViewer = null;
+  private CheckboxTableViewer eventTableViewer     = null;
 
   /** Content provider used to get the elements currently displayed. */
-  private PreesmAlgorithmTreeContentProvider contentProvider = null;
+  private PapifyComponentListContentProvider componentContentProvider = null;
+  private PapifyEventListContentProvider     eventContentProvider     = null;
 
   /** Constraints page used as a property listener to change the dirty state. */
   private IPropertyListener propertyListener = null;
@@ -99,32 +93,46 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   /**
    * Instantiates a new constraints check state listener.
    *
-   * @param section
-   *          the section
    * @param scenario
    *          the scenario
    */
   public PapifyCheckStateListener(final Section section, final PreesmScenario scenario) {
     super();
-    this.scenario = scenario;
     this.section = section;
+    this.scenario = scenario;
   }
 
   /**
    * Sets the different necessary attributes.
    *
-   * @param treeViewer
+   * @param tableViewer
    *          the tree viewer
    * @param contentProvider
    *          the content provider
    * @param propertyListener
    *          the property listener
    */
-  @Override
-  public void setTreeViewer(final CheckboxTreeViewer treeViewer, final PreesmAlgorithmTreeContentProvider contentProvider,
+  public void setComponentTableViewer(final CheckboxTableViewer tableViewer, final PapifyComponentListContentProvider contentProvider,
       final IPropertyListener propertyListener) {
-    this.treeViewer = treeViewer;
-    this.contentProvider = contentProvider;
+    this.componentTableViewer = tableViewer;
+    this.componentContentProvider = contentProvider;
+    this.propertyListener = propertyListener;
+  }
+
+  /**
+   * Sets the different necessary attributes.
+   *
+   * @param tableViewer
+   *          the tree viewer
+   * @param contentProvider
+   *          the content provider
+   * @param propertyListener
+   *          the property listener
+   */
+  public void setEventTableViewer(final CheckboxTableViewer tableViewer, final PapifyEventListContentProvider contentProvider,
+      final IPropertyListener propertyListener) {
+    this.componentTableViewer = tableViewer;
+    this.eventContentProvider = contentProvider;
     this.propertyListener = propertyListener;
   }
 
@@ -140,49 +148,34 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
     final boolean isChecked = event.getChecked();
 
     BusyIndicator.showWhile(this.section.getDisplay(), () -> {
-      if (PapifyCheckStateListener.this.scenario.isIBSDFScenario()) {
-        if (element instanceof SDFGraph) {
-          final SDFGraph graph1 = (SDFGraph) element;
-          fireOnCheck(graph1, isChecked);
-          // updateConstraints(null,
-          // contentProvider.getCurrentGraph());
-          updateCheck();
-        } else if (element instanceof HierarchicalSDFVertex) {
-          final HierarchicalSDFVertex vertex = (HierarchicalSDFVertex) element;
-          fireOnCheck(vertex, isChecked);
-          // updateConstraints(null,
-          // contentProvider.getCurrentGraph());
-          updateCheck();
+      if (element instanceof PapiComponent) {
+        final PapiComponent comp1 = (PapiComponent) element;
+        fireOnCheck(comp1, isChecked);
+        updateCheck();
+      } else if (element instanceof PapiEvent) {
+        final PapiEvent event1 = (PapiEvent) element;
+        fireOnCheck(event1, isChecked);
+        updateCheck();
 
-        }
-      } else if (PapifyCheckStateListener.this.scenario.isPISDFScenario()) {
-        if (element instanceof PiGraph) {
-          final PiGraph graph2 = (PiGraph) element;
-          fireOnCheck(graph2, isChecked);
-          updateCheck();
-        } else if (element instanceof AbstractActor) {
-          final AbstractActor actor = (AbstractActor) element;
-          fireOnCheck(actor, isChecked);
-          updateCheck();
-        }
       }
     });
     this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
   }
 
   /**
-   * Adds or remove constraints for all vertices in the graph depending on the isChecked status.
+   * Adds or remove a component depending on the isChecked status.
    *
-   * @param graph
-   *          the graph
+   * @param comp
+   *          the new PAPI component
    * @param isChecked
    *          the is checked
    */
-  private void fireOnCheck(final SDFGraph graph, final boolean isChecked) {
+  private void fireOnCheck(final PapiComponent comp, final boolean isChecked) {
     if (this.currentOpId != null) {
-      // Checks the children of the current graph
-      for (final HierarchicalSDFVertex v : this.contentProvider.filterIBSDFChildren(graph.vertexSet())) {
-        fireOnCheck(v, isChecked);
+      if (isChecked) {
+        this.scenario.getPapifyConfigManager().addComponent(this.currentOpId, comp);
+      } else {
+        this.scenario.getPapifyConfigManager().removeComponent(this.currentOpId, comp);
       }
     }
   }
@@ -190,77 +183,17 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   /**
    * Fire on check.
    *
-   * @param graph
-   *          the graph
+   * @param event
+   *          the Papi event
    * @param isChecked
    *          the is checked
    */
-  private void fireOnCheck(final PiGraph graph, final boolean isChecked) {
-    if (this.currentOpId != null) {
-      // Checks the children of the current graph
-      for (final AbstractActor v : this.contentProvider.filterPISDFChildren(graph.getActors())) {
-        if (v instanceof PiGraph) {
-          fireOnCheck(((PiGraph) v), isChecked);
-        }
-        fireOnCheck(v, isChecked);
-      }
-      fireOnCheck((AbstractActor) graph, isChecked);
-    }
-  }
-
-  /**
-   * Adds or remove a constraint depending on the isChecked status.
-   *
-   * @param vertex
-   *          the vertex
-   * @param isChecked
-   *          the is checked
-   */
-  private void fireOnCheck(final HierarchicalSDFVertex vertex, final boolean isChecked) {
+  private void fireOnCheck(final PapiEvent event, final boolean isChecked) {
     if (this.currentOpId != null) {
       if (isChecked) {
-        this.scenario.getConstraintGroupManager().addConstraint(this.currentOpId, vertex.getStoredVertex());
+        this.scenario.getPapifyConfigManager().addEvent(this.currentOpId, event);
       } else {
-        this.scenario.getConstraintGroupManager().removeConstraint(this.currentOpId, vertex.getStoredVertex());
-      }
-    }
-
-    // Checks the children of the current vertex
-    final IRefinement refinement = vertex.getStoredVertex().getRefinement();
-    if ((refinement != null) && (refinement instanceof SDFGraph)) {
-      final SDFGraph graph = (SDFGraph) refinement;
-
-      for (final HierarchicalSDFVertex v : this.contentProvider.filterIBSDFChildren(graph.vertexSet())) {
-        fireOnCheck(v, isChecked);
-      }
-    }
-  }
-
-  /**
-   * Fire on check.
-   *
-   * @param abstractActor
-   *          the actor
-   * @param isChecked
-   *          the is checked
-   */
-  private void fireOnCheck(final AbstractActor abstractActor, final boolean isChecked) {
-    if (this.currentOpId != null) {
-      if (isChecked) {
-        this.scenario.getConstraintGroupManager().addConstraint(this.currentOpId, abstractActor);
-      } else {
-        this.scenario.getConstraintGroupManager().removeConstraint(this.currentOpId, abstractActor);
-      }
-    }
-
-    // Checks the children of the current vertex
-    if (abstractActor instanceof Actor) {
-      final Actor actor = (Actor) abstractActor;
-      if (actor.isHierarchical()) {
-        final PiGraph subGraph = actor.getSubGraph();
-        for (final AbstractActor v : this.contentProvider.filterPISDFChildren(subGraph.getActors())) {
-          fireOnCheck(v, isChecked);
-        }
+        this.scenario.getPapifyConfigManager().removeEvent(this.currentOpId, event);
       }
     }
   }
@@ -295,86 +228,37 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   }
 
   /**
-   * Update the check status of the whole tree.
+   * Update the check status of both the tables.
    */
   public void updateCheck() {
     if (this.scenario != null) {
-      if (this.scenario.isIBSDFScenario()) {
-        updateCheckIBSDF();
-      } else if (this.scenario.isPISDFScenario()) {
-        updateCheckPISDF();
-      }
-    }
-  }
+      final List<PapiComponent> papiComponents = this.componentContentProvider.getComponents();
+      final List<PapiEvent> papiEvents = this.eventContentProvider.getEvents();
 
-  /**
-   * Update check PISDF.
-   */
-  private void updateCheckPISDF() {
-    final PiGraph currentGraph = this.contentProvider.getPISDFCurrentGraph();
-    if ((this.currentOpId != null) && (currentGraph != null)) {
-      final Set<AbstractVertex> cgSet = new LinkedHashSet<>();
+      if ((this.currentOpId != null) && (papiComponents != null)) {
+        final Set<PapiComponent> pcgSet = new LinkedHashSet<>();
 
-      for (final ConstraintGroup cg : this.scenario.getConstraintGroupManager().getOpConstraintGroups(this.currentOpId)) {
-
-        // Retrieves the elements in the tree that have the same name as
-        // the ones to select in the constraint group
-        for (final String vertexId : cg.getVertexPaths()) {
-          final AbstractVertex v = ActorPath.lookup(currentGraph, vertexId);
-          if (v != null) {
-            cgSet.add(v);
+        for (final PapifyConfig pg : this.scenario.getPapifyConfigManager().getCorePapifyConfigGroups(this.currentOpId)) {
+          if (pg != null) {
+            pcgSet.add(pg.getPAPIComponent());
           }
         }
+
+        this.componentTableViewer.setCheckedElements(pcgSet.toArray());
       }
+      if ((this.currentOpId != null) && (papiEvents != null)) {
+        final Set<PapiEvent> pegSet = new LinkedHashSet<>();
 
-      this.treeViewer.setCheckedElements(cgSet.toArray());
-
-      // If all the children of a graph are checked, it is checked itself
-      boolean allChildrenChecked = true;
-      for (final AbstractActor v : this.contentProvider.filterPISDFChildren(currentGraph.getActors())) {
-        allChildrenChecked &= this.treeViewer.getChecked(v);
-      }
-
-      if (allChildrenChecked) {
-        this.treeViewer.setChecked(currentGraph, true);
-      }
-
-    }
-  }
-
-  /**
-   * Update check IBSDF.
-   */
-  private void updateCheckIBSDF() {
-    final SDFGraph currentGraph = this.contentProvider.getIBSDFCurrentGraph();
-    if ((this.currentOpId != null) && (currentGraph != null)) {
-      final Set<HierarchicalSDFVertex> cgSet = new LinkedHashSet<>();
-
-      for (final ConstraintGroup cg : this.scenario.getConstraintGroupManager().getOpConstraintGroups(this.currentOpId)) {
-
-        // Retrieves the elements in the tree that have the same name as
-        // the ones to select in the constraint group
-        for (final String vertexId : cg.getVertexPaths()) {
-          final SDFAbstractVertex v = currentGraph.getHierarchicalVertexFromPath(vertexId);
-
-          if (v != null) {
-            cgSet.add(this.contentProvider.convertSDFChild(v));
+        for (final PapifyConfig pg : this.scenario.getPapifyConfigManager().getCorePapifyConfigGroups(this.currentOpId)) {
+          for (final PapiEvent singleEvent : pg.getPAPIEvents()) {
+            if (singleEvent != null) {
+              pegSet.add(singleEvent);
+            }
           }
         }
+
+        this.eventTableViewer.setCheckedElements(pegSet.toArray());
       }
-
-      this.treeViewer.setCheckedElements(cgSet.toArray());
-
-      // If all the children of a graph are checked, it is checked itself
-      boolean allChildrenChecked = true;
-      for (final HierarchicalSDFVertex v : this.contentProvider.filterIBSDFChildren(currentGraph.vertexSet())) {
-        allChildrenChecked &= this.treeViewer.getChecked(v);
-      }
-
-      if (allChildrenChecked) {
-        this.treeViewer.setChecked(currentGraph, true);
-      }
-
     }
   }
 
@@ -393,7 +277,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
     combocps.setVisible(true);
     final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
     combo.setVisibleItemCount(20);
-    combo.setToolTipText(Messages.getString("Constraints.coreSelectionTooltip"));
+    combo.setToolTipText(Messages.getString("Papify.coreSelectionTooltip"));
     comboDataInit(combo);
     combo.addFocusListener(new FocusListener() {
 
@@ -438,6 +322,12 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   }
 
   public void setTableViewer(CheckboxTableViewer tableviewer, PreesmAlgorithmTreeContentProvider contentProvider2, IPropertyListener listener) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void setTreeViewer(CheckboxTreeViewer treeViewer, PreesmAlgorithmTreeContentProvider contentProvider, IPropertyListener propertyListener) {
     // TODO Auto-generated method stub
 
   }

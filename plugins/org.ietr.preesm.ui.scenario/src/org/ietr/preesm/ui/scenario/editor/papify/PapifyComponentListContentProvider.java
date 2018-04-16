@@ -53,6 +53,17 @@ import org.ietr.preesm.core.scenario.papi.PapiEventSet;
  */
 public class PapifyComponentListContentProvider implements IStructuredContentProvider {
 
+  private List<PapiComponent> componentList;
+
+  /**
+   * Gets the Papi Component list.
+   *
+   * @return the Papi Component list
+   */
+  public List<PapiComponent> getComponents() {
+    return this.componentList;
+  }
+
   /*
    * (non-Javadoc)
    *
@@ -66,7 +77,7 @@ public class PapifyComponentListContentProvider implements IStructuredContentPro
     if (inputElement instanceof PapiEventInfo) {
       final PapiEventInfo inputPapiEventInfo = (PapiEventInfo) inputElement;
       PapiComponent compAux = null;
-      List<PapiComponent> componentList = new ArrayList<>();
+      componentList = new ArrayList<>();
       PapiEventSet eventSetAux = null;
 
       boolean checkingEvents = false;

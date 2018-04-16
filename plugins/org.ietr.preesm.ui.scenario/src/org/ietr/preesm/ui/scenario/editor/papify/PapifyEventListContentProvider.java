@@ -54,6 +54,17 @@ import org.ietr.preesm.core.scenario.papi.PapiEventSet;
  */
 public class PapifyEventListContentProvider implements IStructuredContentProvider {
 
+  private List<PapiEvent> eventList;
+
+  /**
+   * Gets the Papi Event list.
+   *
+   * @return the Papi Event list
+   */
+  public List<PapiEvent> getEvents() {
+    return this.eventList;
+  }
+
   /*
    * (non-Javadoc)
    *
@@ -69,7 +80,7 @@ public class PapifyEventListContentProvider implements IStructuredContentProvide
       final PapiEvent timingEvent = new PapiEvent();
       PapiComponent compAux = null;
       PapiEventSet eventSetAux = null;
-      List<PapiEvent> eventList = new ArrayList<>();
+      eventList = new ArrayList<>();
       timingEvent.setName("Timing");
       timingEvent.setDesciption("Event to time through PAPI_get_time()");
       eventList.add(timingEvent);

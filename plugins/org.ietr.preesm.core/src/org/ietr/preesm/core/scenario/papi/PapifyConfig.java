@@ -49,7 +49,7 @@ public class PapifyConfig {
   private String coreId;
 
   /** The PAPI component associated to the core instance. */
-  private String PAPIComponent;
+  private PapiComponent PAPIComponent;
 
   /** The set of events that are going to be monitored. */
   private final Set<PapiEvent> PAPIEvents;
@@ -81,7 +81,7 @@ public class PapifyConfig {
    * @param component
    *          the PAPI component
    */
-  public void addPAPIComponent(final String component) {
+  public void addPAPIComponent(final PapiComponent component) {
     this.PAPIComponent = component;
 
   }
@@ -117,7 +117,7 @@ public class PapifyConfig {
    * @param component
    *          the PAPI component
    */
-  public void removePAPIComponent(final String component) {
+  public void removePAPIComponent(final PapiComponent component) {
     if (component.equals(this.PAPIComponent)) {
       this.PAPIComponent = null;
     }
@@ -149,7 +149,7 @@ public class PapifyConfig {
    *
    * @return the PAPI component
    */
-  public String getPAPIComponent() {
+  public PapiComponent getPAPIComponent() {
     return (this.PAPIComponent);
   }
 
@@ -185,7 +185,7 @@ public class PapifyConfig {
    *          the PAPI component
    * @return true, if successful
    */
-  public boolean isPAPIComponent(final String component) {
+  public boolean isPAPIComponent(final PapiComponent component) {
 
     if (component.equals(this.PAPIComponent)) {
       return true;

@@ -74,7 +74,7 @@ public class PapifyConfigManager {
    * @param component
    *          the PAPI component
    */
-  public void addComponent(final String opId, final String component) {
+  public void addComponent(final String opId, final PapiComponent component) {
 
     final Set<PapifyConfig> pgSet = getCorePapifyConfigGroups(opId);
 
@@ -96,7 +96,7 @@ public class PapifyConfigManager {
    * @param component
    *          the PAPI component
    */
-  public void removeComponent(final String opId, final String component) {
+  public void removeComponent(final String opId, final PapiComponent component) {
     final Set<PapifyConfig> pgSet = getCorePapifyConfigGroups(opId);
 
     if (!pgSet.isEmpty()) {
@@ -163,7 +163,7 @@ public class PapifyConfigManager {
    *          the PAPI component
    * @return the component PapifyConfig groups
    */
-  public Set<PapifyConfig> getComponentPapifyConfigGroups(final String component) {
+  public Set<PapifyConfig> getComponentPapifyConfigGroups(final PapiComponent component) {
     final Set<PapifyConfig> graphPapifyConfigGroups = new LinkedHashSet<>();
 
     for (final PapifyConfig pg : this.papifyConfigGroups) {
