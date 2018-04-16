@@ -52,13 +52,13 @@ public class PiGraphLookupTest {
     topGraph.setName("topGraph");
     final Actor actor1 = PiMMUserFactory.instance.createActor();
     actor1.setName("toto");
-    topGraph.getActors().add(actor1);
+    topGraph.addActor(actor1);
     final PiGraph secondLevelGraph = PiMMUserFactory.instance.createPiGraph();
     secondLevelGraph.setName("secondLevelGraph");
-    topGraph.getActors().add(secondLevelGraph);
+    topGraph.addActor(secondLevelGraph);
     final Actor actor2 = PiMMUserFactory.instance.createActor();
     actor2.setName("titi");
-    secondLevelGraph.getActors().add(actor2);
+    secondLevelGraph.addActor(actor2);
 
     final PiGraph refinementGraph = PiMMUserFactory.instance.createPiGraph();
     refinementGraph.setName("refinementGraph");
@@ -68,7 +68,7 @@ public class PiGraphLookupTest {
     actor2.setRefinement(pisdfRefinmentMock);
     final Actor actor3 = PiMMUserFactory.instance.createActor();
     actor3.setName("tutu");
-    refinementGraph.getActors().add(actor3);
+    refinementGraph.addActor(actor3);
 
     // usual requests
 

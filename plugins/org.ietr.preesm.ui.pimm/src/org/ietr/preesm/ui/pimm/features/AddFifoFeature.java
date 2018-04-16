@@ -98,7 +98,7 @@ public class AddFifoFeature extends AbstractAddFeature {
     // in a real scenario the business model would have its own resource
     if (addedFifo.eResource() == null) {
       final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
-      graph.getFifos().add(addedFifo);
+      graph.addFifo(addedFifo);
     }
 
     // CONNECTION WITH POLYLINE

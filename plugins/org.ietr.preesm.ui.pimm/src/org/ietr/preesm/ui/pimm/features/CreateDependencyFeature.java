@@ -356,7 +356,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
     final Dependency dependency = PiMMUserFactory.instance.createDependency(setter, getter);
 
     // Add the new Fifo to the graph
-    graph.getDependencies().add(dependency);
+    graph.addDependency(dependency);
 
     return dependency;
   }

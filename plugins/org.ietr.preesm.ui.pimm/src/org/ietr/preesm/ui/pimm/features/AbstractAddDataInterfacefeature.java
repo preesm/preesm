@@ -125,7 +125,7 @@ public abstract class AbstractAddDataInterfacefeature extends AbstractAddFeature
     // resource of the graph
     if (dataInterface.eResource() == null) {
       final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
-      graph.getActors().add(dataInterface);
+      graph.addActor(dataInterface);
     }
     link(boxAnchor, port);
 

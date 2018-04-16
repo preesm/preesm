@@ -118,7 +118,7 @@ public class CreateParameterFeature extends AbstractCreateFeature {
     // this parameter
 
     // Add new parameter to the graph.
-    if (graph.getParameters().add(newParameter)) {
+    if (graph.addParameter(newParameter)) {
       this.hasDoneChanges = true;
     }
 

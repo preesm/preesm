@@ -128,7 +128,7 @@ public class AddConfigInputInterfaceFeature extends AbstractAddFeature {
       // resource of the graph
       if (addedParam.eResource() == null) {
         final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
-        graph.getParameters().add(addedParam);
+        graph.addParameter(addedParam);
       }
       link(boxAnchor, addedParam);
     }
