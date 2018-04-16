@@ -19,3 +19,4 @@ Export-Package: org.ietr.preesm.algorithm.exportDif,
  org.ietr.preesm.algorithm.optimization,
  org.ietr.preesm.algorithm.randomsdf,
  org.ietr.preesm.algorithm.transforms
+Import-Package: org.apache.commons.lang3.time

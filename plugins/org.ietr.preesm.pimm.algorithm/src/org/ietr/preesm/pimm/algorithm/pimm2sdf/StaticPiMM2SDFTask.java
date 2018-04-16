@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.workflow.WorkflowException;
@@ -69,6 +70,9 @@ public class StaticPiMM2SDFTask extends AbstractTaskImplementation {
     final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
+    StopWatch timer = new StopWatch();
+    timer.start();
+
     final StaticPiMM2SDFLauncher launcher = new StaticPiMM2SDFLauncher(scenario, graph);
     SDFGraph result = null;
     try {
@@ -78,6 +82,8 @@ public class StaticPiMM2SDFTask extends AbstractTaskImplementation {
       logger.log(Level.WARNING, e.getMessage());
     }
 
+    timer.stop();
+    WorkflowLogger.getLogger().log(Level.INFO, "PiMM2SDF transformation: " + timer.toString() + "s.");
     final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH, result);
     return output;

@@ -36,7 +36,6 @@
  */
 package org.ietr.preesm.pimm.algorithm.pimm2srdag;
 
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -65,7 +64,6 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
 import org.ietr.preesm.mapper.model.MapperDAG;
-import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperEdgeFactory;
 import org.ietr.preesm.pimm.algorithm.math.LCMBasedBRV;
 import org.ietr.preesm.pimm.algorithm.math.PiBRV;
@@ -109,19 +107,20 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
 
   private static void printRV(final Map<AbstractVertex, Integer> graphBRV) {
     for (final Map.Entry<AbstractVertex, Integer> rv : graphBRV.entrySet()) {
-      List<String> hierarchyNames = new ArrayList<>();
-      AbstractActor actor = (AbstractActor) rv.getKey();
-      while (actor.getContainingGraph() != null) {
-        actor = actor.getContainingGraph();
-        hierarchyNames.add(actor.getName());
-      }
-      // Removes top graph name
-      hierarchyNames.remove(actor.getName());
-      String hierarchyName = String.join("_", Lists.reverse(hierarchyNames));
-      if (!hierarchyName.isEmpty()) {
-        hierarchyName += "_";
-      }
-      WorkflowLogger.getLogger().log(Level.INFO, hierarchyName + rv.getKey().getName() + " x" + Integer.toString(rv.getValue()));
+      // List<String> hierarchyNames = new ArrayList<>();
+      // AbstractActor actor = (AbstractActor) rv.getKey();
+      // while (actor.getContainingGraph() != null) {
+      // actor = actor.getContainingGraph();
+      // hierarchyNames.add(actor.getName());
+      // }
+      // // Removes top graph name
+      // hierarchyNames.remove(actor.getName());
+      // String hierarchyName = String.join("_", Lists.reverse(hierarchyNames));
+      // if (!hierarchyName.isEmpty()) {
+      // hierarchyName += "_";
+      // }
+      // WorkflowLogger.getLogger().log(Level.INFO, hierarchyName + rv.getKey().getName() + " x" + Integer.toString(rv.getValue()));
+      WorkflowLogger.getLogger().log(Level.INFO, rv.getKey().getVertexID() + " x" + Integer.toString(rv.getValue()));
     }
   }
 
@@ -171,9 +170,11 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
   }
 
   private MapperDAG computeSRDag() throws StaticPiMM2SrDAGException {
-    final MapperDAG mapperDAG = new MapperDAG(new MapperEdgeFactory(), this.graph);
-    iterativeComputeSRDag(mapperDAG, this.piHandler);
-    return mapperDAG;
+    // Creates "top" sr dag with PiSDF reference graph
+    final MapperDAG topDAG = new MapperDAG(new MapperEdgeFactory(), this.graph);
+    // Iterates over every actors and levels of hierarchy to add vertices
+    iterativeComputeSRDag(topDAG, this.piHandler);
+    return topDAG;
   }
 
   private void iterativeComputeSRDag(final MapperDAG dag, final PiMMHandler piHandler) throws StaticPiMM2SrDAGException {
@@ -243,7 +244,8 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
 
       final List<SourceConnection> sourceConnections = new ArrayList<>();
 
-      MapperDAGEdge edge;
+      // MapperDAGEdge edge = new MapperDAGEdge(source, destination);
+      // edge.setWeight(new DAGDefaultEdgePropertyType(1));
 
       // Fill source/sink repetition list
       if (sourceActor instanceof InterfaceActor) {
@@ -338,12 +340,12 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
    */
   private void pimm2DAGVertex(final AbstractActor a, final DAGVertex vertex) {
     // Handle vertex's name
-    vertex.setName(a.getName());
+    vertex.setName(a.getVertexID());
     // Handle vertex's path inside the graph hierarchy
     vertex.setInfo(a.getVertexPath());
     // Handle ID
-    vertex.setId(a.getName());
-    // Number of incoming edges
+    vertex.setId(a.getVertexID());
+    // Set Repetition vector
     vertex.setNbRepeat(new DAGDefaultVertexPropertyType(this.graphBRV.get(a)));
   }
 

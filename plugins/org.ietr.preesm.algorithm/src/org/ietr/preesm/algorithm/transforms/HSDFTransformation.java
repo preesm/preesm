@@ -44,6 +44,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -79,6 +80,8 @@ public class HSDFTransformation extends AbstractTaskImplementation {
     final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
 
     final Logger logger = WorkflowLogger.getLogger();
+    StopWatch timer = new StopWatch();
+    timer.start();
 
     try {
 
@@ -123,6 +126,9 @@ public class HSDFTransformation extends AbstractTaskImplementation {
     } catch (final SDF4JException e) {
       throw (new WorkflowException(e.getMessage(), e));
     }
+
+    timer.stop();
+    WorkflowLogger.getLogger().log(Level.INFO, "HSDF transformation: " + timer.toString() + "s.");
 
     return outputs;
   }
