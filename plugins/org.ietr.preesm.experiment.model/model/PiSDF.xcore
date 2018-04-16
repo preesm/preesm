@@ -106,7 +106,7 @@ interface AbstractVertex extends Vertex {
 	}
 	op String getVertexPath() {
 		val actorName = name;
-		return Optional.ofNullable(getContainingPiGraph).map[vertexPath + "/" + actorName].orElse(actorName)
+		return Optional.ofNullable(containingPiGraph).map[it|it.vertexPath + "/" + actorName].orElse(actorName)
 	}
 }
 
