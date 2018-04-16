@@ -95,7 +95,6 @@ interface ExpresionHolder extends Parameterizable {
 
 interface AbstractVertex extends Vertex {
 	String name
-	op PiGraph getContainingGraph()
 	op unique Port[] getAllPorts()
 	op Port lookupPort(String portName) {
 		return getAllPorts().filterNull.findFirst [
