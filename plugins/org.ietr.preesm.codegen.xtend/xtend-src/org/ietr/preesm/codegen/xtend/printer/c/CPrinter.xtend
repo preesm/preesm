@@ -383,9 +383,16 @@ class CPrinter extends DefaultPrinter {
 		 */
 
 		#define _GNU_SOURCE
+		#ifdef _WIN32
+		#include <windows.h>
+		#else
 		#include <unistd.h>
+		#endif
+
 		#include <pthread.h>
 		#include <stdio.h>
+
+		#define _PREESM_NBTHREADS_ «printerBlocks.size»
 
 		// application dependent includes
 		#include "preesm.h"
@@ -398,51 +405,63 @@ class CPrinter extends DefaultPrinter {
 		pthread_barrier_t iter_barrier;
 		int stopThreads;
 
-		// setting a setting core affinity
-		int set_affinity_to_core(pthread_t* thread, int core_id) {
-		int num_cores = sysconf(_SC_NPROCESSORS_ONLN);
-		if (core_id < 0 || core_id >= num_cores)
-		  printf("Wrong core number %d\n", core_id);
-		  cpu_set_t cpuset;
-		  CPU_ZERO(&cpuset);
-		  CPU_SET(core_id, &cpuset);
-		  return pthread_setaffinity_np(*thread, sizeof(cpu_set_t), &cpuset);
+
+		unsigned int launch(unsigned int core_id, pthread_t * thread, void *(*start_routine) (void *)) {
+			// check CPU id is valid
+		#ifdef _WIN32
+			SYSTEM_INFO sysinfo;
+			GetSystemInfo(&sysinfo);
+			unsigned int numCPU = sysinfo.dwNumberOfProcessors;
+			if (core_id >= numCPU) return 1;
+		#else
+			unsigned int numCPU = sysconf(_SC_NPROCESSORS_ONLN);
+			if (core_id >= numCPU) return 1;
+		#endif
+			// init cpuset struct
+			cpu_set_t cpuset;
+			CPU_ZERO(&cpuset);
+			CPU_SET(core_id, &cpuset);
+			// init pthread attributes with affinity
+			pthread_attr_t attr;
+			pthread_attr_init(&attr);
+			pthread_attr_setaffinity_np(&attr, sizeof(cpuset), &cpuset);
+			// create thread
+			pthread_create(thread, &attr, start_routine, NULL);
+			return 0;
 		}
 
-		int main(void)
-		{
 
-		  // Declaring thread pointers
-		  «FOR coreBlock : printerBlocks »
-		    pthread_t threadCore«(coreBlock as CoreBlock).coreID»;
-		  «ENDFOR»
+		int main(void) {
+			// Declaring thread pointers
+			pthread_t coreThreads[_PREESM_NBTHREADS_];
+			void *(*coreThreadComputations[_PREESM_NBTHREADS_])(void *) = {
+				«FOR coreBlock : printerBlocks»&computationThread_Core«(coreBlock as CoreBlock).coreID»«if(printerBlocks.last == coreBlock) {""} else {", "}»«ENDFOR»
+			};
 
-		  #ifdef VERBOSE
-		  printf("Launched main\n");
-		  #endif
+		#ifdef VERBOSE
+			printf("Launched main\n");
+		#endif
 
-		  // Creating a synchronization barrier
-		  stopThreads = 0;
-		  pthread_barrier_init(&iter_barrier, NULL, «printerBlocks.size»);
+			// Creating a synchronization barrier
+			stopThreads = 0;
+			pthread_barrier_init(&iter_barrier, NULL, _PREESM_NBTHREADS_);
 
-		  communicationInit();
+			communicationInit();
 
-		  // Creating threads
-		  «FOR coreBlock : printerBlocks»
-		  pthread_create(&threadCore«(coreBlock as CoreBlock).coreID», NULL, computationThread_Core«(coreBlock as CoreBlock).coreID», NULL);
-		  set_affinity_to_core(&threadCore«(coreBlock as CoreBlock).coreID»,«(coreBlock as CoreBlock).coreID»);
-		  «ENDFOR»
+			// Creating threads
+			for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
+				if(launch(i,&coreThreads[i],coreThreadComputations[i])) {
+					printf("Error: could not launch thread %d\n",i);
+					return 1;
+				}
+			}
 
-		  // Waiting for thread terminations
-		  «FOR coreBlock : printerBlocks»
-		    pthread_join(threadCore«(coreBlock as CoreBlock).coreID»,NULL);
-		  «ENDFOR»
+			// Waiting for thread terminations
+			for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
+				pthread_join(coreThreads[i], NULL);
+			}
 
-		  #ifdef VERBOSE
-		  printf("Press any key to stop application\n");
-		  #endif
-
-		  return 0;
+			return 0;
 		}
 
 	'''

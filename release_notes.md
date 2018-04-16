@@ -9,6 +9,7 @@ PREESM Changelog
 ### Changes
 
 ### Bug fix
+* Fix codegen for MS Visual Studio to support thread affinity;
 
 
 ## Release version 2.10.0
