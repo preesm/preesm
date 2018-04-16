@@ -152,7 +152,18 @@ abstract class AbstractActor extends Configurable {
 
 class PiGraph extends AbstractActor, Graph {
 
-	contains Dependency[] dependencies
+	op unique boolean addActor(AbstractActor actor) {
+		vertices.add(actor)
+	}
+	op unique boolean addParameter(Parameter parameter) {
+		vertices.add(parameter)
+	}
+	op unique boolean addFifo(Fifo fifo) {
+		edges.add(fifo)
+	}
+	op unique boolean addDependency(Dependency dependency) {
+		edges.add(dependency)
+	}
 
 	op unique Parameter[] getParameters(){
 		return vertices.filter(Parameter).toEList.unmodifiableView
@@ -162,6 +173,9 @@ class PiGraph extends AbstractActor, Graph {
 	}
 	op unique Fifo[] getFifos() {
 		return edges.filter(Fifo).toEList.unmodifiableView
+	}
+	op unique Dependency[] getDependencies() {
+		return edges.filter(Dependency).toEList.unmodifiableView
 	}
 
 	op unique String[] getActorsNames() {
@@ -401,7 +415,7 @@ class Parameter extends Vertex, Configurable, ISetter, ExpresionHolder {
 	}
 }
 
-class Dependency {
+class Dependency extends Edge {
 	refers ISetter setter opposite outgoingDependencies
 	refers ConfigInputPort getter opposite incomingDependency
 }
