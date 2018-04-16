@@ -114,7 +114,7 @@ public class CreateConfigInputInterfaceFeature extends AbstractCreateFeature {
     newParameter.setName(newCfgInIfName);
 
     // Add new parameter to the graph.
-    if (graph.getParameters().add(newParameter)) {
+    if (graph.addParameter(newParameter)) {
       this.hasDoneChanges = true;
     }
 

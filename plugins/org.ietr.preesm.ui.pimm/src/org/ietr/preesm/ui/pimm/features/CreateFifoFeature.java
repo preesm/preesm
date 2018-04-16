@@ -322,7 +322,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     fifo.setTargetPort(target);
 
     // Add the new Fifo to the graph
-    graph.getFifos().add(fifo);
+    graph.addFifo(fifo);
 
     return fifo;
   }

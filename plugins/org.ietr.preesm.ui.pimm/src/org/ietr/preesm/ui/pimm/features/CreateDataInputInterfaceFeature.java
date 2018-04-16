@@ -112,7 +112,7 @@ public class CreateDataInputInterfaceFeature extends AbstractCreateFeature {
     newSrcInterface.getDataPort().setName(newSrcName);
 
     // Add new sourceInterface to the graph.
-    if (graph.getActors().add(newSrcInterface)) {
+    if (graph.addActor(newSrcInterface)) {
       this.hasDoneChanges = true;
     }
 

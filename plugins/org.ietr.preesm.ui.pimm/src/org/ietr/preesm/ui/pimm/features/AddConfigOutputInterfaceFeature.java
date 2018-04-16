@@ -127,7 +127,7 @@ public class AddConfigOutputInterfaceFeature extends AbstractAddFeature {
       // resource of the graph
       if (cfgOutIf.eResource() == null) {
         final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
-        graph.getActors().add(cfgOutIf);
+        graph.addActor(cfgOutIf);
       }
       link(boxAnchor, port);
     }

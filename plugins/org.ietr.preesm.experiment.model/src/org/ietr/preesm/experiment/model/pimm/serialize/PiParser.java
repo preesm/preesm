@@ -217,7 +217,7 @@ public class PiParser {
     actor.setName(nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME));
 
     // Add the actor to the parsed graph
-    graph.getActors().add(actor);
+    graph.addActor(actor);
 
     parseRefinement(nodeElt, actor);
 
@@ -339,7 +339,7 @@ public class PiParser {
     param.setName(attribute);
 
     // Add the actor to the parsed graph
-    graph.getParameters().add(param);
+    graph.addParameter(param);
 
     return param;
   }
@@ -415,7 +415,7 @@ public class PiParser {
     }
 
     // Add the new dependency to the graph
-    graph.getDependencies().add(dependency);
+    graph.addDependency(dependency);
   }
 
   /**
@@ -500,7 +500,7 @@ public class PiParser {
     }
 
     // Add the new Fifo to the graph
-    graph.getFifos().add(fifo);
+    graph.addFifo(fifo);
   }
 
   /**
@@ -643,7 +643,7 @@ public class PiParser {
     param.setName(nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME));
 
     // Add the actor to the parsed graph
-    graph.getParameters().add(param);
+    graph.addParameter(param);
 
     return param;
   }
@@ -758,7 +758,7 @@ public class PiParser {
     cfgOutIf.getDataPort().setName(name);
 
     // Add the actor to the parsed graph
-    graph.getActors().add(cfgOutIf);
+    graph.addActor(cfgOutIf);
 
     return cfgOutIf;
   }
@@ -782,7 +782,7 @@ public class PiParser {
     snkInterface.getDataPort().setName(name);
 
     // Add the actor to the parsed graph
-    graph.getActors().add(snkInterface);
+    graph.addActor(snkInterface);
 
     return snkInterface;
   }
@@ -806,7 +806,7 @@ public class PiParser {
     srcInterface.getDataPort().setName(name);
 
     // Add the actor to the parsed graph
-    graph.getActors().add(srcInterface);
+    graph.addActor(srcInterface);
 
     return srcInterface;
   }
@@ -847,7 +847,7 @@ public class PiParser {
     actor.setName(nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME));
 
     // Add the actor to the parsed graph
-    graph.getActors().add(actor);
+    graph.addActor(actor);
 
     return actor;
   }

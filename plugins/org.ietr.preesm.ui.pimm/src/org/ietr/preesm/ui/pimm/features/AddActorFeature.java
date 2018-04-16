@@ -133,7 +133,7 @@ public class AddActorFeature extends AbstractAddFeature {
       // in a real scenario the business model would have its own resource
       if (addedActor.eResource() == null) {
         final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
-        graph.getActors().add(addedActor);
+        graph.addActor(addedActor);
       }
       // create link and wire it
       link(containerShape, addedActor);

@@ -131,7 +131,7 @@ public class AddParameterFeature extends AbstractAddFeature {
       // of the graph
       if (addedParameter.eResource() == null) {
         final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
-        graph.getParameters().add(addedParameter);
+        graph.addParameter(addedParameter);
       }
 
       // create link and wire it

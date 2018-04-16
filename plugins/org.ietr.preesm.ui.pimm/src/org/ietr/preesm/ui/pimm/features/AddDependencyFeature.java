@@ -92,7 +92,7 @@ public class AddDependencyFeature extends AbstractAddFeature {
     // of the Graph
     if (addedDependency.eResource() == null) {
       final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
-      graph.getDependencies().add(addedDependency);
+      graph.addDependency(addedDependency);
     }
 
     // CONNECTION WITH POLYLINE
