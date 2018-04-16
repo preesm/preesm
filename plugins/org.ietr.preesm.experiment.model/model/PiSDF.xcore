@@ -95,6 +95,9 @@ interface ExpresionHolder extends Parameterizable {
 
 interface AbstractVertex extends Vertex {
 	String name
+	op PiGraph getContainingPiGraph() {
+		return super.containingGraph as PiGraph
+	}
 	op unique Port[] getAllPorts()
 	op Port lookupPort(String portName) {
 		return getAllPorts().filterNull.findFirst [
@@ -103,7 +106,7 @@ interface AbstractVertex extends Vertex {
 	}
 	op String getVertexPath() {
 		val actorName = name;
-		return Optional.ofNullable(containingGraph).map[vertexPath + "/" + actorName].orElse(actorName)
+		return Optional.ofNullable(getContainingPiGraph).map[vertexPath + "/" + actorName].orElse(actorName)
 	}
 }
 
