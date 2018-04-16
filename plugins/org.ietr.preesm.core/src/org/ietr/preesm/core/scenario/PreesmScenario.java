@@ -54,6 +54,7 @@ import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.architecture.slam.SlamPackage;
 import org.ietr.dftools.architecture.slam.serialize.IPXACTResourceFactoryImpl;
 import org.ietr.preesm.core.architecture.util.DesignTools;
+import org.ietr.preesm.core.scenario.papi.PapifyConfigManager;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -105,6 +106,9 @@ public class PreesmScenario {
   /** Path to the scenario file. */
   private String scenarioURL = "";
 
+  /** Manager of PapifyConfig groups. */
+  private PapifyConfigManager papifyconfiggroupmanager = null;
+
   /** The dags 2 sdfs. */
   // Map from DAGs names to SDFGraphs from which they are generated
   private final Map<String, SDFGraph> dags2sdfs;
@@ -121,6 +125,7 @@ public class PreesmScenario {
     this.variablesManager = new VariablesManager();
     this.parameterValueManager = new ParameterValueManager();
     this.dags2sdfs = new LinkedHashMap<>();
+    this.papifyconfiggroupmanager = new PapifyConfigManager();
   }
 
   /**
@@ -302,6 +307,15 @@ public class PreesmScenario {
   }
 
   /**
+   * Gets the PapifyConfig group manager.
+   *
+   * @return the PapifyConfig group manager
+   */
+  public PapifyConfigManager getPapifyConfigManager() {
+    return this.papifyconfiggroupmanager;
+  }
+
+  /**
    * Sets the scenario URL.
    *
    * @param scenarioURL
@@ -465,6 +479,7 @@ public class PreesmScenario {
     if (algorithmChange || architectureChange) {
       this.timingmanager.getTimings().clear();
       this.constraintgroupmanager.update();
+      this.papifyconfiggroupmanager.update();
     }
   }
 

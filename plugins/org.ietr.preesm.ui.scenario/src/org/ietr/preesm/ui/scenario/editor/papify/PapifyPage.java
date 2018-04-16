@@ -140,7 +140,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     // Constrints file chooser section
     createFileSection(managedForm, Messages.getString("Papify.file"), Messages.getString("Papify.fileDescription"), Messages.getString("Papify.fileEdit"),
-        this.scenario.getConstraintGroupManager().getExcelFileURL(), Messages.getString("Papify.fileBrowseTitle"), "xls");
+        this.scenario.getConstraintGroupManager().getExcelFileURL(), Messages.getString("Papify.fileBrowseTitle"), "xml");
 
     createPapifySection(managedForm, Messages.getString("Papify.title"), Messages.getString("Papify.description"));
 
