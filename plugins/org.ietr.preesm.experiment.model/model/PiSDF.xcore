@@ -45,6 +45,19 @@ type int wraps int
 type long wraps long
 type double wraps double
 
+class Vertex {
+	container Graph containingGraph opposite vertices
+}
+
+class Edge {
+	container Graph containingGraph opposite edges
+}
+
+class Graph {
+	contains Vertex[] vertices opposite containingGraph
+	contains Edge[] edges opposite containingGraph
+}
+
 interface Parameterizable {
 	op unique Parameter[] getInputParameters()
 	op boolean isLocallyStatic() {
