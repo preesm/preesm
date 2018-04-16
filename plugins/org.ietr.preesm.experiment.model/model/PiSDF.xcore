@@ -219,6 +219,7 @@ abstract class DataPort extends Port, ExpresionHolder {
 		val String portName = Optional.ofNullable(name).filter[!it.isEmpty()].map["." + it].orElse("");
 		return actorName + portName;
 	}
+	op Fifo getFifo()
 }
 
 class DataInputPort extends DataPort {
@@ -226,12 +227,18 @@ class DataInputPort extends DataPort {
 	op PortKind getKind() {
 		return PortKind.DATA_INPUT
 	}
+	op Fifo getFifo() {
+		return incomingFifo;
+	}
 }
 
 class DataOutputPort extends DataPort {
 	refers Fifo outgoingFifo opposite sourcePort
 	op PortKind getKind() {
 		return PortKind.DATA_OUTPUT
+	}
+	op Fifo getFifo() {
+		return outgoingFifo;
 	}
 }
 
