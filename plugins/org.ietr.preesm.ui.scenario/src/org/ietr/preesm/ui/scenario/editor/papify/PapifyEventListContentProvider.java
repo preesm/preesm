@@ -44,6 +44,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.ietr.preesm.core.scenario.papi.PapiComponent;
 import org.ietr.preesm.core.scenario.papi.PapiEvent;
 import org.ietr.preesm.core.scenario.papi.PapiEventInfo;
+import org.ietr.preesm.core.scenario.papi.PapiEventModifier;
 import org.ietr.preesm.core.scenario.papi.PapiEventSet;
 
 // TODO: Auto-generated Javadoc
@@ -78,16 +79,16 @@ public class PapifyEventListContentProvider implements IStructuredContentProvide
     if (inputElement instanceof PapiEventInfo) {
       final PapiEventInfo inputPapiEventInfo = (PapiEventInfo) inputElement;
       final PapiEvent timingEvent = new PapiEvent();
+      final List<PapiEventModifier> modifTimingList = new ArrayList<>();
       PapiComponent compAux = null;
       PapiEventSet eventSetAux = null;
       eventList = new ArrayList<>();
       timingEvent.setName("Timing");
       timingEvent.setDesciption("Event to time through PAPI_get_time()");
+      timingEvent.setModifiers(modifTimingList);
       eventList.add(timingEvent);
-      // for (int i = 0; i < inputPapiEventInfo.getComponents().size(); i++) {
       for (int i = inputPapiEventInfo.getComponents().size() - 1; i >= 0; i--) {
         compAux = inputPapiEventInfo.getComponents().get(i);
-        // for (int j = 0; j < compAux.getEventSets().size(); j++) {
         for (int j = compAux.getEventSets().size() - 1; j >= 0; j--) {
           eventSetAux = compAux.getEventSets().get(j);
           eventList.addAll(eventSetAux.getEvents());

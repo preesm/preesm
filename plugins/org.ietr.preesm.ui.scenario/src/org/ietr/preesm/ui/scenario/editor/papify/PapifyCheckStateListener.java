@@ -41,7 +41,6 @@ import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.PaintEvent;
@@ -52,7 +51,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.papi.PapiComponent;
 import org.ietr.preesm.core.scenario.papi.PapiEvent;
@@ -77,7 +75,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   private String currentOpId = null;
 
   /** Current section (necessary to diplay busy status). */
-  private Section section = null;
+  // private Section section = null;
 
   /** Tables used to set the checked status. */
   private CheckboxTableViewer componentTableViewer = null;
@@ -96,9 +94,10 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    * @param scenario
    *          the scenario
    */
-  public PapifyCheckStateListener(final Section section, final PreesmScenario scenario) {
+  // public PapifyCheckStateListener(final Section section, final PreesmScenario scenario) {
+  public PapifyCheckStateListener(final PreesmScenario scenario) {
     super();
-    this.section = section;
+    // this.section = section;
     this.scenario = scenario;
   }
 
@@ -131,7 +130,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    */
   public void setEventTableViewer(final CheckboxTableViewer tableViewer, final PapifyEventListContentProvider contentProvider,
       final IPropertyListener propertyListener) {
-    this.componentTableViewer = tableViewer;
+    this.eventTableViewer = tableViewer;
     this.eventContentProvider = contentProvider;
     this.propertyListener = propertyListener;
   }
@@ -147,18 +146,18 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
     final Object element = event.getElement();
     final boolean isChecked = event.getChecked();
 
-    BusyIndicator.showWhile(this.section.getDisplay(), () -> {
-      if (element instanceof PapiComponent) {
-        final PapiComponent comp1 = (PapiComponent) element;
-        fireOnCheck(comp1, isChecked);
-        updateCheck();
-      } else if (element instanceof PapiEvent) {
-        final PapiEvent event1 = (PapiEvent) element;
-        fireOnCheck(event1, isChecked);
-        updateCheck();
+    // BusyIndicator.showWhile(this.section.getDisplay(), () -> {
+    if (element instanceof PapiComponent) {
+      final PapiComponent comp1 = (PapiComponent) element;
+      fireOnCheck(comp1, isChecked);
+      updateComponentCheck();
+    } else if (element instanceof PapiEvent) {
+      final PapiEvent event1 = (PapiEvent) element;
+      fireOnCheck(event1, isChecked);
+      updateEventCheck();
 
-      }
-    });
+    }
+    // });
     this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
   }
 
@@ -222,7 +221,8 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
       final String item = combo.getItem(combo.getSelectionIndex());
 
       this.currentOpId = item;
-      updateCheck();
+      updateComponentCheck();
+      updateEventCheck();
     }
 
   }
@@ -230,34 +230,35 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   /**
    * Update the check status of both the tables.
    */
-  public void updateCheck() {
+  public void updateComponentCheck() {
     if (this.scenario != null) {
       final List<PapiComponent> papiComponents = this.componentContentProvider.getComponents();
-      final List<PapiEvent> papiEvents = this.eventContentProvider.getEvents();
+      final Set<PapiComponent> pcgSet = new LinkedHashSet<>();
 
       if ((this.currentOpId != null) && (papiComponents != null)) {
-        final Set<PapiComponent> pcgSet = new LinkedHashSet<>();
-
-        for (final PapifyConfig pg : this.scenario.getPapifyConfigManager().getCorePapifyConfigGroups(this.currentOpId)) {
-          if (pg != null) {
-            pcgSet.add(pg.getPAPIComponent());
-          }
+        final PapifyConfig pcgSetRead = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroups(this.currentOpId);
+        if (pcgSetRead != null && pcgSetRead.getPAPIComponent() != null) {
+          pcgSet.add(pcgSetRead.getPAPIComponent());
         }
-
         this.componentTableViewer.setCheckedElements(pcgSet.toArray());
       }
+    }
+  }
+
+  /**
+   * Update the check status of event table.
+   */
+  public void updateEventCheck() {
+    if (this.scenario != null) {
+      final List<PapiEvent> papiEvents = this.eventContentProvider.getEvents();
+      Set<PapiEvent> pegSetfinal = new LinkedHashSet<>();
+
       if ((this.currentOpId != null) && (papiEvents != null)) {
-        final Set<PapiEvent> pegSet = new LinkedHashSet<>();
-
-        for (final PapifyConfig pg : this.scenario.getPapifyConfigManager().getCorePapifyConfigGroups(this.currentOpId)) {
-          for (final PapiEvent singleEvent : pg.getPAPIEvents()) {
-            if (singleEvent != null) {
-              pegSet.add(singleEvent);
-            }
-          }
+        final PapifyConfig pegSetRead = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroups(this.currentOpId);
+        if (pegSetRead != null && !pegSetRead.getPAPIEvents().isEmpty()) {
+          pegSetfinal = pegSetRead.getPAPIEvents();
         }
-
-        this.eventTableViewer.setCheckedElements(pegSet.toArray());
+        this.eventTableViewer.setCheckedElements(pegSetfinal.toArray());
       }
     }
   }
@@ -317,7 +318,8 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    */
   @Override
   public void paintControl(final PaintEvent e) {
-    updateCheck();
+    updateComponentCheck();
+    updateEventCheck();
 
   }
 

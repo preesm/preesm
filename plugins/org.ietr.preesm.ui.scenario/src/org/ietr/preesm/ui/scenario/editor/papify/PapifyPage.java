@@ -104,8 +104,6 @@ public class PapifyPage extends FormPage implements IPropertyListener {
   /** Architecture. */
   private Design slamDesign = null;
 
-  private Section section;
-
   /**
    * Instantiates a new papify page.
    *
@@ -139,7 +137,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     // papiEvents = papiParser.parse("/home/dmadronal/workspace_PREESM_developer/org.ietr.preesm.sobel_parallel/Code/PAPI_info.xml");
 
-    // Constrints file chooser section
+    // Papify file chooser section
     createFileSection(managedForm, Messages.getString("Papify.file"), Messages.getString("Papify.fileDescription"), Messages.getString("Papify.fileEdit"),
         this.scenario.getConstraintGroupManager().getExcelFileURL(), Messages.getString("Papify.fileBrowseTitle"), "xml");
 
@@ -230,19 +228,11 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
     final Composite container = createSection(managedForm, title, desc, 1, new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
-    // section.setLayout(new GridLayout());
-    // section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
 
-    this.section = createSection(managedForm, title, desc, 2);
+    this.checkStateListener = new PapifyCheckStateListener(this.scenario);
+    container.addPaintListener(checkStateListener);
 
-    this.checkStateListener = new PapifyCheckStateListener(section, this.scenario);
-
-    // Creates the section part containing the tree with SDF vertices
-    // new SDFTreeSection(this.scenario, section, managedForm.getToolkit(), Section.DESCRIPTION, this, this.checkStateListener);
-
-    // DM added this
     final FormToolkit toolkit = managedForm.getToolkit();
-    // final Combo coreCombo = addCoreSelector(container, toolkit);
 
     checkStateListener.addComboBoxSelector(container, toolkit);
 
@@ -358,6 +348,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     papiEvents = papiParser.parse(text.getText());
 
     if (papiEvents.getComponents() != null) {
+      this.scenario.getPapifyConfigManager().setExcelFileURL(text.getText());
       this.componentTableViewer.setInput(this.papiEvents);
       this.componentTableViewer.refresh();
       this.eventTableViewer.setInput(this.papiEvents);
@@ -407,10 +398,6 @@ public class PapifyPage extends FormPage implements IPropertyListener {
       columns.add(column);
     }
 
-    // Make the last column (Expression) editable
-    // XXX: Through an other way than double clicking (direct editing)
-    // this.componentTableViewer.addDoubleClickListener(e -> labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection()));
-
     final Table tref = table;
     final Composite comp = tablecps;
     final List<TableColumn> fColumns = columns;
@@ -447,7 +434,6 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     gd.heightHint = 100;
     gd.widthHint = 400;
     tablecps.setLayoutData(gd);
-    this.section.addPaintListener(checkStateListener);
   }
 
   /**
@@ -490,10 +476,6 @@ public class PapifyPage extends FormPage implements IPropertyListener {
       columns.add(column);
     }
 
-    // Make the last column (Expression) editable
-    // XXX: Through an other way than double clicking (direct editing)
-    // this.eventTableViewer.addDoubleClickListener(e -> labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection()));
-
     final Table tref = table;
     final Composite comp = tablecps;
     final List<TableColumn> fColumns = columns;
@@ -530,7 +512,6 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     gd.heightHint = 200;
     gd.widthHint = 400;
     tablecps.setLayoutData(gd);
-    this.section.addPaintListener(checkStateListener);
   }
 
   /**

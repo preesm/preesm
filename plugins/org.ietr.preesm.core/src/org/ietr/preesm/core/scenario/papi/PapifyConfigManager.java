@@ -48,6 +48,9 @@ public class PapifyConfigManager {
   /** List of all PapifyConfig groups. */
   private final Set<PapifyConfig> papifyConfigGroups;
 
+  /** Path to a file containing constraints. */
+  private String xmlFileURL = "";
+
   /**
    * Instantiates a new PapifyConfig manager.
    */
@@ -76,16 +79,17 @@ public class PapifyConfigManager {
    */
   public void addComponent(final String opId, final PapiComponent component) {
 
-    final Set<PapifyConfig> pgSet = getCorePapifyConfigGroups(opId);
+    final PapifyConfig pgSet = getCorePapifyConfigGroups(opId);
 
-    if (pgSet.isEmpty()) {
+    if (pgSet == null) {
       final PapifyConfig pg = new PapifyConfig();
       pg.addCoreId(opId);
       pg.addPAPIComponent(component);
       this.papifyConfigGroups.add(pg);
     } else {
-      ((PapifyConfig) pgSet.toArray()[0]).addPAPIComponent(component);
+      pgSet.addPAPIComponent(component);
     }
+
   }
 
   /**
@@ -97,12 +101,10 @@ public class PapifyConfigManager {
    *          the PAPI component
    */
   public void removeComponent(final String opId, final PapiComponent component) {
-    final Set<PapifyConfig> pgSet = getCorePapifyConfigGroups(opId);
+    final PapifyConfig pgSet = getCorePapifyConfigGroups(opId);
 
-    if (!pgSet.isEmpty()) {
-      for (final PapifyConfig pg : pgSet) {
-        pg.removePAPIComponent(component);
-      }
+    if (pgSet != null) {
+      pgSet.removePAPIComponent(component);
     }
   }
 
@@ -116,15 +118,15 @@ public class PapifyConfigManager {
    */
   public void addEvent(final String opId, final PapiEvent event) {
 
-    final Set<PapifyConfig> pgSet = getCorePapifyConfigGroups(opId);
+    final PapifyConfig pgSet = getCorePapifyConfigGroups(opId);
 
-    if (pgSet.isEmpty()) {
+    if (pgSet == null) {
       final PapifyConfig pg = new PapifyConfig();
       pg.addCoreId(opId);
       pg.addPAPIEvent(event);
       this.papifyConfigGroups.add(pg);
     } else {
-      ((PapifyConfig) pgSet.toArray()[0]).addPAPIEvent(event);
+      pgSet.addPAPIEvent(event);
     }
   }
 
@@ -137,12 +139,10 @@ public class PapifyConfigManager {
    *          the PAPI event
    */
   public void removeEvent(final String opId, final PapiEvent event) {
-    final Set<PapifyConfig> pgSet = getCorePapifyConfigGroups(opId);
+    final PapifyConfig pgSet = getCorePapifyConfigGroups(opId);
 
-    if (!pgSet.isEmpty()) {
-      for (final PapifyConfig pg : pgSet) {
-        pg.removePAPIEvent(event);
-      }
+    if (pgSet != null) {
+      pgSet.removePAPIEvent(event);
     }
   }
 
@@ -163,35 +163,35 @@ public class PapifyConfigManager {
    *          the PAPI component
    * @return the component PapifyConfig groups
    */
-  public Set<PapifyConfig> getComponentPapifyConfigGroups(final PapiComponent component) {
-    final Set<PapifyConfig> graphPapifyConfigGroups = new LinkedHashSet<>();
+  public PapifyConfig getComponentPapifyConfigGroups(final PapiComponent component) {
+    PapifyConfig papifyConfigGroup = null;
 
     for (final PapifyConfig pg : this.papifyConfigGroups) {
       if (pg.isPAPIComponent(component)) {
-        graphPapifyConfigGroups.add(pg);
+        papifyConfigGroup = pg;
       }
     }
 
-    return graphPapifyConfigGroups;
+    return papifyConfigGroup;
   }
 
   /**
-   * Gets the op PapifyConfig groups.
+   * Gets the op PapifyConfig group.
    *
    * @param opId
    *          the op id
    * @return the op PapifyConfig groups
    */
-  public Set<PapifyConfig> getCorePapifyConfigGroups(final String opId) {
-    final Set<PapifyConfig> graphPapifyConfigGroups = new LinkedHashSet<>();
+  public PapifyConfig getCorePapifyConfigGroups(final String opId) {
+    PapifyConfig papifyConfigGroup = null;
 
     for (final PapifyConfig pg : this.papifyConfigGroups) {
       if (pg.isCoreId(opId)) {
-        graphPapifyConfigGroups.add(pg);
+        papifyConfigGroup = pg;
       }
     }
 
-    return graphPapifyConfigGroups;
+    return papifyConfigGroup;
   }
 
   /**
@@ -200,6 +200,25 @@ public class PapifyConfigManager {
   public void removeAll() {
 
     this.papifyConfigGroups.clear();
+  }
+
+  /**
+   * Gets the xml file URL.
+   *
+   * @return the xml file URL
+   */
+  public String getXmlFileURL() {
+    return this.xmlFileURL;
+  }
+
+  /**
+   * Sets the xml file URL.
+   *
+   * @param xmlFileURL
+   *          the new xml file URL
+   */
+  public void setExcelFileURL(final String xmlFileURL) {
+    this.xmlFileURL = xmlFileURL;
   }
 
   /*

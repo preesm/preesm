@@ -58,7 +58,7 @@ public class PapifyConfig {
    * Instantiates a new PapifyConfig group.
    */
   public PapifyConfig() {
-    this.coreId = null;
+    this.coreId = "";
     this.PAPIComponent = null;
     this.PAPIEvents = new LinkedHashSet<>();
 
@@ -93,9 +93,8 @@ public class PapifyConfig {
    *          the PAPI event
    */
   public void addPAPIEvent(final PapiEvent event) {
-    if (!PAPIEvents.contains(event)) {
+    if (!this.PAPIEvents.contains(event)) {
       this.PAPIEvents.add(event);
-
     }
   }
 
@@ -107,7 +106,7 @@ public class PapifyConfig {
    */
   public void removeCoreId(final String coreId) {
     if (coreId.equals(this.coreId)) {
-      this.coreId = null;
+      this.coreId = "";
     }
   }
 
@@ -130,7 +129,7 @@ public class PapifyConfig {
    *          the PAPI event
    */
   public void removePAPIEvent(final PapiEvent event) {
-    if (PAPIEvents.contains(event)) {
+    if (this.PAPIEvents.contains(event)) {
       this.PAPIEvents.remove(event);
     }
   }
@@ -219,11 +218,13 @@ public class PapifyConfig {
    */
   @Override
   public String toString() {
-    String s = "<";
+    String s = "<Printing core> \n";
     s += this.coreId.toString();
+    s += "\n<Printing component> \n";
     s += this.PAPIComponent.toString();
+    s += "\n<Printing events> \n";
     s += this.PAPIEvents.toString();
-    s += ">";
+    s += "<end printing>\n";
 
     return s;
   }
