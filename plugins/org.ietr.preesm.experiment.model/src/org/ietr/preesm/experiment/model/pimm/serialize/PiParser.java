@@ -193,8 +193,7 @@ public class PiParser {
       // Fill the graph with parsed information
       parsePi(rootElt, graph);
     } catch (final RuntimeException e) {
-      e.printStackTrace();
-      return null;
+      throw new PiGraphException("Could not parse the input graph", e);
     }
 
     return graph;
