@@ -116,7 +116,7 @@ abstract class Configurable extends AbstractVertex, Parameterizable {
 		return configInputPorts.filterNull.map[incomingDependency].filterNull.map[setter].filter(Parameter).toEList.
 			unmodifiableView
 	}
-	op Port lookupPortConnectedWithParameter(Parameter parameter) {
+	op ConfigInputPort lookupConfigInputPortConnectedWithParameter(Parameter parameter) {
 		return Optional.ofNullable(configInputPorts.filterNull.map[incomingDependency].filterNull.findFirst [
 			it.setter === parameter
 		]).map[getter].orElse(null)

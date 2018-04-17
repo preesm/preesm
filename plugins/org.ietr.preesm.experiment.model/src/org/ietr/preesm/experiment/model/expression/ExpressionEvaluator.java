@@ -44,13 +44,13 @@ import org.ietr.preesm.experiment.model.expression.functions.GeometricSum;
 import org.ietr.preesm.experiment.model.expression.functions.MaxFunction;
 import org.ietr.preesm.experiment.model.expression.functions.MinFunction;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.ExpresionHolder;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.Port;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
@@ -139,7 +139,7 @@ public class ExpressionEvaluator {
         if (containingActor instanceof InterfaceActor) {
           result.put(param.getName(), value);
         } else {
-          final Port configInputPort = containingActor.lookupPortConnectedWithParameter(param);
+          final ConfigInputPort configInputPort = containingActor.lookupConfigInputPortConnectedWithParameter(param);
           final String name = configInputPort.getName();
           result.put(name, value);
         }
