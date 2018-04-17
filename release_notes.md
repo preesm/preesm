@@ -14,7 +14,7 @@ PREESM Changelog
 
 ### Bug fix
 * Fix codegen for MS Visual Studio to support thread affinity;
-
+* Properly rethrow exception when parser is failing instead of returning null;
 
 ## Release version 2.10.0
 *2018.03.29*
