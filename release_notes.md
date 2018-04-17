@@ -10,6 +10,7 @@ PREESM Changelog
 * Add a generic graph definition in PiSDF (graph, vertices, edges);
 * Add helper oeprations in PiSDF;
 * Update release process to upload releases on GitHub;
+* Update operation with more accurate name and return type;
 
 ### Bug fix
 * Fix codegen for MS Visual Studio to support thread affinity;
