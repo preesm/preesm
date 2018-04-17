@@ -47,7 +47,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
-import org.ietr.preesm.experiment.model.pimm.ExpresionHolder;
+import org.ietr.preesm.experiment.model.pimm.ExpressionHolder;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
@@ -126,7 +126,7 @@ public class ExpressionEvaluator {
 
   private static Map<String, Number> addInputParameterValues(final Expression expression) {
     final Map<String, Number> result = new LinkedHashMap<>();
-    final ExpresionHolder holder = expression.getHolder();
+    final ExpressionHolder holder = expression.getHolder();
     final EList<Parameter> inputParameters = holder.getInputParameters();
     for (final Parameter param : inputParameters) {
       final Expression valueExpression = param.getValueExpression();

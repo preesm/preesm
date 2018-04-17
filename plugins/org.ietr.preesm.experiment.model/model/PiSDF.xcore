@@ -85,11 +85,11 @@ interface Parameterizable {
 }
 
 class Expression {
-	refers ExpresionHolder holder opposite expression
+	refers ExpressionHolder holder opposite expression
 	String expressionString = "0"
 }
 
-interface ExpresionHolder extends Parameterizable {
+interface ExpressionHolder extends Parameterizable {
 	contains Expression expression opposite holder
 }
 
@@ -257,9 +257,9 @@ interface Port {
 	op PortKind getKind()
 }
 
-abstract class DataPort extends Port, ExpresionHolder {
+abstract class DataPort extends Port, ExpressionHolder {
 	op Expression getPortRateExpression() {
-		return expression
+		return getExpression
 	}
 	PortMemoryAnnotation ^annotation
 	op AbstractActor getContainingActor() {
@@ -403,9 +403,9 @@ class CHeaderRefinement extends Refinement {
 	}
 }
 
-class Parameter extends Vertex, Configurable, ISetter, ExpresionHolder {
+class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 	op Expression getValueExpression() {
-		return expression
+		return getExpression
 	}
 	op boolean isLocallyStatic() {
 		// a parameter is static if all its setters are static (or it has no setter)
@@ -429,9 +429,9 @@ interface ISetter {
 	op boolean isLocallyStatic()
 }
 
-class Delay extends Configurable, ExpresionHolder {
+class Delay extends Configurable, ExpressionHolder {
 	op Expression getSizeExpression() {
-		return expression
+		return getExpression
 	}
 	container readonly Fifo containingFifo opposite delay
 
