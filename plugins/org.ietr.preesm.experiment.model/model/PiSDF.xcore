@@ -116,6 +116,10 @@ abstract class Configurable extends AbstractVertex, Parameterizable {
 		return configInputPorts.filterNull.map[incomingDependency].filterNull.map[setter].filter(Parameter).toEList.
 			unmodifiableView
 	}
+	/*
+	 * Lookup within all the ConfigInputPort and return the first one connected to the given
+	 * Parameter, or null if the actor is not connected to it.
+	 */
 	op ConfigInputPort lookupConfigInputPortConnectedWithParameter(Parameter parameter) {
 		return Optional.ofNullable(configInputPorts.filterNull.map[incomingDependency].filterNull.findFirst [
 			it.setter === parameter
