@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ietr.preesm.pimm.algorithm.math;
+package org.ietr.preesm.pimm.algorithm.helper;
 
 /**
  * @author farresti

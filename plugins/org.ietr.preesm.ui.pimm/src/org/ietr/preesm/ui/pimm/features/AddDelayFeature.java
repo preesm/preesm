@@ -152,8 +152,9 @@ public class AddDelayFeature extends AbstractCustomFeature {
     final Delay delay = PiMMUserFactory.instance.createDelay();
     fifo.setDelay(delay);
     delay.setName("");
-    final PiGraph graph = fifo.getContainingGraph();
-    graph.getDelays().add(delay);
+
+    final PiGraph graph = fifo.getContainingPiGraph();
+    graph.addDelay(delay);
 
     // Get the GaService
     final IGaService gaService = Graphiti.getGaService();

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ietr.preesm.pimm.algorithm.math;
+package org.ietr.preesm.pimm.algorithm.helper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,7 +17,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
-import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
@@ -119,11 +119,7 @@ public class PiMMHandler {
    */
   public void addAbstractActor(final AbstractActor actor) {
     // Special case of delay
-    if (actor instanceof Delay) {
-      this.graph.getDelays().add((Delay) actor);
-    } else {
-      this.graph.getActors().add(actor);
-    }
+    this.graph.addActor(actor);
     // TODO
     // Update properties
   }
@@ -293,13 +289,11 @@ public class PiMMHandler {
     // Fetch all actors without interfaces in the PiGraph
     List<AbstractActor> fullActorList = new ArrayList<>();
     fullActorList.addAll(graph.getActors());
-    // Add delays with connected actors
-    for (final Delay delay : graph.getDelays()) {
-      if (delay.hasGetterActor() || delay.hasSetterActor()) {
-        fullActorList.add(delay);
-      }
-    }
     for (final AbstractActor actor : fullActorList) {
+      // Ignore unused delay actor
+      if ((actor instanceof DelayActor) && !((DelayActor) actor).getLinkedDelay().isDynamic()) {
+        continue;
+      }
       boolean alreadyContained = false;
       for (List<AbstractActor> cc : listCCs) {
         if (cc.contains(actor)) {
@@ -313,7 +307,6 @@ public class PiMMHandler {
         iterativeCCFetcher(actor, cc);
         listCCs.add(cc);
       }
-
     }
   }
 
@@ -369,6 +362,9 @@ public class PiMMHandler {
    *           the PiMMHandlerException exception
    */
   public void resolveAllParameters() throws PiMMHandlerException {
+
+    final PiMMResolverVisitor piMMResolverVisitor = new PiMMResolverVisitor();
+
     final LinkedHashMap<Parameter, Long> parameterValues = new LinkedHashMap<>();
 
     // First we evaluate constant values and check for dynamic parameters
@@ -551,15 +547,6 @@ public class PiMMHandler {
       actorGraphParametersResolver(actor, parameterValues, portValues);
       actorParsers.put(actor, initJep(portValues));
     }
-    // Deals with delay
-    for (final Delay delay : this.graph.getAllDelays()) {
-      if (delay.hasSetterActor() || delay.hasGetterActor()) {
-        // Construct a Map that links actor port parameter to their real value in the graph
-        final LinkedHashMap<String, Long> portValues = new LinkedHashMap<>();
-        actorGraphParametersResolver(delay, parameterValues, portValues);
-        actorParsers.put((AbstractActor) delay, initJep(portValues));
-      }
-    }
     return actorParsers;
   }
 
@@ -576,14 +563,14 @@ public class PiMMHandler {
   private static void actorGraphParametersResolver(final AbstractActor actor, final LinkedHashMap<Parameter, Long> parameterValues,
       final LinkedHashMap<String, Long> portValues) {
     // Data interface actors do not have parameter ports, thus expression is directly graph parameter
-    // Same for delays
-    if (actor instanceof InterfaceActor || actor instanceof Delay) {
+    if (actor instanceof InterfaceActor) {
       for (final Parameter p : actor.getInputParameters()) {
         portValues.put(p.getName(), parameterValues.get(p));
       }
     } else {
       // We have to fetch the corresponding parameter port for normal actors
       for (final Parameter p : actor.getInputParameters()) {
+        // TODO fix link between port of delay actor and parameter
         final Port lookupPort = actor.lookupPortConnectedWithParameter(p);
         portValues.put(lookupPort.getName(), parameterValues.get(p));
       }

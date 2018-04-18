@@ -52,6 +52,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -196,7 +197,8 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     final PictogramElement sourcePe = context.getSourcePictogramElement();
     final Object obj = getBusinessObjectForPictogramElement(sourcePe);
     if (obj instanceof Delay) {
-      return (Port) ((Delay) obj).getGetterPort();
+      final DelayActor actor = ((Delay) obj).getActor();
+      return actor.getDataOutputPort();
     }
     return getPort(sourceAnchor);
   }
@@ -205,7 +207,8 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     final PictogramElement targetPe = context.getTargetPictogramElement();
     final Object obj = getBusinessObjectForPictogramElement(targetPe);
     if (obj instanceof Delay) {
-      return (Port) ((Delay) obj).getSetterPort();
+      final DelayActor actor = ((Delay) obj).getActor();
+      return actor.getDataInputPort();
     }
     return getPort(targetAnchor);
   }

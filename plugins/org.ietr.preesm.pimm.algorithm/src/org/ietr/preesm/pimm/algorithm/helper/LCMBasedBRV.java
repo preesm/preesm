@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ietr.preesm.pimm.algorithm.math;
+package org.ietr.preesm.pimm.algorithm.helper;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -16,7 +16,7 @@ import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.pimm.algorithm.math.PiMMHandler.PiMMHandlerException;
+import org.ietr.preesm.pimm.algorithm.helper.PiMMHandler.PiMMHandlerException;
 import org.ietr.preesm.throughput.tools.helpers.MathFunctionsHelper;
 
 /**

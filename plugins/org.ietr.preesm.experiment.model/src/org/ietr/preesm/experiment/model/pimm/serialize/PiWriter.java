@@ -63,6 +63,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
@@ -360,22 +361,25 @@ public class PiWriter {
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.DELAY);
 
     // Write setter and getter names if delay has any
-    final String setterName = delay.hasSetterActor() ? delay.getSetterActor().getName() : "";
+    final DelayActor actor = delay.getActor();
+    final String setterName = delay.hasSetterActor() ? actor.getSetterActor().getName() : "";
     vertexElt.setAttribute(PiIdentifiers.DELAY_SETTER, setterName);
-    final String getterName = delay.hasGetterActor() ? delay.getGetterActor().getName() : "";
+    final String getterName = delay.hasGetterActor() ? actor.getGetterActor().getName() : "";
     vertexElt.setAttribute(PiIdentifiers.DELAY_GETTER, getterName);
     vertexElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, delay.getSizeExpression().getExpressionString());
 
     // Checks if the delay has refinement in case of no setter is provided
     if (!delay.hasSetterActor()) {
-      final Refinement refinement = delay.getRefinement();
+      final Refinement refinement = actor.getRefinement();
       if (refinement != null && refinement instanceof CHeaderRefinement) {
         writeRefinement(vertexElt, refinement);
       }
     }
 
-    writePorts(vertexElt, delay.getDataInputPorts());
-    writePorts(vertexElt, delay.getDataOutputPorts());
+    if (actor != null) {
+      writePorts(vertexElt, actor.getDataInputPorts());
+      writePorts(vertexElt, actor.getDataOutputPorts());
+    }
   }
 
   /**

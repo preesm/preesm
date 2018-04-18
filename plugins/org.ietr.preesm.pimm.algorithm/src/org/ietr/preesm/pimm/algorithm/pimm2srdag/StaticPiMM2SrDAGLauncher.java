@@ -65,11 +65,11 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperEdgeFactory;
-import org.ietr.preesm.pimm.algorithm.math.LCMBasedBRV;
-import org.ietr.preesm.pimm.algorithm.math.PiBRV;
-import org.ietr.preesm.pimm.algorithm.math.PiMMHandler;
-import org.ietr.preesm.pimm.algorithm.math.PiMMHandler.PiMMHandlerException;
-import org.ietr.preesm.pimm.algorithm.math.TopologyBasedBRV;
+import org.ietr.preesm.pimm.algorithm.helper.LCMBasedBRV;
+import org.ietr.preesm.pimm.algorithm.helper.PiBRV;
+import org.ietr.preesm.pimm.algorithm.helper.PiMMHandler;
+import org.ietr.preesm.pimm.algorithm.helper.PiMMHandler.PiMMHandlerException;
+import org.ietr.preesm.pimm.algorithm.helper.TopologyBasedBRV;
 
 /**
  * The Class StaticPiMM2SDFLauncher.
@@ -120,7 +120,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
       // hierarchyName += "_";
       // }
       // WorkflowLogger.getLogger().log(Level.INFO, hierarchyName + rv.getKey().getName() + " x" + Integer.toString(rv.getValue()));
-      WorkflowLogger.getLogger().log(Level.INFO, rv.getKey().getVertexID() + " x" + Integer.toString(rv.getValue()));
+      WorkflowLogger.getLogger().log(Level.INFO, rv.getKey().getVertexPath() + " x" + Integer.toString(rv.getValue()));
     }
   }
 
@@ -340,11 +340,11 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
    */
   private void pimm2DAGVertex(final AbstractActor a, final DAGVertex vertex) {
     // Handle vertex's name
-    vertex.setName(a.getVertexID());
+    vertex.setName(a.getVertexPath());
     // Handle vertex's path inside the graph hierarchy
     vertex.setInfo(a.getVertexPath());
     // Handle ID
-    vertex.setId(a.getVertexID());
+    vertex.setId(a.getVertexPath());
     // Set Repetition vector
     vertex.setNbRepeat(new DAGDefaultVertexPropertyType(this.graphBRV.get(a)));
   }

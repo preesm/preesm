@@ -80,6 +80,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.NonExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
@@ -205,6 +206,9 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
         pasteFeature.addGraphicalRepresentationForVertex(p, 0, 0);
       }
       for (final AbstractVertex v : this.graph.getActors()) {
+        if (v instanceof NonExecutableActor) {
+          continue;
+        }
         pasteFeature.addGraphicalRepresentationForVertex(v, 0, 0);
       }
 

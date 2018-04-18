@@ -71,6 +71,7 @@ import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Direction;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
@@ -241,7 +242,7 @@ public class PiParser {
    *          the actor
    */
   private void parseRefinement(final Element nodeElt, final RefinementContainer actor) {
-    if (!(actor instanceof Delay)) {
+    if (!(actor instanceof DelayActor)) {
       actor.setRefinement(PiMMUserFactory.instance.createPiSDFRefinement());
     }
     final String refinement = PiParser.getProperty(nodeElt, PiIdentifiers.REFINEMENT);
@@ -253,7 +254,7 @@ public class PiParser {
       if (path.getFileExtension().equals("h")) {
         final CHeaderRefinement hrefinement;
         // Delays already have a default refinement by default at creation time
-        if (actor instanceof Delay) {
+        if (actor instanceof DelayActor) {
           hrefinement = (CHeaderRefinement) actor.getRefinement();
         } else {
           hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
@@ -522,12 +523,6 @@ public class PiParser {
       fifo.setDelay(delay);
     }
 
-    // if (PiParser.getProperty(edgeElt, PiIdentifiers.DELAY) != null) {
-    // final Delay delay = PiMMUserFactory.instance.createDelay();
-    // delay.getSizeExpression().setExpressionString(edgeElt.getAttribute(PiIdentifiers.DELAY_EXPRESSION));
-    // fifo.setDelay(delay);
-    // }
-
     // Add the new Fifo to the graph
     graph.addFifo(fifo);
   }
@@ -541,8 +536,8 @@ public class PiParser {
    *          the deserialized {@link PiGraph}
    * @return the created delay
    */
-  protected Delay parseDelay(final Element nodeElt, final PiGraph graph) {
-    // Instantiate the new actor
+  protected DelayActor parseDelay(final Element nodeElt, final PiGraph graph) {
+    // Instantiate the new delay
     final Delay delay = PiMMUserFactory.instance.createDelay();
 
     // Set the delay expression
@@ -550,6 +545,12 @@ public class PiParser {
 
     // Get the delay properties
     delay.setName(nodeElt.getAttribute(PiIdentifiers.DELAY_NAME));
+
+    // TODO fix that
+    delay.getActor().setName(delay.getName());
+
+    // Instantiate the new actor
+    final DelayActor delayActor = delay.getActor();
 
     // Adds Setter / Getter actors to the delay
     final String setterName = nodeElt.getAttribute(PiIdentifiers.DELAY_SETTER);
@@ -566,14 +567,11 @@ public class PiParser {
     // Add the refinement for the INIT of the delay (if it exists)
     // Any refinement is ignored if the delay is already connected to a setter actor
     if (setter == null) {
-      parseRefinement(nodeElt, delay);
+      parseRefinement(nodeElt, delayActor);
       // Checks the validity of the H refinement of the delay
-      if (delay.getRefinement() instanceof CHeaderRefinement) {
-        CHeaderRefinement hrefinement = (CHeaderRefinement) delay.getRefinement();
-        // if (hrefinement.getLoopPrototype() != null) {
-        // throw new PiGraphException("A delay can not have a loop refinement.");
-        // }
-        if (!delay.isValidRefinement(hrefinement)) {
+      if (delayActor.getRefinement() instanceof CHeaderRefinement) {
+        CHeaderRefinement hrefinement = (CHeaderRefinement) delayActor.getRefinement();
+        if (!delayActor.isValidRefinement(hrefinement)) {
           throw new PiGraphException("Delay INIT prototype must match following prototype: void init(IN int size, OUT <type>* fifo)");
         }
         final String delayInitPrototype = "Delay INIT function used: " + hrefinement.getLoopPrototype().getName();
@@ -582,11 +580,9 @@ public class PiParser {
     }
 
     // Add the delay to the parsed graph
-    graph.getDelays().add(delay);
+    graph.addDelay(delay);
 
-    // parseRefinement(nodeElt, actor);
-
-    return delay;
+    return delayActor;
   }
 
   /**
@@ -693,7 +689,7 @@ public class PiParser {
         case PiIdentifiers.DELAY:
           vertex = parseDelay(nodeElt, graph);
           // Ignore parsing of ports
-          // Delays have pre-defined ports created at delay instantiation
+          // Delays have pre-defined ports created at delay actor instantiation
           return;
         default:
           throw new PiGraphException("Parsed node " + nodeElt.getNodeName() + " has an unknown kind: " + nodeKind);

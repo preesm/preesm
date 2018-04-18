@@ -47,8 +47,8 @@ import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
-import org.ietr.preesm.experiment.model.pimm.DelayGetterPort;
-import org.ietr.preesm.experiment.model.pimm.DelaySetterPort;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
+import org.ietr.preesm.experiment.model.pimm.DelayLinkedExpression;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Direction;
 import org.ietr.preesm.experiment.model.pimm.Expression;
@@ -128,6 +128,20 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
     return res;
   }
 
+  /**
+   * Method to create a data input port with its expression linked to a delay
+   * 
+   * @param delay
+   *          the delay to set
+   */
+  public DataInputPort createDataInputPort(final Delay delay) {
+    final DataInputPort res = super.createDataInputPort();
+    final DelayLinkedExpression delayExpression = createDelayLinkedExpression();
+    delayExpression.setDelay(delay);
+    res.setExpression(delayExpression);
+    return res;
+  }
+
   @Override
   public DataOutputPort createDataOutputPort() {
     final DataOutputPort res = super.createDataOutputPort();
@@ -135,17 +149,17 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
     return res;
   }
 
-  @Override
-  public DelaySetterPort createDelaySetterPort() {
-    final DelaySetterPort res = super.createDelaySetterPort();
-    res.setExpression(createExpression());
-    return res;
-  }
-
-  @Override
-  public DelayGetterPort createDelayGetterPort() {
-    final DelayGetterPort res = super.createDelayGetterPort();
-    res.setExpression(createExpression());
+  /**
+   * Method to create a data output port with its expression linked to a delay
+   * 
+   * @param delay
+   *          the delay to set
+   */
+  public DataOutputPort createDataOutputPort(final Delay delay) {
+    final DataOutputPort res = super.createDataOutputPort();
+    final DelayLinkedExpression delayExpression = createDelayLinkedExpression();
+    delayExpression.setDelay(delay);
+    res.setExpression(delayExpression);
     return res;
   }
 
@@ -159,16 +173,33 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   @Override
   public Delay createDelay() {
     final Delay res = super.createDelay();
-    // Create ports here and force their name
-    final DelaySetterPort setter = PiMMUserFactory.instance.createDelaySetterPort();
-    final DelayGetterPort getter = PiMMUserFactory.instance.createDelayGetterPort();
-    res.getAllDataPorts().add(setter);
-    res.getAllDataPorts().add(getter);
-    res.getSetterPort().setName("set");
-    res.getGetterPort().setName("get");
-
     // Set default expression
     res.setExpression(createExpression());
+    // Create the non executable actor associated with the Delay directly here
+    res.setActor(PiMMUserFactory.instance.createDelayActor(res));
+    return res;
+  }
+
+  /**
+   * Method to create a delay actor with the corresponding delay as parameter
+   * 
+   * @param delay
+   *          the delay to set
+   */
+  public DelayActor createDelayActor(final Delay delay) {
+    final DelayActor res = super.createDelayActor();
+    // Create ports here and force their name
+    // Expression of the port are directly linked to the one of the delay
+    final DataInputPort setterPort = PiMMUserFactory.instance.createDataInputPort(delay);
+    final DataOutputPort getterPort = PiMMUserFactory.instance.createDataOutputPort(delay);
+    res.getDataInputPorts().add(setterPort);
+    res.getDataInputPort().setName("set");
+    res.getDataOutputPorts().add(getterPort);
+    res.getDataOutputPort().setName("get");
+
+    // Set the linked delay
+    res.setLinkedDelay(delay);
+    res.setName("");
 
     // Creates the default refinement
     // TODO try to find better solution

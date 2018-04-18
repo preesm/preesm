@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ietr.preesm.pimm.algorithm.math;
+package org.ietr.preesm.pimm.algorithm.helper;
 
 import java.util.List;
 import java.util.Map;
@@ -13,7 +13,7 @@ import org.ietr.dftools.algorithm.Rational;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.pimm.algorithm.math.PiMMHandler.PiMMHandlerException;
+import org.ietr.preesm.pimm.algorithm.helper.PiMMHandler.PiMMHandlerException;
 import org.math.array.LinearAlgebra;
 
 /**

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ietr.preesm.pimm.algorithm.math;
+package org.ietr.preesm.pimm.algorithm.helper;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -12,11 +12,11 @@ import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
-import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.pimm.algorithm.math.PiMMHandler.PiMMHandlerException;
+import org.ietr.preesm.pimm.algorithm.helper.PiMMHandler.PiMMHandlerException;
 
 /**
  * @author farresti
@@ -147,9 +147,9 @@ public abstract class PiBRV {
     for (AbstractActor actor : subgraph) {
       int newRV = this.graphBRV.get(actor) * scaleFactor;
       this.graphBRV.put(actor, newRV);
-      if ((actor instanceof Delay) && newRV != 1) {
+      if ((actor instanceof DelayActor) && newRV != 1) {
         PiMMHandler hdl = new PiMMHandler();
-        throw (hdl.new PiMMHandlerException("Inconsistent graph. Delay [" + actor.getName() + "] with a repetition vector of " + Integer.toString(newRV)));
+        throw (hdl.new PiMMHandlerException("Inconsistent graph. DelayActor [" + actor.getName() + "] with a repetition vector of " + Integer.toString(newRV)));
       }
     }
   }
