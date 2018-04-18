@@ -37,7 +37,11 @@ package org.ietr.preesm.ui.scenario.editor.papify;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
@@ -77,6 +81,7 @@ import org.ietr.preesm.core.scenario.papi.PapiConfigParser;
 import org.ietr.preesm.core.scenario.papi.PapiEventInfo;
 import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.ui.scenario.editor.Messages;
+import org.ietr.preesm.utils.files.WorkspaceUtils;
 
 /**
  * Papify editor within the implementation editor.
@@ -132,8 +137,6 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     final ScrolledForm f = managedForm.getForm();
     f.setText(Messages.getString("Papify.title"));
     f.getBody().setLayout(new GridLayout());
-
-    // papiEvents = papiParser.parse("/home/dmadronal/workspace_PREESM_developer/org.ietr.preesm.sobel_parallel/Code/PAPI_info.xml");
 
     // Papify file chooser section
     createFileSection(managedForm, Messages.getString("Papify.file"), Messages.getString("Papify.fileDescription"), Messages.getString("Papify.fileEdit"),
@@ -343,7 +346,14 @@ public class PapifyPage extends FormPage implements IPropertyListener {
    */
   private void importData(final Text text) throws InvalidModelException, FileNotFoundException, CoreException {
 
-    papiEvents = papiParser.parse(text.getText());
+    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+
+    WorkspaceUtils.updateWorkspace();
+
+    final Path path = new Path(text.getText());
+    final IFile file = workspace.getRoot().getFile(path);
+
+    papiEvents = papiParser.parse(file.getLocation().toString());
 
     if (papiEvents.getComponents() != null) {
       this.scenario.getPapifyConfigManager().setExcelFileURL(text.getText());

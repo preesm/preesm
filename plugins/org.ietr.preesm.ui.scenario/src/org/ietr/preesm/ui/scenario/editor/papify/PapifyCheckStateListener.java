@@ -95,7 +95,6 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    * @param scenario
    *          the scenario
    */
-  // public PapifyCheckStateListener(final Section section, final PreesmScenario scenario) {
   public PapifyCheckStateListener(final Composite container, final PreesmScenario scenario) {
     super();
     this.container = container;
