@@ -194,6 +194,9 @@ class PiGraph extends AbstractActor, Graph {
 	op unique Parameter[] getAllParameters() {
 		return (parameters + childrenGraphs.map[allParameters].flatten).toEList.unmodifiableView
 	}
+	op unique AbstractActor[] getOnlyActors(){
+		return (actors.filter(it|!(it instanceof PiGraph))).toEList.unmodifiableView
+	}
 	op unique PiGraph[] getChildrenGraphs() {
 		return (actors.filter(PiGraph) + actorsWithRefinement.filter[isHierarchical].map[subGraph]).toEList.
 			unmodifiableView
@@ -408,7 +411,7 @@ class CHeaderRefinement extends Refinement {
 
 class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 	op Expression getValueExpression() {
-		return expression 
+		return expression
 	}
 	op boolean isLocallyStatic() {
 		// a parameter is static if all its setters are static (or it has no setter)
