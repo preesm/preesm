@@ -50,6 +50,12 @@ import org.ietr.preesm.core.scenario.ParameterValueManager;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.RelativeConstraintManager;
 import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.core.scenario.papi.PapiComponent;
+import org.ietr.preesm.core.scenario.papi.PapiEvent;
+import org.ietr.preesm.core.scenario.papi.PapiEventModifier;
+import org.ietr.preesm.core.scenario.papi.PapiEventSet;
+import org.ietr.preesm.core.scenario.papi.PapifyConfig;
+import org.ietr.preesm.core.scenario.papi.PapifyConfigManager;
 import org.ietr.preesm.core.types.DataType;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -110,6 +116,7 @@ public class ScenarioWriter {
     addSimuParams(root);
     addVariables(root);
     addParameterValues(root);
+    addPapifyConfigs(root);
 
     return this.dom;
   }
@@ -173,6 +180,101 @@ public class ScenarioWriter {
       valueElt.setAttribute("type", value.getType().toString());
 
       valueElt.setAttribute("value", valueToPrint);
+    }
+  }
+
+  /**
+   * Adds the papify configurations.
+   *
+   * @param parent
+   *          the parent
+   */
+  private void addPapifyConfigs(final Element parent) {
+    final Element papifyConfigs = this.dom.createElement("papifyConfig");
+    parent.appendChild(papifyConfigs);
+
+    papifyConfigs.setAttribute("xmlUrl", this.scenario.getPapifyConfigManager().getXmlFileURL());
+
+    final PapifyConfigManager manager = this.scenario.getPapifyConfigManager();
+
+    for (final PapifyConfig config : manager.getPapifyConfigGroups()) {
+      addPapifyConfig(papifyConfigs, config);
+    }
+  }
+
+  /**
+   * Adds the papify config.
+   *
+   * @param parent
+   *          the parent
+   * @param value
+   *          the value
+   */
+  private void addPapifyConfig(final Element parent, final PapifyConfig config) {
+
+    final Element papifyConfigElt = this.dom.createElement("papifyConfig");
+    parent.appendChild(papifyConfigElt);
+
+    final Element coreId = this.dom.createElement("coreId");
+    papifyConfigElt.appendChild(coreId);
+    coreId.setAttribute("coreId", config.getCoreId());
+
+    final Element component = this.dom.createElement("PapiComponent");
+    papifyConfigElt.appendChild(component);
+    addPapifyComponent(component, config.getPAPIComponent());
+
+    for (final PapiEvent event : config.getPAPIEvents()) {
+      final Element singleEvent = this.dom.createElement("event");
+      papifyConfigElt.appendChild(singleEvent);
+      addPapifyEvent(singleEvent, event);
+    }
+  }
+
+  /**
+   * Adds the papify component.
+   *
+   * @param component
+   *          the parent component
+   * @param papiComponent
+   *          the papiComponent itself
+   */
+  private void addPapifyComponent(final Element component, final PapiComponent papiComponent) {
+
+    component.setAttribute("componentId", papiComponent.getId());
+    component.setAttribute("componentType", papiComponent.getType().toString());
+    component.setAttribute("componentIndex", Integer.toString(papiComponent.getIndex()));
+
+    for (final PapiEventSet eventSet : papiComponent.getEventSets()) {
+      final Element singleEventSet = this.dom.createElement("eventSet");
+      component.appendChild(singleEventSet);
+      singleEventSet.setAttribute("type", eventSet.getType().toString());
+      for (final PapiEvent event : eventSet.getEvents()) {
+        final Element singleEvent = this.dom.createElement("event");
+        singleEventSet.appendChild(singleEvent);
+        addPapifyEvent(singleEvent, event);
+      }
+    }
+  }
+
+  /**
+   * Adds the papify event.
+   *
+   * @param event
+   *          the parent event
+   * @param papiEvent
+   *          the papiEvent itself
+   */
+  private void addPapifyEvent(final Element event, final PapiEvent papiEvent) {
+
+    event.setAttribute("eventId", Integer.toString(papiEvent.getIndex()));
+    event.setAttribute("eventName", papiEvent.getName());
+    event.setAttribute("eventDescription", papiEvent.getDesciption());
+
+    for (final PapiEventModifier eventModifier : papiEvent.getModifiers()) {
+      final Element singleEventModifier = this.dom.createElement("eventModifier");
+      event.appendChild(singleEventModifier);
+      singleEventModifier.setAttribute("name", eventModifier.getName());
+      singleEventModifier.setAttribute("description", eventModifier.getDescription());
     }
   }
 
