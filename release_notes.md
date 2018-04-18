@@ -11,6 +11,7 @@ PREESM Changelog
 * Add helper oeprations in PiSDF;
 * Update release process to upload releases on GitHub;
 * Update operation with more accurate name and return type;
+* Fix typos;
 
 ### Bug fix
 * Fix codegen for MS Visual Studio to support thread affinity;
