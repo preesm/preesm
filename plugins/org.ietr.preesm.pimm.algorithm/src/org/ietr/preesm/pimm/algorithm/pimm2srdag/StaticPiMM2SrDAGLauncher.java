@@ -107,19 +107,6 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
 
   private static void printRV(final Map<AbstractVertex, Integer> graphBRV) {
     for (final Map.Entry<AbstractVertex, Integer> rv : graphBRV.entrySet()) {
-      // List<String> hierarchyNames = new ArrayList<>();
-      // AbstractActor actor = (AbstractActor) rv.getKey();
-      // while (actor.getContainingGraph() != null) {
-      // actor = actor.getContainingGraph();
-      // hierarchyNames.add(actor.getName());
-      // }
-      // // Removes top graph name
-      // hierarchyNames.remove(actor.getName());
-      // String hierarchyName = String.join("_", Lists.reverse(hierarchyNames));
-      // if (!hierarchyName.isEmpty()) {
-      // hierarchyName += "_";
-      // }
-      // WorkflowLogger.getLogger().log(Level.INFO, hierarchyName + rv.getKey().getName() + " x" + Integer.toString(rv.getValue()));
       WorkflowLogger.getLogger().log(Level.INFO, rv.getKey().getVertexPath() + " x" + Integer.toString(rv.getValue()));
     }
   }
@@ -173,7 +160,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     // Creates "top" sr dag with PiSDF reference graph
     final MapperDAG topDAG = new MapperDAG(new MapperEdgeFactory(), this.graph);
     // Iterates over every actors and levels of hierarchy to add vertices
-    iterativeComputeSRDag(topDAG, this.piHandler);
+    // iterativeComputeSRDag(topDAG, this.piHandler);
     return topDAG;
   }
 
