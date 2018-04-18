@@ -70,6 +70,7 @@ import org.ietr.preesm.pimm.algorithm.helper.PiBRV;
 import org.ietr.preesm.pimm.algorithm.helper.PiMMHandler;
 import org.ietr.preesm.pimm.algorithm.helper.PiMMHandler.PiMMHandlerException;
 import org.ietr.preesm.pimm.algorithm.helper.TopologyBasedBRV;
+import org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor.StaticPiMM2SrDAGVisitor;
 
 /**
  * The Class StaticPiMM2SDFLauncher.
@@ -145,22 +146,22 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     }
     printRV(this.graphBRV);
     // Visitor creating the SR-DAG
-    // StaticPiMM2SrDAGVisitor visitor;
-    // final PiGraphExecution execution = new PiGraphExecution(this.parametersValues);
-    // visitor = new StaticPiMM2SrDAGVisitor(execution);
+    StaticPiMM2SrDAGVisitor visitor;
+    visitor = new StaticPiMM2SrDAGVisitor(new MapperDAG(new MapperEdgeFactory(), this.graph), this.graphBRV);
+    visitor.doSwitch(this.graph);
     // if (!visitor.doSwitch(this.graph)) {
     // if (visitor.getResult() == null) {
     // throw new StaticPiMM2SrDAGException("Cannot convert to Sr-DAG, top graph does not contain any actors.");
     // }
     // }
-    return computeSRDag();
+    return visitor.getResult();
   }
 
   private MapperDAG computeSRDag() throws StaticPiMM2SrDAGException {
     // Creates "top" sr dag with PiSDF reference graph
     final MapperDAG topDAG = new MapperDAG(new MapperEdgeFactory(), this.graph);
     // Iterates over every actors and levels of hierarchy to add vertices
-    // iterativeComputeSRDag(topDAG, this.piHandler);
+    iterativeComputeSRDag(topDAG, this.piHandler);
     return topDAG;
   }
 

@@ -89,8 +89,8 @@ public abstract class PiBRV {
    * Compute the BRV of the associated graph given a method. This also checks for consistency at the same time.
    *
    * @return true if no error were found, false else
-   * @throws PiBRVException
-   *           the PiBRVException exception
+   * @throws PiMMHandlerException
+   *           the PiMMHandlerException exception
    */
   public abstract boolean execute() throws PiMMHandlerException;
 
