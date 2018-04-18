@@ -252,6 +252,9 @@ class ForkActor extends ExecutableActor {
 class RoundBufferActor extends ExecutableActor {
 }
 
+abstract class NonExecutableActor extends AbstractActor {
+}
+
 interface Port {
 	String name
 	op PortKind getKind()
@@ -405,7 +408,7 @@ class CHeaderRefinement extends Refinement {
 
 class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 	op Expression getValueExpression() {
-		return getExpression
+		return expression 
 	}
 	op boolean isLocallyStatic() {
 		// a parameter is static if all its setters are static (or it has no setter)
