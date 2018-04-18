@@ -41,6 +41,7 @@ import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.PaintEvent;
@@ -74,8 +75,8 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   /** Current operator. */
   private String currentOpId = null;
 
-  /** Current section (necessary to diplay busy status). */
-  // private Section section = null;
+  /** Current composite (necessary to diplay busy status). */
+  private Composite container = null;
 
   /** Tables used to set the checked status. */
   private CheckboxTableViewer componentTableViewer = null;
@@ -95,9 +96,9 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    *          the scenario
    */
   // public PapifyCheckStateListener(final Section section, final PreesmScenario scenario) {
-  public PapifyCheckStateListener(final PreesmScenario scenario) {
+  public PapifyCheckStateListener(final Composite container, final PreesmScenario scenario) {
     super();
-    // this.section = section;
+    this.container = container;
     this.scenario = scenario;
   }
 
@@ -146,18 +147,18 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
     final Object element = event.getElement();
     final boolean isChecked = event.getChecked();
 
-    // BusyIndicator.showWhile(this.section.getDisplay(), () -> {
-    if (element instanceof PapiComponent) {
-      final PapiComponent comp1 = (PapiComponent) element;
-      fireOnCheck(comp1, isChecked);
-      updateComponentCheck();
-    } else if (element instanceof PapiEvent) {
-      final PapiEvent event1 = (PapiEvent) element;
-      fireOnCheck(event1, isChecked);
-      updateEventCheck();
+    BusyIndicator.showWhile(this.container.getDisplay(), () -> {
+      if (element instanceof PapiComponent) {
+        final PapiComponent comp1 = (PapiComponent) element;
+        fireOnCheck(comp1, isChecked);
+        updateComponentCheck();
+      } else if (element instanceof PapiEvent) {
+        final PapiEvent event1 = (PapiEvent) element;
+        fireOnCheck(event1, isChecked);
+        updateEventCheck();
 
-    }
-    // });
+      }
+    });
     this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
   }
 

@@ -1,9 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2017) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2015)
+ * Daniel Madroñal <daniel.madronal@upm.es> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -229,7 +227,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     managedForm.getForm().setLayout(new FillLayout());
     final Composite container = createSection(managedForm, title, desc, 1, new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
 
-    this.checkStateListener = new PapifyCheckStateListener(this.scenario);
+    this.checkStateListener = new PapifyCheckStateListener(container, this.scenario);
     container.addPaintListener(checkStateListener);
 
     final FormToolkit toolkit = managedForm.getToolkit();
