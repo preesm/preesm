@@ -546,9 +546,6 @@ public class PiParser {
     // Get the delay properties
     delay.setName(nodeElt.getAttribute(PiIdentifiers.DELAY_NAME));
 
-    // TODO fix that
-    delay.getActor().setName(delay.getName());
-
     // Instantiate the new actor
     final DelayActor delayActor = delay.getActor();
 

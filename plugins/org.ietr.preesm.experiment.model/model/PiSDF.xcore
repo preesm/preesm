@@ -330,13 +330,6 @@ abstract class NonExecutableActor extends AbstractActor {
 class DelayActor extends NonExecutableActor, RefinementContainer {
 	refers Delay linkedDelay opposite actor
 	
-	op unique void setName(String newName) {
-		if (newName.empty) {
-				super.setName("non-exec_" + linkedDelay.getName())
-			} else {
-				super.setName(newName)
-			}
-	}
 	// Return parameter of delays
 	op Parameter[] getInputParameters() {
 		return linkedDelay.inputParameters
@@ -586,7 +579,8 @@ class Delay extends Configurable, ExpressionHolder {
 				super.setName("delay_" + srcName + "--" + tgtName)
 			} else {
 				super.setName(newName)
-			}			
+			}
+			actor.setName(name)			
 		}
 	}
 }
