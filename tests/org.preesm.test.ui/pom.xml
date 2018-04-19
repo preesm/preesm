@@ -47,6 +47,21 @@
 		<relativePath>..</relativePath>
 	</parent>
 
+  <repositories>
+		<repository>
+			<id>rcptt-releases</id>
+			<name>RCPTT Maven repository</name>
+			<url>https://repo.eclipse.org/content/repositories/rcptt-releases/</url>
+		</repository>
+  </repositories>
+  <pluginRepositories>
+		<pluginRepository>
+			<id>rcptt-releases</id>
+			<name>RCPTT Maven repository</name>
+			<url>https://repo.eclipse.org/content/repositories/rcptt-releases/</url>
+		</pluginRepository>
+  </pluginRepositories>
+
   <dependencies>
     <!--
       Have the dependency to make sure the product is built before
@@ -92,26 +107,34 @@
   </profiles>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.eclipse.rcptt</groupId>
+          <artifactId>rcptt-maven-plugin</artifactId>
+          <version>${rcptt-version}</version>
+          <extensions>true</extensions>
+          <configuration>
+            <runner>
+              <version>${rcptt-version}</version>
+            </runner>
+            <!-- The main configuration section goes here -->
+            <aut>
+              <groupId>org.ietr.preesm</groupId>
+              <artifactId>org.ietr.preesm.product</artifactId>
+              <version>${project.version}</version>
+              <vmArgs>
+                <vmArg>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco-version}/org.jacoco.agent-${jacoco-version}-runtime.jar=destfile=${project.basedir}/${sonar.jacoco.reportPaths},append=true,excludes=**/tests/**:**/test-fragments/**:**/releng/**</vmArg>
+              </vmArgs>
+            </aut>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.eclipse.rcptt</groupId>
         <artifactId>rcptt-maven-plugin</artifactId>
-        <version>${rcptt-version}</version>
-        <extensions>true</extensions>
-        <configuration>
-          <runner>
-            <version>${rcptt-version}</version>
-          </runner>
-          <!-- The main configuration section goes here -->
-          <aut>
-            <groupId>org.ietr.preesm</groupId>
-            <artifactId>org.ietr.preesm.product</artifactId>
-            <version>${project.version}</version>
-            <vmArgs>
-              <vmArg>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco-version}/org.jacoco.agent-${jacoco-version}-runtime.jar=destfile=${project.basedir}/${sonar.jacoco.reportPaths},append=true,excludes=**/tests/**:**/test-fragments/**:**/releng/**</vmArg>
-            </vmArgs>
-          </aut>
-        </configuration>
       </plugin>
     </plugins>
   </build>
