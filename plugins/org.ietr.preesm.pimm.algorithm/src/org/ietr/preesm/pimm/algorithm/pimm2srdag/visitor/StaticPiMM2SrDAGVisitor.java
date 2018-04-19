@@ -8,6 +8,7 @@ import java.util.Map;
 import org.ietr.dftools.algorithm.model.CodeRefinement;
 import org.ietr.dftools.algorithm.model.IRefinement;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGBroadcastVertex;
 import org.ietr.dftools.algorithm.model.dag.types.DAGDefaultVertexPropertyType;
 import org.ietr.dftools.algorithm.model.parameters.Argument;
 import org.ietr.dftools.algorithm.model.parameters.ConstantValue;
@@ -15,7 +16,6 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
@@ -23,6 +23,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFExpressionEdgePropertyType;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
@@ -73,13 +74,19 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
   /** Basic repetition vector of the graph */
   private Map<AbstractVertex, Integer> brv;
 
+  /** Counter for hierarchical actors indexes */
+  private int hCounter;
+
+  /** Counter for actors indexes */
+  private int aCounter;
+
   /** The execution. */
   // Original list of fixed values for all the parameters of the graph
   protected PiGraphExecution execution;
 
   /** The pi vx 2 SDF vx. */
   // Map from original PiMM vertices to generated SDF vertices
-  protected Map<AbstractVertex, SDFAbstractVertex> piVx2SDFVx = new LinkedHashMap<>();
+  protected Map<AbstractVertex, DAGVertex> piVx2DAGVx = new LinkedHashMap<>();
 
   /** The pi port 2 vx. */
   // Map from PiMM ports to their vertex (used for SDFEdge creation)
@@ -91,7 +98,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
   /** The current SDF refinement. */
   // Current SDF Refinement
-  protected IRefinement currentSDFRefinement;
+  protected IRefinement currentRefinement;
 
   /**
    * Instantiates a new abstract pi MM 2 SR-DAG visitor.
@@ -111,17 +118,16 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
    *          the AbstractActor
    * @return the DAGVertex
    */
-  private DAGVertex pimm2srdag(final AbstractActor a) {
-    final DAGVertex vertex = new DAGVertex();
+  private void pimm2srdag(final AbstractActor a, final DAGVertex vertex) {
+    final String nameInfoID = a.getVertexPath() + "_" + Integer.toString(aCounter);
     // Handle vertex's name
-    vertex.setName(a.getVertexPath());
+    vertex.setName(nameInfoID);
     // Handle vertex's path inside the graph hierarchy
-    vertex.setInfo(a.getVertexPath());
+    vertex.setInfo(nameInfoID);
     // Handle ID
-    vertex.setId(a.getVertexPath());
+    vertex.setId(nameInfoID);
     // Set Repetition vector
     vertex.setNbRepeat(new DAGDefaultVertexPropertyType(this.brv.get(a)));
-    return vertex;
   }
 
   /*
@@ -130,8 +136,49 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#caseAbstractActor(org.ietr.preesm.experiment.model.pimm.AbstractActor)
    */
   @Override
-  public Boolean caseAbstractActor(final AbstractActor aa) {
-
+  public Boolean caseAbstractActor(final AbstractActor actor) {
+    // // Handle the target ports (DataInputPort in PISDF,
+    // // SDFSourceInterfaceVertex in IBSDF) keeping the order
+    // for (final DataInputPort dip : aa.getDataInputPorts()) {
+    // // The target SDF port
+    // SDFSourceInterfaceVertex sdfInputPort;
+    // // The SDF vertex to which to add the created port
+    // final SDFAbstractVertex sdfTarget = this.piVx2SDFVx.get(aa);
+    // if (sdfTarget instanceof SDFSourceInterfaceVertex) {
+    // // If the SDF vertex is an interface, use it as the port
+    // sdfInputPort = (SDFSourceInterfaceVertex) sdfTarget;
+    // } else {
+    // // Otherwise create a new port and add it to the SDF vertex
+    // sdfInputPort = new SDFSourceInterfaceVertex();
+    // sdfInputPort.setName(dip.getName());
+    // sdfTarget.addSource(sdfInputPort);
+    // }
+    // this.piPort2SDFPort.put(dip, sdfInputPort);
+    // this.piPort2Vx.put(dip, aa);
+    // }
+    // // Handle the source ports (DataOuputPort in PISDF,
+    // // SDFSinkInterfaceVertex in IBSDF) keeping the order
+    // for (final DataOutputPort dop : aa.getDataOutputPorts()) {
+    // // The source SDF port
+    // SDFSinkInterfaceVertex sdfOutputPort;
+    // // The SDF vertex to which to add the created port
+    // final SDFAbstractVertex sdfSource = this.piVx2SDFVx.get(aa);
+    // if (sdfSource instanceof SDFSinkInterfaceVertex) {
+    // // If the SDF vertex is an interface, use it as the port
+    // sdfOutputPort = (SDFSinkInterfaceVertex) sdfSource;
+    // } else {
+    // // Otherwise create a new port and add it to the SDF vertex
+    // sdfOutputPort = new SDFSinkInterfaceVertex();
+    // sdfOutputPort.setName(dop.getName());
+    // sdfSource.addSink(sdfOutputPort);
+    // }
+    // this.piPort2SDFPort.put(dop, sdfOutputPort);
+    // this.piPort2Vx.put(dop, aa);
+    // }
+    // for (final ConfigOutputPort cop : aa.getConfigOutputPorts()) {
+    // this.piPort2Vx.put(cop, aa);
+    // }
+    // caseConfigurable(aa);
     return true;
   }
 
@@ -141,38 +188,21 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitActor(org.ietr.preesm.experiment.model.pimm.Actor)
    */
   @Override
-  public Boolean caseActor(final Actor a) {
-    final SDFVertex v = new SDFVertex();
-    this.piVx2SDFVx.put(a, v);
-    // Handle vertex's name
-    v.setName(a.getName());
-    // Handle vertex's path inside the graph hierarchy
-    v.setInfo(a.getVertexPath());
-    // Handle ID
-    v.setId(a.getName());
+  public Boolean caseActor(final Actor actor) {
+    final DAGVertex vertex = new DAGVertex();
+    // Set default properties from the PiMM actor
+    pimm2srdag(actor, vertex);
+    // Handle path to memory script of the vertex
+    if (actor.getMemoryScriptPath() != null) {
+      vertex.setPropertyValue(SDFVertex.MEMORY_SCRIPT, actor.getMemoryScriptPath().toOSString());
+    }
     // Handle vertex's refinement (description of the vertex's behavior:
     // function prototypes or subgraphs)
-    final Refinement piRef = a.getRefinement();
-    doSwitch(piRef);
-    v.setRefinement(this.currentSDFRefinement);
-    // Handle path to memory script of the vertex
-    if (a.getMemoryScriptPath() != null) {
-      v.setPropertyValue(SDFVertex.MEMORY_SCRIPT, a.getMemoryScriptPath().toOSString());
-    }
-    // Handle input parameters as instance arguments
-    for (final ConfigInputPort p : a.getConfigInputPorts()) {
-      final ISetter setter = p.getIncomingDependency().getSetter();
-      if (setter instanceof Parameter) {
-        final Parameter param = (Parameter) setter;
-        final Argument arg = new Argument(p.getName());
-        arg.setValue(param.getName());
-        v.getArguments().addArgument(arg);
-      }
-    }
-
-    caseAbstractActor(a);
-
-    // this.result.addVertex(v);
+    final Refinement piRefinement = actor.getRefinement();
+    doSwitch(piRefinement);
+    vertex.setRefinement(this.currentRefinement);
+    this.result.addVertex(vertex);
+    // caseAbstractActor(a);
     return true;
   }
 
@@ -277,8 +307,8 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean casePiSDFRefinement(final PiSDFRefinement r) {
-    this.currentSDFRefinement = new CodeRefinement(r.getFilePath());
+  public Boolean casePiSDFRefinement(final PiSDFRefinement refinement) {
+    this.currentRefinement = new CodeRefinement(refinement.getFilePath());
     return true;
   }
 
@@ -303,7 +333,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
       actorPrototype.setInitPrototype(this.currentPrototype);
     }
 
-    this.currentSDFRefinement = actorPrototype;
+    this.currentRefinement = actorPrototype;
     return true;
   }
 
@@ -353,13 +383,23 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseBroadcastActor(final BroadcastActor ba) {
-    final SDFBroadcastVertex bv = new SDFBroadcastVertex();
-    this.piVx2SDFVx.put(ba, bv);
-    // Handle vertex's name
-    bv.setName(ba.getName());
-    // Handle vertex's path inside the graph hierarchy
-    bv.setInfo(ba.getVertexPath());
+  public Boolean caseBroadcastActor(final BroadcastActor actor) {
+    final DAGBroadcastVertex vertex = new DAGBroadcastVertex();
+    pimm2srdag(actor, vertex);
+    // Check the good use of the broadcast
+    final DataInputPort dataInputPort = actor.getDataInputPorts().get(0);
+    final Expression portRateExpression = dataInputPort.getPortRateExpression();
+    final long cons = Long.parseLong(portRateExpression.getExpressionString());
+    for (final DataOutputPort out : actor.getDataOutputPorts()) {
+      final Expression outPortRateExpression = out.getPortRateExpression();
+      final long prod = Long.parseLong(outPortRateExpression.getExpressionString());
+      if (prod != cons) {
+        WorkflowLogger.getLogger()
+            .warning("Warning: Broadcast have different production/consumption: prod(" + Long.toString(prod) + ") != cons(" + Long.toString(cons) + ")");
+      }
+    }
+    // add a dag vertex to the single rate graph
+    dag.addVertex(dagVertex);
 
     // Handle input parameters as instance arguments
     for (final ConfigInputPort p : ba.getConfigInputPorts()) {
@@ -532,23 +572,37 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     if (pg.getActors().isEmpty()) {
       return false;
     }
-    final DAGVertex vertex = this.result.getVertex(pg.getVertexPath());
+    final DAGVertex vertex = this.result.getVertex(pg.getVertexPath() + "_" + Integer.toString(this.hCounter));
     if (vertex == null) {
-      this.result.addVertex(pimm2srdag(pg));
+      throw new RuntimeException("Failed to convert PiMM 2 SR-DAG.\nVertex [" + pg.getVertexPath() + "_" + Integer.toString(this.hCounter) + "] not found.");
     } else {
+      // Remove the hierarchical vertex from the DAG
+      // We are going to replace it with its contents
       this.result.removeVertex(vertex);
     }
+
+    // Add SR-Vertices
     for (final AbstractActor actor : pg.getActors()) {
-      // first treat hierarchical graphs as normal actors
-      if (actor instanceof PiGraph) {
-        caseAbstractActor(actor);
-        continue;
+      for (int i = 0; i < this.brv.get(actor); ++i) {
+        this.aCounter = i;
+        // Treat hierarchical graphs as normal actors
+        // This populate the DAG with the right amount of hierarchical instances w.r.t the BRV value
+        if (actor instanceof PiGraph) {
+          caseAbstractActor(actor);
+          continue;
+        }
+        doSwitch(actor);
       }
-      doSwitch(actor);
     }
 
+    // Link SR-Vertices
+
+    // Go check hierarchical graphs
     for (final PiGraph g : pg.getChildrenGraphs()) {
+      // We have to iterate for every number of hierarchical graph we populated
+      // TODO this is not optimal. Find better approach
       for (int i = 0; i < this.brv.get(g); ++i) {
+        this.hCounter = i;
         doSwitch(g);
       }
     }
