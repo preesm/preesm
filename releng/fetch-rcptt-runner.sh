@@ -1,9 +1,11 @@
 #!/bin/bash -eu
 
 ###
-### Utility script to fetch the RCPTT Runner from a mirror different
+### Utility script to prefetch the RCPTT Runner from a mirror different
 ### than the default location because it can be very slow (> 10 min)
 ### and make the continuous integration builds fail (timeout)
+###
+### Note that the projects will build without running this script
 ###
 
 
