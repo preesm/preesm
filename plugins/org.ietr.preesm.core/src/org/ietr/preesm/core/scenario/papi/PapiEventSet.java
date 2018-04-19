@@ -28,6 +28,33 @@ public class PapiEventSet {
   private List<PapiEvent> events;
 
   @Override
+  public boolean equals(Object comparer) {
+
+    boolean decision = false;
+    boolean typeComp = false;
+    boolean eventsComp = false;
+
+    if (comparer instanceof PapiEventSet) {
+      PapiEventSet tester = (PapiEventSet) comparer;
+      if (this.type.equals(tester.getType())) {
+        typeComp = true;
+      }
+      if (this.events.equals(tester.getEvents())) {
+        eventsComp = true;
+      }
+      if (typeComp && eventsComp) {
+        decision = true;
+      }
+    }
+    return decision;
+  }
+
+  @Override
+  public int hashCode() {
+    return type.hashCode();
+  }
+
+  @Override
   public String toString() {
     final StringBuilder b = new StringBuilder();
     final String string = this.type.toString();

@@ -190,7 +190,7 @@ public class ScenarioWriter {
    *          the parent
    */
   private void addPapifyConfigs(final Element parent) {
-    final Element papifyConfigs = this.dom.createElement("papifyConfig");
+    final Element papifyConfigs = this.dom.createElement("papifyConfigs");
     parent.appendChild(papifyConfigs);
 
     papifyConfigs.setAttribute("xmlUrl", this.scenario.getPapifyConfigManager().getXmlFileURL());
@@ -212,21 +212,22 @@ public class ScenarioWriter {
    */
   private void addPapifyConfig(final Element parent, final PapifyConfig config) {
 
-    final Element papifyConfigElt = this.dom.createElement("papifyConfig");
-    parent.appendChild(papifyConfigElt);
+    if (!config.getCoreId().equals("") && config.getPAPIComponent() != null && !config.getPAPIEvents().isEmpty()) {
+      final Element papifyConfigElt = this.dom.createElement("papifyConfig");
+      parent.appendChild(papifyConfigElt);
 
-    final Element coreId = this.dom.createElement("coreId");
-    papifyConfigElt.appendChild(coreId);
-    coreId.setAttribute("coreId", config.getCoreId());
+      final Element coreId = this.dom.createElement("coreId");
+      papifyConfigElt.appendChild(coreId);
+      coreId.setAttribute("coreId", config.getCoreId());
+      final Element component = this.dom.createElement("PapiComponent");
+      papifyConfigElt.appendChild(component);
+      addPapifyComponent(component, config.getPAPIComponent());
 
-    final Element component = this.dom.createElement("PapiComponent");
-    papifyConfigElt.appendChild(component);
-    addPapifyComponent(component, config.getPAPIComponent());
-
-    for (final PapiEvent event : config.getPAPIEvents()) {
-      final Element singleEvent = this.dom.createElement("event");
-      papifyConfigElt.appendChild(singleEvent);
-      addPapifyEvent(singleEvent, event);
+      for (final PapiEvent event : config.getPAPIEvents()) {
+        final Element singleEvent = this.dom.createElement("event");
+        papifyConfigElt.appendChild(singleEvent);
+        addPapifyEvent(singleEvent, event);
+      }
     }
   }
 
@@ -268,7 +269,7 @@ public class ScenarioWriter {
 
     event.setAttribute("eventId", Integer.toString(papiEvent.getIndex()));
     event.setAttribute("eventName", papiEvent.getName());
-    event.setAttribute("eventDescription", papiEvent.getDesciption());
+    event.setAttribute("eventDescription", papiEvent.getDescription());
 
     for (final PapiEventModifier eventModifier : papiEvent.getModifiers()) {
       final Element singleEventModifier = this.dom.createElement("eventModifier");

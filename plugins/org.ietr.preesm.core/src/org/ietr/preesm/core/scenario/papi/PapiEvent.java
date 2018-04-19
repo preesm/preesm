@@ -11,7 +11,7 @@ public class PapiEvent {
 
   private int                     index;
   private String                  name;
-  private String                  desciption;
+  private String                  description;
   private List<PapiEventModifier> modifiers;
 
   public int getIndex() {
@@ -30,12 +30,12 @@ public class PapiEvent {
     this.name = name;
   }
 
-  public String getDesciption() {
-    return desciption;
+  public String getDescription() {
+    return description;
   }
 
   public void setDesciption(String desciption) {
-    this.desciption = desciption;
+    this.description = desciption;
   }
 
   public List<PapiEventModifier> getModifiers() {
@@ -47,9 +47,48 @@ public class PapiEvent {
   }
 
   @Override
+  public boolean equals(Object comparer) {
+
+    boolean decision = false;
+    boolean nameComp = false;
+    boolean descriptionComp = false;
+    boolean idComp = false;
+    boolean modifiersComp = false;
+
+    if (comparer instanceof PapiEvent) {
+      PapiEvent tester = (PapiEvent) comparer;
+      if (this.description.equals(tester.getDescription())) {
+        descriptionComp = true;
+      }
+      if (this.name.equals(tester.getName())) {
+        nameComp = true;
+      }
+      if (this.description.equals(tester.getDescription())) {
+        descriptionComp = true;
+      }
+      if (this.index == tester.getIndex()) {
+        idComp = true;
+      }
+      if (this.modifiers.equals(tester.getModifiers())) {
+        modifiersComp = true;
+      }
+      if (nameComp && descriptionComp && idComp && modifiersComp) {
+        decision = true;
+      }
+    }
+
+    return decision;
+  }
+
+  @Override
+  public int hashCode() {
+    return index;
+  }
+
+  @Override
   public String toString() {
     final StringBuilder b = new StringBuilder();
-    b.append(String.format("      <event index=\"%d\" name=\"%s\" desc=\"%s\">%n", index, name, desciption));
+    b.append(String.format("      <event index=\"%d\" name=\"%s\" desc=\"%s\">%n", index, name, description));
     for (PapiEventModifier modifier : modifiers) {
       b.append(modifier.toString());
     }

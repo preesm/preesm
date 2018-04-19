@@ -258,6 +258,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
         if (pegSetRead != null && !pegSetRead.getPAPIEvents().isEmpty()) {
           pegSetfinal = pegSetRead.getPAPIEvents();
         }
+
         this.eventTableViewer.setCheckedElements(pegSetfinal.toArray());
       }
     }

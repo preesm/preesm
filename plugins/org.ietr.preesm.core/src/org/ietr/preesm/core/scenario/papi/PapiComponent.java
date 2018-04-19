@@ -56,6 +56,41 @@ public class PapiComponent {
   }
 
   @Override
+  public boolean equals(Object comparer) {
+
+    boolean decision = false;
+    boolean idComp = false;
+    boolean typeComp = false;
+    boolean indexComp = false;
+    boolean eventSetsComp = false;
+
+    if (comparer instanceof PapiComponent) {
+      PapiComponent tester = (PapiComponent) comparer;
+      if (this.id.equals(tester.getId())) {
+        idComp = true;
+      }
+      if (this.type.equals(tester.getType())) {
+        typeComp = true;
+      }
+      if (this.index == tester.getIndex()) {
+        indexComp = true;
+      }
+      if (this.eventSets.equals(tester.getEventSets())) {
+        eventSetsComp = true;
+      }
+      if (idComp && typeComp && indexComp && eventSetsComp) {
+        decision = true;
+      }
+    }
+    return decision;
+  }
+
+  @Override
+  public int hashCode() {
+    return index;
+  }
+
+  @Override
   public String toString() {
     final StringBuilder b = new StringBuilder();
     final String string = this.type.toString();

@@ -99,7 +99,7 @@ public class PapifyEventLabelProvider implements ITableLabelProvider, SelectionL
       case 0:// Parsing column
         return elementParsed.getName();
       case 1:// Evaluation column
-        return elementParsed.getDesciption();
+        return elementParsed.getDescription();
       default:// Others
         break;
     }

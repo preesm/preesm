@@ -6,7 +6,7 @@ package org.ietr.preesm.core.scenario.papi;
  *
  */
 public enum PapiComponentType {
-  UNKNOWN("Unkown"), CPU("CPU");
+  UNKNOWN("Unknown"), CPU("CPU");
 
   private final String name;
 

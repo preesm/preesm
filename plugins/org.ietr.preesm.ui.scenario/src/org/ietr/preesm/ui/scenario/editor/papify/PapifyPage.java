@@ -140,13 +140,21 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     // Papify file chooser section
     createFileSection(managedForm, Messages.getString("Papify.file"), Messages.getString("Papify.fileDescription"), Messages.getString("Papify.fileEdit"),
-        this.scenario.getConstraintGroupManager().getExcelFileURL(), Messages.getString("Papify.fileBrowseTitle"), "xml");
+        this.scenario.getPapifyConfigManager().getXmlFileURL(), Messages.getString("Papify.fileBrowseTitle"), "xml");
 
     createPapifySection(managedForm, Messages.getString("Papify.title"), Messages.getString("Papify.description"));
 
+    if (!this.scenario.getPapifyConfigManager().getXmlFileURL().equals("")) {
+      final String xmlFullPath = getFullXmlPath(this.scenario.getPapifyConfigManager().getXmlFileURL());
+      parseXmlData(xmlFullPath);
+      if (!this.papiEvents.getComponents().isEmpty()) {
+        updateTables();
+        firePropertyChange(IEditorPart.PROP_DIRTY);
+      }
+    }
+
     managedForm.refresh();
     managedForm.reflow(true);
-
   }
 
   /**
@@ -363,6 +371,53 @@ public class PapifyPage extends FormPage implements IPropertyListener {
       this.eventTableViewer.refresh();
     }
     firePropertyChange(IEditorPart.PROP_DIRTY);
+  }
+
+  /**
+   * Get full xml path.
+   *
+   * @param xmlfile
+   *          the xmlfile
+   */
+  private String getFullXmlPath(String xmlfile) {
+
+    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    final String fullPath;
+
+    WorkspaceUtils.updateWorkspace();
+
+    final Path path = new Path(xmlfile);
+    final IFile file = workspace.getRoot().getFile(path);
+
+    fullPath = file.getLocation().toString();
+    return fullPath;
+  }
+
+  /**
+   * Parse xml data.
+   *
+   * @param xmlpath
+   *          the xmlfile
+   */
+  private void parseXmlData(String xmlfile) {
+
+    papiEvents = papiParser.parse(xmlfile);
+
+  }
+
+  /**
+   * Update info.
+   *
+   * @param xmlpath
+   *          the xmlfile
+   */
+  private void updateTables() {
+
+    this.componentTableViewer.setInput(this.papiEvents);
+    this.componentTableViewer.refresh();
+    this.eventTableViewer.setInput(this.papiEvents);
+    this.eventTableViewer.refresh();
+
   }
 
   /**

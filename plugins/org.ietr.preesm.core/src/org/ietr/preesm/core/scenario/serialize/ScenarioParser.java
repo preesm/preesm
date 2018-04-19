@@ -42,8 +42,11 @@ package org.ietr.preesm.core.scenario.serialize;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import javax.xml.parsers.DocumentBuilder;
@@ -73,6 +76,12 @@ import org.ietr.preesm.core.scenario.MemCopySpeed;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.core.scenario.TimingManager;
+import org.ietr.preesm.core.scenario.papi.PapiComponent;
+import org.ietr.preesm.core.scenario.papi.PapiEvent;
+import org.ietr.preesm.core.scenario.papi.PapiEventModifier;
+import org.ietr.preesm.core.scenario.papi.PapiEventSet;
+import org.ietr.preesm.core.scenario.papi.PapiEventSetType;
+import org.ietr.preesm.core.scenario.papi.PapifyConfig;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
@@ -179,6 +188,9 @@ public class ScenarioParser {
               break;
             case "parameterValues":
               parseParameterValues(elt);
+              break;
+            case "papifyConfigs":
+              parsePapifyConfigs(elt);
               break;
             default:
           }
@@ -732,6 +744,165 @@ public class ScenarioParser {
     }
 
     return cg;
+  }
+
+  /**
+   * Retrieves all the papifyConfig groups.
+   *
+   * @param cstGroupsElt
+   *          the cst groups elt
+   */
+  private void parsePapifyConfigs(final Element papifyConfigsElt) {
+
+    final String xmlFileURL = papifyConfigsElt.getAttribute("xmlUrl");
+    this.scenario.getPapifyConfigManager().setExcelFileURL(xmlFileURL);
+
+    Node node = papifyConfigsElt.getFirstChild();
+
+    while (node != null) {
+
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        final String type = elt.getTagName();
+        if (type.equals("papifyConfig")) {
+          final PapifyConfig pg = getPapifyConfig(elt);
+          this.scenario.getPapifyConfigManager().addPapifyConfigGroup(pg);
+        }
+      }
+
+      node = node.getNextSibling();
+    }
+  }
+
+  /**
+   * Retrieves a papifyConfig.
+   *
+   * @param papifyConfigElt
+   *          the papifyConfig group elt
+   * @return the papifyConfig
+   */
+  private PapifyConfig getPapifyConfig(final Element papifyConfigElt) {
+
+    final PapifyConfig pc = new PapifyConfig();
+    Node node = papifyConfigElt.getFirstChild();
+
+    while (node != null) {
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        final String type = elt.getTagName();
+
+        switch (type) {
+          case "coreId":
+            final String coreId = elt.getAttribute("coreId");
+            pc.addCoreId(coreId);
+            break;
+          case "PapiComponent":
+            final PapiComponent component = getPapifyComponent(elt);
+            pc.addPAPIComponent(component);
+            break;
+          case "event":
+            final PapiEvent event = getPapifyEvent(elt);
+            pc.addPAPIEvent(event);
+            break;
+          default:
+        }
+      }
+      node = node.getNextSibling();
+    }
+    return pc;
+  }
+
+  /**
+   * Retrieves the component info.
+   *
+   * @param node
+   *          the papi component elt
+   * @return the papi component
+   */
+  private PapiComponent getPapifyComponent(final Element papifyComponentElt) {
+
+    PapiComponent component = null;
+    final String componentId = papifyComponentElt.getAttribute("componentId");
+    final String componentIndex = papifyComponentElt.getAttribute("componentIndex");
+    final String componentType = papifyComponentElt.getAttribute("componentType");
+
+    component = new PapiComponent(componentId, componentIndex, componentType);
+
+    final List<PapiEventSet> eventSetList = new ArrayList<>();
+
+    Node node = papifyComponentElt.getFirstChild();
+    while (node != null) {
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        final String type = elt.getAttribute("type");
+        final PapiEventSet eventSet = new PapiEventSet();
+
+        List<PapiEvent> eventList = getPapifyEvents(elt);
+        eventSet.setType(Optional.ofNullable(type).map(PapiEventSetType::valueOf).orElse(null));
+        eventSet.setEvents(eventList);
+        eventSetList.add(eventSet);
+      }
+      node = node.getNextSibling();
+    }
+    component.setEventSets(eventSetList);
+    return component;
+  }
+
+  /**
+   * Retrieves the events info.
+   *
+   * @param node
+   *          the event set elt
+   * @return the papi list of events
+   */
+  private List<PapiEvent> getPapifyEvents(final Element papifyEventsElt) {
+
+    List<PapiEvent> eventList = new ArrayList<>();
+    Node node = papifyEventsElt.getFirstChild();
+    while (node != null) {
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        PapiEvent event = getPapifyEvent(elt);
+        eventList.add(event);
+      }
+      node = node.getNextSibling();
+    }
+    return eventList;
+  }
+
+  /**
+   * Retrieves the event info.
+   *
+   * @param node
+   *          the event elt
+   * @return the papi event
+   */
+  private PapiEvent getPapifyEvent(final Element papifyEventElt) {
+
+    PapiEvent event = new PapiEvent();
+    final String eventDescription = papifyEventElt.getAttribute("eventDescription");
+    event.setDesciption(eventDescription);
+    final String eventId = papifyEventElt.getAttribute("eventId");
+    event.setIndex(Integer.valueOf(eventId));
+    final String eventName = papifyEventElt.getAttribute("eventName");
+    event.setName(eventName);
+    List<PapiEventModifier> eventModiferList = new ArrayList<>();
+
+    Node node = papifyEventElt.getFirstChild();
+    while (node != null) {
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        PapiEventModifier eventModifer = new PapiEventModifier();
+        final String description = elt.getAttribute("description");
+        eventModifer.setDescription(description);
+        final String name = elt.getAttribute("name");
+        eventModifer.setName(name);
+        eventModiferList.add(eventModifer);
+      }
+      node = node.getNextSibling();
+    }
+    event.setModifiers(eventModiferList);
+    return event;
   }
 
   /**

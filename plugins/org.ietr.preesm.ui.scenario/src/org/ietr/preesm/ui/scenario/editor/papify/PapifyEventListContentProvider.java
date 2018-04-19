@@ -85,6 +85,7 @@ public class PapifyEventListContentProvider implements IStructuredContentProvide
       eventList = new ArrayList<>();
       timingEvent.setName("Timing");
       timingEvent.setDesciption("Event to time through PAPI_get_time()");
+      timingEvent.setIndex(9999);
       timingEvent.setModifiers(modifTimingList);
       eventList.add(timingEvent);
       for (int i = inputPapiEventInfo.getComponents().size() - 1; i >= 0; i--) {
