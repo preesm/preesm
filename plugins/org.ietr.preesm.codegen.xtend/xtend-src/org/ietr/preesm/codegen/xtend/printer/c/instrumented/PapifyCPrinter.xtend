@@ -48,8 +48,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
 import org.ietr.dftools.architecture.slam.Design
 import org.ietr.dftools.architecture.slam.ComponentInstance
-
-
+import org.ietr.preesm.core.scenario.papi.PapifyConfigManager
+import org.ietr.preesm.core.scenario.papi.PapifyConfig
 
 /**
  * This printer currently papify C code for X86 cores..
@@ -76,6 +76,8 @@ class PapifyCPrinter extends CPrinter {
 		var String all_event_names;
 		var String timing_active;
 		var boolean papifying = false;
+		PapifyConfigManager papifyConfig = this.engine.scenario.papifyConfigManager;
+		PapifyConfig config;
 
 	/**
 	 * Add a required library for Papify utilization
@@ -105,6 +107,8 @@ class PapifyCPrinter extends CPrinter {
 	 */
 	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {
 		
+		
+		
 		var Design slamDesign = this.engine.archi;		
 		var List<ComponentInstance> compInstances = slamDesign.componentInstances; 
 	
@@ -115,6 +119,14 @@ class PapifyCPrinter extends CPrinter {
 		
 		// for each block				
 		for (Block block : printerBlocks){
+			
+			config = papifyConfig.getCorePapifyConfigGroups(block.name);
+			//TBD
+			//Get component
+			//Get events
+			//Check if events are available in the component
+			//Set the parameters
+			
 			// associate the block with its instance in the slam model
 			search_index = 0;
 			instance = 0;
