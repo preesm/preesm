@@ -12,6 +12,11 @@ PREESM Changelog
 * Update release process to upload releases on GitHub;
 * Update operation with more accurate name and return type;
 * Fix typos;
+* Update checkstyle to 8.8 (and maven plugin to 3.0.0);
+* Update Coding policies (now ignores javadoc @throw issues);
+* Add script to prefetch RCPTT Runner from different mirror (faster);
+* Update RCPTT POM Configuration;
+
 
 ### Bug fix
 * Fix codegen for MS Visual Studio to support thread affinity;
