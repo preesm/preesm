@@ -78,7 +78,7 @@
     <tycho-version>1.0.0</tycho-version>
     <findbugs-version>3.0.4</findbugs-version>
     <sonar-version>3.3.0.603</sonar-version>
-		<rcptt-maven-version>2.2.0</rcptt-maven-version>
+    <rcptt-version>2.2.0</rcptt-version>
     <checkstyle-version>7.6.1</checkstyle-version>
     <preesm.coding.policy.version>1.0.1</preesm.coding.policy.version>
 
@@ -209,11 +209,11 @@
 			<plugin>
 				<groupId>org.eclipse.rcptt</groupId>
 				<artifactId>rcptt-maven-plugin</artifactId>
-				<version>${rcptt-maven-version}</version>
+				<version>${rcptt-version}</version>
 				<extensions>true</extensions>
 				<configuration>
 					<runner>
-						<version>${rcptt-maven-version}</version>
+						<version>${rcptt-version}</version>
 					</runner>
 					<!-- The main configuration section goes here -->
 					<aut>

@@ -96,11 +96,11 @@
       <plugin>
         <groupId>org.eclipse.rcptt</groupId>
         <artifactId>rcptt-maven-plugin</artifactId>
-        <version>${rcptt-maven-version}</version>
+        <version>${rcptt-version}</version>
         <extensions>true</extensions>
         <configuration>
           <runner>
-            <version>${rcptt-maven-version}</version>
+            <version>${rcptt-version}</version>
           </runner>
           <!-- The main configuration section goes here -->
           <aut>
