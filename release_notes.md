@@ -15,6 +15,9 @@ PREESM Changelog
 * Update checkstyle to 8.8 (and maven plugin to 3.0.0);
 * Update Coding policies (now ignores javadoc @throw issues);
 * Add script to prefetch RCPTT Runner from different mirror (faster);
+* Add NonExecutableActors;
+* Add helper methods in PiGraph;
+* Minor refactoring;
 * Update RCPTT POM Configuration;
 
 
