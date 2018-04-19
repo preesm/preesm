@@ -84,7 +84,7 @@
         <dependency>
           <groupId>org.eclipse.rcptt.runner</groupId>
           <artifactId>rcptt.runner</artifactId>
-          <version>${rcptt-maven-version}</version>
+          <version>${rcptt-version}</version>
           <type>zip</type>
         </dependency>
       </dependencies>
