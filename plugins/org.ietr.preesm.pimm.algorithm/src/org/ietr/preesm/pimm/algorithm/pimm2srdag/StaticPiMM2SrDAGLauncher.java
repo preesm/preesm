@@ -68,7 +68,7 @@ import org.ietr.preesm.mapper.model.MapperEdgeFactory;
 import org.ietr.preesm.pimm.algorithm.helper.LCMBasedBRV;
 import org.ietr.preesm.pimm.algorithm.helper.PiBRV;
 import org.ietr.preesm.pimm.algorithm.helper.PiMMHandler;
-import org.ietr.preesm.pimm.algorithm.helper.PiMMHandler.PiMMHandlerException;
+import org.ietr.preesm.pimm.algorithm.helper.PiMMHelperException;
 import org.ietr.preesm.pimm.algorithm.helper.TopologyBasedBRV;
 import org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor.StaticPiMM2SrDAGVisitor;
 
@@ -141,7 +141,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
       this.graphBRV = piBRVAlgo.getBRV();
       timer.stop();
       WorkflowLogger.getLogger().log(Level.INFO, "Repetition vector computed in " + timer.toString() + "s.");
-    } catch (PiMMHandlerException e) {
+    } catch (PiMMHelperException e) {
       throw new StaticPiMM2SrDAGException(e.getMessage());
     }
     printRV(this.graphBRV);
@@ -180,7 +180,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
       for (final PiMMHandler ph : piHandler.getChildrenGraphsHandler()) {
         iterativeComputeSRDag(dag, ph);
       }
-    } catch (PiMMHandlerException e) {
+    } catch (PiMMHelperException e) {
       throw new StaticPiMM2SrDAGException(e.getMessage());
     }
   }

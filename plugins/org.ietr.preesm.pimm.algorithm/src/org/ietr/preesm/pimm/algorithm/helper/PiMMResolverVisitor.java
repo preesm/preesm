@@ -22,7 +22,6 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
-import org.ietr.preesm.pimm.algorithm.helper.PiMMHandler.PiMMHandlerException;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
@@ -114,7 +113,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
    *          the data port to evaluate
    * @param actorParser
    *          parser of the actor containing the port
-   * @throws PiMMHandlerException
+   * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
   private static void resolvePortRate(final DataPort port, final JEP actorParser) {

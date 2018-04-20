@@ -13,7 +13,6 @@ import org.ietr.dftools.algorithm.Rational;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.pimm.algorithm.helper.PiMMHandler.PiMMHandlerException;
 import org.math.array.LinearAlgebra;
 
 /**
@@ -33,7 +32,7 @@ public class TopologyBasedBRV extends PiBRV {
    * @see org.ietr.preesm.pimm.algorithm.math.PiBRV#execute()
    */
   @Override
-  public boolean execute() throws PiMMHandlerException {
+  public boolean execute() throws PiMMHelperException {
     if (this.piHandler.getReferenceGraph() == null) {
       WorkflowLogger.getLogger().log(Level.SEVERE, "cannot compute BRV for null graph.");
       return false;
@@ -46,8 +45,7 @@ public class TopologyBasedBRV extends PiBRV {
 
       // Get the topology matrix
       if (subgraph.isEmpty()) {
-        PiMMHandler hdl = new PiMMHandler();
-        throw hdl.new PiMMHandlerException("Impossible to compute consistency. Empty graph.");
+        throw new PiMMHelperException("Impossible to compute consistency. Empty graph.");
       }
       // We have only one actor connected to Interface Actor
       // The graph is consistent
@@ -58,8 +56,7 @@ public class TopologyBasedBRV extends PiBRV {
         double[][] topologyMatrix = getTopologyMatrix(listFifo, subgraph);
         int rank = LinearAlgebra.rank(topologyMatrix);
         if (rank != subgraph.size() - 1) {
-          PiMMHandler hdl = new PiMMHandler();
-          throw hdl.new PiMMHandlerException("Graph not consitent. rank: " + Integer.toString(rank));
+          throw new PiMMHelperException("Graph not consitent. rank: " + Integer.toString(rank));
         }
         // Compute BRV
         final Vector<Rational> vrb = computeRationnalNullSpace(topologyMatrix);
@@ -79,7 +76,7 @@ public class TopologyBasedBRV extends PiBRV {
     return true;
   }
 
-  private double[][] getTopologyMatrix(final List<Fifo> listFifo, final List<AbstractActor> subgraph) throws PiMMHandlerException {
+  private double[][] getTopologyMatrix(final List<Fifo> listFifo, final List<AbstractActor> subgraph) throws PiMMHelperException {
     double[][] topologyMatrix = new double[listFifo.size()][subgraph.size()];
     for (final Fifo fifo : listFifo) {
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
@@ -92,14 +89,12 @@ public class TopologyBasedBRV extends PiBRV {
         final String prodString = "Prod: " + Integer.toString(prod) + "\n";
         final String consString = "Cons: " + Integer.toString(cons) + "\n";
         final String errorString = "Bad production / consumption rates\n";
-        PiMMHandler hdl = new PiMMHandler();
-        throw hdl.new PiMMHandlerException("Fifo [" + fifo.getId() + "]\n" + prodString + consString + errorString);
+        throw new PiMMHelperException("Fifo [" + fifo.getId() + "]\n" + prodString + consString + errorString);
       }
       final int sourceIndex = subgraph.indexOf(sourceActor);
       final int targetIndex = subgraph.indexOf(targetActor);
       if (sourceIndex < 0 || targetIndex < 0) {
-        PiMMHandler hdl = new PiMMHandler();
-        throw hdl.new PiMMHandlerException("Bad index error:\nSource actor index [" + sourceActor.getName() + "]: " + Integer.toString(sourceIndex)
+        throw new PiMMHelperException("Bad index error:\nSource actor index [" + sourceActor.getName() + "]: " + Integer.toString(sourceIndex)
             + "\nTarget actor index [" + targetActor.getName() + "]: " + Integer.toString(targetIndex));
       }
       topologyMatrix[listFifo.indexOf(fifo)][sourceIndex] = prod;

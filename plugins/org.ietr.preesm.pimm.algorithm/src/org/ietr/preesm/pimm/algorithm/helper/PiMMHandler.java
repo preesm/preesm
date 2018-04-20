@@ -140,10 +140,10 @@ public class PiMMHandler {
    * @param cc
    *          the connectedComponent to evaluate
    * @return all FIFOs contained in the connectedComponent, null if the connectedComponent is empty
-   * @throws PiMMHandlerException
+   * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  public List<Fifo> getFifosFromCC(List<AbstractActor> cc) throws PiMMHandlerException {
+  public List<Fifo> getFifosFromCC(List<AbstractActor> cc) throws PiMMHelperException {
     if (cc.isEmpty()) {
       WorkflowLogger.getLogger().log(Level.INFO, "No FIFOs to extrac, empty connectedComponent.");
       return Collections.<Fifo>emptyList();
@@ -165,14 +165,14 @@ public class PiMMHandler {
    *          the actor to evaluate
    * @param fifos
    *          list of Fifo to update
-   * @throws PiMMHandlerException
+   * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  private void extractFifosFromActor(final boolean containsInterfaceActors, final AbstractActor actor, List<Fifo> fifos) throws PiMMHandlerException {
+  private void extractFifosFromActor(final boolean containsInterfaceActors, final AbstractActor actor, List<Fifo> fifos) throws PiMMHelperException {
     for (final DataPort port : actor.getAllDataPorts()) {
       final Fifo fifo = port.getFifo();
       if (fifo == null) {
-        throw new PiMMHandlerException(noFIFOExceptionMessage(actor, port));
+        throw new PiMMHelperException(noFIFOExceptionMessage(actor, port));
       }
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
@@ -191,10 +191,10 @@ public class PiMMHandler {
    * @param cc
    *          the connectedComponent to evaluate
    * @return all FIFOs contained in the connectedComponent, null if the subgraph is empty
-   * @throws PiMMHandlerException
+   * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  public List<Fifo> getFifosFromCCWOSelfLoop(List<AbstractActor> cc) throws PiMMHandlerException {
+  public List<Fifo> getFifosFromCCWOSelfLoop(List<AbstractActor> cc) throws PiMMHelperException {
     List<Fifo> fifos = getFifosFromCC(cc);
     fifos.removeIf(fifo -> (fifo.getSourcePort().getContainingActor() == fifo.getTargetPort().getContainingActor()));
     return fifos;
@@ -209,10 +209,10 @@ public class PiMMHandler {
    * First access can be slow since the List of CCs has to be computed.
    * 
    * @return all CCs contained in the reference graph (read only access)
-   * @throws PiMMHandlerException
+   * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  public List<List<AbstractActor>> getAllConnectedComponents() throws PiMMHandlerException {
+  public List<List<AbstractActor>> getAllConnectedComponents() throws PiMMHelperException {
     if (this.listConnectedComponents.isEmpty()) {
       ccsFetcher(this.graph, this.listConnectedComponents);
     }
@@ -227,10 +227,10 @@ public class PiMMHandler {
    * This method uses getAllConnectedComponents to extract connected components, i.e a call to getAllConnectedComponents afterward will be fast.
    * 
    * @return all CCs contained in the associated graph (read only access)
-   * @throws PiMMHandlerException
+   * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  public List<List<AbstractActor>> getAllConnectedComponentsWOInterfaces() throws PiMMHandlerException {
+  public List<List<AbstractActor>> getAllConnectedComponentsWOInterfaces() throws PiMMHelperException {
     // First fetch all subgraphs
     if (this.listConnectedComponents.isEmpty()) {
       ccsFetcher(this.graph, this.listConnectedComponents);
@@ -270,10 +270,10 @@ public class PiMMHandler {
    *          the graph to process
    * @param listCCs
    *          list of subgraphs to be updated
-   * @throws PiMMHandlerException
+   * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  private static void ccsFetcher(final PiGraph graph, List<List<AbstractActor>> listCCs) throws PiMMHandlerException {
+  private static void ccsFetcher(final PiGraph graph, List<List<AbstractActor>> listCCs) throws PiMMHelperException {
     // Fetch all actors without interfaces in the PiGraph
     List<AbstractActor> fullActorList = new ArrayList<>();
     fullActorList.addAll(graph.getActors());
@@ -305,15 +305,14 @@ public class PiMMHandler {
    *          the current actor
    * @param cc
    *          the current connected component
-   * @throws PiMMHandlerException
+   * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  private static void iterativeCCFetcher(final AbstractActor actor, List<AbstractActor> cc) throws PiMMHandlerException {
+  private static void iterativeCCFetcher(final AbstractActor actor, List<AbstractActor> cc) throws PiMMHelperException {
     for (final DataOutputPort output : actor.getDataOutputPorts()) {
       final Fifo fifo = output.getOutgoingFifo();
       if (fifo == null) {
-        PiMMHandler hdl = new PiMMHandler();
-        throw (hdl.new PiMMHandlerException(noFIFOExceptionMessage(actor, output)));
+        throw new PiMMHelperException(noFIFOExceptionMessage(actor, output));
       }
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
       if (!cc.contains(targetActor)) {
@@ -324,8 +323,7 @@ public class PiMMHandler {
     for (final DataInputPort input : actor.getDataInputPorts()) {
       final Fifo fifo = input.getIncomingFifo();
       if (fifo == null) {
-        PiMMHandler hdl = new PiMMHandler();
-        throw (hdl.new PiMMHandlerException(noFIFOExceptionMessage(actor, input)));
+        throw new PiMMHelperException(noFIFOExceptionMessage(actor, input));
       }
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
       if (!cc.contains(sourceActor)) {
@@ -346,35 +344,12 @@ public class PiMMHandler {
   /**
    * Resolve all parameter values of the reference PiGraph and its child sub-graph.
    *
-   * @throws PiMMHandlerException
+   * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  public void resolveAllParameters() throws PiMMHandlerException {
+  public void resolveAllParameters() throws PiMMHelperException {
     final PiMMResolverVisitor piMMResolverVisitor = new PiMMResolverVisitor(new LinkedHashMap<>());
     piMMResolverVisitor.doSwitch(this.graph);
-  }
-
-  /**
-   * The Class PiMMHandlerException.
-   */
-  public class PiMMHandlerException extends Exception {
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 3141592653589793238L;
-
-    /**
-     * Instantiates a new static pi MM 2 SDF exception.
-     *
-     * @param message
-     *          the message
-     */
-    public PiMMHandlerException(final String message) {
-      super(message);
-    }
-
-    public PiMMHandlerException() {
-      super();
-    }
-
   }
 
 }

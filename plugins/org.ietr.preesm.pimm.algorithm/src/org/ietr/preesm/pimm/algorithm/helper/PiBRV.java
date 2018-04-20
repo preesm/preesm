@@ -16,7 +16,6 @@ import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.pimm.algorithm.helper.PiMMHandler.PiMMHandlerException;
 
 /**
  * @author farresti
@@ -46,7 +45,7 @@ public abstract class PiBRV {
    * 
    * Set the associated PiGraph. If current BRV map was not empty, it is cleared. The BRV is automatically recomputed.
    */
-  public void setAssociatedGraphHandler(final PiMMHandler piHandler) throws PiMMHandlerException {
+  public void setAssociatedGraphHandler(final PiMMHandler piHandler) throws PiMMHelperException {
     this.piHandler = piHandler;
     if (!this.graphBRV.isEmpty()) {
       this.graphBRV.clear();
@@ -67,7 +66,7 @@ public abstract class PiBRV {
    * 
    * @return a map of vertex and associated repetition vector values
    */
-  public Map<AbstractVertex, Integer> getBRV() throws PiMMHandlerException {
+  public Map<AbstractVertex, Integer> getBRV() throws PiMMHelperException {
     if (this.graphBRV.isEmpty()) {
       execute();
     }
@@ -89,12 +88,12 @@ public abstract class PiBRV {
    * Compute the BRV of the associated graph given a method. This also checks for consistency at the same time.
    *
    * @return true if no error were found, false else
-   * @throws PiMMHandlerException
+   * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  public abstract boolean execute() throws PiMMHandlerException;
+  public abstract boolean execute() throws PiMMHelperException;
 
-  protected void updateRVWithInterfaces(final PiGraph graph, final List<AbstractActor> subgraph) throws PiMMHandlerException {
+  protected void updateRVWithInterfaces(final PiGraph graph, final List<AbstractActor> subgraph) throws PiMMHelperException {
     // Update RV values based on the interface
     int scaleFactor = 1;
     // Compute scaleFactor for input interfaces
@@ -148,8 +147,7 @@ public abstract class PiBRV {
       int newRV = this.graphBRV.get(actor) * scaleFactor;
       this.graphBRV.put(actor, newRV);
       if ((actor instanceof DelayActor) && newRV != 1) {
-        PiMMHandler hdl = new PiMMHandler();
-        throw (hdl.new PiMMHandlerException("Inconsistent graph. DelayActor [" + actor.getName() + "] with a repetition vector of " + Integer.toString(newRV)));
+        throw new PiMMHelperException("Inconsistent graph. DelayActor [" + actor.getName() + "] with a repetition vector of " + Integer.toString(newRV));
       }
     }
   }

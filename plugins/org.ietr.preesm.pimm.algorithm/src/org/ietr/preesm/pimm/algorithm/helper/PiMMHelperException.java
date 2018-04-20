@@ -7,7 +7,10 @@ package org.ietr.preesm.pimm.algorithm.helper;
  * @author farresti
  *
  */
-public class PiBRVException extends Exception {
+/**
+ * The Class PiMMHandlerException.
+ */
+public class PiMMHelperException extends Exception {
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 3141592653589793238L;
 
@@ -17,7 +20,12 @@ public class PiBRVException extends Exception {
    * @param message
    *          the message
    */
-  public PiBRVException(final String message) {
+  public PiMMHelperException(final String message) {
     super(message);
   }
+
+  public PiMMHelperException() {
+    super();
+  }
+
 }
