@@ -74,7 +74,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
 
     final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, result);
-    return new LinkedHashMap<>();
+    return output;// new LinkedHashMap<>();
   }
 
   /*

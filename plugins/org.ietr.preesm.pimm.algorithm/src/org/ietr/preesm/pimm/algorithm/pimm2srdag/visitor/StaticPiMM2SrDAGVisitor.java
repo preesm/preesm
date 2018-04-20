@@ -3,32 +3,29 @@
  */
 package org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.ietr.dftools.algorithm.model.CodeRefinement;
 import org.ietr.dftools.algorithm.model.IRefinement;
+import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGBroadcastVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGEndVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGInitVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGJoinVertex;
+import org.ietr.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType;
 import org.ietr.dftools.algorithm.model.dag.types.DAGDefaultVertexPropertyType;
-import org.ietr.dftools.algorithm.model.parameters.Argument;
-import org.ietr.dftools.algorithm.model.parameters.ConstantValue;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
-import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFExpressionEdgePropertyType;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
@@ -36,13 +33,13 @@ import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
-import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
@@ -51,22 +48,26 @@ import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
-import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
 import org.ietr.preesm.mapper.model.MapperDAG;
-import org.ietr.preesm.pimm.algorithm.pimm2sdf.PiGraphExecution;
 
 /**
  * @author farresti
  *
  */
 public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
+  /** Property name for property TARGET_VERTEX. */
+  public static final String TARGET_VERTEX = "target_vertex";
+
+  /** Property name for property SOURCE_VERTEX. */
+  public static final String SOURCE_VERTEX = "source_vertex";
+
   /** The result. */
   // SRDAG graph created from the outer graph
   private MapperDAG result;
@@ -80,21 +81,9 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
   /** Counter for actors indexes */
   private int aCounter;
 
-  /** The execution. */
-  // Original list of fixed values for all the parameters of the graph
-  protected PiGraphExecution execution;
-
   /** The pi vx 2 SDF vx. */
-  // Map from original PiMM vertices to generated SDF vertices
-  protected Map<AbstractVertex, DAGVertex> piVx2DAGVx = new LinkedHashMap<>();
-
-  /** The pi port 2 vx. */
-  // Map from PiMM ports to their vertex (used for SDFEdge creation)
-  protected Map<Port, Configurable> piPort2Vx = new LinkedHashMap<>();
-  // Map from original PiMM ports to generated SDF ports (used for SDFEdge
-  /** The pi port 2 SDF port. */
-  // creation)
-  protected Map<Port, SDFInterfaceVertex> piPort2SDFPort = new LinkedHashMap<>();
+  // Map from original PiMM vertices to generated DAG vertices
+  private Map<AbstractVertex, ArrayList<DAGVertex>> piActor2DAGVertex = new LinkedHashMap<>();
 
   /** The current SDF refinement. */
   // Current SDF Refinement
@@ -125,9 +114,29 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     // Handle vertex's path inside the graph hierarchy
     vertex.setInfo(nameInfoID);
     // Handle ID
-    vertex.setId(nameInfoID);
-    // Set Repetition vector
-    vertex.setNbRepeat(new DAGDefaultVertexPropertyType(this.brv.get(a)));
+    vertex.setId(Integer.toString(aCounter));
+    // Set Repetition vector to 1 since it is a single rate vertex
+    vertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
+  }
+
+  private DAGJoinVertex addJoinVertex(final String fixID, Integer joinID) {
+    final DAGJoinVertex joinVertex = new DAGJoinVertex();
+    final String id = fixID + joinID.toString();
+    joinVertex.setId(id);
+    joinVertex.setName(id);
+    joinVertex.setInfo(id);
+    joinID++;
+    return joinVertex;
+  }
+
+  private DAGForkVertex addForkVertex(final String fixID, Integer forkID) {
+    final DAGForkVertex forkVertex = new DAGForkVertex();
+    final String id = fixID + forkID.toString();
+    forkVertex.setId(id);
+    forkVertex.setName(id);
+    forkVertex.setInfo(id);
+    forkID++;
+    return forkVertex;
   }
 
   /*
@@ -137,48 +146,12 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseAbstractActor(final AbstractActor actor) {
-    // // Handle the target ports (DataInputPort in PISDF,
-    // // SDFSourceInterfaceVertex in IBSDF) keeping the order
-    // for (final DataInputPort dip : aa.getDataInputPorts()) {
-    // // The target SDF port
-    // SDFSourceInterfaceVertex sdfInputPort;
-    // // The SDF vertex to which to add the created port
-    // final SDFAbstractVertex sdfTarget = this.piVx2SDFVx.get(aa);
-    // if (sdfTarget instanceof SDFSourceInterfaceVertex) {
-    // // If the SDF vertex is an interface, use it as the port
-    // sdfInputPort = (SDFSourceInterfaceVertex) sdfTarget;
-    // } else {
-    // // Otherwise create a new port and add it to the SDF vertex
-    // sdfInputPort = new SDFSourceInterfaceVertex();
-    // sdfInputPort.setName(dip.getName());
-    // sdfTarget.addSource(sdfInputPort);
-    // }
-    // this.piPort2SDFPort.put(dip, sdfInputPort);
-    // this.piPort2Vx.put(dip, aa);
-    // }
-    // // Handle the source ports (DataOuputPort in PISDF,
-    // // SDFSinkInterfaceVertex in IBSDF) keeping the order
-    // for (final DataOutputPort dop : aa.getDataOutputPorts()) {
-    // // The source SDF port
-    // SDFSinkInterfaceVertex sdfOutputPort;
-    // // The SDF vertex to which to add the created port
-    // final SDFAbstractVertex sdfSource = this.piVx2SDFVx.get(aa);
-    // if (sdfSource instanceof SDFSinkInterfaceVertex) {
-    // // If the SDF vertex is an interface, use it as the port
-    // sdfOutputPort = (SDFSinkInterfaceVertex) sdfSource;
-    // } else {
-    // // Otherwise create a new port and add it to the SDF vertex
-    // sdfOutputPort = new SDFSinkInterfaceVertex();
-    // sdfOutputPort.setName(dop.getName());
-    // sdfSource.addSink(sdfOutputPort);
-    // }
-    // this.piPort2SDFPort.put(dop, sdfOutputPort);
-    // this.piPort2Vx.put(dop, aa);
-    // }
-    // for (final ConfigOutputPort cop : aa.getConfigOutputPorts()) {
-    // this.piPort2Vx.put(cop, aa);
-    // }
-    // caseConfigurable(aa);
+    final DAGVertex vertex = new DAGVertex();
+    // Set default properties from the PiMM actor
+    pimm2srdag(actor, vertex);
+    // Add the vertex to the DAG
+    this.result.addVertex(vertex);
+    this.piActor2DAGVertex.get(actor).add(vertex);
     return true;
   }
 
@@ -201,8 +174,59 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     final Refinement piRefinement = actor.getRefinement();
     doSwitch(piRefinement);
     vertex.setRefinement(this.currentRefinement);
+    // Add the vertex to the DAG
     this.result.addVertex(vertex);
-    // caseAbstractActor(a);
+    this.piActor2DAGVertex.get(actor).add(vertex);
+    return true;
+  }
+
+  @Override
+  public Boolean caseBroadcastActor(final BroadcastActor actor) {
+    final DAGBroadcastVertex vertex = new DAGBroadcastVertex();
+    pimm2srdag(actor, vertex);
+    // Check the good use of the broadcast
+    final DataInputPort dataInputPort = actor.getDataInputPorts().get(0);
+    final Expression portRateExpression = dataInputPort.getPortRateExpression();
+    final long cons = Long.parseLong(portRateExpression.getExpressionString());
+    for (final DataOutputPort out : actor.getDataOutputPorts()) {
+      final Expression outPortRateExpression = out.getPortRateExpression();
+      final long prod = Long.parseLong(outPortRateExpression.getExpressionString());
+      if (prod != cons) {
+        WorkflowLogger.getLogger()
+            .warning("Warning: Broadcast have different production/consumption: prod(" + Long.toString(prod) + ") != cons(" + Long.toString(cons) + ")");
+      }
+    }
+    // Add the vertex to the DAG
+    this.result.addVertex(vertex);
+    this.piActor2DAGVertex.get(actor).add(vertex);
+    return true;
+  }
+
+  @Override
+  public Boolean caseJoinActor(final JoinActor actor) {
+    final DAGJoinVertex vertex = new DAGJoinVertex();
+    pimm2srdag(actor, vertex);
+    // Check Join use
+    if (actor.getDataOutputPorts().size() > 1) {
+      WorkflowLogger.getLogger().warning("Warning: Join actors should have only one output.");
+    }
+    // Add the vertex to the DAG
+    this.result.addVertex(vertex);
+    this.piActor2DAGVertex.get(actor).add(vertex);
+    return true;
+  }
+
+  @Override
+  public Boolean caseForkActor(final ForkActor actor) {
+    final DAGForkVertex vertex = new DAGForkVertex();
+    pimm2srdag(actor, vertex);
+    // Check Fork use
+    if (actor.getDataInputPorts().size() > 1) {
+      WorkflowLogger.getLogger().warning("Warning: Fork actors should have only one input.");
+    }
+    // Add the vertex to the DAG
+    this.result.addVertex(vertex);
+    this.piActor2DAGVertex.get(actor).add(vertex);
     return true;
   }
 
@@ -212,50 +236,327 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitFifo(org.ietr.preesm.experiment.model.pimm.Fifo)
    */
   @Override
-  public Boolean caseFifo(final Fifo f) {
-    final DataOutputPort piOutputPort = f.getSourcePort();
-    final DataInputPort piInputPort = f.getTargetPort();
+  public Boolean caseFifo(final Fifo fifo) {
+    final String fifoID = fifo.getId();
+    Integer forkID = 0;
+    String forkIDString = fifoID + "_Fork_";
+    Integer joinID = 0;
+    String joinIDString = fifoID + "_Join_";
 
-    final Configurable source = this.piPort2Vx.get(piOutputPort);
-    final Configurable target = this.piPort2Vx.get(piInputPort);
-
-    if ((source instanceof AbstractVertex) && (target instanceof AbstractVertex)) {
-      // Get SDFAbstractVertices corresponding to source and target
-      final SDFAbstractVertex sdfSource = this.piVx2SDFVx.get(source);
-      final SDFAbstractVertex sdfTarget = this.piVx2SDFVx.get(target);
-
-      // Get the source port created in caseAbstractActor
-      final SDFSinkInterfaceVertex sdfOutputPort = (SDFSinkInterfaceVertex) this.piPort2SDFPort.get(piOutputPort);
-
-      // Get the target port created in caseAbstractActor
-      final SDFSourceInterfaceVertex sdfInputPort = (SDFSourceInterfaceVertex) this.piPort2SDFPort.get(piInputPort);
-
-      // Handle Delay, Consumption and Production rates
-      SDFExpressionEdgePropertyType delay;
-      if (f.getDelay() != null) {
-        // Evaluate the expression wrt. the current values of the
-        // parameters
-        delay = new SDFExpressionEdgePropertyType(createValue(Long.toString(ExpressionEvaluator.evaluate(f.getDelay().getSizeExpression()))));
-      } else {
-        delay = new SDFExpressionEdgePropertyType(new ConstantValue(0));
-      }
-      // Evaluate the expression wrt. the current values of the parameters
-      final SDFExpressionEdgePropertyType cons = new SDFExpressionEdgePropertyType(
-          createValue(Long.toString(ExpressionEvaluator.evaluate(piInputPort.getPortRateExpression()))));
-
-      // Evaluate the expression wrt. the current values of the parameters
-      final SDFExpressionEdgePropertyType prod = new SDFExpressionEdgePropertyType(
-          createValue(Long.toString(ExpressionEvaluator.evaluate(piOutputPort.getPortRateExpression()))));
-
-      // final SDFEdge edge = this.result.addEdge(sdfSource, sdfOutputPort, sdfTarget, sdfInputPort, prod, cons, delay);
-      //
-      // // Set the data type of the edge
-      // edge.setDataType(new SDFStringEdgePropertyType(f.getType()));
-      //
-      // // Handle memory annotations
-      // convertAnnotationsFromTo(piOutputPort, edge, SDFEdge.SOURCE_PORT_MODIFIER);
-      // convertAnnotationsFromTo(piInputPort, edge, SDFEdge.TARGET_PORT_MODIFIER);
+    long nDelays = 0;
+    if (fifo.getDelay() != null) {
+      nDelays = Long.parseLong(fifo.getDelay().getSizeExpression().getExpressionString());
     }
+
+    // Sanity check on delay value
+    if (nDelays != 0) {
+      final long targetRate = Long.parseLong(fifo.getTargetPort().getPortRateExpression().getExpressionString());
+      if (nDelays < 0) {
+        throw new RuntimeException("Invalid number of delay on fifo[" + fifo.getId() + "]: " + Long.toString(nDelays));
+      } else if (nDelays < targetRate) {
+        throw new RuntimeException("Insuffisiant number of delay on fifo[" + fifo.getId() + "]: number of delays: " + Long.toString(nDelays) + ", consumption: "
+            + Long.toString(targetRate));
+      }
+
+    }
+
+    // Evaluate source repetition vector
+    final DataOutputPort sourcePort = fifo.getSourcePort();
+    final AbstractActor sourceActor = sourcePort.getContainingActor();
+    long nbSourceRepetitions = 1;
+    if (!(sourceActor instanceof InterfaceActor)) {
+      nbSourceRepetitions = this.brv.get(sourceActor);
+    }
+
+    // Evaluate target repetition vector
+    final DataInputPort sinkPort = fifo.getTargetPort();
+    final AbstractActor sinkActor = sinkPort.getContainingActor();
+    long nbSinkRepetitions = 1;
+    if (!(sinkActor instanceof InterfaceActor)) {
+      nbSinkRepetitions = this.brv.get(sinkActor);
+    }
+
+    // If the sink actor or the source actor is a delay actor then we already check these
+    if (sinkActor instanceof DelayActor || sourceActor instanceof DelayActor) {
+      return true;
+    }
+
+    final long sourceProduction = Long.parseLong(sourcePort.getPortRateExpression().getExpressionString());
+    final long sinkConsumption = Long.parseLong(sinkPort.getPortRateExpression().getExpressionString());
+
+    final List<SourceConnection> sourceConnections = new ArrayList<>();
+    final List<SinkConnection> sinkConnections = new ArrayList<>();
+
+    boolean sinkNeedEnd = false;
+
+    // Deals with the source part
+    if (sourceActor instanceof InterfaceActor) {
+      final DAGVertex sourceVertex = this.piActor2DAGVertex.get(sourceActor).get(0);
+      final long totalSinkConsumption = sinkConsumption * nbSinkRepetitions;
+      if (sourceProduction == totalSinkConsumption) {
+        // We don't need to use broadcast
+        // final DataInputInterface dataInputInterface = (DataInputInterface) sourceActor;
+        // final DataInputPort dataInputPort = (DataInputPort) dataInputInterface.getDataPort();
+        // final AbstractActor interfaceSourceActor = dataInputPort.getIncomingFifo().getSourcePort().getContainingActor();
+        final DAGVertex vertex = this.piActor2DAGVertex.get(sourceActor).get(0);
+        final SourceConnection sourceConnection = new SourceConnection(vertex, sourcePort, sourceProduction);
+      } else {
+        final boolean perfectBroadcast = totalSinkConsumption % sourceProduction == 0;
+        long nBroadcast = totalSinkConsumption / sourceProduction;
+        if (!perfectBroadcast) {
+          nBroadcast++;
+        }
+        // Update the number of repetition of the source
+        nbSourceRepetitions = nBroadcast;
+        // If we have left over tokens, we need to get rid of them
+        sinkNeedEnd = !perfectBroadcast;
+        DAGBroadcastVertex vertex = new DAGBroadcastVertex();
+        this.result.addEdge(sourceVertex, vertex, new DAGEdge());
+        for (int i = 0; i < nBroadcast; ++i) {
+          final SourceConnection sourceConnection = new SourceConnection();
+          sourceConnection.setSource(vertex);
+          sourceConnection.setProd(sourceProduction);
+          // setPort ?
+          sourceConnections.add(sourceConnection);
+        }
+      }
+    } else if (sourceActor instanceof AbstractActor) {
+      if (nDelays == 0) {
+        for (int i = 0; i < nbSourceRepetitions; ++i) {
+          final DAGVertex vertex = this.piActor2DAGVertex.get(sourceActor).get(i);
+          sourceConnections.add(new SourceConnection(vertex, sourcePort, sourceProduction));
+        }
+      } else {
+        nbSourceRepetitions++;
+        if (fifo.getDelay().hasSetterActor()) {
+          final AbstractActor setterActor = fifo.getDelay().getSetterActor();
+          final Integer brvSetter = this.brv.get(setterActor);
+          sourceConnections.add(new SourceConnection());
+          sourceConnections.get(0).setProd(nDelays);
+          if (brvSetter > 1) {
+            // We have to add a join actor
+            final DAGJoinVertex joinVertex = addJoinVertex(joinIDString, joinID);
+            this.result.addVertex(joinVertex);
+            for (int i = 0; i < brvSetter; ++i) {
+              final DAGVertex setterVertex = this.piActor2DAGVertex.get(setterActor).get(i);
+              final DAGEdge edge = new DAGEdge();
+              this.result.addEdge(setterVertex, joinVertex, edge);
+              final long setterRate = Long.parseLong(fifo.getDelay().getSetterPort().getPortRateExpression().getExpressionString());
+              edge.setWeight(new DAGDefaultEdgePropertyType((int) setterRate));
+            }
+            sourceConnections.get(0).setSource(joinVertex);
+          } else {
+            final DAGVertex setterVertex = this.piActor2DAGVertex.get(setterActor).get(0);
+            sourceConnections.get(0).setSource(setterVertex);
+          }
+        } else {
+          final DAGInitVertex vertex = new DAGInitVertex();
+          vertex.setId(fifoID + "_Init");
+          this.result.addVertex(vertex);
+          sourceConnections.get(0).setSource(vertex);
+        }
+        for (int i = 1; i < nbSourceRepetitions; ++i) {
+          final DAGVertex vertex = this.piActor2DAGVertex.get(sourceActor).get(i - 1);
+          sourceConnections.add(new SourceConnection(vertex, sourcePort, sourceProduction));
+        }
+      }
+    }
+
+    // Deals with the sink part
+    if (sinkActor instanceof InterfaceActor) {
+      if (sinkConsumption == sourceProduction * nbSourceRepetitions) {
+        // final DAGEdge edge = outputIfs.get(sinkActor);
+        // sinkConnections.add(new SinkConnection(edge, sinkConsumption));
+      } else {
+        final long nDroppedTokens = sourceProduction * nbSourceRepetitions - sinkConsumption;
+        long nEnd = (long) Math.ceil((double) nDroppedTokens / sourceProduction);
+        nbSinkRepetitions = nEnd + 1;
+        for (int i = 0; i < nEnd; ++i) {
+          final SinkConnection sinkConnection = new SinkConnection(new DAGEdge(), sourceProduction);
+          final DAGVertex targetVertex = this.piActor2DAGVertex.get(sinkActor).get(i);
+          sinkConnection.getEdge().setPropertyValue(StaticPiMM2SrDAGVisitor.TARGET_VERTEX, targetVertex);
+          sinkConnections.add(sinkConnection);
+        }
+        sinkConnections.get((int) nEnd - 1).setCons(nDroppedTokens - (nEnd - 1) * sourceProduction);
+        // final DAGEdge edge = outputIfs.get(sinkActor);
+        // sinkConnections.add(new SinkConnection(edge, sinkConsumption));
+      }
+    } else if (sinkActor instanceof AbstractActor) {
+      for (int i = 0; i < nbSinkRepetitions; ++i) {
+        final SinkConnection sinkConnection = new SinkConnection(new DAGEdge(), sinkConsumption);
+        final DAGVertex targetVertex = this.piActor2DAGVertex.get(sinkActor).get(i);
+        sinkConnection.getEdge().setPropertyValue(StaticPiMM2SrDAGVisitor.TARGET_VERTEX, targetVertex);
+        sinkConnections.add(sinkConnection);
+      }
+      if (nDelays == 0) {
+        if (sinkNeedEnd) {
+          final DAGEndVertex endVertex = new DAGEndVertex();
+          endVertex.setId(fifoID + "_End");
+          this.result.addVertex(endVertex);
+          final SinkConnection sinkConnection = new SinkConnection(new DAGEdge(), sourceProduction - sinkConsumption * nbSinkRepetitions);
+          sinkConnection.getEdge().setPropertyValue(StaticPiMM2SrDAGVisitor.TARGET_VERTEX, endVertex);
+          sinkConnections.add(sinkConnection);
+          nbSinkRepetitions++;
+        }
+      } else {
+        // We have at least one edge coming from the delay
+        final SinkConnection sinkConnection = new SinkConnection(new DAGEdge(), nDelays);
+        sinkConnections.add(sinkConnection);
+        // We ge the last "delay provider"
+        final DAGVertex sourceVertex = sourceConnections.get(sourceConnections.size() - 1).getSource();
+        // this.piActor2DAGVertex.get(sourceActor).get((int) nbSourceRepetitions - 1);
+        if (fifo.getDelay().hasGetterActor()) {
+          final AbstractActor getterActor = fifo.getDelay().getGetterActor();
+          final Integer brvGetter = this.brv.get(getterActor);
+          if (brvGetter > 1) {
+            // We have to add a fork actor
+            final DAGForkVertex forkVertex = addForkVertex(forkIDString, forkID);
+            this.result.addVertex(forkVertex);
+            // The delay provider actor is connected the fork actor which will provide the getter actor instances
+            this.result.addEdge(sourceVertex, forkVertex, sinkConnection.getEdge());
+            for (int i = 0; i < brvGetter; ++i) {
+              // We add an edge in the DAG going from the fork vertex to the correct instance of the getter actor
+              final DAGVertex getterVertex = this.piActor2DAGVertex.get(getterActor).get(i);
+              final DAGEdge edge = new DAGEdge();
+              this.result.addEdge(forkVertex, getterVertex, edge);
+              // Now we add our sink connection to the list
+              final long getterRate = Long.parseLong(fifo.getDelay().getGetterPort().getPortRateExpression().getExpressionString());
+              // sinkConnections.add(new SinkConnection(edge, getterRate));
+            }
+          } else {
+            // In this case, the last instance of the delay provider actor is directly connected to the getter actor
+            final DAGVertex getterVertex = this.piActor2DAGVertex.get(getterActor).get(0);
+            this.result.addEdge(sourceVertex, getterVertex, sinkConnection.getEdge());
+          }
+        } else {
+          // In this case we have to get rid of the data tokens
+          final DAGEndVertex endVertex = new DAGEndVertex();
+          endVertex.setId(fifoID + "_End");
+          this.result.addVertex(endVertex);
+          this.result.addEdge(sourceVertex, endVertex, sinkConnection.getEdge());
+          // sinkConnection.getEdge().setPropertyValue(StaticPiMM2SrDAGVisitor.TARGET_VERTEX, endVertex);
+        }
+        nbSinkRepetitions++;
+      }
+    }
+
+    // Now deal with all these connections
+    long curSourceToken = sourceConnections.get(0).getProd();
+    long curSinkToken = sinkConnections.get(0).getCons();
+    int sourceIndex = 0;
+    int sinkIndex = 0;
+
+    String cur_fork_id = forkIDString + Integer.toString(-1);
+    String cur_join_id = joinIDString + Integer.toString(-1);
+
+    // Iterating until all consumptions are "satisfied".
+    while ((sourceIndex < (nbSourceRepetitions - 1)) || (sinkIndex < (nbSinkRepetitions - 1))) {
+      final DAGVertex sourceVertex = sourceConnections.get(sourceIndex).getSource();
+      // Production/consumption rate for the current source/target.
+      final long restToken = Math.min(curSourceToken, curSinkToken);
+
+      // Adding explode / collapse vertices if required.
+      if ((restToken < curSourceToken) && !sourceVertex.getId().equals(cur_fork_id)) {
+        // Adding an explode vertex.
+        final DAGForkVertex forkVertex = addForkVertex(forkIDString, forkID);
+        this.result.addVertex(forkVertex);
+        cur_fork_id = forkVertex.getId();
+        // Adding an edge between the source and the fork.
+        this.result.addEdge(sourceVertex, forkVertex, new DAGEdge());
+        this.result.getEdge(sourceVertex, forkVertex).setWeight(new DAGDefaultEdgePropertyType((int) curSourceToken));
+        // this.result.setEdgeWeight(this.result.getEdge(sourceVertex, forkVertex), (double) curSourceToken);
+        sourceConnections.get(sourceIndex).setSource(forkVertex);
+      }
+
+      DAGVertex targetVertex = (DAGVertex) sinkConnections.get(sinkIndex).getEdge().getPropertyBean().getValue(StaticPiMM2SrDAGVisitor.TARGET_VERTEX);
+      if ((restToken < curSinkToken) && targetVertex != null && !targetVertex.getId().equals(cur_join_id)) {
+        // Adding a collapse vertex.
+        final DAGJoinVertex joinVertex = addJoinVertex(joinIDString, joinID);
+        this.result.addVertex(joinVertex);
+        cur_join_id = joinVertex.getId();
+        // Replacing the sink vertex by the join vertex in the array of sinks.
+        this.result.addEdge(joinVertex, targetVertex, sinkConnections.get(sinkIndex).getEdge());
+        sinkConnections.get(sinkIndex).getEdge().setWeight(new DAGDefaultEdgePropertyType((int) sinkConnections.get(sinkIndex).getCons()));
+        // this.result.setEdgeWeight(sinkConnections.get(sinkIndex).getEdge(), (double) sinkConnections.get(sinkIndex).getCons());
+
+        sinkConnections.get(sinkIndex).setEdge(new DAGEdge());
+        sinkConnections.get(sinkIndex).getEdge().setPropertyValue(StaticPiMM2SrDAGVisitor.TARGET_VERTEX, joinVertex);
+        targetVertex = joinVertex;
+      }
+
+      // Creating the new edge between normal vertices or between a normal and an explode / collapse one.
+      // Reassign target vertex as it may have changed
+      this.result.addEdge(sourceConnections.get(sourceIndex).getSource(), targetVertex, sinkConnections.get(sinkIndex).getEdge());
+      sinkConnections.get(sinkIndex).getEdge().setWeight(new DAGDefaultEdgePropertyType((int) restToken));
+      // this.result.setEdgeWeight(sinkConnections.get(sinkIndex).getEdge(), (double) restToken);
+
+      // Update the number of token produced/consumed by the current source/target.
+      curSourceToken -= restToken;
+      curSinkToken -= restToken;
+
+      if (curSourceToken == 0 && sourceIndex < (sourceConnections.size() - 1)) {
+        sourceIndex++;
+        curSourceToken = sourceConnections.get(sourceIndex).getProd();
+      }
+      if (curSinkToken == 0 && sinkIndex < (sinkConnections.size() - 1)) {
+        sinkIndex++;
+        curSinkToken = sinkConnections.get(sinkIndex).getCons();
+      }
+    }
+
+    // while (sourceIndex < nbSourceRepetitions
+    // || sinkIndex < nbSinkRepetitions) {
+    // // Production/consumption rate for the current source/target.
+    // int rest = std::min(curSourceToken, curSinkToken); // Minimum.
+    //
+    // /*
+    // * Adding explode/implode vertices if required.
+    // */
+    //
+    // if (rest < curSinkToken &&
+    // snkConnections[sinkIndex].edge->getSnk() &&
+    // (snkConnections[sinkIndex].edge->getSnk()->getId() != joinIx)){ // Type == 0 indicates it is a normal vertex.
+    //
+    // // Adding an join vertex.
+    // SRDAGVertex *join_vertex = topSrdag->addJoin(MAX_IO_EDGES);
+    // joinIx = join_vertex->getId();
+    //
+    // // Replacing the sink vertex by the join vertex in the array of sources.
+    // snkConnections[sinkIndex].edge->connectSrc(join_vertex, 0);
+    // snkConnections[sinkIndex].edge->setRate(snkConnections[sinkIndex].cons);
+    // snkConnections[sinkIndex].edge = topSrdag->addEdge();
+    // snkConnections[sinkIndex].edge->connectSnk(join_vertex, 0);
+    //
+    // }else if(snkConnections[sinkIndex].edge->getSnk()
+    // && snkConnections[sinkIndex].edge->getSnk()->getId() == joinIx){
+    // /* Adding the new edge in join*/
+    // SRDAGVertex *join_vertex = snkConnections[sinkIndex].edge->getSnk();
+    // snkConnections[sinkIndex].edge = topSrdag->addEdge();
+    // snkConnections[sinkIndex].edge->connectSnk(join_vertex, join_vertex->getNConnectedInEdge());
+    // }
+    //
+    // //Creating the new edge between normal vertices or between a normal and an explode/implode one.
+    // SRDAGEdge* srcEdge;
+    // if((srcEdge = srcConnections[sourceIndex].src->getOutEdge(srcConnections[sourceIndex].portIx)) != 0){
+    // snkConnections[sinkIndex].edge->setAlloc(srcEdge->getAlloc());
+    // snkConnections[sinkIndex].edge->setAllocIx(srcEdge->getAllocIx());
+    // snkConnections[sinkIndex].edge->setRate(srcEdge->getRate());
+    //
+    // topSrdag->delEdge(srcEdge);
+    // snkConnections[sinkIndex].edge->connectSrc(
+    // srcConnections[sourceIndex].src,
+    // srcConnections[sourceIndex].portIx
+    // );
+    // }else{
+    // snkConnections[sinkIndex].edge->connectSrc(
+    // srcConnections[sourceIndex].src,
+    // srcConnections[sourceIndex].portIx
+    // );
+    // snkConnections[sinkIndex].edge->setRate(rest);
+    // }
+    //
+    // }
+
     return true;
   }
 
@@ -286,22 +587,22 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseDataInputInterface(final DataInputInterface dii) {
-    final SDFSourceInterfaceVertex v = new SDFSourceInterfaceVertex();
-    this.piVx2SDFVx.put(dii, v);
-    v.setName(dii.getName());
-
-    caseAbstractActor(dii);
+    // final SDFSourceInterfaceVertex v = new SDFSourceInterfaceVertex();
+    // this.piVx2SDFVx.put(dii, v);
+    // v.setName(dii.getName());
+    //
+    // caseAbstractActor(dii);
 
     return true;
   }
 
   @Override
   public Boolean caseDataOutputInterface(final DataOutputInterface doi) {
-    final SDFSinkInterfaceVertex v = new SDFSinkInterfaceVertex();
-    this.piVx2SDFVx.put(doi, v);
-    v.setName(doi.getName());
-
-    caseAbstractActor(doi);
+    // final SDFSinkInterfaceVertex v = new SDFSinkInterfaceVertex();
+    // this.piVx2SDFVx.put(doi, v);
+    // v.setName(doi.getName());
+    //
+    // caseAbstractActor(doi);
 
     return true;
   }
@@ -382,120 +683,6 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     return true;
   }
 
-  @Override
-  public Boolean caseBroadcastActor(final BroadcastActor actor) {
-    final DAGBroadcastVertex vertex = new DAGBroadcastVertex();
-    pimm2srdag(actor, vertex);
-    // Check the good use of the broadcast
-    final DataInputPort dataInputPort = actor.getDataInputPorts().get(0);
-    final Expression portRateExpression = dataInputPort.getPortRateExpression();
-    final long cons = Long.parseLong(portRateExpression.getExpressionString());
-    for (final DataOutputPort out : actor.getDataOutputPorts()) {
-      final Expression outPortRateExpression = out.getPortRateExpression();
-      final long prod = Long.parseLong(outPortRateExpression.getExpressionString());
-      if (prod != cons) {
-        WorkflowLogger.getLogger()
-            .warning("Warning: Broadcast have different production/consumption: prod(" + Long.toString(prod) + ") != cons(" + Long.toString(cons) + ")");
-      }
-    }
-    // add a dag vertex to the single rate graph
-    dag.addVertex(dagVertex);
-
-    // Handle input parameters as instance arguments
-    for (final ConfigInputPort p : ba.getConfigInputPorts()) {
-      final ISetter setter = p.getIncomingDependency().getSetter();
-      if (setter instanceof Parameter) {
-        final Parameter param = (Parameter) setter;
-        final Argument arg = new Argument(p.getName());
-        arg.setValue(param.getName());
-        bv.getArguments().addArgument(arg);
-      }
-    }
-
-    caseAbstractActor(ba);
-
-    // this.result.addVertex(bv);
-    return true;
-  }
-
-  @Override
-  public Boolean caseJoinActor(final JoinActor ja) {
-    final SDFJoinVertex jv = new SDFJoinVertex();
-    this.piVx2SDFVx.put(ja, jv);
-    // Handle vertex's name
-    jv.setName(ja.getName());
-    // Handle vertex's path inside the graph hierarchy
-    jv.setInfo(ja.getVertexPath());
-
-    // Handle input parameters as instance arguments
-    for (final ConfigInputPort p : ja.getConfigInputPorts()) {
-      final ISetter setter = p.getIncomingDependency().getSetter();
-      if (setter instanceof Parameter) {
-        final Parameter param = (Parameter) setter;
-        final Argument arg = new Argument(p.getName());
-        arg.setValue(param.getName());
-        jv.getArguments().addArgument(arg);
-      }
-    }
-
-    caseAbstractActor(ja);
-
-    // this.result.addVertex(jv);
-    return true;
-  }
-
-  @Override
-  public Boolean caseForkActor(final ForkActor fa) {
-    final SDFForkVertex fv = new SDFForkVertex();
-    this.piVx2SDFVx.put(fa, fv);
-    // Handle vertex's name
-    fv.setName(fa.getName());
-    // Handle vertex's path inside the graph hierarchy
-    fv.setInfo(fa.getVertexPath());
-
-    // Handle input parameters as instance arguments
-    for (final ConfigInputPort p : fa.getConfigInputPorts()) {
-      final ISetter setter = p.getIncomingDependency().getSetter();
-      if (setter instanceof Parameter) {
-        final Parameter param = (Parameter) setter;
-        final Argument arg = new Argument(p.getName());
-        arg.setValue(param.getName());
-        fv.getArguments().addArgument(arg);
-      }
-    }
-
-    caseAbstractActor(fa);
-
-    // this.result.addVertex(fv);
-    return true;
-  }
-
-  @Override
-  public Boolean caseRoundBufferActor(final RoundBufferActor rba) {
-    final SDFRoundBufferVertex rbv = new SDFRoundBufferVertex();
-    this.piVx2SDFVx.put(rba, rbv);
-    // Handle vertex's name
-    rbv.setName(rba.getName());
-    // Handle vertex's path inside the graph hierarchy
-    rbv.setInfo(rba.getVertexPath());
-
-    // Handle input parameters as instance arguments
-    for (final ConfigInputPort p : rba.getConfigInputPorts()) {
-      final ISetter setter = p.getIncomingDependency().getSetter();
-      if (setter instanceof Parameter) {
-        final Parameter param = (Parameter) setter;
-        final Argument arg = new Argument(p.getName());
-        arg.setValue(param.getName());
-        rbv.getArguments().addArgument(arg);
-      }
-    }
-
-    caseAbstractActor(rba);
-
-    // this.result.addVertex(rbv);
-    return true;
-  }
-
   /**
    * Gets the result.
    *
@@ -568,21 +755,15 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean casePiGraph(final PiGraph pg) {
-    if (pg.getActors().isEmpty()) {
+  public Boolean casePiGraph(final PiGraph graph) {
+    if (graph.getActors().isEmpty()) {
       return false;
-    }
-    final DAGVertex vertex = this.result.getVertex(pg.getVertexPath() + "_" + Integer.toString(this.hCounter));
-    if (vertex == null) {
-      throw new RuntimeException("Failed to convert PiMM 2 SR-DAG.\nVertex [" + pg.getVertexPath() + "_" + Integer.toString(this.hCounter) + "] not found.");
-    } else {
-      // Remove the hierarchical vertex from the DAG
-      // We are going to replace it with its contents
-      this.result.removeVertex(vertex);
     }
 
     // Add SR-Vertices
-    for (final AbstractActor actor : pg.getActors()) {
+    // TODO handle interface actors (round buffer)
+    for (final AbstractActor actor : graph.getActors()) {
+      this.piActor2DAGVertex.put(actor, new ArrayList<>());
       for (int i = 0; i < this.brv.get(actor); ++i) {
         this.aCounter = i;
         // Treat hierarchical graphs as normal actors
@@ -594,19 +775,112 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
         doSwitch(actor);
       }
     }
-
-    // Link SR-Vertices
-
-    // Go check hierarchical graphs
-    for (final PiGraph g : pg.getChildrenGraphs()) {
-      // We have to iterate for every number of hierarchical graph we populated
-      // TODO this is not optimal. Find better approach
-      for (int i = 0; i < this.brv.get(g); ++i) {
-        this.hCounter = i;
-        doSwitch(g);
+    // Check for top graph condition
+    if (graph.getContainingGraph() != null) {
+      final String name = graph.getVertexPath() + "_" + Integer.toString(this.hCounter);
+      final DAGVertex vertex = this.result.getVertex(name);
+      if (vertex == null) {
+        throw new RuntimeException("Failed to convert PiMM 2 SR-DAG.\nVertex [" + name + "] not found.");
+      } else {
+        // Remove the hierarchical vertex from the DAG
+        // We are going to replace it with its contents
+        this.result.removeVertex(vertex);
       }
     }
+
+    // Link SR-Vertices
+    for (final Fifo fifo : graph.getFifos()) {
+      doSwitch(fifo);
+    }
+
+    // Go check hierarchical graphs
+    // for (final PiGraph g : graph.getChildrenGraphs()) {
+    // // We have to iterate for every number of hierarchical graph we populated
+    // // TODO this is not optimal. Find better approach
+    //
+    // // TODO create the inputIF and outputIf needed for Julien implem
+    // for (int i = 0; i < this.brv.get(g); ++i) {
+    // this.hCounter = i;
+    // doSwitch(g);
+    // }
+    // }
     return true;
+  }
+
+  /**
+   * The Class SourceConnection.
+   */
+  private class SourceConnection {
+    private DAGVertex source;
+    private long      prod;
+    private DataPort  port;
+
+    public SourceConnection() {
+      // Empty constructor
+    }
+
+    public SourceConnection(final DAGVertex source, final DataPort port, final long prod) {
+      this.source = source;
+      this.prod = prod;
+      this.port = port;
+    }
+
+    public void setSource(final DAGVertex vertex) {
+      source = vertex;
+    }
+
+    public DAGVertex getSource() {
+      return source;
+    }
+
+    public String getSourceID() {
+      return this.source.getId();
+    }
+
+    public void setProd(final long p) {
+      this.prod = p;
+    }
+
+    public void setPort(final DataPort port) {
+      this.port = port;
+    }
+
+    public long getProd() {
+      return this.prod;
+    }
+  }
+
+  /**
+   * The Class TargetConnection.
+   */
+  private class SinkConnection {
+    private DAGEdge edge;
+    private long    cons;
+
+    public SinkConnection() {
+      // Empty constructor
+    }
+
+    public SinkConnection(final DAGEdge edge, final long cons) {
+      this.edge = edge;
+      this.cons = cons;
+    }
+
+    public void setEdge(final DAGEdge edge) {
+      this.edge = edge;
+    }
+
+    public DAGEdge getEdge() {
+      return this.edge;
+    }
+
+    public void setCons(final long c) {
+      this.cons = c;
+    }
+
+    public long getCons() {
+      return this.cons;
+    }
   }
 
 }
