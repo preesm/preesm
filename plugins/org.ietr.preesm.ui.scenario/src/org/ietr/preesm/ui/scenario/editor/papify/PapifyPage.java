@@ -147,10 +147,14 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     if (!this.scenario.getPapifyConfigManager().getXmlFileURL().equals("")) {
       final String xmlFullPath = getFullXmlPath(this.scenario.getPapifyConfigManager().getXmlFileURL());
-      parseXmlData(xmlFullPath);
-      if (!this.papiEvents.getComponents().isEmpty()) {
+      if (!xmlFullPath.equals("")) {
+        parseXmlData(xmlFullPath);
+      }
+      if (this.papiEvents != null && !this.papiEvents.getComponents().isEmpty()) {
         updateTables();
         firePropertyChange(IEditorPart.PROP_DIRTY);
+      } else {
+        this.scenario.setPapifyConfigManager(new PapifyConfigManager());
       }
     }
 
@@ -384,14 +388,16 @@ public class PapifyPage extends FormPage implements IPropertyListener {
   private String getFullXmlPath(String xmlfile) {
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-    final String fullPath;
+    String fullPath = "";
 
     WorkspaceUtils.updateWorkspace();
 
     final Path path = new Path(xmlfile);
     final IFile file = workspace.getRoot().getFile(path);
 
-    fullPath = file.getLocation().toString();
+    if (file.exists()) {
+      fullPath = file.getLocation().toString();
+    }
     return fullPath;
   }
 
