@@ -137,6 +137,12 @@
                   object="org.ietr.preesm.core.scenario.PreesmScenario">
             </input>
          </inputs>
+         <outputs>
+            <output
+                  id="DAG"
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </output>
+         </outputs>
       </task>
    </extension>
 
