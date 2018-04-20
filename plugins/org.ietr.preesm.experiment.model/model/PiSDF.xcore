@@ -343,10 +343,10 @@ class DelayActor extends NonExecutableActor, RefinementContainer {
 	}
 	// Return the actor that set / get the delay
 	op AbstractActor getSetterActor() {
-		return Optional.ofNullable(dataInputPort.containingActor).orElse(null)
+		return Optional.ofNullable(dataInputPort.incomingFifo.sourcePort.containingActor).orElse(null)
 	}
 	op AbstractActor getGetterActor() {
-		return Optional.ofNullable(dataOutputPort.containingActor).orElse(null)
+		return Optional.ofNullable(dataOutputPort.outgoingFifo.targetPort.containingActor).orElse(null)
 	}	
 	op ConfigInputPort lookupConfigInputPortConnectedWithParameter(Parameter p) {
 		return linkedDelay.lookupConfigInputPortConnectedWithParameter(p) 
@@ -569,6 +569,22 @@ class Delay extends Configurable, ExpressionHolder {
 	
 	op boolean isDynamic() {
 		return hasSetterActor || hasGetterActor
+	}
+	
+	op AbstractActor getGetterActor() {
+		return actor.getterActor
+	}
+	
+	op AbstractActor getSetterActor() {
+		return actor.setterActor
+	}
+	
+	op DataInputPort getGetterPort() {
+		return Optional.ofNullable(actor.dataOutputPort.outgoingFifo.targetPort).orElse(null)
+	}
+	
+	op DataOutputPort getSetterPort() {
+		return Optional.ofNullable(actor.dataInputPort.incomingFifo.sourcePort).orElse(null)
 	}
 	 
 	op unique void setName(String newName) {
