@@ -316,6 +316,14 @@ public class PreesmScenario {
   }
 
   /**
+   * Sets the new PapifyConfig group manager.
+   *
+   */
+  public void setPapifyConfigManager(PapifyConfigManager manager) {
+    this.papifyconfiggroupmanager = manager;
+  }
+
+  /**
    * Sets the scenario URL.
    *
    * @param scenarioURL

@@ -27,6 +27,13 @@ public class PapiEventSet {
 
   private List<PapiEvent> events;
 
+  /**
+   *
+   */
+  public boolean containsEvent(PapiEvent event) {
+    return events.contains(event);
+  }
+
   @Override
   public boolean equals(Object comparer) {
 

@@ -79,6 +79,7 @@ import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.papi.PapiConfigParser;
 import org.ietr.preesm.core.scenario.papi.PapiEventInfo;
+import org.ietr.preesm.core.scenario.papi.PapifyConfigManager;
 import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 import org.ietr.preesm.utils.files.WorkspaceUtils;
@@ -363,7 +364,8 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     papiEvents = papiParser.parse(file.getLocation().toString());
 
-    if (papiEvents.getComponents() != null) {
+    if (!text.getText().equals(this.scenario.getPapifyConfigManager().getXmlFileURL()) && papiEvents.getComponents() != null) {
+      this.scenario.setPapifyConfigManager(new PapifyConfigManager());
       this.scenario.getPapifyConfigManager().setExcelFileURL(text.getText());
       this.componentTableViewer.setInput(this.papiEvents);
       this.componentTableViewer.refresh();

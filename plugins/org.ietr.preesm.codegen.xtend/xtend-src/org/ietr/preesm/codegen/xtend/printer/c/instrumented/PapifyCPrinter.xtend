@@ -50,6 +50,12 @@ import org.ietr.dftools.architecture.slam.Design
 import org.ietr.dftools.architecture.slam.ComponentInstance
 import org.ietr.preesm.core.scenario.papi.PapifyConfigManager
 import org.ietr.preesm.core.scenario.papi.PapifyConfig
+import org.ietr.preesm.core.scenario.papi.PapiComponent
+import org.ietr.preesm.core.scenario.papi.PapiEvent
+import java.util.Set
+import org.ietr.preesm.core.scenario.papi.PapiEventModifier
+import java.util.ArrayList
+import java.util.LinkedHashSet
 
 /**
  * This printer currently papify C code for X86 cores..
@@ -71,14 +77,16 @@ class PapifyCPrinter extends CPrinter {
 	/**
 	 * variables to configure the papification
 	 */			
-		int instance;
 		var int code_set_size;
-		var String all_event_names;
-		var String timing_active;
-		var boolean papifying = false;
-		PapifyConfigManager papifyConfig = this.engine.scenario.papifyConfigManager;
+		var boolean eventMonitoring = false;
+		var boolean timingMonitoring = false;
+		PapifyConfigManager papifyConfig;
 		PapifyConfig config;
-
+		PapiComponent comp;
+		Set<PapiEvent> events;
+		Set<PapiEvent> includedEvents = new LinkedHashSet();
+      	PapiEvent timingEvent = new PapiEvent();
+      	List<PapiEventModifier> modifTimingList = new ArrayList();
 	/**
 	 * Add a required library for Papify utilization
 	 *
@@ -107,55 +115,50 @@ class PapifyCPrinter extends CPrinter {
 	 */
 	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {
 		
-		
-		
-		var Design slamDesign = this.engine.archi;		
-		var List<ComponentInstance> compInstances = slamDesign.componentInstances; 
-	
-		var ComponentInstance pe;			
-		var String[] event_names;
-		
-		var int search_index;
+		timingEvent.setName("Timing");
+	    timingEvent.setDesciption("Event to time through PAPI_get_time()");
+	    timingEvent.setIndex(9999);
+	    timingEvent.setModifiers(modifTimingList);
+	    
+		if(this.engine.scenario.papifyConfigManager !== null){
+			papifyConfig = this.engine.scenario.papifyConfigManager;
+		}
+		var String event_names = "";
 		
 		// for each block				
 		for (Block block : printerBlocks){
 			
+			//The configuration is performed per core --> All core actors have the same config 
+			
 			config = papifyConfig.getCorePapifyConfigGroups(block.name);
-			//TBD
+			event_names = "";
+			includedEvents = new LinkedHashSet();
+
 			//Get component
 			//Get events
-			//Check if events are available in the component
-			//Set the parameters
-			
-			// associate the block with its instance in the slam model
-			search_index = 0;
-			instance = 0;
-			for(ComponentInstance searching : compInstances){
-				if(searching.instanceName.equals(block.name)){
-					instance = search_index;
-				}
-				else{
-					search_index++;
-				}
+			if(config !== null){
+				comp = config.getPAPIComponent();
+				events = config.getPAPIEvents();
 			}
-			pe = compInstances.get(instance);
-			
-			// get the events to be monitored and/or if there will be only a timing measurement
-			all_event_names = org.ietr.preesm.core.architecture.util.DesignTools.getParameter(pe, "PAPI_AVAIL_EVENTS");
-			timing_active = org.ietr.preesm.core.architecture.util.DesignTools.getParameter(pe, "PAPI_TIMING");
-						
-			// configure Papify
-			if(all_event_names !== null && all_event_names != ""){					
-				event_names = all_event_names.split(",");	
-				code_set_size = event_names.length;
-				papifying = true;
-			}else if(timing_active == "1"){
-				code_set_size = 0;
-				papifying = true;
-			}
-			
+			if(config !== null){
+			//Checks if the events are available in the component and discards the rest
+				for(PapiEvent singleEvent : events){	
+					if(singleEvent.equals(timingEvent)){
+						timingMonitoring = true;
+					}else if(comp.containsEvent(singleEvent)){
+						includedEvents.add(singleEvent);
+						eventMonitoring = true;
+						if(event_names.equals("")){
+							event_names = singleEvent.getName();
+						}else{
+							event_names = event_names.concat("," + singleEvent.getName());
+						}
+					}
+				}
+				code_set_size = includedEvents.length;
+			}						
 			// if the core instance is being papified
-			if(papifying == true){									
+			if(eventMonitoring == true || timingMonitoring == true){									
 				for(CodeElt elts : (block as CoreBlock).loopBlock.codeElts){	
 					//For all the FunctionCalls within the main code loop
 					if(elts.eClass.name.equals("FunctionCall")){
@@ -172,7 +175,7 @@ class PapifyCPrinter extends CPrinter {
 						block.definitions.add({
 							var const = CodegenFactory.eINSTANCE.createConstantString
 							const.name = "component_name".concat((elts as FunctionCall).actorName)
-							const.value = block.name
+							const.value = comp.id
 							const.comment = "Instance name"
 							const
 						})
@@ -195,7 +198,7 @@ class PapifyCPrinter extends CPrinter {
 						block.definitions.add({
 							var const = CodegenFactory.eINSTANCE.createConstantString
 							const.name = "all_event_names"
-							const.value = all_event_names
+							const.value = event_names
 							const.comment = "Papify events"
 							const
 						})
@@ -218,11 +221,15 @@ class PapifyCPrinter extends CPrinter {
 							const.name = "Papified"
 							//We cannot read the value of the parameter, so timing and event monitoring
 							//is distinguished using the type of variable
-							if(code_set_size == 0){
-								const.type = "int"						
+							if(timingMonitoring){
+								if(!eventMonitoring){
+									const.type = "int"				// Only timing			
+								}else{		
+							 		const.type = "boolean"			// Both timing and event monitoring						
+								}					
 							}
-							else{
-							 	const.type = "boolean"							
+							else{	
+							 	const.type = "float"				// Only events				
 							}
 							const.value = 1		
 							const
@@ -231,7 +238,8 @@ class PapifyCPrinter extends CPrinter {
 					}
 				}
 			}
-			papifying = false;
+			eventMonitoring = false;
+			timingMonitoring = false;		
 		}		
 		super.preProcessing(printerBlocks, allBlocks)
 	}
@@ -257,13 +265,22 @@ class PapifyCPrinter extends CPrinter {
 				// Monitoring Stop for «functionCall.actorName»
 				event_stop_papify_timing(papify_actions_«functionCall.actorName»);
 				event_write_file(papify_actions_«functionCall.actorName»);
-			«ELSE»
+			«ENDIF»
+			«IF functionCall.parameters.get(functionCall.parameters.length-1).type == "boolean"»
 				// Monitoring Start for «functionCall.actorName»
 				event_start(papify_actions_«functionCall.actorName», 0);
 				event_start_papify_timing(papify_actions_«functionCall.actorName»);
 				«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-1) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 				// Monitoring Stop for «functionCall.actorName»
 				event_stop_papify_timing(papify_actions_«functionCall.actorName»);
+				event_stop(papify_actions_«functionCall.actorName», 0);
+				event_write_file(papify_actions_«functionCall.actorName»);
+			«ENDIF»
+			«IF functionCall.parameters.get(functionCall.parameters.length-1).type == "float"»
+				// Monitoring Start for «functionCall.actorName»
+				event_start(papify_actions_«functionCall.actorName», 0);
+				«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-1) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
+				// Monitoring Stop for «functionCall.actorName»
 				event_stop(papify_actions_«functionCall.actorName», 0);
 				event_write_file(papify_actions_«functionCall.actorName»);
 			«ENDIF»

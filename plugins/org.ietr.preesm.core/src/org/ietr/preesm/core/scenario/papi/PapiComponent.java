@@ -41,6 +41,19 @@ public class PapiComponent {
     this.eventSets = eventSets;
   }
 
+  /**
+   *
+   */
+  public boolean containsEvent(PapiEvent event) {
+    boolean decision = false;
+    for (PapiEventSet eventSet : this.eventSets) {
+      if (eventSet.containsEvent(event)) {
+        decision = true;
+      }
+    }
+    return decision;
+  }
+
   private String             id;
   private PapiComponentType  type;
   private int                index;
