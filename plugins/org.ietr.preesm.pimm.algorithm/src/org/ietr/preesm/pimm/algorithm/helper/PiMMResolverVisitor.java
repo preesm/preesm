@@ -12,6 +12,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
+import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
@@ -95,12 +96,27 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
     }
   }
 
-  private static void parsePortJEP(final AbstractActor actor, final LinkedHashMap<String, Long> portValues) {
+  private static void parseJEP(final AbstractActor actor, final LinkedHashMap<String, Long> portValues) {
     // Init the JEP parser associated with the actor
     final JEP jepParser = initJep(portValues);
     // Iterate over all data ports of the actor and resolve their rates
     for (final DataPort dp : actor.getAllDataPorts()) {
-      resolvePortRate(dp, jepParser);
+      try {
+        resolveExpression(dp.getPortRateExpression(), jepParser);
+      } catch (ParseException eparse) {
+        throw new RuntimeException("Failed to parse rate for [" + dp.getId() + "] port: " + eparse.getMessage());
+      }
+    }
+
+    // Parse delays as well
+    if (actor instanceof PiGraph) {
+      for (final Delay d : ((PiGraph) actor).getDelays()) {
+        try {
+          resolveExpression(d.getSizeExpression(), jepParser);
+        } catch (ParseException eparse) {
+          throw new RuntimeException("Failed to parse expression for delay [" + d.getName() + "]: " + eparse.getMessage());
+        }
+      }
     }
   }
 
@@ -109,26 +125,21 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
    * If rate expression is a constant, then parsing is ignored since it is already done. <br>
    * This implementation uses benefit of the fact that the parser is initialized once for a given actor.
    *
-   * @param port
-   *          the data port to evaluate
+   * @param expression
+   *          the expression to evaluate
    * @param actorParser
    *          parser of the actor containing the port
    * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  private static void resolvePortRate(final DataPort port, final JEP actorParser) {
-    final Expression portRateExpression = port.getPortRateExpression();
+  private static void resolveExpression(final Expression expression, final JEP actorParser) throws ParseException {
     try {
       // If we can parse it, then it is constant
-      Long.parseLong(portRateExpression.getExpressionString());
+      Long.parseLong(expression.getExpressionString());
     } catch (final NumberFormatException e) {
-      try {
-        // Now, we deal with expression
-        long rate = parsePortExpression(actorParser, portRateExpression.getExpressionString());
-        portRateExpression.setExpressionString(Long.toString(rate));
-      } catch (ParseException eparse) {
-        throw new RuntimeException("Failed to parse rate for [" + port.getId() + "] port: " + e.getMessage());
-      }
+      // Now, we deal with expression
+      long rate = parsePortExpression(actorParser, expression.getExpressionString());
+      expression.setExpressionString(Long.toString(rate));
     }
   }
 
@@ -191,7 +202,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
       final Port lookupPort = actor.lookupConfigInputPortConnectedWithParameter(p);
       portValues.put(lookupPort.getName(), parameterValues.get(p));
     }
-    parsePortJEP(actor, portValues);
+    parseJEP(actor, portValues);
     return true;
   }
 
@@ -203,7 +214,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
     for (final Parameter p : actor.getInputParameters()) {
       portValues.put(p.getName(), parameterValues.get(p));
     }
-    parsePortJEP(actor, portValues);
+    parseJEP(actor, portValues);
     return true;
   }
 
@@ -216,7 +227,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
     for (final Parameter p : actor.getInputParameters()) {
       portValues.put(p.getName(), parameterValues.get(p));
     }
-    parsePortJEP(actor, portValues);
+    parseJEP(actor, portValues);
     return true;
   }
 
@@ -244,7 +255,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
       final Port lookupPort = graph.lookupConfigInputPortConnectedWithParameter(p);
       portValues.put(lookupPort.getName(), parameterValues.get(p));
     }
-    parsePortJEP(graph, portValues);
+    parseJEP(graph, portValues);
 
     // Switch on child subgraphs
     for (final PiGraph g : graph.getChildrenGraphs()) {
