@@ -45,6 +45,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
@@ -170,21 +171,32 @@ public class TimingManager {
     final SDFAbstractVertex sdfVertex = dagVertex.getCorrespondingSDFVertex();
     final List<Timing> vals = new ArrayList<>();
 
-    if (sdfVertex.getGraphDescription() == null) {
-      for (final Timing timing : this.timings) {
+    final AbstractGraph<?, ?> graphDescription = sdfVertex.getGraphDescription();
+
+    final AbstractGraph<?, ?> dagGraphDesc = dagVertex.getGraphDescription();
+    if (dagGraphDesc != graphDescription) {
+      throw new RuntimeException("Florian ton idée est mauvaise");
+    }
+
+    if (graphDescription == null) {
+      for (final Timing timing : this.getTimings()) {
         if (timing.getVertexId().equals(sdfVertex.getId())) {
           vals.add(timing);
         }
       }
-    } else if (sdfVertex.getGraphDescription() instanceof SDFGraph) {
-      // Adds timings for all operators in hierarchy if they can be
-      // calculated
-      // from underlying vertices
-      for (final String opDefId : operatorDefinitionIds) {
-        final Timing t = generateVertexTimingFromHierarchy(dagVertex.getCorrespondingSDFVertex(), opDefId);
-        if (t != null) {
-          vals.add(t);
+    } else {
+      if (graphDescription instanceof SDFGraph) {
+        // Adds timings for all operators in hierarchy if they can be
+        // calculated
+        // from underlying vertices
+        for (final String opDefId : operatorDefinitionIds) {
+          final Timing t = generateVertexTimingFromHierarchy(dagVertex.getCorrespondingSDFVertex(), opDefId);
+          if (t != null) {
+            vals.add(t);
+          }
         }
+      } else {
+        throw new UnsupportedOperationException("Could not et timings for " + graphDescription);
       }
     }
 
