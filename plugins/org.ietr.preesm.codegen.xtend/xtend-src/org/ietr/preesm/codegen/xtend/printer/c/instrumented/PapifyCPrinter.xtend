@@ -302,7 +302,7 @@ class PapifyCPrinter extends CPrinter {
 			«IF functionCall.parameters.get(functionCall.parameters.length-1).type == "float"»
 				// Monitoring Start for «functionCall.actorName»
 				event_start(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-2) as Constant).getValue»);
-				«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-12) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
+				«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-2) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 				// Monitoring Stop for «functionCall.actorName»
 				event_stop(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-2) as Constant).getValue»);
 				event_write_file(papify_actions_«functionCall.actorName»);
