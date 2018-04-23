@@ -19,7 +19,7 @@ PREESM Changelog
 * Add helper methods in PiGraph;
 * Minor refactoring;
 * Update RCPTT POM Configuration;
-
+* Have travis retry 3 times to fetch dependencies;
 
 ### Bug fix
 * Fix codegen for MS Visual Studio to support thread affinity;
