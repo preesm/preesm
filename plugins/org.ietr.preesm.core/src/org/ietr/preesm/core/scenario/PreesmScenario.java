@@ -421,7 +421,8 @@ public class PreesmScenario {
    *           the core exception
    */
 
-  public void update(final boolean algorithmChange, final boolean architectureChange) throws InvalidModelException, CoreException {
+  public void update(final boolean algorithmChange, final boolean architectureChange)
+      throws InvalidModelException, CoreException {
     // If the architecture changes, operator ids, operator defintion ids and
     // com node ids are no more valid (they are extracted from the
     // architecture)
@@ -462,7 +463,7 @@ public class PreesmScenario {
     // If the algorithm or the architecture changes, timings and constraints
     // are no more valid (they depends on both algo and archi)
     if (algorithmChange || architectureChange) {
-      this.timingmanager.clear();
+      this.timingmanager.getTimings().clear();
       this.constraintgroupmanager.update();
     }
   }

@@ -286,14 +286,6 @@ public class TimingManager {
   }
 
   /**
-   * Removes the all.
-   */
-  public void removeAll() {
-
-    this.timings.clear();
-  }
-
-  /**
    * Gets the excel file URL.
    *
    * @return the excel file URL
@@ -399,13 +391,7 @@ public class TimingManager {
    *          the new default mem cpy speed
    */
   public void setDefaultMemCpySpeed(final String operatorDef) {
-    putMemcpySpeed(new MemCopySpeed(operatorDef, TimingManager.DEFAULTMEMCPYSETUPTIME, TimingManager.DEFAULTMEMCPYTIMEPERUNIT));
-  }
-
-  /**
-   * Clear.
-   */
-  public void clear() {
-    getTimings().clear();
+    putMemcpySpeed(
+        new MemCopySpeed(operatorDef, TimingManager.DEFAULTMEMCPYSETUPTIME, TimingManager.DEFAULTMEMCPYTIMEPERUNIT));
   }
 }
