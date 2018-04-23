@@ -49,11 +49,13 @@ jobs:
     - stage : Validate POM
       script: mvn -U -e -C -B -V -P doUpdateSite -Dtycho.mode=maven help:help -q
     - stage : Fetch Maven Dependencies
-      script: mvn -U -e -C -B -V -P doUpdateSite -Dtycho.mode=maven dependency:go-offline
+      script:
+        - ./releng/fetch-rcptt-runner.sh
+        - travis_retry mvn -U -e -C -B -V -P doUpdateSite -Dtycho.mode=maven dependency:go-offline
     - stage : Run Checkstyle (offline)
       script: mvn --offline -e -C -B -V -Dtycho.mode=maven checkstyle:check
     - stage : Fetch P2 Dependencies
-      script: mvn -U -e -C -B -V -P doUpdateSite help:help
+      script: travis_retry mvn -U -e -C -B -V -P doUpdateSite help:help
     - stage : Clean (offline)
       script: mvn --offline -e -C -B -V -P doUpdateSite -Dtycho.mode=maven clean
     - stage : Build code and package (offline, no tests)

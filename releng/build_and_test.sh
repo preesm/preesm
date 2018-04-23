@@ -39,7 +39,8 @@ time (
   echo ""
   echo "Fetch Maven Deps"
   echo ""
-  (cd $DIR && mvn -U -e -C -B -V -P doUpdateSite -Dtycho.mode=maven dependency:go-offline) || exit 2
+  (cd $DIR && ./releng/fetch-rcptt-runner.sh) || exit 21
+  (cd $DIR && mvn -U -e -C -B -V -P doUpdateSite -Dtycho.mode=maven dependency:go-offline) || exit 22
   #CHECKSTYLE (offline)
   echo ""
   echo "Checkstyle (offline)"

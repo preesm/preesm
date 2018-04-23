@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
@@ -421,7 +421,8 @@ public class PreesmScenario {
    *           the core exception
    */
 
-  public void update(final boolean algorithmChange, final boolean architectureChange) throws InvalidModelException, CoreException {
+  public void update(final boolean algorithmChange, final boolean architectureChange)
+      throws InvalidModelException, CoreException {
     // If the architecture changes, operator ids, operator defintion ids and
     // com node ids are no more valid (they are extracted from the
     // architecture)
@@ -462,7 +463,7 @@ public class PreesmScenario {
     // If the algorithm or the architecture changes, timings and constraints
     // are no more valid (they depends on both algo and archi)
     if (algorithmChange || architectureChange) {
-      this.timingmanager.clear();
+      this.timingmanager.getTimings().clear();
       this.constraintgroupmanager.update();
     }
   }

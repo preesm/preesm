@@ -43,7 +43,6 @@ import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.func.ICreate;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
-import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
@@ -112,13 +111,11 @@ public class CreateParameterFeature extends AbstractCreateFeature {
 
     // create Parameter
     final Parameter newParameter = PiMMUserFactory.instance.createParameter();
-    final Expression expr = PiMMUserFactory.instance.createExpression();
-    newParameter.setExpression(expr);
     newParameter.setName(newParameterName);
     // this parameter
 
     // Add new parameter to the graph.
-    if (graph.getParameters().add(newParameter)) {
+    if (graph.addParameter(newParameter)) {
       this.hasDoneChanges = true;
     }
 

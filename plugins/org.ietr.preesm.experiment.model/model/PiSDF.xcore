@@ -45,6 +45,37 @@ type int wraps int
 type long wraps long
 type double wraps double
 
+/*************************************
+ *
+ * Generic Graph Definition
+ *
+ **************************************/
+
+class Vertex {
+	container Graph containingGraph opposite vertices
+	refers Edge[] outEdges opposite source
+	refers Edge[] inEdges opposite target
+}
+
+class Edge {
+	container Graph containingGraph opposite edges
+	refers Vertex source opposite outEdges
+	refers Vertex target opposite inEdges
+}
+
+class Graph {
+	contains Vertex[] vertices opposite containingGraph
+	contains Edge[] edges opposite containingGraph
+}
+
+
+/*************************************
+ *
+ * PiSDF Specification
+ *
+ **************************************/
+
+
 interface Parameterizable {
 	op unique Parameter[] getInputParameters()
 	op boolean isLocallyStatic() {
@@ -54,17 +85,19 @@ interface Parameterizable {
 }
 
 class Expression {
-	refers ExpresionHolder holder opposite expression
+	refers ExpressionHolder holder opposite expression
 	String expressionString = "0"
 }
 
-interface ExpresionHolder extends Parameterizable {
+interface ExpressionHolder extends Parameterizable {
 	contains Expression expression opposite holder
 }
 
-interface AbstractVertex {
+interface AbstractVertex extends Vertex {
 	String name
-	op PiGraph getContainingGraph()
+	op PiGraph getContainingPiGraph() {
+		return super.containingGraph as PiGraph
+	}
 	op unique Port[] getAllPorts()
 	op Port lookupPort(String portName) {
 		return getAllPorts().filterNull.findFirst [
@@ -73,7 +106,7 @@ interface AbstractVertex {
 	}
 	op String getVertexPath() {
 		val actorName = name;
-		return Optional.ofNullable(containingGraph).map[vertexPath + "/" + actorName].orElse(actorName)
+		return Optional.ofNullable(containingPiGraph).map[it|it.vertexPath + "/" + actorName].orElse(actorName)
 	}
 }
 
@@ -83,7 +116,11 @@ abstract class Configurable extends AbstractVertex, Parameterizable {
 		return configInputPorts.filterNull.map[incomingDependency].filterNull.map[setter].filter(Parameter).toEList.
 			unmodifiableView
 	}
-	op Port lookupPortConnectedWithParameter(Parameter parameter) {
+	/*
+	 * Lookup within all the ConfigInputPort and return the first one connected to the given
+	 * Parameter, or null if the actor is not connected to it.
+	 */
+	op ConfigInputPort lookupConfigInputPortConnectedWithParameter(Parameter parameter) {
 		return Optional.ofNullable(configInputPorts.filterNull.map[incomingDependency].filterNull.findFirst [
 			it.setter === parameter
 		]).map[getter].orElse(null)
@@ -100,7 +137,6 @@ abstract class AbstractActor extends Configurable {
 	contains DataInputPort[] dataInputPorts
 	contains DataOutputPort[] dataOutputPorts
 	contains ConfigOutputPort[] configOutputPorts
-	container PiGraph containingGraph opposite actors
 	op unique DataPort[] getAllDataPorts() {
 		return (dataInputPorts + dataOutputPorts).toEList.unmodifiableView
 	}
@@ -118,11 +154,34 @@ abstract class AbstractActor extends Configurable {
 	}
 }
 
-class PiGraph extends AbstractActor {
-	contains AbstractActor[] actors opposite containingGraph
-	contains Fifo[] fifos opposite containingGraph
-	contains Parameter[] parameters opposite containingGraph
-	contains Dependency[] dependencies
+class PiGraph extends AbstractActor, Graph {
+
+	op unique boolean addActor(AbstractActor actor) {
+		vertices.add(actor)
+	}
+	op unique boolean addParameter(Parameter parameter) {
+		vertices.add(parameter)
+	}
+	op unique boolean addFifo(Fifo fifo) {
+		edges.add(fifo)
+	}
+	op unique boolean addDependency(Dependency dependency) {
+		edges.add(dependency)
+	}
+
+	op unique Parameter[] getParameters(){
+		return vertices.filter(Parameter).toEList.unmodifiableView
+	}
+	op unique AbstractActor[] getActors(){
+		return vertices.filter(AbstractActor).toEList.unmodifiableView
+	}
+	op unique Fifo[] getFifos() {
+		return edges.filter(Fifo).toEList.unmodifiableView
+	}
+	op unique Dependency[] getDependencies() {
+		return edges.filter(Dependency).toEList.unmodifiableView
+	}
+
 	op unique String[] getActorsNames() {
 		return actors.map[name].unmodifiableView
 	}
@@ -135,6 +194,9 @@ class PiGraph extends AbstractActor {
 	op unique Parameter[] getAllParameters() {
 		return (parameters + childrenGraphs.map[allParameters].flatten).toEList.unmodifiableView
 	}
+	op unique AbstractActor[] getOnlyActors(){
+		return (actors.filter(it|!(it instanceof PiGraph))).toEList.unmodifiableView
+	}
 	op unique PiGraph[] getChildrenGraphs() {
 		return (actors.filter(PiGraph) + actorsWithRefinement.filter[isHierarchical].map[subGraph]).toEList.
 			unmodifiableView
@@ -143,7 +205,7 @@ class PiGraph extends AbstractActor {
 		return (actors + childrenGraphs.map[allActors].flatten).toEList.unmodifiableView
 	}
 	op Parameter lookupParameterGivenGraph(String parameterName , String graphName) {
-		return allParameters.findFirst[it.name == parameterName && it.containingGraph.name == graphName]
+		return allParameters.findFirst[it.name == parameterName && (it.containingGraph as PiGraph).name == graphName]
 	}
 	op AbstractVertex lookupVertex(String vertexName) {
 		return (actors + parameters).findFirst[it.name == vertexName]
@@ -193,14 +255,17 @@ class ForkActor extends ExecutableActor {
 class RoundBufferActor extends ExecutableActor {
 }
 
+abstract class NonExecutableActor extends AbstractActor {
+}
+
 interface Port {
 	String name
 	op PortKind getKind()
 }
 
-abstract class DataPort extends Port, ExpresionHolder {
+abstract class DataPort extends Port, ExpressionHolder {
 	op Expression getPortRateExpression() {
-		return expression
+		return getExpression
 	}
 	PortMemoryAnnotation ^annotation
 	op AbstractActor getContainingActor() {
@@ -219,6 +284,7 @@ abstract class DataPort extends Port, ExpresionHolder {
 		val String portName = Optional.ofNullable(name).filter[!it.isEmpty()].map["." + it].orElse("");
 		return actorName + portName;
 	}
+	op Fifo getFifo()
 }
 
 class DataInputPort extends DataPort {
@@ -226,12 +292,18 @@ class DataInputPort extends DataPort {
 	op PortKind getKind() {
 		return PortKind.DATA_INPUT
 	}
+	op Fifo getFifo() {
+		return incomingFifo;
+	}
 }
 
 class DataOutputPort extends DataPort {
 	refers Fifo outgoingFifo opposite sourcePort
 	op PortKind getKind() {
 		return PortKind.DATA_OUTPUT
+	}
+	op Fifo getFifo() {
+		return outgoingFifo;
 	}
 }
 
@@ -253,10 +325,9 @@ class ConfigOutputPort extends DataOutputPort , ISetter {
 	}
 }
 
-class Fifo {
+class Fifo extends Edge {
 	refers DataOutputPort sourcePort opposite outgoingFifo
 	refers DataInputPort targetPort opposite incomingFifo
-	container PiGraph containingGraph opposite fifos
 	contains Delay delay opposite containingFifo
 	String ^type = "void"
 
@@ -338,11 +409,10 @@ class CHeaderRefinement extends Refinement {
 	}
 }
 
-class Parameter extends Configurable, ISetter, ExpresionHolder {
+class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 	op Expression getValueExpression() {
 		return expression
 	}
-	container PiGraph containingGraph opposite parameters
 	op boolean isLocallyStatic() {
 		// a parameter is static if all its setters are static (or it has no setter)
 		return getConfigInputPorts().map[incomingDependency].map[setter].forall[isLocallyStatic]
@@ -355,7 +425,7 @@ class Parameter extends Configurable, ISetter, ExpresionHolder {
 	}
 }
 
-class Dependency {
+class Dependency extends Edge {
 	refers ISetter setter opposite outgoingDependencies
 	refers ConfigInputPort getter opposite incomingDependency
 }
@@ -365,14 +435,14 @@ interface ISetter {
 	op boolean isLocallyStatic()
 }
 
-class Delay extends Configurable, ExpresionHolder {
+class Delay extends Configurable, ExpressionHolder {
 	op Expression getSizeExpression() {
-		return expression
+		return getExpression
 	}
 	container readonly Fifo containingFifo opposite delay
 
 	op PiGraph getContainingGraph() {
-		return containingFifo.containingGraph
+		return containingFifo.containingGraph as PiGraph
 	}
 }
 

@@ -45,7 +45,7 @@
   <parent>
     <groupId>org.ietr.preesm</groupId>
     <artifactId>org.ietr.preesm.parent</artifactId>
-    <version>2.10.0</version>
+    <version>2.11.0</version>
     <relativePath>..</relativePath>
   </parent>
 
@@ -63,7 +63,7 @@
         <repository>
           <id>RCPTT</id>
           <layout>p2</layout>
-          <url>http://download.eclipse.org/rcptt/release/2.2.0/repository/</url>
+          <url>${eclipse.mirror}/rcptt/release/${rcptt-version}/repository/</url>
         </repository>
 
         <repository>

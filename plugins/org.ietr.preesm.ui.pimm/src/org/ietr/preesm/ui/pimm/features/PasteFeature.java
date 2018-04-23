@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -248,7 +248,7 @@ public class PasteFeature extends AbstractPasteFeature {
 
     final ConfigInputPort copiedConfigInputPort = lookupConfigInputPort(copiedParameterizable, getter);
     final Dependency newDep = PiMMUserFactory.instance.createDependency(copiedSetter, copiedConfigInputPort);
-    targetPiGraph.getDependencies().add(newDep);
+    targetPiGraph.addDependency(newDep);
     addGraphicalRepresentationForDependency(newDep);
   }
 
@@ -294,7 +294,7 @@ public class PasteFeature extends AbstractPasteFeature {
     for (final Entry<Fifo, Fifo> fifoEntry : newFifos.entrySet()) {
       final Fifo copiedFifo = fifoEntry.getKey();
       final Fifo originalFifo = fifoEntry.getValue();
-      piGraph.getFifos().add(copiedFifo);
+      piGraph.addFifo(copiedFifo);
 
       final FreeFormConnection addGraphicalRepresentationForFifo = addGraphicalRepresentationForFifo(copiedFifo);
 

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2015)
@@ -98,7 +98,7 @@ public class AddFifoFeature extends AbstractAddFeature {
     // in a real scenario the business model would have its own resource
     if (addedFifo.eResource() == null) {
       final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
-      graph.getFifos().add(addedFifo);
+      graph.addFifo(addedFifo);
     }
 
     // CONNECTION WITH POLYLINE

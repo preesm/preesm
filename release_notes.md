@@ -1,6 +1,31 @@
 PREESM Changelog
 ================
 
+## Release version 2.11.0
+*2018.04.23*
+
+### New Feature
+
+### Changes
+* Add a generic graph definition in PiSDF (graph, vertices, edges);
+* Add helper oeprations in PiSDF;
+* Update release process to upload releases on GitHub;
+* Update operation with more accurate name and return type;
+* Fix typos;
+* Update checkstyle to 8.8 (and maven plugin to 3.0.0);
+* Update Coding policies (now ignores javadoc @throw issues);
+* Add script to prefetch RCPTT Runner from different mirror (faster);
+* Add NonExecutableActors;
+* Add helper methods in PiGraph;
+* Minor refactoring;
+* Update RCPTT POM Configuration;
+* Have travis retry 3 times to fetch dependencies;
+* Force DFTools to 1.4.1+;
+
+### Bug fix
+* Fix codegen for MS Visual Studio to support thread affinity;
+* Properly rethrow exception when parser is failing instead of returning null;
+
 ## Release version 2.10.0
 *2018.03.29*
 

@@ -3,6 +3,7 @@
  *
  * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -44,13 +45,13 @@ import org.ietr.preesm.experiment.model.expression.functions.GeometricSum;
 import org.ietr.preesm.experiment.model.expression.functions.MaxFunction;
 import org.ietr.preesm.experiment.model.expression.functions.MinFunction;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
-import org.ietr.preesm.experiment.model.pimm.ExpresionHolder;
 import org.ietr.preesm.experiment.model.pimm.Expression;
+import org.ietr.preesm.experiment.model.pimm.ExpressionHolder;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.Port;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
@@ -126,7 +127,7 @@ public class ExpressionEvaluator {
 
   private static Map<String, Number> addInputParameterValues(final Expression expression) {
     final Map<String, Number> result = new LinkedHashMap<>();
-    final ExpresionHolder holder = expression.getHolder();
+    final ExpressionHolder holder = expression.getHolder();
     final EList<Parameter> inputParameters = holder.getInputParameters();
     for (final Parameter param : inputParameters) {
       final Expression valueExpression = param.getValueExpression();
@@ -139,7 +140,7 @@ public class ExpressionEvaluator {
         if (containingActor instanceof InterfaceActor) {
           result.put(param.getName(), value);
         } else {
-          final Port configInputPort = containingActor.lookupPortConnectedWithParameter(param);
+          final ConfigInputPort configInputPort = containingActor.lookupConfigInputPortConnectedWithParameter(param);
           final String name = configInputPort.getName();
           result.put(name, value);
         }

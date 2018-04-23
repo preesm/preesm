@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2013)
@@ -98,8 +98,8 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
    * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
 
@@ -156,8 +156,9 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
     } else {
       final GMLMapperDAGImporter importer = new GMLMapperDAGImporter();
 
-      ((PreesmScenario) outputs.get("scenario")).getConstraintGroupManager().removeAll();
-      ((PreesmScenario) outputs.get("scenario")).getTimingManager().removeAll();
+      final PreesmScenario preesmScenario = (PreesmScenario) outputs.get("scenario");
+      preesmScenario.getConstraintGroupManager().removeAll();
+      preesmScenario.getTimingManager().getTimings().clear();
 
       try {
         final Path relativePath = new Path(dagFileName);
@@ -165,7 +166,6 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 
         WorkspaceUtils.updateWorkspace();
         SDFGraph graph = importer.parse(file.getContents(), dagFileName);
-        graph = importer.parse(file.getContents(), dagFileName);
 
         for (final SDFAbstractVertex dagV : graph.vertexSet()) {
           final String vName = (String) dagV.getPropertyBean().getValue("name");
@@ -175,8 +175,8 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
           final ComponentInstance op = DesignTools.getComponentInstance((Design) outputs.get("architecture"), opName);
 
           if ((sdfV != null) && (op != null) && (op.getComponent() instanceof Operator)) {
-            ((PreesmScenario) outputs.get("scenario")).getConstraintGroupManager().addConstraint(opName, sdfV);
-            ((PreesmScenario) outputs.get("scenario")).getTimingManager().setTiming(sdfV.getName(), op.getComponent().getVlnv().getName(),
+            preesmScenario.getConstraintGroupManager().addConstraint(opName, sdfV);
+            preesmScenario.getTimingManager().setTiming(sdfV.getName(), op.getComponent().getVlnv().getName(),
                 Long.parseLong(timeStr));
           }
         }

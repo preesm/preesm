@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
@@ -110,7 +110,7 @@ public class CreateForkActorFeature extends AbstractCreateFeature {
     newActor.setName(newActorName);
 
     // Add new actor to the graph.
-    if (graph.getActors().add(newActor)) {
+    if (graph.addActor(newActor)) {
       this.hasDoneChanges = true;
     }
 
