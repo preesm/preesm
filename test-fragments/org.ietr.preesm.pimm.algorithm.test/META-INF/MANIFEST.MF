@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm PISDF graph transformation plug-in Tests
 Bundle-SymbolicName: org.ietr.preesm.pimm.algorithm.test
-Bundle-Version: 2.10.0.qualifier
+Bundle-Version: 2.11.0
 Bundle-Vendor: IETR/INSA Rennes
 Fragment-Host: org.ietr.preesm.pimm.algorithm
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
