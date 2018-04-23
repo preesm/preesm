@@ -130,7 +130,7 @@
               <strictHostKeyChecking>false</strictHostKeyChecking>
               <mode>send</mode>
               <localPath>${project.build.directory}/deploy/${project.version}/</localPath>
-              <remotePath>/releases/</remotePath>
+              <remotePath>/releases/${project.version}/</remotePath>
             </configuration>
             <goals>
               <goal>sftp-transfert</goal>
