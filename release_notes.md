@@ -20,6 +20,7 @@ PREESM Changelog
 * Minor refactoring;
 * Update RCPTT POM Configuration;
 * Have travis retry 3 times to fetch dependencies;
+* Force DFTools to 1.4.1+;
 
 ### Bug fix
 * Fix codegen for MS Visual Studio to support thread affinity;
