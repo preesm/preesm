@@ -8,6 +8,7 @@ PREESM Changelog
 
 ### Changes
 * Update coding policies to 1.2.4 (fix line split);
+* Update DFTools to 1.5.0+;
 
 ### Bug fix
 
