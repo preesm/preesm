@@ -56,6 +56,8 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
 import org.ietr.preesm.mapper.model.MapperDAG;
+import org.ietr.preesm.mapper.model.MapperEdgeFactory;
+import org.ietr.preesm.mapper.model.MapperVertexFactory;
 
 /**
  * @author farresti
@@ -71,6 +73,10 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
   /** The result. */
   // SRDAG graph created from the outer graph
   private MapperDAG result;
+
+  // The factories
+  private final MapperVertexFactory vertexFactory;
+  private final MapperEdgeFactory   edgeFactory;
 
   /** Basic repetition vector of the graph */
   private Map<AbstractVertex, Integer> brv;
@@ -98,6 +104,8 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
   public StaticPiMM2SrDAGVisitor(final MapperDAG dag, Map<AbstractVertex, Integer> brv) {
     this.result = dag;
     this.brv = brv;
+    this.vertexFactory = MapperVertexFactory.getInstance();
+    this.edgeFactory = new MapperEdgeFactory();
   }
 
   /**
@@ -117,10 +125,13 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     vertex.setId(Integer.toString(aCounter));
     // Set Repetition vector to 1 since it is a single rate vertex
     vertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
+
+    vertex.setTime(new DAGDefaultVertexPropertyType(0));
+    // vertex.setNbRepeat(new DAGDefaultVertexPropertyType(0));
   }
 
-  private DAGJoinVertex addJoinVertex(final String fixID, Integer joinID) {
-    final DAGJoinVertex joinVertex = new DAGJoinVertex();
+  private DAGVertex addJoinVertex(final String fixID, Integer joinID) {
+    final DAGVertex joinVertex = this.vertexFactory.createVertex(DAGJoinVertex.DAG_JOIN_VERTEX);
     final String id = fixID + joinID.toString();
     joinVertex.setId(id);
     joinVertex.setName(id);
@@ -129,8 +140,8 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     return joinVertex;
   }
 
-  private DAGForkVertex addForkVertex(final String fixID, Integer forkID) {
-    final DAGForkVertex forkVertex = new DAGForkVertex();
+  private DAGVertex addForkVertex(final String fixID, Integer forkID) {
+    final DAGVertex forkVertex = this.vertexFactory.createVertex(DAGForkVertex.DAG_FORK_VERTEX);
     final String id = fixID + forkID.toString();
     forkVertex.setId(id);
     forkVertex.setName(id);
@@ -146,7 +157,8 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseAbstractActor(final AbstractActor actor) {
-    final DAGVertex vertex = new DAGVertex();
+    final DAGVertex vertex = this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX);
+    // new DAGVertex();
     // Set default properties from the PiMM actor
     pimm2srdag(actor, vertex);
     // Add the vertex to the DAG
@@ -162,7 +174,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseActor(final Actor actor) {
-    final DAGVertex vertex = new DAGVertex();
+    final DAGVertex vertex = this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX);
     // Set default properties from the PiMM actor
     pimm2srdag(actor, vertex);
     // Handle path to memory script of the vertex
@@ -182,7 +194,9 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseBroadcastActor(final BroadcastActor actor) {
-    final DAGBroadcastVertex vertex = new DAGBroadcastVertex();
+    // final DAGBroadcastVertex vertex = new DAGBroadcastVertex();
+    final DAGVertex vertex = this.vertexFactory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
+
     pimm2srdag(actor, vertex);
     // Check the good use of the broadcast
     final DataInputPort dataInputPort = actor.getDataInputPorts().get(0);
@@ -192,8 +206,8 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
       final Expression outPortRateExpression = out.getPortRateExpression();
       final long prod = Long.parseLong(outPortRateExpression.getExpressionString());
       if (prod != cons) {
-        WorkflowLogger.getLogger()
-            .warning("Warning: Broadcast have different production/consumption: prod(" + Long.toString(prod) + ") != cons(" + Long.toString(cons) + ")");
+        WorkflowLogger.getLogger().warning("Warning: Broadcast [" + actor.getVertexPath() + "] have different production/consumption: prod("
+            + Long.toString(prod) + ") != cons(" + Long.toString(cons) + ")");
       }
     }
     // Add the vertex to the DAG
@@ -204,7 +218,8 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseJoinActor(final JoinActor actor) {
-    final DAGJoinVertex vertex = new DAGJoinVertex();
+    // final DAGJoinVertex vertex = new DAGJoinVertex();
+    final DAGVertex vertex = this.vertexFactory.createVertex(DAGJoinVertex.DAG_JOIN_VERTEX);
     pimm2srdag(actor, vertex);
     // Check Join use
     if (actor.getDataOutputPorts().size() > 1) {
@@ -218,7 +233,8 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseForkActor(final ForkActor actor) {
-    final DAGForkVertex vertex = new DAGForkVertex();
+    // final DAGForkVertex vertex = new DAGForkVertex();
+    final DAGVertex vertex = this.vertexFactory.createVertex(DAGForkVertex.DAG_FORK_VERTEX);
     pimm2srdag(actor, vertex);
     // Check Fork use
     if (actor.getDataInputPorts().size() > 1) {
@@ -310,8 +326,10 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
         nbSourceRepetitions = nBroadcast;
         // If we have left over tokens, we need to get rid of them
         sinkNeedEnd = !perfectBroadcast;
-        DAGBroadcastVertex vertex = new DAGBroadcastVertex();
-        this.result.addEdge(sourceVertex, vertex, new DAGEdge());
+        // DAGBroadcastVertex vertex = new DAGBroadcastVertex();
+        DAGVertex vertex = this.vertexFactory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
+        // this.result.addEdge(sourceVertex, vertex, new DAGEdge());
+        this.result.addEdge(sourceVertex, vertex);
         for (int i = 0; i < nBroadcast; ++i) {
           final SourceConnection sourceConnection = new SourceConnection();
           sourceConnection.setSource(vertex);
@@ -335,12 +353,11 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
           sourceConnections.get(0).setProd(nDelays);
           if (brvSetter > 1) {
             // We have to add a join actor
-            final DAGJoinVertex joinVertex = addJoinVertex(joinIDString, joinID);
+            final DAGVertex joinVertex = addJoinVertex(joinIDString, joinID);
             this.result.addVertex(joinVertex);
             for (int i = 0; i < brvSetter; ++i) {
               final DAGVertex setterVertex = this.piActor2DAGVertex.get(setterActor).get(i);
-              final DAGEdge edge = new DAGEdge();
-              this.result.addEdge(setterVertex, joinVertex, edge);
+              final DAGEdge edge = this.result.addEdge(setterVertex, joinVertex);
               final long setterRate = Long.parseLong(fifo.getDelay().getSetterPort().getPortRateExpression().getExpressionString());
               edge.setWeight(new DAGDefaultEdgePropertyType((int) setterRate));
             }
@@ -350,7 +367,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
             sourceConnections.get(0).setSource(setterVertex);
           }
         } else {
-          final DAGInitVertex vertex = new DAGInitVertex();
+          final DAGVertex vertex = this.vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX);
           vertex.setId(fifoID + "_Init");
           this.result.addVertex(vertex);
           sourceConnections.get(0).setSource(vertex);
@@ -390,7 +407,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
       }
       if (nDelays == 0) {
         if (sinkNeedEnd) {
-          final DAGEndVertex endVertex = new DAGEndVertex();
+          final DAGVertex endVertex = this.vertexFactory.createVertex(DAGEndVertex.DAG_END_VERTEX);
           endVertex.setId(fifoID + "_End");
           this.result.addVertex(endVertex);
           final SinkConnection sinkConnection = new SinkConnection(new DAGEdge(), sourceProduction - sinkConsumption * nbSinkRepetitions);
@@ -400,7 +417,8 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
         }
       } else {
         // We have at least one edge coming from the delay
-        final SinkConnection sinkConnection = new SinkConnection(new DAGEdge(), nDelays);
+        final SinkConnection sinkConnection = new SinkConnection();
+        sinkConnection.setCons(nDelays);
         sinkConnections.add(sinkConnection);
         // We ge the last "delay provider"
         final DAGVertex sourceVertex = sourceConnections.get(sourceConnections.size() - 1).getSource();
@@ -410,30 +428,30 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
           final Integer brvGetter = this.brv.get(getterActor);
           if (brvGetter > 1) {
             // We have to add a fork actor
-            final DAGForkVertex forkVertex = addForkVertex(forkIDString, forkID);
+            final DAGVertex forkVertex = addForkVertex(forkIDString, forkID);
             this.result.addVertex(forkVertex);
             // The delay provider actor is connected the fork actor which will provide the getter actor instances
-            this.result.addEdge(sourceVertex, forkVertex, sinkConnection.getEdge());
+            sinkConnection.setEdge(this.result.addEdge(sourceVertex, forkVertex));
             for (int i = 0; i < brvGetter; ++i) {
               // We add an edge in the DAG going from the fork vertex to the correct instance of the getter actor
               final DAGVertex getterVertex = this.piActor2DAGVertex.get(getterActor).get(i);
-              final DAGEdge edge = new DAGEdge();
-              this.result.addEdge(forkVertex, getterVertex, edge);
+              final DAGEdge edge = this.result.addEdge(forkVertex, getterVertex);
               // Now we add our sink connection to the list
               final long getterRate = Long.parseLong(fifo.getDelay().getGetterPort().getPortRateExpression().getExpressionString());
+              edge.setWeight(new DAGDefaultEdgePropertyType((int) getterRate));
               // sinkConnections.add(new SinkConnection(edge, getterRate));
             }
           } else {
             // In this case, the last instance of the delay provider actor is directly connected to the getter actor
             final DAGVertex getterVertex = this.piActor2DAGVertex.get(getterActor).get(0);
-            this.result.addEdge(sourceVertex, getterVertex, sinkConnection.getEdge());
+            sinkConnection.setEdge(this.result.addEdge(sourceVertex, getterVertex));
           }
         } else {
           // In this case we have to get rid of the data tokens
-          final DAGEndVertex endVertex = new DAGEndVertex();
+          final DAGVertex endVertex = this.vertexFactory.createVertex(DAGEndVertex.DAG_END_VERTEX);
           endVertex.setId(fifoID + "_End");
           this.result.addVertex(endVertex);
-          this.result.addEdge(sourceVertex, endVertex, sinkConnection.getEdge());
+          sinkConnection.setEdge(this.result.addEdge(sourceVertex, endVertex));
           // sinkConnection.getEdge().setPropertyValue(StaticPiMM2SrDAGVisitor.TARGET_VERTEX, endVertex);
         }
         nbSinkRepetitions++;
@@ -458,12 +476,12 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
       // Adding explode / collapse vertices if required.
       if ((restToken < curSourceToken) && !sourceVertex.getId().equals(cur_fork_id)) {
         // Adding an explode vertex.
-        final DAGForkVertex forkVertex = addForkVertex(forkIDString, forkID);
+        final DAGVertex forkVertex = addForkVertex(forkIDString, forkID);
         this.result.addVertex(forkVertex);
         cur_fork_id = forkVertex.getId();
         // Adding an edge between the source and the fork.
-        this.result.addEdge(sourceVertex, forkVertex, new DAGEdge());
-        this.result.getEdge(sourceVertex, forkVertex).setWeight(new DAGDefaultEdgePropertyType((int) curSourceToken));
+        final DAGEdge edge = this.result.addEdge(sourceVertex, forkVertex);
+        edge.setWeight(new DAGDefaultEdgePropertyType((int) curSourceToken));
         // this.result.setEdgeWeight(this.result.getEdge(sourceVertex, forkVertex), (double) curSourceToken);
         sourceConnections.get(sourceIndex).setSource(forkVertex);
       }
@@ -471,12 +489,12 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
       DAGVertex targetVertex = (DAGVertex) sinkConnections.get(sinkIndex).getEdge().getPropertyBean().getValue(StaticPiMM2SrDAGVisitor.TARGET_VERTEX);
       if ((restToken < curSinkToken) && targetVertex != null && !targetVertex.getId().equals(cur_join_id)) {
         // Adding a collapse vertex.
-        final DAGJoinVertex joinVertex = addJoinVertex(joinIDString, joinID);
+        final DAGVertex joinVertex = addJoinVertex(joinIDString, joinID);
         this.result.addVertex(joinVertex);
         cur_join_id = joinVertex.getId();
         // Replacing the sink vertex by the join vertex in the array of sinks.
-        this.result.addEdge(joinVertex, targetVertex, sinkConnections.get(sinkIndex).getEdge());
-        sinkConnections.get(sinkIndex).getEdge().setWeight(new DAGDefaultEdgePropertyType((int) sinkConnections.get(sinkIndex).getCons()));
+        final DAGEdge edge = this.result.addEdge(joinVertex, targetVertex);
+        edge.setWeight(new DAGDefaultEdgePropertyType((int) sinkConnections.get(sinkIndex).getCons()));
         // this.result.setEdgeWeight(sinkConnections.get(sinkIndex).getEdge(), (double) sinkConnections.get(sinkIndex).getCons());
 
         sinkConnections.get(sinkIndex).setEdge(new DAGEdge());
@@ -486,8 +504,8 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
       // Creating the new edge between normal vertices or between a normal and an explode / collapse one.
       // Reassign target vertex as it may have changed
-      this.result.addEdge(sourceConnections.get(sourceIndex).getSource(), targetVertex, sinkConnections.get(sinkIndex).getEdge());
-      sinkConnections.get(sinkIndex).getEdge().setWeight(new DAGDefaultEdgePropertyType((int) restToken));
+      final DAGEdge edge = this.result.addEdge(sourceConnections.get(sourceIndex).getSource(), targetVertex);
+      edge.setWeight(new DAGDefaultEdgePropertyType((int) restToken));
       // this.result.setEdgeWeight(sinkConnections.get(sinkIndex).getEdge(), (double) restToken);
 
       // Update the number of token produced/consumed by the current source/target.
@@ -503,59 +521,6 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
         curSinkToken = sinkConnections.get(sinkIndex).getCons();
       }
     }
-
-    // while (sourceIndex < nbSourceRepetitions
-    // || sinkIndex < nbSinkRepetitions) {
-    // // Production/consumption rate for the current source/target.
-    // int rest = std::min(curSourceToken, curSinkToken); // Minimum.
-    //
-    // /*
-    // * Adding explode/implode vertices if required.
-    // */
-    //
-    // if (rest < curSinkToken &&
-    // snkConnections[sinkIndex].edge->getSnk() &&
-    // (snkConnections[sinkIndex].edge->getSnk()->getId() != joinIx)){ // Type == 0 indicates it is a normal vertex.
-    //
-    // // Adding an join vertex.
-    // SRDAGVertex *join_vertex = topSrdag->addJoin(MAX_IO_EDGES);
-    // joinIx = join_vertex->getId();
-    //
-    // // Replacing the sink vertex by the join vertex in the array of sources.
-    // snkConnections[sinkIndex].edge->connectSrc(join_vertex, 0);
-    // snkConnections[sinkIndex].edge->setRate(snkConnections[sinkIndex].cons);
-    // snkConnections[sinkIndex].edge = topSrdag->addEdge();
-    // snkConnections[sinkIndex].edge->connectSnk(join_vertex, 0);
-    //
-    // }else if(snkConnections[sinkIndex].edge->getSnk()
-    // && snkConnections[sinkIndex].edge->getSnk()->getId() == joinIx){
-    // /* Adding the new edge in join*/
-    // SRDAGVertex *join_vertex = snkConnections[sinkIndex].edge->getSnk();
-    // snkConnections[sinkIndex].edge = topSrdag->addEdge();
-    // snkConnections[sinkIndex].edge->connectSnk(join_vertex, join_vertex->getNConnectedInEdge());
-    // }
-    //
-    // //Creating the new edge between normal vertices or between a normal and an explode/implode one.
-    // SRDAGEdge* srcEdge;
-    // if((srcEdge = srcConnections[sourceIndex].src->getOutEdge(srcConnections[sourceIndex].portIx)) != 0){
-    // snkConnections[sinkIndex].edge->setAlloc(srcEdge->getAlloc());
-    // snkConnections[sinkIndex].edge->setAllocIx(srcEdge->getAllocIx());
-    // snkConnections[sinkIndex].edge->setRate(srcEdge->getRate());
-    //
-    // topSrdag->delEdge(srcEdge);
-    // snkConnections[sinkIndex].edge->connectSrc(
-    // srcConnections[sourceIndex].src,
-    // srcConnections[sourceIndex].portIx
-    // );
-    // }else{
-    // snkConnections[sinkIndex].edge->connectSrc(
-    // srcConnections[sourceIndex].src,
-    // srcConnections[sourceIndex].portIx
-    // );
-    // snkConnections[sinkIndex].edge->setRate(rest);
-    // }
-    //
-    // }
 
     return true;
   }
@@ -754,6 +719,20 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     throw new UnsupportedOperationException();
   }
 
+  private void addVertex(final AbstractVertex actor, final Integer rv) {
+    this.piActor2DAGVertex.put(actor, new ArrayList<>());
+    for (int i = 0; i < rv; ++i) {
+      this.aCounter = i;
+      // Treat hierarchical graphs as normal actors
+      // This populate the DAG with the right amount of hierarchical instances w.r.t the BRV value
+      if (actor instanceof PiGraph) {
+        caseAbstractActor((AbstractActor) actor);
+        continue;
+      }
+      doSwitch(actor);
+    }
+  }
+
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
     if (graph.getActors().isEmpty()) {
@@ -762,19 +741,8 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
     // Add SR-Vertices
     // TODO handle interface actors (round buffer)
-    for (final AbstractActor actor : graph.getActors()) {
-      this.piActor2DAGVertex.put(actor, new ArrayList<>());
-      for (int i = 0; i < this.brv.get(actor); ++i) {
-        this.aCounter = i;
-        // Treat hierarchical graphs as normal actors
-        // This populate the DAG with the right amount of hierarchical instances w.r.t the BRV value
-        if (actor instanceof PiGraph) {
-          caseAbstractActor(actor);
-          continue;
-        }
-        doSwitch(actor);
-      }
-    }
+    this.brv.forEach((k, v) -> addVertex(k, v));
+
     // Check for top graph condition
     if (graph.getContainingGraph() != null) {
       final String name = graph.getVertexPath() + "_" + Integer.toString(this.hCounter);
