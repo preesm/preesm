@@ -33,6 +33,7 @@ PREESM Changelog
 * Update RCPTT POM Configuration;
 * Have travis retry 3 times to fetch dependencies;
 * Force DFTools to 1.4.1+;
+* Enforced use of DAG properties instead of SDF properties when conversion of an SDF graph is done
 
 ### Bug fix
 * Fix codegen for MS Visual Studio to support thread affinity;
