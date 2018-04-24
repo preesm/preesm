@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Update coding policies to 1.2.4 (fix line split);
 
 ### Bug fix
 
