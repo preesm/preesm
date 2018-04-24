@@ -245,13 +245,13 @@ class PapifyCPrinter extends CPrinter {
 							//is distinguished using the type of variable
 							if(timingMonitoring){
 								if(!eventMonitoring){
-									const.type = "int"				// Only timing			
+									const.value = 0				// Only timing			
 								}else{		
-							 		const.type = "boolean"			// Both timing and event monitoring						
+							 		const.value = 1			// Both timing and event monitoring						
 								}					
 							}
 							else{	
-							 	const.type = "float"				// Only events				
+							 	const.value = 2				// Only events				
 							}
 							const.value = 1		
 							const
@@ -281,7 +281,7 @@ class PapifyCPrinter extends CPrinter {
 	 */
 	override printFunctionCall(FunctionCall functionCall) '''
 		«IF state == PrinterState::PRINTING_LOOP_BLOCK && functionCall.parameters.get(functionCall.parameters.length-1).name.equals("Papified")»
-			«IF functionCall.parameters.get(functionCall.parameters.length-1).type == "int"»
+			«IF (functionCall.parameters.get(functionCall.parameters.length-1) as Constant).value == 0»
 				// Monitoring Start for «functionCall.actorName»
 				event_start_papify_timing(papify_actions_«functionCall.actorName»);
 				«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-2) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
@@ -289,7 +289,7 @@ class PapifyCPrinter extends CPrinter {
 				event_stop_papify_timing(papify_actions_«functionCall.actorName»);
 				event_write_file(papify_actions_«functionCall.actorName»);
 			«ENDIF»
-			«IF functionCall.parameters.get(functionCall.parameters.length-1).type == "boolean"»
+			«IF (functionCall.parameters.get(functionCall.parameters.length-1) as Constant).value == 1»
 				// Monitoring Start for «functionCall.actorName»
 				event_start(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-2) as Constant).getValue»);
 				event_start_papify_timing(papify_actions_«functionCall.actorName»);
@@ -299,7 +299,7 @@ class PapifyCPrinter extends CPrinter {
 				event_stop(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-2) as Constant).getValue»);
 				event_write_file(papify_actions_«functionCall.actorName»);
 			«ENDIF»
-			«IF functionCall.parameters.get(functionCall.parameters.length-1).type == "float"»
+			«IF (functionCall.parameters.get(functionCall.parameters.length-1) as Constant).value == 2»
 				// Monitoring Start for «functionCall.actorName»
 				event_start(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-2) as Constant).getValue»);
 				«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-2) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
