@@ -111,15 +111,15 @@ public class TimingManager {
   /**
    * Adds the timing.
    *
-   * @param sdfVertexId
-   *          the sdf vertex id
+   * @param dagVertexId
+   *          the dag vertex id
    * @param operatorDefinitionId
    *          the operator definition id
    * @return the timing
    */
-  public Timing addTiming(final String sdfVertexId, final String operatorDefinitionId) {
+  public Timing addTiming(final String dagVertexId, final String operatorDefinitionId) {
 
-    final Timing newt = new Timing(operatorDefinitionId, sdfVertexId);
+    final Timing newt = new Timing(operatorDefinitionId, dagVertexId);
     for (final Timing timing : this.timings) {
       if (timing.equals(newt)) {
         return timing;
@@ -133,29 +133,29 @@ public class TimingManager {
   /**
    * Sets the timing.
    *
-   * @param sdfVertexId
-   *          the sdf vertex id
+   * @param dagVertexId
+   *          the dag vertex id
    * @param operatorDefinitionId
    *          the operator definition id
    * @param time
    *          the time
    */
-  public void setTiming(final String sdfVertexId, final String operatorDefinitionId, final long time) {
-    addTiming(sdfVertexId, operatorDefinitionId).setTime(time);
+  public void setTiming(final String dagVertexId, final String operatorDefinitionId, final long time) {
+    addTiming(dagVertexId, operatorDefinitionId).setTime(time);
   }
 
   /**
    * Sets the timing.
    *
-   * @param sdfVertexId
-   *          the sdf vertex id
+   * @param dagVertexId
+   *          the dag vertex id
    * @param operatorDefinitionId
    *          the operator definition id
    * @param value
    *          the value
    */
-  public void setTiming(final String sdfVertexId, final String operatorDefinitionId, final String value) {
-    addTiming(sdfVertexId, operatorDefinitionId).setStringValue(value);
+  public void setTiming(final String dagVertexId, final String operatorDefinitionId, final String value) {
+    addTiming(dagVertexId, operatorDefinitionId).setStringValue(value);
   }
 
   /**
@@ -168,19 +168,13 @@ public class TimingManager {
    * @return the graph timings
    */
   public List<Timing> getGraphTimings(final DAGVertex dagVertex, final Set<String> operatorDefinitionIds) {
-    final SDFAbstractVertex sdfVertex = dagVertex.getCorrespondingSDFVertex();
     final List<Timing> vals = new ArrayList<>();
-
-    final AbstractGraph<?, ?> graphDescription = sdfVertex.getGraphDescription();
-
-    final AbstractGraph<?, ?> dagGraphDesc = dagVertex.getGraphDescription();
-    if (dagGraphDesc != graphDescription) {
-      throw new RuntimeException("Florian ton idée est mauvaise");
-    }
+    final AbstractGraph<?, ?> graphDescription = dagVertex.getGraphDescription();
+    final String id = dagVertex.getId();
 
     if (graphDescription == null) {
       for (final Timing timing : this.getTimings()) {
-        if (timing.getVertexId().equals(sdfVertex.getId())) {
+        if (timing.getVertexId().equals(id)) {
           vals.add(timing);
         }
       }
@@ -190,13 +184,14 @@ public class TimingManager {
         // calculated
         // from underlying vertices
         for (final String opDefId : operatorDefinitionIds) {
-          final Timing t = generateVertexTimingFromHierarchy(dagVertex.getCorrespondingSDFVertex(), opDefId);
+          final SDFAbstractVertex correspondingSDFVertex = dagVertex.getCorrespondingSDFVertex();
+          final Timing t = generateVertexTimingFromHierarchy(correspondingSDFVertex, opDefId);
           if (t != null) {
             vals.add(t);
           }
         }
       } else {
-        throw new UnsupportedOperationException("Could not et timings for " + graphDescription);
+        throw new UnsupportedOperationException("Could not get timings for " + graphDescription);
       }
     }
 
@@ -265,17 +260,17 @@ public class TimingManager {
   /**
    * Looks for a timing entered in scenario editor. If there is none, returns a default value
    *
-   * @param sdfVertexId
-   *          the sdf vertex id
+   * @param dagVertexId
+   *          the dag vertex id
    * @param operatorDefinitionId
    *          the operator definition id
    * @return the timing or default
    */
-  public Timing getTimingOrDefault(final String sdfVertexId, final String operatorDefinitionId) {
+  public Timing getTimingOrDefault(final String dagVertexId, final String operatorDefinitionId) {
     Timing val = null;
 
     for (final Timing timing : this.timings) {
-      if (timing.getVertexId().equals(sdfVertexId) && timing.getOperatorDefinitionId().equals(operatorDefinitionId)) {
+      if (timing.getVertexId().equals(dagVertexId) && timing.getOperatorDefinitionId().equals(operatorDefinitionId)) {
         val = timing;
       }
     }
