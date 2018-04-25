@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -87,7 +88,7 @@ public class CodegenEngine {
   private final String codegenPath;
 
   /** The code blocks. */
-  private final List<Block> codeBlocks;
+  private final Collection<Block> codeBlocks;
 
   /** The registered printers and blocks. */
   private Map<IConfigurationElement, List<Block>> registeredPrintersAndBlocks;
@@ -101,7 +102,7 @@ public class CodegenEngine {
    * Instantiates a new codegen engine.
    *
    */
-  public CodegenEngine(final String codegenPath, final List<Block> codeBlocks, final CodegenModelGenerator generator) {
+  public CodegenEngine(final String codegenPath, final Collection<Block> codeBlocks, CodegenModelGenerator generator) {
     this.codegenPath = codegenPath;
     this.codeBlocks = codeBlocks;
     this.generator = generator;
@@ -142,7 +143,6 @@ public class CodegenEngine {
 
     for (final Block b : this.codeBlocks) {
       // Create a resource
-      getScenario().getCodegenManager().getCodegenDirectory();
       final Resource resource = resSet.createResource(URI.createURI(codegenPath + b.getName() + ".codegen"));
       // Get the first model element and cast it to the right type, in
       // my example everything is hierarchical included in this first

@@ -36,27 +36,26 @@
  */
 package org.ietr.preesm.codegen.xtend.printer.c.instrumented
 
+import java.util.ArrayList
+import java.util.Collection
 import java.util.Date
+import java.util.LinkedHashSet
 import java.util.List
-import org.ietr.preesm.codegen.xtend.printer.c.CPrinter
-import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
+import java.util.Set
 import org.ietr.preesm.codegen.xtend.model.codegen.Block
-import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory
-import org.ietr.preesm.codegen.xtend.printer.PrinterState
 import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt
+import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory
+import org.ietr.preesm.codegen.xtend.model.codegen.Constant
+import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
+import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
-import org.ietr.dftools.architecture.slam.Design
-import org.ietr.dftools.architecture.slam.ComponentInstance
-import org.ietr.preesm.core.scenario.papi.PapifyConfigManager
-import org.ietr.preesm.core.scenario.papi.PapifyConfig
+import org.ietr.preesm.codegen.xtend.printer.PrinterState
+import org.ietr.preesm.codegen.xtend.printer.c.CPrinter
 import org.ietr.preesm.core.scenario.papi.PapiComponent
 import org.ietr.preesm.core.scenario.papi.PapiEvent
-import java.util.Set
 import org.ietr.preesm.core.scenario.papi.PapiEventModifier
-import java.util.ArrayList
-import java.util.LinkedHashSet
-import org.ietr.preesm.codegen.xtend.model.codegen.Constant
+import org.ietr.preesm.core.scenario.papi.PapifyConfig
+import org.ietr.preesm.core.scenario.papi.PapifyConfigManager
 
 /**
  * This printer currently papify C code for X86 cores..
@@ -77,7 +76,7 @@ class PapifyCPrinter extends CPrinter {
 		String papify_actions = "papify_actions_";
 	/**
 	 * variables to configure the papification
-	 */			
+	 */
 		var int code_set_size;
 		var int PE_id;
 		var boolean eventMonitoring = false;
@@ -107,7 +106,7 @@ class PapifyCPrinter extends CPrinter {
 	 * In the current version, the instrumentation could be configured in terms of:<br>
 	 * - Which cores are being monitored.<br>
 	 * - Monitoring only time or time and events.<br>
-	 * 
+	 *
 	 * This configuration is based on user defined parameters within the SLAM model.<br>
 	 * The results of the monitoring will be stored in a .csv file.<br>
 	 *
@@ -115,24 +114,24 @@ class PapifyCPrinter extends CPrinter {
 	 * 			List of the blocks printed by the printer. (will be
 	 * 			modified)
 	 */
-	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {
-		
+	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks) {
+
 		timingEvent.setName("Timing");
 	    timingEvent.setDesciption("Event to time through PAPI_get_time()");
 	    timingEvent.setIndex(9999);
 	    timingEvent.setModifiers(modifTimingList);
-	    
+
 		if(this.engine.scenario.papifyConfigManager !== null){
 			papifyConfig = this.engine.scenario.papifyConfigManager;
 		}
 		var String event_names = "";
-		
-		// for each block		
-		PE_id = 0;			
+
+		// for each block
+		PE_id = 0;
 		for (Block block : printerBlocks){
-			
-			//The configuration is performed per core --> All core actors have the same config 
-			
+
+			//The configuration is performed per core --> All core actors have the same config
+
 			config = papifyConfig.getCorePapifyConfigGroups(block.name);
 			event_names = "";
 			includedEvents = new LinkedHashSet();
@@ -145,7 +144,7 @@ class PapifyCPrinter extends CPrinter {
 			}
 			if(config !== null){
 			//Checks if the events are available in the component and discards the rest
-				for(PapiEvent singleEvent : events){	
+				for(PapiEvent singleEvent : events){
 					if(singleEvent.equals(timingEvent)){
 						timingMonitoring = true;
 					}else if(comp.containsEvent(singleEvent)){
@@ -162,8 +161,8 @@ class PapifyCPrinter extends CPrinter {
 			}
 			PE_id++;
 			// if the core instance is being papified
-			if(eventMonitoring == true || timingMonitoring == true){									
-				for(CodeElt elts : (block as CoreBlock).loopBlock.codeElts){	
+			if(eventMonitoring == true || timingMonitoring == true){
+				for(CodeElt elts : (block as CoreBlock).loopBlock.codeElts){
 					//For all the FunctionCalls within the main code loop
 					if(elts.eClass.name.equals("FunctionCall")){
 						//Add Papify action variable
@@ -221,7 +220,7 @@ class PapifyCPrinter extends CPrinter {
 							const.value = PE_id
 							const
 						})
-						(elts as FunctionCall).addParameter(block.definitions.get(block.definitions.length-1), PortDirection.NONE);	
+						(elts as FunctionCall).addParameter(block.definitions.get(block.definitions.length-1), PortDirection.NONE);
 						//Create a function to configure the papification
 						(block as CoreBlock).initBlock.codeElts.add({
 							var func = CodegenFactory.eINSTANCE.createFunctionCall()
@@ -235,8 +234,8 @@ class PapifyCPrinter extends CPrinter {
 							func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.INPUT)
 							func.actorName = "Papify --> configure papification of ".concat((elts as FunctionCall).actorName)
 							func
-						})				
-						//Include a parameter in each actor to point out that it will be monitored						
+						})
+						//Include a parameter in each actor to point out that it will be monitored
 						block.definitions.add({
 							var const = CodegenFactory.eINSTANCE.createConstant
 							const.comment = "Actor to be papified"
@@ -245,15 +244,15 @@ class PapifyCPrinter extends CPrinter {
 							//is distinguished using the type of variable
 							if(timingMonitoring){
 								if(!eventMonitoring){
-									const.value = 0				// Only timing			
-								}else{		
-							 		const.value = 1			// Both timing and event monitoring						
-								}					
+									const.value = 0				// Only timing
+								}else{
+							 		const.value = 1			// Both timing and event monitoring
+								}
 							}
-							else{	
-							 	const.value = 2				// Only events				
+							else{
+							 	const.value = 2				// Only events
 							}
-							const.value = 1		
+							const.value = 1
 							const
 						})
 						(elts as FunctionCall).addParameter(block.definitions.get(block.definitions.length-1), PortDirection.NONE);
@@ -262,8 +261,8 @@ class PapifyCPrinter extends CPrinter {
 				}
 			}
 			eventMonitoring = false;
-			timingMonitoring = false;		
-		}		
+			timingMonitoring = false;
+		}
 		super.preProcessing(printerBlocks, allBlocks)
 	}
 
@@ -273,7 +272,7 @@ class PapifyCPrinter extends CPrinter {
 	 * - Monitoring timing (last parameter of the functionCall is Papified and its type is "int").<br>
 	 * - Monitoring timing and events (last parameter of the functionCall is Papified and its type is "boolean").<br>
 	 * - No monitoring at all.<br>
-	 * 
+	 *
 	 * The results will be written into a .csv file.<br>
 	 *
 	 * @param functionCall
@@ -323,24 +322,24 @@ class PapifyCPrinter extends CPrinter {
 			 * @date «new Date»
 			 *
 			 */
-	
+
 			#define _GNU_SOURCE
 			#include <unistd.h>
 			#include <pthread.h>
 			#include <stdio.h>
-	
+
 			// application dependent includes
 			#include "preesm.h"
 			#include "eventLib.h"
-	
+
 			// Declare computation thread functions
 			«FOR coreBlock : printerBlocks»
 			void *computationThread_Core«(coreBlock as CoreBlock).coreID»(void *arg);
 			«ENDFOR»
-	
+
 			pthread_barrier_t iter_barrier;
 			int stopThreads;
-	
+
 			// setting a setting core affinity
 			int set_affinity_to_core(pthread_t* thread, int core_id) {
 			int num_cores = sysconf(_SC_NPROCESSORS_ONLN);
@@ -351,47 +350,47 @@ class PapifyCPrinter extends CPrinter {
 			  CPU_SET(core_id, &cpuset);
 			  return pthread_setaffinity_np(*thread, sizeof(cpu_set_t), &cpuset);
 			}
-	
+
 			int main(void)
 			{
 			  // Papify output folder
 			  mkdir("papify-output", 0777);
 			  // Init Papify
 			  event_init_multiplex();
-	
+
 			  // Declaring thread pointers
 			  «FOR coreBlock : printerBlocks »
 			    pthread_t threadCore«(coreBlock as CoreBlock).coreID»;
 			  «ENDFOR»
-	
+
 			  #ifdef VERBOSE
 			  printf("Launched main\n");
 			  #endif
-	
+
 			  // Creating a synchronization barrier
 			  stopThreads = 0;
 			  pthread_barrier_init(&iter_barrier, NULL, «printerBlocks.size»);
-	
+
 			  communicationInit();
-	
+
 			  // Creating threads
 			  «FOR coreBlock : printerBlocks»
 			  pthread_create(&threadCore«(coreBlock as CoreBlock).coreID», NULL, computationThread_Core«(coreBlock as CoreBlock).coreID», NULL);
 			  set_affinity_to_core(&threadCore«(coreBlock as CoreBlock).coreID»,«(coreBlock as CoreBlock).coreID»);
 			  «ENDFOR»
-	
+
 			  // Waiting for thread terminations
 			  «FOR coreBlock : printerBlocks»
 			    pthread_join(threadCore«(coreBlock as CoreBlock).coreID»,NULL);
 			  «ENDFOR»
-	
+
 			  #ifdef VERBOSE
 			  printf("Press any key to stop application\n");
 			  #endif
-	
+
 			  return 0;
 			}
-	
+
 		'''
 
 }

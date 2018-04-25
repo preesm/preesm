@@ -38,6 +38,7 @@
 package org.ietr.preesm.codegen.xtend.printer
 
 import java.util.ArrayList
+import java.util.Collection
 import java.util.List
 import java.util.Map
 import java.util.Map.Entry
@@ -65,8 +66,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 import org.ietr.preesm.codegen.xtend.model.codegen.util.CodegenSwitch
-import org.ietr.preesm.codegen.xtend.task.CodegenException
 import org.ietr.preesm.codegen.xtend.task.CodegenEngine
+import org.ietr.preesm.codegen.xtend.task.CodegenException
 
 enum PrinterState {
 	PRINTING_DEFINITIONS,
@@ -562,7 +563,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * 				The list of all {@link Block blocks} printed during a workflow execution.
 	 * 				This list includes all printerBlocks
 	 */
-	def void preProcessing(List<Block> printerBlocks, List<Block> allBlocks);
+	def void preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks);
 
 	/**
 	 * Method called after printing a set of {@link Block blocks}. This method
@@ -596,7 +597,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 *		The list of all {@link Block blocks} printed during a workflow execution.
 	 *		This list includes all printerBlocks
 	 */
-	def Map<String, CharSequence> createSecondaryFiles(List<Block> printerBlocks, List<Block> allBlocks);
+	def Map<String, CharSequence> createSecondaryFiles(List<Block> printerBlocks, Collection<Block> allBlocks);
 
 	/**
 	 * Method called to print a {@link SpecialCall} with

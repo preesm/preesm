@@ -38,32 +38,33 @@
  */
 package org.ietr.preesm.codegen.xtend.printer.c
 
+import java.util.ArrayList
+import java.util.Collection
 import java.util.Date
 import java.util.List
+import org.ietr.preesm.codegen.xtend.model.codegen.Block
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
+import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator
 import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.Communication
 import org.ietr.preesm.codegen.xtend.model.codegen.Constant
+import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
+import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter
+import org.ietr.preesm.codegen.xtend.model.codegen.Direction
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
+import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
+import org.ietr.preesm.codegen.xtend.model.codegen.IntVar
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
+import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 import org.ietr.preesm.codegen.xtend.printer.DefaultPrinter
 import org.ietr.preesm.codegen.xtend.task.CodegenException
-import java.util.ArrayList
-import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
-import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
-import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator
-import org.ietr.preesm.codegen.xtend.model.codegen.IntVar
-import org.ietr.preesm.codegen.xtend.model.codegen.Direction
-import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter
-import org.ietr.preesm.codegen.xtend.model.codegen.Block
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -366,7 +367,7 @@ class CPrinter extends DefaultPrinter {
 		}
 	}
 
-	override createSecondaryFiles(List<Block> printerBlocks, List<Block> allBlocks) {
+	override createSecondaryFiles(List<Block> printerBlocks, Collection<Block> allBlocks) {
 		val result = super.createSecondaryFiles(printerBlocks, allBlocks);
 		if (generateMainFile()) {
 			result.put("main.c", printMain(printerBlocks))
