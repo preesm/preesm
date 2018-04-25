@@ -82,6 +82,7 @@ public class PapifyEventListContentProvider implements IStructuredContentProvide
       final List<PapiEventModifier> modifTimingList = new ArrayList<>();
       PapiComponent compAux = null;
       PapiEventSet eventSetAux = null;
+      PapiEvent eventAux = null;
       eventList = new ArrayList<>();
       timingEvent.setName("Timing");
       timingEvent.setDesciption("Event to time through PAPI_get_time()");
@@ -92,7 +93,12 @@ public class PapifyEventListContentProvider implements IStructuredContentProvide
         compAux = inputPapiEventInfo.getComponents().get(i);
         for (int j = compAux.getEventSets().size() - 1; j >= 0; j--) {
           eventSetAux = compAux.getEventSets().get(j);
-          eventList.addAll(eventSetAux.getEvents());
+          for (int k = 0; k < eventSetAux.getEvents().size(); k++) {
+            eventAux = eventSetAux.getEvents().get(k);
+            if (eventAux.getModifiers().isEmpty()) {
+              eventList.add(eventAux);
+            }
+          }
         }
       }
       elementTable = eventList.toArray();
