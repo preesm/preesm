@@ -130,8 +130,12 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     printRV(this.graphBRV);
     // Visitor creating the SR-DAG
     StaticPiMM2SrDAGVisitor visitor;
-    visitor = new StaticPiMM2SrDAGVisitor(new MapperDAG(new MapperEdgeFactory(), this.graph), this.graphBRV);
+    visitor = new StaticPiMM2SrDAGVisitor(new MapperDAG(new MapperEdgeFactory(), this.graph), this.graphBRV, this.scenario);
+    StopWatch timer = new StopWatch();
+    timer.start();
     visitor.doSwitch(this.graph);
+    timer.stop();
+    WorkflowLogger.getLogger().log(Level.INFO, "Dag transformation performed in " + timer.toString() + "s.");
     return visitor.getResult();
   }
 

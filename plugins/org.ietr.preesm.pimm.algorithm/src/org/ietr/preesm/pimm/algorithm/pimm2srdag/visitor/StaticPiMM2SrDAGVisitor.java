@@ -26,6 +26,7 @@ import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
@@ -56,8 +57,11 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
 import org.ietr.preesm.mapper.model.MapperDAG;
+import org.ietr.preesm.mapper.model.MapperDAGEdge;
+import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.MapperEdgeFactory;
 import org.ietr.preesm.mapper.model.MapperVertexFactory;
+import org.ietr.preesm.pimm.algorithm.helper.PiMMHelperException;
 
 /**
  * @author farresti
@@ -89,11 +93,14 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
   /** The pi vx 2 SDF vx. */
   // Map from original PiMM vertices to generated DAG vertices
-  private Map<AbstractVertex, ArrayList<DAGVertex>> piActor2DAGVertex = new LinkedHashMap<>();
+  private Map<AbstractVertex, ArrayList<MapperDAGVertex>> piActor2DAGVertex = new LinkedHashMap<>();
 
   /** The current SDF refinement. */
   // Current SDF Refinement
   protected IRefinement currentRefinement;
+
+  /** The scenario. */
+  private final PreesmScenario scenario;
 
   /**
    * Instantiates a new abstract pi MM 2 SR-DAG visitor.
@@ -101,11 +108,12 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
    * @param dag
    *          the dag
    */
-  public StaticPiMM2SrDAGVisitor(final MapperDAG dag, Map<AbstractVertex, Integer> brv) {
+  public StaticPiMM2SrDAGVisitor(final MapperDAG dag, Map<AbstractVertex, Integer> brv, final PreesmScenario scenario) {
     this.result = dag;
     this.brv = brv;
     this.vertexFactory = MapperVertexFactory.getInstance();
-    this.edgeFactory = new MapperEdgeFactory();
+    this.edgeFactory = (MapperEdgeFactory) dag.getEdgeFactory();
+    this.scenario = scenario;
   }
 
   /**
@@ -122,7 +130,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     // Handle vertex's path inside the graph hierarchy
     vertex.setInfo(nameInfoID);
     // Handle ID
-    vertex.setId(Integer.toString(aCounter));
+    vertex.setId(a.getName() + "_" + Integer.toString(aCounter));
     // Set Repetition vector to 1 since it is a single rate vertex
     vertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
 
@@ -136,6 +144,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     joinVertex.setId(id);
     joinVertex.setName(id);
     joinVertex.setInfo(id);
+    joinVertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
     joinID++;
     return joinVertex;
   }
@@ -146,6 +155,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     forkVertex.setId(id);
     forkVertex.setName(id);
     forkVertex.setInfo(id);
+    forkVertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
     forkID++;
     return forkVertex;
   }
@@ -157,8 +167,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseAbstractActor(final AbstractActor actor) {
-    final DAGVertex vertex = this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX);
-    // new DAGVertex();
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX);
     // Set default properties from the PiMM actor
     pimm2srdag(actor, vertex);
     // Add the vertex to the DAG
@@ -174,7 +183,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseActor(final Actor actor) {
-    final DAGVertex vertex = this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX);
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX);
     // Set default properties from the PiMM actor
     pimm2srdag(actor, vertex);
     // Handle path to memory script of the vertex
@@ -194,8 +203,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseBroadcastActor(final BroadcastActor actor) {
-    // final DAGBroadcastVertex vertex = new DAGBroadcastVertex();
-    final DAGVertex vertex = this.vertexFactory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
 
     pimm2srdag(actor, vertex);
     // Check the good use of the broadcast
@@ -218,8 +226,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseJoinActor(final JoinActor actor) {
-    // final DAGJoinVertex vertex = new DAGJoinVertex();
-    final DAGVertex vertex = this.vertexFactory.createVertex(DAGJoinVertex.DAG_JOIN_VERTEX);
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGJoinVertex.DAG_JOIN_VERTEX);
     pimm2srdag(actor, vertex);
     // Check Join use
     if (actor.getDataOutputPorts().size() > 1) {
@@ -233,8 +240,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseForkActor(final ForkActor actor) {
-    // final DAGForkVertex vertex = new DAGForkVertex();
-    final DAGVertex vertex = this.vertexFactory.createVertex(DAGForkVertex.DAG_FORK_VERTEX);
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGForkVertex.DAG_FORK_VERTEX);
     pimm2srdag(actor, vertex);
     // Check Fork use
     if (actor.getDataInputPorts().size() > 1) {
@@ -246,6 +252,33 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     return true;
   }
 
+  /**
+   * Retrieve the number of delay tokens contain in a fifo, if any
+   * 
+   * @param fifo
+   * @return number of delay, 0 if the fifo does not contain any delay
+   */
+  private static long getNDelays(final Fifo fifo) {
+    final Delay delay = fifo.getDelay();
+    if (delay == null) {
+      return 0;
+    }
+    // Get the number of delay
+    final Expression sizeExpression = fifo.getDelay().getSizeExpression();
+    long nDelays = Long.parseLong(sizeExpression.getExpressionString());
+    // Sanity check on delay value
+    final DataInputPort targetPort = fifo.getTargetPort();
+    final Expression portRateExpression = targetPort.getPortRateExpression();
+    final long targetRate = Long.parseLong(portRateExpression.getExpressionString());
+    if (nDelays < 0) {
+      throw new RuntimeException("Invalid number of delay on fifo[" + fifo.getId() + "]: " + Long.toString(nDelays));
+    } else if (nDelays < targetRate) {
+      throw new RuntimeException("Insuffisiant number of delay on fifo[" + fifo.getId() + "]: number of delays: " + Long.toString(nDelays) + ", consumption: "
+          + Long.toString(targetRate));
+    }
+    return nDelays;
+  }
+
   /*
    * (non-Javadoc)
    *
@@ -254,27 +287,17 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseFifo(final Fifo fifo) {
     final String fifoID = fifo.getId();
+    final String forkIDString = fifoID + "_Fork_";
+    final String joinIDString = fifoID + "_Join_";
     Integer forkID = 0;
-    String forkIDString = fifoID + "_Fork_";
     Integer joinID = 0;
-    String joinIDString = fifoID + "_Join_";
 
-    long nDelays = 0;
-    if (fifo.getDelay() != null) {
-      nDelays = Long.parseLong(fifo.getDelay().getSizeExpression().getExpressionString());
-    }
+    // Data type size
+    final String type = fifo.getType();
+    final int size = scenario.getSimulationManager().getDataTypeSizeOrDefault(type);
 
-    // Sanity check on delay value
-    if (nDelays != 0) {
-      final long targetRate = Long.parseLong(fifo.getTargetPort().getPortRateExpression().getExpressionString());
-      if (nDelays < 0) {
-        throw new RuntimeException("Invalid number of delay on fifo[" + fifo.getId() + "]: " + Long.toString(nDelays));
-      } else if (nDelays < targetRate) {
-        throw new RuntimeException("Insuffisiant number of delay on fifo[" + fifo.getId() + "]: number of delays: " + Long.toString(nDelays) + ", consumption: "
-            + Long.toString(targetRate));
-      }
-
-    }
+    // Retrieve number of delay tokens
+    long nDelays = getNDelays(fifo);
 
     // Evaluate source repetition vector
     final DataOutputPort sourcePort = fifo.getSourcePort();
@@ -292,13 +315,16 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
       nbSinkRepetitions = this.brv.get(sinkActor);
     }
 
-    // If the sink actor or the source actor is a delay actor then we already check these
+    // If the sink actor or the source actor is a delay actor then we already checked these
     if (sinkActor instanceof DelayActor || sourceActor instanceof DelayActor) {
       return true;
     }
 
-    final long sourceProduction = Long.parseLong(sourcePort.getPortRateExpression().getExpressionString());
-    final long sinkConsumption = Long.parseLong(sinkPort.getPortRateExpression().getExpressionString());
+    // Port expressions
+    final Expression sourceExpression = sourcePort.getPortRateExpression();
+    final Expression sinkExpression = sinkPort.getPortRateExpression();
+    final long sourceProduction = Long.parseLong(sourceExpression.getExpressionString());
+    final long sinkConsumption = Long.parseLong(sinkExpression.getExpressionString());
 
     final List<SourceConnection> sourceConnections = new ArrayList<>();
     final List<SinkConnection> sinkConnections = new ArrayList<>();
@@ -306,6 +332,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     boolean sinkNeedEnd = false;
 
     // Deals with the source part
+    final Delay delay = fifo.getDelay();
     if (sourceActor instanceof InterfaceActor) {
       final DAGVertex sourceVertex = this.piActor2DAGVertex.get(sourceActor).get(0);
       final long totalSinkConsumption = sinkConsumption * nbSinkRepetitions;
@@ -326,15 +353,12 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
         nbSourceRepetitions = nBroadcast;
         // If we have left over tokens, we need to get rid of them
         sinkNeedEnd = !perfectBroadcast;
-        // DAGBroadcastVertex vertex = new DAGBroadcastVertex();
         DAGVertex vertex = this.vertexFactory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
-        // this.result.addEdge(sourceVertex, vertex, new DAGEdge());
         this.result.addEdge(sourceVertex, vertex);
         for (int i = 0; i < nBroadcast; ++i) {
           final SourceConnection sourceConnection = new SourceConnection();
           sourceConnection.setSource(vertex);
           sourceConnection.setProd(sourceProduction);
-          // setPort ?
           sourceConnections.add(sourceConnection);
         }
       }
@@ -346,8 +370,8 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
         }
       } else {
         nbSourceRepetitions++;
-        if (fifo.getDelay().hasSetterActor()) {
-          final AbstractActor setterActor = fifo.getDelay().getSetterActor();
+        if (delay.hasSetterActor()) {
+          final AbstractActor setterActor = delay.getSetterActor();
           final Integer brvSetter = this.brv.get(setterActor);
           sourceConnections.add(new SourceConnection());
           sourceConnections.get(0).setProd(nDelays);
@@ -356,21 +380,25 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
             final DAGVertex joinVertex = addJoinVertex(joinIDString, joinID);
             this.result.addVertex(joinVertex);
             for (int i = 0; i < brvSetter; ++i) {
-              final DAGVertex setterVertex = this.piActor2DAGVertex.get(setterActor).get(i);
-              final DAGEdge edge = this.result.addEdge(setterVertex, joinVertex);
-              final long setterRate = Long.parseLong(fifo.getDelay().getSetterPort().getPortRateExpression().getExpressionString());
+              final MapperDAGVertex setterVertex = this.piActor2DAGVertex.get(setterActor).get(i);
+              final MapperDAGEdge edge = (MapperDAGEdge) this.result.addEdge(setterVertex, joinVertex);
+              final long setterRate = size * Long.parseLong(delay.getSetterPort().getPortRateExpression().getExpressionString());
+              edge.setPropertyValue(SDFEdge.DATA_TYPE, type);
+              edge.setPropertyValue(SDFEdge.DATA_SIZE, size);
               edge.setWeight(new DAGDefaultEdgePropertyType((int) setterRate));
             }
+            // The source of the first iteration is the join vertex
             sourceConnections.get(0).setSource(joinVertex);
           } else {
             final DAGVertex setterVertex = this.piActor2DAGVertex.get(setterActor).get(0);
+            // The source of the first iteration is the setter vertex
             sourceConnections.get(0).setSource(setterVertex);
           }
         } else {
-          final DAGVertex vertex = this.vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX);
-          vertex.setId(fifoID + "_Init");
-          this.result.addVertex(vertex);
-          sourceConnections.get(0).setSource(vertex);
+          final DAGVertex initVertex = this.vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX);
+          initVertex.setId(fifoID + "_Init");
+          this.result.addVertex(initVertex);
+          sourceConnections.get(0).setSource(initVertex);
         }
         for (int i = 1; i < nbSourceRepetitions; ++i) {
           final DAGVertex vertex = this.piActor2DAGVertex.get(sourceActor).get(i - 1);
@@ -423,8 +451,8 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
         // We ge the last "delay provider"
         final DAGVertex sourceVertex = sourceConnections.get(sourceConnections.size() - 1).getSource();
         // this.piActor2DAGVertex.get(sourceActor).get((int) nbSourceRepetitions - 1);
-        if (fifo.getDelay().hasGetterActor()) {
-          final AbstractActor getterActor = fifo.getDelay().getGetterActor();
+        if (delay.hasGetterActor()) {
+          final AbstractActor getterActor = delay.getGetterActor();
           final Integer brvGetter = this.brv.get(getterActor);
           if (brvGetter > 1) {
             // We have to add a fork actor
@@ -437,7 +465,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
               final DAGVertex getterVertex = this.piActor2DAGVertex.get(getterActor).get(i);
               final DAGEdge edge = this.result.addEdge(forkVertex, getterVertex);
               // Now we add our sink connection to the list
-              final long getterRate = Long.parseLong(fifo.getDelay().getGetterPort().getPortRateExpression().getExpressionString());
+              final long getterRate = Long.parseLong(delay.getGetterPort().getPortRateExpression().getExpressionString());
               edge.setWeight(new DAGDefaultEdgePropertyType((int) getterRate));
               // sinkConnections.add(new SinkConnection(edge, getterRate));
             }
@@ -758,7 +786,12 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
     // Link SR-Vertices
     for (final Fifo fifo : graph.getFifos()) {
-      doSwitch(fifo);
+      final SRVerticesLinker srVerticesLinker = new SRVerticesLinker(fifo, this.result, this.scenario);
+      try {
+        srVerticesLinker.execute(brv, piActor2DAGVertex);
+      } catch (PiMMHelperException e) {
+        throw new RuntimeException(e.getMessage());
+      }
     }
 
     // Go check hierarchical graphs
