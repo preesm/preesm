@@ -44,7 +44,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
@@ -58,7 +57,6 @@ import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.mapper.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.mapper.algo.list.InitialLists;
 import org.ietr.preesm.mapper.algo.list.KwokListScheduler;
-import org.ietr.preesm.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.params.AbcParameters;
@@ -70,8 +68,7 @@ import org.ietr.preesm.mapper.params.AbcParameters;
  * @author pmenuet
  * @author mpelcat
  */
-@Deprecated
-public class ListSchedulingMapping extends AbstractMapping {
+public class ListSchedulingMappingFromDAG extends AbstractMapping {
 
   /*
    * (non-Javadoc)
@@ -95,14 +92,12 @@ public class ListSchedulingMapping extends AbstractMapping {
       final String nodeName, final Workflow workflow) throws WorkflowException {
 
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
-    final SDFGraph algorithm = (SDFGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH);
+    final MapperDAG dag = (MapperDAG) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
     final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     super.execute(inputs, parameters, monitor, nodeName, workflow);
 
     final AbcParameters abcParameters = new AbcParameters(parameters);
-
-    final MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario);
 
     // calculates the DAG span length on the architecture main operator (the
     // tasks that can not be executed by the main operator are deported

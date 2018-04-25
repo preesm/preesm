@@ -44,7 +44,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
@@ -54,24 +53,29 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbstractAbc;
 import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
-import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
+import org.ietr.preesm.mapper.abc.taskscheduling.SimpleTaskSched;
 import org.ietr.preesm.mapper.abc.taskscheduling.TopologicalTaskSched;
+import org.ietr.preesm.mapper.algo.fast.FastAlgorithm;
 import org.ietr.preesm.mapper.algo.list.InitialLists;
-import org.ietr.preesm.mapper.algo.list.KwokListScheduler;
-import org.ietr.preesm.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.params.AbcParameters;
+import org.ietr.preesm.mapper.params.FastAlgoParameters;
 
 // TODO: Auto-generated Javadoc
 /**
- * List scheduling is a cheep, greedy, sequential mapping/scheduling method.
+ * FAST is a sequential mapping/scheduling method based on list scheduling followed by a neighborhood search phase. It was invented by Y-K Kwok.
  *
  * @author pmenuet
  * @author mpelcat
  */
-@Deprecated
-public class ListSchedulingMapping extends AbstractMapping {
+public class FASTMappingFromDAG extends AbstractMapping {
+
+  /**
+   * Instantiates a new FAST mapping.
+   */
+  public FASTMappingFromDAG() {
+  }
 
   /*
    * (non-Javadoc)
@@ -81,6 +85,10 @@ public class ListSchedulingMapping extends AbstractMapping {
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = super.getDefaultParameters();
+
+    parameters.put("displaySolutions", "false");
+    parameters.put("fastTime", "100");
+    parameters.put("fastLocalSearchTime", "10");
     return parameters;
   }
 
@@ -94,56 +102,64 @@ public class ListSchedulingMapping extends AbstractMapping {
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
       final String nodeName, final Workflow workflow) throws WorkflowException {
 
+    final Map<String, Object> outputs = new LinkedHashMap<>();
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
-    final SDFGraph algorithm = (SDFGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH);
+    MapperDAG dag = (MapperDAG) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
     final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     super.execute(inputs, parameters, monitor, nodeName, workflow);
 
-    final AbcParameters abcParameters = new AbcParameters(parameters);
+    final FastAlgoParameters fastParams = new FastAlgoParameters(parameters);
+    final AbcParameters abcParams = new AbcParameters(parameters);
 
-    final MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario);
+    if (dag == null) {
+      throw (new WorkflowException(" graph can't be scheduled, check console messages"));
+    }
 
     // calculates the DAG span length on the architecture main operator (the
-    // tasks that can not be executed by the main operator are deported
-    // without transfer time to other operator)
-    calculateSpan(dag, architecture, scenario, abcParameters);
+    // tasks that can
+    // not be executed by the main operator are deported without transfer
+    // time to other operator
+    calculateSpan(dag, architecture, scenario, abcParams);
 
-    final IAbc simu = new InfiniteHomogeneousAbc(abcParameters, dag, architecture, abcParameters.getSimulatorType().getTaskSchedType(), scenario);
+    final IAbc simu = new InfiniteHomogeneousAbc(abcParams, dag, architecture, abcParams.getSimulatorType().getTaskSchedType(), scenario);
 
-    final InitialLists initial = new InitialLists();
-
-    final boolean couldConstructInitialLists = initial.constructInitialLists(dag, simu);
-    if (!couldConstructInitialLists) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "Error in scheduling");
-      return null;
+    final InitialLists initialLists = new InitialLists();
+    if (!initialLists.constructInitialLists(dag, simu)) {
+      return outputs;
     }
+
+    final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
+    simu.resetDAG();
+
+    final FastAlgorithm fastAlgorithm = new FastAlgorithm(initialLists, scenario);
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
 
-    // Using topological task scheduling in list scheduling: the t-level
-    // order of the infinite homogeneous simulation
-    final AbstractTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
-
-    simu.resetDAG();
-    final IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture, scenario);
-    simu2.setTaskScheduler(taskSched);
-
-    final KwokListScheduler scheduler = new KwokListScheduler();
-    scheduler.schedule(dag, initial.getCpnDominant(), simu2, null, null);
+    dag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false, fastParams.isDisplaySolutions(), monitor, taskSched);
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
 
-    final TagDAG tagSDF = new TagDAG();
+    final IAbc simu2 = AbstractAbc.getInstance(abcParams, dag, architecture, scenario);
+    // Transfer vertices are automatically regenerated
+    simu2.setDAG(dag);
 
+    // The transfers are reordered using the best found order during
+    // scheduling
+    simu2.reschedule(fastAlgorithm.getBestTotalOrder());
+    final TagDAG tagDAG = new TagDAG();
+
+    // The mapper dag properties are put in the property bean to be
+    // transfered to code generation
     try {
-      tagSDF.tag(dag, architecture, scenario, simu2, abcParameters.getEdgeSchedType());
+      tagDAG.tag(dag, architecture, scenario, simu2, abcParams.getEdgeSchedType());
     } catch (final InvalidExpressionException e) {
-      e.printStackTrace();
       throw (new WorkflowException(e.getMessage()));
     }
 
-    final Map<String, Object> outputs = new LinkedHashMap<>();
+    // A simple task scheduler avoids new task swaps and ensures reuse of
+    // previous order.
+    simu2.setTaskScheduler(new SimpleTaskSched());
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, simu2);
 

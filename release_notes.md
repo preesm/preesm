@@ -39,6 +39,8 @@ PREESM Changelog
 * Force DFTools to 1.4.1+;
 * Enforced use of DAG properties instead of SDF properties when conversion of an SDF graph is done
 * Initialization of data size property in SDFEdge before dag conversion. 
+* Adding workflow task for converting Single rate SDF graph to DAG
+* Deprecating use of Schedule/Mapping task using SDF as input in favor to the new ones with DAG as input.
 
 ### Bug fix
 * Fix codegen for MS Visual Studio to support thread affinity;

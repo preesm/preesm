@@ -48,7 +48,6 @@ import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.types.DAGDefaultVertexPropertyType;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
@@ -63,6 +62,7 @@ import org.ietr.dftools.architecture.slam.link.Link;
 import org.ietr.dftools.architecture.slam.link.LinkFactory;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
+import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -72,7 +72,6 @@ import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.ietr.preesm.mapper.abc.taskscheduling.SimpleTaskSched;
 import org.ietr.preesm.mapper.algo.dynamic.DynamicQueuingScheduler;
-import org.ietr.preesm.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
@@ -87,13 +86,12 @@ import org.ietr.preesm.mapper.params.AbcParameters;
  * @author mpelcat
  * @author kdesnos (minor bugfix)
  */
-@Deprecated
-public class DynamicQueuingMapping extends AbstractMapping {
+public class DynamicQueuingMappingFromDAG extends AbstractMapping {
 
   /**
    * Instantiates a new dynamic queuing mapping.
    */
-  public DynamicQueuingMapping() {
+  public DynamicQueuingMappingFromDAG() {
   }
 
   /*
@@ -125,9 +123,9 @@ public class DynamicQueuingMapping extends AbstractMapping {
       final String nodeName, final Workflow workflow) throws WorkflowException {
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
-    final Design architecture = (Design) inputs.get("architecture");
-    final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
-    final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
+    final MapperDAG dag = (MapperDAG) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
+    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     // The graph may be repeated a predefined number of times
     // with a predefined period
@@ -189,8 +187,6 @@ public class DynamicQueuingMapping extends AbstractMapping {
     super.execute(inputs, parameters, monitor, nodeName, workflow);
 
     final AbcParameters abcParameters = new AbcParameters(parameters);
-
-    final MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario);
 
     // Repeating the graph to simulate several calls.
     if (iterationNr != 0) {
@@ -292,8 +288,8 @@ public class DynamicQueuingMapping extends AbstractMapping {
       throw (new WorkflowException(e.getMessage()));
     }
 
-    outputs.put("DAG", dag);
-    outputs.put("ABC", simu2);
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, simu2);
 
     super.clean(architecture, scenario);
     super.checkSchedulingResult(parameters, dag);

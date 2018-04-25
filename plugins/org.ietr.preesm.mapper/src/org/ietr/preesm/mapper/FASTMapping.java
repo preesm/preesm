@@ -70,6 +70,7 @@ import org.ietr.preesm.mapper.params.FastAlgoParameters;
  * @author pmenuet
  * @author mpelcat
  */
+@Deprecated
 public class FASTMapping extends AbstractMapping {
 
   /**

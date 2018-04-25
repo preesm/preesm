@@ -67,6 +67,7 @@ import org.ietr.preesm.mapper.params.PFastAlgoParameters;
  * @author mwipliez
  * @author pmenuet
  */
+@Deprecated
 public class PFASTMapping extends AbstractMapping {
 
   /**
