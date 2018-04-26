@@ -72,7 +72,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
       // Convert the PiGraph to the Single-Rate Directed Acyclic Graph
       result = launcher.launch(method);
     } catch (final StaticPiMM2SrDAGException e) {
-      logger.log(Level.SEVERE, e.getMessage());
+      throw new WorkflowException(e.getMessage());
     }
 
     SdfToDagConverter.addInitialProperties(result, architecture, scenario);

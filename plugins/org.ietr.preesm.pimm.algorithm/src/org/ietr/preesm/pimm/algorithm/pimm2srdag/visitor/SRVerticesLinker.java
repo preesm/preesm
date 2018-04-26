@@ -5,6 +5,7 @@ package org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor;
 
 import java.util.ArrayList;
 import java.util.Map;
+import org.apache.commons.lang3.tuple.Pair;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGEndVertex;
@@ -37,6 +38,12 @@ import org.ietr.preesm.pimm.algorithm.helper.PiMMHelperException;
  *
  */
 public class SRVerticesLinker {
+
+  /** Property name for property JOIN_VERTEX. */
+  public static final String JOIN_VERTEX = "_Join_";
+
+  /** Property name for property FORK_VERTEX. */
+  public static final String FORK_VERTEX = "_Fork_";
 
   // Number of delays
   private final long delays;
@@ -149,92 +156,135 @@ public class SRVerticesLinker {
     if (source instanceof DelayActor || sink instanceof DelayActor) {
       return true;
     }
-    // Repetition values
-    final long sinkRV = getRVorDefault(sink, brv);
-    final long sourceRV = getRVorDefault(source, brv);
-
-    // Port expressions
-    final Expression sourceExpression = this.sourcePort.getPortRateExpression();
-    final Expression sinkExpression = this.sinkPort.getPortRateExpression();
-    // Production / Consumption
-    final long sourceProduction = Long.parseLong(sourceExpression.getExpressionString());
-    final long sinkConsumption = Long.parseLong(sinkExpression.getExpressionString());
 
     // List of source vertex
     ArrayList<Pair<DAGVertex, Long>> sourceSet = getSourceSet(brv, pimm2dag);
     // List of sink vertex
     ArrayList<Pair<DAGVertex, Long>> sinkSet = getSinkSet(brv, pimm2dag);
 
-    // TODO handle the connections now.
-
-    // for (final Pair<DAGVertex, Long> srcPair : sourceSet) {
-    // DAGVertex srcVertex = srcPair.getFirst();
-    // for (final Pair<DAGVertex, Long> snkPair : sinkSet) {
-    //
-    // }
-    // }
-    //
-    // long curSourceToken = sourceSet.get(0).getSecond();
-    // long curSinkToken = sinkSet.get(0).getSecond();
-    // int sourceIndex = 0;
-    // int sinkIndex = 0;
-    //
-    // String currentForkID = this.fifo.getId() + "_Fork_" + Integer.toString(-1);
-    // String currentJoinID = this.fifo.getId() + "_Join_" + Integer.toString(-1);
-    //
-    // final MapperVertexFactory vertexFactory = MapperVertexFactory.getInstance();
-    //
-    // // Iterating until all consumptions are "satisfied".
-    // while ((sourceIndex < sourceSet.size()) || (sinkIndex < sinkSet.size())) {
-    // final DAGVertex sourceVertex = sourceSet.get(sourceIndex).getFirst();
-    // // Production/consumption rate for the current source/target.
-    // final long restToken = Math.min(curSourceToken, curSinkToken);
-    //
-    // // Adding explode / collapse vertices if required.
-    // if ((restToken < curSourceToken) && !sourceVertex.getId().equals(currentForkID)) {
-    // // Adding an explode vertex.
-    // final DAGVertex forkVertex = createForkVertex(this.fifo.getId() + "_Fork_", vertexFactory);
-    // this.dag.addVertex(forkVertex);
-    // currentForkID = forkVertex.getId();
-    // // Adding an edge between the source and the fork.
-    // createEdge(sourceVertex, forkVertex, Long.toString(curSourceToken));
-    // // this.result.setEdgeWeight(this.result.getEdge(sourceVertex, forkVertex), (double) curSourceToken);
-    // sourceSet.get(sourceIndex).setFirst(forkVertex);
-    // }
-    //
-    // DAGVertex targetVertex = sinkSet.get(sinkIndex).getFirst();
-    // if ((restToken < curSinkToken) && targetVertex != null && !targetVertex.getId().equals(currentJoinID)) {
-    // // Adding a collapse vertex.
-    // final DAGVertex joinVertex = createJoinVertex(this.fifo.getId() + "_Join_", vertexFactory);
-    // this.dag.addVertex(joinVertex);
-    // currentJoinID = joinVertex.getId();
-    // // Replacing the sink vertex by the join vertex in the array of sinks.
-    // createEdge(joinVertex, targetVertex, Long.toString(sinkSet.get(sinkIndex).getSecond()));
-    // sinkSet.get(sinkIndex).setFirst(joinVertex);
-    // targetVertex = joinVertex;
-    // }
-    //
-    // // Creating the new edge between normal vertices or between a normal and an explode / collapse one.
-    // // Reassign target vertex as it may have changed
-    // createEdge(sourceSet.get(sourceIndex).getFirst(), targetVertex, Long.toString(restToken));
-    //
-    // // Update the number of token produced/consumed by the current source/target.
-    // curSourceToken -= restToken;
-    // curSinkToken -= restToken;
-    //
-    // if (curSourceToken == 0 && (sourceIndex < sourceSet.size() - 1)) {
-    // sourceIndex++;
-    // curSourceToken = sourceSet.get(sourceIndex).getSecond();
-    // }
-    // if (curSinkToken == 0 && (sinkIndex < sinkSet.size() - 1)) {
-    // sinkIndex++;
-    // curSinkToken = sinkSet.get(sinkIndex).getSecond();
-    // }
-    // }
+    // Connect all the source to the sinks
+    connectEdges(sourceSet, sinkSet);
 
     return true;
   }
 
+  /**
+   * Connect the sources to the sinks
+   * 
+   * @param sourceSet
+   *          set of dag sources
+   * @param sinkSet
+   *          set of dag sinks
+   */
+  private void connectEdges(final ArrayList<Pair<DAGVertex, Long>> sourceSet, final ArrayList<Pair<DAGVertex, Long>> sinkSet) {
+    Pair<DAGVertex, Long> currentSink = sinkSet.get(0);
+    while (!sourceSet.isEmpty() && currentSink.getLeft() != null) {
+      Pair<DAGVertex, Long> currentSource = connectSources2Sink(sourceSet, currentSink);
+      sinkSet.remove(currentSink);
+      if (currentSource.getLeft() == null) {
+        break;
+      }
+      currentSink = connectSinks2Source(sinkSet, currentSource);
+      sourceSet.remove(currentSource);
+    }
+  }
+
+  /**
+   * Connect sources to current sink
+   * 
+   * @param sourceSet
+   *          set of dag sources
+   * @param sink
+   *          current sink to connect to
+   * @return new current source
+   */
+  private Pair<DAGVertex, Long> connectSources2Sink(final ArrayList<Pair<DAGVertex, Long>> sourceSet, final Pair<DAGVertex, Long> sink) {
+    long cons = sink.getRight();
+    final ArrayList<Pair<DAGVertex, Long>> toRemove = new ArrayList<Pair<DAGVertex, Long>>();
+    DAGVertex sinkVertex = sink.getLeft();
+    boolean hasImplode = false;
+    for (final Pair<DAGVertex, Long> src : sourceSet) {
+      toRemove.add(src);
+      long prod = src.getRight();
+      final DAGVertex sourceVertex = src.getLeft();
+      if (prod > cons) {
+        final DAGVertex fork = createForkVertex(this.fifo.getId() + SRVerticesLinker.FORK_VERTEX, MapperVertexFactory.getInstance());
+        createEdge(sourceVertex, fork, Long.toString(prod));
+        createEdge(fork, sinkVertex, Long.toString(cons));
+        prod = prod - cons;
+        sourceSet.removeAll(toRemove);
+        return Pair.of(fork, prod);
+      } else if (!hasImplode && prod < cons) {
+        // Add a join
+        final DAGVertex join = createJoinVertex(this.fifo.getId() + SRVerticesLinker.JOIN_VERTEX, MapperVertexFactory.getInstance());
+        createEdge(join, sinkVertex, Long.toString(cons));
+        sinkVertex = join;
+        hasImplode = true;
+      }
+      createEdge(sourceVertex, sinkVertex, Long.toString(cons));
+      cons = cons - prod;
+      if (cons == 0) {
+        sourceSet.removeAll(toRemove);
+        return sourceSet.isEmpty() ? Pair.of((DAGVertex) null, (long) -1) : sourceSet.get(0);
+      }
+    }
+    sourceSet.removeAll(toRemove);
+    return Pair.of((DAGVertex) null, (long) -1);
+  }
+
+  /**
+   * Connect sinks to current source
+   * 
+   * @param sinkSet
+   *          set of dag sinks
+   * @param source
+   *          current source to connect from
+   * @return new current sink
+   */
+  private Pair<DAGVertex, Long> connectSinks2Source(final ArrayList<Pair<DAGVertex, Long>> sinkSet, final Pair<DAGVertex, Long> source) {
+    long prod = source.getRight();
+    final ArrayList<Pair<DAGVertex, Long>> toRemove = new ArrayList<Pair<DAGVertex, Long>>();
+    DAGVertex sourceVertex = source.getLeft();
+    boolean hasExplode = false;
+    for (final Pair<DAGVertex, Long> snk : sinkSet) {
+      toRemove.add(snk);
+      long cons = snk.getRight();
+      final DAGVertex sinkVertex = snk.getLeft();
+      if (cons > prod) {
+        final DAGVertex join = createJoinVertex(this.fifo.getId() + SRVerticesLinker.JOIN_VERTEX, MapperVertexFactory.getInstance());
+        createEdge(join, sinkVertex, Long.toString(cons));
+        createEdge(sourceVertex, join, Long.toString(prod));
+        cons = cons - prod;
+        sinkSet.removeAll(toRemove);
+        return Pair.of(join, cons);
+      } else if (!hasExplode && cons < prod) {
+        // Add a fork
+        final DAGVertex fork = createForkVertex(this.fifo.getId() + SRVerticesLinker.FORK_VERTEX, MapperVertexFactory.getInstance());
+        createEdge(sourceVertex, fork, Long.toString(prod));
+        sourceVertex = fork;
+        hasExplode = true;
+      }
+      createEdge(sourceVertex, sinkVertex, Long.toString(cons));
+      prod = prod - cons;
+      if (prod == 0) {
+        sinkSet.removeAll(toRemove);
+        return sinkSet.isEmpty() ? Pair.of((DAGVertex) null, (long) -1) : sinkSet.get(0);
+      }
+    }
+    sinkSet.removeAll(toRemove);
+    return Pair.of((DAGVertex) null, (long) -1);
+  }
+
+  /**
+   * Generate DAG set of sources
+   * 
+   * @param brv
+   *          repetition vector values
+   * @param pimm2dag
+   *          map of PiMM actors and their associated list of dag vertices
+   * @return set of dag sources
+   * @throws PiMMHelperException
+   */
   private ArrayList<Pair<DAGVertex, Long>> getSourceSet(final Map<AbstractVertex, Integer> brv, final Map<AbstractVertex, ArrayList<MapperDAGVertex>> pimm2dag)
       throws PiMMHelperException {
     ArrayList<Pair<DAGVertex, Long>> sourceSet = new ArrayList<>();
@@ -292,8 +342,7 @@ public class SRVerticesLinker {
           sourceSet.add(addDelaySetterActor(setterActorList));
         } else {
           // Add an init vertex for the first iteration of the sink actor
-          final DAGVertex initVertex = vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX);
-          setVertexDefault(initVertex, fifoID + "_Init");
+          final DAGVertex initVertex = createInitVertex(fifoID + "_Init", vertexFactory);
           addPair(sourceSet, initVertex, this.delays);
         }
       }
@@ -305,8 +354,18 @@ public class SRVerticesLinker {
     return sourceSet;
   }
 
+  /**
+   * Adds a new pair to a set
+   * 
+   * @param set
+   *          the set
+   * @param vertex
+   *          left element of the pair to add
+   * @param value
+   *          right element of the pair to add
+   */
   private void addPair(final ArrayList<Pair<DAGVertex, Long>> set, final DAGVertex vertex, final long value) {
-    set.add(new Pair<>(vertex, value));
+    set.add(Pair.of(vertex, value));
   }
 
   /**
@@ -324,19 +383,28 @@ public class SRVerticesLinker {
     if (setterRV > 1) {
       // Add a join vertex for the first iteration of the sink actor
       // Connect all instances of the setter actor to the join actor
-      final DAGVertex joinVertex = createJoinVertex(this.fifo.getId() + "_Join_", vertexFactory);
-      this.dag.addVertex(joinVertex);
+      final DAGVertex joinVertex = createJoinVertex(this.fifo.getId() + SRVerticesLinker.JOIN_VERTEX, vertexFactory);
       for (int i = 0; i < setterRV; ++i) {
         final DAGVertex currentSetterActor = setterActorList.get(i);
         final String rateExpression = delay.getSetterPort().getPortRateExpression().getExpressionString();
         createEdge(currentSetterActor, joinVertex, rateExpression);
       }
-      return new Pair<>(joinVertex, this.delays);
+      return Pair.of(joinVertex, this.delays);
     } else {
-      return new Pair<>(setterActorList.get(0), this.delays);
+      return Pair.of(setterActorList.get(0), this.delays);
     }
   }
 
+  /**
+   * Generate DAG set of sinks
+   * 
+   * @param brv
+   *          repetition vector values
+   * @param pimm2dag
+   *          map of PiMM actors and their associated list of dag vertices
+   * @return set of dag sink
+   * @throws PiMMHelperException
+   */
   private ArrayList<Pair<DAGVertex, Long>> getSinkSet(final Map<AbstractVertex, Integer> brv, final Map<AbstractVertex, ArrayList<MapperDAGVertex>> pimm2dag)
       throws PiMMHelperException {
     ArrayList<Pair<DAGVertex, Long>> sinkSet = new ArrayList<>();
@@ -386,8 +454,7 @@ public class SRVerticesLinker {
           sinkSet.add(addDelayGetterActor(getterActorList));
         } else {
           // Add an end vertex for the last iteration of the source actor
-          final DAGVertex endVertex = vertexFactory.createVertex(DAGEndVertex.DAG_END_VERTEX);
-          setVertexDefault(endVertex, fifoID + "_End");
+          final DAGVertex endVertex = createEndVertex(fifoID + "_End", vertexFactory);
           addPair(sinkSet, endVertex, this.delays);
         }
       }
@@ -412,16 +479,15 @@ public class SRVerticesLinker {
     if (getterRV > 1) {
       // Add a fork vertex for the last iteration of the source actor
       // Connect all instances of the getter actor to the fork actor
-      final DAGVertex forkVertex = createForkVertex(this.fifo.getId() + "_Fork_", vertexFactory);
-      this.dag.addVertex(forkVertex);
+      final DAGVertex forkVertex = createForkVertex(this.fifo.getId() + SRVerticesLinker.FORK_VERTEX, vertexFactory);
       for (int i = 0; i < getterRV; ++i) {
         final DAGVertex currentGetterActor = getterActorList.get(i);
         final String rateExpression = delay.getGetterPort().getPortRateExpression().getExpressionString();
         createEdge(forkVertex, currentGetterActor, rateExpression);
       }
-      return new Pair<>(forkVertex, this.delays);
+      return Pair.of(forkVertex, this.delays);
     } else {
-      return new Pair<>(getterActorList.get(0), this.delays);
+      return Pair.of(getterActorList.get(0), this.delays);
     }
   }
 
@@ -448,7 +514,8 @@ public class SRVerticesLinker {
   }
 
   /**
-   * Creates a new join actor with a unique ID
+   * Creates a new join actor with a unique ID. <br>
+   * The created vertex is automatically added to the DAG.
    * 
    * @param fixID
    *          fix part of the join actor ID
@@ -460,11 +527,13 @@ public class SRVerticesLinker {
     final DAGVertex joinVertex = vertexFactory.createVertex(DAGJoinVertex.DAG_JOIN_VERTEX);
     final String id = fixID + Integer.toString(joinIDCounter++);
     setVertexDefault(joinVertex, id);
+    this.dag.addVertex(joinVertex);
     return joinVertex;
   }
 
   /**
-   * Creates a new fork actor with a unique ID
+   * Creates a new fork actor with a unique ID. <br>
+   * The created vertex is automatically added to the DAG.
    * 
    * @param fixID
    *          fix part of the fork actor ID
@@ -476,7 +545,42 @@ public class SRVerticesLinker {
     final DAGVertex forkVertex = vertexFactory.createVertex(DAGForkVertex.DAG_FORK_VERTEX);
     final String id = fixID + Integer.toString(forkIDCounter++);
     setVertexDefault(forkVertex, id);
+    this.dag.addVertex(forkVertex);
     return forkVertex;
+  }
+
+  /**
+   * Creates a new init actor. <br>
+   * The created vertex is automatically added to the DAG.
+   * 
+   * @param fixID
+   *          id of the vertex
+   * @param vertexFactory
+   *          DAGVertex factory
+   * @return the init DAGVertex
+   */
+  private DAGVertex createInitVertex(final String fixID, final MapperVertexFactory vertexFactory) {
+    final DAGVertex initVertex = vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX);
+    setVertexDefault(initVertex, fixID);
+    this.dag.addVertex(initVertex);
+    return initVertex;
+  }
+
+  /**
+   * Creates a new end actor. <br>
+   * The created vertex is automatically added to the DAG.
+   * 
+   * @param fixID
+   *          id of the vertex
+   * @param vertexFactory
+   *          DAGVertex factory
+   * @return the end DAGVertex
+   */
+  private DAGVertex createEndVertex(final String fixID, final MapperVertexFactory vertexFactory) {
+    final DAGVertex endVertex = vertexFactory.createVertex(DAGEndVertex.DAG_END_VERTEX);
+    setVertexDefault(endVertex, fixID);
+    this.dag.addVertex(endVertex);
+    return endVertex;
   }
 
   /**
@@ -496,69 +600,69 @@ public class SRVerticesLinker {
     vertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
   }
 
-  private class Pair<F, S> {
-
-    // First element of the pair
-    private F first;
-    // Second element of the pair
-    private S second;
-
-    /**
-     * Construct a pair from the parameters.
-     * 
-     * @param a
-     *          First element.
-     * @param b
-     *          Second element.
-     */
-    public Pair(F a, S b) {
-      first = a;
-      second = b;
-    }
-
-    /**
-     * @return First element in the pair.
-     */
-    public F getFirst() {
-      return first;
-    }
-
-    /**
-     * @return Second element in the pair.
-     */
-    public S getSecond() {
-      return second;
-    }
-
-    /**
-     * Sets the first element
-     * 
-     * @param a
-     *          First element.
-     */
-    public void setFirst(F a) {
-      first = a;
-    }
-
-    /**
-     * Sets the second element
-     * 
-     * @param b
-     *          Second element.
-     */
-    public void setSecond(S b) {
-      second = b;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-      return "<" + first + ", " + second + ">";
-    }
-  }
+  // private class Pair<F, S> {
+  //
+  // // First element of the pair
+  // private F first;
+  // // Second element of the pair
+  // private S second;
+  //
+  // /**
+  // * Construct a pair from the parameters.
+  // *
+  // * @param a
+  // * First element.
+  // * @param b
+  // * Second element.
+  // */
+  // public Pair(F a, S b) {
+  // first = a;
+  // second = b;
+  // }
+  //
+  // /**
+  // * @return First element in the pair.
+  // */
+  // public F getFirst() {
+  // return first;
+  // }
+  //
+  // /**
+  // * @return Second element in the pair.
+  // */
+  // public S getSecond() {
+  // return second;
+  // }
+  //
+  // /**
+  // * Sets the first element
+  // *
+  // * @param a
+  // * First element.
+  // */
+  // public void setFirst(F a) {
+  // first = a;
+  // }
+  //
+  // /**
+  // * Sets the second element
+  // *
+  // * @param b
+  // * Second element.
+  // */
+  // public void setSecond(S b) {
+  // second = b;
+  // }
+  //
+  // /*
+  // * (non-Javadoc)
+  // *
+  // * @see java.lang.Object#toString()
+  // */
+  // @Override
+  // public String toString() {
+  // return "<" + first + ", " + second + ">";
+  // }
+  // }
 
 }

@@ -393,7 +393,6 @@ public class SdfToDagConverter {
      * Importing data edge weights and multiplying by type size when available
      */
     final Iterator<DAGEdge> edgeiterator = dag.edgeSet().iterator();
-
     while (edgeiterator.hasNext()) {
       final MapperDAGEdge currentEdge = (MapperDAGEdge) edgeiterator.next();
       final EdgeInit currentEdgeInit = currentEdge.getInit();
