@@ -43,18 +43,18 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * 
+ *
  * Unit test of SDFConsistency class
- * 
+ *
  * @author hderoui
- * 
+ *
  */
 public class SDFConsistencyTest {
 
   @Test
   public void testRVShouldBeComputed() {
     // generate the SDF graph ABC326
-    SDFGraph ABC = generateSDFGraphABC326();
+    final SDFGraph ABC = generateSDFGraphABC326();
     // compute the repetition vector (RV) of ABC326
     SDFConsistency.computeRV(ABC);
     // check the RV value
@@ -66,7 +66,7 @@ public class SDFConsistencyTest {
   @Test
   public void testConsistencyShouldBeEvaluated() {
     // generate the SDF graph ABC326 (consistent)
-    SDFGraph ABC = generateSDFGraphABC326();
+    final SDFGraph ABC = generateSDFGraphABC326();
     // evaluate the consistency
     Boolean consistent = SDFConsistency.computeRV(ABC);
     Assert.assertTrue(consistent);
@@ -81,7 +81,7 @@ public class SDFConsistencyTest {
 
   /**
    * generate a SDF graph to test methods
-   * 
+   *
    * @return SDF graph
    */
   public SDFGraph generateSDFGraphABC326() {
@@ -90,7 +90,7 @@ public class SDFConsistencyTest {
     // RV[A=3, B=2, C=6]
 
     // create SDF graph testABC326
-    SDFGraph graph = new SDFGraph();
+    final SDFGraph graph = new SDFGraph();
     graph.setName("testABC326");
 
     // add actors

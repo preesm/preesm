@@ -44,7 +44,7 @@ import org.junit.Test;
 
 /**
  * Unit test of ALAPScheduler_DAG class
- * 
+ *
  * @author hderoui
  *
  */
@@ -53,11 +53,11 @@ public class ALAPScheduler_DAGTest {
   @Test
   public void testIterationDurationShouldBeComputed() {
     // generate a DAG
-    SDFGraph dag = generateDAGOfGraphABC326();
+    final SDFGraph dag = generateDAGOfGraphABC326();
 
     // schedule the DAG by an ASAP to get the throughput constraint
-    ASAPScheduler_DAG asap = new ASAPScheduler_DAG();
-    double ThConstraint = asap.schedule(dag);
+    final ASAPScheduler_DAG asap = new ASAPScheduler_DAG();
+    final double ThConstraint = asap.schedule(dag);
     // check the throughput constraint
     Assert.assertEquals(12.0, ThConstraint, 0);
     // check the start date of each actor
@@ -68,8 +68,8 @@ public class ALAPScheduler_DAGTest {
     asap.simulator.resetExecutionCounter();
 
     // ALAP schedule the DAG
-    ALAPScheduler_DAG alap = new ALAPScheduler_DAG();
-    double durationOf1Iteration = alap.schedule(dag, asap.simulator, ThConstraint);
+    final ALAPScheduler_DAG alap = new ALAPScheduler_DAG();
+    final double durationOf1Iteration = alap.schedule(dag, asap.simulator, ThConstraint);
 
     // check the value of the duration
     Assert.assertEquals(12.0, durationOf1Iteration, 0);
@@ -82,7 +82,7 @@ public class ALAPScheduler_DAGTest {
 
   /**
    * generates a normalized SDF graph
-   * 
+   *
    * @return SDF graph
    */
   public SDFGraph generateDAGOfGraphABC326() {
@@ -93,7 +93,7 @@ public class ALAPScheduler_DAGTest {
     // Duration of the first iteration = 12
 
     // create DAG testABC
-    SDFGraph graph = new SDFGraph();
+    final SDFGraph graph = new SDFGraph();
     graph.setName("testABC");
 
     // add actors

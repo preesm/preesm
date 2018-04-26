@@ -430,7 +430,7 @@ public class PasteFeature extends AbstractPasteFeature {
     // setter is either a Parameter or ConfigOutputPort
     final ISetter setter = newDep.getSetter();
     final Anchor setterPE;
-    if (setter instanceof ConfigInputInterface || setter instanceof Parameter) {
+    if ((setter instanceof ConfigInputInterface) || (setter instanceof Parameter)) {
       final PictogramElement pe = findPE(setter);
       if (pe instanceof Anchor) {
         setterPE = (Anchor) pe;

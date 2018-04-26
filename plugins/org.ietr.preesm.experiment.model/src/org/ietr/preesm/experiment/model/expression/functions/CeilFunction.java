@@ -53,7 +53,7 @@ public class CeilFunction extends AbstractPreesmMathFunction {
   }
 
   @Override
-  protected double compute(double... args) {
+  protected double compute(final double... args) {
     return Math.ceil(args[0]);
   }
 

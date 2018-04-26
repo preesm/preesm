@@ -57,13 +57,13 @@ public class ASAPScheduler_SDF {
 
   /**
    * Schedule the graph using an ASAP schedule and return the duration of the graph iteration
-   * 
+   *
    * @param graph
    *          SDF graph contains actors duration
    * @return the duration of a graph iteration
    */
-  public double schedule(SDFGraph graph) {
-    Stopwatch timer = new Stopwatch();
+  public double schedule(final SDFGraph graph) {
+    final Stopwatch timer = new Stopwatch();
     timer.start();
 
     // initialize the simulator
@@ -71,38 +71,38 @@ public class ASAPScheduler_SDF {
     this.dur1Iter = 0.;
 
     // initialize the 1st elements of the list
-    executions = new Hashtable<Double, Hashtable<SDFAbstractVertex, Integer>>();
-    this.initialzeList(graph);
+    this.executions = new Hashtable<>();
+    initialzeList(graph);
 
-    while (!executions.isEmpty()) {
+    while (!this.executions.isEmpty()) {
       // pick the execution list with the earliest finish date
       double t = Double.MAX_VALUE;
-      for (double keyT : executions.keySet()) {
+      for (final double keyT : this.executions.keySet()) {
         if (t >= keyT) {
           t = keyT;
         }
       }
 
       // update the duration of the iteration
-      if (dur1Iter < t) {
-        dur1Iter = t;
+      if (this.dur1Iter < t) {
+        this.dur1Iter = t;
       }
 
       // execute the list of executions
-      Hashtable<SDFAbstractVertex, Integer> listTExec = executions.get(t);
-      executions.remove(t);
+      final Hashtable<SDFAbstractVertex, Integer> listTExec = this.executions.get(t);
+      this.executions.remove(t);
 
-      for (Entry<SDFAbstractVertex, Integer> execution : listTExec.entrySet()) {
+      for (final Entry<SDFAbstractVertex, Integer> execution : listTExec.entrySet()) {
 
         // produce n*prod data tokens
         this.simulator.produce(execution.getKey(), execution.getValue());
 
         // verify the target actors of the executed actor if they are ready to be executed
-        for (SDFInterfaceVertex output : execution.getKey().getSinks()) {
+        for (final SDFInterfaceVertex output : execution.getKey().getSinks()) {
 
           // execute n times the target actor if it is ready
-          SDFAbstractVertex targetActor = execution.getKey().getAssociatedEdge(output).getTarget();
-          int n = this.simulator.maxExecToCompleteAnIteration(targetActor);
+          final SDFAbstractVertex targetActor = execution.getKey().getAssociatedEdge(output).getTarget();
+          final int n = this.simulator.maxExecToCompleteAnIteration(targetActor);
 
           if (n > 0) {
             // consume N data tokens
@@ -112,21 +112,21 @@ public class ASAPScheduler_SDF {
             this.simulator.setStartDate(targetActor, t);
 
             // set the finish date
-            double finishDate = this.simulator.getStartDate(targetActor) + this.simulator.getActorDuration(targetActor);
+            final double finishDate = this.simulator.getStartDate(targetActor) + this.simulator.getActorDuration(targetActor);
             this.simulator.setfinishDate(targetActor, finishDate);
 
             // add the execution to the list
-            if (executions.containsKey(finishDate)) {
-              Hashtable<SDFAbstractVertex, Integer> listExec = executions.get(finishDate);
+            if (this.executions.containsKey(finishDate)) {
+              final Hashtable<SDFAbstractVertex, Integer> listExec = this.executions.get(finishDate);
               if (listExec.containsKey(targetActor)) {
-                int old = listExec.get(targetActor);
+                final int old = listExec.get(targetActor);
                 listExec.put(targetActor, (old + n));
               } else {
                 listExec.put(targetActor, n);
               }
             } else {
-              executions.put(finishDate, new Hashtable<SDFAbstractVertex, Integer>());
-              executions.get(finishDate).put(targetActor, n);
+              this.executions.put(finishDate, new Hashtable<SDFAbstractVertex, Integer>());
+              this.executions.get(finishDate).put(targetActor, n);
             }
           }
         }
@@ -137,28 +137,28 @@ public class ASAPScheduler_SDF {
 
     // check if the simulation is completed
     if (this.simulator.isIterationCompleted()) {
-      live = true;
+      this.live = true;
       System.out.println("Iteration complete !!");
     } else {
-      live = false;
+      this.live = false;
       System.err.println("Iteration not complete !!");
     }
 
     System.out.println("SDF Graph Scheduled in " + timer.toString());
-    return dur1Iter;
+    return this.dur1Iter;
   }
 
   /**
    * Initialize the list of ready executions
-   * 
+   *
    * @param graph
    *          SDF graph
    */
-  private void initialzeList(SDFGraph graph) {
+  private void initialzeList(final SDFGraph graph) {
     // loop actors
-    for (SDFAbstractVertex actor : graph.vertexSet()) {
+    for (final SDFAbstractVertex actor : graph.vertexSet()) {
       // get the max n
-      int n = this.simulator.maxExecToCompleteAnIteration(actor);
+      final int n = this.simulator.maxExecToCompleteAnIteration(actor);
       // if ready
       if (n > 0) {
         // consume N data tokens
@@ -166,14 +166,14 @@ public class ASAPScheduler_SDF {
         // set the start date
         this.simulator.setStartDate(actor, 0.);
         // set the finish date
-        double finishDate = this.simulator.getStartDate(actor) + this.simulator.getActorDuration(actor);
+        final double finishDate = this.simulator.getStartDate(actor) + this.simulator.getActorDuration(actor);
         this.simulator.setfinishDate(actor, finishDate);
         // add the execution to the list
-        if (executions.containsKey(finishDate)) {
-          executions.get(finishDate).put(actor, n);
+        if (this.executions.containsKey(finishDate)) {
+          this.executions.get(finishDate).put(actor, n);
         } else {
-          executions.put(finishDate, new Hashtable<SDFAbstractVertex, Integer>());
-          executions.get(finishDate).put(actor, n);
+          this.executions.put(finishDate, new Hashtable<SDFAbstractVertex, Integer>());
+          this.executions.get(finishDate).put(actor, n);
         }
       }
     }

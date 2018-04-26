@@ -139,7 +139,7 @@ public class RenameAbstractVertexFeature extends AbstractCustomFeature {
           this.hasDoneChanges = true;
           vertex.setName(newVertexName);
           if (vertex instanceof InterfaceActor) {
-            InterfaceActor iface = (InterfaceActor) vertex;
+            final InterfaceActor iface = (InterfaceActor) vertex;
             iface.getDataPort().setName(newVertexName);
           }
 

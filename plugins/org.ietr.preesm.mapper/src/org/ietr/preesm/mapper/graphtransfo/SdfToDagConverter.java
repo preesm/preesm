@@ -3,6 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Jonathan Piat <jpiat@laas.fr> (2008 - 2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
@@ -109,7 +110,7 @@ public class SdfToDagConverter {
       return null;
     }
     final SDFGraph sdf = sdfIn.clone();
-    setDataSizeForSDF(sdf, scenario);
+    SdfToDagConverter.setDataSizeForSDF(sdf, scenario);
     // Generates a dag
     final MapperDAG dag = new MapperDAG(new MapperEdgeFactory(), sdf);
 

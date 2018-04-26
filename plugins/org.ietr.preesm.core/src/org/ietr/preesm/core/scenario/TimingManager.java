@@ -3,6 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Jonathan Piat <jpiat@laas.fr> (2009 - 2011)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2015)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
@@ -173,7 +174,7 @@ public class TimingManager {
     final String id = dagVertex.getId();
 
     if (graphDescription == null) {
-      for (final Timing timing : this.getTimings()) {
+      for (final Timing timing : getTimings()) {
         if (timing.getVertexId().equals(id)) {
           vals.add(timing);
         }
@@ -398,7 +399,6 @@ public class TimingManager {
    *          the new default mem cpy speed
    */
   public void setDefaultMemCpySpeed(final String operatorDef) {
-    putMemcpySpeed(
-        new MemCopySpeed(operatorDef, TimingManager.DEFAULTMEMCPYSETUPTIME, TimingManager.DEFAULTMEMCPYTIMEPERUNIT));
+    putMemcpySpeed(new MemCopySpeed(operatorDef, TimingManager.DEFAULTMEMCPYSETUPTIME, TimingManager.DEFAULTMEMCPYTIMEPERUNIT));
   }
 }

@@ -58,24 +58,24 @@ public class HPeriodicSchedule {
    *          IBSDF graph
    * @return throughput of the graph
    */
-  public double evaluate(SDFGraph inputGraph) {
+  public double evaluate(final SDFGraph inputGraph) {
     // this.preesmScenario = scenario;
 
     // add the name property for each edge of the graph
-    for (SDFEdge e : inputGraph.edgeSet()) {
+    for (final SDFEdge e : inputGraph.edgeSet()) {
       e.setPropertyValue("edgeName", Identifier.generateEdgeId());
     }
 
     System.out.println("Computing the throughput of the graph using Hierarchical Periodic Schedule ...");
     this.timer = new Stopwatch();
-    timer.start();
+    this.timer.start();
 
     // Step 1: define the execution duration of each hierarchical actor and add a self loop to it
     System.out.println("Step 1: define the execution duration of each hierarchical actor");
-    for (SDFAbstractVertex actor : inputGraph.vertexSet()) {
+    for (final SDFAbstractVertex actor : inputGraph.vertexSet()) {
       if (actor.getGraphDescription() != null) {
         // set the duration of the hierarchical actor
-        Double duration = this.setHierarchicalActorsDuration((SDFGraph) actor.getGraphDescription());
+        final Double duration = setHierarchicalActorsDuration((SDFGraph) actor.getGraphDescription());
         actor.setPropertyValue("duration", duration);
         // if (this.preesmScenario != null) {
         // this.preesmScenario.getTimingManager().setTiming(actor.getId(), "x86", duration.longValue());
@@ -87,33 +87,33 @@ public class HPeriodicSchedule {
 
     // Step 3: compute the throughput with the Periodic Schedule
     System.out.println("Step 4: compute the throughput using the Periodic Schedule");
-    PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
-    double throughput = periodic.computeGraphThroughput(inputGraph, null, false);
-    timer.stop();
-    System.out.println("Throughput of the graph = " + throughput + " computed in " + timer.toString());
+    final PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
+    final double throughput = periodic.computeGraphThroughput(inputGraph, null, false);
+    this.timer.stop();
+    System.out.println("Throughput of the graph = " + throughput + " computed in " + this.timer.toString());
 
     return throughput;
   }
 
   /**
    * Computes the duration of a subgraph
-   * 
+   *
    * @param subgraph
    *          subgraph of a hierarchical actor
    * @return the duration of the subgraph
    */
-  public double setHierarchicalActorsDuration(SDFGraph subgraph) {
+  public double setHierarchicalActorsDuration(final SDFGraph subgraph) {
 
     // add the name property for each edge of the graph
-    for (SDFEdge e : subgraph.edgeSet()) {
+    for (final SDFEdge e : subgraph.edgeSet()) {
       e.setPropertyValue("edgeName", Identifier.generateEdgeId());
     }
 
     // recursive function
-    for (SDFAbstractVertex actor : subgraph.vertexSet()) {
+    for (final SDFAbstractVertex actor : subgraph.vertexSet()) {
       if (actor.getGraphDescription() != null) {
         // set the duration of the hierarchical actor
-        Double duration = this.setHierarchicalActorsDuration((SDFGraph) actor.getGraphDescription());
+        final Double duration = setHierarchicalActorsDuration((SDFGraph) actor.getGraphDescription());
         actor.setPropertyValue("duration", duration);
         // this.preesmScenario.getTimingManager().setTiming(actor.getId(), "x86", duration.longValue());
         // add the self loop
@@ -125,11 +125,11 @@ public class HPeriodicSchedule {
     // Step 4: compute the throughput with the Periodic Schedule
     System.out.println("Step 4: compute the throughput using the Periodic Schedule");
     // normalize the graph
-    SDFGraph g = subgraph;
+    final SDFGraph g = subgraph;
     // SDFGraph g = SDFTransformer.convertToSrSDF(subgraph);
     SDFTransformer.normalize(g);
     // compute its normalized period K
-    PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
+    final PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
     periodic.computeNormalizedPeriod(g, null);
     // compute the subgraph period
     return periodic.computeGraphPeriod(g);

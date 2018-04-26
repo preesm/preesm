@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2016)
@@ -430,8 +430,8 @@ public abstract class MemoryAllocator {
             .getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
 
         @SuppressWarnings("unchecked")
-        final List<MemoryExclusionVertex> neighbors = (List<MemoryExclusionVertex>) vertex.getPropertyBean()
-            .getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
+        final List<
+            MemoryExclusionVertex> neighbors = (List<MemoryExclusionVertex>) vertex.getPropertyBean().getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
 
         // If the Mobject is not splitted
         if (realTokenRange.size() == 1) {

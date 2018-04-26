@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2017)
@@ -741,8 +741,8 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
     // DAG_FIFO_ALLOCATION
     @SuppressWarnings("unchecked")
-    final Map<MemoryExclusionVertex, Integer> dagFifoAlloc = (Map<MemoryExclusionVertex, Integer>) getPropertyBean()
-        .getValue(MemoryExclusionGraph.DAG_FIFO_ALLOCATION);
+    final Map<MemoryExclusionVertex,
+        Integer> dagFifoAlloc = (Map<MemoryExclusionVertex, Integer>) getPropertyBean().getValue(MemoryExclusionGraph.DAG_FIFO_ALLOCATION);
     if (dagFifoAlloc != null) {
       final Map<MemoryExclusionVertex, Integer> dagFifoAllocCopy = new LinkedHashMap<>();
       for (final Entry<MemoryExclusionVertex, Integer> fifoAlloc : dagFifoAlloc.entrySet()) {
@@ -753,8 +753,8 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
     // WORKING_MEM_ALLOCATION
     @SuppressWarnings("unchecked")
-    final Map<MemoryExclusionVertex, Integer> wMemAlloc = (Map<MemoryExclusionVertex, Integer>) getPropertyBean()
-        .getValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION);
+    final Map<MemoryExclusionVertex,
+        Integer> wMemAlloc = (Map<MemoryExclusionVertex, Integer>) getPropertyBean().getValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION);
     if (wMemAlloc != null) {
       final Map<MemoryExclusionVertex, Integer> wMemAllocCopy = new LinkedHashMap<>();
       for (final Entry<MemoryExclusionVertex, Integer> wMem : wMemAlloc.entrySet()) {
@@ -873,8 +873,8 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
       // DIVIDED_PARTS_HOSTS
       @SuppressWarnings("unchecked")
-      final List<MemoryExclusionVertex> dividedPartHosts = (List<MemoryExclusionVertex>) vertex.getPropertyBean()
-          .getValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS);
+      final List<
+          MemoryExclusionVertex> dividedPartHosts = (List<MemoryExclusionVertex>) vertex.getPropertyBean().getValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS);
       if (dividedPartHosts != null) {
         final List<MemoryExclusionVertex> dividedPartHostCopy = new ArrayList<>();
         for (final MemoryExclusionVertex host : dividedPartHosts) {

@@ -44,7 +44,7 @@ import org.junit.Test;
 
 /**
  * Unit test of SrSDFTransformer class
- * 
+ *
  * @author hderoui
  *
  */
@@ -54,15 +54,15 @@ public class SrSDFTransformerTest {
   public void testSrSDFGraphShouldBeTranformedToHSDFGraph() {
 
     // generate a srSDF graph
-    SDFGraph srSDF = generateSrSDFGraphABC326();
+    final SDFGraph srSDF = generateSrSDFGraphABC326();
 
     // convert the srSDF graph to an HSDF graph
-    SDFGraph hsdf = SrSDFTransformer.convertToHSDF(srSDF);
+    final SDFGraph hsdf = SrSDFTransformer.convertToHSDF(srSDF);
 
     // verify that the consumption/production rate of all edges equal 1
-    for (SDFEdge e : hsdf.edgeSet()) {
-      int cons = e.getCons().intValue();
-      int prod = e.getProd().intValue();
+    for (final SDFEdge e : hsdf.edgeSet()) {
+      final int cons = e.getCons().intValue();
+      final int prod = e.getProd().intValue();
 
       Assert.assertEquals(1, cons);
       Assert.assertEquals(1, prod);
@@ -74,10 +74,10 @@ public class SrSDFTransformerTest {
   public void testSrSDFGraphShouldBeTranformedToDAG() {
 
     // generate a srSDF graph
-    SDFGraph srSDF = generateSrSDFGraphABC326();
+    final SDFGraph srSDF = generateSrSDFGraphABC326();
 
     // convert the srSDF graph to a DAG
-    SDFGraph dag = SrSDFTransformer.convertToDAG(srSDF);
+    final SDFGraph dag = SrSDFTransformer.convertToDAG(srSDF);
 
     // check if all the edges between Ai and Bi have been removed
     int nbEdge;
@@ -91,8 +91,8 @@ public class SrSDFTransformerTest {
     Assert.assertEquals(0, nbEdge);
 
     // check if all the edges have zero delay
-    for (SDFEdge e : dag.edgeSet()) {
-      int delay = e.getDelay().intValue();
+    for (final SDFEdge e : dag.edgeSet()) {
+      final int delay = e.getDelay().intValue();
       Assert.assertEquals(0, delay);
 
     }
@@ -100,7 +100,7 @@ public class SrSDFTransformerTest {
 
   /**
    * generates a normalized SDF graph
-   * 
+   *
    * @return SDF graph
    */
   public SDFGraph generateSrSDFGraphABC326() {
@@ -111,7 +111,7 @@ public class SrSDFTransformerTest {
     // Duration of the first iteration = 3
 
     // create srSDF graph testABC326
-    SDFGraph graph = new SDFGraph();
+    final SDFGraph graph = new SDFGraph();
     graph.setName("testABC326");
 
     // add actors

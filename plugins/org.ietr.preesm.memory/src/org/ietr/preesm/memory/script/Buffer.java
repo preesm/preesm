@@ -52,7 +52,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 
 /**
  * This class implements the Buffer concept used in memory scripts.
- * 
+ *
  * @author ahonorat
  */
 public class Buffer {
@@ -65,7 +65,7 @@ public class Buffer {
    * @return a {@link Map} containing the start end end of ranges matched multiple times.
    */
   List<Range> getMultipleMatchRange() {
-    return getOverlappingRanges(matchTable.values().stream().flatMap(it -> it.stream()).collect(Collectors.toList()));
+    return Buffer.getOverlappingRanges(this.matchTable.values().stream().flatMap(it -> it.stream()).collect(Collectors.toList()));
   }
 
   /**
@@ -76,15 +76,15 @@ public class Buffer {
    *          the {@link List} of {@link Match matches}
    * @return a {@link List} of {@link Range} containing the overlapping ranges of the matches.
    */
-  static List<Range> getOverlappingRanges(List<Match> matches) {
-    List<Range> matchRanges = new ArrayList<>();
-    List<Range> multipleMatchRanges = new ArrayList<>();
+  static List<Range> getOverlappingRanges(final List<Match> matches) {
+    final List<Range> matchRanges = new ArrayList<>();
+    final List<Range> multipleMatchRanges = new ArrayList<>();
 
     // For each Match
-    for (Match match : matches) {
-      Range newRange = match.getLocalRange();
+    for (final Match match : matches) {
+      final Range newRange = match.getLocalRange();
       // Get the intersection of the match and existing match ranges
-      List<Range> intersections = Range.intersection(matchRanges, newRange);
+      final List<Range> intersections = Range.intersection(matchRanges, newRange);
       Range.union(multipleMatchRanges, intersections);
       // Update the existing match ranges
       Range.union(matchRanges, newRange);
@@ -103,19 +103,19 @@ public class Buffer {
    * @return <code>true</code> if the {@link Buffer} is completely matched, and <code>false</code> otherwise.
    */
   boolean isCompletelyMatched() {
-    List<Range> coveredRange = new ArrayList<Range>();
-    Iterator<Entry<Integer, List<Match>>> iterEntry = this.matchTable.entrySet().iterator();
+    final List<Range> coveredRange = new ArrayList<>();
+    final Iterator<Entry<Integer, List<Match>>> iterEntry = this.matchTable.entrySet().iterator();
     boolean stop = false;
 
     while (iterEntry.hasNext() && !stop) {
-      Entry<Integer, List<Match>> entry = iterEntry.next();
-      Iterator<Match> iterMatch = entry.getValue().iterator();
+      final Entry<Integer, List<Match>> entry = iterEntry.next();
+      final Iterator<Match> iterMatch = entry.getValue().iterator();
       while (iterMatch.hasNext() && !stop) {
-        Match match = iterMatch.next();
-        Range addedRange = Range.union(coveredRange, match.getLocalRange());
+        final Match match = iterMatch.next();
+        final Range addedRange = Range.union(coveredRange, match.getLocalRange());
 
         // Set stop to true if the range covers the complete token range
-        stop = stop || (addedRange.getStart() <= 0 && addedRange.getEnd() >= tokenSize * nbTokens);
+        stop = stop || ((addedRange.getStart() <= 0) && (addedRange.getEnd() >= (this.tokenSize * this.nbTokens)));
       }
     }
 
@@ -130,13 +130,13 @@ public class Buffer {
    * A {@link Match} is reciprocal if the remote {@link Match#buffer} contains an reciprocal {@link Match} in its {@link Buffer#_matchTable matchTable}.
    */
   boolean isReciprocal() {
-    return matchTable.entrySet().stream().allMatch(entry -> {
-      List<Match> matches = entry.getValue();
-      int localIdx = entry.getKey();
+    return this.matchTable.entrySet().stream().allMatch(entry -> {
+      final List<Match> matches = entry.getValue();
+      final int localIdx = entry.getKey();
       // for all matches
       return matches.stream().allMatch(match -> {
-        List<Match> remoteMatches = match.getRemoteBuffer().matchTable.get(match.getRemoteIndex());
-        return remoteMatches != null && remoteMatches.contains(new Match(match.getRemoteBuffer(), match.getRemoteIndex(), this, localIdx, match.getLength()));
+        final List<Match> remoteMatches = match.getRemoteBuffer().matchTable.get(match.getRemoteIndex());
+        return (remoteMatches != null) && remoteMatches.contains(new Match(match.getRemoteBuffer(), match.getRemoteIndex(), this, localIdx, match.getLength()));
       });
     });
   }
@@ -158,15 +158,15 @@ public class Buffer {
    *          A {@link List} containing {@link Match matches} that will be ignored during simplification. This list will be updated during the method execution
    *          by adding to it the {@link Match#reciprocate} of the processed {@link Match matches}.
    */
-  void simplifyMatches(List<Match> processedMatch) {
-    List<Integer> removedEntry = new ArrayList<>();
+  void simplifyMatches(final List<Match> processedMatch) {
+    final List<Integer> removedEntry = new ArrayList<>();
 
     // Process the match table
-    for (Entry<Integer, List<Match>> entry : matchTable.entrySet()) {
-      int localIdx = entry.getKey();
-      List<Match> matchSet = entry.getValue();
+    for (final Entry<Integer, List<Match>> entry : this.matchTable.entrySet()) {
+      final int localIdx = entry.getKey();
+      final List<Match> matchSet = entry.getValue();
       // For each match
-      for (Match match : matchSet) {
+      for (final Match match : matchSet) {
         if (processedMatch.contains(match)) {
           continue;
         }
@@ -174,15 +174,15 @@ public class Buffer {
         do {
 
           // Check if a consecutive match exist
-          List<Match> candidateSet = matchTable.get(localIdx + match.getLength());
+          final List<Match> candidateSet = this.matchTable.get(localIdx + match.getLength());
 
           // Since Buffer#check() is supposed valid
           // at most one candidate can satisfy the conditions
           remMatch = null;
           if (candidateSet != null) {
-            for (Match candidate : candidateSet) {
+            for (final Match candidate : candidateSet) {
               // same target
-              if (candidate.getRemoteBuffer().equals(match.getRemoteBuffer()) && candidate.getRemoteIndex() == match.getRemoteIndex() + match.getLength()) {
+              if (candidate.getRemoteBuffer().equals(match.getRemoteBuffer()) && (candidate.getRemoteIndex() == (match.getRemoteIndex() + match.getLength()))) {
                 remMatch = candidate;
                 break;
               }
@@ -192,7 +192,7 @@ public class Buffer {
 
             // Remove the consecutive match from matchTables
             candidateSet.remove(remMatch);
-            List<Match> remMatchSet = remMatch.getRemoteBuffer().matchTable.get(remMatch.getRemoteIndex());
+            final List<Match> remMatchSet = remMatch.getRemoteBuffer().matchTable.get(remMatch.getRemoteIndex());
             remMatchSet.remove(remMatch.getReciprocate());
 
             // Remove empty matchLists from the matchTable
@@ -215,8 +215,8 @@ public class Buffer {
     }
 
     // Remove empty matchLists from matchTable
-    for (int i : removedEntry) {
-      matchTable.remove(i);
+    for (final int i : removedEntry) {
+      this.matchTable.remove(i);
     }
   }
 
@@ -253,13 +253,13 @@ public class Buffer {
   final int nbTokens;
 
   public int getNbTokens() {
-    return nbTokens;
+    return this.nbTokens;
   }
 
   final int tokenSize;
 
   public int getTokenSize() {
-    return tokenSize;
+    return this.tokenSize;
   }
 
   final DAGVertex dagVertex;
@@ -291,7 +291,7 @@ public class Buffer {
 
   /**
    * Constructor for the {@link Buffer}.
-   * 
+   *
    * @param name
    *          A {@link String} corresponding to the final name of the buffer.
    * @param nbTokens
@@ -299,53 +299,53 @@ public class Buffer {
    * @param tokenSize
    *          The size of one token of the buffer.
    */
-  public Buffer(SDFEdge edge, DAGVertex dagVertex, String name, int nbTokens, int tokenSize, boolean mergeable) {
-    sdfEdge = edge;
+  public Buffer(final SDFEdge edge, final DAGVertex dagVertex, final String name, final int nbTokens, final int tokenSize, final boolean mergeable) {
+    this.sdfEdge = edge;
     this.name = name;
     this.nbTokens = nbTokens;
     this.tokenSize = tokenSize;
-    matchTable = new HashMap<>();
-    appliedMatches = new HashMap<>();
-    minIndex = 0;
-    maxIndex = nbTokens * tokenSize;
+    this.matchTable = new HashMap<>();
+    this.appliedMatches = new HashMap<>();
+    this.minIndex = 0;
+    this.maxIndex = nbTokens * tokenSize;
     this.dagVertex = dagVertex;
-    originallyMergeable = mergeable;
-    mergeableRanges = new ArrayList<>();
+    this.originallyMergeable = mergeable;
+    this.mergeableRanges = new ArrayList<>();
     if (mergeable) {
-      mergeableRanges.add(new Range(0, nbTokens * tokenSize));
+      this.mergeableRanges.add(new Range(0, nbTokens * tokenSize));
     }
-    indivisibleRanges = new ArrayList<>();
-    divisibilityRequiredMatches = new ArrayList<>();
+    this.indivisibleRanges = new ArrayList<>();
+    this.divisibilityRequiredMatches = new ArrayList<>();
   }
 
   SDFAbstractVertex getSdfVertex() {
-    return dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex.class);
+    return this.dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex.class);
   }
 
-  void setMaxIndex(int newValue) {
+  void setMaxIndex(final int newValue) {
 
     // if the buffer was originally mergeable
-    if (originallyMergeable) {
+    if (this.originallyMergeable) {
       // Add a new mergeable range corresponding to the new virtual tokens
-      Range.union(mergeableRanges, new Range(maxIndex, newValue));
+      Range.union(this.mergeableRanges, new Range(this.maxIndex, newValue));
     }
-    maxIndex = newValue;
+    this.maxIndex = newValue;
   }
 
-  void setMinIndex(int newValue) {
+  void setMinIndex(final int newValue) {
 
     // if the buffer was originally mergeable
-    if (originallyMergeable) {
+    if (this.originallyMergeable) {
       // Add a new mergeable range corresponding to the new virtual tokens
-      Range.union(mergeableRanges, new Range(newValue, minIndex));
+      Range.union(this.mergeableRanges, new Range(newValue, this.minIndex));
     }
-    minIndex = newValue;
+    this.minIndex = newValue;
   }
 
   /**
    * Cf. {@link Buffer#matchWith(int, Buffer, int, int)} with size = 1
    */
-  public Match matchWith(int localIdx, Buffer buffer, int remoteIdx) {
+  public Match matchWith(final int localIdx, final Buffer buffer, final int remoteIdx) {
     return matchWith(localIdx, buffer, remoteIdx, 1);
   }
 
@@ -355,7 +355,7 @@ public class Buffer {
    * The localIdx, remoteIdx and size represent a number of token. (cf. production and consumption rate from the SDF graph).
    * <p>
    * May be called from a BeanShell memory script.
-   * 
+   *
    * @exception Exception
    *              may be thrown if the matched ranges both have elements outside of their {@link Buffer} indexes ({@link #_maxIndex} and {@link #_minIndex}).
    *
@@ -370,61 +370,61 @@ public class Buffer {
    *          the size of the matched range
    * @return the created local {@link Match}
    */
-  public Match matchWith(int localIdx, Buffer buffer, int remoteIdx, int size) {
+  public Match matchWith(final int localIdx, final Buffer buffer, final int remoteIdx, final int size) {
 
-    if (tokenSize != buffer.tokenSize) {
-      throw new RuntimeException("Cannot match " + dagVertex.getName() + "." + name + "with " + buffer.dagVertex.getName() + "." + buffer.name
-          + " because buffers have different token sizes (" + tokenSize + " != " + buffer.tokenSize + " )");
+    if (this.tokenSize != buffer.tokenSize) {
+      throw new RuntimeException("Cannot match " + this.dagVertex.getName() + "." + this.name + "with " + buffer.dagVertex.getName() + "." + buffer.name
+          + " because buffers have different token sizes (" + this.tokenSize + " != " + buffer.tokenSize + " )");
     }
 
-    int maxLocal = localIdx + size - 1;
-    int maxRemote = remoteIdx + size - 1;
+    final int maxLocal = (localIdx + size) - 1;
+    final int maxRemote = (remoteIdx + size) - 1;
 
     // Test if a matched range is completely out of real tokens
-    if (localIdx >= nbTokens || maxLocal < 0) {
-      int maxLTokens = nbTokens - 1;
-      throw new RuntimeException("Cannot match " + dagVertex.getName() + "." + name + "[" + localIdx + ".." + maxLocal + "] and " + buffer.dagVertex.getName()
-          + "." + buffer.name + "[" + remoteIdx + ".." + maxRemote + "] because no \"real\" token from " + dagVertex.getName() + "." + name + "[0.."
-          + maxLTokens + "] is matched.");
+    if ((localIdx >= this.nbTokens) || (maxLocal < 0)) {
+      final int maxLTokens = this.nbTokens - 1;
+      throw new RuntimeException("Cannot match " + this.dagVertex.getName() + "." + this.name + "[" + localIdx + ".." + maxLocal + "] and "
+          + buffer.dagVertex.getName() + "." + buffer.name + "[" + remoteIdx + ".." + maxRemote + "] because no \"real\" token from " + this.dagVertex.getName()
+          + "." + this.name + "[0.." + maxLTokens + "] is matched.");
     }
 
-    if (remoteIdx >= buffer.nbTokens || maxRemote < 0) {
-      int maxRTokens = buffer.nbTokens - 1;
-      throw new RuntimeException("Cannot match " + dagVertex.getName() + "." + name + "[" + localIdx + ".." + maxLocal + "] and " + buffer.dagVertex.getName()
-          + "." + buffer.name + "[" + remoteIdx + ".." + maxRemote + "] because no \"real\" token from " + buffer.dagVertex.getName() + "." + buffer.name
-          + "[0.." + maxRTokens + "] is matched.");
+    if ((remoteIdx >= buffer.nbTokens) || (maxRemote < 0)) {
+      final int maxRTokens = buffer.nbTokens - 1;
+      throw new RuntimeException("Cannot match " + this.dagVertex.getName() + "." + this.name + "[" + localIdx + ".." + maxLocal + "] and "
+          + buffer.dagVertex.getName() + "." + buffer.name + "[" + remoteIdx + ".." + maxRemote + "] because no \"real\" token from "
+          + buffer.dagVertex.getName() + "." + buffer.name + "[0.." + maxRTokens + "] is matched.");
     }
 
     // Are "virtual" tokens matched together
 
     // Both ranges begins before the first token
-    boolean bIndexes = (localIdx < 0) && (remoteIdx < 0);
+    final boolean bIndexes = (localIdx < 0) && (remoteIdx < 0);
     // or both buffers ends after the last token
-    boolean bTokens = (maxLocal >= nbTokens) && (maxRemote >= buffer.nbTokens);
+    final boolean bTokens = (maxLocal >= this.nbTokens) && (maxRemote >= buffer.nbTokens);
     // or local range begins with less real tokens than the number of virtual tokens beginning remote range
-    boolean bLocalVirtual = localIdx >= 0 && ((nbTokens - localIdx) <= -Math.min(0, remoteIdx));
+    final boolean bLocalVirtual = (localIdx >= 0) && ((this.nbTokens - localIdx) <= -Math.min(0, remoteIdx));
     // or remote range begins with less real tokens than the number of virtual tokens beginning local range
-    boolean bRemoteVirtual = remoteIdx >= 0 && ((buffer.nbTokens - remoteIdx) <= -Math.min(0, localIdx));
+    final boolean bRemoteVirtual = (remoteIdx >= 0) && ((buffer.nbTokens - remoteIdx) <= -Math.min(0, localIdx));
     if (bIndexes || bTokens || bLocalVirtual || bRemoteVirtual) {
-      throw new RuntimeException(
-          "Cannot match " + dagVertex.getName() + "." + name + "[" + localIdx + ".." + maxLocal + "] and " + buffer.dagVertex.getName() + "." + buffer.name
-              + "[" + remoteIdx + ".." + maxRemote + "] because \"virtual tokens\" cannot be matched together.\n" + "Information: " + dagVertex.getName() + "."
-              + name + " size = " + nbTokens + " and " + buffer.dagVertex.getName() + "." + buffer.name + " size = " + buffer.nbTokens + ".");
+      throw new RuntimeException("Cannot match " + this.dagVertex.getName() + "." + this.name + "[" + localIdx + ".." + maxLocal + "] and "
+          + buffer.dagVertex.getName() + "." + buffer.name + "[" + remoteIdx + ".." + maxRemote + "] because \"virtual tokens\" cannot be matched together.\n"
+          + "Information: " + this.dagVertex.getName() + "." + this.name + " size = " + this.nbTokens + " and " + buffer.dagVertex.getName() + "." + buffer.name
+          + " size = " + buffer.nbTokens + ".");
     }
 
-    return byteMatchWith(localIdx * tokenSize, buffer, remoteIdx * tokenSize, size * tokenSize);
+    return byteMatchWith(localIdx * this.tokenSize, buffer, remoteIdx * this.tokenSize, size * this.tokenSize);
   }
 
   /**
    * Cf. {@link Buffer#byteMatchWith(int, Buffer, int, int, boolean)} with check = true
    */
-  public Match byteMatchWith(int localByteIdx, Buffer buffer, int remoteByteIdx, int byteSize) {
+  public Match byteMatchWith(final int localByteIdx, final Buffer buffer, final int remoteByteIdx, final int byteSize) {
     return byteMatchWith(localByteIdx, buffer, remoteByteIdx, byteSize, true);
   }
 
   /**
    * May be called from a BeanShell memory script.
-   * 
+   *
    * @param localByteIdx
    *          start index of the matched range for the local {@link Buffer}.
    * @param buffer
@@ -437,9 +437,9 @@ public class Buffer {
    *          whether or not the match feasibility (e.g. with virtual ranges) must be checked
    * @return the created local {@link Match}
    */
-  public Match byteMatchWith(int localByteIdx, Buffer buffer, int remoteByteIdx, int byteSize, boolean check) {
-    int byteLMax = localByteIdx + byteSize - 1;
-    int byteRMax = remoteByteIdx + byteSize - 1;
+  public Match byteMatchWith(final int localByteIdx, final Buffer buffer, final int remoteByteIdx, final int byteSize, final boolean check) {
+    final int byteLMax = (localByteIdx + byteSize) - 1;
+    final int byteRMax = (remoteByteIdx + byteSize) - 1;
 
     // Test if a matched range is completely out of real bytes
     // This rule is indispensable to make sure that "virtual" token
@@ -461,15 +461,15 @@ public class Buffer {
     // Then, Match1 will not be forwarded to B.out because it has no overlap with the
     // real tokens.
     if (check) {
-      if ((localByteIdx >= nbTokens * tokenSize) || (byteLMax < 0)) {
-        int tokenLMax = nbTokens * tokenSize - 1;
-        throw new RuntimeException("Cannot match bytes " + dagVertex.getName() + "." + name + "[" + localByteIdx + ".." + byteLMax + "] and "
-            + buffer.dagVertex.getName() + "." + buffer.name + "[" + remoteByteIdx + ".." + byteRMax + "] because no \"real\" byte from " + dagVertex.getName()
-            + "." + name + "[0.." + tokenLMax + "] is matched.");
+      if ((localByteIdx >= (this.nbTokens * this.tokenSize)) || (byteLMax < 0)) {
+        final int tokenLMax = (this.nbTokens * this.tokenSize) - 1;
+        throw new RuntimeException("Cannot match bytes " + this.dagVertex.getName() + "." + this.name + "[" + localByteIdx + ".." + byteLMax + "] and "
+            + buffer.dagVertex.getName() + "." + buffer.name + "[" + remoteByteIdx + ".." + byteRMax + "] because no \"real\" byte from "
+            + this.dagVertex.getName() + "." + this.name + "[0.." + tokenLMax + "] is matched.");
       }
-      if ((remoteByteIdx >= buffer.nbTokens * buffer.tokenSize) || (byteRMax < 0)) {
-        int tokenRMax = buffer.nbTokens * buffer.tokenSize - 1;
-        throw new RuntimeException("Cannot match bytes " + dagVertex.getName() + "." + name + "[" + localByteIdx + ".." + byteLMax + "] and "
+      if ((remoteByteIdx >= (buffer.nbTokens * buffer.tokenSize)) || (byteRMax < 0)) {
+        final int tokenRMax = (buffer.nbTokens * buffer.tokenSize) - 1;
+        throw new RuntimeException("Cannot match bytes " + this.dagVertex.getName() + "." + this.name + "[" + localByteIdx + ".." + byteLMax + "] and "
             + buffer.dagVertex.getName() + "." + buffer.name + "[" + remoteByteIdx + ".." + byteRMax + "] because no \"real\" byte from "
             + buffer.dagVertex.getName() + "." + buffer.name + "[0.." + tokenRMax + "] is matched.");
       }
@@ -477,38 +477,39 @@ public class Buffer {
       // Are "virtual" tokens matched together
 
       // Both ranges begins before the first byte
-      boolean bPositiveIndex = (localByteIdx < 0) && (remoteByteIdx < 0);
+      final boolean bPositiveIndex = (localByteIdx < 0) && (remoteByteIdx < 0);
       // or both buffers ends after the last byte
-      boolean bTooLargeBuffer = (byteLMax >= nbTokens * tokenSize) && (byteRMax >= buffer.nbTokens * buffer.tokenSize);
+      final boolean bTooLargeBuffer = (byteLMax >= (this.nbTokens * this.tokenSize)) && (byteRMax >= (buffer.nbTokens * buffer.tokenSize));
       // or local range begins with less real bytes than the number of virtual bytes beginning remote range
-      boolean bLocalVirtual = localByteIdx >= 0 && ((nbTokens * tokenSize - localByteIdx) <= -Math.min(0, remoteByteIdx));
+      final boolean bLocalVirtual = (localByteIdx >= 0) && (((this.nbTokens * this.tokenSize) - localByteIdx) <= -Math.min(0, remoteByteIdx));
       // or remote range begins with less real bytes than the number of virtual bytes beginning local range
-      boolean bRemoteVirtual = remoteByteIdx >= 0 && ((buffer.nbTokens * buffer.tokenSize - remoteByteIdx) <= -Math.min(0, localByteIdx));
+      final boolean bRemoteVirtual = (remoteByteIdx >= 0) && (((buffer.nbTokens * buffer.tokenSize) - remoteByteIdx) <= -Math.min(0, localByteIdx));
       if (bPositiveIndex || bTooLargeBuffer || bLocalVirtual || bRemoteVirtual) {
-        throw new RuntimeException("Cannot match bytes " + dagVertex.getName() + "." + name + "[" + localByteIdx + ".." + byteLMax + "] and "
-            + buffer.dagVertex.getName() + "." + buffer.name + "[" + remoteByteIdx + ".." + byteRMax
-            + "] because \"virtual bytes\" cannot be matched together.\nInformation: " + dagVertex.getName() + "." + name + " size = " + nbTokens * tokenSize
-            + " and " + buffer.dagVertex.getName() + "." + buffer.name + " size = " + buffer.nbTokens * buffer.tokenSize + ".");
+        throw new RuntimeException(
+            "Cannot match bytes " + this.dagVertex.getName() + "." + this.name + "[" + localByteIdx + ".." + byteLMax + "] and " + buffer.dagVertex.getName()
+                + "." + buffer.name + "[" + remoteByteIdx + ".." + byteRMax + "] because \"virtual bytes\" cannot be matched together.\nInformation: "
+                + this.dagVertex.getName() + "." + this.name + " size = " + (this.nbTokens * this.tokenSize) + " and " + buffer.dagVertex.getName() + "."
+                + buffer.name + " size = " + (buffer.nbTokens * buffer.tokenSize) + ".");
       }
     }
 
     // If needed, update the buffers min/max indexes
-    if (!(localByteIdx >= 0 && byteLMax < nbTokens * tokenSize)) {
-      minIndex = Math.min(minIndex, localByteIdx);
-      maxIndex = Math.max(maxIndex, (localByteIdx + byteSize));
+    if (!((localByteIdx >= 0) && (byteLMax < (this.nbTokens * this.tokenSize)))) {
+      this.minIndex = Math.min(this.minIndex, localByteIdx);
+      this.maxIndex = Math.max(this.maxIndex, (localByteIdx + byteSize));
     }
-    if (!(remoteByteIdx >= 0 && byteRMax < buffer.nbTokens * buffer.tokenSize)) {
+    if (!((remoteByteIdx >= 0) && (byteRMax < (buffer.nbTokens * buffer.tokenSize)))) {
       buffer.minIndex = Math.min(buffer.minIndex, remoteByteIdx);
       buffer.maxIndex = Math.max(buffer.maxIndex, (remoteByteIdx + byteSize));
     }
 
     // Do the match
-    List<Match> matchSet = matchTable.get(localByteIdx);
+    List<Match> matchSet = this.matchTable.get(localByteIdx);
     if (matchSet == null) {
       matchSet = new ArrayList<>();
-      matchTable.put(localByteIdx, matchSet);
+      this.matchTable.put(localByteIdx, matchSet);
     }
-    Match localMatch = new Match(this, localByteIdx, buffer, remoteByteIdx, byteSize);
+    final Match localMatch = new Match(this, localByteIdx, buffer, remoteByteIdx, byteSize);
     matchSet.add(localMatch);
 
     List<Match> remoteMatchSet = buffer.matchTable.get(remoteByteIdx);
@@ -516,7 +517,7 @@ public class Buffer {
       remoteMatchSet = new ArrayList<>();
       buffer.matchTable.put(remoteByteIdx, remoteMatchSet);
     }
-    Match remoteMatch = new Match(buffer, remoteByteIdx, this, localByteIdx, byteSize);
+    final Match remoteMatch = new Match(buffer, remoteByteIdx, this, localByteIdx, byteSize);
     remoteMatchSet.add(remoteMatch);
 
     localMatch.setReciprocate(remoteMatch);
@@ -535,14 +536,14 @@ public class Buffer {
    */
 
   boolean isDivisible() {
-    if (isCompletelyMatched() && indivisibleRanges.size() > 1) {
+    if (isCompletelyMatched() && (this.indivisibleRanges.size() > 1)) {
       // Test that all ranges are covered by the indivisible ranges
-      List<Range> copy = new ArrayList<Range>(indivisibleRanges.stream().map(it -> (Range) it.clone()).collect(Collectors.toList()));
-      Range firstElement = copy.get(0);
+      final List<Range> copy = new ArrayList<>(this.indivisibleRanges.stream().map(it -> (Range) it.clone()).collect(Collectors.toList()));
+      final Range firstElement = copy.get(0);
       copy.remove(0);
-      Range coveredRange = Range.union(copy, firstElement);
-      boolean b = new Range(0, nbTokens * tokenSize).difference(coveredRange).size() == 0;
-      return b && matchTable.values().stream().flatMap(it -> it.stream()).allMatch(it -> it.getRemoteBuffer().isIndivisible());
+      final Range coveredRange = Range.union(copy, firstElement);
+      final boolean b = new Range(0, this.nbTokens * this.tokenSize).difference(coveredRange).size() == 0;
+      return b && this.matchTable.values().stream().flatMap(it -> it.stream()).allMatch(it -> it.getRemoteBuffer().isIndivisible());
     }
     return false;
   }
@@ -554,14 +555,15 @@ public class Buffer {
    * of the conditions to be divisible.</b>
    */
   boolean isIndivisible() {
-    return indivisibleRanges.size() == 1 && indivisibleRanges.get(0).getStart() == minIndex && indivisibleRanges.get(0).getEnd() == maxIndex;
+    return (this.indivisibleRanges.size() == 1) && (this.indivisibleRanges.get(0).getStart() == this.minIndex)
+        && (this.indivisibleRanges.get(0).getEnd() == this.maxIndex);
   }
 
   /**
    * We do not check that the match is possible ! We just apply it and assume all checks are performed somewhere else ! The local buffer is merged into the
    * remote buffer The local buffer does not "exists" afterwards
    */
-  void applyMatches(List<Match> matches) {
+  void applyMatches(final List<Match> matches) {
 
     // Check that all match have the current buffer as local
     if (matches.stream().anyMatch(it -> !it.getLocalBuffer().equals(this))) {
@@ -571,12 +573,12 @@ public class Buffer {
     // copy the list to iterate on it
     // Otherwise the list would be modified during the iteration since it
     // is the result of a flatten or a filter operation.
-    List<Match> matchesCopy = new ArrayList<>(matches);
+    final List<Match> matchesCopy = new ArrayList<>(matches);
 
     // Check that the matches completely cover the buffer
-    List<Range> matchedRange = matchesCopy.stream().collect(ArrayList<Range>::new,
+    final List<Range> matchedRange = matchesCopy.stream().collect(ArrayList<Range>::new,
         (previousRes, currentMatch) -> Range.union(previousRes, currentMatch.getLocalIndivisibleRange()), Range::union);
-    Range tokenRange = new Range(0, tokenSize * nbTokens);
+    final Range tokenRange = new Range(0, this.tokenSize * this.nbTokens);
     if (!Range.intersection(matchedRange, tokenRange).get(0).equals(tokenRange)) {
       throw new RuntimeException("Incorrect call to applyMatches method.\n " + "All real token must be covered by the given matches.\n" + matches);
     }
@@ -593,9 +595,9 @@ public class Buffer {
           + matches.stream().filter(it -> !it.isApplicable() || !it.getReciprocate().isApplicable()));
     }
 
-    for (Match match : matchesCopy) {
+    for (final Match match : matchesCopy) {
 
-      appliedMatches.put(match.getLocalIndivisibleRange(), new Pair<>(match.getRemoteBuffer(), match.getRemoteIndex()));
+      this.appliedMatches.put(match.getLocalIndivisibleRange(), new Pair<>(match.getRemoteBuffer(), match.getRemoteIndex()));
       match.getRemoteBuffer().host = true;
 
       // Fill the forbiddenLocalRanges of conflictCandidates and conflictingMatches
@@ -614,7 +616,7 @@ public class Buffer {
       // For each backward match of the localBuffer (i.e. not conflicting with the applied match)
       forwardMatch.getLocalBuffer().matchTable.values().stream().flatMap(it -> it.stream()).filter(it -> it.getType() == MatchType.BACKWARD).forEach(item -> {
         // Copy the forbiddenLocalRanges of the applied forward match
-        List<Range> newForbiddenRanges = forwardMatch.getForbiddenLocalRanges().stream().map(it -> (Range) it.clone()).collect(Collectors.toList());
+        final List<Range> newForbiddenRanges = forwardMatch.getForbiddenLocalRanges().stream().map(it -> (Range) it.clone()).collect(Collectors.toList());
         // translate to the backward match remoteBuffer indexes
         Range.translate(newForbiddenRanges, item.getRemoteIndex() - item.getLocalIndex());
         // Add it to the forward match (i.e. the reciprocate of the backward)
@@ -625,9 +627,9 @@ public class Buffer {
       forwardMatch.getRemoteBuffer().matchTable.values().stream().flatMap(it -> it.stream()).filter(it -> it.getType() == MatchType.FORWARD).forEach(item -> {
 
         // Copy the forbiddenLocalRanges and mergeableLocalRange of the applied backward match
-        List<Range> newForbiddenRanges = forwardMatch.getReciprocate().getForbiddenLocalRanges().stream().map(it -> (Range) it.clone())
+        final List<Range> newForbiddenRanges = forwardMatch.getReciprocate().getForbiddenLocalRanges().stream().map(it -> (Range) it.clone())
             .collect(Collectors.toList());
-        List<Range> newMergeableRanges = forwardMatch.getReciprocate().getMergeableLocalRanges().stream().map(it -> (Range) it.clone())
+        final List<Range> newMergeableRanges = forwardMatch.getReciprocate().getMergeableLocalRanges().stream().map(it -> (Range) it.clone())
             .collect(Collectors.toList());
         // translate to the forward match remoteBuffer indexes
         Range.translate(newForbiddenRanges, item.getRemoteIndex() - item.getLocalIndex());
@@ -645,11 +647,11 @@ public class Buffer {
       updateConflictCandidates(match);
 
       // Move all third-party matches from the matched range of the merged buffer
-      List<Match> ze = match.getLocalBuffer().matchTable.values().stream().flatMap(it -> it.stream())
+      final List<Match> ze = match.getLocalBuffer().matchTable.values().stream().flatMap(it -> it.stream())
           .filter(it -> !it.equals(match) && Range.hasOverlap(it.getLocalRange(), match.getLocalIndivisibleRange())).collect(Collectors.toList());
-      for (Match movedMatch : ze) {
+      for (final Match movedMatch : ze) {
         // Remove old match from original match list
-        List<Match> localList = match.getLocalBuffer().matchTable.get(movedMatch.getLocalIndex());
+        final List<Match> localList = match.getLocalBuffer().matchTable.get(movedMatch.getLocalIndex());
         localList.remove(movedMatch);
         if (localList.isEmpty()) {
           match.getLocalBuffer().matchTable.remove(movedMatch.getLocalIndex());
@@ -685,18 +687,18 @@ public class Buffer {
       updateRemoteMergeableRange(match);
 
       // Update Matches
-      updateMatches(match);
+      Buffer.updateMatches(match);
 
       // Update conflicting matches
       List<Match> matchToUpdate = match.getRemoteBuffer().matchTable.values().stream().flatMap(it -> it.stream())
           .filter(it -> !it.equals(match.getReciprocate())).collect(Collectors.toList());
       while (!matchToUpdate.isEmpty()) {
-        matchToUpdate = updateConflictingMatches(matchToUpdate);
+        matchToUpdate = Buffer.updateConflictingMatches(matchToUpdate);
       }
 
       // Remove the applied match from the buffers match table
       // (local and reciprocate)
-      unmatch(match);
+      Buffer.unmatch(match);
 
       // Match was applied (and reciprocate)
       match.setApplied(true);
@@ -704,23 +706,24 @@ public class Buffer {
     }
 
     // Mark the buffer as Matched
-    matched = matchesCopy;
+    this.matched = matchesCopy;
 
   }
 
-  private void unionForwardMatchConflictCandidatesRanges(Match forwardMatch, List<Match> matches) {
-    for (Match conflictMatch : matches) {
+  private void unionForwardMatchConflictCandidatesRanges(final Match forwardMatch, final List<Match> matches) {
+    for (final Match conflictMatch : matches) {
       // Must be extracted for each iteration because the union modifies the range
-      Range impactedRange = forwardMatch.getReciprocate().getLocalImpactedRange();
+      final Range impactedRange = forwardMatch.getReciprocate().getLocalImpactedRange();
       impactedRange.translate(conflictMatch.getLocalIndex() - conflictMatch.getRemoteIndex());
       Range.union(conflictMatch.getForbiddenLocalRanges(), impactedRange);
     }
   }
 
-  private void unionBackwardMatchConflictCandidatesRanges(List<Range> remoteMergeableRange, List<Range> forbiddenRanges, List<Match> matches) {
-    for (Match conflictMatch : matches) {
-      List<Range> newMergeableRanges = remoteMergeableRange.stream().map(it -> (Range) it.clone()).collect(Collectors.toList());
-      List<Range> newForbiddenRanges = forbiddenRanges.stream().map(it -> (Range) it.clone()).collect(Collectors.toList());
+  private void unionBackwardMatchConflictCandidatesRanges(final List<Range> remoteMergeableRange, final List<Range> forbiddenRanges,
+      final List<Match> matches) {
+    for (final Match conflictMatch : matches) {
+      final List<Range> newMergeableRanges = remoteMergeableRange.stream().map(it -> (Range) it.clone()).collect(Collectors.toList());
+      final List<Range> newForbiddenRanges = forbiddenRanges.stream().map(it -> (Range) it.clone()).collect(Collectors.toList());
       // translate it to localBuffer of conflictMatches indexes
       Range.translate(newMergeableRanges, conflictMatch.getLocalIndex() - conflictMatch.getRemoteIndex());
       Range.translate(newForbiddenRanges, conflictMatch.getLocalIndex() - conflictMatch.getRemoteIndex());
@@ -731,13 +734,13 @@ public class Buffer {
     }
   }
 
-  void updateForbiddenAndMergeableLocalRanges(Match match) {
+  void updateForbiddenAndMergeableLocalRanges(final Match match) {
 
     // For the forward match, simply fill the forbidden ranges
     Match forwardMatch = match;
     Match backwardMatch = match.getReciprocate();
     if (match.getType() != MatchType.FORWARD) {
-      Match tmp = forwardMatch;
+      final Match tmp = forwardMatch;
       forwardMatch = backwardMatch;
       backwardMatch = tmp;
     }
@@ -748,14 +751,14 @@ public class Buffer {
     // For backward match, fill the forbidden an mergeable ranges (if any)
 
     // Get the target mergeable range
-    Range impactedRange = backwardMatch.getReciprocate().getLocalImpactedRange();
+    final Range impactedRange = backwardMatch.getReciprocate().getLocalImpactedRange();
     impactedRange.translate(backwardMatch.getLocalIndex() - backwardMatch.getRemoteIndex());
-    List<Range> remoteMergeableRange = Range.intersection(backwardMatch.getLocalBuffer().mergeableRanges, impactedRange);
+    final List<Range> remoteMergeableRange = Range.intersection(backwardMatch.getLocalBuffer().mergeableRanges, impactedRange);
 
     // No need to remove forbidden ranges from it. Indeed, if there are such
     // range, the match couldn't have been applied
     // Compute forbidden ranges
-    List<Range> forbiddenRanges = Range.difference(Arrays.asList(impactedRange), remoteMergeableRange);
+    final List<Range> forbiddenRanges = Range.difference(Arrays.asList(impactedRange), remoteMergeableRange);
 
     // translate it back to source indexes
     Range.translate(remoteMergeableRange, backwardMatch.getRemoteIndex() - backwardMatch.getLocalIndex());
@@ -765,7 +768,7 @@ public class Buffer {
     unionBackwardMatchConflictCandidatesRanges(remoteMergeableRange, forbiddenRanges, backwardMatch.getConflictingMatches());
   }
 
-  static void updateMatches(Match match) {
+  static void updateMatches(final Match match) {
 
     // 1- For all matches of the remote buffer (old and newly added)
     // 1.1- If the match (local and remote) ranges falls within
@@ -773,11 +776,11 @@ public class Buffer {
     // Then:
     // 1.1.1- the match must be enlarged to cover this range
     // Several matches might become redundant (i.e. identical) in the process
-    List<Pair<Match, Range>> modifiedMatches = new ArrayList<>();
+    final List<Pair<Match, Range>> modifiedMatches = new ArrayList<>();
     match.getRemoteBuffer().matchTable.values().stream().flatMap(it -> it.stream()).filter(it -> !it.equals(match.getReciprocate())).forEach(testedMatch -> {
       // Get the aligned smallest indivisible range (local or remote)
-      Range localIndivisibleRange = testedMatch.getLocalIndivisibleRange();
-      Range remoteIndivisibleRange = testedMatch.getReciprocate().getLocalIndivisibleRange();
+      final Range localIndivisibleRange = testedMatch.getLocalIndivisibleRange();
+      final Range remoteIndivisibleRange = testedMatch.getReciprocate().getLocalIndivisibleRange();
       remoteIndivisibleRange.translate(testedMatch.getLocalIndex() - testedMatch.getRemoteIndex());
       Range smallestRange = localIndivisibleRange;
       if (localIndivisibleRange.getLength() > remoteIndivisibleRange.getLength()) {
@@ -792,19 +795,19 @@ public class Buffer {
 
     modifiedMatches.stream().forEach(it -> {
 
-      Match modifiedMatch = it.getKey();
-      Range newRange = it.getValue();
+      final Match modifiedMatch = it.getKey();
+      final Range newRange = it.getValue();
       // Update the match
       modifiedMatch.setLength(newRange.getLength());
       modifiedMatch.getReciprocate().setLength(newRange.getLength());
       // If the match must be moved
-      int originalIndex = modifiedMatch.getLocalIndex();
-      int originalRemoteIndex = modifiedMatch.getRemoteIndex();
+      final int originalIndex = modifiedMatch.getLocalIndex();
+      final int originalRemoteIndex = modifiedMatch.getRemoteIndex();
       if (newRange.getStart() != originalIndex) {
 
         // Move the local match
         modifiedMatch.setLocalIndex(newRange.getStart());
-        modifiedMatch.setRemoteIndex(originalRemoteIndex + newRange.getStart() - originalIndex);
+        modifiedMatch.setRemoteIndex((originalRemoteIndex + newRange.getStart()) - originalIndex);
         modifiedMatch.getLocalBuffer().matchTable.get(originalIndex).remove(modifiedMatch);
         List<Match> localList = modifiedMatch.getLocalBuffer().matchTable.get(newRange.getStart());
         if (localList == null) {
@@ -836,17 +839,17 @@ public class Buffer {
     });
 
     // Find redundant matches
-    List<Match> matches = match.getRemoteBuffer().matchTable.values().stream().flatMap(it -> it.stream()).collect(Collectors.toList());
-    Set<Integer> redundantMatches = new HashSet<>();
+    final List<Match> matches = match.getRemoteBuffer().matchTable.values().stream().flatMap(it -> it.stream()).collect(Collectors.toList());
+    final Set<Integer> redundantMatches = new HashSet<>();
     int i = 0;
-    while (i < matches.size() - 1) {
+    while (i < (matches.size() - 1)) {
 
       // If the current match is not already redundant
       if (!redundantMatches.contains(i)) {
-        Match currentMatch = matches.get(i);
+        final Match currentMatch = matches.get(i);
         int j = i + 1;
         while (j < matches.size()) {
-          Match redundantMatch = matches.get(j);
+          final Match redundantMatch = matches.get(j);
           if (currentMatch.equals(redundantMatch)) {
 
             // Matches are redundant
@@ -928,8 +931,8 @@ public class Buffer {
 
     // do the removal :
     if (!redundantMatches.isEmpty()) {
-      List<Match> removedMatches = redundantMatches.stream().map(it -> matches.get(it)).collect(Collectors.toList());
-      removedMatches.forEach(it -> unmatch(it));
+      final List<Match> removedMatches = redundantMatches.stream().map(it -> matches.get(it)).collect(Collectors.toList());
+      removedMatches.forEach(it -> Buffer.unmatch(it));
     }
   }
 
@@ -937,7 +940,7 @@ public class Buffer {
    * Must be called before {@link ScriptRunner#updateConflictingMatches() updating conflicting matches}.
    */
 
-  void updateConflictCandidates(Match match) {
+  void updateConflictCandidates(final Match match) {
 
     // 1. Conflict candidates of the applied local->remote match are
     // added to all remote->other matches (except inter siblings and
@@ -948,7 +951,7 @@ public class Buffer {
     // the already conflicting to local->remote (i.e. the forward if
     // remote->local is backward or vice versa))
     // 1
-    List<Match> newConflicts = new ArrayList<>();
+    final List<Match> newConflicts = new ArrayList<>();
     if (!match.getReciprocate().getConflictCandidates().isEmpty() || !match.getReciprocate().getConflictingMatches().isEmpty()) {
       match.getRemoteBuffer().matchTable.values().stream().flatMap(it -> it.stream()).filter(it -> it.getType() == match.getType()).forEach(otherMatch -> {
         otherMatch.getReciprocate().getConflictCandidates().addAll(match.getReciprocate().getConflictCandidates());
@@ -985,14 +988,14 @@ public class Buffer {
    *
    * @return the {@link List} of {@link Match} updated by the method
    */
-  static List<Match> updateConflictingMatches(List<Match> matchList) {
+  static List<Match> updateConflictingMatches(final List<Match> matchList) {
 
-    List<Match> updatedMatches = new ArrayList<>();
+    final List<Match> updatedMatches = new ArrayList<>();
     matchList.forEach(match -> {
       // Check all the conflict candidates
       Iterator<Match> iter = match.getConflictCandidates().iterator();
       while (iter.hasNext()) {
-        Match candidate = iter.next();
+        final Match candidate = iter.next();
         if (Range.hasOverlap(candidate.getReciprocate().getLocalImpactedRange(), match.getReciprocate().getLocalImpactedRange())) {
           iter.remove();
 
@@ -1006,7 +1009,7 @@ public class Buffer {
       // Do the same for reciprocate
       iter = match.getReciprocate().getConflictCandidates().iterator();
       while (iter.hasNext()) {
-        Match candidate = iter.next();
+        final Match candidate = iter.next();
         if (Range.hasOverlap(candidate.getReciprocate().getLocalImpactedRange(), match.getLocalImpactedRange())) {
           iter.remove();
 
@@ -1027,15 +1030,15 @@ public class Buffer {
   /**
    * MUST be called before updateRemoteMergeableRange because the updated local indexes are used in the current function, which cause an update of the mergeable
    * ranges.
-   * 
+   *
    * @return true of the indexes were updated, false otherwise
    */
 
-  boolean updateRemoteIndexes(Match match) {
+  boolean updateRemoteIndexes(final Match match) {
     boolean res = false;
 
     // Get the local indivisible ranges involved in the match
-    Range localIndivisibleRange = match.getLocalIndivisibleRange();
+    final Range localIndivisibleRange = match.getLocalIndivisibleRange();
 
     // Align them with the remote ranges
     localIndivisibleRange.translate(match.getRemoteIndex() - match.getLocalIndex());
@@ -1059,14 +1062,14 @@ public class Buffer {
    *
    */
 
-  void updateDivisibleRanges(Match match) {
-    Range localRange = match.getLocalRange();
+  void updateDivisibleRanges(final Match match) {
+    final Range localRange = match.getLocalRange();
 
     // Get the local indivisible ranges involved in the match
     // An indivisible range can go beyond the matched
     // range. For example, if the range includes virtual tokens
     // toList to make sure the map function is applied only once
-    List<Range> localIndivisibleRanges = match.getLocalBuffer().indivisibleRanges.stream().filter(it -> Range.hasOverlap(it, localRange))
+    final List<Range> localIndivisibleRanges = match.getLocalBuffer().indivisibleRanges.stream().filter(it -> Range.hasOverlap(it, localRange))
         .map(it -> (Range) it.clone()).collect(Collectors.toList());
 
     // Align them with the remote ranges
@@ -1092,30 +1095,30 @@ public class Buffer {
    * Must be called after updateRemoteIndexesAndDivisibleRanges
    */
 
-  void updateRemoteMergeableRange(Match match) {
+  void updateRemoteMergeableRange(final Match match) {
 
     // 1 - Get the mergeable ranges that are involved in the match
     // Get the local involved Range
-    Range involvedRange = match.getLocalIndivisibleRange();
-    List<Range> localMergeableRange = Range.intersection(match.getLocalBuffer().mergeableRanges, involvedRange);
+    final Range involvedRange = match.getLocalIndivisibleRange();
+    final List<Range> localMergeableRange = Range.intersection(match.getLocalBuffer().mergeableRanges, involvedRange);
 
     // Translate it to get the remote involved range
     involvedRange.translate(match.getRemoteIndex() - match.getLocalIndex());
-    List<Range> remoteMergeableRange = Range.intersection(match.getRemoteBuffer().mergeableRanges, involvedRange);
+    final List<Range> remoteMergeableRange = Range.intersection(match.getRemoteBuffer().mergeableRanges, involvedRange);
 
     // 2 - Realign the two ranges
     Range.translate(localMergeableRange, -match.getLocalIndex());
     Range.translate(remoteMergeableRange, -match.getRemoteIndex());
 
     // 3 - Get intersection => the mergeable range of the result
-    List<Range> resultMergeableRange = Range.intersection(localMergeableRange, remoteMergeableRange);
+    final List<Range> resultMergeableRange = Range.intersection(localMergeableRange, remoteMergeableRange);
 
     // 4 - Update the destination mergeable range
     // no need to update the origin mergeable range since
     // this buffer will no longer be used in the processing
     // 4.1 - compute the Mergeable range that must be removed
     // from the destination buffer
-    List<Range> unmergeableRange = Range.difference(remoteMergeableRange, resultMergeableRange);
+    final List<Range> unmergeableRange = Range.difference(remoteMergeableRange, resultMergeableRange);
 
     // 4.2 - Realign unmergeable range with destination buffer
     Range.translate(unmergeableRange, match.getRemoteIndex());
@@ -1129,9 +1132,9 @@ public class Buffer {
    * matchTable}. Each time the current match is retrieved in a List, the reference equality (===) from XTend is used. Indeed, several matches might be
    * {@link Match#equals(Object) equals} which would result in removing the wrong match.
    */
-  static void unmatch(Match match) {
+  static void unmatch(final Match match) {
     // Local unmatch
-    List<Match> localList = match.getLocalBuffer().matchTable.get(match.getLocalIndex());
+    final List<Match> localList = match.getLocalBuffer().matchTable.get(match.getLocalIndex());
     Iterator<Match> iter = localList.iterator();
 
     while (iter.hasNext()) {
@@ -1148,7 +1151,7 @@ public class Buffer {
     }
 
     // Remote unmatch
-    List<Match> remoteList = match.getRemoteBuffer().matchTable.get(match.getRemoteIndex());
+    final List<Match> remoteList = match.getRemoteBuffer().matchTable.get(match.getRemoteIndex());
     iter = remoteList.iterator();
     while (iter.hasNext()) {
       // use the triple === to remove the correct
@@ -1163,7 +1166,7 @@ public class Buffer {
 
     // Remove it from conflictingMatches and conflictCandidates
     match.getConflictCandidates().stream().forEach(it -> {
-      Iterator<Match> iterator = it.getConflictCandidates().iterator();
+      final Iterator<Match> iterator = it.getConflictCandidates().iterator();
       while (iterator.hasNext()) {
         if (iterator.next() == match) {
           iterator.remove();
@@ -1171,7 +1174,7 @@ public class Buffer {
       }
     });
     match.getConflictingMatches().stream().forEach(it -> {
-      Iterator<Match> iterator = it.getConflictingMatches().iterator();
+      final Iterator<Match> iterator = it.getConflictingMatches().iterator();
       while (iterator.hasNext()) {
         if (iterator.next() == match) {
           iterator.remove();
@@ -1179,7 +1182,7 @@ public class Buffer {
       }
     });
     match.getReciprocate().getConflictCandidates().stream().forEach(it -> {
-      Iterator<Match> iterator = it.getConflictCandidates().iterator();
+      final Iterator<Match> iterator = it.getConflictCandidates().iterator();
       while (iterator.hasNext()) {
         if (iterator.next() == match.getReciprocate()) {
           iterator.remove();
@@ -1188,7 +1191,7 @@ public class Buffer {
     });
 
     match.getReciprocate().getConflictingMatches().stream().forEach(it -> {
-      Iterator<Match> iterator = it.getConflictingMatches().iterator();
+      final Iterator<Match> iterator = it.getConflictingMatches().iterator();
       while (iterator.hasNext()) {
         if (iterator.next() == match.getReciprocate()) {
           iterator.remove();
@@ -1202,29 +1205,29 @@ public class Buffer {
    *
    */
 
-  boolean doesCompleteRequiredMatches(List<Match> matches) {
+  boolean doesCompleteRequiredMatches(final List<Match> matches) {
 
     // Remove completed lists
-    Iterator<List<Match>> iter = divisibilityRequiredMatches.iterator();
+    final Iterator<List<Match>> iter = this.divisibilityRequiredMatches.iterator();
     while (iter.hasNext()) {
 
       // In the current version we only check if all lists are completelyMatched
       // for better optimization, we must check if each list contains enough applied matches
       // to cover the complete original range
-      List<Match> list = iter.next();
+      final List<Match> list = iter.next();
       if (list.stream().allMatch(it -> it.isApplied())) {
         iter.remove();
       }
     }
 
     // Check if the proposed matches completes the remaining lists
-    return divisibilityRequiredMatches.stream().allMatch(list -> matches.containsAll(list));
+    return this.divisibilityRequiredMatches.stream().allMatch(list -> matches.containsAll(list));
   }
 
   @Override
   public String toString() {
-    int size = nbTokens * tokenSize;
-    return getSdfVertex().getName() + "." + name + "[" + size + "]";
+    final int size = this.nbTokens * this.tokenSize;
+    return getSdfVertex().getName() + "." + this.name + "[" + size + "]";
   }
 
 }

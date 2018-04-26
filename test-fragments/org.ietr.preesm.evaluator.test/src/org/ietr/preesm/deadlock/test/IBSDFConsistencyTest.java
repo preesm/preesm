@@ -45,18 +45,18 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * 
+ *
  * Unit test of IBSDFConsistency class
- * 
+ *
  * @author hderoui
- * 
+ *
  */
 public class IBSDFConsistencyTest {
 
   @Test
   public void testRVShouldBeComputed() {
     // generate the IBSDF graph AB[DEF]C
-    SDFGraph ABC = generateIBSDFGraph();
+    final SDFGraph ABC = generateIBSDFGraph();
     // compute the repetition vector (RV) of AB[DEF]C
     IBSDFConsistency.computeRV(ABC);
     // check the RV value of the top-graph
@@ -65,17 +65,17 @@ public class IBSDFConsistencyTest {
     Assert.assertEquals(3, ABC.getVertex("C").getNbRepeat());
 
     // check the RV value of the sub-graph
-    SDFGraph DEF = (SDFGraph) ABC.getVertex("B").getGraphDescription();
+    final SDFGraph DEF = (SDFGraph) ABC.getVertex("B").getGraphDescription();
     Assert.assertEquals(2, DEF.getVertex("D").getNbRepeat());
     Assert.assertEquals(6, DEF.getVertex("E").getNbRepeat());
     Assert.assertEquals(4, DEF.getVertex("F").getNbRepeat());
 
     // TODO: check the consumption/production rates of interfaces
-    SDFAbstractVertex in = DEF.getVertex("a");
+    final SDFAbstractVertex in = DEF.getVertex("a");
     SDFEdge e = in.getAssociatedEdge(in.getSinks().iterator().next());
     Assert.assertEquals(6, e.getProd().intValue());
 
-    SDFAbstractVertex out = DEF.getVertex("c");
+    final SDFAbstractVertex out = DEF.getVertex("c");
     e = out.getAssociatedEdge(out.getSources().iterator().next());
     Assert.assertEquals(12, e.getCons().intValue());
   }
@@ -83,14 +83,14 @@ public class IBSDFConsistencyTest {
   @Test
   public void testConsistencyShouldBeEvaluated() {
     // generate the IBSDF graph AB[DEF]C (consistent)
-    SDFGraph ibsdf = generateIBSDFGraph();
+    final SDFGraph ibsdf = generateIBSDFGraph();
     // evaluate the consistency
     Boolean consistent = IBSDFConsistency.computeRV(ibsdf);
     Assert.assertTrue(consistent);
 
     // change the production rate of the edge EF so that the subgraph becomes non consistent
-    SDFGraph subgraph = (SDFGraph) ibsdf.getVertex("B").getGraphDescription();
-    SDFAbstractVertex E = subgraph.getVertex("E");
+    final SDFGraph subgraph = (SDFGraph) ibsdf.getVertex("B").getGraphDescription();
+    final SDFAbstractVertex E = subgraph.getVertex("E");
     E.getAssociatedEdge(E.getSinks().iterator().next()).setProd(new SDFIntEdgePropertyType(10));
 
     // evaluate the consistency
@@ -101,7 +101,7 @@ public class IBSDFConsistencyTest {
 
   /**
    * generate a IBSDF graph to test methods
-   * 
+   *
    * @return IBSDF graph
    */
   public SDFGraph generateIBSDFGraph() {
@@ -121,7 +121,7 @@ public class IBSDFConsistencyTest {
     // the resulted rates of edges : aE=(6,1); Fc=(3,12)
 
     // create the subgraph
-    SDFGraph subgraph = new SDFGraph();
+    final SDFGraph subgraph = new SDFGraph();
     subgraph.setName("subgraph");
     GraphStructureHelper.addActor(subgraph, "D", null, null, null, null, null);
     GraphStructureHelper.addActor(subgraph, "E", null, null, null, null, null);
@@ -136,7 +136,7 @@ public class IBSDFConsistencyTest {
     GraphStructureHelper.addEdge(subgraph, "F", null, "c", null, 3, 1, 0, null);
 
     // create the top graph and add the subgraph to the hierarchical actor B
-    SDFGraph topgraph = new SDFGraph();
+    final SDFGraph topgraph = new SDFGraph();
     topgraph.setName("topgraph");
     GraphStructureHelper.addActor(topgraph, "A", null, null, null, null, null);
     GraphStructureHelper.addActor(topgraph, "B", subgraph, null, null, null, null);

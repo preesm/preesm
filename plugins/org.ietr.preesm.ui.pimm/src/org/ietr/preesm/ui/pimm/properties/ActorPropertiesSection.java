@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
  *
  * Alexandre Honorat <ahonorat@insa-rennes.fr> (2017)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
@@ -521,7 +521,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
         if (bo instanceof Actor) {
           final Actor actor = (Actor) bo;
           final Refinement refinement = actor.getRefinement();
-          if (refinement == null || refinement.getFilePath() == null) {
+          if ((refinement == null) || (refinement.getFilePath() == null)) {
             this.lblRefinementObj.setText("(none)");
             this.lblRefinementView.setText("(none)");
             this.butRefinementClear.setEnabled(false);

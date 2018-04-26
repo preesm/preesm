@@ -43,7 +43,7 @@ import org.junit.Test;
 
 /**
  * Unit test of ASAPScheduler_SDF class
- * 
+ *
  * @author hderoui
  *
  */
@@ -52,11 +52,11 @@ public class ASAPScheduler_SDFTest {
   @Test
   public void testIterationDurationShouldBeComputed() {
     // generate a SDF graph
-    SDFGraph sdf = generateSDFGraphABC326();
+    final SDFGraph sdf = generateSDFGraphABC326();
 
     // schedule the SDF graph
-    ASAPScheduler_SDF scheduler = new ASAPScheduler_SDF();
-    double durationOf1Iteration = scheduler.schedule(sdf);
+    final ASAPScheduler_SDF scheduler = new ASAPScheduler_SDF();
+    final double durationOf1Iteration = scheduler.schedule(sdf);
 
     // check the value of the duration
     Assert.assertEquals(3.0, durationOf1Iteration, 0);
@@ -65,7 +65,7 @@ public class ASAPScheduler_SDFTest {
 
   /**
    * generates a normalized SDF graph
-   * 
+   *
    * @return SDF graph
    */
   public SDFGraph generateSDFGraphABC326() {
@@ -76,7 +76,7 @@ public class ASAPScheduler_SDFTest {
     // Duration of the first iteration = 3
 
     // create SDF graph testABC3
-    SDFGraph graph = new SDFGraph();
+    final SDFGraph graph = new SDFGraph();
     graph.setName("testABC3");
 
     // add actors

@@ -5,6 +5,9 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* Add new code generation scheme for instrumenting code with PAPI;
+  * add new code generator : PapifyC
+  * add new tab in the scenario editor to configure the Papi events to monitor;
 
 ### Changes
 * Update coding policies to 1.2.4 (fix line split);

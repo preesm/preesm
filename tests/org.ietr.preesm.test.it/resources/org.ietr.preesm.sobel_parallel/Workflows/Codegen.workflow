@@ -65,7 +65,7 @@
     <dftools:task
         pluginId="org.ietr.preesm.codegen.xtend.task.CodegenTask" taskId="Code Generation">
         <dftools:data key="variables">
-            <dftools:variable name="Printer" value="PapifiedC"/>
+            <dftools:variable name="Printer" value="PapifyC"/>
         </dftools:data>
     </dftools:task>
     <dftools:task

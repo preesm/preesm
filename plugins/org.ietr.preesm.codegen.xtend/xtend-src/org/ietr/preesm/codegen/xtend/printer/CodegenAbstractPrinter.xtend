@@ -2,6 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Daniel Madroñal <daniel.madronal@upm.es> (2017)
  * Julien Hascoet <jhascoet@kalray.eu> (2016)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
  *
