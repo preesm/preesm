@@ -837,7 +837,7 @@ public class ScenarioParser {
         final String type = elt.getAttribute("type");
         final PapiEventSet eventSet = new PapiEventSet();
 
-        List<PapiEvent> eventList = getPapifyEvents(elt);
+        final List<PapiEvent> eventList = getPapifyEvents(elt);
         eventSet.setType(Optional.ofNullable(type).map(PapiEventSetType::valueOf).orElse(null));
         eventSet.setEvents(eventList);
         eventSetList.add(eventSet);
@@ -857,12 +857,12 @@ public class ScenarioParser {
    */
   private List<PapiEvent> getPapifyEvents(final Element papifyEventsElt) {
 
-    List<PapiEvent> eventList = new ArrayList<>();
+    final List<PapiEvent> eventList = new ArrayList<>();
     Node node = papifyEventsElt.getFirstChild();
     while (node != null) {
       if (node instanceof Element) {
         final Element elt = (Element) node;
-        PapiEvent event = getPapifyEvent(elt);
+        final PapiEvent event = getPapifyEvent(elt);
         eventList.add(event);
       }
       node = node.getNextSibling();
@@ -879,20 +879,20 @@ public class ScenarioParser {
    */
   private PapiEvent getPapifyEvent(final Element papifyEventElt) {
 
-    PapiEvent event = new PapiEvent();
+    final PapiEvent event = new PapiEvent();
     final String eventDescription = papifyEventElt.getAttribute("eventDescription");
     event.setDesciption(eventDescription);
     final String eventId = papifyEventElt.getAttribute("eventId");
     event.setIndex(Integer.valueOf(eventId));
     final String eventName = papifyEventElt.getAttribute("eventName");
     event.setName(eventName);
-    List<PapiEventModifier> eventModiferList = new ArrayList<>();
+    final List<PapiEventModifier> eventModiferList = new ArrayList<>();
 
     Node node = papifyEventElt.getFirstChild();
     while (node != null) {
       if (node instanceof Element) {
         final Element elt = (Element) node;
-        PapiEventModifier eventModifer = new PapiEventModifier();
+        final PapiEventModifier eventModifer = new PapiEventModifier();
         final String description = elt.getAttribute("description");
         eventModifer.setDescription(description);
         final String name = elt.getAttribute("name");
@@ -996,7 +996,7 @@ public class ScenarioParser {
     if (this.algoSDF != null) {
       result = this.algoSDF.getHierarchicalVertexFromPath(path);
     } else if (this.algoPi != null) {
-      result = ActorPath.lookup(algoPi, path);
+      result = ActorPath.lookup(this.algoPi, path);
     }
     return result;
   }

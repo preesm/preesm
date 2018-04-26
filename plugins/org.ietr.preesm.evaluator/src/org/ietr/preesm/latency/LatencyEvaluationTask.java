@@ -77,19 +77,19 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
   public Stopwatch           timer;
 
   @Override
-  public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters, IProgressMonitor monitor, String nodeName, Workflow workflow)
-      throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
     // get the input graph, the scenario for actors duration, and the total number of cores
-    SDFGraph inputGraph = GraphStructureHelper.cloneIBSDF((SDFGraph) inputs.get("SDF"));
-    PreesmScenario inputScenario = (PreesmScenario) inputs.get("scenario");
-    boolean multicore = Boolean.valueOf(parameters.get("multicore"));
-    LatencyMethod inputMethod = LatencyMethod.valueOf(parameters.get("method"));
+    final SDFGraph inputGraph = GraphStructureHelper.cloneIBSDF((SDFGraph) inputs.get("SDF"));
+    final PreesmScenario inputScenario = (PreesmScenario) inputs.get("scenario");
+    final boolean multicore = Boolean.valueOf(parameters.get("multicore"));
+    final LatencyMethod inputMethod = LatencyMethod.valueOf(parameters.get("method"));
 
     // init & test
-    boolean deadlockFree = this.init(inputGraph, inputScenario);
+    final boolean deadlockFree = init(inputGraph, inputScenario);
     double latency = 0;
-    timer = new Stopwatch();
+    this.timer = new Stopwatch();
 
     // Compute the latency of the graph if it is deadlock free
     if (deadlockFree) {
@@ -99,36 +99,36 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
         switch (inputMethod) {
           case FLAT_LP:
             // Based on flattening the hierarchy into a Flat srSDF graph
-            timer.start();
+            this.timer.start();
 
             // convert the IBSDF graph to a flat srSDF graph then to a dag
-            SDFGraph dag_lp = SrSDFTransformer.convertToDAG(IBSDFTransformer.convertToSrSDF(inputGraph, false));
+            final SDFGraph dag_lp = SrSDFTransformer.convertToDAG(IBSDFTransformer.convertToSrSDF(inputGraph, false));
 
             // compute the value of the longest path in the dag
             latency = GraphStructureHelper.getLongestPath(dag_lp, null, null);
 
-            timer.stop();
+            this.timer.stop();
             break;
 
           case FLAT_SE:
             // Based on flattening the hierarchy into a Flat srSDF graph
-            timer.start();
+            this.timer.start();
 
             // convert the IBSDF graph to a flat srSDF graph then to a dag
-            SDFGraph dag_simu = SrSDFTransformer.convertToDAG(IBSDFTransformer.convertToSrSDF(inputGraph, false));
+            final SDFGraph dag_simu = SrSDFTransformer.convertToDAG(IBSDFTransformer.convertToSrSDF(inputGraph, false));
 
             // Simulate an ASAP schedule
-            ASAPScheduler_DAG schedule = new ASAPScheduler_DAG();
+            final ASAPScheduler_DAG schedule = new ASAPScheduler_DAG();
             latency = schedule.schedule(dag_simu);
 
-            timer.stop();
+            this.timer.stop();
             break;
 
           case FAST:
             // Based on a hierarchical evaluation of the latency (evaluate-replace)
-            LatencyEvaluationEngine evaluator = new LatencyEvaluationEngine();
+            final LatencyEvaluationEngine evaluator = new LatencyEvaluationEngine();
             latency = evaluator.getMinLatencyMultiCore(inputGraph, null, false);
-            timer = evaluator.timer;
+            this.timer = evaluator.timer;
             break;
 
           default:
@@ -138,17 +138,17 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
 
         // print a message with the latency value
         WorkflowLogger.getLogger().log(Level.INFO,
-            "The minimum Latency value of a multicore execution = " + latency + " Cycle, Computed in : " + timer.toString());
+            "The minimum Latency value of a multicore execution = " + latency + " Cycle, Computed in : " + this.timer.toString());
 
       } else {
         // single core execution
-        LatencyEvaluationEngine evaluator = new LatencyEvaluationEngine();
+        final LatencyEvaluationEngine evaluator = new LatencyEvaluationEngine();
         latency = evaluator.getMinLatencySingleCore(inputGraph, inputScenario);
-        timer = evaluator.timer;
+        this.timer = evaluator.timer;
 
         // print a message with the latency value
         WorkflowLogger.getLogger().log(Level.INFO,
-            "The minimum Latency value of a singlecore execution = " + latency + " Cycle, Computed in : " + timer.toString());
+            "The minimum Latency value of a singlecore execution = " + latency + " Cycle, Computed in : " + this.timer.toString());
       }
 
     } else {
@@ -157,7 +157,7 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
     }
 
     // set the outputs
-    Map<String, Object> outputs = new HashMap<String, Object>();
+    final Map<String, Object> outputs = new HashMap<>();
     outputs.put("SDF", inputGraph);
     outputs.put("scenario", inputScenario);
     outputs.put("latency", latency);
@@ -167,7 +167,7 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    Map<String, String> parameters = new HashMap<String, String>();
+    final Map<String, String> parameters = new HashMap<>();
     // parameters.put(,);
     return parameters;
   }
@@ -179,15 +179,15 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
 
   /**
    * Check the deadlock freeness of the graph and initialize it before computing the throughput
-   * 
+   *
    * @param inputGraph
    *          SDF/IBSDF graph
    * @param scenario
    *          contains actors duration
-   * 
+   *
    * @return true if deadlock free, false if not
    */
-  private boolean init(SDFGraph inputGraph, PreesmScenario scenario) {
+  private boolean init(final SDFGraph inputGraph, final PreesmScenario scenario) {
     // test the inputs
     // TestPlugin.start(null, null);
 
@@ -198,11 +198,11 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
     if (deadlockFree) {
 
       // Copy actors duration from the scenario to actors properties
-      for (SDFAbstractVertex actor : inputGraph.getAllVertices()) {
+      for (final SDFAbstractVertex actor : inputGraph.getAllVertices()) {
         if (actor.getKind() == "vertex") {
           if (actor.getGraphDescription() == null) {
             // if atomic actor then copy the duration indicated in the scenario
-            double duration = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
+            final double duration = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
             actor.setPropertyValue("duration", duration);
           } else {
             // if hierarchical actor then as default the duration is 1
@@ -212,7 +212,7 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
           }
         } else {
           // keep the duration of input interfaces
-          double duration = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
+          final double duration = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
           actor.setPropertyValue("duration", duration);
 
           // the duration of interfaces in neglected by setting their duration to 0

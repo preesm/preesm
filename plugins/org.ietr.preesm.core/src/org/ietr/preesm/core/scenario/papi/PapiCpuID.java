@@ -10,26 +10,26 @@ public class PapiCpuID {
   private int model;
 
   public int getFamily() {
-    return family;
+    return this.family;
   }
 
-  public void setFamily(int family) {
+  public void setFamily(final int family) {
     this.family = family;
   }
 
   public int getModel() {
-    return model;
+    return this.model;
   }
 
-  public void setModel(int model) {
+  public void setModel(final int model) {
     this.model = model;
   }
 
   public int getStepping() {
-    return stepping;
+    return this.stepping;
   }
 
-  public void setStepping(int stepping) {
+  public void setStepping(final int stepping) {
     this.stepping = stepping;
   }
 

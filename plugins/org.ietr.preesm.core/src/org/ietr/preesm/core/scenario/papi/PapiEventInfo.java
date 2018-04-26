@@ -21,11 +21,11 @@ public class PapiEventInfo {
   }
 
   public PapiHardware getHardware() {
-    return hardware;
+    return this.hardware;
   }
 
   public List<PapiComponent> getComponents() {
-    return components;
+    return this.components;
   }
 
   @Override

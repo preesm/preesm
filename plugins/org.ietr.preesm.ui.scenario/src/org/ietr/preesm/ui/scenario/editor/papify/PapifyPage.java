@@ -46,8 +46,6 @@ import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -75,7 +73,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.papi.PapiConfigParser;
 import org.ietr.preesm.core.scenario.papi.PapiEventInfo;
@@ -104,9 +101,6 @@ public class PapifyPage extends FormPage implements IPropertyListener {
   CheckboxTableViewer eventTableViewer     = null;
   PapiEventInfo       papiEvents           = null;
   PapiConfigParser    papiParser           = new PapiConfigParser();
-
-  /** Architecture. */
-  private Design slamDesign = null;
 
   /**
    * Instantiates a new papify page.
@@ -150,7 +144,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
       if (!xmlFullPath.equals("")) {
         parseXmlData(xmlFullPath);
       }
-      if (this.papiEvents != null && !this.papiEvents.getComponents().isEmpty()) {
+      if ((this.papiEvents != null) && !this.papiEvents.getComponents().isEmpty()) {
         updateTables();
         firePropertyChange(IEditorPart.PROP_DIRTY);
       } else {
@@ -244,11 +238,11 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     final Composite container = createSection(managedForm, title, desc, 1, new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
 
     this.checkStateListener = new PapifyCheckStateListener(container, this.scenario);
-    container.addPaintListener(checkStateListener);
+    container.addPaintListener(this.checkStateListener);
 
     final FormToolkit toolkit = managedForm.getToolkit();
 
-    checkStateListener.addComboBoxSelector(container, toolkit);
+    this.checkStateListener.addComboBoxSelector(container, toolkit);
 
     addComponentSelectionTable(container, toolkit);
     addEventSelectionTable(container, toolkit);
@@ -366,9 +360,9 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     final Path path = new Path(text.getText());
     final IFile file = workspace.getRoot().getFile(path);
 
-    papiEvents = papiParser.parse(file.getLocation().toString());
+    this.papiEvents = this.papiParser.parse(file.getLocation().toString());
 
-    if (!text.getText().equals(this.scenario.getPapifyConfigManager().getXmlFileURL()) && papiEvents.getComponents() != null) {
+    if (!text.getText().equals(this.scenario.getPapifyConfigManager().getXmlFileURL()) && (this.papiEvents.getComponents() != null)) {
       this.scenario.setPapifyConfigManager(new PapifyConfigManager());
       this.scenario.getPapifyConfigManager().setExcelFileURL(text.getText());
       this.componentTableViewer.setInput(this.papiEvents);
@@ -385,7 +379,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
    * @param xmlfile
    *          the xmlfile
    */
-  private String getFullXmlPath(String xmlfile) {
+  private String getFullXmlPath(final String xmlfile) {
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
     String fullPath = "";
@@ -407,9 +401,9 @@ public class PapifyPage extends FormPage implements IPropertyListener {
    * @param xmlpath
    *          the xmlfile
    */
-  private void parseXmlData(String xmlfile) {
+  private void parseXmlData(final String xmlfile) {
 
-    papiEvents = papiParser.parse(xmlfile);
+    this.papiEvents = this.papiParser.parse(xmlfile);
 
   }
 
@@ -452,15 +446,15 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     final PapifyComponentListContentProvider contentProvider = new PapifyComponentListContentProvider();
     this.componentTableViewer.setContentProvider(contentProvider);
 
-    checkStateListener.setComponentTableViewer(this.componentTableViewer, contentProvider, this);
+    this.checkStateListener.setComponentTableViewer(this.componentTableViewer, contentProvider, this);
 
     final PapifyComponentLabelProvider labelProvider = new PapifyComponentLabelProvider(this.scenario, this.componentTableViewer, this);
     this.componentTableViewer.setLabelProvider(labelProvider);
 
-    this.componentTableViewer.addCheckStateListener(checkStateListener);
+    this.componentTableViewer.addCheckStateListener(this.checkStateListener);
 
     // Create columns
-    String[] componentSelectionColumnNames = { "PAPI components", "Component type" };
+    final String[] componentSelectionColumnNames = { "PAPI components", "Component type" };
 
     final List<TableColumn> columns = new ArrayList<>();
     for (int i = 0; i < componentSelectionColumnNames.length; i++) {
@@ -531,14 +525,14 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     final PapifyEventListContentProvider contentProvider = new PapifyEventListContentProvider();
     this.eventTableViewer.setContentProvider(contentProvider);
 
-    checkStateListener.setEventTableViewer(this.eventTableViewer, contentProvider, this);
+    this.checkStateListener.setEventTableViewer(this.eventTableViewer, contentProvider, this);
 
     final PapifyEventLabelProvider labelProvider = new PapifyEventLabelProvider(this.scenario, this.eventTableViewer, this);
     this.eventTableViewer.setLabelProvider(labelProvider);
 
-    this.eventTableViewer.addCheckStateListener(checkStateListener);
+    this.eventTableViewer.addCheckStateListener(this.checkStateListener);
     // Create columns
-    String[] eventSelectionColumnNames = { "Event Name", "Short Description" };
+    final String[] eventSelectionColumnNames = { "Event Name", "Short Description" };
 
     final List<TableColumn> columns = new ArrayList<>();
     for (int i = 0; i < eventSelectionColumnNames.length; i++) {
@@ -583,39 +577,6 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     gd.heightHint = 200;
     gd.widthHint = 400;
     tablecps.setLayoutData(gd);
-  }
-
-  /**
-   * Adds a combo box for the core selection.
-   *
-   * @param parent
-   *          the parent
-   * @param toolkit
-   *          the toolkit
-   * @return the combo
-   */
-  private Combo addCoreSelector(final Composite parent, final FormToolkit toolkit) {
-    final Composite combocps = toolkit.createComposite(parent);
-    combocps.setLayout(new FillLayout());
-    combocps.setVisible(true);
-    final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
-    combo.setVisibleItemCount(20);
-    combo.setToolTipText(Messages.getString("Papify.coreSelectionTooltip"));
-    comboDataInit(combo);
-    combo.addFocusListener(new FocusListener() {
-
-      @Override
-      public void focusGained(final FocusEvent e) {
-        comboDataInit((Combo) e.getSource());
-
-      }
-
-      @Override
-      public void focusLost(final FocusEvent e) {
-      }
-
-    });
-    return combo;
   }
 
   /**

@@ -237,7 +237,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
       if ((this.currentOpId != null) && (papiComponents != null)) {
         final PapifyConfig pcgSetRead = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroups(this.currentOpId);
-        if (pcgSetRead != null && pcgSetRead.getPAPIComponent() != null) {
+        if ((pcgSetRead != null) && (pcgSetRead.getPAPIComponent() != null)) {
           pcgSet.add(pcgSetRead.getPAPIComponent());
         }
         this.componentTableViewer.setCheckedElements(pcgSet.toArray());
@@ -255,7 +255,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
       if ((this.currentOpId != null) && (papiEvents != null)) {
         final PapifyConfig pegSetRead = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroups(this.currentOpId);
-        if (pegSetRead != null && !pegSetRead.getPAPIEvents().isEmpty()) {
+        if ((pegSetRead != null) && !pegSetRead.getPAPIEvents().isEmpty()) {
           pegSetfinal = pegSetRead.getPAPIEvents();
         }
 
@@ -324,13 +324,15 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
   }
 
-  public void setTableViewer(CheckboxTableViewer tableviewer, PreesmAlgorithmTreeContentProvider contentProvider2, IPropertyListener listener) {
+  public void setTableViewer(final CheckboxTableViewer tableviewer, final PreesmAlgorithmTreeContentProvider contentProvider2,
+      final IPropertyListener listener) {
     // TODO Auto-generated method stub
 
   }
 
   @Override
-  public void setTreeViewer(CheckboxTreeViewer treeViewer, PreesmAlgorithmTreeContentProvider contentProvider, IPropertyListener propertyListener) {
+  public void setTreeViewer(final CheckboxTreeViewer treeViewer, final PreesmAlgorithmTreeContentProvider contentProvider,
+      final IPropertyListener propertyListener) {
     // TODO Auto-generated method stub
 
   }

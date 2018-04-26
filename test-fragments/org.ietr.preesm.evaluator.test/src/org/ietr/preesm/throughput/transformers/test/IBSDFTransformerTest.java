@@ -46,7 +46,7 @@ import org.junit.Test;
 
 /**
  * Unit test of IBSDFTransformer class
- * 
+ *
  * @author hderoui
  *
  */
@@ -56,24 +56,24 @@ public class IBSDFTransformerTest {
   public void testIBSDFGraphShouldBeTranformedToFlatSrSDFGraph() {
 
     // generate an IBSDF graph
-    SDFGraph ibsdf = generateIBSDFGraph();
+    final SDFGraph ibsdf = generateIBSDFGraph();
 
     // flatten the hierarchy with the execution rules
-    SDFGraph flatSrSDF = IBSDFTransformer.convertToSrSDF(ibsdf, true);
+    final SDFGraph flatSrSDF = IBSDFTransformer.convertToSrSDF(ibsdf, true);
 
     // check the number of actors and the number of edges
     // actors 53 = 2 + 3*(1 + 2 + 6 + 4 + 1 + 2) + 3
     // edges 176
-    for (SDFAbstractVertex a : flatSrSDF.vertexSet()) {
+    for (final SDFAbstractVertex a : flatSrSDF.vertexSet()) {
       System.out.println("Actor " + a.getId());
     }
 
-    for (SDFEdge e : flatSrSDF.edgeSet()) {
+    for (final SDFEdge e : flatSrSDF.edgeSet()) {
       System.out.println("Edge " + e.toString());
     }
 
-    int nbActor = flatSrSDF.vertexSet().size();
-    int nbEdges = flatSrSDF.edgeSet().size();
+    final int nbActor = flatSrSDF.vertexSet().size();
+    final int nbEdges = flatSrSDF.edgeSet().size();
 
     Assert.assertEquals(53, nbActor);
     Assert.assertEquals(176, nbEdges);
@@ -84,16 +84,16 @@ public class IBSDFTransformerTest {
   public void testIBSDFGraphShouldBeTranformedToRelaxedSrSDFGraph() {
 
     // generate an IBSDF graph
-    SDFGraph ibsdf = generateIBSDFGraph();
+    final SDFGraph ibsdf = generateIBSDFGraph();
 
     // flatten the hierarchy
-    SDFGraph flatSrSDF = IBSDFTransformer.convertToSrSDF(ibsdf, false);
+    final SDFGraph flatSrSDF = IBSDFTransformer.convertToSrSDF(ibsdf, false);
 
     // check the number of actors and the number of edges
     // actors 47 = 2 + 3*(1 + 2 + 6 + 4 + 1) + 3
     // edges 95
-    int nbActor = flatSrSDF.vertexSet().size();
-    int nbEdges = flatSrSDF.edgeSet().size();
+    final int nbActor = flatSrSDF.vertexSet().size();
+    final int nbEdges = flatSrSDF.edgeSet().size();
 
     Assert.assertEquals(47, nbActor);
     Assert.assertEquals(95, nbEdges);
@@ -102,7 +102,7 @@ public class IBSDFTransformerTest {
 
   /**
    * generate an IBSDF graph to test methods
-   * 
+   *
    * @return IBSDF graph
    */
   public SDFGraph generateIBSDFGraph() {
@@ -122,7 +122,7 @@ public class IBSDFTransformerTest {
     // the resulted rates of edges : aE=(6,1); Fc=(3,12)
 
     // create the subgraph
-    SDFGraph subgraph = new SDFGraph();
+    final SDFGraph subgraph = new SDFGraph();
     subgraph.setName("subgraph");
     GraphStructureHelper.addActor(subgraph, "D", null, null, 1., null, null);
     GraphStructureHelper.addActor(subgraph, "E", null, null, 1., null, null);
@@ -137,7 +137,7 @@ public class IBSDFTransformerTest {
     GraphStructureHelper.addEdge(subgraph, "F", null, "c", null, 3, 1, 0, null);
 
     // create the top graph and add the subgraph to the hierarchical actor B
-    SDFGraph topgraph = new SDFGraph();
+    final SDFGraph topgraph = new SDFGraph();
     topgraph.setName("topgraph");
     GraphStructureHelper.addActor(topgraph, "A", null, null, 1., null, null);
     GraphStructureHelper.addActor(topgraph, "B", subgraph, null, null, null, null);

@@ -840,8 +840,8 @@ public class CodegenModelGenerator {
       this.mainBuffers.put(memoryBank, mainBuffer);
 
       @SuppressWarnings("unchecked")
-      final Map<DAGEdge, Integer> allocation = meg.getPropertyBean().getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION,
-          (new LinkedHashMap<DAGEdge, Integer>()).getClass());
+      final Map<DAGEdge,
+          Integer> allocation = meg.getPropertyBean().getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION, (new LinkedHashMap<DAGEdge, Integer>()).getClass());
 
       // generate the subbuffer for each dagedge
       for (final Entry<DAGEdge, Integer> dagAlloc : allocation.entrySet()) {
@@ -919,8 +919,8 @@ public class CodegenModelGenerator {
 
       // Generate buffers for each fifo
       @SuppressWarnings("unchecked")
-      final Map<MemoryExclusionVertex, Integer> fifoAllocation = (Map<MemoryExclusionVertex, Integer>) meg.getPropertyBean()
-          .getValue(MemoryExclusionGraph.DAG_FIFO_ALLOCATION);
+      final Map<MemoryExclusionVertex,
+          Integer> fifoAllocation = (Map<MemoryExclusionVertex, Integer>) meg.getPropertyBean().getValue(MemoryExclusionGraph.DAG_FIFO_ALLOCATION);
       for (final Entry<MemoryExclusionVertex, Integer> fifoAlloc : fifoAllocation.entrySet()) {
         final SubBuffer fifoBuffer = CodegenFactory.eINSTANCE.createSubBuffer();
 
@@ -954,8 +954,8 @@ public class CodegenModelGenerator {
       }
       // Generate subbuffers for each working mem.
       @SuppressWarnings("unchecked")
-      final Map<MemoryExclusionVertex, Integer> workingMemoryAllocation = (Map<MemoryExclusionVertex, Integer>) (meg.getPropertyBean()
-          .getValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION));
+      final Map<MemoryExclusionVertex, Integer> workingMemoryAllocation = (Map<MemoryExclusionVertex,
+          Integer>) (meg.getPropertyBean().getValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION));
       for (final Entry<MemoryExclusionVertex, Integer> e : workingMemoryAllocation.entrySet()) {
         final SubBuffer workingMemBuffer = CodegenFactory.eINSTANCE.createSubBuffer();
         final MemoryExclusionVertex mObj = e.getKey();

@@ -173,7 +173,7 @@ public class TimingManager {
     final String id = dagVertex.getId();
 
     if (graphDescription == null) {
-      for (final Timing timing : this.getTimings()) {
+      for (final Timing timing : getTimings()) {
         if (timing.getVertexId().equals(id)) {
           vals.add(timing);
         }
@@ -398,7 +398,6 @@ public class TimingManager {
    *          the new default mem cpy speed
    */
   public void setDefaultMemCpySpeed(final String operatorDef) {
-    putMemcpySpeed(
-        new MemCopySpeed(operatorDef, TimingManager.DEFAULTMEMCPYSETUPTIME, TimingManager.DEFAULTMEMCPYTIMEPERUNIT));
+    putMemcpySpeed(new MemCopySpeed(operatorDef, TimingManager.DEFAULTMEMCPYSETUPTIME, TimingManager.DEFAULTMEMCPYTIMEPERUNIT));
   }
 }

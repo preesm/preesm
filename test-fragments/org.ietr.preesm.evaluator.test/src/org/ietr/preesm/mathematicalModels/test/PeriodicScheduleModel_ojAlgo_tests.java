@@ -44,7 +44,7 @@ import org.junit.Test;
 
 /**
  * Unit test of PeriodicScheduleModel_GLPK class
- * 
+ *
  * @author hderoui
  *
  */
@@ -53,17 +53,17 @@ public class PeriodicScheduleModel_ojAlgo_tests {
   @Test
   public void testNormalizedPeriodShouldBeComputed() {
     // generate a normalized SDF graph
-    SDFGraph ABC = generateNormalizedSDFGraphABC3();
+    final SDFGraph ABC = generateNormalizedSDFGraphABC3();
     // compute its normalized period K
-    PeriodicScheduleModel_ojAlgo model = new PeriodicScheduleModel_ojAlgo();
-    double k = model.computeNormalizedPeriod(ABC).doubleValue();
+    final PeriodicScheduleModel_ojAlgo model = new PeriodicScheduleModel_ojAlgo();
+    final double k = model.computeNormalizedPeriod(ABC).doubleValue();
     // check the value of K
     Assert.assertEquals(1, k, 0);
   }
 
   /**
    * generates a normalized SDF graph
-   * 
+   *
    * @return SDF graph
    */
   public SDFGraph generateNormalizedSDFGraphABC3() {
@@ -76,7 +76,7 @@ public class PeriodicScheduleModel_ojAlgo_tests {
     // normalized period K of the graph = 3
 
     // create SDF graph testABC3
-    SDFGraph graph = new SDFGraph();
+    final SDFGraph graph = new SDFGraph();
     graph.setName("testABC3");
 
     // add actors

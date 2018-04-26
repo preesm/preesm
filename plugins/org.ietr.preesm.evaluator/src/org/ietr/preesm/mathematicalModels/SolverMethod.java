@@ -39,7 +39,7 @@ import org.apache.commons.lang3.math.Fraction;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 
 /**
- * 
+ *
  * @author hderoui
  *
  */

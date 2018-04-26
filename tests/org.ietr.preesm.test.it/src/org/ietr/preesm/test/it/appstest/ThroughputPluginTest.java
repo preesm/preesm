@@ -43,7 +43,7 @@ import org.junit.Test;
 
 /**
  * Integration test for the throughput plug-in
- * 
+ *
  * @author hderoui
  *
  */

@@ -15,39 +15,39 @@ public class PapiEvent {
   private List<PapiEventModifier> modifiers;
 
   public int getIndex() {
-    return index;
+    return this.index;
   }
 
-  public void setIndex(int index) {
+  public void setIndex(final int index) {
     this.index = index;
   }
 
   public String getName() {
-    return name;
+    return this.name;
   }
 
-  public void setName(String name) {
+  public void setName(final String name) {
     this.name = name;
   }
 
   public String getDescription() {
-    return description;
+    return this.description;
   }
 
-  public void setDesciption(String desciption) {
+  public void setDesciption(final String desciption) {
     this.description = desciption;
   }
 
   public List<PapiEventModifier> getModifiers() {
-    return modifiers;
+    return this.modifiers;
   }
 
-  public void setModifiers(List<PapiEventModifier> modifiers) {
+  public void setModifiers(final List<PapiEventModifier> modifiers) {
     this.modifiers = modifiers;
   }
 
   @Override
-  public boolean equals(Object comparer) {
+  public boolean equals(final Object comparer) {
 
     boolean decision = false;
     boolean nameComp = false;
@@ -56,7 +56,7 @@ public class PapiEvent {
     boolean modifiersComp = false;
 
     if (comparer instanceof PapiEvent) {
-      PapiEvent tester = (PapiEvent) comparer;
+      final PapiEvent tester = (PapiEvent) comparer;
       if (this.description.equals(tester.getDescription())) {
         descriptionComp = true;
       }
@@ -82,14 +82,14 @@ public class PapiEvent {
 
   @Override
   public int hashCode() {
-    return index;
+    return this.index;
   }
 
   @Override
   public String toString() {
     final StringBuilder b = new StringBuilder();
-    b.append(String.format("      <event index=\"%d\" name=\"%s\" desc=\"%s\">%n", index, name, description));
-    for (PapiEventModifier modifier : modifiers) {
+    b.append(String.format("      <event index=\"%d\" name=\"%s\" desc=\"%s\">%n", this.index, this.name, this.description));
+    for (final PapiEventModifier modifier : this.modifiers) {
       b.append(modifier.toString());
     }
     b.append(String.format("      </event>%n"));

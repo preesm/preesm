@@ -45,7 +45,7 @@ import org.junit.Test;
 
 /**
  * Unit test of PeriodicScheduler_SDF class
- * 
+ *
  * @author hderoui
  *
  */
@@ -54,11 +54,11 @@ public class PeriodicScheduler_SDFTest {
   @Test
   public void testPeriodicScheduleShouldBeComputed() {
     // generate a SDF graph
-    SDFGraph sdf = generateSDFGraphABC326();
+    final SDFGraph sdf = generateSDFGraphABC326();
 
     // schedule the SDF graph
-    PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
-    double throughput = periodic.schedule(sdf, null, true);
+    final PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
+    final double throughput = periodic.schedule(sdf, null, true);
 
     // check the normalized rate of actors
     // Z=[t1=3, t2=2, t3=6, t4=6, t5=18]
@@ -69,11 +69,11 @@ public class PeriodicScheduler_SDFTest {
     Assert.assertEquals(18, (double) sdf.getVertex("t5").getPropertyBean().getValue("normalizedRate"), 0);
 
     // check the value of the normalized period of the graph
-    double k = ((Fraction) sdf.getPropertyBean().getValue("normalizedPeriod")).doubleValue();
+    final double k = ((Fraction) sdf.getPropertyBean().getValue("normalizedPeriod")).doubleValue();
     Assert.assertEquals(13, k, 0);
 
     // check the value of the throughput
-    double throughputExpected = 1. / 234.;
+    final double throughputExpected = 1. / 234.;
     Assert.assertEquals(throughputExpected, throughput, 0);
 
     // check the execution period of actors
@@ -96,7 +96,7 @@ public class PeriodicScheduler_SDFTest {
 
   /**
    * generates a normalized SDF graph
-   * 
+   *
    * @return SDF graph
    */
   public SDFGraph generateSDFGraphABC326() {
@@ -120,7 +120,7 @@ public class PeriodicScheduler_SDFTest {
     // Starting time of actors: s(t1)=0, s(t2)=0, s(t3)=54, s(t4)=56, s(t5)=222
 
     // create SDF graph test Benabid
-    SDFGraph graph = new SDFGraph();
+    final SDFGraph graph = new SDFGraph();
     graph.setName("testBenabid");
 
     // add actors

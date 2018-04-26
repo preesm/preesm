@@ -109,7 +109,7 @@ public class SdfToDagConverter {
       return null;
     }
     final SDFGraph sdf = sdfIn.clone();
-    setDataSizeForSDF(sdf, scenario);
+    SdfToDagConverter.setDataSizeForSDF(sdf, scenario);
     // Generates a dag
     final MapperDAG dag = new MapperDAG(new MapperEdgeFactory(), sdf);
 

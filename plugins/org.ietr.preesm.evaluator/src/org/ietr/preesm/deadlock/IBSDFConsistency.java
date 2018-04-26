@@ -47,13 +47,13 @@ public abstract class IBSDFConsistency {
 
   /**
    * Compute the Repetition factor of all actors of the hierarchy
-   * 
+   *
    * @param graph
    *          IBSDF graph
    * @return true if consistent
    */
-  public static boolean computeRV(SDFGraph graph) {
-    Stopwatch timer = new Stopwatch();
+  public static boolean computeRV(final SDFGraph graph) {
+    final Stopwatch timer = new Stopwatch();
     timer.start();
 
     // step 1: compute the RV of the top graph
@@ -63,7 +63,7 @@ public abstract class IBSDFConsistency {
       return false;
     } else {
       // step 2: compute the RV of each subgraph
-      for (SDFAbstractVertex actor : graph.vertexSet()) {
+      for (final SDFAbstractVertex actor : graph.vertexSet()) {
         if (actor.getGraphDescription() != null) {
           if (!IBSDFConsistency.computeRV((SDFGraph) actor.getGraphDescription())) {
             timer.stop();

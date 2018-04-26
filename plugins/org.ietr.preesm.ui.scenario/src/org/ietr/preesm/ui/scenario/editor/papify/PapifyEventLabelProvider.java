@@ -54,18 +54,6 @@ import org.ietr.preesm.core.scenario.papi.PapiEvent;
  */
 public class PapifyEventLabelProvider implements ITableLabelProvider, SelectionListener {
 
-  /** The scenario. */
-  private PreesmScenario scenario = null;
-
-  /** The current op def id. */
-  private String currentOpDefId = null;
-
-  /** The table viewer. */
-  private TableViewer tableViewer = null;
-
-  /** Constraints page used as a property listener to change the dirty state. */
-  private IPropertyListener propertyListener = null;
-
   String[] eventNames = { "Timing", "Event1", "Event2", "Event3", "Event4", "Event5" };
   String[] eventDescr = { "Time", "Event1 Descr", "Event2 Descr", "Event3 Descr", "Event4 Descr", "Event5 Descr" };
 
@@ -81,9 +69,6 @@ public class PapifyEventLabelProvider implements ITableLabelProvider, SelectionL
    */
   public PapifyEventLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer, final IPropertyListener propertyListener) {
     super();
-    this.scenario = scenario;
-    this.tableViewer = tableViewer;
-    this.propertyListener = propertyListener;
   }
 
   /*
@@ -94,7 +79,7 @@ public class PapifyEventLabelProvider implements ITableLabelProvider, SelectionL
   @Override
   public String getColumnText(final Object element, final int columnIndex) {
 
-    PapiEvent elementParsed = (PapiEvent) element;
+    final PapiEvent elementParsed = (PapiEvent) element;
     switch (columnIndex) {
       case 0:// Parsing column
         return elementParsed.getName();
@@ -172,7 +157,7 @@ public class PapifyEventLabelProvider implements ITableLabelProvider, SelectionL
   }
 
   @Override
-  public Image getColumnImage(Object element, int columnIndex) {
+  public Image getColumnImage(final Object element, final int columnIndex) {
     // TODO Auto-generated method stub
     return null;
   }

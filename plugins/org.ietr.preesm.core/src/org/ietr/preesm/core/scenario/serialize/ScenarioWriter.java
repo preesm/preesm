@@ -212,7 +212,7 @@ public class ScenarioWriter {
    */
   private void addPapifyConfig(final Element parent, final PapifyConfig config) {
 
-    if (!config.getCoreId().equals("") && config.getPAPIComponent() != null && !config.getPAPIEvents().isEmpty()) {
+    if (!config.getCoreId().equals("") && (config.getPAPIComponent() != null) && !config.getPAPIEvents().isEmpty()) {
       final Element papifyConfigElt = this.dom.createElement("papifyConfig");
       parent.appendChild(papifyConfigElt);
 

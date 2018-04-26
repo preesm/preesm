@@ -430,8 +430,8 @@ public abstract class MemoryAllocator {
             .getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
 
         @SuppressWarnings("unchecked")
-        final List<MemoryExclusionVertex> neighbors = (List<MemoryExclusionVertex>) vertex.getPropertyBean()
-            .getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
+        final List<
+            MemoryExclusionVertex> neighbors = (List<MemoryExclusionVertex>) vertex.getPropertyBean().getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
 
         // If the Mobject is not splitted
         if (realTokenRange.size() == 1) {

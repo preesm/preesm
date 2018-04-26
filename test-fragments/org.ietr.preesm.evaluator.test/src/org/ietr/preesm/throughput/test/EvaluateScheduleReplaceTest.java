@@ -44,7 +44,7 @@ import org.junit.Test;
 
 /**
  * Unit test of EvaluateScheduleReplace class
- * 
+ *
  * @author hderoui
  *
  */
@@ -54,11 +54,11 @@ public class EvaluateScheduleReplaceTest {
   public void testThroughputShouldBeComputed() {
 
     // generate the IBSDF graph AB[DEF]C
-    SDFGraph ibsdf = generateIBSDFGraph();
+    final SDFGraph ibsdf = generateIBSDFGraph();
 
     // compute its throughput by classical method
-    EvaluateScheduleReplace method = new EvaluateScheduleReplace();
-    double th = method.evaluate(ibsdf);
+    final EvaluateScheduleReplace method = new EvaluateScheduleReplace();
+    final double th = method.evaluate(ibsdf);
 
     // check the throughput value
     Assert.assertEquals(1 / 7., th, 0);
@@ -67,7 +67,7 @@ public class EvaluateScheduleReplaceTest {
 
   /**
    * generate an IBSDF graph to test methods
-   * 
+   *
    * @return IBSDF graph
    */
   public SDFGraph generateIBSDFGraph() {
@@ -87,7 +87,7 @@ public class EvaluateScheduleReplaceTest {
     // the resulted rates of edges : aE=(6,1); Fc=(3,12)
 
     // create the subgraph
-    SDFGraph subgraph = new SDFGraph();
+    final SDFGraph subgraph = new SDFGraph();
     subgraph.setName("subgraph");
     GraphStructureHelper.addActor(subgraph, "D", null, null, 1., null, null);
     GraphStructureHelper.addActor(subgraph, "E", null, null, 1., null, null);
@@ -102,7 +102,7 @@ public class EvaluateScheduleReplaceTest {
     GraphStructureHelper.addEdge(subgraph, "F", null, "c", null, 3, 1, 0, null);
 
     // create the top graph and add the subgraph to the hierarchical actor B
-    SDFGraph topgraph = new SDFGraph();
+    final SDFGraph topgraph = new SDFGraph();
     topgraph.setName("topgraph");
     GraphStructureHelper.addActor(topgraph, "A", null, null, 1., null, null);
     GraphStructureHelper.addActor(topgraph, "B", subgraph, null, null, null, null);

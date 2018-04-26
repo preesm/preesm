@@ -319,7 +319,7 @@ public class PreesmScenario {
    * Sets the new PapifyConfig group manager.
    *
    */
-  public void setPapifyConfigManager(PapifyConfigManager manager) {
+  public void setPapifyConfigManager(final PapifyConfigManager manager) {
     this.papifyconfiggroupmanager = manager;
   }
 
@@ -443,8 +443,7 @@ public class PreesmScenario {
    *           the core exception
    */
 
-  public void update(final boolean algorithmChange, final boolean architectureChange)
-      throws InvalidModelException, CoreException {
+  public void update(final boolean algorithmChange, final boolean architectureChange) throws InvalidModelException, CoreException {
     // If the architecture changes, operator ids, operator defintion ids and
     // com node ids are no more valid (they are extracted from the
     // architecture)

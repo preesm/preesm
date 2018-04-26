@@ -8,32 +8,32 @@ public class PapiEventModifier {
   private String name;
 
   public String getName() {
-    return name;
+    return this.name;
   }
 
-  public void setName(String name) {
+  public void setName(final String name) {
     this.name = name;
   }
 
   public String getDescription() {
-    return description;
+    return this.description;
   }
 
-  public void setDescription(String description) {
+  public void setDescription(final String description) {
     this.description = description;
   }
 
   private String description;
 
   @Override
-  public boolean equals(Object comparer) {
+  public boolean equals(final Object comparer) {
 
     boolean decision = false;
     boolean nameComp = false;
     boolean descriptionComp = false;
 
     if (comparer instanceof PapiEventModifier) {
-      PapiEventModifier tester = (PapiEventModifier) comparer;
+      final PapiEventModifier tester = (PapiEventModifier) comparer;
       if (this.description.equals(tester.getDescription())) {
         descriptionComp = true;
       }
@@ -50,13 +50,13 @@ public class PapiEventModifier {
 
   @Override
   public int hashCode() {
-    return name.hashCode();
+    return this.name.hashCode();
   }
 
   @Override
   public String toString() {
     final StringBuilder b = new StringBuilder();
-    b.append(String.format("        <modifier name=\"%s\" desc=\"%s\">", name, description));
+    b.append(String.format("        <modifier name=\"%s\" desc=\"%s\">", this.name, this.description));
     b.append(String.format(" </modifier>%n"));
     return b.toString();
   }

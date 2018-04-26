@@ -52,11 +52,11 @@ import org.ietr.preesm.throughput.tools.transformers.SDFTransformer;
 /**
  * this class computes the periodic schedule for an SDF graph. It computes the execution period W and the start date of the first execution for each actor. It
  * also define the maximum throughput of a periodic schedule of the graph.
- * 
+ *
  * TODO add the method that return the start date of an execution t of an actor a
- * 
+ *
  * TODO use only one method to compute the normalized period of the graph which return a fraction instead of a double.
- * 
+ *
  * @author HDeroui
  *
  */
@@ -66,7 +66,7 @@ public class PeriodicScheduler_SDF {
    * @author HDeroui
    *
    *         methods for MCR problem
-   * 
+   *
    */
   public static enum Method {
     Algorithm, LinearProgram_Gurobi, LinearProgram_GLPK, LinearProgram_ojAlgo
@@ -76,25 +76,25 @@ public class PeriodicScheduler_SDF {
 
   /**
    * tests if a periodic schedule exists for an SDF graph using the same sufficient condition of liveness of SDF graphs.
-   * 
+   *
    * @param graph
    *          SDF graph
    * @return true if periodic schedule exists
    */
-  public boolean isPeriodic(SDFGraph graph) {
+  public boolean isPeriodic(final SDFGraph graph) {
     // set edges value : v = h (use the normalized version of the graph)
     // h = (out - M0 - gcd)* alpha(e)
-    Hashtable<String, Double> edgeValue = new Hashtable<>(graph.edgeSet().size());
-    for (SDFEdge e : graph.edgeSet()) {
-      double gcd = MathFunctionsHelper.gcd(e.getProd().intValue(), e.getCons().intValue());
-      double alpha = (double) e.getPropertyBean().getValue("normalizationFactor");
-      double h = (e.getDelay().intValue() - e.getCons().intValue() + gcd) * alpha;
+    final Hashtable<String, Double> edgeValue = new Hashtable<>(graph.edgeSet().size());
+    for (final SDFEdge e : graph.edgeSet()) {
+      final double gcd = MathFunctionsHelper.gcd(e.getProd().intValue(), e.getCons().intValue());
+      final double alpha = (double) e.getPropertyBean().getValue("normalizationFactor");
+      final double h = ((e.getDelay().intValue() - e.getCons().intValue()) + gcd) * alpha;
       edgeValue.put((String) e.getPropertyBean().getValue("edgeName"), h);
     }
 
     // initialize the vertex distance
-    Hashtable<String, Double> vertexDistance = new Hashtable<>(graph.vertexSet().size());
-    for (SDFAbstractVertex a : graph.vertexSet()) {
+    final Hashtable<String, Double> vertexDistance = new Hashtable<>(graph.vertexSet().size());
+    for (final SDFAbstractVertex a : graph.vertexSet()) {
       vertexDistance.put(a.getName(), Double.POSITIVE_INFINITY);
     }
 
@@ -103,7 +103,7 @@ public class PeriodicScheduler_SDF {
     // System.out.println("v(" + e.sourceActor.id + "," + e.targetActor.id + ") = " + edgeValue.get(e.id));
 
     // in case of a non strongly connected graph we need to choose many source vertex to evaluate all parts of the graph
-    for (SDFAbstractVertex vertexSource : graph.vertexSet()) {
+    for (final SDFAbstractVertex vertexSource : graph.vertexSet()) {
       if (vertexDistance.get(vertexSource.getName()) == Double.POSITIVE_INFINITY) {
         // initialize the source vertex
         vertexDistance.put(vertexSource.getName(), 0.);
@@ -116,11 +116,11 @@ public class PeriodicScheduler_SDF {
         boolean repete = true;
 
         // relax edges
-        while (repete && count < graph.vertexSet().size() - 1) {
+        while (repete && (count < (graph.vertexSet().size() - 1))) {
           repete = false;
-          for (SDFEdge e : graph.edgeSet()) {
+          for (final SDFEdge e : graph.edgeSet()) {
             // test the distance
-            double newDistance = vertexDistance.get(e.getSource().getName()) + edgeValue.get((String) e.getPropertyBean().getValue("edgeName"));
+            final double newDistance = vertexDistance.get(e.getSource().getName()) + edgeValue.get(e.getPropertyBean().getValue("edgeName"));
             if (vertexDistance.get(e.getTarget().getName()) > newDistance) {
               // update the distance
               vertexDistance.put(e.getTarget().getName(), newDistance);
@@ -133,11 +133,11 @@ public class PeriodicScheduler_SDF {
         }
 
         // check for negative circuit if we complete the v-1 iterations
-        if (count == graph.vertexSet().size() - 1) {
+        if (count == (graph.vertexSet().size() - 1)) {
           // relax all the edges
-          for (SDFEdge e : graph.edgeSet()) {
-            if (vertexDistance.get(e.getTarget().getName()) > vertexDistance.get(e.getSource().getName())
-                + edgeValue.get((String) e.getPropertyBean().getValue("edgeName"))) {
+          for (final SDFEdge e : graph.edgeSet()) {
+            if (vertexDistance
+                .get(e.getTarget().getName()) > (vertexDistance.get(e.getSource().getName()) + edgeValue.get(e.getPropertyBean().getValue("edgeName")))) {
               // negative circuit detected if a part of the graph is not live the global graph is not too
               System.err.println("Negativ cycle detected !!");
               // System.err.println("This graph has no Periodic Schedule !");
@@ -154,7 +154,7 @@ public class PeriodicScheduler_SDF {
   /**
    * Schedules an SDF graph with a periodic schedule. It computes the execution period W and the start date S0 of the first execution for each actor of the
    * graph.
-   * 
+   *
    * @param graph
    *          SDF graph
    * @param method
@@ -164,8 +164,8 @@ public class PeriodicScheduler_SDF {
    * @return throughput
    */
 
-  public double schedule(SDFGraph graph, Method method, boolean selfLoopEdge) {
-    Stopwatch timer = new Stopwatch();
+  public double schedule(final SDFGraph graph, final Method method, final boolean selfLoopEdge) {
+    final Stopwatch timer = new Stopwatch();
     timer.start();
 
     System.out.println("Scheduling the graph ...");
@@ -182,30 +182,30 @@ public class PeriodicScheduler_SDF {
       ArrayList<SDFEdge> selfLoopEdgesList = null;
       if (selfLoopEdge) {
         selfLoopEdgesList = new ArrayList<>(graph.vertexSet().size());
-        for (SDFAbstractVertex actor : graph.vertexSet()) {
-          int z = ((Double) actor.getPropertyBean().getValue("normalizedRate")).intValue();
-          Double alpha = 1.;
-          SDFEdge edge = GraphStructureHelper.addEdge(graph, actor.getName(), null, actor.getName(), null, z, z, z, null);
+        for (final SDFAbstractVertex actor : graph.vertexSet()) {
+          final int z = ((Double) actor.getPropertyBean().getValue("normalizedRate")).intValue();
+          final Double alpha = 1.;
+          final SDFEdge edge = GraphStructureHelper.addEdge(graph, actor.getName(), null, actor.getName(), null, z, z, z, null);
           selfLoopEdgesList.add(edge);
           edge.setPropertyValue("normalizationFactor", alpha);
         }
       }
 
       // Step 2: compute the normalized period K
-      this.computeNormalizedPeriod(graph, method);
+      computeNormalizedPeriod(graph, method);
 
       // remove the self loop edges added before
       if (selfLoopEdge) {
-        for (SDFEdge edge : selfLoopEdgesList) {
+        for (final SDFEdge edge : selfLoopEdgesList) {
           graph.removeEdge(edge);
         }
       }
 
       // Step 3: compute actors period and define the maximum throughput of the computed periodic schedule
-      throughput = this.computeActorsPeriod(graph);
+      throughput = computeActorsPeriod(graph);
 
       // Step 4: compute the start date of the first execution of each actor
-      this.computeActorsStartingTime(graph);
+      computeActorsStartingTime(graph);
 
       timer.stop();
       System.out.println("Schedule completed in " + timer.toString());
@@ -222,7 +222,7 @@ public class PeriodicScheduler_SDF {
 
   /**
    * computes the throughput of a graph based on the periodic schedule
-   * 
+   *
    * @param graph
    *          SDF graph
    * @param method
@@ -231,7 +231,7 @@ public class PeriodicScheduler_SDF {
    *          boolean
    * @return throughput
    */
-  public Double computeGraphThroughput(SDFGraph graph, Method method, boolean selfLoopEdge) {
+  public Double computeGraphThroughput(final SDFGraph graph, final Method method, final boolean selfLoopEdge) {
     double throughput = -1.;
 
     // Step 1: normalize the graph
@@ -245,8 +245,8 @@ public class PeriodicScheduler_SDF {
       ArrayList<SDFEdge> selfLoopEdgesList = null;
       if (selfLoopEdge) {
         selfLoopEdgesList = new ArrayList<>(graph.vertexSet().size());
-        for (SDFAbstractVertex actor : graph.vertexSet()) {
-          SDFEdge edge = GraphStructureHelper.addEdge(graph, actor.getName(), null, actor.getName(), null,
+        for (final SDFAbstractVertex actor : graph.vertexSet()) {
+          final SDFEdge edge = GraphStructureHelper.addEdge(graph, actor.getName(), null, actor.getName(), null,
               (Integer) actor.getPropertyBean().getValue("normalizedRate"), (Integer) actor.getPropertyBean().getValue("normalizedRate"),
               (Integer) actor.getPropertyBean().getValue("normalizedRate"), null);
           selfLoopEdgesList.add(edge);
@@ -254,17 +254,17 @@ public class PeriodicScheduler_SDF {
       }
 
       // Step 2: compute the normalized period K
-      this.computeNormalizedPeriod(graph, method);
+      computeNormalizedPeriod(graph, method);
 
       // remove the self loop edges added before
       if (selfLoopEdge) {
-        for (SDFEdge edge : selfLoopEdgesList) {
+        for (final SDFEdge edge : selfLoopEdgesList) {
           graph.removeEdge(edge);
         }
       }
 
       // Step 3: compute actors period and define the maximum throughput of the computed periodic schedule
-      throughput = this.computeActorsPeriod(graph);
+      throughput = computeActorsPeriod(graph);
 
     } else {
       System.err.println("A Periodic Schedule does not exist for this graph");
@@ -279,9 +279,9 @@ public class PeriodicScheduler_SDF {
    * @param method
    *          Math model or Algorithm
    */
-  public Fraction computeNormalizedPeriod(SDFGraph graph, Method method) {
+  public Fraction computeNormalizedPeriod(final SDFGraph graph, Method method) {
     System.out.println("Computing the normalized period of the graph ...");
-    Stopwatch timer = new Stopwatch();
+    final Stopwatch timer = new Stopwatch();
     timer.start();
 
     Fraction period = null;
@@ -292,12 +292,12 @@ public class PeriodicScheduler_SDF {
     }
 
     if (Activator.solverMethodRegistry.containsKey(method)) {
-      SolverMethod solverMethod = Activator.solverMethodRegistry.get(method);
+      final SolverMethod solverMethod = Activator.solverMethodRegistry.get(method);
       period = solverMethod.computeNormalizedPeriod(graph);
     } else {
       // use the default method : GLPK
-      System.err.println(method.toString() + " method is not available ! \nTrying to use " + METHOD_DEFAULT_VALUE.toString() + " ...");
-      SolverMethod solverMethod = Activator.solverMethodRegistry.get(METHOD_DEFAULT_VALUE);
+      System.err.println(method.toString() + " method is not available ! \nTrying to use " + PeriodicScheduler_SDF.METHOD_DEFAULT_VALUE.toString() + " ...");
+      SolverMethod solverMethod = Activator.solverMethodRegistry.get(PeriodicScheduler_SDF.METHOD_DEFAULT_VALUE);
       // if the activator have not been executed yet, then instantiate the solverMethod manually ()
       if (solverMethod == null) {
         solverMethod = new PeriodicScheduleModel_ojAlgo();
@@ -312,22 +312,22 @@ public class PeriodicScheduler_SDF {
 
   /**
    * computes the execution period of each actor and define the maximum throughput of the periodic schedule as MaxTh = min (1/k*Z)
-   * 
+   *
    * @param graph
    *          SDF graph
    * @return the maximum throughput of the periodic schedule
    */
-  public double computeActorsPeriod(SDFGraph graph) {
+  public double computeActorsPeriod(final SDFGraph graph) {
     System.out.println("Computing Actors duration ...");
     // get the normalized period of the graph
-    Fraction k = (Fraction) graph.getPropertyBean().getValue("normalizedPeriod");
+    final Fraction k = (Fraction) graph.getPropertyBean().getValue("normalizedPeriod");
 
     // define the maximum execution period
     Fraction maxW = Fraction.getFraction(0);
 
     // define the execution period of each actor of the graph as w=k*z
-    for (SDFAbstractVertex actor : graph.vertexSet()) {
-      Fraction w = k.multiplyBy(Fraction.getFraction((Double) actor.getPropertyBean().getValue("normalizedRate")));
+    for (final SDFAbstractVertex actor : graph.vertexSet()) {
+      final Fraction w = k.multiplyBy(Fraction.getFraction((Double) actor.getPropertyBean().getValue("normalizedRate")));
       actor.setPropertyValue("executionPeriod", w.doubleValue());
 
       // test if the current execution period is greater than maxW
@@ -337,18 +337,18 @@ public class PeriodicScheduler_SDF {
     }
 
     // return the maximum throughput as 1/maxW
-    double maxThroughput = 1 / maxW.doubleValue();
+    final double maxThroughput = 1 / maxW.doubleValue();
     return maxThroughput;
   }
 
   /**
    * Computes the duration of the first iteration of the graph
-   * 
+   *
    * @param graph
    *          SDF graph
    * @return latency
    */
-  public double computeGraphLatency(SDFGraph graph) {
+  public double computeGraphLatency(final SDFGraph graph) {
     System.out.println("Computing graph latency ...");
     // formule : S(t) = S(t0) + w*t
     // finish date = S(t) + L
@@ -357,13 +357,13 @@ public class PeriodicScheduler_SDF {
     double maxFinishDate = 0;
 
     // compute the finish time for every actor
-    for (SDFAbstractVertex actor : graph.vertexSet()) {
-      double s0 = (double) actor.getPropertyBean().getValue("firstExecutionStartDate");
-      double w = (double) actor.getPropertyBean().getValue("executionPeriod");
-      double l = (double) actor.getPropertyBean().getValue("duration"); // or use the scenario
+    for (final SDFAbstractVertex actor : graph.vertexSet()) {
+      final double s0 = (double) actor.getPropertyBean().getValue("firstExecutionStartDate");
+      final double w = (double) actor.getPropertyBean().getValue("executionPeriod");
+      final double l = (double) actor.getPropertyBean().getValue("duration"); // or use the scenario
 
       // finish date
-      double finishDateOfLastExecution = s0 + w * actor.getNbRepeatAsInteger() + l;
+      final double finishDateOfLastExecution = s0 + (w * actor.getNbRepeatAsInteger()) + l;
 
       if (finishDateOfLastExecution > maxFinishDate) {
         maxFinishDate = finishDateOfLastExecution;
@@ -375,28 +375,28 @@ public class PeriodicScheduler_SDF {
 
   /**
    * compute the duration of the graph period as RV(a)*W(a) where a is an arbitrary actor of the graph
-   * 
+   *
    * @param graph
    *          SDF graph
    * @return graph period
    */
-  public double computeGraphPeriod(SDFGraph graph) {
+  public double computeGraphPeriod(final SDFGraph graph) {
     System.out.println("Computing graph period ...");
     // get an arbitrary actor from the graph
-    SDFAbstractVertex actor = graph.vertexSet().iterator().next();
+    final SDFAbstractVertex actor = graph.vertexSet().iterator().next();
     // double w = (double) actor.getPropertyBean().getValue("executionPeriod");
-    double k = ((Fraction) graph.getPropertyBean().getValue("normalizedPeriod")).doubleValue();
-    double graphPeriod = k * ((Double) actor.getPropertyBean().getValue("normalizedRate")) * actor.getNbRepeatAsInteger();
+    final double k = ((Fraction) graph.getPropertyBean().getValue("normalizedPeriod")).doubleValue();
+    final double graphPeriod = k * ((Double) actor.getPropertyBean().getValue("normalizedRate")) * actor.getNbRepeatAsInteger();
     return graphPeriod;
   }
 
   /**
    * compute the start date of the first execution of each actor
-   * 
+   *
    * @param graph
    *          SDF graph
    */
-  public void computeActorsStartingTime(SDFGraph graph) {
+  public void computeActorsStartingTime(final SDFGraph graph) {
     System.out.println("Computing actors first execution start date ...");
     /*
      * see Ben Abid paper : step 1: add a dummy vertex to the graph step 2: connect the new actor to every actor of the graph with a null value step 3: use the
@@ -405,31 +405,31 @@ public class PeriodicScheduler_SDF {
 
     // set edges value : v = L + k*h (use the normalized version of the graph)
     // h = (out - M0 - gcd)* alpha(e)
-    Hashtable<String, Double> edgeValue = new Hashtable<>(graph.edgeSet().size());
-    for (SDFEdge e : graph.edgeSet()) {
-      double l = (double) e.getSource().getPropertyBean().getValue("duration");
-      double k = ((Fraction) graph.getPropertyBean().getValue("normalizedPeriod")).doubleValue();
-      double gcd = MathFunctionsHelper.gcd(e.getProd().intValue(), e.getCons().intValue());
-      double alpha = (double) e.getPropertyBean().getValue("normalizationFactor");
-      double h = (e.getCons().intValue() - e.getDelay().intValue() - gcd) * alpha;
-      double v = l + k * h;
+    final Hashtable<String, Double> edgeValue = new Hashtable<>(graph.edgeSet().size());
+    for (final SDFEdge e : graph.edgeSet()) {
+      final double l = (double) e.getSource().getPropertyBean().getValue("duration");
+      final double k = ((Fraction) graph.getPropertyBean().getValue("normalizedPeriod")).doubleValue();
+      final double gcd = MathFunctionsHelper.gcd(e.getProd().intValue(), e.getCons().intValue());
+      final double alpha = (double) e.getPropertyBean().getValue("normalizationFactor");
+      final double h = (e.getCons().intValue() - e.getDelay().intValue() - gcd) * alpha;
+      final double v = l + (k * h);
       edgeValue.put((String) e.getPropertyBean().getValue("edgeName"), v);
     }
 
     // initialize the vertex distance
-    Hashtable<String, Double> vertexDistance = new Hashtable<>(graph.vertexSet().size());
+    final Hashtable<String, Double> vertexDistance = new Hashtable<>(graph.vertexSet().size());
     // for (SDFAbstractVertex a : graph.vertexSet()) {
     // vertexDistance.put(a.getName(), .0);
     // }
 
     // source vertex to evaluate all parts of the graph
     // add the dummy actor to the graph
-    SDFAbstractVertex dummy = GraphStructureHelper.addActor(graph, "dummy", null, null, null, null, null);
+    final SDFAbstractVertex dummy = GraphStructureHelper.addActor(graph, "dummy", null, null, null, null, null);
 
     // connect the dummy actor to all actors
-    for (SDFAbstractVertex a : graph.vertexSet()) {
+    for (final SDFAbstractVertex a : graph.vertexSet()) {
       // add an edge between the dummy actor and the selected actor
-      SDFEdge e = GraphStructureHelper.addEdge(graph, "dummy", null, a.getName(), null, 1, 1, 0, null);
+      final SDFEdge e = GraphStructureHelper.addEdge(graph, "dummy", null, a.getName(), null, 1, 1, 0, null);
       // set the value of the added edge to 0
       edgeValue.put((String) e.getPropertyBean().getValue("edgeName"), 0.);
       // set the vertex distance to 0
@@ -444,11 +444,11 @@ public class PeriodicScheduler_SDF {
     boolean repete = true;
 
     // relax edges
-    while (repete && count < graph.vertexSet().size() - 1) {
+    while (repete && (count < (graph.vertexSet().size() - 1))) {
       repete = false;
-      for (SDFEdge e : graph.edgeSet()) {
+      for (final SDFEdge e : graph.edgeSet()) {
         // test the distance
-        double newDistance = vertexDistance.get(e.getSource().getName()) + edgeValue.get((String) e.getPropertyBean().getValue("edgeName"));
+        final double newDistance = vertexDistance.get(e.getSource().getName()) + edgeValue.get(e.getPropertyBean().getValue("edgeName"));
         if (vertexDistance.get(e.getTarget().getName()) < newDistance) {
           // update the distance
           vertexDistance.put(e.getTarget().getName(), newDistance);
@@ -464,7 +464,7 @@ public class PeriodicScheduler_SDF {
     graph.removeVertex(dummy);
 
     // save the start date into actors properties
-    for (SDFAbstractVertex a : graph.vertexSet()) {
+    for (final SDFAbstractVertex a : graph.vertexSet()) {
       a.setPropertyValue("firstExecutionStartDate", vertexDistance.get(a.getName()));
     }
   }

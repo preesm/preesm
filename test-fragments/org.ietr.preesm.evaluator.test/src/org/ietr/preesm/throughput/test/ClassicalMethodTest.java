@@ -44,7 +44,7 @@ import org.junit.Test;
 
 /**
  * Unit test of ClassicalMethodTest class
- * 
+ *
  * @author hderoui
  *
  */
@@ -54,11 +54,11 @@ public class ClassicalMethodTest {
   public void testThroughputShouldBeComputed() {
 
     // generate the IBSDF graph AB[DEF]C
-    SDFGraph ibsdf = generateIBSDFGraph();
+    final SDFGraph ibsdf = generateIBSDFGraph();
 
     // compute its throughput by classical method
-    ClassicalMethod method = new ClassicalMethod();
-    double th = method.evaluate(ibsdf, false);
+    final ClassicalMethod method = new ClassicalMethod();
+    final double th = method.evaluate(ibsdf, false);
 
     // check the throughput value
     Assert.assertEquals(1 / 7., th, 0);
@@ -69,11 +69,11 @@ public class ClassicalMethodTest {
   public void testConstrainedThroughputShouldBeComputed() {
 
     // generate the IBSDF graph AB[DEF]C
-    SDFGraph ibsdf = generateIBSDFGraph();
+    final SDFGraph ibsdf = generateIBSDFGraph();
 
     // compute its throughput by classical method
-    ClassicalMethod method = new ClassicalMethod();
-    double th = method.evaluate(ibsdf, true);
+    final ClassicalMethod method = new ClassicalMethod();
+    final double th = method.evaluate(ibsdf, true);
 
     // check the throughput value
     Assert.assertEquals(1 / 8., th, 0);
@@ -82,7 +82,7 @@ public class ClassicalMethodTest {
 
   /**
    * generate an IBSDF graph to test methods
-   * 
+   *
    * @return IBSDF graph
    */
   public SDFGraph generateIBSDFGraph() {
@@ -102,7 +102,7 @@ public class ClassicalMethodTest {
     // the resulted rates of edges : aE=(6,1); Fc=(3,12)
 
     // create the subgraph
-    SDFGraph subgraph = new SDFGraph();
+    final SDFGraph subgraph = new SDFGraph();
     subgraph.setName("subgraph");
     GraphStructureHelper.addActor(subgraph, "D", null, null, 1., null, null);
     GraphStructureHelper.addActor(subgraph, "E", null, null, 1., null, null);
@@ -117,7 +117,7 @@ public class ClassicalMethodTest {
     GraphStructureHelper.addEdge(subgraph, "F", null, "c", null, 3, 1, 0, null);
 
     // create the top graph and add the subgraph to the hierarchical actor B
-    SDFGraph topgraph = new SDFGraph();
+    final SDFGraph topgraph = new SDFGraph();
     topgraph.setName("topgraph");
     GraphStructureHelper.addActor(topgraph, "A", null, null, 1., null, null);
     GraphStructureHelper.addActor(topgraph, "B", subgraph, null, null, null, null);

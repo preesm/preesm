@@ -53,89 +53,89 @@ public abstract class Identifier {
 
   /**
    * generates an Id for a graph
-   * 
+   *
    * @return id
    */
   public static String generateSDFGraphId() {
-    String id = "g" + SDFGraphId;
-    SDFGraphId++;
+    final String id = "g" + Identifier.SDFGraphId;
+    Identifier.SDFGraphId++;
     return id;
   }
 
   /**
    * generates an Id for an actor
-   * 
+   *
    * @return id
    */
   public static String generateActorId() {
-    String id = "a" + actorId;
-    actorId++;
+    final String id = "a" + Identifier.actorId;
+    Identifier.actorId++;
     return id;
   }
 
   /**
    * generates an Id for an edge
-   * 
+   *
    * @return id
    */
   public static String generateEdgeId() {
-    String id = "e" + edgeId;
-    edgeId++;
+    final String id = "e" + Identifier.edgeId;
+    Identifier.edgeId++;
     return id;
   }
 
   /**
    * generates an Id for a hierarchical actor
-   * 
+   *
    * @return id
    */
   public static String generateHierarchicalActorId() {
-    String id = "H" + HierarchicalActorId;
-    HierarchicalActorId++;
+    final String id = "H" + Identifier.HierarchicalActorId;
+    Identifier.HierarchicalActorId++;
     return id;
   }
 
   /**
    * generates an Id for an input interface
-   * 
+   *
    * @return id
    */
   public static String generateInputInterfaceId() {
-    String id = "inI" + InputInterfaceId;
-    InputInterfaceId++;
+    final String id = "inI" + Identifier.InputInterfaceId;
+    Identifier.InputInterfaceId++;
     return id;
   }
 
   /**
    * generates an Id for an output interface
-   * 
+   *
    * @return id
    */
   public static String generateOutputInterfaceId() {
-    String id = "outI" + OutputInterfaceId;
-    OutputInterfaceId++;
+    final String id = "outI" + Identifier.OutputInterfaceId;
+    Identifier.OutputInterfaceId++;
     return id;
   }
 
   /**
    * generates an Id for an input port
-   * 
+   *
    * @return id
    */
   public static String generateInputPortId() {
-    String id = "inP" + InputPortId;
-    InputPortId++;
+    final String id = "inP" + Identifier.InputPortId;
+    Identifier.InputPortId++;
     return id;
   }
 
   /**
    * generates an Id for an output port
-   * 
+   *
    * @return id
    */
   public static String generateOutputPortId() {
-    String id = "OutP" + OutputPortId;
-    OutputPortId++;
+    final String id = "OutP" + Identifier.OutputPortId;
+    Identifier.OutputPortId++;
     return id;
   }
 
@@ -143,13 +143,13 @@ public abstract class Identifier {
    * reset the Id generator
    */
   public static void reset() {
-    SDFGraphId = 0;
-    actorId = 0;
-    InputPortId = 0;
-    OutputPortId = 0;
-    edgeId = 0;
-    HierarchicalActorId = 0;
-    InputInterfaceId = 0;
-    OutputInterfaceId = 0;
+    Identifier.SDFGraphId = 0;
+    Identifier.actorId = 0;
+    Identifier.InputPortId = 0;
+    Identifier.OutputPortId = 0;
+    Identifier.edgeId = 0;
+    Identifier.HierarchicalActorId = 0;
+    Identifier.InputInterfaceId = 0;
+    Identifier.OutputInterfaceId = 0;
   }
 }

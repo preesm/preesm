@@ -95,13 +95,13 @@ public class CodegenEngine {
   /** The real printers. */
   private Map<IConfigurationElement, CodegenAbstractPrinter> realPrinters;
 
-  private CodegenModelGenerator generator;
+  private final CodegenModelGenerator generator;
 
   /**
    * Instantiates a new codegen engine.
    *
    */
-  public CodegenEngine(final String codegenPath, final List<Block> codeBlocks, CodegenModelGenerator generator) {
+  public CodegenEngine(final String codegenPath, final List<Block> codeBlocks, final CodegenModelGenerator generator) {
     this.codegenPath = codegenPath;
     this.codeBlocks = codeBlocks;
     this.generator = generator;
@@ -142,7 +142,7 @@ public class CodegenEngine {
 
     for (final Block b : this.codeBlocks) {
       // Create a resource
-      this.getScenario().getCodegenManager().getCodegenDirectory();
+      getScenario().getCodegenManager().getCodegenDirectory();
       final Resource resource = resSet.createResource(URI.createURI(codegenPath + b.getName() + ".codegen"));
       // Get the first model element and cast it to the right type, in
       // my example everything is hierarchical included in this first

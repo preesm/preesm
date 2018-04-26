@@ -119,18 +119,18 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
     }
   }
 
-  private void checkVersion(IDiagramTypeProvider diagramTypeProvider) {
+  private void checkVersion(final IDiagramTypeProvider diagramTypeProvider) {
 
     final Diagram diagram = diagramTypeProvider.getDiagram();
     final TreeIterator<EObject> eAllContents = diagram.eAllContents();
     while (eAllContents.hasNext()) {
-      EObject child = eAllContents.next();
+      final EObject child = eAllContents.next();
       if (child instanceof PictogramElement) {
-        PictogramElement node = (PictogramElement) child;
+        final PictogramElement node = (PictogramElement) child;
         final PictogramLink link = node.getLink();
         if (link != null) {
           final EList<EObject> businessObjects = link.getBusinessObjects();
-          for (EObject bo : businessObjects) {
+          for (final EObject bo : businessObjects) {
             final boolean eIsProxy = bo.eIsProxy();
             if (eIsProxy) {
               final String title = "Warning: the diagram is linked to an old version of the PiSDF meta-model";

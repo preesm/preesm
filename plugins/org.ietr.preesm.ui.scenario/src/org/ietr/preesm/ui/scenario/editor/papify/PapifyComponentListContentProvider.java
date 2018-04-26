@@ -77,7 +77,7 @@ public class PapifyComponentListContentProvider implements IStructuredContentPro
     if (inputElement instanceof PapiEventInfo) {
       final PapiEventInfo inputPapiEventInfo = (PapiEventInfo) inputElement;
       PapiComponent compAux = null;
-      componentList = new ArrayList<>();
+      this.componentList = new ArrayList<>();
       PapiEventSet eventSetAux = null;
 
       boolean checkingEvents = false;
@@ -96,10 +96,10 @@ public class PapifyComponentListContentProvider implements IStructuredContentPro
         }
         if (componentAdded) {
           componentAdded = false;
-          componentList.add(compAux);
+          this.componentList.add(compAux);
         }
       }
-      elementTable = componentList.toArray();
+      elementTable = this.componentList.toArray();
     }
 
     return elementTable;

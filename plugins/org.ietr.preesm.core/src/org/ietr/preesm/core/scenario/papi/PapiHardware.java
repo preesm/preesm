@@ -18,114 +18,114 @@ public class PapiHardware {
   private int       cpuMinMegahertz;
 
   public String getVendor() {
-    return vendor;
+    return this.vendor;
   }
 
-  public void setVendor(String vendor) {
+  public void setVendor(final String vendor) {
     this.vendor = vendor;
   }
 
   public int getVendorCode() {
-    return vendorCode;
+    return this.vendorCode;
   }
 
-  public void setVendorCode(int vendorCode) {
+  public void setVendorCode(final int vendorCode) {
     this.vendorCode = vendorCode;
   }
 
   public String getModel() {
-    return model;
+    return this.model;
   }
 
-  public void setModel(String model) {
+  public void setModel(final String model) {
     this.model = model;
   }
 
   public int getModelCode() {
-    return modelCode;
+    return this.modelCode;
   }
 
-  public void setModelCode(int modelCode) {
+  public void setModelCode(final int modelCode) {
     this.modelCode = modelCode;
   }
 
   public double getCpuRevision() {
-    return cpuRevision;
+    return this.cpuRevision;
   }
 
-  public void setCpuRevision(double cpuRevision) {
+  public void setCpuRevision(final double cpuRevision) {
     this.cpuRevision = cpuRevision;
   }
 
   public PapiCpuID getCpuID() {
-    return cpuID;
+    return this.cpuID;
   }
 
-  public void setCpuID(PapiCpuID cpuID) {
+  public void setCpuID(final PapiCpuID cpuID) {
     this.cpuID = cpuID;
   }
 
   public int getCpuMaxMegahertz() {
-    return cpuMaxMegahertz;
+    return this.cpuMaxMegahertz;
   }
 
-  public void setCpuMaxMegahertz(int cpuMaxMegahertz) {
+  public void setCpuMaxMegahertz(final int cpuMaxMegahertz) {
     this.cpuMaxMegahertz = cpuMaxMegahertz;
   }
 
   public int getCpuMinMegahertz() {
-    return cpuMinMegahertz;
+    return this.cpuMinMegahertz;
   }
 
-  public void setCpuMinMegahertz(int cpuMinMegahertz) {
+  public void setCpuMinMegahertz(final int cpuMinMegahertz) {
     this.cpuMinMegahertz = cpuMinMegahertz;
   }
 
   public int getThreads() {
-    return threads;
+    return this.threads;
   }
 
-  public void setThreads(int threads) {
+  public void setThreads(final int threads) {
     this.threads = threads;
   }
 
   public int getCores() {
-    return cores;
+    return this.cores;
   }
 
-  public void setCores(int cores) {
+  public void setCores(final int cores) {
     this.cores = cores;
   }
 
   public int getSockets() {
-    return sockets;
+    return this.sockets;
   }
 
-  public void setSockets(int sockets) {
+  public void setSockets(final int sockets) {
     this.sockets = sockets;
   }
 
   public int getNodes() {
-    return nodes;
+    return this.nodes;
   }
 
-  public void setNodes(int nodes) {
+  public void setNodes(final int nodes) {
     this.nodes = nodes;
   }
 
   public int getCpuPerNode() {
-    return cpuPerNode;
+    return this.cpuPerNode;
   }
 
-  public void setCpuPerNode(int cpuPerNode) {
+  public void setCpuPerNode(final int cpuPerNode) {
     this.cpuPerNode = cpuPerNode;
   }
 
   public int getTotalCPUs() {
-    return totalCPUs;
+    return this.totalCPUs;
   }
 
-  public void setTotalCPUs(int totalCPUs) {
+  public void setTotalCPUs(final int totalCPUs) {
     this.totalCPUs = totalCPUs;
   }
 

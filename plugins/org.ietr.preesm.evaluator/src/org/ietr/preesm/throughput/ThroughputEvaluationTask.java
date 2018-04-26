@@ -43,16 +43,16 @@ This software is a computer program whose purpose is to prototype
 parallel applications.
 
 This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use, 
+abiding by the rules of distribution of free software.  You can  use,
 modify and/ or redistribute the software under the terms of the CeCILL-C
 license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info". 
+"http://www.cecill.info".
 
 As a counterpart to the access to the source code and  rights to copy,
 modify and redistribute granted by the license, users are provided only
 with a limited warranty  and the software's author,  the holder of the
 economic rights,  and the successive licensors  have only  limited
-liability. 
+liability.
 
 In this respect, the user's attention is drawn to the risks associated
 with loading,  using,  modifying and/or developing or reproducing the
@@ -61,9 +61,9 @@ that may mean  that it is complicated to manipulate,  and  that  also
 therefore means  that it is reserved for developers  and  experienced
 professionals having in-depth computer knowledge. Users are therefore
 encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or 
-data to be ensured and,  more generally, to use and operate it in the 
-same conditions as regards security. 
+requirements in conditions enabling the security of their systems and/or
+data to be ensured and,  more generally, to use and operate it in the
+same conditions as regards security.
 
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
@@ -112,16 +112,16 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
   public Stopwatch           timer;
 
   @Override
-  public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters, IProgressMonitor monitor, String nodeName, Workflow workflow)
-      throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
     // get the input graph, the scenario for actors duration, and the method to use
-    SDFGraph inputGraph = GraphStructureHelper.cloneIBSDF((SDFGraph) inputs.get("SDF"));
-    PreesmScenario inputScenario = (PreesmScenario) inputs.get("scenario");
-    ThroughputMethod inputMethod = ThroughputMethod.valueOf(parameters.get("method"));
+    final SDFGraph inputGraph = GraphStructureHelper.cloneIBSDF((SDFGraph) inputs.get("SDF"));
+    final PreesmScenario inputScenario = (PreesmScenario) inputs.get("scenario");
+    final ThroughputMethod inputMethod = ThroughputMethod.valueOf(parameters.get("method"));
 
     // init & test
-    boolean deadlockFree = this.init(inputGraph, inputScenario);
+    final boolean deadlockFree = init(inputGraph, inputScenario);
     double throughput = 0;
 
     if (deadlockFree) {
@@ -129,28 +129,28 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
       switch (inputMethod) {
         case SR:
           // Schedule-Replace technique
-          ScheduleReplace sr = new ScheduleReplace();
+          final ScheduleReplace sr = new ScheduleReplace();
           throughput = sr.evaluate(inputGraph);
           this.timer = sr.timer;
           break;
 
         case ESR:
           // Evaluate-Schedule-Replace method
-          EvaluateScheduleReplace esr = new EvaluateScheduleReplace();
+          final EvaluateScheduleReplace esr = new EvaluateScheduleReplace();
           throughput = esr.evaluate(inputGraph);
           this.timer = esr.timer;
           break;
 
         case HPeriodic:
           // Hierarchical Periodic Schedule method
-          HPeriodicSchedule HPeriodic = new HPeriodicSchedule();
+          final HPeriodicSchedule HPeriodic = new HPeriodicSchedule();
           throughput = HPeriodic.evaluate(inputGraph);
           this.timer = HPeriodic.timer;
           break;
 
         case Classical:
           // Based on flattening the hierarchy into a Flat srSDF graph
-          ClassicalMethod classicalMethod = new ClassicalMethod();
+          final ClassicalMethod classicalMethod = new ClassicalMethod();
           throughput = classicalMethod.evaluate(inputGraph, false);
           this.timer = classicalMethod.timer;
           break;
@@ -161,7 +161,7 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
       }
 
       // print the computed throughput
-      WorkflowLogger.getLogger().log(Level.INFO, "Throughput value = " + throughput + " nbIter/clockCycle, Computed in : " + timer.toString());
+      WorkflowLogger.getLogger().log(Level.INFO, "Throughput value = " + throughput + " nbIter/clockCycle, Computed in : " + this.timer.toString());
 
     } else {
       // print an error message
@@ -169,7 +169,7 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
     }
 
     // set the outputs
-    Map<String, Object> outputs = new HashMap<String, Object>();
+    final Map<String, Object> outputs = new HashMap<>();
     outputs.put("SDF", inputGraph);
     outputs.put("scenario", inputScenario);
     outputs.put("throughput", throughput);
@@ -179,8 +179,8 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(PARAM_METHOD, PARAM_METHOD_DEFAULT_VALUE);
+    final Map<String, String> parameters = new HashMap<>();
+    parameters.put(ThroughputEvaluationTask.PARAM_METHOD, ThroughputEvaluationTask.PARAM_METHOD_DEFAULT_VALUE);
     return parameters;
   }
 
@@ -191,15 +191,15 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
 
   /**
    * Check the deadlock freeness of the graph and initialize it before computing the throughput
-   * 
+   *
    * @param inputGraph
    *          SDF/IBSDF graph
    * @param scenario
    *          contains actors duration
-   * 
+   *
    * @return true if deadlock free, false if not
    */
-  private boolean init(SDFGraph inputGraph, PreesmScenario scenario) {
+  private boolean init(final SDFGraph inputGraph, final PreesmScenario scenario) {
     // test the inputs
     // TestPlugin.start(null, null);
 
@@ -210,11 +210,11 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
     if (deadlockFree) {
 
       // Copy actors duration from the scenario to actors properties
-      for (SDFAbstractVertex actor : inputGraph.getAllVertices()) {
+      for (final SDFAbstractVertex actor : inputGraph.getAllVertices()) {
         if (actor.getKind() == "vertex") {
           if (actor.getGraphDescription() == null) {
             // if atomic actor then copy the duration indicated in the scenario
-            double duration = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
+            final double duration = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
             actor.setPropertyValue("duration", duration);
           } else {
             // if hierarchical actor then as default the duration is 1

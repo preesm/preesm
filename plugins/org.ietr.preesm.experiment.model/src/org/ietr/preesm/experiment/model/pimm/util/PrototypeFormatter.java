@@ -50,7 +50,7 @@ public class PrototypeFormatter {
    * Pretty prints a FunctionPrototype as a String formatted as follows: name (parameters types)
    */
   public static final String format(final FunctionPrototype prototype) {
-    StringBuilder result = new StringBuilder(prototype.getName() + "(");
+    final StringBuilder result = new StringBuilder(prototype.getName() + "(");
     boolean first = true;
     for (final FunctionParameter p : prototype.getParameters()) {
       if (first) {

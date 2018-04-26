@@ -66,7 +66,7 @@ public class EvaluateScheduleReplace {
    * Evaluate-Schedule-Replace technique : Evaluate the throughput of a relaxed execution of an ibsdf graph. It consists of three main process, Evaluate,
    * Schedule and Replace. The technique analyze the subgraph in terms of time dependencies and replace it with a small graph that represents its execution
    * behavior :o :o :o
-   * 
+   *
    */
 
   // list of replacement graphs
@@ -74,24 +74,24 @@ public class EvaluateScheduleReplace {
 
   /**
    * Compute the throughput of an IBSDF graph using the Evaluate-Schedule-Replace method
-   * 
+   *
    * @param inputGraph
    *          IBSDF graph contains actors duration
    * @return the throughput of the graph
    */
-  public double evaluate(SDFGraph inputGraph) {
+  public double evaluate(final SDFGraph inputGraph) {
     // this.preesmScenario = scenario;
     // Re-timing the IBSDF graph
     GraphStructureHelper.retime(inputGraph);
 
     System.out.println("Computing the throughput of the graph using Evaluate-Schedule-Replace (ESR) method ...");
     this.timer = new Stopwatch();
-    timer.start();
+    this.timer.start();
 
     // Step 1: Construct the subgraph execution model for the hierarchical actors of the top graph
     System.out.println("Step 1: Construct the subgraph execution model for the hierarchical actors of the top graph");
-    subgraphExecutionModelList = new Hashtable<String, SDFGraph>();
-    for (SDFAbstractVertex actor : inputGraph.vertexSet()) {
+    this.subgraphExecutionModelList = new Hashtable<>();
+    for (final SDFAbstractVertex actor : inputGraph.vertexSet()) {
       if (actor.getGraphDescription() != null) {
         buildSEM(actor, (SDFGraph) actor.getGraphDescription());
       }
@@ -99,19 +99,19 @@ public class EvaluateScheduleReplace {
 
     // Step 2: convert the top graph to a srSDF graph
     System.out.println("Step 2: convert the top graph to a srSDF graph");
-    SDFGraph srSDF = SDFTransformer.convertToSrSDF(inputGraph);
+    final SDFGraph srSDF = SDFTransformer.convertToSrSDF(inputGraph);
 
     // Step 3: replace the hierarchical actors by their subgraph execution model
     System.out.println("Step 3: replace the hierarchical actors by their subgraph execution model");
-    ArrayList<SDFAbstractVertex> actorToReplace = new ArrayList<SDFAbstractVertex>();
-    for (SDFAbstractVertex actor : srSDF.vertexSet()) {
+    final ArrayList<SDFAbstractVertex> actorToReplace = new ArrayList<>();
+    for (final SDFAbstractVertex actor : srSDF.vertexSet()) {
       if (((SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor")).getGraphDescription() != null) {
         actorToReplace.add(actor);
       }
     }
-    for (SDFAbstractVertex actor : actorToReplace) {
-      SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
-      GraphStructureHelper.replaceHierarchicalActor(srSDF, actor, subgraphExecutionModelList.get(baseActor.getName()));
+    for (final SDFAbstractVertex actor : actorToReplace) {
+      final SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
+      GraphStructureHelper.replaceHierarchicalActor(srSDF, actor, this.subgraphExecutionModelList.get(baseActor.getName()));
     }
 
     // Step 4: compute the throughput of the top graph using the periodic schedule
@@ -119,40 +119,40 @@ public class EvaluateScheduleReplace {
     // normalize the graph
     SDFTransformer.normalize(srSDF);
     // compute its normalized period K
-    PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
-    Fraction k = periodic.computeNormalizedPeriod(srSDF, PeriodicScheduler_SDF.Method.LinearProgram_Gurobi);
+    final PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
+    final Fraction k = periodic.computeNormalizedPeriod(srSDF, PeriodicScheduler_SDF.Method.LinearProgram_Gurobi);
     // compute its throughput as 1/K
-    double throughput = 1 / k.doubleValue();
-    timer.stop();
-    System.out.println("Throughput of the graph = " + throughput + " computed in " + timer.toString());
+    final double throughput = 1 / k.doubleValue();
+    this.timer.stop();
+    System.out.println("Throughput of the graph = " + throughput + " computed in " + this.timer.toString());
 
     return throughput;
   }
 
   /**
    * build the Subgraph Execution Model of a hierarchical actor
-   * 
+   *
    * @param h
    *          a hierarchical actor
    * @param graph
    *          subgraph
    */
-  private void buildSEM(SDFAbstractVertex h, SDFGraph graph) {
+  private void buildSEM(final SDFAbstractVertex h, final SDFGraph graph) {
     // Recursive function
-    for (SDFAbstractVertex actor : graph.vertexSet()) {
+    for (final SDFAbstractVertex actor : graph.vertexSet()) {
       if (actor.getGraphDescription() != null) {
         buildSEM(actor, (SDFGraph) actor.getGraphDescription());
       }
     }
 
     // Step 1: convert the SDF to srSDF
-    SDFGraph srSDF = SDFTransformer.convertToSrSDF(graph);
+    final SDFGraph srSDF = SDFTransformer.convertToSrSDF(graph);
 
     // Step 3: replace the hierarchical actors by their subgraph execution model
-    ArrayList<SDFAbstractVertex> actorToReplace = new ArrayList<SDFAbstractVertex>();
-    ArrayList<String> subgraphExecutionModelToRemove = new ArrayList<String>();
-    for (SDFAbstractVertex actor : srSDF.vertexSet()) {
-      SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
+    final ArrayList<SDFAbstractVertex> actorToReplace = new ArrayList<>();
+    final ArrayList<String> subgraphExecutionModelToRemove = new ArrayList<>();
+    for (final SDFAbstractVertex actor : srSDF.vertexSet()) {
+      final SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
       if (baseActor.getGraphDescription() != null) {
         actorToReplace.add(actor);
         // add the parent actor to the list of subgraph execution model to remove
@@ -161,85 +161,85 @@ public class EvaluateScheduleReplace {
         }
       }
     }
-    for (SDFAbstractVertex actor : actorToReplace) {
-      SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
-      GraphStructureHelper.replaceHierarchicalActor(srSDF, actor, subgraphExecutionModelList.get(baseActor.getName()));
+    for (final SDFAbstractVertex actor : actorToReplace) {
+      final SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
+      GraphStructureHelper.replaceHierarchicalActor(srSDF, actor, this.subgraphExecutionModelList.get(baseActor.getName()));
     }
 
     // delete all replacement graphs that are no longer needed
-    for (String actor : subgraphExecutionModelToRemove) {
-      subgraphExecutionModelList.remove(actor);
+    for (final String actor : subgraphExecutionModelToRemove) {
+      this.subgraphExecutionModelList.remove(actor);
     }
 
     // Step 4: construct the subgraph execution model of the hierarchical actor subgraph
-    SDFGraph SubgraphExecutionModel = process(h, srSDF);
+    final SDFGraph SubgraphExecutionModel = process(h, srSDF);
 
     // save the replacement graph
-    subgraphExecutionModelList.put(h.getName(), SubgraphExecutionModel);
+    this.subgraphExecutionModelList.put(h.getName(), SubgraphExecutionModel);
   }
 
   /**
    * process a subgraph : model its best execution by a small srSDF graph
-   * 
+   *
    * @param h
    *          hierarchical actor
    * @param graph
    *          srSDF graph
    * @return subgraph execution model
    */
-  private SDFGraph process(SDFAbstractVertex h, SDFGraph srSDF) {
+  private SDFGraph process(final SDFAbstractVertex h, final SDFGraph srSDF) {
     // Step 1: compute the normalized period K of the graph
-    Fraction K = computeK(srSDF);
+    final Fraction K = computeK(srSDF);
 
     // Step 2: convert the srSDF to DAG
-    SDFGraph DAG = SrSDFTransformer.convertToDAG(srSDF);
+    final SDFGraph DAG = SrSDFTransformer.convertToDAG(srSDF);
 
     // Step 3: Schedule the subgraph ASAP + ALAP
     schedule(DAG);
 
     // Step 4: construct the subgraph execution model
-    SDFGraph SubgraphExecutionModel = assembleSEM(h, DAG, K);
+    final SDFGraph SubgraphExecutionModel = assembleSEM(h, DAG, K);
 
     return SubgraphExecutionModel;
   }
 
   /**
    * compute the throughput of the graph CHECK
-   * 
+   *
    * @param graph
    *          srSDF graph
    * @return normalized period K
    */
-  private Fraction computeK(SDFGraph graph) {
+  private Fraction computeK(final SDFGraph graph) {
     // normalize the graph first
     SDFTransformer.normalize(graph);
     // return the fraction k=L/H computed by the periodic schedule
-    PeriodicScheduler_SDF scheduler = new PeriodicScheduler_SDF();
+    final PeriodicScheduler_SDF scheduler = new PeriodicScheduler_SDF();
     return scheduler.computeNormalizedPeriod(graph, PeriodicScheduler_SDF.Method.LinearProgram_Gurobi);
   }
 
   /**
    * ASAP + ALAP schedule
-   * 
+   *
    * @param graph
    *          DAG
    */
-  private void schedule(SDFGraph graph) {
+  private void schedule(final SDFGraph graph) {
     // ASAP schedule to determine the start/finish date for each actor and the latency constraint
-    ASAPScheduler_DAG ASAP_DAG = new ASAPScheduler_DAG();
+    final ASAPScheduler_DAG ASAP_DAG = new ASAPScheduler_DAG();
     ASAP_DAG.schedule(graph);
 
     // reset the execution counter of each actor
     ASAP_DAG.simulator.resetExecutionCounter();
 
     // step 2: ALAP schedule ESR paper version
-    ALAPScheduler_DAG ALAP = new ALAPScheduler_DAG();
+    final ALAPScheduler_DAG ALAP = new ALAPScheduler_DAG();
     ALAP.schedule(graph, ASAP_DAG.simulator, ASAP_DAG.dur1Iter);
   }
 
   /**
    * assemble the Subgraph Execution Model of the hierarchical actor
-   * 
+   *
    * @param HActor
    *          hierarchical actor
    * @param subgraph
@@ -248,7 +248,7 @@ public class EvaluateScheduleReplace {
    *          the normalized period of the graph
    * @return subgraph execution model
    */
-  private SDFGraph assembleSEM(SDFAbstractVertex HActor, SDFGraph subgraph, Fraction K) {
+  private SDFGraph assembleSEM(final SDFAbstractVertex HActor, final SDFGraph subgraph, final Fraction K) {
     // construct the replacement graph for the hierarchical actor
     // step 1: get all interfaces execution start time and create a new actor for each interface
     // step 2: construct the time line
@@ -256,22 +256,22 @@ public class EvaluateScheduleReplace {
     // step 4: add the period actor to the time line
 
     // create the subgraph execution model
-    SDFGraph subgraphExecutionModel = new SDFGraph();
+    final SDFGraph subgraphExecutionModel = new SDFGraph();
     subgraphExecutionModel.setName(Identifier.generateSDFGraphId());
 
     // list of time line actors
-    Hashtable<Double, SDFAbstractVertex> timeLineActors = new Hashtable<>();
+    final Hashtable<Double, SDFAbstractVertex> timeLineActors = new Hashtable<>();
 
     // create the interfaces and connect them to their associated time actor
-    for (IInterface iInterface : HActor.getInterfaces()) {
+    for (final IInterface iInterface : HActor.getInterfaces()) {
       // add the interface to the subgraph execution model
-      SDFAbstractVertex subgraphInterface = subgraph.getVertex(((SDFInterfaceVertex) iInterface).getName() + "_1");
-      SDFAbstractVertex SEM_inetrface = GraphStructureHelper.addActor(subgraphExecutionModel, subgraphInterface.getName(), null,
+      final SDFAbstractVertex subgraphInterface = subgraph.getVertex(((SDFInterfaceVertex) iInterface).getName() + "_1");
+      final SDFAbstractVertex SEM_inetrface = GraphStructureHelper.addActor(subgraphExecutionModel, subgraphInterface.getName(), null,
           subgraphInterface.getNbRepeatAsInteger(), (Double) subgraphInterface.getPropertyBean().getValue("duration"), null,
           (SDFAbstractVertex) subgraphInterface.getPropertyBean().getValue("baseActor"));
 
       // get the execution start date of the interface
-      Double startDate = (Double) subgraphInterface.getPropertyBean().getValue("startDate");
+      final Double startDate = (Double) subgraphInterface.getPropertyBean().getValue("startDate");
 
       // get the associated time actor, if not yet exists then create one and add it to the subgraph execution model
       SDFAbstractVertex timeActor = null;
@@ -293,13 +293,13 @@ public class EvaluateScheduleReplace {
     }
 
     // sort the time actors and connect them by transition actors
-    ArrayList<Double> orderedTimeLine = new ArrayList<Double>(timeLineActors.keySet());
+    final ArrayList<Double> orderedTimeLine = new ArrayList<>(timeLineActors.keySet());
     Collections.sort(orderedTimeLine);
 
     // construct the time line by connecting the time actors using transition actors
-    for (int i = 0; i < orderedTimeLine.size() - 1; i++) {
+    for (int i = 0; i < (orderedTimeLine.size() - 1); i++) {
       // add the transition actor to the subgraph execution model
-      SDFAbstractVertex TransitionActor = GraphStructureHelper.addActor(subgraphExecutionModel,
+      final SDFAbstractVertex TransitionActor = GraphStructureHelper.addActor(subgraphExecutionModel,
           "time" + orderedTimeLine.get(i) + "_to_time" + orderedTimeLine.get(i + 1), null, 1, orderedTimeLine.get(i + 1) - orderedTimeLine.get(i), null, null);
 
       // add time actor i with the time actor i+1 through the transition actor
@@ -312,14 +312,14 @@ public class EvaluateScheduleReplace {
     // add the period actor
     if (K.doubleValue() > 0) {
       // get the first and the last time actor of time line
-      double firstTime = orderedTimeLine.get(0);
-      double lastTime = orderedTimeLine.get(orderedTimeLine.size() - 1);
-      SDFAbstractVertex fistTimeActor = timeLineActors.get(firstTime);
-      SDFAbstractVertex lastTimeActor = timeLineActors.get(lastTime);
+      final double firstTime = orderedTimeLine.get(0);
+      final double lastTime = orderedTimeLine.get(orderedTimeLine.size() - 1);
+      final SDFAbstractVertex fistTimeActor = timeLineActors.get(firstTime);
+      final SDFAbstractVertex lastTimeActor = timeLineActors.get(lastTime);
 
       // create the period actor
-      SDFAbstractVertex periodActor = GraphStructureHelper.addActor(subgraphExecutionModel, "period", null, 1, K.getNumerator() - (lastTime - firstTime), null,
-          null);
+      final SDFAbstractVertex periodActor = GraphStructureHelper.addActor(subgraphExecutionModel, "period", null, 1, K.getNumerator() - (lastTime - firstTime),
+          null, null);
 
       // connect the period actor to the time line
       GraphStructureHelper.addEdge(subgraphExecutionModel, lastTimeActor.getName(), null, periodActor.getName(), null, 1, 1, 0, null);

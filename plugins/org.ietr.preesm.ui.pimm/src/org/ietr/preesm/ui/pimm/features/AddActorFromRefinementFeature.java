@@ -102,16 +102,16 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
     // Stop if actor creation was cancelled
     if (actors == null) {
       System.out.println("issue while creating actor");
-      hasDoneChanges = false;
+      this.hasDoneChanges = false;
       return null;
     } else {
       final Actor actor = actors;
 
       // 2- Set Refinement
-      boolean validFile = setRefinement(context, actor);
+      final boolean validFile = setRefinement(context, actor);
       if (!validFile) {
         System.out.println("invalid file path");
-        hasDoneChanges = false;
+        this.hasDoneChanges = false;
         return null;
       }
 
