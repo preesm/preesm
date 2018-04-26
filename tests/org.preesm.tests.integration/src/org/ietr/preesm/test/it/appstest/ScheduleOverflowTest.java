@@ -1,8 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
  *
- * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
- * Julien Hascoet [jhascoet@kalray.eu] (2017)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -44,17 +43,21 @@ import org.junit.Test;
 /**
  *
  */
-public class MemoryAllocationOverflowTest {
+public class ScheduleOverflowTest {
 
   @Test
-  public void testMemoryAllocationOverflow() throws IOException, CoreException {
-    final String projectName = "memory.allocator.overflow";
-    final String scenario = "HextractSIFT4Corex86_64.scenario";
-    final String workflow = "Codegen.workflow";
+  public void testScheduleOverflow() throws IOException, CoreException {
+    final String projectName = "schedule.overflow";
+    final String[] scenarios = new String[] { "Sample1.scenario" };
+    final String[] workflows = new String[] { "Codegen.workflow" };
 
-    final String workflowFilePathStr = "/Workflows/" + workflow;
-    final String scenarioFilePathStr = "/Scenarios/" + scenario;
-    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-    Assert.assertTrue("[FAILED] Workflow " + workflowFilePathStr + " Scenario " + scenarioFilePathStr, success);
+    for (final String workflow : workflows) {
+      for (final String scenario : scenarios) {
+        final String workflowFilePathStr = "/Workflows/" + workflow;
+        final String scenarioFilePathStr = "/Scenarios/" + scenario;
+        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+        Assert.assertTrue("[FAILED] Workflow [" + workflow + "] with scenario [" + scenario + "] failed.", success);
+      }
+    }
   }
 }

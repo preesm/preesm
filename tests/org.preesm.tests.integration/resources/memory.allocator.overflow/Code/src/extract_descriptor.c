@@ -3,7 +3,7 @@
 
 #include "ezsift-common.h"
 
-void MERGE_keypoints(int nbKeypointsMax, int parallelismLevels,
+void MERGE_keypoints(int nKeypointsMax, int parallelismLevel, int nLocalKptMax,
 		     IN SiftKpt * keypoints_in, /* IN int * nbKeypoints_in, */
 		     OUT SiftKpt * keypoints_out, OUT int * nbKeypoints_out) {
 #ifdef SIFT_DEBUG
@@ -11,10 +11,10 @@ void MERGE_keypoints(int nbKeypointsMax, int parallelismLevels,
 #endif
   size_t offset_out = 0;
   size_t offset_in = 0;
-  for(int i = 0; i < parallelismLevels; i++) {
-    int nbKpt = keypoints_in[offset_in+SIFT_localKPTmax].octave;
+  for(int i = 0; i < parallelismLevel; i++) {
+    int nbKpt = keypoints_in[offset_in+nLocalKptMax].octave;
     memcpy(keypoints_out + offset_out, keypoints_in + offset_in, nbKpt*sizeof(struct SiftKeypoint));
-    offset_in += SIFT_localKPTmax + 1;
+    offset_in += nLocalKptMax + 1;
     offset_out += nbKpt;
   }
   nbKeypoints_out[0] = offset_out;
@@ -25,7 +25,10 @@ void MERGE_keypoints(int nbKeypointsMax, int parallelismLevels,
 // Extract descriptor
 // 1. Unroll the tri-linear part.
 void extract_descriptor(int nLayers, int totSizeWithoutLayers,
-			int parallelismLevels, int nbKeypointsMax,
+			int parallelismLevel, int nLocalKptMax,
+			int image_width, int image_height,
+			int imgDouble, int nBins, int nHistBins,
+			int descrWidth, int descrHistBins,
 			IN float * grdPyr,  IN float * rotPyr, 
 			IN SiftKpt * keypoints_in, /* IN int * nbKeypoints_in, */
 			OUT SiftKpt * keypoints_out/* , OUT int * nbKeypoints_out */) {
@@ -38,11 +41,11 @@ void extract_descriptor(int nLayers, int totSizeWithoutLayers,
   // Number of subregions, default 4x4 subregions.
   // The width of subregion is determined by the scale of the keypoint.
   // Or, in Lowe's SIFT paper[2004], width of subregion is 16x16.
-  int nSubregion = SIFT_DESCR_WIDTH; 
+  int nSubregion = descrWidth; 
   int nHalfSubregion = nSubregion >> 1;
 
   // Number of histogram bins for each descriptor subregion.
-  int nBinsPerSubregion = SIFT_DESCR_HIST_BINS;
+  int nBinsPerSubregion = descrHistBins;
   float nBinsPerSubregionPerDegree = (float)nBinsPerSubregion / _2PI;
 
   // 3-D structure for histogram bins (rbin, cbin, obin);
@@ -52,15 +55,13 @@ void extract_descriptor(int nLayers, int totSizeWithoutLayers,
 
   // In this implementation, histBin is a circular buffer. 
   // we expand the cube by 1 for each direction.
-  int nBins = nSubregion * nSubregion * nBinsPerSubregion;
-  int nHistBins = (nSubregion + 2) * (nSubregion + 2) * (nBinsPerSubregion + 2);
   int nSliceStep = (nSubregion + 2) * (nBinsPerSubregion + 2); // 32
   int nRowStep = (nBinsPerSubregion + 2);
-  float histBin[SIFT_nHistBins];
+  float histBin[nHistBins];
 
   float exp_scale = -2.0f / (nSubregion * nSubregion);  // -1/(2* nSubregion/2 * nSubregion/2)
 
-  int nbKeypoints = keypoints_in[SIFT_localKPTmax].octave;
+  int nbKeypoints = keypoints_in[nLocalKptMax].octave;
   for (int index = 0; index < nbKeypoints; index++) {
     struct SiftKeypoint * kpt = keypoints_in + index;
     // Keypoint information
@@ -81,18 +82,20 @@ void extract_descriptor(int nLayers, int totSizeWithoutLayers,
 
 
     size_t offset_gpyr = 0;
-    size_t w = SIFT_IMAGE_W;
-    size_t h = SIFT_IMAGE_H;
-    if (SIFT_IMG_DBL) {
+    size_t w = image_width;
+    size_t h = image_height;
+    if (imgDouble) {
       w *= 2;
       h *= 2;
     }
+    size_t tot_size = w*h;
     for (int k = 0; k < octave; k++) {
-      offset_gpyr +=  w*h*nLayers;
-      w /= 2;
-      h /= 2;
+      offset_gpyr +=  tot_size*nLayers;
+      w >>= 1;
+      h >>= 1;
+      tot_size >>= 2;
     }
-    size_t layer_offset = w*h*(layer-1);
+    size_t layer_offset = tot_size*(layer-1);
     offset_gpyr += layer_offset;
 
     float * grdData = grdPyr + offset_gpyr;
@@ -131,14 +134,14 @@ void extract_descriptor(int nLayers, int totSizeWithoutLayers,
     float d_rbin, d_cbin, d_obin;
 
     // Boundary of sample region.
-    int r, c;
+    size_t r, c, rw;
     int left = tmax_i(-win_size, 1 - kptc_i);
     int right = tmin_i(win_size, w - 2 - kptc_i);
     int top = tmax_i(-win_size, 1 - kptr_i);
     int bottom = tmin_i(win_size, h - 2 - kptr_i);
 
-    for (int i = top; i <= bottom; i ++){ // rows
-      for (int j = left; j <= right; j ++){ // columns
+    for (int i = top; i <= bottom; i ++) { // rows
+      for (int j = left; j <= right; j ++) { // columns
 	// Accurate position relative to (kptr, kptc)	
 	rr = i + d_kptr;
 	cc = j + d_kptc;
@@ -158,8 +161,9 @@ void extract_descriptor(int nLayers, int totSizeWithoutLayers,
 	// All the data need for gradient computation are valid, no border issues.
 	r = kptr_i + i;
 	c = kptc_i + j;
-	mag = grdData[r * w + c];
-	angle = rotData[r * w + c] - kpt_ori;
+	rw = r * w;
+	mag = grdData[rw + c];
+	angle = rotData[rw + c] - kpt_ori;
 	float angle1 = (angle < 0) ? (_2PI + angle) : angle; // Adjust angle to [0, 2PI)
 	obin = angle1 * nBinsPerSubregionPerDegree;
 
@@ -234,7 +238,7 @@ void extract_descriptor(int nLayers, int totSizeWithoutLayers,
 
     // Discard all the edges for row and column.
     // Only retrive edges for orientation bins.
-    float dstBins[SIFT_nBins];
+    float dstBins[nBins];
     for (int i = 1; i <= nSubregion; i ++) { // slice
       for (int j = 1; j <= nSubregion; j ++) { // row
 	int idx = i * nSliceStep + j * nRowStep;
@@ -303,8 +307,9 @@ void extract_descriptor(int nLayers, int totSizeWithoutLayers,
     /* fprintf(stderr, "\n"); */
     
     
-    for (int i = 0; i < nBins; i ++)
+    for (int i = 0; i < nBins; i ++) {
       dstBins[i] = dstBins[i] * norm_factor;
+    }
 
     memcpy(kpt->descriptors, dstBins, nBins * sizeof(float));
 
@@ -312,7 +317,7 @@ void extract_descriptor(int nLayers, int totSizeWithoutLayers,
 
   if (/* nbKeypoints_out != NULL &&  */keypoints_out != NULL) {
     /* *nbKeypoints_out = *nbKeypoints_in; */
-    memcpy(keypoints_out, keypoints_in, nbKeypoints*sizeof(struct SiftKeypoint));
+    memcpy(keypoints_out, keypoints_in, (nLocalKptMax+1)*sizeof(struct SiftKeypoint));
   }
 
 }

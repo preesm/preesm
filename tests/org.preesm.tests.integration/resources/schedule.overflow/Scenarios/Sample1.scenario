@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/schedule.overflow/Algo/Sample1.pi"/>
+        <architecture url="/schedule.overflow/Archi/1CoreX86.slam"/>
+        <codegenDirectory url="/schedule.overflow/Code/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="Sample1/A1"/>
+            <task name="Sample1/A3"/>
+            <task name="Sample1/BroadcastA"/>
+            <task name="Sample1"/>
+            <task name="Sample1/A2"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl="">
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="1.0"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="int" size="4"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0" toleranceEPS="0.0"/>
+    </energyConfigs>
+</scenario>

@@ -6,13 +6,13 @@
 #ifndef ORDERED_CHAINED_LIST_H
 #define ORDERED_CHAINED_LIST_H
 
-struct Element {
+struct ElementOrdList {
   size_t elementIndex; // we can avoid it with pointer arithmetic
-  struct Element * next;
+  struct ElementOrdList * next;
 };
 
 struct OrderedKptList {
-  struct Element allEl[SIFT_localKPTmax];
+  struct ElementOrdList * allEl;//allEl[SIFT_localKPTmax];
   struct SiftKeypoint * allVal;//allVal[SIFT_localKPTmax];
   size_t beginIndex;
   size_t size;
@@ -20,7 +20,7 @@ struct OrderedKptList {
 };
 
 
-void initMemKpt(struct OrderedKptList * list, struct SiftKeypoint * mem);
+void initMemKpt(struct OrderedKptList * list, size_t nbElts, struct ElementOrdList * elts, struct SiftKeypoint * mem);
 
 int getSizeKpt(struct OrderedKptList * list);
 
@@ -34,7 +34,7 @@ void addElementKpt(struct OrderedKptList * list, struct SiftKeypoint * val, int 
 /* -------- for MatchPair ---------- */
 
 struct OrderedMatchList {
-  struct Element allEl[SIFT_localMatchMax];
+  struct ElementOrdList * allEl;//allEl[SIFT_localMatchMax];
   struct MatchPair * allVal;//allVal[SIFT_localMatchMax];
   size_t beginIndex;
   size_t size;
@@ -42,7 +42,7 @@ struct OrderedMatchList {
 };
 
 
-void initMemMatch(struct OrderedMatchList * list, struct MatchPair * mem);
+void initMemMatch(struct OrderedMatchList * list, size_t nbElts, struct ElementOrdList * elts, struct MatchPair * mem);
 
 int getSizeMatch(struct OrderedMatchList * list);
 
