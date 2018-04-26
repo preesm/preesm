@@ -3,6 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
+ * Daniel Madroñal <daniel.madronal@upm.es> (2018)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2013)
  * Pengcheng Mu <pengcheng.mu@insa-rennes.fr> (2008)

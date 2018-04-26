@@ -1,5 +1,5 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
  *
  * Daniel Madroñal <daniel.madronal@upm.es> (2018)
  *
