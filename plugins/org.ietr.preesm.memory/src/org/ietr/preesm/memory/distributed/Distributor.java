@@ -616,11 +616,10 @@ public class Distributor {
           for (final Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry : hosts.entrySet()) {
             final MemoryExclusionVertex hostMObj = entry.getKey();
             final Set<MemoryExclusionVertex> hostedMObjs = entry.getValue();
-            if ((hostMObj != mObj // No self-exclusion
-            ) && hostedMObjs.contains(adjacentMObj) // Does the tested host contain the adjacentMObj
-                && meg.containsVertex(hostMObj) // If hostMobj was already added to the MEG
-            // && !meg.containsEdge(mObj,hostMObj) // Exclusion does not already exists
-            ) {
+            final boolean noSelfExec = hostMObj != mObj;
+            final boolean containsAdjacentMemObj = hostedMObjs.contains(adjacentMObj);
+            final boolean alreadyAdded = meg.containsVertex(hostMObj);
+            if (noSelfExec && containsAdjacentMemObj && alreadyAdded) {
               meg.addEdge(mObj, hostMObj);
             }
           }
