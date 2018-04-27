@@ -33,6 +33,7 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
@@ -218,29 +219,25 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseDataInputInterface(final DataInputInterface actor) {
-    // final SDFSourceInterfaceVertex v = new SDFSourceInterfaceVertex();
-    // this.piVx2SDFVx.put(dii, v);
-    // v.setName(dii.getName());
-    //
-    // caseAbstractActor(dii);
     final String name = this.graph.getVertexPath().replace("/", "_") + "_" + Integer.toString(this.hCounter);
     final MapperDAGVertex vertex = (MapperDAGVertex) this.result.getVertex(name);
     if (vertex == null) {
       throw new RuntimeException("Failed to convert PiMM 2 SR-DAG.\nVertex [" + name + "] not found.");
     }
+    this.piActor2DAGVertex.put(actor, new ArrayList<>());
     this.piActor2DAGVertex.get(actor).add(vertex);
-    final DataOutputPort port = (DataOutputPort) actor.getDataPort();
     return true;
   }
 
   @Override
-  public Boolean caseDataOutputInterface(final DataOutputInterface doi) {
-    // final SDFSinkInterfaceVertex v = new SDFSinkInterfaceVertex();
-    // this.piVx2SDFVx.put(doi, v);
-    // v.setName(doi.getName());
-    //
-    // caseAbstractActor(doi);
-
+  public Boolean caseDataOutputInterface(final DataOutputInterface actor) {
+    final String name = this.graph.getVertexPath().replace("/", "_") + "_" + Integer.toString(this.hCounter);
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.result.getVertex(name);
+    if (vertex == null) {
+      throw new RuntimeException("Failed to convert PiMM 2 SR-DAG.\nVertex [" + name + "] not found.");
+    }
+    this.piActor2DAGVertex.put(actor, new ArrayList<>());
+    this.piActor2DAGVertex.get(actor).add(vertex);
     return true;
   }
 
@@ -337,6 +334,12 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
    */
 
   @Override
+  public Boolean caseDelayActor(final DelayActor actor) {
+    // Do nothing
+    return true;
+  }
+
+  @Override
   public Boolean caseDataOutputPort(final DataOutputPort dop) {
     throw new UnsupportedOperationException();
   }
@@ -413,14 +416,17 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     // Sets the current graph
     this.graph = graph;
 
-    // if (hCounter == 0) {
-    // caseAbstractActor((AbstractActor) graph);
-    // }
     // Clear the map
-    piActor2DAGVertex.clear();
+    // piActor2DAGVertex.clear();
 
     // Add SR-Vertices
-    this.brv.forEach((k, v) -> addVertex(k, v));
+    for (final AbstractActor actor : graph.getActors()) {
+      int rv = 1;
+      if (this.brv.containsKey(actor)) {
+        rv = this.brv.get(actor);
+      }
+      addVertex(actor, rv);
+    }
 
     // Link SR-Vertices
     for (final Fifo fifo : graph.getFifos()) {
@@ -431,30 +437,27 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
         throw new RuntimeException(e.getMessage());
       }
     }
-
-    // Check for top graph condition
-    if (graph.getContainingGraph() != null) {
-      final String name = graph.getVertexPath().replace("/", "_") + "_" + Integer.toString(this.hCounter);
-      final DAGVertex vertex = this.result.getVertex(name);
-      if (vertex == null) {
-        throw new RuntimeException("Failed to convert PiMM 2 SR-DAG.\nVertex [" + name + "] not found.");
-      } else {
-        // Remove the hierarchical vertex from the DAG
-        // We have replaced it with its contents
-        this.result.removeVertex(vertex);
+    // Go check hierarchical graphs
+    for (final PiGraph g : graph.getChildrenGraphs()) {
+      // We have to iterate for every number of hierarchical graph we populated
+      for (int i = 0; i < this.brv.get(g); ++i) {
+        this.hCounter = i;
+        doSwitch(g);
       }
     }
-    // Go check hierarchical graphs
-    // for (final PiGraph g : graph.getChildrenGraphs()) {
-    // // We have to iterate for every number of hierarchical graph we populated
-    // // TODO this is not optimal. Find better approach
-    //
-    // // TODO create the inputIF and outputIf needed for Julien implem
-    // for (int i = 0; i < this.brv.get(g); ++i) {
-    // this.hCounter = i;
-    // doSwitch(g);
-    // }
-    // }
+
+    // Check for top graph condition
+    // Removing all graph vertices
+    if (graph.getContainingGraph() == null) {
+      for (final PiGraph g : graph.getChildrenGraphs()) {
+        // We have to iterate for every number of hierarchical graph we populated
+        for (int i = 0; i < this.brv.get(g); ++i) {
+          final String name = graph.getVertexPath().replace("/", "_") + "_" + Integer.toString(i);
+          final DAGVertex vertex = this.result.getVertex(name);
+          this.result.removeVertex(vertex);
+        }
+      }
+    }
     return true;
   }
 

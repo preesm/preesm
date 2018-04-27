@@ -117,13 +117,15 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
       timer.start();
       this.piHandler.resolveAllParameters();
       timer.stop();
-      WorkflowLogger.getLogger().log(Level.INFO, "Parameters and rates evaluations: " + timer.toString() + "s.");
+      String msg = "Parameters and rates evaluations: " + timer + "s.";
+      WorkflowLogger.getLogger().log(Level.INFO, msg);
       timer.reset();
       timer.start();
       piBRVAlgo.execute();
       this.graphBRV = piBRVAlgo.getBRV();
       timer.stop();
-      WorkflowLogger.getLogger().log(Level.INFO, "Repetition vector computed in " + timer.toString() + "s.");
+      msg = "Repetition vector computed in" + timer + "s.";
+      WorkflowLogger.getLogger().log(Level.INFO, msg);
     } catch (final PiMMHelperException e) {
       throw new StaticPiMM2SrDAGException(e.getMessage());
     }
@@ -135,7 +137,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     timer.start();
     visitor.doSwitch(this.graph);
     timer.stop();
-    WorkflowLogger.getLogger().log(Level.INFO, "Dag transformation performed in " + timer.toString() + "s.");
+    WorkflowLogger.getLogger().log(Level.INFO, "Dag transformation performed in " + timer + "s.");
     return visitor.getResult();
   }
 

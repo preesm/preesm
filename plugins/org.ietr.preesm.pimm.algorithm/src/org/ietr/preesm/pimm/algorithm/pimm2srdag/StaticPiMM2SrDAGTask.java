@@ -76,6 +76,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
     }
 
     SdfToDagConverter.addInitialProperties(result, architecture, scenario);
+    WorkflowLogger.getLogger().log(Level.INFO, "mapping a DAG with " + result.vertexSet().size() + " vertices and " + result.edgeSet().size() + " edges");
 
     final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, result);
