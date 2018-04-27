@@ -252,7 +252,6 @@ class PapifyCPrinter extends CPrinter {
 							else{
 							 	const.value = 2				// Only events
 							}
-							const.value = 1
 							const
 						})
 						(elts as FunctionCall).addParameter(block.definitions.get(block.definitions.length-1), PortDirection.NONE);

@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Fix Papify codegen configuration;
 
 ### Bug fix
 
