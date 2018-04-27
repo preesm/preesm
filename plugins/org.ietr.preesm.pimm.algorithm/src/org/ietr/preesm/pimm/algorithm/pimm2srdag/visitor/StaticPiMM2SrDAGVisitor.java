@@ -449,16 +449,21 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     // Check for top graph condition
     // Removing all graph vertices
     if (graph.getContainingGraph() == null) {
-      for (final PiGraph g : graph.getChildrenGraphs()) {
-        // We have to iterate for every number of hierarchical graph we populated
-        for (int i = 0; i < this.brv.get(g); ++i) {
-          final String name = graph.getVertexPath().replace("/", "_") + "_" + Integer.toString(i);
-          final DAGVertex vertex = this.result.getVertex(name);
-          this.result.removeVertex(vertex);
-        }
-      }
+      removeGraphVertices(graph);
     }
     return true;
+  }
+
+  private void removeGraphVertices(final PiGraph graph) {
+    for (final PiGraph g : graph.getChildrenGraphs()) {
+      // We have to iterate for every number of hierarchical graph we populated
+      for (int i = 0; i < this.brv.get(g); ++i) {
+        final String name = g.getVertexPath().replace("/", "_") + "_" + Integer.toString(i);
+        final DAGVertex vertex = this.result.getVertex(name);
+        this.result.removeVertex(vertex);
+      }
+      removeGraphVertices(g);
+    }
   }
 
 }
