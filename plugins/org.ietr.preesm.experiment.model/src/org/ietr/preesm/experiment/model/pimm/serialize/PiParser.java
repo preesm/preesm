@@ -555,10 +555,10 @@ public class PiParser {
     final AbstractActor setter = (AbstractActor) graph.lookupVertex(setterName);
     final String getterName = nodeElt.getAttribute(PiIdentifiers.DELAY_GETTER);
     final AbstractActor getter = (AbstractActor) graph.lookupVertex(getterName);
-    if (setter == null && !setterName.isEmpty()) {
+    if ((setter == null) && !setterName.isEmpty()) {
       throw new PiGraphException("Delay setter vertex " + setterName + " does not exist.");
     }
-    if (getter == null && !getterName.isEmpty()) {
+    if ((getter == null) && !getterName.isEmpty()) {
       throw new PiGraphException("Delay getter vertex " + getterName + " does not exist.");
     }
 
@@ -568,7 +568,7 @@ public class PiParser {
       parseRefinement(nodeElt, delayActor);
       // Checks the validity of the H refinement of the delay
       if (delayActor.getRefinement() instanceof CHeaderRefinement) {
-        CHeaderRefinement hrefinement = (CHeaderRefinement) delayActor.getRefinement();
+        final CHeaderRefinement hrefinement = (CHeaderRefinement) delayActor.getRefinement();
         if (!delayActor.isValidRefinement(hrefinement)) {
           throw new PiGraphException("Delay INIT prototype must match following prototype: void init(IN int size, OUT <type>* fifo)");
         }
@@ -709,9 +709,9 @@ public class PiParser {
       }
     }
     // Sanity check for special actors
-    if ((vertex instanceof BroadcastActor) && ((AbstractActor) vertex).getDataInputPorts().size() > 1) {
+    if ((vertex instanceof BroadcastActor) && (((AbstractActor) vertex).getDataInputPorts().size() > 1)) {
       throw new PiGraphException("Broadcast with multiple input detected [" + vertex.getName() + "].\n Broadcast actors can only have one input!");
-    } else if ((vertex instanceof ForkActor) && ((AbstractActor) vertex).getDataInputPorts().size() > 1) {
+    } else if ((vertex instanceof ForkActor) && (((AbstractActor) vertex).getDataInputPorts().size() > 1)) {
       throw new PiGraphException("ForkActor with multiple input detected [" + vertex.getName() + "].\n Fork actors can only have one input!");
     }
   }

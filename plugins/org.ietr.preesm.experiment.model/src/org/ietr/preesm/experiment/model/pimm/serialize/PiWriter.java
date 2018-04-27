@@ -371,7 +371,7 @@ public class PiWriter {
     // Checks if the delay has refinement in case of no setter is provided
     if (!delay.hasSetterActor()) {
       final Refinement refinement = actor.getRefinement();
-      if (refinement != null && refinement instanceof CHeaderRefinement) {
+      if ((refinement != null) && (refinement instanceof CHeaderRefinement)) {
         writeRefinement(vertexElt, refinement);
       }
     }

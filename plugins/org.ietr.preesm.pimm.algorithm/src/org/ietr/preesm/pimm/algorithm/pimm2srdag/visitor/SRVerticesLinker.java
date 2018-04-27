@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor;
 
@@ -15,11 +15,13 @@ import org.ietr.dftools.algorithm.model.dag.edag.DAGJoinVertex;
 import org.ietr.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType;
 import org.ietr.dftools.algorithm.model.dag.types.DAGDefaultVertexPropertyType;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
+import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
@@ -31,9 +33,9 @@ import org.ietr.preesm.mapper.model.MapperVertexFactory;
 import org.ietr.preesm.pimm.algorithm.helper.PiMMHelperException;
 
 /**
- * 
+ *
  * Link SR DAG vertices
- * 
+ *
  * @author farresti
  *
  */
@@ -44,6 +46,9 @@ public class SRVerticesLinker {
 
   /** Property name for property FORK_VERTEX. */
   public static final String FORK_VERTEX = "_Fork_";
+
+  /** Property name for property PIMM_FIFO. */
+  public static final String PIMM_FIFO = "pimm_fifo";
 
   // Number of delays
   private final long delays;
@@ -67,13 +72,19 @@ public class SRVerticesLinker {
   // The DAG in which we operate
   private final MapperDAG dag;
 
+  // Counters for unique ID creation of Forks/Joins
   private int joinIDCounter;
   private int forkIDCounter;
 
+  // Port modifiers annotations
+  private final String sourceModifier;
+  private final String targetModifier;
+
   /**
    * Retrieve the number of delay tokens contain in a fifo, if any
-   * 
+   *
    * @param fifo
+   *          the fifo
    * @return number of delay, 0 if the fifo does not contain any delay
    */
   private static long getNDelays(final Fifo fifo) {
@@ -83,7 +94,7 @@ public class SRVerticesLinker {
     }
     // Get the number of delay
     final Expression sizeExpression = fifo.getDelay().getSizeExpression();
-    long nDelays = Long.parseLong(sizeExpression.getExpressionString());
+    final long nDelays = Long.parseLong(sizeExpression.getExpressionString());
     // Sanity check on delay value
     final DataInputPort targetPort = fifo.getTargetPort();
     final Expression portRateExpression = targetPort.getPortRateExpression();
@@ -98,24 +109,8 @@ public class SRVerticesLinker {
   }
 
   /**
-   * Get the repetition value for the sink / source actor
-   * 
-   * @param actor
-   *          the sink actor
-   * @param brv
-   *          the basic repetition vector map
-   * @return repetition value of the actor, 1 if it is an interface actor
-   */
-  private static long getRVorDefault(final AbstractActor actor, final Map<AbstractVertex, Integer> brv) {
-    if (actor instanceof InterfaceActor) {
-      return 1;
-    }
-    return (long) (brv.get(actor));
-  }
-
-  /**
    * Constructor for the SR linker
-   * 
+   *
    * @param fifo
    *          the fifo to link
    * @param dag
@@ -125,7 +120,7 @@ public class SRVerticesLinker {
    */
   public SRVerticesLinker(final Fifo fifo, final MapperDAG dag, final PreesmScenario scenario) {
     this.fifo = fifo;
-    this.delays = getNDelays(fifo);
+    this.delays = SRVerticesLinker.getNDelays(fifo);
     this.source = fifo.getSourcePort().getContainingActor();
     this.sink = fifo.getTargetPort().getContainingActor();
     this.sourcePort = fifo.getSourcePort();
@@ -135,32 +130,55 @@ public class SRVerticesLinker {
     this.dag = dag;
     this.joinIDCounter = 0;
     this.forkIDCounter = 0;
+    this.sourceModifier = getAnnotationFromPort(this.sourcePort);
+    this.targetModifier = getAnnotationFromPort(this.sinkPort);
+  }
+
+  /**
+   * Convert annotations from to.
+   *
+   * @param piPort
+   *          the pi port
+   * @param edge
+   *          the edge
+   * @param property
+   *          the property
+   */
+  private String getAnnotationFromPort(final DataPort piPort) {
+    switch (piPort.getAnnotation()) {
+      case READ_ONLY:
+        return SDFEdge.MODIFIER_READ_ONLY;
+      case WRITE_ONLY:
+        return SDFEdge.MODIFIER_WRITE_ONLY;
+      case UNUSED:
+        return SDFEdge.MODIFIER_UNUSED;
+      default:
+        return "";
+    }
   }
 
   /**
    * Do the linkage between the dag vertices
-   * 
+   *
    * @param brv
    *          the basic repetition vector map
-   * 
+   *
    * @param pimm2dag
    *          the map between the pimm vertex and the dag vertex
-   * 
-   * @param dag
-   *          the dag in which the vertices need to be connected
-   * 
+   *
+   *
    * @return true if no error, false else
    */
   public Boolean execute(final Map<AbstractVertex, Integer> brv, final Map<AbstractVertex, ArrayList<MapperDAGVertex>> pimm2dag) throws PiMMHelperException {
     // These connections are already dealt with
-    if (source instanceof DelayActor || sink instanceof DelayActor) {
+    if ((this.source instanceof DelayActor) || (this.sink instanceof DelayActor)) {
       return true;
     }
 
     // List of source vertex
-    ArrayList<Pair<DAGVertex, Long>> sourceSet = getSourceSet(brv, pimm2dag);
+    final ArrayList<Pair<DAGVertex, Long>> sourceSet = getSourceSet(brv, pimm2dag);
     // List of sink vertex
-    ArrayList<Pair<DAGVertex, Long>> sinkSet = getSinkSet(brv, pimm2dag);
+    final ArrayList<Pair<DAGVertex, Long>> sinkSet = getSinkSet(brv, pimm2dag);
 
     // Connect all the source to the sinks
     connectEdges(sourceSet, sinkSet);
@@ -170,7 +188,7 @@ public class SRVerticesLinker {
 
   /**
    * Connect the sources to the sinks
-   * 
+   *
    * @param sourceSet
    *          set of dag sources
    * @param sinkSet
@@ -178,8 +196,8 @@ public class SRVerticesLinker {
    */
   private void connectEdges(final ArrayList<Pair<DAGVertex, Long>> sourceSet, final ArrayList<Pair<DAGVertex, Long>> sinkSet) {
     Pair<DAGVertex, Long> currentSink = sinkSet.get(0);
-    while (!sourceSet.isEmpty() && currentSink.getLeft() != null) {
-      Pair<DAGVertex, Long> currentSource = connectSources2Sink(sourceSet, currentSink);
+    while (!sourceSet.isEmpty() && (currentSink.getLeft() != null)) {
+      final Pair<DAGVertex, Long> currentSource = connectSources2Sink(sourceSet, currentSink);
       sinkSet.remove(currentSink);
       if (currentSource.getLeft() == null) {
         break;
@@ -191,7 +209,7 @@ public class SRVerticesLinker {
 
   /**
    * Connect sources to current sink
-   * 
+   *
    * @param sourceSet
    *          set of dag sources
    * @param sink
@@ -200,7 +218,7 @@ public class SRVerticesLinker {
    */
   private Pair<DAGVertex, Long> connectSources2Sink(final ArrayList<Pair<DAGVertex, Long>> sourceSet, final Pair<DAGVertex, Long> sink) {
     long cons = sink.getRight();
-    final ArrayList<Pair<DAGVertex, Long>> toRemove = new ArrayList<Pair<DAGVertex, Long>>();
+    final ArrayList<Pair<DAGVertex, Long>> toRemove = new ArrayList<>();
     DAGVertex sinkVertex = sink.getLeft();
     boolean hasImplode = false;
     for (final Pair<DAGVertex, Long> src : sourceSet) {
@@ -214,7 +232,7 @@ public class SRVerticesLinker {
         prod = prod - cons;
         sourceSet.removeAll(toRemove);
         return Pair.of(fork, prod);
-      } else if (!hasImplode && prod < cons) {
+      } else if (!hasImplode && (prod < cons)) {
         // Add a join
         final DAGVertex join = createJoinVertex(this.fifo.getId() + SRVerticesLinker.JOIN_VERTEX, MapperVertexFactory.getInstance());
         createEdge(join, sinkVertex, Long.toString(cons));
@@ -234,7 +252,7 @@ public class SRVerticesLinker {
 
   /**
    * Connect sinks to current source
-   * 
+   *
    * @param sinkSet
    *          set of dag sinks
    * @param source
@@ -243,7 +261,7 @@ public class SRVerticesLinker {
    */
   private Pair<DAGVertex, Long> connectSinks2Source(final ArrayList<Pair<DAGVertex, Long>> sinkSet, final Pair<DAGVertex, Long> source) {
     long prod = source.getRight();
-    final ArrayList<Pair<DAGVertex, Long>> toRemove = new ArrayList<Pair<DAGVertex, Long>>();
+    final ArrayList<Pair<DAGVertex, Long>> toRemove = new ArrayList<>();
     DAGVertex sourceVertex = source.getLeft();
     boolean hasExplode = false;
     for (final Pair<DAGVertex, Long> snk : sinkSet) {
@@ -257,7 +275,7 @@ public class SRVerticesLinker {
         cons = cons - prod;
         sinkSet.removeAll(toRemove);
         return Pair.of(join, cons);
-      } else if (!hasExplode && cons < prod) {
+      } else if (!hasExplode && (cons < prod)) {
         // Add a fork
         final DAGVertex fork = createForkVertex(this.fifo.getId() + SRVerticesLinker.FORK_VERTEX, MapperVertexFactory.getInstance());
         createEdge(sourceVertex, fork, Long.toString(prod));
@@ -277,45 +295,43 @@ public class SRVerticesLinker {
 
   /**
    * Generate DAG set of sources
-   * 
+   *
    * @param brv
    *          repetition vector values
    * @param pimm2dag
    *          map of PiMM actors and their associated list of dag vertices
    * @return set of dag sources
    * @throws PiMMHelperException
+   *           the exception
    */
   private ArrayList<Pair<DAGVertex, Long>> getSourceSet(final Map<AbstractVertex, Integer> brv, final Map<AbstractVertex, ArrayList<MapperDAGVertex>> pimm2dag)
       throws PiMMHelperException {
-    ArrayList<Pair<DAGVertex, Long>> sourceSet = new ArrayList<>();
+    final ArrayList<Pair<DAGVertex, Long>> sourceSet = new ArrayList<>();
 
     final MapperVertexFactory vertexFactory = MapperVertexFactory.getInstance();
     final String fifoID = this.fifo.getId();
     // Port expressions
     final Expression sourceExpression = this.sourcePort.getPortRateExpression();
-    final Expression sinkExpression = this.sinkPort.getPortRateExpression();
+    this.sinkPort.getPortRateExpression();
     final long sourceProduction = Long.parseLong(sourceExpression.getExpressionString());
 
     if (this.source instanceof InterfaceActor) {
       // We will see that later
       // Repetition values
       // final long sinkRV = getRVorDefault(this.sink, brv);
-      // Port expressions
-      // final Expression sourceExpression = this.sourcePort.getPortRateExpression();
+      // // Port expressions
       // final Expression sinkExpression = this.sinkPort.getPortRateExpression();
-      // final long sourceProduction = Long.parseLong(sourceExpression.getExpressionString());
       // final long sinkConsumption = Long.parseLong(sinkExpression.getExpressionString());
-      // final DAGVertex sourceVertex = this.piActor2DAGVertex.get(sourceActor).get(0);
+      // final DAGVertex sourceVertex = pimm2dag.get(this.source).get(0);
       // if (sourceProduction == sinkConsumption * sinkRV) {
       // // We don't need to use broadcast
       // // final DataInputInterface dataInputInterface = (DataInputInterface) sourceActor;
       // // final DataInputPort dataInputPort = (DataInputPort) dataInputInterface.getDataPort();
       // // final AbstractActor interfaceSourceActor = dataInputPort.getIncomingFifo().getSourcePort().getContainingActor();
-      // final DAGVertex vertex = this.piActor2DAGVertex.get(sourceActor).get(0);
-      // final SourceConnection sourceConnection = new SourceConnection(vertex, sourcePort, sourceProduction);
+      // final DAGVertex vertex = pimm2dag.get(this.source).get(0);
       // } else {
-      // final boolean perfectBroadcast = totalSinkConsumption % sourceProduction == 0;
-      // long nBroadcast = totalSinkConsumption / sourceProduction;
+      // final boolean perfectBroadcast = (sinkConsumption * sinkRV) % sourceProduction == 0;
+      // long nBroadcast = (sinkConsumption * sinkRV) / sourceProduction;
       // if (!perfectBroadcast) {
       // nBroadcast++;
       // }
@@ -323,17 +339,14 @@ public class SRVerticesLinker {
       // nbSourceRepetitions = nBroadcast;
       // // If we have left over tokens, we need to get rid of them
       // sinkNeedEnd = !perfectBroadcast;
-      // DAGVertex vertex = this.vertexFactory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
+      // DAGVertex vertex = vertexFactory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
       // this.result.addEdge(sourceVertex, vertex);
       // for (int i = 0; i < nBroadcast; ++i) {
-      // final SourceConnection sourceConnection = new SourceConnection();
-      // sourceConnection.setSource(vertex);
-      // sourceConnection.setProd(sourceProduction);
-      // sourceConnections.add(sourceConnection);
-      // }
+      // sourceSet.add(Pair.of(vertex, sourceProduction));
       // }
     } else if (this.source instanceof AbstractActor) {
       if (this.delays != 0) {
+
         // Deals with the delay
         final Delay delay = this.fifo.getDelay();
         if (delay.hasSetterActor()) {
@@ -349,14 +362,14 @@ public class SRVerticesLinker {
       // Add the list of the SR-DAG vertex associated with the source
       pimm2dag.get(this.source).forEach(v -> addPair(sourceSet, v, sourceProduction));
     } else {
-      throw new PiMMHelperException("Unhandled type of actor: " + source.getClass().toString());
+      throw new PiMMHelperException("Unhandled type of actor: " + this.source.getClass().toString());
     }
     return sourceSet;
   }
 
   /**
    * Adds a new pair to a set
-   * 
+   *
    * @param set
    *          the set
    * @param vertex
@@ -371,7 +384,7 @@ public class SRVerticesLinker {
   /**
    * Deals with the setter actor of a delay. <br>
    * If the RV of the setter actor is greater than 1, then a join actor is created to connect all of its instances. <br>
-   * 
+   *
    * @param setterActorList
    *          list of sr dag instances of the setter actor
    * @return setter actor if its RV = 1, the join actor created else
@@ -397,17 +410,18 @@ public class SRVerticesLinker {
 
   /**
    * Generate DAG set of sinks
-   * 
+   *
    * @param brv
    *          repetition vector values
    * @param pimm2dag
    *          map of PiMM actors and their associated list of dag vertices
    * @return set of dag sink
    * @throws PiMMHelperException
+   *           the exception
    */
   private ArrayList<Pair<DAGVertex, Long>> getSinkSet(final Map<AbstractVertex, Integer> brv, final Map<AbstractVertex, ArrayList<MapperDAGVertex>> pimm2dag)
       throws PiMMHelperException {
-    ArrayList<Pair<DAGVertex, Long>> sinkSet = new ArrayList<>();
+    final ArrayList<Pair<DAGVertex, Long>> sinkSet = new ArrayList<>();
 
     final MapperVertexFactory vertexFactory = MapperVertexFactory.getInstance();
     final String fifoID = this.fifo.getId();
@@ -415,7 +429,7 @@ public class SRVerticesLinker {
     // Port expressions
     final Expression sourceExpression = this.sourcePort.getPortRateExpression();
     final Expression sinkExpression = this.sinkPort.getPortRateExpression();
-    final long sourceProduction = Long.parseLong(sourceExpression.getExpressionString());
+    Long.parseLong(sourceExpression.getExpressionString());
     final long sinkConsumption = Long.parseLong(sinkExpression.getExpressionString());
 
     if (this.sink instanceof InterfaceActor) {
@@ -467,7 +481,7 @@ public class SRVerticesLinker {
   /**
    * Deals with the getter actor of a delay. <br>
    * If the RV of the getter actor is greater than 1, then a fork actor is created to connect all of its instances. <br>
-   * 
+   *
    * @param getterActorList
    *          list of sr dag instances of the getter actor
    * @return getter actor if its RV = 1, the fork actor created else
@@ -494,8 +508,8 @@ public class SRVerticesLinker {
   /**
    * Creates a MapperDAGEdge and sets initial properties. <br>
    * The created edge is added to the MapperDAG.
-   * 
-   * 
+   *
+   *
    * @param source
    *          source vertex of the edge
    * @param target
@@ -507,6 +521,9 @@ public class SRVerticesLinker {
   private DAGEdge createEdge(final DAGVertex source, final DAGVertex target, final String rateExpression) {
     final DAGEdge edge = this.dag.addEdge(source, target);
     final int weight = this.dataSize * Integer.parseInt(rateExpression);
+    edge.setPropertyValue(SDFEdge.SOURCE_PORT_MODIFIER, new SDFStringEdgePropertyType(this.sourceModifier));
+    edge.setPropertyValue(SDFEdge.TARGET_PORT_MODIFIER, new SDFStringEdgePropertyType(this.targetModifier));
+    edge.setPropertyValue(SRVerticesLinker.PIMM_FIFO, new SDFStringEdgePropertyType(this.fifo.getId()));
     edge.setPropertyValue(SDFEdge.DATA_TYPE, this.fifo.getType());
     edge.setPropertyValue(SDFEdge.DATA_SIZE, this.dataSize);
     edge.setWeight(new DAGDefaultEdgePropertyType(weight));
@@ -516,7 +533,7 @@ public class SRVerticesLinker {
   /**
    * Creates a new join actor with a unique ID. <br>
    * The created vertex is automatically added to the DAG.
-   * 
+   *
    * @param fixID
    *          fix part of the join actor ID
    * @param vertexFactory
@@ -525,7 +542,7 @@ public class SRVerticesLinker {
    */
   private DAGVertex createJoinVertex(final String fixID, final MapperVertexFactory vertexFactory) {
     final DAGVertex joinVertex = vertexFactory.createVertex(DAGJoinVertex.DAG_JOIN_VERTEX);
-    final String id = fixID + Integer.toString(joinIDCounter++);
+    final String id = fixID + Integer.toString(this.joinIDCounter++);
     setVertexDefault(joinVertex, id);
     this.dag.addVertex(joinVertex);
     return joinVertex;
@@ -534,7 +551,7 @@ public class SRVerticesLinker {
   /**
    * Creates a new fork actor with a unique ID. <br>
    * The created vertex is automatically added to the DAG.
-   * 
+   *
    * @param fixID
    *          fix part of the fork actor ID
    * @param vertexFactory
@@ -543,7 +560,7 @@ public class SRVerticesLinker {
    */
   private DAGVertex createForkVertex(final String fixID, final MapperVertexFactory vertexFactory) {
     final DAGVertex forkVertex = vertexFactory.createVertex(DAGForkVertex.DAG_FORK_VERTEX);
-    final String id = fixID + Integer.toString(forkIDCounter++);
+    final String id = fixID + Integer.toString(this.forkIDCounter++);
     setVertexDefault(forkVertex, id);
     this.dag.addVertex(forkVertex);
     return forkVertex;
@@ -552,7 +569,7 @@ public class SRVerticesLinker {
   /**
    * Creates a new init actor. <br>
    * The created vertex is automatically added to the DAG.
-   * 
+   *
    * @param fixID
    *          id of the vertex
    * @param vertexFactory
@@ -569,7 +586,7 @@ public class SRVerticesLinker {
   /**
    * Creates a new end actor. <br>
    * The created vertex is automatically added to the DAG.
-   * 
+   *
    * @param fixID
    *          id of the vertex
    * @param vertexFactory
@@ -587,7 +604,7 @@ public class SRVerticesLinker {
    * Set default properties of a DAGVertex. <br>
    * id = name = info <br>
    * nbRepeat = 1
-   * 
+   *
    * @param vertex
    *          the vertex to init
    * @param id

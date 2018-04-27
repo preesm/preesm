@@ -86,7 +86,7 @@ public class StaticPiMM2SDFLauncher {
 
     // Visitor creating the SDFGraph
     final PiGraphExecution execution = new PiGraphExecution(parametersValues);
-    StaticPiMM2SDFVisitor visitor = new StaticPiMM2SDFVisitor(execution);
+    final StaticPiMM2SDFVisitor visitor = new StaticPiMM2SDFVisitor(execution);
     visitor.doSwitch(this.graph);
 
     result = visitor.getResult();

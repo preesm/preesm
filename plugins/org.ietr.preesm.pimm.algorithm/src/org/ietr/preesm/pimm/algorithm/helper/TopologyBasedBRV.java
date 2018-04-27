@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.ietr.preesm.pimm.algorithm.helper;
 
@@ -17,7 +17,7 @@ import org.math.array.LinearAlgebra;
 
 /**
  * This class is used to compute the basic repetition vector of a static PiSDF graph using topology matrix method.
- * 
+ *
  * @author farresti
  */
 public class TopologyBasedBRV extends PiBRV {
@@ -28,7 +28,7 @@ public class TopologyBasedBRV extends PiBRV {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.pimm.algorithm.math.PiBRV#execute()
    */
   @Override
@@ -41,7 +41,7 @@ public class TopologyBasedBRV extends PiBRV {
     final List<List<AbstractActor>> subgraphsWOInterfaces = this.piHandler.getAllConnectedComponentsWOInterfaces();
     for (final List<AbstractActor> subgraph : subgraphsWOInterfaces) {
       // Construct the list of Edges without interfaces
-      List<Fifo> listFifo = this.piHandler.getFifosFromCCWOSelfLoop(subgraph);
+      final List<Fifo> listFifo = this.piHandler.getFifosFromCCWOSelfLoop(subgraph);
 
       // Get the topology matrix
       if (subgraph.isEmpty()) {
@@ -53,22 +53,22 @@ public class TopologyBasedBRV extends PiBRV {
       if (listFifo.isEmpty()) {
         this.graphBRV.put(subgraph.get(0), 1);
       } else {
-        double[][] topologyMatrix = getTopologyMatrix(listFifo, subgraph);
-        int rank = LinearAlgebra.rank(topologyMatrix);
-        if (rank != subgraph.size() - 1) {
+        final double[][] topologyMatrix = getTopologyMatrix(listFifo, subgraph);
+        final int rank = LinearAlgebra.rank(topologyMatrix);
+        if (rank != (subgraph.size() - 1)) {
           throw new PiMMHelperException("Graph not consitent. rank: " + Integer.toString(rank));
         }
         // Compute BRV
-        final Vector<Rational> vrb = computeRationnalNullSpace(topologyMatrix);
+        final Vector<Rational> vrb = TopologyBasedBRV.computeRationnalNullSpace(topologyMatrix);
         final List<Integer> result = Rational.toNatural(new Vector<>(vrb));
-        this.graphBRV.putAll(zipToMap(subgraph, result));
+        this.graphBRV.putAll(TopologyBasedBRV.zipToMap(subgraph, result));
       }
 
       // Update BRV values with interfaces
       updateRVWithInterfaces(this.piHandler.getReferenceGraph(), subgraph);
     }
     for (final PiMMHandler g : this.piHandler.getChildrenGraphsHandler()) {
-      TopologyBasedBRV topologyBRV = new TopologyBasedBRV(g);
+      final TopologyBasedBRV topologyBRV = new TopologyBasedBRV(g);
       topologyBRV.execute();
       this.graphBRV.putAll(topologyBRV.getBRV());
     }
@@ -77,15 +77,15 @@ public class TopologyBasedBRV extends PiBRV {
   }
 
   private double[][] getTopologyMatrix(final List<Fifo> listFifo, final List<AbstractActor> subgraph) throws PiMMHelperException {
-    double[][] topologyMatrix = new double[listFifo.size()][subgraph.size()];
+    final double[][] topologyMatrix = new double[listFifo.size()][subgraph.size()];
     for (final Fifo fifo : listFifo) {
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
       // int prod = (int) (ExpressionEvaluator.evaluate(fifo.getSourcePort().getPortRateExpression()));
       // int cons = (int) (ExpressionEvaluator.evaluate(fifo.getTargetPort().getPortRateExpression()));
-      int prod = Integer.parseInt(fifo.getSourcePort().getPortRateExpression().getExpressionString());
-      int cons = Integer.parseInt(fifo.getTargetPort().getPortRateExpression().getExpressionString());
-      if (prod < 0 || cons < 0) {
+      final int prod = Integer.parseInt(fifo.getSourcePort().getPortRateExpression().getExpressionString());
+      final int cons = Integer.parseInt(fifo.getTargetPort().getPortRateExpression().getExpressionString());
+      if ((prod < 0) || (cons < 0)) {
         final String prodString = "Prod: " + Integer.toString(prod) + "\n";
         final String consString = "Cons: " + Integer.toString(cons) + "\n";
         final String errorString = "Bad production / consumption rates\n";
@@ -93,7 +93,7 @@ public class TopologyBasedBRV extends PiBRV {
       }
       final int sourceIndex = subgraph.indexOf(sourceActor);
       final int targetIndex = subgraph.indexOf(targetActor);
-      if (sourceIndex < 0 || targetIndex < 0) {
+      if ((sourceIndex < 0) || (targetIndex < 0)) {
         throw new PiMMHelperException("Bad index error:\nSource actor index [" + sourceActor.getName() + "]: " + Integer.toString(sourceIndex)
             + "\nTarget actor index [" + targetActor.getName() + "]: " + Integer.toString(targetIndex));
       }
@@ -104,7 +104,7 @@ public class TopologyBasedBRV extends PiBRV {
     return topologyMatrix;
   }
 
-  public static <K, V> Map<K, V> zipToMap(List<K> keys, List<V> values) {
+  public static <K, V> Map<K, V> zipToMap(final List<K> keys, final List<V> values) {
     return IntStream.range(0, keys.size()).boxed().collect(Collectors.toMap(keys::get, values::get));
   }
 

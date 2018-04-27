@@ -130,7 +130,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
 
   /**
    * Method to create a data input port with its expression linked to a delay
-   * 
+   *
    * @param delay
    *          the delay to set
    */
@@ -151,7 +151,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
 
   /**
    * Method to create a data output port with its expression linked to a delay
-   * 
+   *
    * @param delay
    *          the delay to set
    */
@@ -182,7 +182,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
 
   /**
    * Method to create a delay actor with the corresponding delay as parameter
-   * 
+   *
    * @param delay
    *          the delay to set
    */

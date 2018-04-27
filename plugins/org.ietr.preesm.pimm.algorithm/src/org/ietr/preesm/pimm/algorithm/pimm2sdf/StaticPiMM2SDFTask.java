@@ -70,7 +70,7 @@ public class StaticPiMM2SDFTask extends AbstractTaskImplementation {
     final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
-    StopWatch timer = new StopWatch();
+    final StopWatch timer = new StopWatch();
     timer.start();
 
     final StaticPiMM2SDFLauncher launcher = new StaticPiMM2SDFLauncher(scenario, graph);

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.ietr.preesm.pimm.algorithm.helper;
 
@@ -32,7 +32,7 @@ public abstract class PiBRV {
 
   /**
    * Instantiates a new PiBRV object
-   * 
+   *
    * @param piHandler
    *          PiSDF graph handler on which we are working
    */
@@ -42,7 +42,7 @@ public abstract class PiBRV {
   }
 
   /**
-   * 
+   *
    * Set the associated PiGraph. If current BRV map was not empty, it is cleared. The BRV is automatically recomputed.
    */
   public void setAssociatedGraphHandler(final PiMMHandler piHandler) throws PiMMHelperException {
@@ -54,7 +54,7 @@ public abstract class PiBRV {
   }
 
   /**
-   * 
+   *
    * @return associated PiGraph
    */
   public PiMMHandler getAssociatedGraphHandler() {
@@ -63,7 +63,7 @@ public abstract class PiBRV {
 
   /**
    * First call will be slower since it has to compute the BRV.
-   * 
+   *
    * @return a map of vertex and associated repetition vector values
    */
   public Map<AbstractVertex, Integer> getBRV() throws PiMMHelperException {
@@ -97,17 +97,17 @@ public abstract class PiBRV {
     // Update RV values based on the interface
     int scaleFactor = 1;
     // Compute scaleFactor for input interfaces
-    for (DataInputInterface in : graph.getDataInputInterfaces()) {
+    for (final DataInputInterface in : graph.getDataInputInterfaces()) {
       final Fifo fifo = ((DataOutputPort) in.getDataPort()).getOutgoingFifo();
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
       if (!(targetActor instanceof InterfaceActor) && subgraph.contains(targetActor)) {
-        int targetRV = this.graphBRV.get(targetActor);
-        int prod = Integer.parseInt(fifo.getSourcePort().getPortRateExpression().getExpressionString());
-        int cons = Integer.parseInt(fifo.getTargetPort().getPortRateExpression().getExpressionString());
-        int tmp = scaleFactor * cons * targetRV;
+        final int targetRV = this.graphBRV.get(targetActor);
+        final int prod = Integer.parseInt(fifo.getSourcePort().getPortRateExpression().getExpressionString());
+        final int cons = Integer.parseInt(fifo.getTargetPort().getPortRateExpression().getExpressionString());
+        final int tmp = scaleFactor * cons * targetRV;
         if (tmp < prod) {
-          int scaleScaleFactor = prod / tmp;
-          if (scaleScaleFactor * tmp < prod) {
+          final int scaleScaleFactor = prod / tmp;
+          if ((scaleScaleFactor * tmp) < prod) {
             scaleFactor *= (scaleScaleFactor + 1);
           } else {
             scaleFactor *= scaleScaleFactor;
@@ -120,17 +120,17 @@ public abstract class PiBRV {
     }
 
     // Compute scaleFactor for output interfaces
-    for (DataOutputInterface out : graph.getDataOutputInterfaces()) {
+    for (final DataOutputInterface out : graph.getDataOutputInterfaces()) {
       final Fifo fifo = ((DataInputPort) out.getDataPort()).getIncomingFifo();
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
       if (!(sourceActor instanceof InterfaceActor) && subgraph.contains(sourceActor)) {
-        int prod = Integer.parseInt(fifo.getSourcePort().getPortRateExpression().getExpressionString());
-        int cons = Integer.parseInt(fifo.getTargetPort().getPortRateExpression().getExpressionString());
-        int sourceRV = this.graphBRV.get(sourceActor);
-        int tmp = scaleFactor * prod * sourceRV;
+        final int prod = Integer.parseInt(fifo.getSourcePort().getPortRateExpression().getExpressionString());
+        final int cons = Integer.parseInt(fifo.getTargetPort().getPortRateExpression().getExpressionString());
+        final int sourceRV = this.graphBRV.get(sourceActor);
+        final int tmp = scaleFactor * prod * sourceRV;
         if (tmp < cons) {
-          int scaleScaleFactor = cons / tmp;
-          if (scaleScaleFactor * tmp < cons) {
+          final int scaleScaleFactor = cons / tmp;
+          if ((scaleScaleFactor * tmp) < cons) {
             scaleFactor *= (scaleScaleFactor + 1);
           } else {
             scaleFactor *= scaleScaleFactor;
@@ -143,10 +143,10 @@ public abstract class PiBRV {
     }
 
     // Do the actual update
-    for (AbstractActor actor : subgraph) {
-      int newRV = this.graphBRV.get(actor) * scaleFactor;
+    for (final AbstractActor actor : subgraph) {
+      final int newRV = this.graphBRV.get(actor) * scaleFactor;
       this.graphBRV.put(actor, newRV);
-      if ((actor instanceof DelayActor) && newRV != 1) {
+      if ((actor instanceof DelayActor) && (newRV != 1)) {
         throw new PiMMHelperException("Inconsistent graph. DelayActor [" + actor.getName() + "] with a repetition vector of " + Integer.toString(newRV));
       }
     }

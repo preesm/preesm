@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.ietr.preesm.pimm.algorithm.helper;
 

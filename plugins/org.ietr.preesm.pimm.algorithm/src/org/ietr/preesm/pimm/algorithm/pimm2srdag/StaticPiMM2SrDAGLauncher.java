@@ -67,7 +67,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
   private final PiGraph graph;
 
   /** The graph. */
-  private PiMMHandler piHandler;
+  private final PiMMHandler piHandler;
 
   /** Map from Pi actors to their Repetition Vector value. */
   protected Map<AbstractVertex, Integer> graphBRV = new LinkedHashMap<>();
@@ -102,7 +102,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
    * @throws StaticPiMM2SrDAGException
    *           the static pi MM 2 SDF exception
    */
-  public MapperDAG launch(int method) throws StaticPiMM2SrDAGException {
+  public MapperDAG launch(final int method) throws StaticPiMM2SrDAGException {
     // Compute BRV following the chosen method
     PiBRV piBRVAlgo;
     if (method == 0) {
@@ -113,7 +113,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
       throw new StaticPiMM2SrDAGException("unexpected value for BRV method: [" + Integer.toString(method) + "]");
     }
     try {
-      StopWatch timer = new StopWatch();
+      final StopWatch timer = new StopWatch();
       timer.start();
       this.piHandler.resolveAllParameters();
       timer.stop();
@@ -124,14 +124,14 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
       this.graphBRV = piBRVAlgo.getBRV();
       timer.stop();
       WorkflowLogger.getLogger().log(Level.INFO, "Repetition vector computed in " + timer.toString() + "s.");
-    } catch (PiMMHelperException e) {
+    } catch (final PiMMHelperException e) {
       throw new StaticPiMM2SrDAGException(e.getMessage());
     }
-    printRV(this.graphBRV);
+    StaticPiMM2SrDAGLauncher.printRV(this.graphBRV);
     // Visitor creating the SR-DAG
     StaticPiMM2SrDAGVisitor visitor;
     visitor = new StaticPiMM2SrDAGVisitor(new MapperDAG(new MapperEdgeFactory(), this.graph), this.graphBRV, this.scenario);
-    StopWatch timer = new StopWatch();
+    final StopWatch timer = new StopWatch();
     timer.start();
     visitor.doSwitch(this.graph);
     timer.stop();

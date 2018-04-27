@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.ietr.preesm.pimm.algorithm.helper;
 
@@ -74,7 +74,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
   }
 
   private static JEP initJep(final LinkedHashMap<String, Long> portValues) {
-    JEP jep = new JEP();
+    final JEP jep = new JEP();
     if (portValues != null) {
       portValues.forEach(jep::addVariable);
     }
@@ -98,12 +98,12 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
 
   private static void parseJEP(final AbstractActor actor, final LinkedHashMap<String, Long> portValues) {
     // Init the JEP parser associated with the actor
-    final JEP jepParser = initJep(portValues);
+    final JEP jepParser = PiMMResolverVisitor.initJep(portValues);
     // Iterate over all data ports of the actor and resolve their rates
     for (final DataPort dp : actor.getAllDataPorts()) {
       try {
-        resolveExpression(dp.getPortRateExpression(), jepParser);
-      } catch (ParseException eparse) {
+        PiMMResolverVisitor.resolveExpression(dp.getPortRateExpression(), jepParser);
+      } catch (final ParseException eparse) {
         throw new RuntimeException("Failed to parse rate for [" + dp.getId() + "] port: " + eparse.getMessage());
       }
     }
@@ -112,8 +112,8 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
     if (actor instanceof PiGraph) {
       for (final Delay d : ((PiGraph) actor).getDelays()) {
         try {
-          resolveExpression(d.getSizeExpression(), jepParser);
-        } catch (ParseException eparse) {
+          PiMMResolverVisitor.resolveExpression(d.getSizeExpression(), jepParser);
+        } catch (final ParseException eparse) {
           throw new RuntimeException("Failed to parse expression for delay [" + d.getName() + "]: " + eparse.getMessage());
         }
       }
@@ -138,7 +138,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
       Long.parseLong(expression.getExpressionString());
     } catch (final NumberFormatException e) {
       // Now, we deal with expression
-      long rate = parsePortExpression(actorParser, expression.getExpressionString());
+      final long rate = PiMMResolverVisitor.parsePortExpression(actorParser, expression.getExpressionString());
       expression.setExpressionString(Long.toString(rate));
     }
   }
@@ -151,18 +151,18 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
    *          the p
    */
   @Override
-  public Boolean caseParameter(Parameter p) {
+  public Boolean caseParameter(final Parameter p) {
     if (!p.isLocallyStatic()) {
       throw new RuntimeException("Parameter " + p.getName() + " is depends on a configuration actor. It is thus impossible to use the"
           + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF" + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
     }
-    if (!parameterValues.containsKey(p)) {
+    if (!this.parameterValues.containsKey(p)) {
       // Evaluate the expression wrt. the current values of the
       // parameters and set the result as new expression
       final Expression valueExpression = p.getValueExpression();
       final long value = ExpressionEvaluator.evaluate(valueExpression);
       valueExpression.setExpressionString(Long.toString(value));
-      parameterValues.put(p, value);
+      this.parameterValues.put(p, value);
     }
     return true;
   }
@@ -186,7 +186,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
       final String expressionString = valueExpression.getExpressionString();
       pExp.setExpressionString(expressionString);
       cii.setExpression(pExp);
-      parameterValues.put((Parameter) cii, Long.parseLong(expressionString));
+      this.parameterValues.put(cii, Long.parseLong(expressionString));
     } else {
       throw new UnsupportedOperationException("In a static PiMM graph, setter of an incomming dependency must be a parameter.");
     }
@@ -200,9 +200,9 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
     // We have to fetch the corresponding parameter port for normal actors
     for (final Parameter p : actor.getInputParameters()) {
       final Port lookupPort = actor.lookupConfigInputPortConnectedWithParameter(p);
-      portValues.put(lookupPort.getName(), parameterValues.get(p));
+      portValues.put(lookupPort.getName(), this.parameterValues.get(p));
     }
-    parseJEP(actor, portValues);
+    PiMMResolverVisitor.parseJEP(actor, portValues);
     return true;
   }
 
@@ -212,9 +212,9 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
     final LinkedHashMap<String, Long> portValues = new LinkedHashMap<>();
     // Data interface actors do not have parameter ports, thus expression is directly graph parameter
     for (final Parameter p : actor.getInputParameters()) {
-      portValues.put(p.getName(), parameterValues.get(p));
+      portValues.put(p.getName(), this.parameterValues.get(p));
     }
-    parseJEP(actor, portValues);
+    PiMMResolverVisitor.parseJEP(actor, portValues);
     return true;
   }
 
@@ -225,9 +225,9 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
     // Delay actors do not have parameter ports, they use the parameters of the linked delay
     // Thus, since delays do not have parameter ports either, the expression is directly the graph parameter
     for (final Parameter p : actor.getInputParameters()) {
-      portValues.put(p.getName(), parameterValues.get(p));
+      portValues.put(p.getName(), this.parameterValues.get(p));
     }
-    parseJEP(actor, portValues);
+    PiMMResolverVisitor.parseJEP(actor, portValues);
     return true;
   }
 
@@ -239,7 +239,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
     }
 
     // Finally, we derive parameter values that have not already been processed
-    computeDerivedParameterValues(graph, parameterValues);
+    PiMMResolverVisitor.computeDerivedParameterValues(graph, this.parameterValues);
 
     // We can now resolve data port rates for this graph
     for (final AbstractActor actor : graph.getOnlyActors()) {
@@ -253,9 +253,9 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
     // Port of a parameter may have a dependency to higher level parameter
     for (final Parameter p : graph.getInputParameters()) {
       final Port lookupPort = graph.lookupConfigInputPortConnectedWithParameter(p);
-      portValues.put(lookupPort.getName(), parameterValues.get(p));
+      portValues.put(lookupPort.getName(), this.parameterValues.get(p));
     }
-    parseJEP(graph, portValues);
+    PiMMResolverVisitor.parseJEP(graph, portValues);
 
     // Switch on child subgraphs
     for (final PiGraph g : graph.getChildrenGraphs()) {
