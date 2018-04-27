@@ -215,6 +215,15 @@ class PiGraph extends AbstractActor, Graph {
 	op Parameter lookupParameterGivenGraph(String parameterName , String graphName) {
 		return allParameters.findFirst[it.name == parameterName && (it.containingGraph as PiGraph).name == graphName]
 	}
+	
+    /*
+	* Lookup within all the data ports of the graph and return the one corresponding to the given interface actor.
+	* The dataport, null if it was not found (should not happen)
+	*/
+	op DataPort lookupDataPortFromInterface(InterfaceActor i) {
+		return allDataPorts.findFirst[it.name == i.name]
+	}
+	
 	op AbstractVertex lookupVertex(String vertexName) {
 		return (actors + parameters).findFirst[it.name == vertexName]
 	}
