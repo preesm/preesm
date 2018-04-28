@@ -58,6 +58,7 @@ import org.ietr.dftools.algorithm.model.PropertySource;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGInitVertex;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
@@ -246,11 +247,9 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
         final DAGVertex dagInitVertex = vertex;
 
+        // // Retrieve the corresponding EndVertex
         // Retrieve the corresponding EndVertex
-        final SDFInitVertex sdfInitVertex = (SDFInitVertex) vertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX);
-        final SDFEndVertex sdfEndVertex = (SDFEndVertex) sdfInitVertex.getEndReference();
-        final DAGVertex dagEndVertex = dag.getVertex(sdfEndVertex.getName());
-
+        final DAGVertex dagEndVertex = (DAGVertex) (vertex.getPropertyBean().getValue(DAGInitVertex.END_REFERENCE));
         // Create the Head Memory Object
         // Get the typeSize
         MemoryExclusionVertex headMemoryNode;
@@ -327,7 +326,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
         // Create the Memory Object for the remaining of the FIFO (if
         // any)
-        final int fifoDepth = sdfInitVertex.getInitSize();
+        final int fifoDepth = (Integer) dagInitVertex.getPropertyBean().getValue(SDFInitVertex.INIT_SIZE);
         if (fifoDepth > (headMemoryNode.getWeight() / typeSize)) {
           final MemoryExclusionVertex fifoMemoryNode = new MemoryExclusionVertex("FIFO_Body_" + dagEndVertex.getName(), dagInitVertex.getName(),
               (fifoDepth * typeSize) - headMemoryNode.getWeight());
@@ -481,7 +480,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       // 2. Working Memory specific Processing
       // If the current vertex has some working memory, create the
       // associated MemoryExclusionGraphVertex
-      final Integer wMem = (Integer) vertexDAG.getCorrespondingSDFVertex().getPropertyBean().getValue("working_memory");
+      final Integer wMem = (Integer) vertexDAG.getPropertyBean().getValue("working_memory");
       if (wMem != null) {
         final MemoryExclusionVertex workingMemoryNode = new MemoryExclusionVertex(vertexDAG.getName(), vertexDAG.getName(), wMem);
         workingMemoryNode.setVertex(vertexDAG);
