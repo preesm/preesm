@@ -3,6 +3,7 @@
  */
 package org.ietr.preesm.pimm.algorithm.helper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -51,16 +52,18 @@ public class TopologyBasedBRV extends PiBRV {
       // The graph is consistent
       // We just have to update the BRV
       if (listFifo.isEmpty()) {
-        this.graphBRV.put(subgraph.get(0), 1);
+        this.graphBRV.put(subgraph.get(0), (long) 1);
       } else {
         final double[][] topologyMatrix = getTopologyMatrix(listFifo, subgraph);
-        final int rank = LinearAlgebra.rank(topologyMatrix);
+        final long rank = LinearAlgebra.rank(topologyMatrix);
         if (rank != (subgraph.size() - 1)) {
-          throw new PiMMHelperException("Graph not consitent. rank: " + Integer.toString(rank));
+          throw new PiMMHelperException("Graph not consitent. rank: " + Long.toString(rank) + ", expected: " + Long.toString(subgraph.size() - 1));
         }
         // Compute BRV
-        final Vector<Rational> vrb = TopologyBasedBRV.computeRationnalNullSpace(topologyMatrix);
-        final List<Integer> result = Rational.toNatural(new Vector<>(vrb));
+        final ArrayList<Rational> vrb = TopologyBasedBRV.computeRationnalNullSpace(topologyMatrix);
+        // final List<Long> result = Rational.toNatural(new Vector<>(vrb))
+        final List<Long> result = new ArrayList<>();
+        Rational.toNatural(new Vector<>(vrb)).forEach(rv -> result.add((long) rv));
         this.graphBRV.putAll(TopologyBasedBRV.zipToMap(subgraph, result));
       }
 
@@ -72,7 +75,6 @@ public class TopologyBasedBRV extends PiBRV {
       topologyBRV.execute();
       this.graphBRV.putAll(topologyBRV.getBRV());
     }
-    // WorkflowLogger.getLogger().log(Level.INFO, "Graph [" + this.piHandler.getReferenceGraph().getName() + "]consistent");
     return true;
   }
 
@@ -81,13 +83,11 @@ public class TopologyBasedBRV extends PiBRV {
     for (final Fifo fifo : listFifo) {
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
-      // int prod = (int) (ExpressionEvaluator.evaluate(fifo.getSourcePort().getPortRateExpression()));
-      // int cons = (int) (ExpressionEvaluator.evaluate(fifo.getTargetPort().getPortRateExpression()));
-      final int prod = Integer.parseInt(fifo.getSourcePort().getPortRateExpression().getExpressionString());
-      final int cons = Integer.parseInt(fifo.getTargetPort().getPortRateExpression().getExpressionString());
+      final long prod = Long.parseLong(fifo.getSourcePort().getPortRateExpression().getExpressionString());
+      final long cons = Long.parseLong(fifo.getTargetPort().getPortRateExpression().getExpressionString());
       if ((prod < 0) || (cons < 0)) {
-        final String prodString = "Prod: " + Integer.toString(prod) + "\n";
-        final String consString = "Cons: " + Integer.toString(cons) + "\n";
+        final String prodString = "Prod: " + Long.toString(prod) + "\n";
+        final String consString = "Cons: " + Long.toString(cons) + "\n";
         final String errorString = "Bad production / consumption rates\n";
         throw new PiMMHelperException("Fifo [" + fifo.getId() + "]\n" + prodString + consString + errorString);
       }
@@ -115,8 +115,8 @@ public class TopologyBasedBRV extends PiBRV {
    *          the matrix
    * @return the vector
    */
-  private static Vector<Rational> computeRationnalNullSpace(final double[][] matrix) {
-    final Vector<Rational> vrb = new Vector<>();
+  private static ArrayList<Rational> computeRationnalNullSpace(final double[][] matrix) {
+    final ArrayList<Rational> vrb = new ArrayList<>();
     final int li = matrix.length;
     int col = 1;
 

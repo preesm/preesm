@@ -119,7 +119,7 @@ public class SRVerticesLinker {
    *          the basic repetition vector map
    * @return repetition value of the actor, 1 if it is an interface actor
    */
-  private static long getRVorDefault(final AbstractActor actor, final Map<AbstractVertex, Integer> brv) {
+  private static long getRVorDefault(final AbstractActor actor, final Map<AbstractVertex, Long> brv) {
     if (actor instanceof InterfaceActor) {
       return 1;
     }
@@ -187,7 +187,7 @@ public class SRVerticesLinker {
    *
    * @return true if no error, false else
    */
-  public Boolean execute(final Map<AbstractVertex, Integer> brv, final Map<AbstractVertex, ArrayList<MapperDAGVertex>> pimm2dag) throws PiMMHelperException {
+  public Boolean execute(final Map<AbstractVertex, Long> brv, final Map<AbstractVertex, ArrayList<MapperDAGVertex>> pimm2dag) throws PiMMHelperException {
     // These connections are already dealt with
     if ((this.source instanceof DelayActor) || (this.sink instanceof DelayActor)) {
       return true;
@@ -238,9 +238,9 @@ public class SRVerticesLinker {
    */
   private boolean connectSources2Sink(final ArrayList<Pair<DAGVertex, Long>> sourceSet, final ArrayList<Pair<DAGVertex, Long>> sinkSet) {
     final ArrayList<Pair<DAGVertex, Long>> toRemove = new ArrayList<>();
-    final Pair<DAGVertex, Long> sink = sinkSet.get(0);
-    DAGVertex sinkVertex = sink.getLeft();
-    long cons = sink.getRight();
+    final Pair<DAGVertex, Long> sinkPair = sinkSet.get(0);
+    DAGVertex sinkVertex = sinkPair.getLeft();
+    long cons = sinkPair.getRight();
     // Check implode condition
     long prod = sourceSet.get(0).getRight();
     if (cons > prod) {
@@ -278,9 +278,9 @@ public class SRVerticesLinker {
    */
   private boolean connectSinks2Source(final ArrayList<Pair<DAGVertex, Long>> sinkSet, final ArrayList<Pair<DAGVertex, Long>> sourceSet) {
     final ArrayList<Pair<DAGVertex, Long>> toRemove = new ArrayList<>();
-    final Pair<DAGVertex, Long> source = sourceSet.get(0);
-    DAGVertex sourceVertex = source.getLeft();
-    long prod = source.getRight();
+    final Pair<DAGVertex, Long> sourcePair = sourceSet.get(0);
+    DAGVertex sourceVertex = sourcePair.getLeft();
+    long prod = sourcePair.getRight();
     long cons = sinkSet.get(0).getRight();
     // Check explode condition
     if (prod > cons) {
@@ -318,7 +318,7 @@ public class SRVerticesLinker {
    * @throws PiMMHelperException
    *           the exception
    */
-  private ArrayList<Pair<DAGVertex, Long>> getSourceSet(final Map<AbstractVertex, Integer> brv, final Map<AbstractVertex, ArrayList<MapperDAGVertex>> pimm2dag)
+  private ArrayList<Pair<DAGVertex, Long>> getSourceSet(final Map<AbstractVertex, Long> brv, final Map<AbstractVertex, ArrayList<MapperDAGVertex>> pimm2dag)
       throws PiMMHelperException {
     final ArrayList<Pair<DAGVertex, Long>> sourceSet = new ArrayList<>();
 
@@ -402,9 +402,7 @@ public class SRVerticesLinker {
     final Fifo correspondingFifo = correspondingPort.getFifo();
     final Set<DAGEdge> incomingEdges = vertex.incomingEdges();
     DAGEdge currentEdge = getInterfaceEdge(correspondingFifo, incomingEdges);
-    final DAGVertex sourceVertex = currentEdge.getSource();
-    // this.dag.removeEdge(currentEdge);
-    return sourceVertex;
+    return currentEdge.getSource();
   }
 
   /**
@@ -459,7 +457,7 @@ public class SRVerticesLinker {
    * @throws PiMMHelperException
    *           the exception
    */
-  private ArrayList<Pair<DAGVertex, Long>> getSinkSet(final Map<AbstractVertex, Integer> brv, final Map<AbstractVertex, ArrayList<MapperDAGVertex>> pimm2dag)
+  private ArrayList<Pair<DAGVertex, Long>> getSinkSet(final Map<AbstractVertex, Long> brv, final Map<AbstractVertex, ArrayList<MapperDAGVertex>> pimm2dag)
       throws PiMMHelperException {
     final ArrayList<Pair<DAGVertex, Long>> sinkSet = new ArrayList<>();
 
@@ -549,9 +547,7 @@ public class SRVerticesLinker {
     final Fifo correspondingFifo = correspondingPort.getFifo();
     final Set<DAGEdge> outgoingEdges = vertex.outgoingEdges();
     DAGEdge currentEdge = getInterfaceEdge(correspondingFifo, outgoingEdges);
-    final DAGVertex sinkVertex = currentEdge.getTarget();
-    // this.dag.removeEdge(currentEdge);
-    return sinkVertex;
+    return currentEdge.getTarget();
   }
 
   /**
@@ -681,6 +677,7 @@ public class SRVerticesLinker {
   private DAGVertex createInitVertex(final String fixID, final MapperVertexFactory vertexFactory) {
     final DAGVertex initVertex = vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX);
     setVertexDefault(initVertex, fixID);
+    initVertex.getPropertyBean().setValue(DAGInitVertex.INIT_SIZE, this.delays);
     this.dag.addVertex(initVertex);
     return initVertex;
   }
@@ -718,70 +715,4 @@ public class SRVerticesLinker {
     vertex.setInfo(id);
     vertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
   }
-
-  // private class Pair<F, S> {
-  //
-  // // First element of the pair
-  // private F first;
-  // // Second element of the pair
-  // private S second;
-  //
-  // /**
-  // * Construct a pair from the parameters.
-  // *
-  // * @param a
-  // * First element.
-  // * @param b
-  // * Second element.
-  // */
-  // public Pair(F a, S b) {
-  // first = a;
-  // second = b;
-  // }
-  //
-  // /**
-  // * @return First element in the pair.
-  // */
-  // public F getFirst() {
-  // return first;
-  // }
-  //
-  // /**
-  // * @return Second element in the pair.
-  // */
-  // public S getSecond() {
-  // return second;
-  // }
-  //
-  // /**
-  // * Sets the first element
-  // *
-  // * @param a
-  // * First element.
-  // */
-  // public void setFirst(F a) {
-  // first = a;
-  // }
-  //
-  // /**
-  // * Sets the second element
-  // *
-  // * @param b
-  // * Second element.
-  // */
-  // public void setSecond(S b) {
-  // second = b;
-  // }
-  //
-  // /*
-  // * (non-Javadoc)
-  // *
-  // * @see java.lang.Object#toString()
-  // */
-  // @Override
-  // public String toString() {
-  // return "<" + first + ", " + second + ">";
-  // }
-  // }
-
 }

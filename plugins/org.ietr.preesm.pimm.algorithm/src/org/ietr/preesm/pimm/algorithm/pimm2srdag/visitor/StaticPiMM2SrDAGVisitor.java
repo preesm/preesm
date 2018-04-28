@@ -69,7 +69,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
   private final MapperVertexFactory vertexFactory;
 
   /** Basic repetition vector of the graph */
-  private final Map<AbstractVertex, Integer> brv;
+  private final Map<AbstractVertex, Long> brv;
 
   /** Counter for hierarchical actors indexes */
   private int hCounter;
@@ -97,7 +97,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
    * @param dag
    *          the dag
    */
-  public StaticPiMM2SrDAGVisitor(final MapperDAG dag, final Map<AbstractVertex, Integer> brv, final PreesmScenario scenario) {
+  public StaticPiMM2SrDAGVisitor(final MapperDAG dag, final Map<AbstractVertex, Long> brv, final PreesmScenario scenario) {
     this.result = dag;
     this.brv = brv;
     this.vertexFactory = MapperVertexFactory.getInstance();
@@ -394,7 +394,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     throw new UnsupportedOperationException();
   }
 
-  private void addVertex(final AbstractVertex actor, final Integer rv) {
+  private void addVertex(final AbstractVertex actor, final Long rv) {
     this.piActor2DAGVertex.put(actor, new ArrayList<>());
     for (int i = 0; i < rv; ++i) {
       this.aCounter = i;
@@ -421,7 +421,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
     // Add SR-Vertices
     for (final AbstractActor actor : graph.getActors()) {
-      int rv = 1;
+      Long rv = (long) 1;
       if (this.brv.containsKey(actor)) {
         rv = this.brv.get(actor);
       }

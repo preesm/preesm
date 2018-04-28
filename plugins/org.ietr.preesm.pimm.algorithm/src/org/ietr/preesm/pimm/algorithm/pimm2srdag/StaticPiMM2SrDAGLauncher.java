@@ -70,7 +70,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
   private final PiMMHandler piHandler;
 
   /** Map from Pi actors to their Repetition Vector value. */
-  protected Map<AbstractVertex, Integer> graphBRV = new LinkedHashMap<>();
+  protected Map<AbstractVertex, Long> graphBRV = new LinkedHashMap<>();
 
   /** Map of all parametersValues */
   protected Map<Parameter, Integer> parametersValues;
@@ -89,9 +89,10 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     this.piHandler = new PiMMHandler(graph);
   }
 
-  private static void printRV(final Map<AbstractVertex, Integer> graphBRV) {
-    for (final Map.Entry<AbstractVertex, Integer> rv : graphBRV.entrySet()) {
-      WorkflowLogger.getLogger().log(Level.INFO, rv.getKey().getVertexPath() + " x" + Integer.toString(rv.getValue()));
+  private static void printRV(final Map<AbstractVertex, Long> graphBRV) {
+    for (final Map.Entry<AbstractVertex, Long> rv : graphBRV.entrySet()) {
+      final String msg = rv.getKey().getVertexPath() + " x" + Long.toString(rv.getValue());
+      WorkflowLogger.getLogger().log(Level.INFO, msg);
     }
   }
 
@@ -137,7 +138,8 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     timer.start();
     visitor.doSwitch(this.graph);
     timer.stop();
-    WorkflowLogger.getLogger().log(Level.INFO, "Dag transformation performed in " + timer + "s.");
+    final String msg = "Dag transformation performed in " + timer + "s.";
+    WorkflowLogger.getLogger().log(Level.INFO, msg);
     return visitor.getResult();
   }
 
