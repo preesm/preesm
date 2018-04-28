@@ -122,6 +122,13 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     vertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
 
     vertex.setTime(new DAGDefaultVertexPropertyType(0));
+
+    for (final DataInputPort port : a.getDataInputPorts()) {
+      vertex.addSourceName(port.getName());
+    }
+    for (final DataOutputPort port : a.getDataOutputPorts()) {
+      vertex.addSinkName(port.getName());
+    }
   }
 
   /*

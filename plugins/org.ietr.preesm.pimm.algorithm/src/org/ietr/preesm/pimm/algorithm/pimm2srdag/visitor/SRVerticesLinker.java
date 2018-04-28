@@ -625,6 +625,8 @@ public class SRVerticesLinker {
     edge.setPropertyValue(SDFEdge.DATA_TYPE, this.fifo.getType());
     edge.setPropertyValue(SDFEdge.DATA_SIZE, this.dataSize);
     edge.setWeight(new DAGDefaultEdgePropertyType(weight));
+    edge.setSourceLabel(this.sourcePort.getName());
+    edge.setTargetLabel(this.sinkPort.getName());
     return edge;
   }
 
@@ -677,7 +679,7 @@ public class SRVerticesLinker {
   private DAGVertex createInitVertex(final String fixID, final MapperVertexFactory vertexFactory) {
     final DAGVertex initVertex = vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX);
     setVertexDefault(initVertex, fixID);
-    initVertex.getPropertyBean().setValue(DAGInitVertex.INIT_SIZE, this.delays);
+    initVertex.getPropertyBean().setValue(DAGInitVertex.INIT_SIZE, (int) this.delays);
     this.dag.addVertex(initVertex);
     return initVertex;
   }
@@ -696,6 +698,12 @@ public class SRVerticesLinker {
     final DAGVertex endVertex = vertexFactory.createVertex(DAGEndVertex.DAG_END_VERTEX);
     setVertexDefault(endVertex, fixID);
     this.dag.addVertex(endVertex);
+    // Test to see if there is an init actor
+    final DAGVertex initVertex = this.dag.getVertex(this.fifo.getId() + "_Init");
+    if (initVertex != null) {
+      initVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, endVertex);
+      endVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, initVertex);
+    }
     return endVertex;
   }
 
