@@ -13,6 +13,7 @@ import org.ietr.dftools.algorithm.model.dag.edag.DAGBroadcastVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGJoinVertex;
 import org.ietr.dftools.algorithm.model.dag.types.DAGDefaultVertexPropertyType;
+import org.ietr.dftools.algorithm.model.parameters.Argument;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
@@ -43,6 +44,7 @@ import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -166,10 +168,29 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     final Refinement piRefinement = actor.getRefinement();
     doSwitch(piRefinement);
     vertex.setRefinement(this.currentRefinement);
+    // Handle input parameters as instance arguments
+    setArguments(actor, vertex);
+
     // Add the vertex to the DAG
     this.result.addVertex(vertex);
     this.piActor2DAGVertex.get(actor).add(vertex);
     return true;
+  }
+
+  /**
+   * @param actor
+   * @param vertex
+   */
+  private void setArguments(final AbstractActor actor, final MapperDAGVertex vertex) {
+    for (final ConfigInputPort p : actor.getConfigInputPorts()) {
+      final ISetter setter = p.getIncomingDependency().getSetter();
+      if (setter instanceof Parameter) {
+        final Parameter param = (Parameter) setter;
+        final Argument arg = new Argument(p.getName());
+        arg.setValue((param.getExpression().getExpressionString()));
+        vertex.getArguments().addArgument(arg);
+      }
+    }
   }
 
   @Override
@@ -190,6 +211,8 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
         WorkflowLogger.getLogger().warning(msg);
       }
     }
+    // Handle input parameters as instance arguments
+    setArguments(actor, vertex);
     // Add the vertex to the DAG
     this.result.addVertex(vertex);
     this.piActor2DAGVertex.get(actor).add(vertex);
@@ -204,6 +227,8 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     if (actor.getDataOutputPorts().size() > 1) {
       WorkflowLogger.getLogger().warning("Warning: Join actors should have only one output.");
     }
+    // Handle input parameters as instance arguments
+    setArguments(actor, vertex);
     // Add the vertex to the DAG
     this.result.addVertex(vertex);
     this.piActor2DAGVertex.get(actor).add(vertex);
@@ -218,6 +243,8 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     if (actor.getDataInputPorts().size() > 1) {
       WorkflowLogger.getLogger().warning("Warning: Fork actors should have only one input.");
     }
+    // Handle input parameters as instance arguments
+    setArguments(actor, vertex);
     // Add the vertex to the DAG
     this.result.addVertex(vertex);
     this.piActor2DAGVertex.get(actor).add(vertex);
