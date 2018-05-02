@@ -209,13 +209,8 @@ public abstract class AbstractAbc implements IAbc {
     verticesToAssociate.add(vertex);
 
     if (SpecialVertexManager.isInit(vertex)) {
-<<<<<<< Updated upstream
-      final SDFEndVertex sdfEndVertex = (SDFEndVertex) ((SDFInitVertex) vertex.getCorrespondingSDFVertex()).getEndReference();
-      final MapperDAGVertex end = (MapperDAGVertex) this.implementation.getVertex(sdfEndVertex.getName());
-=======
       final String endReferenceName = (String) vertex.getPropertyBean().getValue(DAGInitVertex.END_REFERENCE);
       final MapperDAGVertex end = (MapperDAGVertex) (this.dag.getVertex(endReferenceName));
->>>>>>> Stashed changes
       verticesToAssociate.add(end);
     }
 
