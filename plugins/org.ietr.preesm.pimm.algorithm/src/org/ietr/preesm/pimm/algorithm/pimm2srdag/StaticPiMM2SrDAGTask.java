@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.visitors.VisitorOutput;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
@@ -21,7 +20,6 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.mapper.model.MapperDAG;
-import org.ietr.preesm.mapper.model.MapperEdgeFactory;
 import org.ietr.preesm.pimm.algorithm.pimm2srdag.StaticPiMM2SrDAGLauncher.StaticPiMM2SrDAGException;
 
 /**
@@ -54,7 +52,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
 
     final StaticPiMM2SrDAGLauncher launcher = new StaticPiMM2SrDAGLauncher(scenario, graph);
 
-    MapperDAG result = new MapperDAG(new MapperEdgeFactory(), new SDFGraph());
+    MapperDAG result = null;
     final Logger logger = WorkflowLogger.getLogger();
     VisitorOutput.setLogger(logger);
     try {
@@ -71,16 +69,16 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
       }
       // Convert the PiGraph to the Single-Rate Directed Acyclic Graph
       result = launcher.launch(method);
+      SdfToDagConverter.addInitialProperties(result, architecture, scenario);
     } catch (final StaticPiMM2SrDAGException e) {
       throw new WorkflowException(e.getMessage());
     }
 
-    SdfToDagConverter.addInitialProperties(result, architecture, scenario);
     WorkflowLogger.getLogger().log(Level.INFO, "mapping a DAG with " + result.vertexSet().size() + " vertices and " + result.edgeSet().size() + " edges");
 
     final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, result);
-    return output;// new LinkedHashMap<>();
+    return output;
   }
 
   /*
