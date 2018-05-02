@@ -79,6 +79,7 @@ import org.ietr.preesm.utils.files.ContainersManager
 import org.ietr.preesm.utils.files.FilesManager
 
 import static extension org.ietr.preesm.memory.script.Range.*
+import org.ietr.dftools.algorithm.model.AbstractEdge
 
 enum CheckPolicy {
 	NONE,
@@ -372,7 +373,7 @@ class ScriptRunner {
 			if (dagVertex.kind !== null) {
 				switch (dagVertex.kind) {
 					case DAGVertex.DAG_VERTEX: {
-						val pathString = sdfVertex.propertyBean.getValue(SDFVertex.MEMORY_SCRIPT, String)
+						val pathString = dagVertex.propertyBean.getValue(SDFVertex.MEMORY_SCRIPT, String)
 						if (pathString !== null) {
 
 							// Retrieve the script path as a relative path to the
@@ -384,7 +385,7 @@ class ScriptRunner {
 								scriptedVertices.put(dagVertex, scriptFile)
 								scriptFiles.put(pathString, scriptFile)
 							} else {
-								val message = "Memory script of vertex " + sdfVertex.getName() + " is invalid: \"" +pathString + "\". Change it in the graphml editor."
+								val message = "Memory script of vertex " + dagVertex.getName() + " is invalid: \"" +pathString + "\". Change it in the graphml editor."
 								logger.log(Level.WARNING, message)
 							}
 						}
@@ -494,7 +495,8 @@ class ScriptRunner {
 
 							// Retrieve the corresponding buffer.
 							scriptResults.get(dagVertex).key.filter [ buffer |
-								buffer.sdfEdge.source.name == edge.source.name
+								buffer.dagEdge.containingEdge.source.name == edge.source.name
+//								buffer.dagEdge.source.name == edge.source.name
 							].forEach [
 								it.enlargeForAlignment
 							]
@@ -1501,10 +1503,10 @@ class ScriptRunner {
 									bufferCandidates.addAll(pair.key)
 									bufferCandidates.addAll(pair.value)
 								}
-								for (sdfEdge : dagEdge.aggregate) {
+								for (aggEdge : dagEdge.aggregate) {
 
 									// Find the 2 buffers corresponding to this sdfEdge
-									var buffers = bufferCandidates.filter[it.sdfEdge == sdfEdge]
+									var buffers = bufferCandidates.filter[it.dagEdge == aggEdge]
 									if (buffers.size == 2) {
 										validBuffers = true
 
@@ -1593,39 +1595,48 @@ class ScriptRunner {
 		classManager.cacheClassInfo("Buffer", Buffer);
 
 		// Retrieve the corresponding sdf vertex
-		val sdfVertex = dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex)
+//		val sdfVertex = dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex)
 
 		// Create the vertex parameter list
 		val Map<String, Integer> parameters = newLinkedHashMap
-		val arguments = sdfVertex.propertyBean.getValue(SDFAbstractVertex.ARGUMENTS) as Map<String, Argument>
+		val arguments = dagVertex.arguments as Map<String, Argument>
 		if(arguments !== null) arguments.entrySet.forEach[parameters.put(it.key, it.value.intValue)]
 
 		parameters.put("alignment", alignment)
 
-		// Create the input/output lists
-		val inputs = sdfVertex.incomingEdges.map[
+		// Create the input/output lists	
+		// @farresti: I use toSet instead of toList as it retrieves the unique reference of the edge	
+		val incomingEdges = dagVertex.incomingEdges.map[it.aggregate.map[edge | (edge as DAGEdge)]].flatten.toSet
+		val inputs = incomingEdges.map[
+			val dataType = it.propertyBean.getValue(SDFEdge::DATA_TYPE)
 			// An input buffer is backward mergeable if it is read_only OR if it is unused
-			val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_READ_ONLY) || ((it.
-				targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED))
+			val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_READ_ONLY) || ((
+				it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED))
+			val dataSize = dataTypes.get(dataType.toString).size
+			// Weight is already dataSize * (Cons || prod)
+			val nbTokens = it.weight.intValue// / dataSize
 			try {
-				new Buffer(it, dagVertex, it.targetLabel, it.cons.intValue, dataTypes.get(it.dataType.toString).size,
-					isMergeable)
+				new Buffer(it, dagVertex, it.targetLabel, nbTokens, dataSize, isMergeable)
 			} catch (NullPointerException exc) {
 				throw new WorkflowException(
-					'''SDFEdge «it.source.name»_«it.sourceLabel»->«it.target.name»_«it.targetLabel» has unknows type «it.
+					'''SDFEdge «it.source.name»_«it.sourceLabel»->«it.target.name»_«it.targetLabel» has unknows type «
 						dataType.toString». Add the corresponding data type to the scenario.''', exc)
 			}].toList
-
-		val outputs = sdfVertex.outgoingEdges.map[
-			// An output buffer is mergeable if it is unused OR if its target port is read_only
-			val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_READ_ONLY) || ((it.
-				targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED))
+			
+		val outgoingEdges = dagVertex.outgoingEdges.map[it.aggregate.map[edge | (edge as DAGEdge)]].flatten.toSet
+		val outputs = outgoingEdges.map[
+			val dataType = it.propertyBean.getValue(SDFEdge::DATA_TYPE)
+			// An input buffer is backward mergeable if it is read_only OR if it is unused
+			val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_READ_ONLY) || ((
+				it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED))
+			val dataSize = dataTypes.get(dataType.toString).size
+			// Weight is already dataSize * (Cons || prod)
+			val nbTokens = it.weight.intValue// / dataSize
 			try {
-				new Buffer(it, dagVertex, it.sourceLabel, it.prod.intValue, dataTypes.get(it.dataType.toString).size,
-					isMergeable)
+				new Buffer(it, dagVertex, it.sourceLabel, nbTokens, dataSize, isMergeable)
 			} catch (NullPointerException exc) {
 				throw new WorkflowException(
-					'''SDFEdge «it.source.name»_«it.sourceLabel»->«it.target.name»_«it.targetLabel» has unknows type «it.
+					'''SDFEdge «it.source.name»_«it.sourceLabel»->«it.target.name»_«it.targetLabel» has unknows type «
 						dataType.toString». Add the corresponding data type to the scenario.''', exc)
 			}].toList
 
@@ -1661,14 +1672,14 @@ class ScriptRunner {
 			// Logger is used to display messages in the console
 			val logger = WorkflowLogger.getLogger
 			var message = error.rawMessage + "\n" + error.cause
-			logger.log(Level.WARNING, "Parse error in " + sdfVertex.name + " memory script:\n" + message)
+			logger.log(Level.WARNING, "Parse error in " + dagVertex.name + " memory script:\n" + message)
 		} catch (EvalError error) {
 
 			// Logger is used to display messages in the console
 			val logger = WorkflowLogger.getLogger
 			var message = error.rawMessage + "\n" + error.cause
 			logger.log(Level.WARNING,
-				"Evaluation error in " + sdfVertex.name + " memory script:\n[Line " + error.errorLineNumber + "] " +
+				"Evaluation error in " + dagVertex.name + " memory script:\n[Line " + error.errorLineNumber + "] " +
 					message)
 		} catch (IOException exception) {
 			val logger = WorkflowLogger.getLogger
@@ -1688,7 +1699,8 @@ class ScriptRunner {
 			for (buffer : buffers) {
 
 				// Get the Mobj
-				val mObjCopy = new MemoryExclusionVertex(buffer.sdfEdge.source.name, buffer.sdfEdge.target.name, 0)
+				val mObjCopy = new MemoryExclusionVertex(buffer.dagEdge.containingEdge.source.name, buffer.dagEdge.containingEdge.target.name, 0)
+//				val mObjCopy = new MemoryExclusionVertex(buffer.dagEdge.source.name, buffer.dagEdge.target.name, 0)
 				val mObj = meg.getVertex(mObjCopy)
 				if (mObj === null) {
 					throw new WorkflowException(
@@ -1851,16 +1863,16 @@ class ScriptRunner {
 
 					// Find unused write_only edges
 					val aggregate = mObj.edge.aggregate
-					aggregate.forall [ sdfEdge |
-						((sdfEdge as SDFEdge).getPropertyStringValue(SDFEdge::SOURCE_PORT_MODIFIER) ?: "").
-							contains(SDFEdge::MODIFIER_WRITE_ONLY) && ((sdfEdge as SDFEdge).
+					aggregate.forall [ dagEdge |
+						((dagEdge as DAGEdge).getPropertyStringValue(SDFEdge::SOURCE_PORT_MODIFIER) ?: "").
+							contains(SDFEdge::MODIFIER_WRITE_ONLY) && ((dagEdge as DAGEdge).
 							getPropertyStringValue(SDFEdge::TARGET_PORT_MODIFIER) ?: "").contains(SDFEdge::MODIFIER_UNUSED)
 					]
 				} else
 					false
 			].filter [ mObj |
 				// keep only those that are not host. (matched ones have already been removed from the MEG)
-				val correspondingBuffer = bufferGroups.flatten.findFirst[mObj.edge.aggregate.contains(it.sdfEdge)]
+				val correspondingBuffer = bufferGroups.flatten.findFirst[mObj.edge.aggregate.contains(it.dagEdge)]
 				if (correspondingBuffer !== null) {
 					!correspondingBuffer.host
 				} else
