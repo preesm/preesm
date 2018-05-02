@@ -78,13 +78,10 @@ import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGInitVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGJoinVertex;
 import org.ietr.dftools.algorithm.model.parameters.Argument;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
@@ -1425,9 +1422,6 @@ public class CodegenModelGenerator {
    *           the codegen exception
    */
   protected void generateSpecialCall(final CoreBlock operatorBlock, final DAGVertex dagVertex) {
-    // get the corresponding SDFVertex
-    final SDFAbstractVertex sdfVertex = dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex.class);
-
     final SpecialCall f = CodegenFactory.eINSTANCE.createSpecialCall();
     f.setName(dagVertex.getName());
     final String vertexType = dagVertex.getPropertyStringValue(AbstractVertex.KIND);
@@ -1439,18 +1433,18 @@ public class CodegenModelGenerator {
         f.setType(SpecialType.JOIN);
         break;
       case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
-        if (sdfVertex == null) {
-          f.setType(SpecialType.BROADCAST);
-          break;
-        } else if (sdfVertex instanceof SDFRoundBufferVertex) {
-          f.setType(SpecialType.ROUND_BUFFER);
-          break;
-        } else if (sdfVertex instanceof SDFBroadcastVertex) {
-          f.setType(SpecialType.BROADCAST);
-          break;
-        } else {
-          throw new CodegenException("DAGVertex " + dagVertex + " has an unknown type: " + vertexType);
+        final String specialKind = (String) dagVertex.getPropertyBean().getValue(DAGBroadcastVertex.SPECIAL_TYPE);
+        if (specialKind == null) {
+          throw new CodegenException("Broadcast DAGVertex " + dagVertex + " has null special type");
         }
+        if (specialKind.equals(DAGBroadcastVertex.SPECIAL_TYPE_BROADCAST)) {
+          f.setType(SpecialType.BROADCAST);
+        } else if (specialKind.equals(DAGBroadcastVertex.SPECIAL_TYPE_ROUNDBUFFER)) {
+          f.setType(SpecialType.ROUND_BUFFER);
+        } else {
+          throw new CodegenException("Broadcast DAGVertex " + dagVertex + " has an unknown special type: " + specialKind);
+        }
+        break;
       default:
         throw new CodegenException("DAGVertex " + dagVertex + " has an unknown type: " + vertexType);
     }
