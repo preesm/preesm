@@ -41,6 +41,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.eclipse.xtext.util.Pair;
 import org.ietr.dftools.algorithm.model.AbstractEdge;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
@@ -48,6 +49,7 @@ import org.ietr.dftools.algorithm.model.PropertyBean;
 import org.ietr.dftools.algorithm.model.PropertyFactory;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
@@ -217,7 +219,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     this.size = vertexWeight;
 
     if (vertexWeight == 0) {
-      System.out.println("Probable ERROR: Vertex weight is 0");
+      WorkflowLogger.getLogger().log(Level.WARNING, "Probable ERROR: Vertex weight is 0");
     }
 
     this.edge = inputEdge;
@@ -301,7 +303,10 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   @Override
   public boolean equals(final Object o) {
     if (o instanceof MemoryExclusionVertex) {
-      return (this.source.equals(((MemoryExclusionVertex) o).source) && this.sink.equals(((MemoryExclusionVertex) o).sink));
+      // final boolean sameEdge = this.edge == ((MemoryExclusionVertex) o).edge
+      final boolean sameSource = this.source.equals(((MemoryExclusionVertex) o).source);
+      final boolean sameSink = this.sink.equals(((MemoryExclusionVertex) o).sink);
+      return sameSink && sameSource;// && sameEdge
     } else {
       return false;
     }
