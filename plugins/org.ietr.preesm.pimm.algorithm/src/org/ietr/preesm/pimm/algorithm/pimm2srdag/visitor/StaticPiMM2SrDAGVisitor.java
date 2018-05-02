@@ -196,6 +196,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseBroadcastActor(final BroadcastActor actor) {
     final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
+    vertex.getPropertyBean().setValue(DAGBroadcastVertex.SPECIAL_TYPE, DAGBroadcastVertex.SPECIAL_TYPE_BROADCAST);
 
     pimm2srdag(actor, vertex);
     // Check the good use of the broadcast
