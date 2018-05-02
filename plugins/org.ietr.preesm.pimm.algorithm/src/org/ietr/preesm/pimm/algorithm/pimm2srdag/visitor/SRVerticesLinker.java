@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
+import org.ietr.dftools.algorithm.model.AbstractEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
+import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGBroadcastVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGEndVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex;
@@ -44,10 +46,10 @@ import org.ietr.preesm.pimm.algorithm.helper.PiMMHelperException;
 public class SRVerticesLinker {
 
   /** Property name for property JOIN_VERTEX. */
-  public static final String JOIN_VERTEX = "_Join_";
+  public static final String JOIN_VERTEX = "implode_";
 
   /** Property name for property FORK_VERTEX. */
-  public static final String FORK_VERTEX = "_Fork_";
+  public static final String FORK_VERTEX = "explode_";
 
   /** Property name for property PIMM_FIFO. */
   public static final String PIMM_FIFO = "pimm_fifo";
@@ -66,7 +68,8 @@ public class SRVerticesLinker {
   private final DataInputPort sinkPort;
 
   // The fifo
-  private final Fifo fifo;
+  private final Fifo   fifo;
+  private final String fifoName;
 
   // The fifo data size
   private final int dataSize;
@@ -150,6 +153,7 @@ public class SRVerticesLinker {
     this.forkIDCounter = 0;
     this.sourceModifier = getAnnotationFromPort(this.sourcePort);
     this.targetModifier = getAnnotationFromPort(this.sinkPort);
+    this.fifoName = this.fifo.getId().replace(".", "_").replace("-", "_");
   }
 
   /**
@@ -244,7 +248,7 @@ public class SRVerticesLinker {
     // Check implode condition
     long prod = sourceSet.get(0).getRight();
     if (cons > prod) {
-      final DAGVertex join = createJoinVertex(this.fifo.getId() + SRVerticesLinker.JOIN_VERTEX, MapperVertexFactory.getInstance());
+      final DAGVertex join = createJoinVertex(SRVerticesLinker.JOIN_VERTEX + this.fifoName, MapperVertexFactory.getInstance());
       createEdge(join, sinkVertex, Long.toString(cons));
       sinkVertex = join;
     }
@@ -284,7 +288,7 @@ public class SRVerticesLinker {
     long cons = sinkSet.get(0).getRight();
     // Check explode condition
     if (prod > cons) {
-      final DAGVertex fork = createForkVertex(this.fifo.getId() + SRVerticesLinker.FORK_VERTEX, MapperVertexFactory.getInstance());
+      final DAGVertex fork = createForkVertex(SRVerticesLinker.FORK_VERTEX + this.fifoName, MapperVertexFactory.getInstance());
       createEdge(sourceVertex, fork, Long.toString(prod));
       sourceVertex = fork;
     }
@@ -323,7 +327,7 @@ public class SRVerticesLinker {
     final ArrayList<Pair<DAGVertex, Long>> sourceSet = new ArrayList<>();
 
     final MapperVertexFactory vertexFactory = MapperVertexFactory.getInstance();
-    final String fifoID = this.fifo.getId();
+    final String fifoID = this.fifoName;
     // Port expressions
     final Expression sourceExpression = this.sourcePort.getPortRateExpression();
     final long sourceProduction = Long.parseLong(sourceExpression.getExpressionString());
@@ -434,7 +438,7 @@ public class SRVerticesLinker {
     if (setterRV > 1) {
       // Add a join vertex for the first iteration of the sink actor
       // Connect all instances of the setter actor to the join actor
-      final DAGVertex joinVertex = createJoinVertex(this.fifo.getId() + SRVerticesLinker.JOIN_VERTEX, vertexFactory);
+      final DAGVertex joinVertex = createJoinVertex(SRVerticesLinker.JOIN_VERTEX + this.fifoName, vertexFactory);
       for (int i = 0; i < setterRV; ++i) {
         final DAGVertex currentSetterActor = setterActorList.get(i);
         final String rateExpression = delay.getSetterPort().getPortRateExpression().getExpressionString();
@@ -462,7 +466,7 @@ public class SRVerticesLinker {
     final ArrayList<Pair<DAGVertex, Long>> sinkSet = new ArrayList<>();
 
     final MapperVertexFactory vertexFactory = MapperVertexFactory.getInstance();
-    final String fifoID = this.fifo.getId();
+    final String fifoID = this.fifoName;
 
     // Port expressions
     final Expression sinkExpression = this.sinkPort.getPortRateExpression();
@@ -560,13 +564,16 @@ public class SRVerticesLinker {
    * @return the edge connected to the hierarchical graph to which the interface belongs
    * @throws PiMMHelperException
    */
+  @SuppressWarnings("unchecked")
   private DAGEdge getInterfaceEdge(final Fifo correspondingFifo, final Set<DAGEdge> setOfEdges) throws PiMMHelperException {
     DAGEdge currentEdge = null;
-    final String id = correspondingFifo.getId();
+    final String id = correspondingFifo.getId().replace(".", "_").replace("-", "_");
     for (final DAGEdge edge : setOfEdges) {
-      final String edgeFifoID = edge.getPropertyStringValue(SRVerticesLinker.PIMM_FIFO);
-      if (edgeFifoID.equals(id)) {
-        currentEdge = edge;
+      for (final AbstractEdge<DirectedAcyclicGraph, DAGVertex> aggEdge : edge.getAggregate()) {
+        final String edgeFifoID = ((DAGEdge) aggEdge).getPropertyStringValue(SRVerticesLinker.PIMM_FIFO);
+        if (edgeFifoID.equals(id)) {
+          currentEdge = edge;
+        }
       }
     }
     if (currentEdge == null) {
@@ -591,7 +598,7 @@ public class SRVerticesLinker {
     if (getterRV > 1) {
       // Add a fork vertex for the last iteration of the source actor
       // Connect all instances of the getter actor to the fork actor
-      final DAGVertex forkVertex = createForkVertex(this.fifo.getId() + SRVerticesLinker.FORK_VERTEX, vertexFactory);
+      final DAGVertex forkVertex = createForkVertex(SRVerticesLinker.FORK_VERTEX + this.fifoName, vertexFactory);
       for (int i = 0; i < getterRV; ++i) {
         final DAGVertex currentGetterActor = getterActorList.get(i);
         final String rateExpression = delay.getGetterPort().getPortRateExpression().getExpressionString();
@@ -617,16 +624,29 @@ public class SRVerticesLinker {
    * @return the created edge
    */
   private DAGEdge createEdge(final DAGVertex source, final DAGVertex target, final String rateExpression) {
-    final DAGEdge edge = this.dag.addEdge(source, target);
+    final DAGEdge edge;
     final int weight = this.dataSize * Integer.parseInt(rateExpression);
-    edge.setPropertyValue(SDFEdge.SOURCE_PORT_MODIFIER, new SDFStringEdgePropertyType(this.sourceModifier));
-    edge.setPropertyValue(SDFEdge.TARGET_PORT_MODIFIER, new SDFStringEdgePropertyType(this.targetModifier));
-    edge.setPropertyValue(SRVerticesLinker.PIMM_FIFO, new SDFStringEdgePropertyType(this.fifo.getId()));
-    edge.setPropertyValue(SDFEdge.DATA_TYPE, this.fifo.getType());
-    edge.setPropertyValue(SDFEdge.DATA_SIZE, this.dataSize);
-    edge.setWeight(new DAGDefaultEdgePropertyType(weight));
-    edge.setSourceLabel(this.sourcePort.getName());
-    edge.setTargetLabel(this.sinkPort.getName());
+    if (this.dag.containsEdge(source, target)) {
+      edge = this.dag.getEdge(source, target);
+      edge.setWeight(new DAGDefaultEdgePropertyType(weight + edge.getWeight().intValue()));
+    } else {
+      edge = this.dag.addEdge(source, target);
+      edge.setWeight(new DAGDefaultEdgePropertyType(weight));
+    }
+
+    final DAGEdge newEdge = new DAGEdge();
+    newEdge.setSourcePortModifier(new SDFStringEdgePropertyType(this.sourceModifier));
+    newEdge.setTargetPortModifier(new SDFStringEdgePropertyType(this.targetModifier));
+    newEdge.setPropertyValue(SRVerticesLinker.PIMM_FIFO, new SDFStringEdgePropertyType(this.fifoName));
+    newEdge.setPropertyValue(SDFEdge.DATA_TYPE, this.fifo.getType());
+    newEdge.setPropertyValue(SDFEdge.DATA_SIZE, this.dataSize);
+    newEdge.setWeight(new DAGDefaultEdgePropertyType(weight / this.dataSize));
+    newEdge.setSourceLabel(this.sourcePort.getName());
+    newEdge.setTargetLabel(this.sinkPort.getName());
+    newEdge.setPropertyValue(SDFEdge.BASE, this.dag);
+    newEdge.setContainingEdge(edge);
+
+    edge.getAggregate().add(newEdge);
     return edge;
   }
 
@@ -699,7 +719,7 @@ public class SRVerticesLinker {
     setVertexDefault(endVertex, fixID);
     this.dag.addVertex(endVertex);
     // Test to see if there is an init actor
-    final DAGVertex initVertex = this.dag.getVertex(this.fifo.getId() + "_Init");
+    final DAGVertex initVertex = this.dag.getVertex(this.fifoName + "_Init");
     if (initVertex != null) {
       initVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, endVertex);
       endVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, initVertex);
