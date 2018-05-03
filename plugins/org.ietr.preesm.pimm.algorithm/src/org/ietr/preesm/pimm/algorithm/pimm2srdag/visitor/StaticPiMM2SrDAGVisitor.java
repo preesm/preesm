@@ -74,31 +74,20 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
   /** Basic repetition vector of the graph */
   private final Map<AbstractVertex, Long> brv;
 
-  /** Counter for hierarchical actors indexes */
-  private int hCounter;
-
-  /** Counter for actors indexes */
-  private int aCounter;
-
-  /** The pi vx 2 SDF vx. */
-  // Map from original PiMM vertices to generated DAG vertices
-  private final Map<AbstractVertex, ArrayList<MapperDAGVertex>> piActor2DAGVertex = new LinkedHashMap<>();
+  /** Map from original PiMM vertices to generated DAG vertices */
+  private final Map<AbstractVertex, ArrayList<MapperDAGVertex>> pimmVertex2DAGVertex = new LinkedHashMap<>();
 
   /** The current SDF refinement. */
-  // Current SDF Refinement
   protected IRefinement currentRefinement;
 
   /** The scenario. */
   private final PreesmScenario scenario;
 
-  /** Current Graph */
-  PiGraph graph;
-
-  /** Top Graph name */
-  Integer topGraphNameLength;
-
   /** Current Graph name */
   String graphName;
+
+  /** Current actor name */
+  String currentActorName;
 
   /**
    * Instantiates a new abstract pi MM 2 SR-DAG visitor.
@@ -111,59 +100,35 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     this.brv = brv;
     this.vertexFactory = MapperVertexFactory.getInstance();
     this.scenario = scenario;
+    this.graphName = "";
   }
 
   /**
    * Convert a PiMM AbstractActor to a DAGVertex.
    *
-   * @param a
+   * @param actor
    *          the AbstractActor
    * @return the DAGVertex
    */
-  private void pimm2srdag(final AbstractActor a, final DAGVertex vertex) {
+  private void setDAGVertexPropertiesFromPiMM(final AbstractActor actor, final DAGVertex vertex) {
     // Handle vertex's name
-    vertex.setName(getProperName(a) + "_" + Integer.toString(this.aCounter));
+    vertex.setName(this.currentActorName);
     // Handle vertex's path inside the graph hierarchy
-    vertex.setInfo(a.getVertexPath());
+    vertex.setInfo(actor.getVertexPath());
     // Handle ID
-    vertex.setId(a.getName());
+    vertex.setId(actor.getName());
     // Set Repetition vector to 1 since it is a single rate vertex
     vertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
-
+    // Set default time property
     vertex.setTime(new DAGDefaultVertexPropertyType(0));
-
-    for (final DataInputPort port : a.getDataInputPorts()) {
+    // Adds the list of source ports
+    for (final DataInputPort port : actor.getDataInputPorts()) {
       vertex.addSourceName(port.getName());
     }
-    for (final DataOutputPort port : a.getDataOutputPorts()) {
+    // Adds the list of sink ports
+    for (final DataOutputPort port : actor.getDataOutputPorts()) {
       vertex.addSinkName(port.getName());
     }
-  }
-
-  /**
-   * Return the full path name of the actor without "/" and without top graph name.
-   * 
-   * @param actor
-   *          the actor
-   * @return the full path name of the actor
-   */
-  private String getProperName(final AbstractActor actor) {
-    final boolean isTopGraph = this.graph.getContainingPiGraph() == null;
-    if (isTopGraph) {
-      return actor.getName();
-    } else {
-      return this.graphName + "_" + actor.getName();
-    }
-  }
-
-  private String getGraphName(final String fixGraphName, final PiGraph graph) {
-    final String name;
-    if (fixGraphName.isEmpty()) {
-      name = graph.getName();
-    } else {
-      name = fixGraphName + "_" + graph.getName();
-    }
-    return name + "_" + Integer.toString(hCounter);
   }
 
   /*
@@ -175,10 +140,11 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
   public Boolean caseAbstractActor(final AbstractActor actor) {
     final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX);
     // Set default properties from the PiMM actor
-    pimm2srdag(actor, vertex);
+    setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Add the vertex to the DAG
     this.result.addVertex(vertex);
-    this.piActor2DAGVertex.get(actor).add(vertex);
+    // Update the map of PiMM actor to DAG Vertices
+    this.pimmVertex2DAGVertex.get(actor).add(vertex);
     return true;
   }
 
@@ -191,7 +157,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
   public Boolean caseActor(final Actor actor) {
     final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX);
     // Set default properties from the PiMM actor
-    pimm2srdag(actor, vertex);
+    setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Handle path to memory script of the vertex
     if (actor.getMemoryScriptPath() != null) {
       vertex.setPropertyValue(SDFVertex.MEMORY_SCRIPT, actor.getMemoryScriptPath().toOSString());
@@ -203,16 +169,113 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     vertex.setRefinement(this.currentRefinement);
     // Handle input parameters as instance arguments
     setArguments(actor, vertex);
-
     // Add the vertex to the DAG
     this.result.addVertex(vertex);
-    this.piActor2DAGVertex.get(actor).add(vertex);
+    // Update the map of PiMM actor to DAG Vertices
+    this.pimmVertex2DAGVertex.get(actor).add(vertex);
+    return true;
+  }
+
+  @Override
+  public Boolean caseBroadcastActor(final BroadcastActor actor) {
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
+    // Set default properties from the PiMM actor
+    setDAGVertexPropertiesFromPiMM(actor, vertex);
+    // Check the good use of the broadcast
+    final DataInputPort dataInputPort = actor.getDataInputPorts().get(0);
+    final Expression portRateExpression = dataInputPort.getPortRateExpression();
+    final long cons = Long.parseLong(portRateExpression.getExpressionString());
+    for (final DataOutputPort out : actor.getDataOutputPorts()) {
+      final Expression outPortRateExpression = out.getPortRateExpression();
+      final long prod = Long.parseLong(outPortRateExpression.getExpressionString());
+      if (prod != cons) {
+        final String msg = "Warning: Broadcast [" + actor.getVertexPath() + "] have different production/consumption: prod(" + Long.toString(prod)
+            + ") != cons(" + Long.toString(cons) + ")";
+        WorkflowLogger.getLogger().warning(msg);
+      }
+    }
+    // Set the special type of the Broadcast
+    vertex.getPropertyBean().setValue(DAGBroadcastVertex.SPECIAL_TYPE, DAGBroadcastVertex.SPECIAL_TYPE_BROADCAST);
+    // Handle input parameters as instance arguments
+    setArguments(actor, vertex);
+    // Add the vertex to the DAG
+    this.result.addVertex(vertex);
+    // Update the map of PiMM actor to DAG Vertices
+    this.pimmVertex2DAGVertex.get(actor).add(vertex);
+    return true;
+  }
+
+  @Override
+  public Boolean caseJoinActor(final JoinActor actor) {
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGJoinVertex.DAG_JOIN_VERTEX);
+    // Set default properties from the PiMM actor
+    setDAGVertexPropertiesFromPiMM(actor, vertex);
+    // Check Join use
+    if (actor.getDataOutputPorts().size() > 1) {
+      final String message = "Join actors should have only one output. Bad use on [" + actor.getVertexPath() + "]";
+      WorkflowLogger.getLogger().severe(message);
+      throw new RuntimeException(message);
+    }
+    // Handle input parameters as instance arguments
+    setArguments(actor, vertex);
+    // Add the vertex to the DAG
+    this.result.addVertex(vertex);
+    // Update the map of PiMM actor to DAG Vertices
+    this.pimmVertex2DAGVertex.get(actor).add(vertex);
+    return true;
+  }
+
+  @Override
+  public Boolean caseForkActor(final ForkActor actor) {
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGForkVertex.DAG_FORK_VERTEX);
+    // Set default properties from the PiMM actor
+    setDAGVertexPropertiesFromPiMM(actor, vertex);
+    // Check Fork use
+    if (actor.getDataInputPorts().size() > 1) {
+      final String message = "Fork actors should have only one input. Bad use on [" + actor.getVertexPath() + "]";
+      WorkflowLogger.getLogger().severe(message);
+      throw new RuntimeException(message);
+    }
+    // Handle input parameters as instance arguments
+    setArguments(actor, vertex);
+    // Add the vertex to the DAG
+    this.result.addVertex(vertex);
+    // Update the map of PiMM actor to DAG Vertices
+    this.pimmVertex2DAGVertex.get(actor).add(vertex);
+    return true;
+  }
+
+  @Override
+  public Boolean caseDataInputInterface(final DataInputInterface actor) {
+    final String name = this.graphName;
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.result.getVertex(name);
+    if (vertex == null) {
+      throw new RuntimeException("Failed to convert PiMM 2 SR-DAG.\nVertex [" + name + "] not found.");
+    }
+    // Update the map of PiMM actor to DAG Vertices
+    this.pimmVertex2DAGVertex.get(actor).add(vertex);
+    return true;
+  }
+
+  @Override
+  public Boolean caseDataOutputInterface(final DataOutputInterface actor) {
+    final String name = this.graphName;
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.result.getVertex(name);
+    if (vertex == null) {
+      throw new RuntimeException("Failed to convert PiMM 2 SR-DAG.\nVertex [" + name + "] not found.");
+    }
+    // Update the map of PiMM actor to DAG Vertices
+    this.pimmVertex2DAGVertex.get(actor).add(vertex);
     return true;
   }
 
   /**
+   * Set the arguments of a DAG Vertex from a PiMM actor properties.
+   * 
    * @param actor
+   *          the PiMM Actor
    * @param vertex
+   *          the DAG vertex
    */
   private void setArguments(final AbstractActor actor, final MapperDAGVertex vertex) {
     for (final ConfigInputPort p : actor.getConfigInputPorts()) {
@@ -227,89 +290,19 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseBroadcastActor(final BroadcastActor actor) {
-    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
-    vertex.getPropertyBean().setValue(DAGBroadcastVertex.SPECIAL_TYPE, DAGBroadcastVertex.SPECIAL_TYPE_BROADCAST);
-
-    pimm2srdag(actor, vertex);
-    // Check the good use of the broadcast
-    final DataInputPort dataInputPort = actor.getDataInputPorts().get(0);
-    final Expression portRateExpression = dataInputPort.getPortRateExpression();
-    final long cons = Long.parseLong(portRateExpression.getExpressionString());
-    for (final DataOutputPort out : actor.getDataOutputPorts()) {
-      final Expression outPortRateExpression = out.getPortRateExpression();
-      final long prod = Long.parseLong(outPortRateExpression.getExpressionString());
-      if (prod != cons) {
-        final String msg = "Warning: Broadcast [" + actor.getVertexPath() + "] have different production/consumption: prod(" + Long.toString(prod)
-            + ") != cons(" + Long.toString(cons) + ")";
-        WorkflowLogger.getLogger().warning(msg);
-      }
-    }
-    // Handle input parameters as instance arguments
-    setArguments(actor, vertex);
-    // Add the vertex to the DAG
-    this.result.addVertex(vertex);
-    this.piActor2DAGVertex.get(actor).add(vertex);
-    return true;
-  }
-
-  @Override
-  public Boolean caseJoinActor(final JoinActor actor) {
-    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGJoinVertex.DAG_JOIN_VERTEX);
-    pimm2srdag(actor, vertex);
-    // Check Join use
-    if (actor.getDataOutputPorts().size() > 1) {
-      WorkflowLogger.getLogger().warning("Warning: Join actors should have only one output.");
-    }
-    // Handle input parameters as instance arguments
-    setArguments(actor, vertex);
-    // Add the vertex to the DAG
-    this.result.addVertex(vertex);
-    this.piActor2DAGVertex.get(actor).add(vertex);
-    return true;
-  }
-
-  @Override
-  public Boolean caseForkActor(final ForkActor actor) {
-    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGForkVertex.DAG_FORK_VERTEX);
-    pimm2srdag(actor, vertex);
-    // Check Fork use
-    if (actor.getDataInputPorts().size() > 1) {
-      WorkflowLogger.getLogger().warning("Warning: Fork actors should have only one input.");
-    }
-    // Handle input parameters as instance arguments
-    setArguments(actor, vertex);
-    // Add the vertex to the DAG
-    this.result.addVertex(vertex);
-    this.piActor2DAGVertex.get(actor).add(vertex);
-    return true;
-  }
-
-  @Override
-  public Boolean caseDataInputInterface(final DataInputInterface actor) {
-    final String name = this.graphName;
-    final MapperDAGVertex vertex = (MapperDAGVertex) this.result.getVertex(name);
-    if (vertex == null) {
-      throw new RuntimeException("Failed to convert PiMM 2 SR-DAG.\nVertex [" + name + "] not found.");
-    }
-    this.piActor2DAGVertex.get(actor).add(vertex);
-    return true;
-  }
-
-  @Override
-  public Boolean caseDataOutputInterface(final DataOutputInterface actor) {
-    final String name = this.graphName;
-    final MapperDAGVertex vertex = (MapperDAGVertex) this.result.getVertex(name);
-    if (vertex == null) {
-      throw new RuntimeException("Failed to convert PiMM 2 SR-DAG.\nVertex [" + name + "] not found.");
-    }
-    this.piActor2DAGVertex.get(actor).add(vertex);
-    return true;
-  }
-
-  @Override
   public Boolean casePiSDFRefinement(final PiSDFRefinement refinement) {
     this.currentRefinement = new CodeRefinement(refinement.getFilePath());
+    return true;
+  }
+
+  @Override
+  public Boolean caseFifo(final Fifo fifo) {
+    final SRVerticesLinker srVerticesLinker = new SRVerticesLinker(fifo, this.result, this.scenario);
+    try {
+      srVerticesLinker.execute(this.brv, this.pimmVertex2DAGVertex);
+    } catch (final PiMMHelperException e) {
+      throw new RuntimeException(e.getMessage());
+    }
     return true;
   }
 
@@ -401,8 +394,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseDelayActor(final DelayActor actor) {
-    // Do nothing
-    return true;
+    throw new UnsupportedOperationException();
   }
 
   @Override
@@ -460,94 +452,100 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     throw new UnsupportedOperationException();
   }
 
-  private void addVertex(final AbstractVertex actor, final Long rv) {
-    this.piActor2DAGVertex.put(actor, new ArrayList<>());
-    for (int i = 0; i < rv; ++i) {
-      this.aCounter = i;
-      // Treat hierarchical graphs as normal actors
-      // This populate the DAG with the right amount of hierarchical instances w.r.t the BRV value
-      if (actor instanceof PiGraph) {
-        caseAbstractActor((AbstractActor) actor);
-        continue;
+  /**
+   * Convert a PiMM actor to a set of DAG Vertices w.r.t the repetition factor of the actor.
+   * 
+   * @param actor
+   *          the actor
+   */
+  private void convertPiMMActor2DAGVertices(final AbstractVertex actor) {
+    // Ignore delay actors, after this transformation, they no longer serve any purpose.
+    if (actor instanceof DelayActor) {
+      return;
+    }
+    // Add a new entry in the map for the current actor
+    this.pimmVertex2DAGVertex.put(actor, new ArrayList<>());
+    // Populate the DAG with the appropriate number of instances of the actor
+    final Long actorNBRepeat = this.brv.get(actor);
+    // We treat hierarchical graphs as normal actors
+    // This populate the DAG with the right amount of hierarchical instances w.r.t the BRV value
+    final String prefixGraphName = this.graphName.isEmpty() ? "" : this.graphName + "_";
+    if (actorNBRepeat > 1) {
+      for (long i = 0; i < actorNBRepeat; ++i) {
+        // Setting the correct name
+        this.currentActorName = prefixGraphName + actor.getName() + "_" + Long.toString(i);
+        doConvert(actor);
       }
+    } else {
+      // In this case we don't need to add number to names
+      this.currentActorName = prefixGraphName + actor.getName();
+      doConvert(actor);
+    }
+  }
+
+  /**
+   * Populate the DAG with 1 instance of the PiMM actor.
+   * 
+   * @param actor
+   *          the actor
+   */
+  public void doConvert(final AbstractVertex actor) {
+    if (actor instanceof PiGraph) {
+      caseAbstractActor((AbstractActor) actor);
+    } else {
       doSwitch(actor);
     }
   }
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
+    // If there is no actor we leave
     if (graph.getActors().isEmpty()) {
-      return false;
-    }
-    // Sets the current graph
-    this.graph = graph;
-
-    // Check for top graph
-    final boolean isTopGraph = graph.getContainingGraph() == null;
-    if (isTopGraph) {
-      topGraphNameLength = graph.getName().length() + 1;
-      this.graphName = "";
+      throw new UnsupportedOperationException("Can not convert an empty graph. Check the refinement for [" + graph.getVertexPath() + "].");
     }
 
     // Add SR-Vertices
     for (final AbstractActor actor : graph.getActors()) {
-      if (actor instanceof DelayActor) {
-        continue;
+      // If the actor is an interface, its repetition factor is 1.
+      if (actor instanceof InterfaceActor) {
+        this.brv.put(actor, (long) 1);
       }
-      Long rv = (long) 1;
-      if (!(actor instanceof InterfaceActor)) {
-        rv = this.brv.get(actor);
-      }
-      addVertex(actor, rv);
+      convertPiMMActor2DAGVertices(actor);
     }
 
     // Link SR-Vertices
     for (final Fifo fifo : graph.getFifos()) {
-      final SRVerticesLinker srVerticesLinker = new SRVerticesLinker(fifo, this.result, this.scenario);
-      try {
-        srVerticesLinker.execute(this.brv, this.piActor2DAGVertex);
-      } catch (final PiMMHelperException e) {
-        throw new RuntimeException(e.getMessage());
-      }
-    }
-    // Go check hierarchical graphs
-    final String fixGraphName = this.graphName;
-    for (final PiGraph g : graph.getChildrenGraphs()) {
-      // We have to iterate for every number of hierarchical graph we populated
-      for (int i = 0; i < this.brv.get(g); ++i) {
-        this.hCounter = i;
-        this.graphName = getGraphName(fixGraphName, g);
-        doSwitch(g);
-        final DAGVertex vertex = this.result.getVertex(this.graphName);
-        if (vertex != null) {
-          this.result.removeVertex(vertex);
-        }
-      }
+      doSwitch(fifo);
     }
 
-    this.graphName = fixGraphName;
-    // Check for top graph condition
-    // Removing all graph vertices
-    if (isTopGraph) {
-      removeGraphVertices(graph);
+    // Save the current graph name
+    final String backupGraphName = this.graphName;
+    // Go check hierarchical graphs
+    // The hierarchy gets flatten as we go deeper
+    for (final PiGraph g : graph.getChildrenGraphs()) {
+      final ArrayList<MapperDAGVertex> graphVertices = this.pimmVertex2DAGVertex.get(g);
+      final ArrayList<String> graphNames = new ArrayList<>();
+      graphVertices.forEach(v -> graphNames.add(v.getName()));
+      for (final String graphVertexName : graphNames) {
+        this.graphName = graphVertexName;
+        // Visit the subgraph
+        doSwitch(g);
+        // Remove the hierarchical graph
+        removeInstanceOfGraph();
+      }
     }
+    // Restore the graph name
+    this.graphName = backupGraphName;
     return true;
   }
 
-  private void removeGraphVertices(final PiGraph graph) {
-    final String fixGraphName = graphName;
-    for (final PiGraph g : graph.getChildrenGraphs()) {
-      // We have to iterate for every number of hierarchical graph we populated
-      for (int i = 0; i < this.brv.get(g); ++i) {
-        this.hCounter = i;
-        this.graphName = getGraphName(fixGraphName, g);
-        final DAGVertex vertex = this.result.getVertex(this.graphName);
-        if (vertex != null) {
-          this.result.removeVertex(vertex);
-        }
-      }
-      removeGraphVertices(g);
+  /**
+   * Removes the instance of the PiGraph of the DAG
+   */
+  private void removeInstanceOfGraph() {
+    final DAGVertex vertex = this.result.getVertex(this.graphName);
+    if (vertex != null) {
+      this.result.removeVertex(vertex);
     }
   }
-
 }
