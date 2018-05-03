@@ -43,6 +43,7 @@ import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -93,6 +94,12 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
   /** Current Graph */
   PiGraph graph;
 
+  /** Top Graph name */
+  Integer topGraphNameLength;
+
+  /** Current Graph name */
+  String graphName;
+
   /**
    * Instantiates a new abstract pi MM 2 SR-DAG visitor.
    *
@@ -115,7 +122,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
    */
   private void pimm2srdag(final AbstractActor a, final DAGVertex vertex) {
     // Handle vertex's name
-    vertex.setName(a.getVertexPath().replace("/", "_") + "_" + Integer.toString(this.aCounter));
+    vertex.setName(getProperName(a) + "_" + Integer.toString(this.aCounter));
     // Handle vertex's path inside the graph hierarchy
     vertex.setInfo(a.getVertexPath());
     // Handle ID
@@ -131,6 +138,32 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     for (final DataOutputPort port : a.getDataOutputPorts()) {
       vertex.addSinkName(port.getName());
     }
+  }
+
+  /**
+   * Return the full path name of the actor without "/" and without top graph name.
+   * 
+   * @param actor
+   *          the actor
+   * @return the full path name of the actor
+   */
+  private String getProperName(final AbstractActor actor) {
+    final boolean isTopGraph = this.graph.getContainingPiGraph() == null;
+    if (isTopGraph) {
+      return actor.getName();
+    } else {
+      return this.graphName + "_" + actor.getName();
+    }
+  }
+
+  private String getGraphName(final String fixGraphName, final PiGraph graph) {
+    final String name;
+    if (fixGraphName.isEmpty()) {
+      name = graph.getName();
+    } else {
+      name = fixGraphName + "_" + graph.getName();
+    }
+    return name + "_" + Integer.toString(hCounter);
   }
 
   /*
@@ -254,24 +287,22 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseDataInputInterface(final DataInputInterface actor) {
-    final String name = this.graph.getVertexPath().replace("/", "_") + "_" + Integer.toString(this.hCounter);
+    final String name = this.graphName;
     final MapperDAGVertex vertex = (MapperDAGVertex) this.result.getVertex(name);
     if (vertex == null) {
       throw new RuntimeException("Failed to convert PiMM 2 SR-DAG.\nVertex [" + name + "] not found.");
     }
-    this.piActor2DAGVertex.put(actor, new ArrayList<>());
     this.piActor2DAGVertex.get(actor).add(vertex);
     return true;
   }
 
   @Override
   public Boolean caseDataOutputInterface(final DataOutputInterface actor) {
-    final String name = this.graph.getVertexPath().replace("/", "_") + "_" + Integer.toString(this.hCounter);
+    final String name = this.graphName;
     final MapperDAGVertex vertex = (MapperDAGVertex) this.result.getVertex(name);
     if (vertex == null) {
       throw new RuntimeException("Failed to convert PiMM 2 SR-DAG.\nVertex [" + name + "] not found.");
     }
-    this.piActor2DAGVertex.put(actor, new ArrayList<>());
     this.piActor2DAGVertex.get(actor).add(vertex);
     return true;
   }
@@ -451,13 +482,20 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     // Sets the current graph
     this.graph = graph;
 
-    // Clear the map
-    // piActor2DAGVertex.clear();
+    // Check for top graph
+    final boolean isTopGraph = graph.getContainingGraph() == null;
+    if (isTopGraph) {
+      topGraphNameLength = graph.getName().length() + 1;
+      this.graphName = "";
+    }
 
     // Add SR-Vertices
     for (final AbstractActor actor : graph.getActors()) {
+      if (actor instanceof DelayActor) {
+        continue;
+      }
       Long rv = (long) 1;
-      if (this.brv.containsKey(actor)) {
+      if (!(actor instanceof InterfaceActor)) {
         rv = this.brv.get(actor);
       }
       addVertex(actor, rv);
@@ -473,29 +511,40 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
       }
     }
     // Go check hierarchical graphs
+    final String fixGraphName = this.graphName;
     for (final PiGraph g : graph.getChildrenGraphs()) {
       // We have to iterate for every number of hierarchical graph we populated
       for (int i = 0; i < this.brv.get(g); ++i) {
         this.hCounter = i;
+        this.graphName = getGraphName(fixGraphName, g);
         doSwitch(g);
+        final DAGVertex vertex = this.result.getVertex(this.graphName);
+        if (vertex != null) {
+          this.result.removeVertex(vertex);
+        }
       }
     }
 
+    this.graphName = fixGraphName;
     // Check for top graph condition
     // Removing all graph vertices
-    if (graph.getContainingGraph() == null) {
+    if (isTopGraph) {
       removeGraphVertices(graph);
     }
     return true;
   }
 
   private void removeGraphVertices(final PiGraph graph) {
+    final String fixGraphName = graphName;
     for (final PiGraph g : graph.getChildrenGraphs()) {
       // We have to iterate for every number of hierarchical graph we populated
       for (int i = 0; i < this.brv.get(g); ++i) {
-        final String name = g.getVertexPath().replace("/", "_") + "_" + Integer.toString(i);
-        final DAGVertex vertex = this.result.getVertex(name);
-        this.result.removeVertex(vertex);
+        this.hCounter = i;
+        this.graphName = getGraphName(fixGraphName, g);
+        final DAGVertex vertex = this.result.getVertex(this.graphName);
+        if (vertex != null) {
+          this.result.removeVertex(vertex);
+        }
       }
       removeGraphVertices(g);
     }
