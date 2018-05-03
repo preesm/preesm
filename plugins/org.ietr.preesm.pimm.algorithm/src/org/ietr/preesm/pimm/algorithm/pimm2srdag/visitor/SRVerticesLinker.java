@@ -21,6 +21,7 @@ import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
@@ -321,6 +322,20 @@ public class SRVerticesLinker {
   }
 
   /**
+   * Adds a new pair to a set
+   *
+   * @param set
+   *          the set
+   * @param vertex
+   *          left element of the pair to add
+   * @param value
+   *          right element of the pair to add
+   */
+  private void addPair(final ArrayList<Pair<DAGVertex, Long>> set, final DAGVertex vertex, final long value) {
+    set.add(Pair.of(vertex, value));
+  }
+
+  /**
    * Generate DAG set of sources
    *
    * @param brv
@@ -350,7 +365,8 @@ public class SRVerticesLinker {
         sourceSet.add(addDelaySetterActor(setterActorList));
       } else {
         // Add an init vertex for the first iteration of the sink actor
-        final DAGVertex initVertex = createInitVertex("init_" + fifoID, vertexFactory);
+        final String uniqueInitID = "init_" + this.sink.getVertexPath().replace("/", "_") + "_" + this.sinkPort.getName();
+        final DAGVertex initVertex = createInitVertex(uniqueInitID, vertexFactory);
         addPair(sourceSet, initVertex, this.delays);
       }
     }
@@ -406,17 +422,8 @@ public class SRVerticesLinker {
    *           the exception
    */
   private DAGVertex getInterfaceSourceVertex(final DAGVertex vertex) throws PiMMHelperException {
-    DataInputPort correspondingPort = null;
-    for (final DataInputPort port : this.source.getContainingPiGraph().getDataInputPorts()) {
-      if (port.getName().equals(this.source.getName())) {
-        correspondingPort = port;
-        break;
-      }
-    }
-    if (correspondingPort == null) {
-      final String message = "Data input port corresponding to interface [" + this.source.getName() + "] not found.";
-      throw new PiMMHelperException(message);
-    }
+    final ArrayList<DataPort> dataInputPorts = new ArrayList<>(this.source.getContainingPiGraph().getDataInputPorts());
+    final DataInputPort correspondingPort = (DataInputPort) getCorrespondingPort(dataInputPorts, this.source.getName());
     final Set<DAGEdge> incomingEdges = vertex.incomingEdges();
     final String targetLabel = this.source.getName();
     DAGEdge interfaceEdge = null;
@@ -432,22 +439,29 @@ public class SRVerticesLinker {
       final String message = "Edge corresponding to fifo [" + correspondingFifo.getId() + "] not found.";
       throw new PiMMHelperException(message);
     }
-    this.sourcePort = correspondingFifo.getSourcePort();
+    this.sourcePort = getOriginalSource(correspondingPort);
     return interfaceEdge.getSource();
   }
 
   /**
-   * Adds a new pair to a set
-   *
-   * @param set
-   *          the set
-   * @param vertex
-   *          left element of the pair to add
-   * @param value
-   *          right element of the pair to add
+   * Retrieve the original source port of an interface, even in deep hierarchy.
+   * 
+   * @param sourceInterface
+   *          the current source interface
+   * @return original source port
+   * @throws PiMMHelperException
+   *           the PiMMHelperException exception
    */
-  private void addPair(final ArrayList<Pair<DAGVertex, Long>> set, final DAGVertex vertex, final long value) {
-    set.add(Pair.of(vertex, value));
+  private DataOutputPort getOriginalSource(final DataInputPort sourcePort) throws PiMMHelperException {
+    final Fifo inFifo = sourcePort.getFifo();
+    final DataOutputPort origSource = inFifo.getSourcePort();
+    final AbstractActor containingActor = origSource.getContainingActor();
+    if (containingActor instanceof DataInputInterface) {
+      final ArrayList<DataPort> dataInputPorts = new ArrayList<>(containingActor.getContainingPiGraph().getDataInputPorts());
+      final DataInputPort correspondingPort = (DataInputPort) getCorrespondingPort(dataInputPorts, containingActor.getName());
+      return getOriginalSource(correspondingPort);
+    }
+    return origSource;
   }
 
   /**
@@ -557,11 +571,71 @@ public class SRVerticesLinker {
         sinkSet.add(addDelayGetterActor(getterActorList));
       } else {
         // Add an end vertex for the last iteration of the source actor
-        final DAGVertex endVertex = createEndVertex("end_" + fifoID, vertexFactory);
+        final String uniqueEndID = "end_" + this.source.getVertexPath().replace("/", "_") + "_" + this.sourcePort.getName();
+        final DAGVertex endVertex = createEndVertex(uniqueEndID, vertexFactory);
+        setEndReference(endVertex);
         addPair(sinkSet, endVertex, this.delays);
       }
     }
     return sinkSet;
+  }
+
+  /**
+   * Retrieve the source vertex corresponding to current data input interface. <br>
+   * The corresponding edge is removed.
+   * 
+   * @param vertex
+   *          the vertex
+   * @return the corresponding sink vertex
+   * @throws PiMMHelperException
+   *           the exception
+   */
+  private DAGVertex getInterfaceSinkVertex(final DAGVertex vertex) throws PiMMHelperException {
+    final ArrayList<DataPort> dataOutputPorts = new ArrayList<>(this.sink.getContainingPiGraph().getDataOutputPorts());
+    final DataOutputPort correspondingPort = (DataOutputPort) getCorrespondingPort(dataOutputPorts, this.sink.getName());
+    final Set<DAGEdge> outgoingEdges = vertex.outgoingEdges();
+    final String sourceLabel = this.sink.getName();
+    DAGEdge interfaceEdge = null;
+    for (final DAGEdge edge : outgoingEdges) {
+      final DAGEdge actualEdge = (DAGEdge) edge.getAggregate().get(0);
+      if (actualEdge.getSourceLabel().equals(sourceLabel)) {
+        interfaceEdge = edge;
+      }
+    }
+    final Fifo correspondingFifo = correspondingPort.getFifo();
+    if (interfaceEdge == null) {
+      final String message = "Edge corresponding to fifo [" + correspondingFifo.getId() + "] not found.";
+      throw new PiMMHelperException(message);
+    }
+    this.sinkPort = correspondingFifo.getTargetPort();
+    return interfaceEdge.getTarget();
+  }
+
+  /**
+   * Retrieve the port matching portName in a portList.<br>
+   * If the port is not found, it throws an exception
+   * 
+   * @param portList
+   *          the list of port in which to look for
+   * @param portName
+   *          the name of the search port
+   * @return the corresponding port
+   * @throws PiMMHelperException
+   *           the PiMMHelperException exception
+   */
+  private DataPort getCorrespondingPort(final ArrayList<DataPort> portList, final String portName) throws PiMMHelperException {
+    DataPort correspondingPort = null;
+    for (final DataPort port : portList) {
+      if (port.getName().equals(portName)) {
+        correspondingPort = port;
+        break;
+      }
+    }
+    if (correspondingPort == null) {
+      final String message = "Data output port corresponding to interface [" + portName + "] not found.";
+      throw new PiMMHelperException(message);
+    }
+    return correspondingPort;
   }
 
   /**
@@ -597,46 +671,6 @@ public class SRVerticesLinker {
     } else {
       return Pair.of(getterActorList.get(0), this.delays);
     }
-  }
-
-  /**
-   * Retrieve the source vertex corresponding to current data input interface. <br>
-   * The corresponding edge is removed.
-   * 
-   * @param vertex
-   *          the vertex
-   * @return the corresponding sink vertex
-   * @throws PiMMHelperException
-   *           the exception
-   */
-  private DAGVertex getInterfaceSinkVertex(final DAGVertex vertex) throws PiMMHelperException {
-    DataOutputPort correspondingPort = null;
-    for (final DataOutputPort port : this.sink.getContainingPiGraph().getDataOutputPorts()) {
-      if (port.getName().equals(this.sink.getName())) {
-        correspondingPort = port;
-        break;
-      }
-    }
-    if (correspondingPort == null) {
-      final String message = "Data output port corresponding to interface [" + this.sink.getName() + "] not found.";
-      throw new PiMMHelperException(message);
-    }
-    final Set<DAGEdge> outgoingEdges = vertex.outgoingEdges();
-    final String sourceLabel = this.sink.getName();
-    DAGEdge interfaceEdge = null;
-    for (final DAGEdge edge : outgoingEdges) {
-      final DAGEdge actualEdge = (DAGEdge) edge.getAggregate().get(0);
-      if (actualEdge.getSourceLabel().equals(sourceLabel)) {
-        interfaceEdge = edge;
-      }
-    }
-    final Fifo correspondingFifo = correspondingPort.getFifo();
-    if (interfaceEdge == null) {
-      final String message = "Edge corresponding to fifo [" + correspondingFifo.getId() + "] not found.";
-      throw new PiMMHelperException(message);
-    }
-    this.sinkPort = correspondingFifo.getTargetPort();
-    return interfaceEdge.getTarget();
   }
 
   /**
@@ -755,13 +789,17 @@ public class SRVerticesLinker {
     final DAGVertex endVertex = vertexFactory.createVertex(DAGEndVertex.DAG_END_VERTEX);
     setVertexDefault(endVertex, fixID);
     this.dag.addVertex(endVertex);
+    return endVertex;
+  }
+
+  private void setEndReference(final DAGVertex endVertex) {
     // Test to see if there is an init actor
-    final DAGVertex initVertex = this.dag.getVertex("init_" + this.fifoName);
+    final String uniqueInitID = "init_" + this.sink.getVertexPath().replace("/", "_") + "_" + this.sinkPort.getName();
+    final DAGVertex initVertex = this.dag.getVertex(uniqueInitID);
     if (initVertex != null) {
       initVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, endVertex.getName());
       endVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, initVertex.getName());
     }
-    return endVertex;
   }
 
   /**
