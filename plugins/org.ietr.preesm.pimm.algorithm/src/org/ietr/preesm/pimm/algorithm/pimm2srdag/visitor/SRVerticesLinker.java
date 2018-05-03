@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
-import org.ietr.dftools.algorithm.model.AbstractEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGBroadcastVertex;
@@ -59,12 +58,12 @@ public class SRVerticesLinker {
   // Source actor
   private final AbstractActor source;
   // Source Port
-  private final DataOutputPort sourcePort;
+  private DataOutputPort sourcePort;
 
   // Sink Actor
   private final AbstractActor sink;
   // Sink Port
-  private final DataInputPort sinkPort;
+  private DataInputPort sinkPort;
 
   // The fifo
   private final Fifo   fifo;
@@ -83,10 +82,6 @@ public class SRVerticesLinker {
   // Port modifiers annotations
   private final String sourceModifier;
   private final String targetModifier;
-
-  // Vertex - List<Edge> pair used for restoring connection order when replacing an interface actor
-  private Pair<DAGVertex, Integer> sourceReconnection;
-  private Pair<DAGVertex, Integer> sinkReconnection;
 
   /**
    * Retrieve the number of delay tokens contain in a fifo, if any
@@ -200,10 +195,6 @@ public class SRVerticesLinker {
       return true;
     }
 
-    // Init replacement connections
-    sourceReconnection = Pair.of(null, -1);
-    sinkReconnection = Pair.of(null, -1);
-
     // List of source vertex
     final ArrayList<Pair<DAGVertex, Long>> sourceSet = getSourceSet(brv, pimm2dag);
     // List of sink vertex
@@ -211,9 +202,6 @@ public class SRVerticesLinker {
 
     // Connect all the source to the sinks
     connectEdges(sourceSet, sinkSet);
-
-    // TODO handle edge order when reconnecting edges
-
     return true;
   }
 
@@ -236,7 +224,6 @@ public class SRVerticesLinker {
       if (connectSinks2Source(sinkSet, sourceSet)) {
         sourceSet.remove(0);
       }
-
     }
   }
 
@@ -390,7 +377,11 @@ public class SRVerticesLinker {
         broadcastVertex.getPropertyBean().setValue(DAGBroadcastVertex.SPECIAL_TYPE, DAGBroadcastVertex.SPECIAL_TYPE_BROADCAST);
         setVertexDefault(broadcastVertex, "broadcast_" + fifoID);
         this.dag.addVertex(broadcastVertex);
-        createEdge(sourceVertex, broadcastVertex, Long.toString(sourceProduction));
+        final DAGEdge edge = createEdge(sourceVertex, broadcastVertex, Long.toString(sourceProduction));
+        edge.setTargetLabel("br_" + edge.getTargetLabel());
+        // This is bit of a hack here.
+        // The problem is that we can not distinguish the number of connection that need to come from the broadcast or a possible INIT.
+        // I generate has many broadcast vertex has need but since there are all the same, all connections will be set to the proper unique broadcast vertex.
         for (int i = 0; i < nBroadcast; ++i) {
           addPair(sourceSet, broadcastVertex, sourceProduction);
         }
@@ -426,20 +417,23 @@ public class SRVerticesLinker {
       final String message = "Data input port corresponding to interface [" + this.source.getName() + "] not found.";
       throw new PiMMHelperException(message);
     }
-    final Fifo correspondingFifo = correspondingPort.getFifo();
     final Set<DAGEdge> incomingEdges = vertex.incomingEdges();
-    final DAGEdge interfaceEdge = getInterfaceEdge(correspondingFifo, incomingEdges);
-    int indexSwap = 0;
-    // now we retrieve the index of edge swapping
-    final DAGVertex sourceVertex = interfaceEdge.getSource();
-    for (final DAGEdge edge : sourceVertex.outgoingEdges()) {
-      if (edge == interfaceEdge) {
+    final String targetLabel = this.source.getName();
+    DAGEdge interfaceEdge = null;
+    for (final DAGEdge edge : incomingEdges) {
+      final DAGEdge actualEdge = (DAGEdge) edge.getAggregate().get(0);
+      if (actualEdge.getTargetLabel().equals(targetLabel)) {
+        interfaceEdge = edge;
         break;
       }
-      indexSwap += 1;
     }
-    sourceReconnection = Pair.of(sourceVertex, indexSwap);
-    return sourceVertex;
+    final Fifo correspondingFifo = correspondingPort.getFifo();
+    if (interfaceEdge == null) {
+      final String message = "Edge corresponding to fifo [" + correspondingFifo.getId() + "] not found.";
+      throw new PiMMHelperException(message);
+    }
+    this.sourcePort = correspondingFifo.getSourcePort();
+    return interfaceEdge.getSource();
   }
 
   /**
@@ -469,15 +463,22 @@ public class SRVerticesLinker {
     final Delay delay = this.fifo.getDelay();
     final int setterRV = setterActorList.size();
     if (setterRV > 1) {
+      // Get the delay setter port
+      final DataOutputPort setterPort = delay.getSetterPort();
       // Add a join vertex for the first iteration of the sink actor
       // Connect all instances of the setter actor to the join actor
       final DAGVertex joinVertex = createJoinVertex(SRVerticesLinker.JOIN_VERTEX + this.fifoName, vertexFactory);
+      Long currentCons = this.delays;
       for (int i = 0; i < setterRV; ++i) {
         final DAGVertex currentSetterActor = setterActorList.get(i);
-        final String rateExpression = delay.getSetterPort().getPortRateExpression().getExpressionString();
+        final Expression portRateExpression = setterPort.getPortRateExpression();
+        final String rateExpression = portRateExpression.getExpressionString();
         final DAGEdge edge = createEdge(currentSetterActor, joinVertex, rateExpression);
         // update name and target port modifier
-        edge.setTargetLabel(edge.getTargetLabel() + "_" + rateExpression);
+        final Long rate = Long.parseLong(rateExpression);
+        currentCons = currentCons - rate;
+        edge.setTargetLabel(edge.getSourceLabel() + "_" + Long.toString(currentCons));
+        edge.setSourceLabel(setterPort.getName());
         edge.setTargetPortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
       }
       return Pair.of(joinVertex, this.delays);
@@ -524,11 +525,11 @@ public class SRVerticesLinker {
         final String fixID = "sinkEnd_" + fifoID + "_";
         for (long i = 0; i < (nEnd - 1); ++i) {
           final DAGVertex endVertex = createEndVertex(fixID + Long.toString(i), vertexFactory);
-          sinkSet.add(Pair.of(endVertex, sourceProduction));
+          addPair(sinkSet, endVertex, sourceProduction);
         }
         final DAGVertex endVertex = createEndVertex(fixID + Long.toString(nEnd - 1), vertexFactory);
-        sinkSet.add(Pair.of(endVertex, nDroppedTokens - (nEnd - 1) * sourceProduction));
-        sinkSet.add(Pair.of(sinkVertex, sinkConsumption));
+        addPair(sinkSet, endVertex, nDroppedTokens - (nEnd - 1) * sourceProduction);
+        addPair(sinkSet, sinkVertex, sinkConsumption);
       }
     } else if (this.sink instanceof AbstractActor) {
       // Add the list of the SR-DAG vertex associated with the sink
@@ -556,7 +557,7 @@ public class SRVerticesLinker {
         sinkSet.add(addDelayGetterActor(getterActorList));
       } else {
         // Add an end vertex for the last iteration of the source actor
-        final DAGVertex endVertex = createEndVertex(fifoID + "_End", vertexFactory);
+        final DAGVertex endVertex = createEndVertex("end_" + fifoID, vertexFactory);
         addPair(sinkSet, endVertex, this.delays);
       }
     }
@@ -579,12 +580,17 @@ public class SRVerticesLinker {
       // Add a fork vertex for the last iteration of the source actor
       // Connect all instances of the getter actor to the fork actor
       final DAGVertex forkVertex = createForkVertex(SRVerticesLinker.FORK_VERTEX + this.fifoName, vertexFactory);
+      Long currentProd = this.delays;
       for (int i = 0; i < getterRV; ++i) {
         final DAGVertex currentGetterActor = getterActorList.get(i);
-        final String rateExpression = delay.getGetterPort().getPortRateExpression().getExpressionString();
+        final Expression portRateExpression = delay.getGetterPort().getPortRateExpression();
+        final String rateExpression = portRateExpression.getExpressionString();
         final DAGEdge edge = createEdge(forkVertex, currentGetterActor, rateExpression);
         // update name and source port modifier
-        edge.setSourceLabel(edge.getSourceLabel() + "_" + rateExpression);
+        final Long rate = Long.parseLong(rateExpression);
+        currentProd = currentProd - rate;
+        edge.setSourceLabel(edge.getTargetLabel() + "_" + Long.toString(currentProd));
+        edge.setTargetLabel(delay.getGetterPort().getName());
         edge.setSourcePortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
       }
       return Pair.of(forkVertex, this.delays);
@@ -615,52 +621,22 @@ public class SRVerticesLinker {
       final String message = "Data output port corresponding to interface [" + this.sink.getName() + "] not found.";
       throw new PiMMHelperException(message);
     }
-    final Fifo correspondingFifo = correspondingPort.getFifo();
     final Set<DAGEdge> outgoingEdges = vertex.outgoingEdges();
-    final DAGEdge interfaceEdge = getInterfaceEdge(correspondingFifo, outgoingEdges);
-    int indexSwap = 0;
-    // now we retrieve the index of edge swapping
-    final DAGVertex targetVertex = interfaceEdge.getTarget();
-    for (final DAGEdge edge : targetVertex.incomingEdges()) {
-      if (edge == interfaceEdge) {
-        break;
-      }
-      indexSwap += 1;
-    }
-    sinkReconnection = Pair.of(targetVertex, indexSwap);
-    return targetVertex;
-  }
-
-  /**
-   * Retrieve the corresponding edge connected to the interface of a PiGraph
-   * 
-   * @param correspondingFifo
-   *          the corresponding fifo to the interface actor and the PiGraph
-   * @param setOfEdges
-   *          set of edges
-   * @return the edge connected to the hierarchical graph to which the interface belongs
-   * @throws PiMMHelperException
-   */
-  private DAGEdge getInterfaceEdge(final Fifo correspondingFifo, final Set<DAGEdge> setOfEdges) throws PiMMHelperException {
-    DAGEdge edgeFound = null;
-    final String id = correspondingFifo.getId().replace(".", "_").replace("-", "_");
-    for (final DAGEdge edge : setOfEdges) {
-      for (final AbstractEdge<?, ?> aggEdge : edge.getAggregate()) {
-        final String edgeFifoID = ((DAGEdge) aggEdge).getPropertyStringValue(SRVerticesLinker.PIMM_FIFO);
-        if (edgeFifoID.equals(id)) {
-          edgeFound = edge;
-          break;
-        }
-      }
-      if (edgeFound != null) {
-        break;
+    final String sourceLabel = this.sink.getName();
+    DAGEdge interfaceEdge = null;
+    for (final DAGEdge edge : outgoingEdges) {
+      final DAGEdge actualEdge = (DAGEdge) edge.getAggregate().get(0);
+      if (actualEdge.getSourceLabel().equals(sourceLabel)) {
+        interfaceEdge = edge;
       }
     }
-    if (edgeFound == null) {
-      final String message = "Edge corresponding to fifo [" + id + "] not found.";
+    final Fifo correspondingFifo = correspondingPort.getFifo();
+    if (interfaceEdge == null) {
+      final String message = "Edge corresponding to fifo [" + correspondingFifo.getId() + "] not found.";
       throw new PiMMHelperException(message);
     }
-    return edgeFound;
+    this.sinkPort = correspondingFifo.getTargetPort();
+    return interfaceEdge.getTarget();
   }
 
   /**
@@ -677,15 +653,18 @@ public class SRVerticesLinker {
    * @return the created edge
    */
   private DAGEdge createEdge(final DAGVertex source, final DAGVertex target, final String rateExpression) {
-    final DAGEdge edge;
-    final int weight = this.dataSize * Integer.parseInt(rateExpression);
-    if (this.dag.containsEdge(source, target)) {
-      edge = this.dag.getEdge(source, target);
-      edge.setWeight(new DAGDefaultEdgePropertyType(weight + edge.getWeight().intValue()));
-    } else {
-      edge = this.dag.addEdge(source, target);
-      edge.setWeight(new DAGDefaultEdgePropertyType(weight));
-    }
+    // final DAGEdge edge;
+    // final int weight = this.dataSize * Integer.parseInt(rateExpression);
+    // if (this.dag.containsEdge(source, target)) {
+    // edge = this.dag.getEdge(source, target);
+    // edge.setWeight(new DAGDefaultEdgePropertyType(weight + edge.getWeight().intValue()));
+    // } else {
+    // edge = this.dag.addEdge(source, target);
+    // edge.setWeight(new DAGDefaultEdgePropertyType(weight));
+    // }
+
+    final int weight = Integer.parseInt(rateExpression);
+    final DAGEdge edge = this.dag.addEdge(source, target);
 
     final DAGEdge newEdge = new DAGEdge();
     if (!this.sourceModifier.isEmpty()) {
@@ -697,13 +676,14 @@ public class SRVerticesLinker {
     newEdge.setPropertyValue(SRVerticesLinker.PIMM_FIFO, new SDFStringEdgePropertyType(this.fifoName));
     newEdge.setPropertyValue(SDFEdge.DATA_TYPE, this.fifo.getType());
     newEdge.setPropertyValue(SDFEdge.DATA_SIZE, this.dataSize);
-    newEdge.setWeight(new DAGDefaultEdgePropertyType(weight / this.dataSize));
+    newEdge.setWeight(new DAGDefaultEdgePropertyType(weight));
     newEdge.setSourceLabel(this.sourcePort.getName());
     newEdge.setTargetLabel(this.sinkPort.getName());
     newEdge.setPropertyValue(SDFEdge.BASE, this.dag);
     newEdge.setContainingEdge(edge);
 
     edge.getAggregate().add(newEdge);
+    edge.setWeight(new DAGDefaultEdgePropertyType(weight * this.dataSize));
     return edge;
   }
 
@@ -719,7 +699,7 @@ public class SRVerticesLinker {
    */
   private DAGVertex createJoinVertex(final String fixID, final MapperVertexFactory vertexFactory) {
     final DAGVertex joinVertex = vertexFactory.createVertex(DAGJoinVertex.DAG_JOIN_VERTEX);
-    final String id = fixID + Integer.toString(this.joinIDCounter++);
+    final String id = fixID + "_" + Integer.toString(this.joinIDCounter++);
     setVertexDefault(joinVertex, id);
     this.dag.addVertex(joinVertex);
     return joinVertex;
@@ -737,7 +717,7 @@ public class SRVerticesLinker {
    */
   private DAGVertex createForkVertex(final String fixID, final MapperVertexFactory vertexFactory) {
     final DAGVertex forkVertex = vertexFactory.createVertex(DAGForkVertex.DAG_FORK_VERTEX);
-    final String id = fixID + Integer.toString(this.forkIDCounter++);
+    final String id = fixID + "_" + Integer.toString(this.forkIDCounter++);
     setVertexDefault(forkVertex, id);
     this.dag.addVertex(forkVertex);
     return forkVertex;
