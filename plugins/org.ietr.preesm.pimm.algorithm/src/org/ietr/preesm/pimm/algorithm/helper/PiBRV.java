@@ -126,7 +126,8 @@ public abstract class PiBRV {
    */
   private long getOutputInterfacesScaleFactor(final PiGraph graph, final List<AbstractActor> subgraph, long scaleFactor) {
     for (final DataOutputInterface out : graph.getDataOutputInterfaces()) {
-      final Fifo fifo = ((DataInputPort) out.getDataPort()).getIncomingFifo();
+      final DataInputPort dataInputPort = (DataInputPort) out.getDataPort();
+      final Fifo fifo = dataInputPort.getIncomingFifo();
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
       if (!(sourceActor instanceof InterfaceActor) && subgraph.contains(sourceActor)) {
         final long prod = Long.parseLong(fifo.getSourcePort().getPortRateExpression().getExpressionString());
@@ -159,7 +160,8 @@ public abstract class PiBRV {
    */
   private long getInputInterfacesScaleFactor(final PiGraph graph, final List<AbstractActor> subgraph, long scaleFactor) {
     for (final DataInputInterface in : graph.getDataInputInterfaces()) {
-      final Fifo fifo = ((DataOutputPort) in.getDataPort()).getOutgoingFifo();
+      final DataOutputPort dataOutputPort = (DataOutputPort) in.getDataPort();
+      final Fifo fifo = dataOutputPort.getOutgoingFifo();
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
       if (!(targetActor instanceof InterfaceActor) && subgraph.contains(targetActor)) {
         final long targetRV = this.graphBRV.get(targetActor);

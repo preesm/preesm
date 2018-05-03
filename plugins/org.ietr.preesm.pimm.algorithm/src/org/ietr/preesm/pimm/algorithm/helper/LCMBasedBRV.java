@@ -86,7 +86,8 @@ public class LCMBasedBRV extends PiBRV {
     }
 
     // Recursively compute BRV of sub-graphs
-    // // TODO maybe optimize this a recursive call to a secondary recursive method executeRec(final PiGraph graph)
+    // TODO maybe optimize this a recursive call to a secondary recursive method executeRec(final PiGraph graph)
+    // or use visitor pattern
     for (final PiMMHandler g : this.piHandler.getChildrenGraphsHandler()) {
       final LCMBasedBRV lcmBRV = new LCMBasedBRV(g);
       lcmBRV.execute();
