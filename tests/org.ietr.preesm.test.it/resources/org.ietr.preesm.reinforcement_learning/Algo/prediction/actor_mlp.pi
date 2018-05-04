@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">actor_mlp</data>
+        <node id="state_space_size" kind="cfg_in_iface"/>
+        <node expr="20" id="Hidden_layer_size" kind="param"/>
+        <node id="action_space_size" kind="cfg_in_iface"/>
+        <node id="state" kind="src">
+            <port annotation="NONE" expr="state_space_size"
+                kind="output" name="state"/>
+        </node>
+        <node id="action" kind="snk">
+            <port annotation="NONE" expr="action_space_size"
+                kind="input" name="action"/>
+        </node>
+        <node id="action_predictor" kind="actor">
+            <data key="graph_desc">Algo/prediction/mlp.pi</data>
+            <port kind="cfg_input" name="input_size"/>
+            <port kind="cfg_input" name="output_size"/>
+            <port kind="cfg_input" name="hidden_size"/>
+            <port annotation="NONE" expr="input_size" kind="input" name="input"/>
+            <port annotation="NONE" expr="output_size" kind="output" name="output"/>
+        </node>
+        <edge kind="fifo" source="state" sourceport="state"
+            target="action_predictor" targetport="input" type="float"/>
+        <edge kind="fifo" source="action_predictor" sourceport="output"
+            target="action" targetport="action" type="float"/>
+        <edge kind="dependency" source="state_space_size" target="state"/>
+        <edge kind="dependency" source="action_space_size" target="action"/>
+        <edge kind="dependency" source="state_space_size"
+            target="action_predictor" targetport="input_size"/>
+        <edge kind="dependency" source="action_space_size"
+            target="action_predictor" targetport="output_size"/>
+        <edge kind="dependency" source="Hidden_layer_size"
+            target="action_predictor" targetport="hidden_size"/>
+    </graph>
+</graphml>

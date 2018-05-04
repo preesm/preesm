@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">mlp_raw</data>
+        <node id="output_size" kind="cfg_in_iface"/>
+        <node id="hidden_size" kind="cfg_in_iface"/>
+        <node id="input_size" kind="cfg_in_iface"/>
+        <node expr="input_size * hidden_size" id="size_weights_hidden" kind="param"/>
+        <node expr="output_size * hidden_size" id="size_weights_output" kind="param"/>
+        <node id="Output_layer" kind="actor">
+            <data key="graph_desc">Algo/common/neuron.pi</data>
+            <port kind="cfg_input" name="input_size"/>
+            <port kind="cfg_input" name="layer_size"/>
+            <port annotation="NONE" expr="input_size" kind="input" name="input"/>
+            <port annotation="NONE" expr="1" kind="input" name="valid"/>
+            <port annotation="NONE" expr="layer_size" kind="input" name="bias_values"/>
+            <port annotation="NONE" expr="input_size * layer_size"
+                kind="input" name="weights"/>
+            <port annotation="NONE" expr="layer_size" kind="output" name="output"/>
+        </node>
+        <node id="Hidden_layer" kind="actor">
+            <data key="graph_desc">Algo/common/neuron.pi</data>
+            <port kind="cfg_input" name="input_size"/>
+            <port kind="cfg_input" name="layer_size"/>
+            <port annotation="NONE" expr="1" kind="input" name="valid"/>
+            <port annotation="NONE" expr="input_size" kind="input" name="input"/>
+            <port annotation="NONE" expr="layer_size" kind="input" name="bias_values"/>
+            <port annotation="NONE" expr="input_size * layer_size"
+                kind="input" name="weights"/>
+            <port annotation="NONE" expr="layer_size" kind="output" name="output"/>
+        </node>
+        <node id="raw_output" kind="snk">
+            <port annotation="NONE" expr="output_size" kind="input" name="raw_output"/>
+        </node>
+        <node id="input" kind="src">
+            <port annotation="NONE" expr="input_size" kind="output" name="input"/>
+        </node>
+        <node id="weights" kind="src">
+            <port annotation="NONE"
+                expr="size_weights_hidden + size_weights_output"
+                kind="output" name="weights"/>
+        </node>
+        <node id="bias" kind="src">
+            <port annotation="NONE" expr="hidden_size + output_size"
+                kind="output" name="bias"/>
+        </node>
+        <node id="ForkBias" kind="fork">
+            <port kind="cfg_input" name="size_out0"/>
+            <port kind="cfg_input" name="size_out1"/>
+            <port annotation="NONE" expr="size_out0 + size_out1"
+                kind="input" name="bias_in"/>
+            <port annotation="NONE" expr="size_out0" kind="output" name="bias_out0"/>
+            <port annotation="NONE" expr="size_out1" kind="output" name="bias_out1"/>
+        </node>
+        <node id="activationFunction" kind="actor">
+            <data key="graph_desc">Code/include/mlp.h</data>
+            <loop name="activateTanHyperbolic">
+                <param direction="IN" isConfig="false" name="input" type="float "/>
+                <param direction="IN" isConfig="false" name="valid" type="int "/>
+                <param direction="OUT" isConfig="false" name="output" type="float "/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="input"/>
+            <port annotation="NONE" expr="1" kind="input" name="valid"/>
+            <port annotation="NONE" expr="1" kind="output" name="output"/>
+        </node>
+        <node id="valid_mlp" kind="actor">
+            <data key="graph_desc">Code/include/common.h</data>
+            <loop name="valid">
+                <param direction="OUT" isConfig="false" name="valid" type="int "/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="output" name="valid"/>
+        </node>
+        <node id="BroadCastValid" kind="broadcast">
+            <port kind="cfg_input" name="hidden_size"/>
+            <port annotation="NONE" expr="1" kind="input" name="in"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="hidden_size" kind="output" name="out_1"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_2"/>
+        </node>
+        <node id="ForkWeights" kind="fork">
+            <port kind="cfg_input" name="size_out0"/>
+            <port kind="cfg_input" name="size_out1"/>
+            <port annotation="NONE" expr="size_out0 + size_out1"
+                kind="input" name="weights_in"/>
+            <port annotation="NONE" expr="size_out0" kind="output" name="weights_out0"/>
+            <port annotation="NONE" expr="size_out1" kind="output" name="weights_out1"/>
+        </node>
+        <node id="raw_hidden" kind="snk">
+            <port annotation="NONE" expr="hidden_size" kind="input" name="raw_hidden"/>
+        </node>
+        <node id="hidden" kind="snk">
+            <port annotation="NONE" expr="hidden_size" kind="input" name="hidden"/>
+        </node>
+        <node id="output" kind="snk">
+            <port annotation="NONE" expr="output_size" kind="input" name="output"/>
+        </node>
+        <node id="BroadcastRawOutput" kind="broadcast">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+            <port annotation="NONE" expr="size" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="size" kind="output" name="out_1"/>
+        </node>
+        <node id="outputActivation" kind="actor">
+            <data key="graph_desc">Code/include/mlp.h</data>
+            <loop name="activateLinear">
+                <param direction="IN" isConfig="false" name="input" type="float "/>
+                <param direction="OUT" isConfig="false" name="output" type="float "/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="input"/>
+            <port annotation="NONE" expr="1" kind="output" name="output"/>
+        </node>
+        <node id="BroadcastRawHidden" kind="broadcast">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+            <port annotation="NONE" expr="size" kind="output" name="out_1"/>
+            <port annotation="NONE" expr="size" kind="output" name="out_0"/>
+        </node>
+        <node id="BroadcastHidden" kind="broadcast">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+            <port annotation="NONE" expr="size" kind="output" name="out_1"/>
+            <port annotation="NONE" expr="size" kind="output" name="out_0"/>
+        </node>
+        <edge kind="fifo" source="input" sourceport="input"
+            target="Hidden_layer" targetport="input" type="float"/>
+        <edge kind="fifo" source="ForkBias" sourceport="bias_out0"
+            target="Hidden_layer" targetport="bias_values" type="float"/>
+        <edge kind="fifo" source="ForkBias" sourceport="bias_out1"
+            target="Output_layer" targetport="bias_values" type="float"/>
+        <edge kind="fifo" source="bias" sourceport="bias"
+            target="ForkBias" targetport="bias_in" type="float"/>
+        <edge kind="fifo" source="valid_mlp" sourceport="valid"
+            target="BroadCastValid" targetport="in" type="int"/>
+        <edge kind="fifo" source="BroadCastValid" sourceport="out_0"
+            target="Hidden_layer" targetport="valid" type="int"/>
+        <edge kind="fifo" source="BroadCastValid" sourceport="out_1"
+            target="activationFunction" targetport="valid" type="int"/>
+        <edge kind="fifo" source="BroadCastValid" sourceport="out_2"
+            target="Output_layer" targetport="valid" type="int"/>
+        <edge kind="fifo" source="weights" sourceport="weights"
+            target="ForkWeights" targetport="weights_in" type="float"/>
+        <edge kind="fifo" source="ForkWeights" sourceport="weights_out0"
+            target="Hidden_layer" targetport="weights" type="float"/>
+        <edge kind="fifo" source="ForkWeights" sourceport="weights_out1"
+            target="Output_layer" targetport="weights" type="float"/>
+        <edge kind="fifo" source="BroadcastRawOutput" sourceport="out_1"
+            target="raw_output" targetport="raw_output" type="float"/>
+        <edge kind="fifo" source="Output_layer" sourceport="output"
+            target="BroadcastRawOutput" targetport="in" type="float"/>
+        <edge kind="fifo" source="BroadcastRawOutput" sourceport="out_0"
+            target="outputActivation" targetport="input" type="float"/>
+        <edge kind="fifo" source="outputActivation" sourceport="output"
+            target="output" targetport="output" type="float"/>
+        <edge kind="fifo" source="BroadcastRawHidden" sourceport="out_0"
+            target="raw_hidden" targetport="raw_hidden" type="float"/>
+        <edge kind="fifo" source="Hidden_layer" sourceport="output"
+            target="BroadcastRawHidden" targetport="in" type="float"/>
+        <edge kind="fifo" source="BroadcastRawHidden" sourceport="out_1"
+            target="activationFunction" targetport="input" type="float"/>
+        <edge kind="fifo" source="BroadcastHidden" sourceport="out_0"
+            target="hidden" targetport="hidden" type="float"/>
+        <edge kind="fifo" source="activationFunction"
+            sourceport="output" target="BroadcastHidden" targetport="in" type="float"/>
+        <edge kind="fifo" source="BroadcastHidden" sourceport="out_1"
+            target="Output_layer" targetport="input" type="float"/>
+        <edge kind="dependency" source="output_size" target="raw_output"/>
+        <edge kind="dependency" source="input_size" target="input"/>
+        <edge kind="dependency" source="input_size"
+            target="Hidden_layer" targetport="input_size"/>
+        <edge kind="dependency" source="output_size"
+            target="Output_layer" targetport="layer_size"/>
+        <edge kind="dependency" source="hidden_size"
+            target="Hidden_layer" targetport="layer_size"/>
+        <edge kind="dependency" source="hidden_size"
+            target="Output_layer" targetport="input_size"/>
+        <edge kind="dependency" source="hidden_size" target="bias"/>
+        <edge kind="dependency" source="output_size" target="bias"/>
+        <edge kind="dependency" source="hidden_size" target="size_weights_hidden"/>
+        <edge kind="dependency" source="input_size" target="size_weights_hidden"/>
+        <edge kind="dependency" source="output_size" target="size_weights_output"/>
+        <edge kind="dependency" source="hidden_size" target="size_weights_output"/>
+        <edge kind="dependency" source="hidden_size" target="ForkBias" targetport="size_out0"/>
+        <edge kind="dependency" source="output_size" target="ForkBias" targetport="size_out1"/>
+        <edge kind="dependency" source="size_weights_hidden" target="weights"/>
+        <edge kind="dependency" source="size_weights_output" target="weights"/>
+        <edge kind="dependency" source="hidden_size"
+            target="BroadCastValid" targetport="hidden_size"/>
+        <edge kind="dependency" source="size_weights_hidden"
+            target="ForkWeights" targetport="size_out0"/>
+        <edge kind="dependency" source="size_weights_output"
+            target="ForkWeights" targetport="size_out1"/>
+        <edge kind="dependency" source="hidden_size" target="raw_hidden"/>
+        <edge kind="dependency" source="output_size" target="output"/>
+        <edge kind="dependency" source="hidden_size" target="hidden"/>
+        <edge kind="dependency" source="output_size"
+            target="BroadcastRawOutput" targetport="size"/>
+        <edge kind="dependency" source="hidden_size"
+            target="BroadcastHidden" targetport="size"/>
+        <edge kind="dependency" source="hidden_size"
+            target="BroadcastRawHidden" targetport="size"/>
+    </graph>
+</graphml>

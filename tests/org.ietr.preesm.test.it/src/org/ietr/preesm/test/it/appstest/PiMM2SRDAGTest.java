@@ -49,8 +49,8 @@ public class PiMM2SRDAGTest {
   public void testRL() throws IOException, CoreException {
     final String projectName = "org.ietr.preesm.reinforcement_learning";
     final String[] scenarios = new String[] { "1corePrediction.scenario", "4corePrediction.scenario", "1coreTraining.scenario", "4coreTraining.scenario" };
-    final String[] workflows = new String[] { "CodegenMemoryScriptsMixedMerged.workflow", "StaticPiMM2SRDAGCodegen.workflow",
-        "PiMM2SRDAGCodegenMemoryScriptsMixedMerged.workflow", "StaticPiMMCodegen.workflow" };
+    final String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "PiMM2SRDAGCodegenMemoryScriptsMixedMerged.workflow",
+        "StaticPiMMCodegen.workflow", "StaticPiMMCodegenMemoryScripts.workflow" };
 
     for (final String workflow : workflows) {
       for (final String scenario : scenarios) {
