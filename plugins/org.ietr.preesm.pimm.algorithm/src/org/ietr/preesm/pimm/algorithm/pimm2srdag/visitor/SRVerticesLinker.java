@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
+import org.ietr.dftools.algorithm.model.AbstractEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGBroadcastVertex;
@@ -112,7 +113,7 @@ public class SRVerticesLinker {
 
   /**
    * Get the repetition value for the sink / source actor
-   * 
+   *
    * @param actor
    *          the sink actor
    * @param brv
@@ -123,7 +124,7 @@ public class SRVerticesLinker {
     if (actor instanceof InterfaceActor) {
       return 1;
     }
-    return (long) (brv.get(actor));
+    return (brv.get(actor));
   }
 
   /**
@@ -193,8 +194,8 @@ public class SRVerticesLinker {
     }
 
     // Initialize delay init / end IDs
-    delayInitID = "";
-    delayEndID = "";
+    this.delayInitID = "";
+    this.delayEndID = "";
 
     // List of source vertex
     final ArrayList<Pair<DAGVertex, Long>> sourceSet = getSourceSet(brv, pimm2dag);
@@ -230,7 +231,7 @@ public class SRVerticesLinker {
 
   /**
    * Test if a vertex is a roundbuffer
-   * 
+   *
    * @param vertex
    *          the vertex to test
    * @return true if the vertex is a roundbuffer, false else
@@ -410,8 +411,8 @@ public class SRVerticesLinker {
       } else {
         // Add an init vertex for the first iteration of the sink actor
         final MapperDAGVertex firstSink = pimm2dag.get(this.sink).get(0);
-        delayInitID = firstSink.getName() + "_init_" + this.sinkPort.getName();
-        final DAGVertex initVertex = createInitVertex(delayInitID, vertexFactory);
+        this.delayInitID = firstSink.getName() + "_init_" + this.sinkPort.getName();
+        final DAGVertex initVertex = createInitVertex(this.delayInitID, vertexFactory);
         addPair(sourceSet, initVertex, this.delays);
       }
     }
@@ -425,16 +426,16 @@ public class SRVerticesLinker {
       final DAGVertex sourceVertex = getInterfaceSourceVertex(vertex);
       // Repetition values
       final long sinkRV = SRVerticesLinker.getRVorDefault(this.sink, brv);
-      if (sourceProduction == sinkConsumption * sinkRV) {
+      if (sourceProduction == (sinkConsumption * sinkRV)) {
         // We don't need to use broadcast
         addPair(sourceSet, sourceVertex, sourceProduction);
       } else {
-        final boolean perfectBroadcast = (sinkConsumption * sinkRV) % sourceProduction == 0;
+        final boolean perfectBroadcast = ((sinkConsumption * sinkRV) % sourceProduction) == 0;
         long nBroadcast = (sinkConsumption * sinkRV) / sourceProduction;
         if (!perfectBroadcast) {
           nBroadcast++;
         }
-        DAGVertex broadcastVertex = vertexFactory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
+        final DAGVertex broadcastVertex = vertexFactory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
         broadcastVertex.getPropertyBean().setValue(DAGBroadcastVertex.SPECIAL_TYPE, DAGBroadcastVertex.SPECIAL_TYPE_BROADCAST);
         setVertexDefault(broadcastVertex, "broadcast_" + fifoID);
         this.dag.addVertex(broadcastVertex);
@@ -459,7 +460,7 @@ public class SRVerticesLinker {
   /**
    * Retrieve the source vertex corresponding to current data input interface. <br>
    * The corresponding edge is removed.
-   * 
+   *
    * @param vertex
    *          the vertex
    * @return the corresponding source vertex
@@ -490,7 +491,7 @@ public class SRVerticesLinker {
 
   /**
    * Retrieve the original source port of an interface, even in deep hierarchy.
-   * 
+   *
    * @param sourceInterface
    *          the current source interface
    * @return original source port
@@ -571,11 +572,11 @@ public class SRVerticesLinker {
 
     if (this.sink instanceof InterfaceActor) {
       // Repetition values
-      final long sourceRV = getRVorDefault(this.source, brv);
+      final long sourceRV = SRVerticesLinker.getRVorDefault(this.source, brv);
       // Retrieve corresponding sink vertex
       final DAGVertex vertex = pimm2dag.get(this.sink).get(0);
       final DAGVertex sinkVertex = getInterfaceSinkVertex(vertex);
-      if (sinkConsumption == sourceProduction * sourceRV) {
+      if (sinkConsumption == (sourceProduction * sourceRV)) {
         sinkSet.add(Pair.of(sinkVertex, sinkConsumption));
       } else {
         // We need to add a round buffer
@@ -597,7 +598,7 @@ public class SRVerticesLinker {
       pimm2dag.get(this.sink).forEach(v -> addPair(sinkSet, v, sinkConsumption));
 
       // This is only true in the case of an interface
-      final long sinkRV = getRVorDefault(this.sink, brv);
+      final long sinkRV = SRVerticesLinker.getRVorDefault(this.sink, brv);
       final long leftOver = (sinkConsumption * sinkRV) % sourceProduction;
       final boolean sinkNeedEnd = leftOver != 0;
       if (sinkNeedEnd) {
@@ -619,8 +620,8 @@ public class SRVerticesLinker {
       } else {
         // Add an end vertex for the last iteration of the source actor
         final MapperDAGVertex lastSource = pimm2dag.get(this.source).get(pimm2dag.get(this.source).size() - 1);
-        delayEndID = lastSource.getName() + "_end_" + this.sourcePort.getName();
-        final DAGVertex endVertex = createEndVertex(delayEndID, vertexFactory);
+        this.delayEndID = lastSource.getName() + "_end_" + this.sourcePort.getName();
+        final DAGVertex endVertex = createEndVertex(this.delayEndID, vertexFactory);
         setEndReference(endVertex);
         addPair(sinkSet, endVertex, this.delays);
       }
@@ -631,7 +632,7 @@ public class SRVerticesLinker {
   /**
    * Retrieve the source vertex corresponding to current data input interface. <br>
    * The corresponding edge is removed.
-   * 
+   *
    * @param vertex
    *          the vertex
    * @return the corresponding sink vertex
@@ -662,7 +663,7 @@ public class SRVerticesLinker {
 
   /**
    * Retrieve the original source port of an interface, even in deep hierarchy.
-   * 
+   *
    * @param sourceInterface
    *          the current source interface
    * @return original source port
@@ -684,7 +685,7 @@ public class SRVerticesLinker {
   /**
    * Retrieve the port matching portName in a portList.<br>
    * If the port is not found, it throws an exception
-   * 
+   *
    * @param portList
    *          the list of port in which to look for
    * @param portName
@@ -782,7 +783,7 @@ public class SRVerticesLinker {
     newEdge.setWeight(new DAGDefaultEdgePropertyType(weight));
     newEdge.setSourceLabel(this.sourcePort.getName());
     newEdge.setTargetLabel(this.sinkPort.getName());
-    newEdge.setPropertyValue(SDFEdge.BASE, this.dag);
+    newEdge.setPropertyValue(AbstractEdge.BASE, this.dag);
     newEdge.setContainingEdge(edge);
 
     edge.getAggregate().add(newEdge);
@@ -864,7 +865,7 @@ public class SRVerticesLinker {
 
   private void setEndReference(final DAGVertex endVertex) {
     // Test to see if there is an init actor
-    final DAGVertex initVertex = this.dag.getVertex(delayInitID);
+    final DAGVertex initVertex = this.dag.getVertex(this.delayInitID);
     if (initVertex != null) {
       initVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, endVertex.getName());
       endVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, initVertex.getName());

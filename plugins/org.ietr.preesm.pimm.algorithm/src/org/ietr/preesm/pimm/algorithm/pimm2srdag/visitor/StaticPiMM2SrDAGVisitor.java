@@ -271,7 +271,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Set the arguments of a DAG Vertex from a PiMM actor properties.
-   * 
+   *
    * @param actor
    *          the PiMM Actor
    * @param vertex
@@ -454,7 +454,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Convert a PiMM actor to a set of DAG Vertices w.r.t the repetition factor of the actor.
-   * 
+   *
    * @param actor
    *          the actor
    */
@@ -485,7 +485,7 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Populate the DAG with 1 instance of the PiMM actor.
-   * 
+   *
    * @param actor
    *          the actor
    */
