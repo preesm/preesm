@@ -23,6 +23,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
@@ -218,7 +219,7 @@ public class SRVerticesLinker {
       if (connectSources2Sink(sourceSet, sinkSet)) {
         sinkSet.remove(0);
       }
-      if (sourceSet.isEmpty()) {
+      if (sourceSet.isEmpty() || sinkSet.isEmpty()) {
         break;
       }
       if (connectSinks2Source(sinkSet, sourceSet)) {
@@ -484,8 +485,7 @@ public class SRVerticesLinker {
       throw new PiMMHelperException(message);
     }
     this.sourcePort = getOriginalSource(correspondingPort);
-    final DAGVertex sourceVertex = interfaceEdge.getSource();
-    return sourceVertex;
+    return interfaceEdge.getSource();
   }
 
   /**
@@ -655,9 +655,30 @@ public class SRVerticesLinker {
       final String message = "Edge corresponding to fifo [" + correspondingFifo.getId() + "] not found.";
       throw new PiMMHelperException(message);
     }
-    this.sinkPort = correspondingFifo.getTargetPort();
-    final DAGVertex targetVertex = interfaceEdge.getTarget();
-    return targetVertex;
+    // this.sinkPort = correspondingFifo.getTargetPort();
+    this.sinkPort = getOriginalSink(correspondingPort);
+    return interfaceEdge.getTarget();
+  }
+
+  /**
+   * Retrieve the original source port of an interface, even in deep hierarchy.
+   * 
+   * @param sourceInterface
+   *          the current source interface
+   * @return original source port
+   * @throws PiMMHelperException
+   *           the PiMMHelperException exception
+   */
+  private DataInputPort getOriginalSink(final DataOutputPort sinkPort) throws PiMMHelperException {
+    final Fifo inFifo = sinkPort.getFifo();
+    final DataInputPort origSink = inFifo.getTargetPort();
+    final AbstractActor containingActor = origSink.getContainingActor();
+    if (containingActor instanceof DataOutputInterface) {
+      final ArrayList<DataPort> dataOutputPorts = new ArrayList<>(containingActor.getContainingPiGraph().getDataOutputPorts());
+      final DataOutputPort correspondingPort = (DataOutputPort) getCorrespondingPort(dataOutputPorts, containingActor.getName());
+      return getOriginalSink(correspondingPort);
+    }
+    return origSink;
   }
 
   /**

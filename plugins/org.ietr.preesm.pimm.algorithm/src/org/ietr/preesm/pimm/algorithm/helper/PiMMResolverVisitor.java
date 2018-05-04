@@ -234,6 +234,9 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
     // Iterate over parameters
+    for (final ConfigInputInterface p : graph.getConfigInputInterfaces()) {
+      doSwitch(p);
+    }
     for (final Parameter p : graph.getParameters()) {
       doSwitch(p);
     }
