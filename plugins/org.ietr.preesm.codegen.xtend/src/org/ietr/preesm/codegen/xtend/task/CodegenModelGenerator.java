@@ -1207,15 +1207,12 @@ public class CodegenModelGenerator {
    *           if the passed vertex is not a {@link DAGInitVertex} nor a {@link DAGEndVertex}
    */
   protected void generateFifoCall(final CoreBlock operatorBlock, final DAGVertex dagVertex) {
-    // Retrieve the sdf vertex
-    // final SDFAbstractVertex sdfVertex = dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex.class);
-
     // Create the Fifo call and set basic property
     final FifoCall fifoCall = CodegenFactory.eINSTANCE.createFifoCall();
     fifoCall.setName(dagVertex.getName());
 
     // Find the type of FiFo operation
-    final String kind = dagVertex.getPropertyStringValue(AbstractVertex.KIND);
+    final String kind = dagVertex.getKind();
     switch (kind) {
       case DAGInitVertex.DAG_INIT_VERTEX:
         fifoCall.setOperation(FifoOperation.POP);
