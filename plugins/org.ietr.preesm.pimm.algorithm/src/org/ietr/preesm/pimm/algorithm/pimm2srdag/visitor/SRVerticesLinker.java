@@ -50,9 +50,6 @@ public class SRVerticesLinker {
   /** Property name for property FORK_VERTEX. */
   public static final String FORK_VERTEX = "explode_";
 
-  /** Property name for property PIMM_FIFO. */
-  public static final String PIMM_FIFO = "pimm_fifo";
-
   // Number of delays
   private final long delays;
 
@@ -76,13 +73,13 @@ public class SRVerticesLinker {
   // The DAG in which we operate
   private final MapperDAG dag;
 
-  // Counters for unique ID creation of Forks/Joins
-  private int joinIDCounter;
-  private int forkIDCounter;
-
   // Port modifiers annotations
   private final String sourceModifier;
   private final String targetModifier;
+
+  // Delay init / end id
+  String delayInitID;
+  String delayEndID;
 
   /**
    * Retrieve the number of delay tokens contain in a fifo, if any
@@ -148,8 +145,6 @@ public class SRVerticesLinker {
     final String type = fifo.getType();
     this.dataSize = scenario.getSimulationManager().getDataTypeSizeOrDefault(type);
     this.dag = dag;
-    this.joinIDCounter = 0;
-    this.forkIDCounter = 0;
     this.sourceModifier = getAnnotationFromPort(this.sourcePort);
     this.targetModifier = getAnnotationFromPort(this.sinkPort);
     this.fifoName = this.fifo.getId().replace(".", "_").replace("-", "_");
@@ -196,6 +191,10 @@ public class SRVerticesLinker {
       return true;
     }
 
+    // Initialize delay init / end IDs
+    delayInitID = "";
+    delayEndID = "";
+
     // List of source vertex
     final ArrayList<Pair<DAGVertex, Long>> sourceSet = getSourceSet(brv, pimm2dag);
     // List of sink vertex
@@ -229,6 +228,21 @@ public class SRVerticesLinker {
   }
 
   /**
+   * Test if a vertex is a roundbuffer
+   * 
+   * @param vertex
+   *          the vertex to test
+   * @return true if the vertex is a roundbuffer, false else
+   */
+  private boolean isRoundBuffer(final DAGVertex vertex) {
+    if (!vertex.getKind().equals(DAGBroadcastVertex.DAG_BROADCAST_VERTEX)) {
+      return false;
+    }
+    final String value = (String) vertex.getPropertyBean().getValue(DAGBroadcastVertex.SPECIAL_TYPE);
+    return value.equals(DAGBroadcastVertex.SPECIAL_TYPE_ROUNDBUFFER);
+  }
+
+  /**
    * Connect sources to current sink
    *
    * @param sourceSet
@@ -238,18 +252,27 @@ public class SRVerticesLinker {
    * @return true if it didn't explode, false else
    */
   private boolean connectSources2Sink(final ArrayList<Pair<DAGVertex, Long>> sourceSet, final ArrayList<Pair<DAGVertex, Long>> sinkSet) {
-    final ArrayList<Pair<DAGVertex, Long>> toRemove = new ArrayList<>();
     final Pair<DAGVertex, Long> sinkPair = sinkSet.get(0);
     DAGVertex sinkVertex = sinkPair.getLeft();
     long cons = sinkPair.getRight();
-    // Check implode condition
     long prod = sourceSet.get(0).getRight();
-    if (cons > prod) {
-      final DAGVertex join = createJoinVertex(SRVerticesLinker.JOIN_VERTEX + this.fifoName, MapperVertexFactory.getInstance());
-      final DAGEdge edge = createEdge(join, sinkVertex, Long.toString(cons));
+    // Check implode condition
+    final boolean implode = (cons > prod);
+    // Check if sink is a join
+    final boolean isSinkJoinVertex = sinkVertex.getKind().equals(DAGJoinVertex.DAG_JOIN_VERTEX);
+    // Check if sink is a roundbuffer
+    final boolean isSinkRoundBufferVertex = isRoundBuffer(sinkVertex);
+    // Test if we need to add an implode vertex
+    if (implode && !isSinkJoinVertex && !isSinkRoundBufferVertex) {
+      final String implodeName = SRVerticesLinker.JOIN_VERTEX + sinkVertex.getName() + "_" + this.sinkPort.getName();
+      final DAGVertex implodeVertex = createJoinVertex(implodeName, MapperVertexFactory.getInstance());
+      final DAGEdge edge = createEdge(implodeVertex, sinkVertex, Long.toString(cons));
+      // Add a source port modifier
       edge.setSourcePortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
-      sinkVertex = join;
+      sinkVertex = implodeVertex;
     }
+    // Array of sources to remove
+    final ArrayList<Pair<DAGVertex, Long>> toRemove = new ArrayList<>();
     // Connect the edges
     for (final Pair<DAGVertex, Long> src : sourceSet) {
       prod = src.getRight();
@@ -259,19 +282,23 @@ public class SRVerticesLinker {
       toRemove.add(src);
       final DAGVertex sourceVertex = src.getLeft();
       final DAGEdge edge = createEdge(sourceVertex, sinkVertex, Long.toString(prod));
-      if (sinkVertex.getKind().equals(DAGJoinVertex.DAG_JOIN_VERTEX) && sinkVertex != sinkPair.getLeft()) {
+
+      // If the target is join (new or not) /roundbuffer with new ports
+      final boolean isJoinOrRoundBuffer = (sinkVertex != sinkPair.getLeft()) || (implode && isSinkRoundBufferVertex && !isSinkJoinVertex);
+      if (isJoinOrRoundBuffer) {
         // update name and source port modifier
         edge.setTargetLabel(edge.getTargetLabel() + "_" + Long.toString(cons));
         edge.setTargetPortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
       }
       cons = cons - prod;
     }
+    // Remove all sources that got connected
     toRemove.forEach(sourceSet::remove);
     // Reset the current top sink
     sinkSet.set(0, Pair.of(sinkVertex, cons));
-    // Explode condition
-    final boolean explode = (prod > cons) && (cons != 0);
-    return !explode;
+    // Removing the sink for the set condition
+    final boolean shouldRemoveSink = (prod > cons) && (cons != 0);
+    return !shouldRemoveSink;
   }
 
   /**
@@ -284,18 +311,30 @@ public class SRVerticesLinker {
    * @return true if it didn't implode, false else
    */
   private boolean connectSinks2Source(final ArrayList<Pair<DAGVertex, Long>> sinkSet, final ArrayList<Pair<DAGVertex, Long>> sourceSet) {
-    final ArrayList<Pair<DAGVertex, Long>> toRemove = new ArrayList<>();
     final Pair<DAGVertex, Long> sourcePair = sourceSet.get(0);
     DAGVertex sourceVertex = sourcePair.getLeft();
     long prod = sourcePair.getRight();
     long cons = sinkSet.get(0).getRight();
     // Check explode condition
-    if (prod > cons) {
-      final DAGVertex fork = createForkVertex(SRVerticesLinker.FORK_VERTEX + this.fifoName, MapperVertexFactory.getInstance());
-      final DAGEdge edge = createEdge(sourceVertex, fork, Long.toString(prod));
+    final boolean explode = prod > cons;
+    // Check if source is a fork
+    final boolean isSourceForkVertex = sourceVertex.getKind().equals(DAGForkVertex.DAG_FORK_VERTEX);
+    // Check if source is a roundbuffer
+    final boolean isSourceRoundBufferVertex = isRoundBuffer(sourceVertex);
+    // Check if source is a broadcast
+    final boolean isSourceBroadcastVertex = !isSourceRoundBufferVertex && sourceVertex.getKind().equals(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
+    // Test if we need to add an explode vertex
+    if (explode && !isSourceForkVertex && (!isSourceBroadcastVertex || isSourceRoundBufferVertex)) {
+      // If we must, we add an explode vertex
+      final String explodeName = SRVerticesLinker.FORK_VERTEX + sourceVertex.getName() + "_" + this.sourcePort.getName();
+      final DAGVertex explodeVertex = createForkVertex(explodeName, MapperVertexFactory.getInstance());
+      final DAGEdge edge = createEdge(sourceVertex, explodeVertex, Long.toString(prod));
+      // Add a target port modifier
       edge.setTargetPortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
-      sourceVertex = fork;
+      sourceVertex = explodeVertex;
     }
+    // Array of sink to remove
+    final ArrayList<Pair<DAGVertex, Long>> toRemove = new ArrayList<>();
     // Connect the edges
     for (final Pair<DAGVertex, Long> snk : sinkSet) {
       cons = snk.getRight();
@@ -305,20 +344,24 @@ public class SRVerticesLinker {
       toRemove.add(snk);
       final DAGVertex sinkVertex = snk.getLeft();
       final DAGEdge edge = createEdge(sourceVertex, sinkVertex, Long.toString(cons));
-      if ((sourceVertex.getKind().equals(DAGForkVertex.DAG_FORK_VERTEX) && sourceVertex != sourcePair.getLeft())
-          || sourceVertex.getKind().equals(DAGBroadcastVertex.DAG_BROADCAST_VERTEX)) {
+      // If the source is a fork (new or not)
+      // or a broadcast with a new port
+      final boolean isForkOrBroadcast = !((sourceVertex == sourcePair.getLeft()) && (!explode || !(isSourceBroadcastVertex || isSourceForkVertex)));
+      if (isForkOrBroadcast) {
         // update name and source port modifier
         edge.setSourceLabel(edge.getSourceLabel() + "_" + Long.toString(prod));
+        // Add a source port modifier
         edge.setSourcePortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
       }
       prod = prod - cons;
     }
+    // Remove all sinks that got connected
     toRemove.forEach(sinkSet::remove);
     // Reset the current top source
     sourceSet.set(0, Pair.of(sourceVertex, prod));
-    // Implode condition
-    final boolean implode = (cons > prod) && (prod != 0);
-    return !implode;
+    // Removing the source for the set condition
+    final boolean shouldRemoveSink = (cons > prod) && (prod != 0);
+    return !shouldRemoveSink;
   }
 
   /**
@@ -365,14 +408,15 @@ public class SRVerticesLinker {
         sourceSet.add(addDelaySetterActor(setterActorList));
       } else {
         // Add an init vertex for the first iteration of the sink actor
-        final String uniqueInitID = "init_" + this.sink.getVertexPath().replace("/", "_") + "_" + this.sinkPort.getName();
-        final DAGVertex initVertex = createInitVertex(uniqueInitID, vertexFactory);
+        final MapperDAGVertex firstSink = pimm2dag.get(this.sink).get(0);
+        delayInitID = firstSink.getName() + "_init_" + this.sinkPort.getName();
+        final DAGVertex initVertex = createInitVertex(delayInitID, vertexFactory);
         addPair(sourceSet, initVertex, this.delays);
       }
     }
 
     if (this.source instanceof InterfaceActor) {
-      // // Port expressions
+      // Port expressions
       final Expression sinkExpression = this.sinkPort.getPortRateExpression();
       final long sinkConsumption = Long.parseLong(sinkExpression.getExpressionString());
       // Retrieve corresponding source vertex
@@ -440,7 +484,8 @@ public class SRVerticesLinker {
       throw new PiMMHelperException(message);
     }
     this.sourcePort = getOriginalSource(correspondingPort);
-    return interfaceEdge.getSource();
+    final DAGVertex sourceVertex = interfaceEdge.getSource();
+    return sourceVertex;
   }
 
   /**
@@ -517,7 +562,6 @@ public class SRVerticesLinker {
     final ArrayList<Pair<DAGVertex, Long>> sinkSet = new ArrayList<>();
 
     final MapperVertexFactory vertexFactory = MapperVertexFactory.getInstance();
-    final String fifoID = this.fifoName;
 
     // Port expressions
     final Expression sinkExpression = this.sinkPort.getPortRateExpression();
@@ -534,16 +578,19 @@ public class SRVerticesLinker {
       if (sinkConsumption == sourceProduction * sourceRV) {
         sinkSet.add(Pair.of(sinkVertex, sinkConsumption));
       } else {
-        final long nDroppedTokens = (sourceProduction * sourceRV) - sinkConsumption;
-        long nEnd = (long) Math.ceil((double) nDroppedTokens / sourceProduction);
-        final String fixID = "sinkEnd_" + fifoID + "_";
-        for (long i = 0; i < (nEnd - 1); ++i) {
-          final DAGVertex endVertex = createEndVertex(fixID + Long.toString(i), vertexFactory);
-          addPair(sinkSet, endVertex, sourceProduction);
-        }
-        final DAGVertex endVertex = createEndVertex(fixID + Long.toString(nEnd - 1), vertexFactory);
-        addPair(sinkSet, endVertex, nDroppedTokens - (nEnd - 1) * sourceProduction);
-        addPair(sinkSet, sinkVertex, sinkConsumption);
+        // We need to add a round buffer
+        // final long nDroppedTokens = (sourceProduction * sourceRV) - sinkConsumption;
+        // long nEnd = (long) Math.ceil((double) nDroppedTokens / sourceProduction);
+        // final String fixID = "rb_" + fifoID + "_";
+        // for (long i = 0; i < (nEnd - 1); ++i) {
+        // final DAGVertex endVertex = createEndVertex(fixID + Long.toString(i), vertexFactory);
+        // addPair(sinkSet, endVertex, sourceProduction);
+        // }
+        // final DAGVertex endVertex = createEndVertex(fixID + Long.toString(nEnd - 1), vertexFactory);
+        // addPair(sinkSet, endVertex, nDroppedTokens - (nEnd - 1) * sourceProduction);
+        // addPair(sinkSet, sinkVertex, sinkConsumption);
+        final DAGVertex roundbufferVertex = createRoundBufferVertex(sinkConsumption, sinkVertex, vertexFactory);
+        addPair(sinkSet, roundbufferVertex, sourceProduction * sourceRV);
       }
     } else if (this.sink instanceof AbstractActor) {
       // Add the list of the SR-DAG vertex associated with the sink
@@ -555,7 +602,7 @@ public class SRVerticesLinker {
       final boolean sinkNeedEnd = leftOver != 0;
       if (sinkNeedEnd) {
         // Add an end vertex for the round buffer of the interface
-        final DAGVertex endVertex = createEndVertex("interfaceEnd_" + fifoID, vertexFactory);
+        final DAGVertex endVertex = createEndVertex(sinkSet.get(sinkSet.size() - 1) + "_end_" + this.sinkPort.getName(), vertexFactory);
         addPair(sinkSet, endVertex, sourceProduction - leftOver);
       }
     } else {
@@ -571,8 +618,9 @@ public class SRVerticesLinker {
         sinkSet.add(addDelayGetterActor(getterActorList));
       } else {
         // Add an end vertex for the last iteration of the source actor
-        final String uniqueEndID = "end_" + this.source.getVertexPath().replace("/", "_") + "_" + this.sourcePort.getName();
-        final DAGVertex endVertex = createEndVertex(uniqueEndID, vertexFactory);
+        final MapperDAGVertex lastSource = pimm2dag.get(this.source).get(pimm2dag.get(this.source).size() - 1);
+        delayEndID = lastSource.getName() + "_end_" + this.sourcePort.getName();
+        final DAGVertex endVertex = createEndVertex(delayEndID, vertexFactory);
         setEndReference(endVertex);
         addPair(sinkSet, endVertex, this.delays);
       }
@@ -608,7 +656,8 @@ public class SRVerticesLinker {
       throw new PiMMHelperException(message);
     }
     this.sinkPort = correspondingFifo.getTargetPort();
-    return interfaceEdge.getTarget();
+    final DAGVertex targetVertex = interfaceEdge.getTarget();
+    return targetVertex;
   }
 
   /**
@@ -707,7 +756,6 @@ public class SRVerticesLinker {
     if (!this.targetModifier.isEmpty()) {
       newEdge.setTargetPortModifier(new SDFStringEdgePropertyType(this.targetModifier));
     }
-    newEdge.setPropertyValue(SRVerticesLinker.PIMM_FIFO, new SDFStringEdgePropertyType(this.fifoName));
     newEdge.setPropertyValue(SDFEdge.DATA_TYPE, this.fifo.getType());
     newEdge.setPropertyValue(SDFEdge.DATA_SIZE, this.dataSize);
     newEdge.setWeight(new DAGDefaultEdgePropertyType(weight));
@@ -718,6 +766,7 @@ public class SRVerticesLinker {
 
     edge.getAggregate().add(newEdge);
     edge.setWeight(new DAGDefaultEdgePropertyType(weight * this.dataSize));
+
     return edge;
   }
 
@@ -733,8 +782,8 @@ public class SRVerticesLinker {
    */
   private DAGVertex createJoinVertex(final String fixID, final MapperVertexFactory vertexFactory) {
     final DAGVertex joinVertex = vertexFactory.createVertex(DAGJoinVertex.DAG_JOIN_VERTEX);
-    final String id = fixID + "_" + Integer.toString(this.joinIDCounter++);
-    setVertexDefault(joinVertex, id);
+    // final String id = fixID + "_" + Integer.toString(this.joinIDCounter++);
+    setVertexDefault(joinVertex, fixID);
     this.dag.addVertex(joinVertex);
     return joinVertex;
   }
@@ -751,8 +800,8 @@ public class SRVerticesLinker {
    */
   private DAGVertex createForkVertex(final String fixID, final MapperVertexFactory vertexFactory) {
     final DAGVertex forkVertex = vertexFactory.createVertex(DAGForkVertex.DAG_FORK_VERTEX);
-    final String id = fixID + "_" + Integer.toString(this.forkIDCounter++);
-    setVertexDefault(forkVertex, id);
+    // final String id = fixID + "_" + Integer.toString(this.forkIDCounter++);
+    setVertexDefault(forkVertex, fixID);
     this.dag.addVertex(forkVertex);
     return forkVertex;
   }
@@ -794,12 +843,31 @@ public class SRVerticesLinker {
 
   private void setEndReference(final DAGVertex endVertex) {
     // Test to see if there is an init actor
-    final String uniqueInitID = "init_" + this.sink.getVertexPath().replace("/", "_") + "_" + this.sinkPort.getName();
-    final DAGVertex initVertex = this.dag.getVertex(uniqueInitID);
+    final DAGVertex initVertex = this.dag.getVertex(delayInitID);
     if (initVertex != null) {
       initVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, endVertex.getName());
       endVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, initVertex.getName());
     }
+  }
+
+  /**
+   * Creates a new roundBuffer actor. <br>
+   * The created vertex is automatically added to the DAG.
+   *
+   * @param fixID
+   *          id of the vertex
+   * @param vertexFactory
+   *          DAGVertex factory
+   * @return the roundBuffer DAGVertex
+   */
+  private DAGVertex createRoundBufferVertex(final Long sinkConsumption, final DAGVertex sinkVertex, final MapperVertexFactory vertexFactory) {
+    final DAGVertex roundbufferVertex = vertexFactory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
+    roundbufferVertex.getPropertyBean().setValue(DAGBroadcastVertex.SPECIAL_TYPE, DAGBroadcastVertex.SPECIAL_TYPE_ROUNDBUFFER);
+    setVertexDefault(roundbufferVertex, "rb_" + sinkVertex.getName());
+    this.dag.addVertex(roundbufferVertex);
+    final DAGEdge edge = createEdge(roundbufferVertex, sinkVertex, sinkConsumption.toString());
+    edge.setSourcePortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
+    return roundbufferVertex;
   }
 
   /**
