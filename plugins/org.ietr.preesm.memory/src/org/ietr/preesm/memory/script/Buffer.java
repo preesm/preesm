@@ -1227,7 +1227,7 @@ public class Buffer {
   @Override
   public String toString() {
     final int size = this.nbTokens * this.tokenSize;
-    return getSdfVertex().getName() + "." + this.name + "[" + size + "]";
+    return dagVertex.getName() + "." + this.name + "[" + size + "]";
   }
 
 }
