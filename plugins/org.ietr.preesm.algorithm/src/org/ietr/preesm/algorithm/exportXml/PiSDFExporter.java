@@ -51,10 +51,14 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiWriter;
 import org.ietr.preesm.utils.files.ContainersManager;
@@ -76,10 +80,22 @@ public class PiSDFExporter extends AbstractTaskImplementation {
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
       final String nodeName, final Workflow workflow) throws WorkflowException {
 
-    final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
+    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
+    // Parse the graph
+    final String url = scenario.getAlgorithmURL();
+    final ResourceSet resourceSet = new ResourceSetImpl();
+
+    final URI uriGraph = URI.createPlatformResourceURI(url, true);
+    if ((uriGraph.fileExtension() == null) || !uriGraph.fileExtension().contentEquals("pi")) {
+      throw new WorkflowException("unhandled file exception: " + uriGraph.fileExtension());
+    }
+    Resource ressource;
+    ressource = resourceSet.getResource(uriGraph, true);
+    final PiGraph graph = (PiGraph) (ressource.getContents().get(0));
+
+    // Creates the output file now
     final String sXmlPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName()) + "/Algo/generated";
-
     IPath xmlPath = new Path(sXmlPath);
     // Get a complete valid path with all folders existing
     try {
@@ -101,9 +117,9 @@ public class PiSDFExporter extends AbstractTaskImplementation {
       final String platformString = uri.toPlatformString(true);
       final IFile documentFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(platformString));
       outStream = new FileOutputStream(documentFile.getLocation().toOSString());
+
       new PiWriter(uri).write(graph, outStream);
     } catch (FileNotFoundException e) {
-      // TODO Auto-generated catch block
       throw new WorkflowException("Could not open outputstream file " + xmlPath.toString());
     }
 

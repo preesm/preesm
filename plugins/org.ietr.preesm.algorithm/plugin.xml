@@ -234,8 +234,8 @@
             type="org.ietr.preesm.algorithm.exportXml.PiSDFExporter">
          <inputs>
             <input
-                  id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
             </input>
          </inputs>
       </task>
