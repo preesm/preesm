@@ -88,6 +88,7 @@ import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
@@ -286,9 +287,10 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       final PiMMAddFeatureSelectionSwitch piMMAddFeatureSelectionSwitch = new PiMMAddFeatureSelectionSwitch();
       addFeature = piMMAddFeatureSelectionSwitch.doSwitch((EObject) newObject);
     } else if (newObject instanceof IFile) {
-      if (getBusinessObjectForPictogramElement(context.getTargetContainer()) instanceof Actor) {
+      final Object businessObjectForPictogramElement = getBusinessObjectForPictogramElement(context.getTargetContainer());
+      if (businessObjectForPictogramElement instanceof Actor || businessObjectForPictogramElement instanceof Delay) {
         addFeature = new AddRefinementFeature(this);
-      } else if (getBusinessObjectForPictogramElement(context.getTargetContainer()) instanceof PiGraph) {
+      } else if (businessObjectForPictogramElement instanceof PiGraph) {
         addFeature = new AddActorFromRefinementFeature(this);
       } else {
         addFeature = null;
@@ -351,6 +353,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     if (!isEditable()) {
       return new ICustomFeature[0];
     }
+
     final ArrayList<ICustomFeature> features = new ArrayList<>();
 
     final PictogramElement[] pes = context.getPictogramElements();
@@ -358,6 +361,10 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       return new ICustomFeature[0];
     }
     final Object obj = getBusinessObjectForPictogramElement(pes[0]);
+
+    if (obj instanceof DelayActor) {
+      return new ICustomFeature[0];
+    }
 
     if (obj instanceof PiGraph) {
       features.add(new SetVisibleAllDependenciesFeature(this, true));

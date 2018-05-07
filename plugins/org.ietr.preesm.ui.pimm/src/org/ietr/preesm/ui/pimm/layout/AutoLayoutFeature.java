@@ -78,6 +78,7 @@ import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
@@ -845,7 +846,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     // (or the gap just before if the delay is a feedback
     // delay
     // of an actor)
-    final PictogramElement delayPE = DiagramPiGraphLinkHelper.getDelayPE(diagram, (Fifo) getter.eContainer());
+    final PictogramElement delayPE = DiagramPiGraphLinkHelper.getDelayPE(diagram, ((Delay) getter).getContainingFifo());
     final GraphicsAlgorithm delayGA = delayPE.getGraphicsAlgorithm();
 
     int gapEnd = -1;
@@ -1242,13 +1243,32 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   protected List<List<AbstractActor>> stageByStageActorSort(final PiGraph graph, final List<Fifo> feedbackFifos) {
     // 1. Sort actor in alphabetical order
     final List<AbstractActor> actors = new ArrayList<>(graph.getActors());
+
+    // 2. Remove Delay Actors that are not connected to avoid weird delay placement
+    actors.removeIf(this::removeDelayActor);
+
     actors.sort((a1, a2) -> a1.getName().compareTo(a2.getName()));
 
-    // 2. Find source actors (actor without input non feedback FIFOs)
+    // 3. Find source actors (actor without input non feedback FIFOs)
     final List<AbstractActor> srcActors = findSrcActors(feedbackFifos, actors);
 
-    // 3. BFS-style stage by stage construction
+    // 4. BFS-style stage by stage construction
     return createActorStages(feedbackFifos, actors, srcActors);
+  }
+
+  /**
+   * Remove a delay actor if it is not connected to a setter or a getter actor as it should not be layout.
+   *
+   * @param actor
+   *          the {@link AbstractActor} tested
+   * @return true if the actor is a {@link DelayActor} and it should be removed, false else
+   */
+  private boolean removeDelayActor(final AbstractActor actor) {
+    if (actor instanceof DelayActor) {
+      final DelayActor delayActor = (DelayActor) actor;
+      return (delayActor.getSetterActor() == null) && (delayActor.getGetterActor() == null);
+    }
+    return false;
   }
 
   /**
