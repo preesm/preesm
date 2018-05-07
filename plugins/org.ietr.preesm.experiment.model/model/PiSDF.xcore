@@ -182,7 +182,7 @@ class PiGraph extends AbstractActor, Graph {
 	}
 	op unique boolean addDependency(Dependency dependency) {
 		edges.add(dependency)
-	}
+	}	
 
 	op unique Parameter[] getParameters(){
 		return vertices.filter(Parameter).toEList.unmodifiableView
@@ -340,10 +340,10 @@ class DelayActor extends NonExecutableActor, RefinementContainer {
 	}
 	// Return the actor that set / get the delay
 	op AbstractActor getSetterActor() {
-		return Optional.ofNullable(dataInputPort.incomingFifo.sourcePort.containingActor).orElse(null)
+		return Optional.ofNullable(dataInputPort.incomingFifo).map[sourcePort.containingActor].orElse(null)
 	}
 	op AbstractActor getGetterActor() {
-		return Optional.ofNullable(dataOutputPort.outgoingFifo.targetPort.containingActor).orElse(null)
+		return Optional.ofNullable(dataOutputPort.outgoingFifo).map[targetPort.containingActor].orElse(null)
 	}	
 	op ConfigInputPort lookupConfigInputPortConnectedWithParameter(Parameter p) {
 		return linkedDelay.lookupConfigInputPortConnectedWithParameter(p) 
@@ -595,6 +595,12 @@ class Delay extends Configurable, ExpressionHolder {
 			}
 			actor.setName(name)			
 		}
+	}
+	
+	op unique String getId() {
+		var String srcName = Optional.ofNullable(containingFifo).map[sourcePort.containingActor.getName()].orElse("")
+		var String tgtName = Optional.ofNullable(containingFifo).map[targetPort.containingActor.getName()].orElse("")
+		return "delay_" + srcName + "--" + tgtName
 	}
 }
 
