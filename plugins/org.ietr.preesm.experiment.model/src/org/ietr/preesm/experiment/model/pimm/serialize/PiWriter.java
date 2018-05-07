@@ -74,6 +74,7 @@ import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
+import org.ietr.preesm.experiment.model.pimm.NonExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -355,7 +356,7 @@ public class PiWriter {
     final Element vertexElt = appendChild(graphElt, PiIdentifiers.NODE);
 
     // Set the unique ID of the node (equal to the vertex name)
-    vertexElt.setAttribute(PiIdentifiers.DELAY_NAME, delay.getName());
+    vertexElt.setAttribute(PiIdentifiers.DELAY_NAME, delay.getId());
 
     // Set the delay attribute to the node
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.DELAY);
@@ -462,7 +463,7 @@ public class PiWriter {
     fifoElt.setAttribute(PiIdentifiers.FIFO_TARGET_PORT, fifo.getTargetPort().getName());
 
     if (fifo.getDelay() != null) {
-      writeDataElt(fifoElt, PiIdentifiers.DELAY, fifo.getDelay().getName());
+      writeDataElt(fifoElt, PiIdentifiers.DELAY, fifo.getDelay().getId());
       fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, fifo.getDelay().getSizeExpression().getExpressionString());
     }
     // TODO other Fifo properties (if any)
@@ -489,6 +490,10 @@ public class PiWriter {
 
     // Write the vertices of the graph
     for (final AbstractActor actor : graph.getActors()) {
+      // ignore all non executable actors
+      if (actor instanceof NonExecutableActor) {
+        continue;
+      }
       writeAbstractActor(graphElt, actor);
     }
 
