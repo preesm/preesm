@@ -512,6 +512,8 @@ public class PiParser {
         delay = PiMMUserFactory.instance.createDelay();
         delay.getSizeExpression().setExpressionString(edgeElt.getAttribute(PiIdentifiers.DELAY_EXPRESSION));
         graph.addDelay(delay);
+        WorkflowLogger.getLogger()
+            .warning("You are using an old formatted .pi file. Use the task org.ietr.preesm.algorithm.exportXml.pimm2xml to generate an updated one");
       } else {
         // Find the delay of the FIFO
         // Delays are now seen as nodes so the delay is already created and parsed by now
