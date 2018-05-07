@@ -13,6 +13,7 @@ PREESM Changelog
 * Update coding policies to 1.2.4 (fix line split);
 * Update DFTools to 1.5.0+;
 * Mintor refactoring of the Codegen;
+* Adding new facilities method in PiGrraph 
 
 ### Bug fix
 
