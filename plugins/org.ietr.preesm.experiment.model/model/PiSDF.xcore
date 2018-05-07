@@ -181,6 +181,14 @@ class PiGraph extends AbstractActor, Graph {
 	op unique Dependency[] getDependencies() {
 		return edges.filter(Dependency).toEList.unmodifiableView
 	}
+	
+	op unique boolean removeActor(AbstractActor actor) {
+		vertices.remove(actor);
+	}
+	
+	op unique Parameter[] getOnlyParameters(){
+		return parameters.filter(it | !((it instanceof ConfigInputInterface) || (it instanceof ConfigOutputInterface) )).toEList.unmodifiableView
+	}
 
 	op unique String[] getActorsNames() {
 		return actors.map[name].unmodifiableView
