@@ -361,6 +361,9 @@ public class PiWriter {
     // Set the delay attribute to the node
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.DELAY);
 
+    // Writes the persistence level of the delay
+    vertexElt.setAttribute(PiIdentifiers.DELAY_PERSISTENCE_LEVEL, delay.getLevel().getLiteral());
+
     // Write setter and getter names if delay has any
     final DelayActor actor = delay.getActor();
     final String setterName = delay.hasSetterActor() ? actor.getSetterActor().getName() : "";

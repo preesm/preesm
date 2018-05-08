@@ -555,6 +555,7 @@ class Delay extends Configurable, ExpressionHolder {
 	}
 	refers DelayActor actor opposite linkedDelay
 	refers Fifo containingFifo opposite delay
+	PersistenceLevel level
 	
 	op boolean hasSetterActor() {
 		return Optional.ofNullable(actor).map[dataInputPort.incomingFifo !== null].orElse(false)
@@ -626,6 +627,12 @@ enum PortMemoryAnnotation {
 	READ_ONLY = 1
 	WRITE_ONLY = 2
 	UNUSED = 3
+}
+
+enum PersistenceLevel {
+	NONE as "none" = 0
+	PERMANENT as "permanent" = 1
+	LOCAL as "local" = 2
 }
 
 enum PortKind {

@@ -93,13 +93,6 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     this.piHandler = new PiMMHandler(graph);
   }
 
-  private static void printRV(final Map<AbstractVertex, Long> graphBRV) {
-    for (final Map.Entry<AbstractVertex, Long> rv : graphBRV.entrySet()) {
-      final String msg = rv.getKey().getVertexPath() + " x" + Long.toString(rv.getValue());
-      WorkflowLogger.getLogger().log(Level.INFO, msg);
-    }
-  }
-
   /**
    * Precondition: All.
    *
@@ -108,7 +101,62 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
    *           the static pi MM 2 SDF exception
    */
   public MapperDAG launch(final int method) throws StaticPiMM2SrDAGException {
-    // Compute BRV following the chosen method
+    // 1. First we perform the delay transformation step that deals with persistence
+    try {
+      this.piHandler.removePersistence();
+    } catch (PiMMHelperException e) {
+      throw new StaticPiMM2SrDAGException(e.getMessage());
+    }
+    // 2. Compute BRV following the chosen method
+    computeBRV(method);
+    // 3. Print the RV values
+    printRV();
+    // 4. Convert to SR-DAG
+    final MapperDAG result = convert2SRDAG();
+    // 5. Aggregate edges
+    final StopWatch timer = new StopWatch();
+    timer.start();
+    // This is needed as the memory allocator does not yet handle multiple edges
+    // There is a potential TODO for someone with a brave heart here
+    // if you're doing this, remember to check for addAggregate in TAGDag.java and for createEdge in SRVerticesLinker.java.
+    // also in ScriptRunner.xtend, there is a part where the aggregate list is flatten, check that also
+    aggregateEdges(result);
+    timer.stop();
+    final String msg2 = "Edge aggregation performed in " + timer + "s.";
+    WorkflowLogger.getLogger().log(Level.INFO, msg2);
+    return result;
+  }
+
+  /**
+   * Convert the PiSDF graph to SRDAG
+   * 
+   * @return the resulting SR DAG
+   */
+  private MapperDAG convert2SRDAG() {
+    StaticPiMM2SrDAGVisitor visitor;
+    visitor = new StaticPiMM2SrDAGVisitor(new MapperDAG(new MapperEdgeFactory(), this.graph), this.graphBRV, this.scenario);
+    final StopWatch timer = new StopWatch();
+    timer.start();
+    // Do the actual transformation of PiMM to Single Rate DAG
+    visitor.doSwitch(this.graph);
+    timer.stop();
+    final String msg = "Dag transformation performed in " + timer + "s.";
+    WorkflowLogger.getLogger().log(Level.INFO, msg);
+    timer.reset();
+    // Get the result
+    final MapperDAG result = visitor.getResult();
+    return result;
+  }
+
+  /**
+   * Computes the BRV of a PiSDF graph using either LCM method or Topology Matrix.
+   * 
+   * @param method
+   *          the method to use for computing the BRV
+   * @throws StaticPiMM2SrDAGException
+   *           the StaticPiMM2SrDAGException exception
+   */
+  private void computeBRV(final int method) throws StaticPiMM2SrDAGException {
     PiBRV piBRVAlgo;
     if (method == 0) {
       piBRVAlgo = new TopologyBasedBRV(this.piHandler);
@@ -134,31 +182,16 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     } catch (final PiMMHelperException e) {
       throw new StaticPiMM2SrDAGException(e.getMessage());
     }
-    StaticPiMM2SrDAGLauncher.printRV(this.graphBRV);
-    // Visitor creating the SR-DAG
-    StaticPiMM2SrDAGVisitor visitor;
-    visitor = new StaticPiMM2SrDAGVisitor(new MapperDAG(new MapperEdgeFactory(), this.graph), this.graphBRV, this.scenario);
-    final StopWatch timer = new StopWatch();
-    timer.start();
-    // Do the actual transformation of PiMM to Single Rate DAG
-    visitor.doSwitch(this.graph);
-    timer.stop();
-    final String msg = "Dag transformation performed in " + timer + "s.";
-    WorkflowLogger.getLogger().log(Level.INFO, msg);
-    timer.reset();
-    // Get the result
-    final MapperDAG result = visitor.getResult();
-    timer.start();
-    // Aggregate edges
-    // This is needed as the memory allocator does not yet handle multiple edges
-    // There is a potential TODO for someone with a brave heart here
-    // if you're doing this, remember to check for addAggregate in TAGDag.java and for createEdge in SRVerticesLinker.java.
-    // also in ScriptRunner.xtend, there is a part where the aggregate list is flatten, check that also
-    aggregateEdges(result);
-    timer.stop();
-    final String msg2 = "Edge aggregation performed in " + timer + "s.";
-    WorkflowLogger.getLogger().log(Level.INFO, msg2);
-    return result;
+  }
+
+  /**
+   * Print the BRV values of every vertex
+   */
+  private void printRV() {
+    for (final Map.Entry<AbstractVertex, Long> rv : this.graphBRV.entrySet()) {
+      final String msg = rv.getKey().getVertexPath() + " x" + Long.toString(rv.getValue());
+      WorkflowLogger.getLogger().log(Level.INFO, msg);
+    }
   }
 
   /**

@@ -6,7 +6,6 @@ package org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
-import org.apache.commons.lang3.tuple.Pair;
 import org.ietr.dftools.algorithm.model.AbstractEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
@@ -198,9 +197,9 @@ public class SRVerticesLinker {
     this.delayEndID = "";
 
     // List of source vertex
-    final ArrayList<Pair<DAGVertex, Long>> sourceSet = getSourceSet(brv, pimm2dag);
+    final ArrayList<SRVerticesLinker.SourceConnection> sourceSet = getSourceSet(brv, pimm2dag);
     // List of sink vertex
-    final ArrayList<Pair<DAGVertex, Long>> sinkSet = getSinkSet(brv, pimm2dag);
+    final ArrayList<SRVerticesLinker.SinkConnection> sinkSet = getSinkSet(brv, pimm2dag);
 
     // Connect all the source to the sinks
     connectEdges(sourceSet, sinkSet);
@@ -215,7 +214,7 @@ public class SRVerticesLinker {
    * @param sinkSet
    *          set of dag sinks
    */
-  private void connectEdges(final ArrayList<Pair<DAGVertex, Long>> sourceSet, final ArrayList<Pair<DAGVertex, Long>> sinkSet) {
+  private void connectEdges(final ArrayList<SRVerticesLinker.SourceConnection> sourceSet, final ArrayList<SRVerticesLinker.SinkConnection> sinkSet) {
     while (!sinkSet.isEmpty()) {
       if (connectSources2Sink(sourceSet, sinkSet)) {
         sinkSet.remove(0);
@@ -253,11 +252,11 @@ public class SRVerticesLinker {
    *          current sink to connect to
    * @return true if it didn't explode, false else
    */
-  private boolean connectSources2Sink(final ArrayList<Pair<DAGVertex, Long>> sourceSet, final ArrayList<Pair<DAGVertex, Long>> sinkSet) {
-    final Pair<DAGVertex, Long> sinkPair = sinkSet.get(0);
-    DAGVertex sinkVertex = sinkPair.getLeft();
-    long cons = sinkPair.getRight();
-    long prod = sourceSet.get(0).getRight();
+  private boolean connectSources2Sink(final ArrayList<SRVerticesLinker.SourceConnection> sourceSet, final ArrayList<SRVerticesLinker.SinkConnection> sinkSet) {
+    final SinkConnection currentSink = sinkSet.get(0);
+    DAGVertex sinkVertex = currentSink.getSink();
+    long cons = currentSink.getConsumption();
+    long prod = sourceSet.get(0).getProduction();
     // Check implode condition
     final boolean implode = (cons > prod);
     // Check if sink is a join
@@ -270,34 +269,39 @@ public class SRVerticesLinker {
       final DAGVertex implodeVertex = createJoinVertex(implodeName, MapperVertexFactory.getInstance());
       final DAGEdge edge = createEdge(implodeVertex, sinkVertex, Long.toString(cons));
       // Add a source port modifier
-      edge.setSourcePortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
+      final DAGEdge aggEdge = (DAGEdge) edge.getAggregate().toArray()[0];
+      aggEdge.setTargetLabel(currentSink.getTargetLabel());
+      aggEdge.setSourcePortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
       sinkVertex = implodeVertex;
     }
     // Array of sources to remove
-    final ArrayList<Pair<DAGVertex, Long>> toRemove = new ArrayList<>();
+    final ArrayList<SRVerticesLinker.SourceConnection> toRemove = new ArrayList<>();
     // Connect the edges
-    for (final Pair<DAGVertex, Long> src : sourceSet) {
-      prod = src.getRight();
+    for (final SourceConnection src : sourceSet) {
+      prod = src.getProduction();
       if ((cons == 0) || (prod > cons)) {
         break;
       }
       toRemove.add(src);
-      final DAGVertex sourceVertex = src.getLeft();
+      final DAGVertex sourceVertex = src.getSource();
       final DAGEdge edge = createEdge(sourceVertex, sinkVertex, Long.toString(prod));
+      final DAGEdge aggEdge = (DAGEdge) edge.getAggregate().toArray()[0];
+      aggEdge.setSourceLabel(src.getSourceLabel());
+      aggEdge.setTargetLabel(currentSink.getTargetLabel());
 
       // If the target is join (new or not) /roundbuffer with new ports
-      final boolean isJoinOrRoundBuffer = (sinkVertex != sinkPair.getLeft()) || (implode && isSinkRoundBufferVertex && !isSinkJoinVertex);
+      final boolean isJoinOrRoundBuffer = (sinkVertex != currentSink.getSink()) || (implode && isSinkRoundBufferVertex && !isSinkJoinVertex);
       if (isJoinOrRoundBuffer) {
         // update name and source port modifier
-        edge.setTargetLabel(edge.getTargetLabel() + "_" + Long.toString(cons));
-        edge.setTargetPortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
+        aggEdge.setTargetLabel(edge.getTargetLabel() + "_" + Long.toString(cons));
+        aggEdge.setTargetPortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
       }
       cons = cons - prod;
     }
     // Remove all sources that got connected
     toRemove.forEach(sourceSet::remove);
     // Reset the current top sink
-    sinkSet.set(0, Pair.of(sinkVertex, cons));
+    sinkSet.set(0, new SinkConnection(sinkVertex, cons, currentSink.getTargetLabel()));
     // Removing the sink for the set condition
     final boolean shouldRemoveSink = (prod > cons) && (cons != 0);
     return !shouldRemoveSink;
@@ -308,15 +312,15 @@ public class SRVerticesLinker {
    *
    * @param sinkSet
    *          set of dag sinks
-   * @param source
+   * @param sink
    *          current source to connect from
    * @return true if it didn't implode, false else
    */
-  private boolean connectSinks2Source(final ArrayList<Pair<DAGVertex, Long>> sinkSet, final ArrayList<Pair<DAGVertex, Long>> sourceSet) {
-    final Pair<DAGVertex, Long> sourcePair = sourceSet.get(0);
-    DAGVertex sourceVertex = sourcePair.getLeft();
-    long prod = sourcePair.getRight();
-    long cons = sinkSet.get(0).getRight();
+  private boolean connectSinks2Source(final ArrayList<SRVerticesLinker.SinkConnection> sinkSet, final ArrayList<SRVerticesLinker.SourceConnection> sourceSet) {
+    final SourceConnection currentSource = sourceSet.get(0);
+    DAGVertex sourceVertex = currentSource.getSource();
+    long prod = currentSource.getProduction();
+    long cons = sinkSet.get(0).getConsumption();
     // Check explode condition
     final boolean explode = prod > cons;
     // Check if source is a fork
@@ -332,52 +336,43 @@ public class SRVerticesLinker {
       final DAGVertex explodeVertex = createForkVertex(explodeName, MapperVertexFactory.getInstance());
       final DAGEdge edge = createEdge(sourceVertex, explodeVertex, Long.toString(prod));
       // Add a target port modifier
-      edge.setTargetPortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
+      final DAGEdge aggEdge = (DAGEdge) edge.getAggregate().toArray()[0];
+      aggEdge.setSourceLabel(currentSource.getSourceLabel());
+      aggEdge.setTargetPortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
       sourceVertex = explodeVertex;
     }
     // Array of sink to remove
-    final ArrayList<Pair<DAGVertex, Long>> toRemove = new ArrayList<>();
+    final ArrayList<SRVerticesLinker.SinkConnection> toRemove = new ArrayList<>();
     // Connect the edges
-    for (final Pair<DAGVertex, Long> snk : sinkSet) {
-      cons = snk.getRight();
+    for (final SinkConnection snk : sinkSet) {
+      cons = snk.getConsumption();
       if ((prod == 0) || (cons > prod)) {
         break;
       }
       toRemove.add(snk);
-      final DAGVertex sinkVertex = snk.getLeft();
+      final DAGVertex sinkVertex = snk.getSink();
       final DAGEdge edge = createEdge(sourceVertex, sinkVertex, Long.toString(cons));
+      final DAGEdge aggEdge = (DAGEdge) edge.getAggregate().toArray()[0];
+      aggEdge.setSourceLabel(currentSource.getSourceLabel());
+      aggEdge.setTargetLabel(snk.getTargetLabel());
       // If the source is a fork (new or not)
       // or a broadcast with a new port
-      final boolean isForkOrBroadcast = !((sourceVertex == sourcePair.getLeft()) && (!explode || !(isSourceBroadcastVertex || isSourceForkVertex)));
+      final boolean isForkOrBroadcast = !((sourceVertex == currentSource.getSource()) && (!explode || !(isSourceBroadcastVertex || isSourceForkVertex)));
       if (isForkOrBroadcast) {
         // update name and source port modifier
-        edge.setSourceLabel(edge.getSourceLabel() + "_" + Long.toString(prod));
+        aggEdge.setSourceLabel(edge.getSourceLabel() + "_" + Long.toString(prod));
         // Add a source port modifier
-        edge.setSourcePortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
+        aggEdge.setSourcePortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
       }
       prod = prod - cons;
     }
     // Remove all sinks that got connected
     toRemove.forEach(sinkSet::remove);
     // Reset the current top source
-    sourceSet.set(0, Pair.of(sourceVertex, prod));
+    sourceSet.set(0, new SourceConnection(sourceVertex, prod, currentSource.getSourceLabel()));
     // Removing the source for the set condition
     final boolean shouldRemoveSink = (cons > prod) && (prod != 0);
     return !shouldRemoveSink;
-  }
-
-  /**
-   * Adds a new pair to a set
-   *
-   * @param set
-   *          the set
-   * @param vertex
-   *          left element of the pair to add
-   * @param value
-   *          right element of the pair to add
-   */
-  private void addPair(final ArrayList<Pair<DAGVertex, Long>> set, final DAGVertex vertex, final long value) {
-    set.add(Pair.of(vertex, value));
   }
 
   /**
@@ -391,70 +386,161 @@ public class SRVerticesLinker {
    * @throws PiMMHelperException
    *           the exception
    */
-  private ArrayList<Pair<DAGVertex, Long>> getSourceSet(final Map<AbstractVertex, Long> brv, final Map<AbstractVertex, ArrayList<MapperDAGVertex>> pimm2dag)
-      throws PiMMHelperException {
-    final ArrayList<Pair<DAGVertex, Long>> sourceSet = new ArrayList<>();
+  private ArrayList<SRVerticesLinker.SourceConnection> getSourceSet(final Map<AbstractVertex, Long> brv,
+      final Map<AbstractVertex, ArrayList<MapperDAGVertex>> pimm2dag) throws PiMMHelperException {
+    final ArrayList<SRVerticesLinker.SourceConnection> sourceSet = new ArrayList<>();
 
-    final MapperVertexFactory vertexFactory = MapperVertexFactory.getInstance();
-    final String fifoID = this.fifoName;
+    // Deals with the delay
+    if (this.delays != 0) {
+      setDelayInit(pimm2dag, sourceSet);
+    }
+
     // Port expressions
     final Expression sourceExpression = this.sourcePort.getPortRateExpression();
     final long sourceProduction = Long.parseLong(sourceExpression.getExpressionString());
 
-    // Deals with the delay
-    if (this.delays != 0) {
-      final Delay delay = this.fifo.getDelay();
-      if (delay.hasSetterActor()) {
-        final AbstractActor setterActor = this.fifo.getDelay().getSetterActor();
-        final ArrayList<MapperDAGVertex> setterActorList = pimm2dag.get(setterActor);
-        sourceSet.add(addDelaySetterActor(setterActorList));
-      } else {
-        // Add an init vertex for the first iteration of the sink actor
-        final MapperDAGVertex firstSink = pimm2dag.get(this.sink).get(0);
-        this.delayInitID = firstSink.getName() + "_init_" + this.sinkPort.getName();
-        final DAGVertex initVertex = createInitVertex(this.delayInitID, vertexFactory);
-        addPair(sourceSet, initVertex, this.delays);
-      }
-    }
-
     if (this.source instanceof InterfaceActor) {
-      // Port expressions
-      final Expression sinkExpression = this.sinkPort.getPortRateExpression();
-      final long sinkConsumption = Long.parseLong(sinkExpression.getExpressionString());
-      // Retrieve corresponding source vertex
-      final DAGVertex vertex = pimm2dag.get(this.source).get(0);
-      final DAGVertex sourceVertex = getInterfaceSourceVertex(vertex);
-      // Repetition values
-      final long sinkRV = SRVerticesLinker.getRVorDefault(this.sink, brv);
-      if (sourceProduction == (sinkConsumption * sinkRV)) {
-        // We don't need to use broadcast
-        addPair(sourceSet, sourceVertex, sourceProduction);
-      } else {
-        final boolean perfectBroadcast = ((sinkConsumption * sinkRV) % sourceProduction) == 0;
-        long nBroadcast = (sinkConsumption * sinkRV) / sourceProduction;
-        if (!perfectBroadcast) {
-          nBroadcast++;
-        }
-        final DAGVertex broadcastVertex = vertexFactory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
-        broadcastVertex.getPropertyBean().setValue(DAGBroadcastVertex.SPECIAL_TYPE, DAGBroadcastVertex.SPECIAL_TYPE_BROADCAST);
-        setVertexDefault(broadcastVertex, "broadcast_" + fifoID);
-        this.dag.addVertex(broadcastVertex);
-        final DAGEdge edge = createEdge(sourceVertex, broadcastVertex, Long.toString(sourceProduction));
-        edge.setTargetLabel("br_" + edge.getTargetLabel());
-        // This is bit of a hack here.
-        // The problem is that we can not distinguish the number of connection that need to come from the broadcast or a possible INIT.
-        // I generate has many broadcast vertex has need but since there are all the same, all connections will be set to the proper unique broadcast vertex.
-        for (int i = 0; i < nBroadcast; ++i) {
-          addPair(sourceSet, broadcastVertex, sourceProduction);
-        }
-      }
+      // Add to the source set the vertex equivalent to the source interface
+      setSourceFromInterface(brv, pimm2dag, sourceSet, sourceProduction);
     } else if (this.source instanceof AbstractActor) {
       // Add the list of the SR-DAG vertex associated with the source
-      pimm2dag.get(this.source).forEach(v -> addPair(sourceSet, v, sourceProduction));
+      pimm2dag.get(this.source).forEach(v -> sourceSet.add(new SourceConnection(v, sourceProduction, this.sourcePort.getName())));
     } else {
       throw new PiMMHelperException("Unhandled type of actor: " + this.source.getClass().toString());
     }
     return sourceSet;
+  }
+
+  /**
+   * Set the init of a delay
+   * 
+   * @param pimm2dag
+   *          map of PiMM actors and their associated list of dag vertices
+   * @param sourceSet
+   *          set of source to connect
+   * @throws PiMMHelperException
+   *           the PiMMHelperException exception
+   */
+  private void setDelayInit(final Map<AbstractVertex, ArrayList<MapperDAGVertex>> pimm2dag, final ArrayList<SRVerticesLinker.SourceConnection> sourceSet)
+      throws PiMMHelperException {
+    final MapperVertexFactory vertexFactory = MapperVertexFactory.getInstance();
+    final Delay delay = this.fifo.getDelay();
+    if (delay.hasSetterActor()) {
+      // Get the setter actor
+      final AbstractActor setterActor = this.fifo.getDelay().getSetterActor();
+      // Get the corresponding DAG vertices
+      final ArrayList<MapperDAGVertex> setterActorList = pimm2dag.get(setterActor);
+      if (setterActor instanceof InterfaceActor) {
+        // If setter is an interface, we have to fetch original source
+        final Expression sourceExpression = ((InterfaceActor) setterActor).getDataPort().getPortRateExpression();
+        final long sourceProduction = Long.parseLong(sourceExpression.getExpressionString());
+        if (sourceProduction != this.delays) {
+          throw new PiMMHelperException("Rate of interface initializing delay should be of the same rate as the delay value.");
+        }
+        final DAGVertex sourceVertex = getInterfaceSourceVertex(setterActorList.get(0), setterActor.getName());
+        sourceSet.add(new SourceConnection(sourceVertex, this.delays, this.sourcePort.getName()));
+        // Restore original source port
+        this.sourcePort = this.fifo.getSourcePort();
+      } else {
+        // We just add the corresponding setter vertex
+        sourceSet.add(addDelaySetterActor(setterActorList));
+      }
+    } else {
+      // Add an INIT vertex for the first iteration of the sink actor
+      final MapperDAGVertex firstSink = pimm2dag.get(this.sink).get(0);
+      // Set the delay ID for the potential END_REFERENCE
+      this.delayInitID = firstSink.getName() + "_init_" + this.sinkPort.getName();
+      // Create the INIT vertex
+      final DAGVertex initVertex = createInitVertex(this.delayInitID, vertexFactory);
+      sourceSet.add(new SourceConnection(initVertex, this.delays, this.sinkPort.getName()));
+    }
+  }
+
+  /**
+   * Deals with the setter actor of a delay. <br>
+   * If the RV of the setter actor is greater than 1, then a join actor is created to connect all of its instances. <br>
+   *
+   * @param setterActorList
+   *          list of sr dag instances of the setter actor
+   * @return setter actor if its RV = 1, the join actor created else
+   */
+  private SourceConnection addDelaySetterActor(final ArrayList<MapperDAGVertex> setterActorList) {
+    final MapperVertexFactory vertexFactory = MapperVertexFactory.getInstance();
+    final Delay delay = this.fifo.getDelay();
+    final int setterRV = setterActorList.size();
+    final String setterName = delay.getSetterPort().getName();
+    if (setterRV > 1) {
+      // Add a join vertex for the first iteration of the sink actor
+      // Connect all instances of the setter actor to the join actor
+      final DAGVertex joinVertex = createJoinVertex(SRVerticesLinker.JOIN_VERTEX + this.fifoName, vertexFactory);
+      Long currentCons = this.delays;
+      for (int i = 0; i < setterRV; ++i) {
+        final DAGVertex currentSetterActor = setterActorList.get(i);
+        final Expression portRateExpression = delay.getSetterPort().getPortRateExpression();
+        final String rateExpression = portRateExpression.getExpressionString();
+        final DAGEdge edge = createEdge(currentSetterActor, joinVertex, rateExpression);
+        // update name and target port modifier
+        final Long rate = Long.parseLong(rateExpression);
+        currentCons = currentCons - rate;
+        edge.setTargetLabel(edge.getSourceLabel() + "_" + Long.toString(currentCons));
+        edge.setSourceLabel(setterName);
+        edge.setTargetPortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
+      }
+      return new SourceConnection(joinVertex, this.delays, setterName);
+    } else {
+      return new SourceConnection(setterActorList.get(0), this.delays, setterName);
+    }
+  }
+
+  /**
+   * Set the source vertex corresponding to the current input interface
+   * 
+   * @param brv
+   *          repetition vector values
+   * @param pimm2dag
+   *          map of PiMM actors and their associated list of dag vertices
+   * @param sourceSet
+   *          set of source to connect
+   * @param sourceProduction
+   *          the source production
+   * @throws PiMMHelperException
+   *           the PiMMHelperException exception
+   */
+  private void setSourceFromInterface(final Map<AbstractVertex, Long> brv, final Map<AbstractVertex, ArrayList<MapperDAGVertex>> pimm2dag,
+      final ArrayList<SRVerticesLinker.SourceConnection> sourceSet, final long sourceProduction) throws PiMMHelperException {
+    final MapperVertexFactory vertexFactory = MapperVertexFactory.getInstance();
+    // Port expressions
+    final Expression sinkExpression = this.sinkPort.getPortRateExpression();
+    final long sinkConsumption = Long.parseLong(sinkExpression.getExpressionString());
+    // Retrieve corresponding source vertex
+    final DAGVertex vertex = pimm2dag.get(this.source).get(0);
+    final DAGVertex sourceVertex = getInterfaceSourceVertex(vertex, this.source.getName());
+    // Repetition values
+    final long sinkRV = SRVerticesLinker.getRVorDefault(this.sink, brv);
+    if (sourceProduction == (sinkConsumption * sinkRV)) {
+      // We don't need to use broadcast
+      sourceSet.add(new SourceConnection(sourceVertex, sourceProduction, this.sourcePort.getName()));
+    } else {
+      // We have to add a broadcast
+      final boolean perfectBroadcast = ((sinkConsumption * sinkRV) % sourceProduction) == 0;
+      long nBroadcast = (sinkConsumption * sinkRV) / sourceProduction;
+      if (!perfectBroadcast) {
+        nBroadcast++;
+      }
+      final DAGVertex broadcastVertex = vertexFactory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
+      broadcastVertex.getPropertyBean().setValue(DAGBroadcastVertex.SPECIAL_TYPE, DAGBroadcastVertex.SPECIAL_TYPE_BROADCAST);
+      setVertexDefault(broadcastVertex, "broadcast_" + sourceVertex.getName());
+      this.dag.addVertex(broadcastVertex);
+      final DAGEdge edge = createEdge(sourceVertex, broadcastVertex, Long.toString(sourceProduction));
+      edge.setTargetLabel("br_" + edge.getTargetLabel());
+      // This is bit of a hack here.
+      // The problem is that we can not distinguish the number of connection that need to come from the broadcast or a possible INIT.
+      // I generate has many broadcast vertex has need but since there are all the same, all connections will be set to the proper unique broadcast vertex.
+      for (int i = 0; i < nBroadcast; ++i) {
+        sourceSet.add(new SourceConnection(broadcastVertex, sourceProduction, this.sourcePort.getName()));
+      }
+      // sourceSet.add(new SourceConnection(broadcastVertex, nBroadcast * sourceProduction, this.sourcePort.getName()))
+    }
   }
 
   /**
@@ -467,11 +553,9 @@ public class SRVerticesLinker {
    * @throws PiMMHelperException
    *           the exception
    */
-  private DAGVertex getInterfaceSourceVertex(final DAGVertex vertex) throws PiMMHelperException {
-    final ArrayList<DataPort> dataInputPorts = new ArrayList<>(this.source.getContainingPiGraph().getDataInputPorts());
-    final DataInputPort correspondingPort = (DataInputPort) getCorrespondingPort(dataInputPorts, this.source.getName());
+  private DAGVertex getInterfaceSourceVertex(final DAGVertex vertex, final String interfaceName) throws PiMMHelperException {
     final Set<DAGEdge> incomingEdges = vertex.incomingEdges();
-    final String targetLabel = this.source.getName();
+    final String targetLabel = interfaceName;
     DAGEdge interfaceEdge = null;
     for (final DAGEdge edge : incomingEdges) {
       final DAGEdge actualEdge = (DAGEdge) edge.getAggregate().get(0);
@@ -480,6 +564,8 @@ public class SRVerticesLinker {
         break;
       }
     }
+    final ArrayList<DataPort> dataInputPorts = new ArrayList<>(this.source.getContainingPiGraph().getDataInputPorts());
+    final DataInputPort correspondingPort = (DataInputPort) getCorrespondingPort(dataInputPorts, interfaceName);
     final Fifo correspondingFifo = correspondingPort.getFifo();
     if (interfaceEdge == null) {
       final String message = "Edge corresponding to fifo [" + correspondingFifo.getId() + "] not found.";
@@ -511,43 +597,6 @@ public class SRVerticesLinker {
   }
 
   /**
-   * Deals with the setter actor of a delay. <br>
-   * If the RV of the setter actor is greater than 1, then a join actor is created to connect all of its instances. <br>
-   *
-   * @param setterActorList
-   *          list of sr dag instances of the setter actor
-   * @return setter actor if its RV = 1, the join actor created else
-   */
-  private Pair<DAGVertex, Long> addDelaySetterActor(final ArrayList<MapperDAGVertex> setterActorList) {
-    final MapperVertexFactory vertexFactory = MapperVertexFactory.getInstance();
-    final Delay delay = this.fifo.getDelay();
-    final int setterRV = setterActorList.size();
-    if (setterRV > 1) {
-      // Get the delay setter port
-      final DataOutputPort setterPort = delay.getSetterPort();
-      // Add a join vertex for the first iteration of the sink actor
-      // Connect all instances of the setter actor to the join actor
-      final DAGVertex joinVertex = createJoinVertex(SRVerticesLinker.JOIN_VERTEX + this.fifoName, vertexFactory);
-      Long currentCons = this.delays;
-      for (int i = 0; i < setterRV; ++i) {
-        final DAGVertex currentSetterActor = setterActorList.get(i);
-        final Expression portRateExpression = setterPort.getPortRateExpression();
-        final String rateExpression = portRateExpression.getExpressionString();
-        final DAGEdge edge = createEdge(currentSetterActor, joinVertex, rateExpression);
-        // update name and target port modifier
-        final Long rate = Long.parseLong(rateExpression);
-        currentCons = currentCons - rate;
-        edge.setTargetLabel(edge.getSourceLabel() + "_" + Long.toString(currentCons));
-        edge.setSourceLabel(setterPort.getName());
-        edge.setTargetPortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
-      }
-      return Pair.of(joinVertex, this.delays);
-    } else {
-      return Pair.of(setterActorList.get(0), this.delays);
-    }
-  }
-
-  /**
    * Generate DAG set of sinks
    *
    * @param brv
@@ -558,9 +607,9 @@ public class SRVerticesLinker {
    * @throws PiMMHelperException
    *           the exception
    */
-  private ArrayList<Pair<DAGVertex, Long>> getSinkSet(final Map<AbstractVertex, Long> brv, final Map<AbstractVertex, ArrayList<MapperDAGVertex>> pimm2dag)
-      throws PiMMHelperException {
-    final ArrayList<Pair<DAGVertex, Long>> sinkSet = new ArrayList<>();
+  private ArrayList<SRVerticesLinker.SinkConnection> getSinkSet(final Map<AbstractVertex, Long> brv,
+      final Map<AbstractVertex, ArrayList<MapperDAGVertex>> pimm2dag) throws PiMMHelperException {
+    final ArrayList<SRVerticesLinker.SinkConnection> sinkSet = new ArrayList<>();
 
     final MapperVertexFactory vertexFactory = MapperVertexFactory.getInstance();
 
@@ -575,9 +624,9 @@ public class SRVerticesLinker {
       final long sourceRV = SRVerticesLinker.getRVorDefault(this.source, brv);
       // Retrieve corresponding sink vertex
       final DAGVertex vertex = pimm2dag.get(this.sink).get(0);
-      final DAGVertex sinkVertex = getInterfaceSinkVertex(vertex);
+      final DAGVertex sinkVertex = getInterfaceSinkVertex(vertex, this.sink.getName());
       if (sinkConsumption == (sourceProduction * sourceRV)) {
-        sinkSet.add(Pair.of(sinkVertex, sinkConsumption));
+        sinkSet.add(new SinkConnection(sinkVertex, sinkConsumption, this.sinkPort.getName()));
       } else {
         // We need to add a round buffer
         // final long nDroppedTokens = (sourceProduction * sourceRV) - sinkConsumption;
@@ -591,11 +640,11 @@ public class SRVerticesLinker {
         // addPair(sinkSet, endVertex, nDroppedTokens - (nEnd - 1) * sourceProduction);
         // addPair(sinkSet, sinkVertex, sinkConsumption);
         final DAGVertex roundbufferVertex = createRoundBufferVertex(sinkConsumption, sinkVertex, vertexFactory);
-        addPair(sinkSet, roundbufferVertex, sourceProduction * sourceRV);
+        sinkSet.add(new SinkConnection(roundbufferVertex, sourceProduction * sourceRV, this.sinkPort.getName()));
       }
     } else if (this.sink instanceof AbstractActor) {
       // Add the list of the SR-DAG vertex associated with the sink
-      pimm2dag.get(this.sink).forEach(v -> addPair(sinkSet, v, sinkConsumption));
+      pimm2dag.get(this.sink).forEach(v -> sinkSet.add(new SinkConnection(v, sinkConsumption, this.sinkPort.getName())));
 
       // This is only true in the case of an interface
       final long sinkRV = SRVerticesLinker.getRVorDefault(this.sink, brv);
@@ -604,7 +653,7 @@ public class SRVerticesLinker {
       if (sinkNeedEnd) {
         // Add an end vertex for the round buffer of the interface
         final DAGVertex endVertex = createEndVertex(sinkSet.get(sinkSet.size() - 1) + "_end_" + this.sinkPort.getName(), vertexFactory);
-        addPair(sinkSet, endVertex, sourceProduction - leftOver);
+        sinkSet.add(new SinkConnection(endVertex, sourceProduction - leftOver, this.sinkPort.getName()));
       }
     } else {
       throw new PiMMHelperException("Unhandled type of actor: " + this.sink.getClass().toString());
@@ -612,21 +661,53 @@ public class SRVerticesLinker {
 
     // Deals with the delay
     if (this.delays != 0) {
-      final Delay delay = this.fifo.getDelay();
-      if (delay.hasGetterActor()) {
-        final AbstractActor getterActor = this.fifo.getDelay().getGetterActor();
-        final ArrayList<MapperDAGVertex> getterActorList = pimm2dag.get(getterActor);
-        sinkSet.add(addDelayGetterActor(getterActorList));
-      } else {
-        // Add an end vertex for the last iteration of the source actor
-        final MapperDAGVertex lastSource = pimm2dag.get(this.source).get(pimm2dag.get(this.source).size() - 1);
-        this.delayEndID = lastSource.getName() + "_end_" + this.sourcePort.getName();
-        final DAGVertex endVertex = createEndVertex(this.delayEndID, vertexFactory);
-        setEndReference(endVertex);
-        addPair(sinkSet, endVertex, this.delays);
-      }
+      setDelayEnd(pimm2dag, sinkSet, vertexFactory);
     }
     return sinkSet;
+  }
+
+  /**
+   * Set the end of a delay
+   * 
+   * @param pimm2dag
+   *          map of PiMM actors and their associated list of dag vertices
+   * @param sinkSet
+   *          set of dag sink to connect
+   * @param vertexFactory
+   *          the mappervertex factory
+   * @throws PiMMHelperException
+   *           the exception
+   */
+  private void setDelayEnd(final Map<AbstractVertex, ArrayList<MapperDAGVertex>> pimm2dag, final ArrayList<SRVerticesLinker.SinkConnection> sinkSet,
+      final MapperVertexFactory vertexFactory) throws PiMMHelperException {
+    final Delay delay = this.fifo.getDelay();
+    if (delay.hasGetterActor()) {
+      final AbstractActor getterActor = this.fifo.getDelay().getGetterActor();
+      final ArrayList<MapperDAGVertex> getterActorList = pimm2dag.get(getterActor);
+      if (getterActor instanceof InterfaceActor) {
+        final Expression sourceExpression = ((InterfaceActor) getterActor).getDataPort().getPortRateExpression();
+        final long sinkConsumption = Long.parseLong(sourceExpression.getExpressionString());
+        if (sinkConsumption != this.delays) {
+          throw new PiMMHelperException("Rate of interface ending a delay should be of the same rate as the delay value.");
+        }
+        final DAGVertex sinkVertex = getInterfaceSinkVertex(getterActorList.get(0), getterActor.getName());
+        sinkSet.add(new SinkConnection(sinkVertex, this.delays, this.sinkPort.getName()));
+        // Restore original sink port
+        this.sinkPort = this.fifo.getTargetPort();
+      } else {
+        sinkSet.add(addDelayGetterActor(getterActorList));
+      }
+    } else {
+      // Add an end vertex for the last iteration of the source actor
+      final MapperDAGVertex lastSource = pimm2dag.get(this.source).get(pimm2dag.get(this.source).size() - 1);
+      // Set the delayEndID for the END_REFERENCE with a potential INIT of the delay
+      this.delayEndID = lastSource.getName() + "_end_" + this.sourcePort.getName();
+      // Creates the end vertex
+      final DAGVertex endVertex = createEndVertex(this.delayEndID, vertexFactory);
+      // Set the END_REFERENCE
+      setEndReference(endVertex);
+      sinkSet.add(new SinkConnection(endVertex, this.delays, this.sourcePort.getName()));
+    }
   }
 
   /**
@@ -639,11 +720,11 @@ public class SRVerticesLinker {
    * @throws PiMMHelperException
    *           the exception
    */
-  private DAGVertex getInterfaceSinkVertex(final DAGVertex vertex) throws PiMMHelperException {
+  private DAGVertex getInterfaceSinkVertex(final DAGVertex vertex, final String interfaceName) throws PiMMHelperException {
     final ArrayList<DataPort> dataOutputPorts = new ArrayList<>(this.sink.getContainingPiGraph().getDataOutputPorts());
-    final DataOutputPort correspondingPort = (DataOutputPort) getCorrespondingPort(dataOutputPorts, this.sink.getName());
+    final DataOutputPort correspondingPort = (DataOutputPort) getCorrespondingPort(dataOutputPorts, interfaceName);
     final Set<DAGEdge> outgoingEdges = vertex.outgoingEdges();
-    final String sourceLabel = this.sink.getName();
+    final String sourceLabel = interfaceName;
     DAGEdge interfaceEdge = null;
     for (final DAGEdge edge : outgoingEdges) {
       final DAGEdge actualEdge = (DAGEdge) edge.getAggregate().get(0);
@@ -717,10 +798,11 @@ public class SRVerticesLinker {
    *          list of sr dag instances of the getter actor
    * @return getter actor if its RV = 1, the fork actor created else
    */
-  private Pair<DAGVertex, Long> addDelayGetterActor(final ArrayList<MapperDAGVertex> getterActorList) {
+  private SinkConnection addDelayGetterActor(final ArrayList<MapperDAGVertex> getterActorList) {
     final MapperVertexFactory vertexFactory = MapperVertexFactory.getInstance();
     final Delay delay = this.fifo.getDelay();
     final int getterRV = getterActorList.size();
+    final String getterName = delay.getGetterPort().getName();
     if (getterRV > 1) {
       // Add a fork vertex for the last iteration of the source actor
       // Connect all instances of the getter actor to the fork actor
@@ -735,12 +817,12 @@ public class SRVerticesLinker {
         final Long rate = Long.parseLong(rateExpression);
         currentProd = currentProd - rate;
         edge.setSourceLabel(edge.getTargetLabel() + "_" + Long.toString(currentProd));
-        edge.setTargetLabel(delay.getGetterPort().getName());
+        edge.setTargetLabel(getterName);
         edge.setSourcePortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
       }
-      return Pair.of(forkVertex, this.delays);
+      return new SinkConnection(forkVertex, this.delays, getterName);
     } else {
-      return Pair.of(getterActorList.get(0), this.delays);
+      return new SinkConnection(getterActorList.get(0), this.delays, getterName);
     }
   }
 
@@ -907,5 +989,53 @@ public class SRVerticesLinker {
     vertex.setName(id);
     vertex.setInfo(id);
     vertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
+  }
+
+  class SourceConnection {
+    private DAGVertex source;
+    private Long      production;
+    private String    sourceLabel;
+
+    public SourceConnection(final DAGVertex source, final Long prod, final String sourceLabel) {
+      this.source = source;
+      this.production = prod;
+      this.sourceLabel = sourceLabel;
+    }
+
+    public DAGVertex getSource() {
+      return source;
+    }
+
+    public Long getProduction() {
+      return production;
+    }
+
+    public String getSourceLabel() {
+      return sourceLabel;
+    }
+  }
+
+  class SinkConnection {
+    private DAGVertex sink;
+    private Long      consumption;
+    private String    targetLabel;
+
+    public SinkConnection(final DAGVertex sink, final Long cons, final String targetLabel) {
+      this.sink = sink;
+      this.consumption = cons;
+      this.targetLabel = targetLabel;
+    }
+
+    public DAGVertex getSink() {
+      return sink;
+    }
+
+    public Long getConsumption() {
+      return consumption;
+    }
+
+    public String getTargetLabel() {
+      return targetLabel;
+    }
   }
 }

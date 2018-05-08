@@ -218,6 +218,9 @@ public class PiIdentifiers {
   /** The Constant DELAY_NAME. */
   public static final String DELAY_NAME = PiIdentifiers.ID;
 
+  /** The Constant DELAY_PERSISTENCE_LEVEL. */
+  public static final String DELAY_PERSISTENCE_LEVEL = "level";
+
   /** The Constant DELAY_EXPRESSION. */
   public static final String DELAY_EXPRESSION = PiIdentifiers.EXPR;
 

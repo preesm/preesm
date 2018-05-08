@@ -84,6 +84,7 @@ import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.PersistenceLevel;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.PortKind;
@@ -516,7 +517,7 @@ public class PiParser {
             .warning("You are using an old formatted .pi file. Use the task org.ietr.preesm.algorithm.exportXml.pimm2xml to generate an updated one");
       } else {
         // Find the delay of the FIFO
-        // Delays are now seen as nodes so the delay is already created and parsed by now
+        // Delays are seen as nodes so the delay is already created and parsed by now
         delay = graph.lookupDelay(fifoDelay);
         if (delay == null) {
           throw new PiGraphException("Edge delay " + fifoDelay + " does not exist.");
@@ -540,19 +541,23 @@ public class PiParser {
    * @return the created delay
    */
   protected DelayActor parseDelay(final Element nodeElt, final PiGraph graph) {
-    // Instantiate the new delay
+    // 1. Instantiate the new delay
     final Delay delay = PiMMUserFactory.instance.createDelay();
 
-    // Set the delay expression
+    // 2. Set the delay expression
     delay.getSizeExpression().setExpressionString(nodeElt.getAttribute(PiIdentifiers.DELAY_EXPRESSION));
 
-    // Get the delay properties
+    // 3. Get the delay ID
     delay.setName(nodeElt.getAttribute(PiIdentifiers.DELAY_NAME));
 
-    // Instantiate the new actor
+    // 4. Set the persistence level
+    final String persistenceLevel = nodeElt.getAttribute(PiIdentifiers.DELAY_PERSISTENCE_LEVEL);
+    delay.setLevel(PersistenceLevel.get(persistenceLevel));
+
+    // 5. Setting properties of the non executable actor associated with the delay
     final DelayActor delayActor = delay.getActor();
 
-    // Adds Setter / Getter actors to the delay
+    // 6. Adds Setter / Getter actors to the delay (if any)
     final String setterName = nodeElt.getAttribute(PiIdentifiers.DELAY_SETTER);
     final AbstractActor setter = (AbstractActor) graph.lookupVertex(setterName);
     final String getterName = nodeElt.getAttribute(PiIdentifiers.DELAY_GETTER);
@@ -564,7 +569,7 @@ public class PiParser {
       throw new PiGraphException("Delay getter vertex " + getterName + " does not exist.");
     }
 
-    // Add the refinement for the INIT of the delay (if it exists)
+    // 7. Add the refinement for the INIT of the delay (if it exists)
     // Any refinement is ignored if the delay is already connected to a setter actor
     if (setter == null) {
       parseRefinement(nodeElt, delayActor);
@@ -579,7 +584,7 @@ public class PiParser {
       }
     }
 
-    // Add the delay to the parsed graph
+    // 8. Add the delay to the parsed graph
     graph.addDelay(delay);
 
     return delayActor;

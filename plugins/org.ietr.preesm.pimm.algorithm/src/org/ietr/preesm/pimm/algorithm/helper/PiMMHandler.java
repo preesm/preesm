@@ -9,14 +9,20 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.logging.Level;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
+import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.PersistenceLevel;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 
 /**
  * @author farresti
@@ -350,6 +356,101 @@ public class PiMMHandler {
   public void resolveAllParameters() throws PiMMHelperException {
     final PiMMResolverVisitor piMMResolverVisitor = new PiMMResolverVisitor(new LinkedHashMap<>());
     piMMResolverVisitor.doSwitch(this.graph);
+  }
+
+  /**
+   * Remove the persistence levels and replace them with the appropriate interfaces.
+   * 
+   * @throws PiMMHelperException
+   *           the PiMMHandlerException exception
+   */
+  public void removePersistence() throws PiMMHelperException {
+    // 1. First for the top graph, we convert every locally persistent delays to permanent ones.
+    for (final Fifo fifo : this.graph.getFifosWithDelay()) {
+      final Delay delay = fifo.getDelay();
+      if (delay.getLevel() == PersistenceLevel.LOCAL) {
+        delay.setLevel(PersistenceLevel.PERMANENT);
+      }
+    }
+    // 2. Then we deal with hierarchical stuff
+    recursiveRemovePersistence(graph);
+  }
+
+  private void recursiveRemovePersistence(final PiGraph graph) {
+    final boolean isTop = graph.getContainingPiGraph() == null;
+    if (!isTop) {
+      // We assume that if the user want to make a delay persist across multiple levels,
+      // he did it explicitly.
+      for (final Fifo fifo : graph.getFifosWithDelay()) {
+        final Delay delay = fifo.getDelay();
+        final String type = fifo.getType();
+        final String delayExpression = delay.getSizeExpression().getExpressionString();
+        if (delay.getLevel() == PersistenceLevel.LOCAL) {
+          // 1. First we remove the level of persistence associated with the delay
+          delay.setLevel(PersistenceLevel.NONE);
+
+          // 2. We create the interfaces that we need to communicate with the upper level
+          // Add the DataInputInterface to the graph
+          final DataInputInterface setterIn = PiMMUserFactory.instance.createDataInputInterface();
+          final String setterName = "in_" + delay.getId();
+          setterIn.setName(setterName);
+          setterIn.getDataPort().setName(setterName);
+          setterIn.getDataPort().setAnnotation(PortMemoryAnnotation.READ_ONLY);
+          setterIn.getDataPort().getExpression().setExpressionString(delayExpression);
+          // Add the DataOutputInterface to the graph
+          final DataOutputInterface getterOut = PiMMUserFactory.instance.createDataOutputInterface();
+          final String getterName = "out_" + delay.getId();
+          getterOut.setName(getterName);
+          getterOut.getDataPort().setName(getterName);
+          getterOut.getDataPort().setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
+          getterOut.getDataPort().getExpression().setExpressionString(delayExpression);
+          graph.addActor(setterIn);
+          graph.addActor(getterOut);
+
+          // 3. Now we connect the newly created interfaces to the delay
+          // Add the setter FIFO
+          final Fifo fifoSetter = PiMMUserFactory.instance.createFifo();
+          fifoSetter.setType(type);
+          // Connect the setter interface to the delay
+          fifoSetter.setSourcePort((DataOutputPort) setterIn.getDataPort());
+          fifoSetter.setTargetPort(delay.getActor().getDataInputPort());
+          // Add the getter FIFO
+          final Fifo fifoGetter = PiMMUserFactory.instance.createFifo();
+          fifoGetter.setType(type);
+          // Connect the delay interface to the getter
+          fifoGetter.setSourcePort(delay.getActor().getDataOutputPort());
+          fifoGetter.setTargetPort((DataInputPort) getterOut.getDataPort());
+          graph.addFifo(fifoSetter);
+          graph.addFifo(fifoGetter);
+
+          // 4. Now we create the feed back FIFO in the upper-level
+          final Fifo fifoPersistence = PiMMUserFactory.instance.createFifo();
+          fifoPersistence.setType(type);
+          // 5. We set the expression of the corresponding ports on the graph
+          final DataInputPort inPort = (DataInputPort) setterIn.getGraphPort();
+          // Add the input port
+          inPort.getExpression().setExpressionString(delayExpression);
+          inPort.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
+          // Add the output port
+          final DataOutputPort outPort = (DataOutputPort) getterOut.getGraphPort();
+          outPort.getExpression().setExpressionString(delayExpression);
+          outPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);
+          // Now set the source / target port of the FIFO
+          fifoPersistence.setSourcePort(outPort);
+          fifoPersistence.setTargetPort(inPort);
+          graph.getContainingPiGraph().addFifo(fifoPersistence);
+
+          // 5. Finally we add a delay to this FIFO as well
+          final Delay delayPersistence = PiMMUserFactory.instance.createDelay();
+          delayPersistence.getSizeExpression().setExpressionString(delayExpression);
+          fifoPersistence.setDelay(delayPersistence);
+          graph.getContainingPiGraph().addDelay(delayPersistence);
+        }
+      }
+    }
+    for (final PiGraph g : graph.getChildrenGraphs()) {
+      recursiveRemovePersistence(g);
+    }
   }
 
 }

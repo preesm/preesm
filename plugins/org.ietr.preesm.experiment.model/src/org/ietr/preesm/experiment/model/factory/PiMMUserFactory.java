@@ -56,6 +56,7 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.PersistenceLevel;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.adapter.GraphInterfaceObserver;
 import org.ietr.preesm.experiment.model.pimm.impl.PiMMFactoryImpl;
@@ -173,10 +174,13 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   @Override
   public Delay createDelay() {
     final Delay res = super.createDelay();
-    // Set default expression
+    // 1. Set default expression
     res.setExpression(createExpression());
-    // Create the non executable actor associated with the Delay directly here
+    // 2. Set the default level of persistence (none)
+    res.setLevel(PersistenceLevel.NONE);
+    // 3. Create the non executable actor associated with the Delay directly here
     res.setActor(PiMMUserFactory.instance.createDelayActor(res));
+
     return res;
   }
 
