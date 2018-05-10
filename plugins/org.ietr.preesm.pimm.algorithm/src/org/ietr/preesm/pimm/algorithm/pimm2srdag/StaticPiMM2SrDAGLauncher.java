@@ -101,20 +101,28 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
    *           the static pi MM 2 SDF exception
    */
   public MapperDAG launch(final int method) throws StaticPiMM2SrDAGException {
-    // 1. First we perform the delay transformation step that deals with persistence
+    final StopWatch timer = new StopWatch();
     try {
+      timer.start();
+      // 1. First we resolve all parameters.
+      // It must be done first because, when removing persistence local parameters have to be known at upper level
+      this.piHandler.resolveAllParameters();
+      timer.stop();
+      String msg = "Parameters and rates evaluations: " + timer + "s.";
+      WorkflowLogger.getLogger().log(Level.INFO, msg);
+      // 2. We perform the delay transformation step that deals with persistence
       this.piHandler.removePersistence();
     } catch (PiMMHelperException e) {
       throw new StaticPiMM2SrDAGException(e.getMessage());
     }
-    // 2. Compute BRV following the chosen method
+    // 3. Compute BRV following the chosen method
     computeBRV(method);
-    // 3. Print the RV values
+    // 4. Print the RV values
     printRV();
-    // 4. Convert to SR-DAG
+    // 5. Convert to SR-DAG
     final MapperDAG result = convert2SRDAG();
-    // 5. Aggregate edges
-    final StopWatch timer = new StopWatch();
+    // 6. Aggregate edges
+    timer.reset();
     timer.start();
     // This is needed as the memory allocator does not yet handle multiple edges
     // There is a potential TODO for someone with a brave heart here
@@ -168,16 +176,10 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     try {
       final StopWatch timer = new StopWatch();
       timer.start();
-      this.piHandler.resolveAllParameters();
-      timer.stop();
-      String msg = "Parameters and rates evaluations: " + timer + "s.";
-      WorkflowLogger.getLogger().log(Level.INFO, msg);
-      timer.reset();
-      timer.start();
       piBRVAlgo.execute();
       this.graphBRV = piBRVAlgo.getBRV();
       timer.stop();
-      msg = "Repetition vector computed in" + timer + "s.";
+      final String msg = "Repetition vector computed in" + timer + "s.";
       WorkflowLogger.getLogger().log(Level.INFO, msg);
     } catch (final PiMMHelperException e) {
       throw new StaticPiMM2SrDAGException(e.getMessage());

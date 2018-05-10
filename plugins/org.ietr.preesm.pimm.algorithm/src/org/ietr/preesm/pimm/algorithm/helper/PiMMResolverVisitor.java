@@ -220,7 +220,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseDelayActor(final DelayActor actor) {
-    // Map that associate to every parameter of an acotr the corresponding value in the graph
+    // Map that associate to every parameter of an actor the corresponding value in the graph
     final LinkedHashMap<String, Long> portValues = new LinkedHashMap<>();
     // Delay actors do not have parameter ports, they use the parameters of the linked delay
     // Thus, since delays do not have parameter ports either, the expression is directly the graph parameter

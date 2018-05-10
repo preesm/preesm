@@ -130,6 +130,7 @@ import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
+import org.ietr.preesm.experiment.model.pimm.PersistenceLevel;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.ietr.preesm.memory.allocation.MemoryAllocator;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
@@ -933,15 +934,18 @@ public class CodegenModelGenerator {
 
       // generate the subbuffer for each dagedge
       for (final Entry<DAGEdge, Integer> dagAlloc : allocation.entrySet()) {
+        final DAGEdge edge = dagAlloc.getKey();
+        final DAGVertex source = edge.getSource();
+        final DAGVertex target = edge.getTarget();
         // If the buffer is not a null buffer
         if (dagAlloc.getValue() != -1) {
           final SubBuffer dagEdgeBuffer = CodegenFactory.eINSTANCE.createSubBuffer();
 
           // Old Naming (too long)
-          final String comment = dagAlloc.getKey().getSource().getName() + " > " + dagAlloc.getKey().getTarget().getName();
+          final String comment = source.getName() + " > " + target.getName();
           dagEdgeBuffer.setComment(comment);
 
-          String name = dagAlloc.getKey().getSource().getName() + "__" + dagAlloc.getKey().getTarget().getName();
+          String name = source.getName() + "__" + target.getName();
 
           name = generateUniqueBufferName(name);
           dagEdgeBuffer.setName(name);
@@ -951,17 +955,15 @@ public class CodegenModelGenerator {
           dagEdgeBuffer.setTypeSize(1);
 
           // Generate subsubbuffers. Each subsubbuffer corresponds to
-          // an
-          // edge
-          // of the single rate SDF Graph
-          final Integer dagEdgeSize = generateSubBuffers(dagEdgeBuffer, dagAlloc.getKey());
+          // an edge of the single rate SDF Graph
+          final Integer dagEdgeSize = generateSubBuffers(dagEdgeBuffer, edge);
 
           // also accessible with dagAlloc.getKey().getWeight()
           dagEdgeBuffer.setSize(dagEdgeSize);
 
           // Save the DAGEdgeBuffer
-          final DAGVertex originalSource = this.algo.getVertex(dagAlloc.getKey().getSource().getName());
-          final DAGVertex originalTarget = this.algo.getVertex(dagAlloc.getKey().getTarget().getName());
+          final DAGVertex originalSource = this.algo.getVertex(source.getName());
+          final DAGVertex originalTarget = this.algo.getVertex(target.getName());
           final DAGEdge originalDagEdge = this.algo.getEdge(originalSource, originalTarget);
           if (!this.dagEdgeBuffers.containsKey(originalDagEdge)) {
             this.dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
@@ -984,7 +986,7 @@ public class CodegenModelGenerator {
           final NullBuffer dagEdgeBuffer = CodegenFactory.eINSTANCE.createNullBuffer();
 
           // Old Naming (too long)
-          final String comment = dagAlloc.getKey().getSource().getName() + " > " + dagAlloc.getKey().getTarget().getName();
+          final String comment = source.getName() + " > " + target.getName();
           dagEdgeBuffer.setComment("NULL_" + comment);
           dagEdgeBuffer.setContainer(mainBuffer);
 
@@ -992,14 +994,14 @@ public class CodegenModelGenerator {
           // an
           // edge
           // of the single rate SDF Graph
-          final Integer dagEdgeSize = generateSubBuffers(dagEdgeBuffer, dagAlloc.getKey());
+          final Integer dagEdgeSize = generateSubBuffers(dagEdgeBuffer, edge);
 
           // We set the size to keep the information
           dagEdgeBuffer.setSize(dagEdgeSize);
 
           // Save the DAGEdgeBuffer
-          final DAGVertex originalSource = this.algo.getVertex(dagAlloc.getKey().getSource().getName());
-          final DAGVertex originalTarget = this.algo.getVertex(dagAlloc.getKey().getTarget().getName());
+          final DAGVertex originalSource = this.algo.getVertex(source.getName());
+          final DAGVertex originalTarget = this.algo.getVertex(target.getName());
           final DAGEdge originalDagEdge = this.algo.getEdge(originalSource, originalTarget);
           this.dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
         }
@@ -1334,8 +1336,10 @@ public class CodegenModelGenerator {
     {
       DAGEdge edge = null;
       for (final DAGEdge currentEdge : edges) {
-        if (currentEdge.getSource().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.class).equals(VertexType.TASK)
-            && currentEdge.getTarget().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.class).equals(VertexType.TASK)) {
+        final DAGVertex source = currentEdge.getSource();
+        final DAGVertex target = currentEdge.getTarget();
+        if (source.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.class).equals(VertexType.TASK)
+            && target.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.class).equals(VertexType.TASK)) {
           edge = currentEdge;
         }
       }
@@ -1355,13 +1359,12 @@ public class CodegenModelGenerator {
     // Retrieve the internal buffer
     DAGVertex dagEndVertex;
     DAGVertex dagInitVertex;
+    final String endReferenceName = (String) dagVertex.getPropertyBean().getValue(SDFInitVertex.END_REFERENCE);
     if (fifoCall.getOperation().equals(FifoOperation.POP)) {
       dagInitVertex = dagVertex;
-      final String endReferenceName = (String) dagInitVertex.getPropertyBean().getValue(SDFInitVertex.END_REFERENCE);
       dagEndVertex = (DAGVertex) dagInitVertex.getBase().getVertex(endReferenceName);
     } else {
       dagEndVertex = dagVertex;
-      final String endReferenceName = (String) dagEndVertex.getPropertyBean().getValue(SDFInitVertex.END_REFERENCE);
       dagInitVertex = (DAGVertex) dagEndVertex.getBase().getVertex(endReferenceName);
     }
     final Pair<Buffer, Buffer> buffers = this.dagFifoBuffers.get(new Pair<>(dagEndVertex, dagInitVertex));
@@ -1383,18 +1386,39 @@ public class CodegenModelGenerator {
       buffers.getValue().getUsers().add(operatorBlock);
     }
 
+    // Create the INIT call (only the first time the fifo is encountered)
+    // @farresti:
+    // the management of local/none and permanent delays is a bit dirty here.
+    // Ideally, this should be called only for permanent delay.
+    // local/none delays should only have a call to the init function, no need for pop/push.
+    // The case where the end vertex is alone should not be considered as it means that the tokens convoyed by the
+    // delay are discarded.
+    // Actually, only the permanent delays really need the pop/push mechanism.
+    if (fifoCall.getOperation().equals(FifoOperation.POP)) {
+      final FifoCall fifoInitCall = CodegenFactory.eINSTANCE.createFifoCall();
+      fifoInitCall.setOperation(FifoOperation.INIT);
+      fifoInitCall.setFifoHead(fifoCall);
+      fifoInitCall.setName(fifoCall.getName());
+      fifoInitCall.setHeadBuffer(fifoCall.getHeadBuffer());
+      fifoInitCall.setBodyBuffer(fifoCall.getBodyBuffer());
+      final PersistenceLevel level = (PersistenceLevel) dagInitVertex.getPropertyBean().getValue(DAGInitVertex.PERSISTENCE_LEVEL);
+      if (level != null && level.equals(PersistenceLevel.PERMANENT)) {
+        operatorBlock.getInitBlock().getCodeElts().add(fifoInitCall);
+      } else {
+        operatorBlock.getLoopBlock().getCodeElts().add(fifoInitCall);
+      }
+    }
+
     // Register associated fifo calls (push/pop)
     if (fifoCall.getOperation().equals(FifoOperation.POP)) {
       // Pop operations are the first to be encountered.
       // We simply store the dagVertex with its associated fifoCall in a
       // Map. This Map will be used when processing the associated Push
       // operation
-      // this.popFifoCalls.put((SDFInitVertex) sdfVertex, fifoCall);dagInitVertex
       this.popFifoCalls.put(dagInitVertex, fifoCall);
 
     } else { // Push case
       // Retrieve the corresponding Pop
-      // final FifoCall popCall = this.popFifoCalls.remove(((SDFEndVertex) sdfVertex).getEndReference());dagInitVertex
       final FifoCall popCall = this.popFifoCalls.remove(dagInitVertex);
       popCall.setFifoHead(fifoCall);
       fifoCall.setFifoTail(popCall);
@@ -1404,17 +1428,6 @@ public class CodegenModelGenerator {
     operatorBlock.getLoopBlock().getCodeElts().add(fifoCall);
     this.dagVertexCalls.put(dagVertex, fifoCall);
     buffer.getUsers().add(operatorBlock);
-
-    // Create the init call (only the first time te fifo is encountered)
-    if (fifoCall.getOperation().equals(FifoOperation.POP)) {
-      final FifoCall fifoInitCall = CodegenFactory.eINSTANCE.createFifoCall();
-      fifoInitCall.setOperation(FifoOperation.INIT);
-      fifoInitCall.setFifoHead(fifoCall);
-      fifoInitCall.setName(fifoCall.getName());
-      fifoInitCall.setHeadBuffer(fifoCall.getHeadBuffer());
-      fifoInitCall.setBodyBuffer(fifoCall.getBodyBuffer());
-      operatorBlock.getInitBlock().getCodeElts().add(fifoInitCall);
-    }
   }
 
   /**
@@ -1764,7 +1777,7 @@ public class CodegenModelGenerator {
   }
 
   /**
-   * This method create a {@link SubBuffer} for each {@link SDFEdge} aggregated in the given {@link DAGEdge}. {@link SubBuffer} information are retrieved from
+   * This method create a {@link SubBuffer} for each {@link DAGEdge} aggregated in the given {@link DAGEdge}. {@link SubBuffer} information are retrieved from
    * the {@link #megs} of the {@link CodegenModelGenerator} . All created {@link SubBuffer} are referenced in the {@link #srSDFEdgeBuffers} map.
    *
    * @param parentBuffer

@@ -34,10 +34,8 @@
  */
 package org.ietr.preesm.experiment.model.factory;
 
-import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
@@ -50,10 +48,8 @@ import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.DelayLinkedExpression;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.Direction;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PersistenceLevel;
@@ -204,24 +200,6 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
     // Set the linked delay
     res.setLinkedDelay(delay);
     res.setName("");
-
-    // Creates the default refinement
-    // TODO try to find better solution
-    final CHeaderRefinement hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
-    final FunctionPrototype proto = PiMMUserFactory.instance.createFunctionPrototype();
-    proto.setName("defaultDelayInit");
-    proto.getParameters().add(PiMMUserFactory.instance.createFunctionParameter());
-    proto.getParameters().add(PiMMUserFactory.instance.createFunctionParameter());
-    proto.getParameters().get(0).setName("size");
-    proto.getParameters().get(0).setType("int");
-    proto.getParameters().get(0).setDirection(Direction.IN);
-    proto.getParameters().get(1).setName("fifo");
-    proto.getParameters().get(1).setType("void*");
-    proto.getParameters().get(1).setDirection(Direction.OUT);
-    hrefinement.setInitPrototype(null);
-    hrefinement.setLoopPrototype(proto);
-    hrefinement.setFilePath(new Path("include/memory.h"));
-    res.setRefinement(hrefinement);
     return res;
   }
 

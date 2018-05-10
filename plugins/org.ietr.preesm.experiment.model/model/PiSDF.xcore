@@ -601,7 +601,7 @@ class Delay extends Configurable, ExpressionHolder {
 	op unique String getId() {
 		var String srcName = Optional.ofNullable(containingFifo).map[sourcePort.containingActor.getName()].orElse("")
 		var String tgtName = Optional.ofNullable(containingFifo).map[targetPort.containingActor.getName()].orElse("")
-		return "delay_" + srcName + "--" + tgtName
+		return "delay_" + srcName + "__" + tgtName
 	}
 }
 

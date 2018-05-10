@@ -31,6 +31,7 @@ import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.MapperVertexFactory;
@@ -452,6 +453,10 @@ public class SRVerticesLinker {
       this.delayInitID = firstSink.getName() + "_init_" + this.sinkPort.getName();
       // Create the INIT vertex
       final DAGVertex initVertex = createInitVertex(this.delayInitID, vertexFactory);
+      // set the refinement of the delay (if any)
+      final Refinement refinement = delay.getActor().getRefinement();
+      initVertex.setPropertyValue(DAGInitVertex.INIT_REFINEMENT, refinement);
+      initVertex.setPropertyValue(DAGInitVertex.PERSISTENCE_LEVEL, delay.getLevel());
       sourceSet.add(new SourceConnection(initVertex, this.delays, this.sinkPort.getName()));
     }
   }

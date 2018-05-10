@@ -569,6 +569,10 @@ public class PiParser {
       throw new PiGraphException("Delay getter vertex " + getterName + " does not exist.");
     }
 
+    if (delay.getLevel().equals(PersistenceLevel.PERMANENT) && ((setter != null) || (getter != null))) {
+      throw new PiGraphException("Delay with global persistence can not be connected to a setter nor a getter actor.");
+    }
+
     // 7. Add the refinement for the INIT of the delay (if it exists)
     // Any refinement is ignored if the delay is already connected to a setter actor
     if (setter == null) {
@@ -580,7 +584,7 @@ public class PiParser {
           throw new PiGraphException("Delay INIT prototype must match following prototype: void init(IN int size, OUT <type>* fifo)");
         }
         final String delayInitPrototype = "Delay INIT function used: " + hrefinement.getLoopPrototype().getName();
-        WorkflowLogger.getLogger().log(Level.FINE, delayInitPrototype);
+        WorkflowLogger.getLogger().log(Level.INFO, delayInitPrototype);
       }
     }
 
