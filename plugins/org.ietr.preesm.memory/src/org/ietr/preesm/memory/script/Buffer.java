@@ -46,9 +46,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.eclipse.xtext.xbase.lib.Pair;
+import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 
 /**
  * This class implements the Buffer concept used in memory scripts.
@@ -264,7 +264,7 @@ public class Buffer {
 
   final DAGVertex dagVertex;
 
-  final SDFEdge sdfEdge;
+  final DAGEdge dagEdge;
 
   /**
    * This {@link List} of {@link Range} is used to store its indivisible sub-parts. A buffer can effectively be divided only if its is not indivisible and if
@@ -299,8 +299,8 @@ public class Buffer {
    * @param tokenSize
    *          The size of one token of the buffer.
    */
-  public Buffer(final SDFEdge edge, final DAGVertex dagVertex, final String name, final int nbTokens, final int tokenSize, final boolean mergeable) {
-    this.sdfEdge = edge;
+  public Buffer(final DAGEdge edge, final DAGVertex dagVertex, final String name, final int nbTokens, final int tokenSize, final boolean mergeable) {
+    this.dagEdge = edge;
     this.name = name;
     this.nbTokens = nbTokens;
     this.tokenSize = tokenSize;
@@ -1227,7 +1227,7 @@ public class Buffer {
   @Override
   public String toString() {
     final int size = this.nbTokens * this.tokenSize;
-    return getSdfVertex().getName() + "." + this.name + "[" + size + "]";
+    return dagVertex.getName() + "." + this.name + "[" + size + "]";
   }
 
 }

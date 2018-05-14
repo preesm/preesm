@@ -388,9 +388,7 @@ public class SdfToDagConverter {
    * @param scenario
    *          the scenario
    */
-  @SuppressWarnings("unchecked")
   public static void addInitialEdgeProperties(final MapperDAG dag, final Design architecture, final PreesmScenario scenario) {
-
     /**
      * Importing data edge weights and multiplying by type size when available
      */
