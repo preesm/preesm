@@ -80,7 +80,7 @@ public class EdgePropertyType extends AbstractEdgePropertyType<Integer> {
    * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#intValue()
    */
   @Override
-  public int intValue() {
+  public long longValue() {
     // TODO Auto-generated method stub
     return this.time;
   }

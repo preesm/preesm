@@ -60,15 +60,15 @@ public class IBSDFConsistencyTest {
     // compute the repetition vector (RV) of AB[DEF]C
     IBSDFConsistency.computeRV(ABC);
     // check the RV value of the top-graph
-    Assert.assertEquals(2, ABC.getVertex("A").getNbRepeat());
-    Assert.assertEquals(3, ABC.getVertex("B").getNbRepeat());
-    Assert.assertEquals(3, ABC.getVertex("C").getNbRepeat());
+    Assert.assertEquals(2L, ABC.getVertex("A").getNbRepeat());
+    Assert.assertEquals(3L, ABC.getVertex("B").getNbRepeat());
+    Assert.assertEquals(3L, ABC.getVertex("C").getNbRepeat());
 
     // check the RV value of the sub-graph
     final SDFGraph DEF = (SDFGraph) ABC.getVertex("B").getGraphDescription();
-    Assert.assertEquals(2, DEF.getVertex("D").getNbRepeat());
-    Assert.assertEquals(6, DEF.getVertex("E").getNbRepeat());
-    Assert.assertEquals(4, DEF.getVertex("F").getNbRepeat());
+    Assert.assertEquals(2L, DEF.getVertex("D").getNbRepeat());
+    Assert.assertEquals(6L, DEF.getVertex("E").getNbRepeat());
+    Assert.assertEquals(4L, DEF.getVertex("F").getNbRepeat());
 
     // TODO: check the consumption/production rates of interfaces
     final SDFAbstractVertex in = DEF.getVertex("a");
