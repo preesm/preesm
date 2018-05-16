@@ -13,7 +13,11 @@ PREESM Changelog
 * Update coding policies to 1.2.4 (fix line split);
 * Update DFTools to 1.6.0+;
 * Mintor refactoring of the Codegen;
-* Adding new facilities method in PiGrraph 
+* Adding new facilities method in PiGraph;
+* Enforced use of DAG properties instead of SDF properties when conversion of an SDF graph is done;
+* Initialization of data size property in SDFEdge before dag conversion;
+* Adding workflow task for converting Single rate SDF graph to DAG;
+* Deprecating use of Schedule/Mapping task using SDF as input in favor to the new ones with DAG as input;
 
 ### Bug fix
 
@@ -38,10 +42,6 @@ PREESM Changelog
 * Update RCPTT POM Configuration;
 * Have travis retry 3 times to fetch dependencies;
 * Force DFTools to 1.4.1+;
-* Enforced use of DAG properties instead of SDF properties when conversion of an SDF graph is done
-* Initialization of data size property in SDFEdge before dag conversion. 
-* Adding workflow task for converting Single rate SDF graph to DAG
-* Deprecating use of Schedule/Mapping task using SDF as input in favor to the new ones with DAG as input.
 
 ### Bug fix
 * Fix codegen for MS Visual Studio to support thread affinity;
