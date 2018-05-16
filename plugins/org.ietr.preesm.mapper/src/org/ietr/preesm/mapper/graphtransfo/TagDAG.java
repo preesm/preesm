@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Jonathan Piat <jpiat@laas.fr> (2008 - 2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
@@ -69,7 +70,6 @@ import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.ReceiveVertex;
 import org.ietr.preesm.mapper.model.special.SendVertex;
-import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -266,12 +266,7 @@ public class TagDAG {
     // Tagging the vertices with informations for code generation
     while (iter.hasNext()) {
       edge = (MapperDAGEdge) iter.next();
-
-      if ((edge.getSource() instanceof TransferVertex) || (edge.getTarget() instanceof TransferVertex)) {
-        addAggregateFromSDF(edge, scenario);
-      } else {
-        addAggregateFromSDF(edge, scenario);
-      }
+      addAggregate(edge, scenario);
     }
   }
 
@@ -293,11 +288,36 @@ public class TagDAG {
     // Iterating the SDF aggregates
     for (final AbstractEdge<SDFGraph, SDFAbstractVertex> aggMember : edge.getAggregate()) {
       final SDFEdge sdfAggMember = (SDFEdge) aggMember;
-
       final DataType dataType = scenario.getSimulationManager().getDataType(sdfAggMember.getDataType().toString());
       final BufferProperties props = new BufferProperties(dataType, sdfAggMember.getSourceInterface().getName(), sdfAggMember.getTargetInterface().getName(),
           sdfAggMember.getProd().intValue());
 
+      agg.add(props);
+    }
+
+    edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);
+  }
+
+  /**
+   * Aggregate is imported from the SDF edge. An aggregate in SDF is a set of sdf edges that were merged into one DAG edge.
+   *
+   * @param edge
+   *          the edge
+   * @param scenario
+   *          the scenario
+   * @throws InvalidExpressionException
+   *           the invalid expression exception
+   */
+  public void addAggregate(final MapperDAGEdge edge, final PreesmScenario scenario) throws InvalidExpressionException {
+    final BufferAggregate agg = new BufferAggregate();
+    for (final AbstractEdge<?, ?> aggMember : edge.getAggregate()) {
+      final DAGEdge dagEdge = (DAGEdge) aggMember;
+      final String value = (String) dagEdge.getPropertyBean().getValue(SDFEdge.DATA_TYPE);
+      final DataType dataType = scenario.getSimulationManager().getDataType(value);
+      // final int dataSize = (Integer) dagEdge.getPropertyBean().getValue(SDFEdge.DATA_SIZE);
+      // final BufferProperties props = new BufferProperties(dataType, dagEdge.getSourceLabel(), dagEdge.getTargetLabel(),
+      // dagEdge.getWeight().intValue() / dataSize);
+      final BufferProperties props = new BufferProperties(dataType, dagEdge.getSourceLabel(), dagEdge.getTargetLabel(), dagEdge.getWeight().intValue());
       agg.add(props);
     }
     edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);

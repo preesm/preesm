@@ -94,7 +94,7 @@ public class PreesmUIPlugin extends AbstractUIPlugin {
    * @return the image
    */
   public static Image getImage(final String path) {
-    final ImageRegistry ir = plugin.getImageRegistry();
+    final ImageRegistry ir = PreesmUIPlugin.plugin.getImageRegistry();
     Image image = ir.get(path);
     if (image == null) {
       final ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(PreesmUIPlugin.PLUGIN_ID, path);

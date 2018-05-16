@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -50,7 +50,7 @@ public class PrototypeFormatter {
    * Pretty prints a FunctionPrototype as a String formatted as follows: name (parameters types)
    */
   public static final String format(final FunctionPrototype prototype) {
-    StringBuilder result = new StringBuilder(prototype.getName() + "(");
+    final StringBuilder result = new StringBuilder(prototype.getName() + "(");
     boolean first = true;
     for (final FunctionParameter p : prototype.getParameters()) {
       if (first) {

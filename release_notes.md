@@ -1,6 +1,27 @@
 PREESM Changelog
 ================
 
+## Release version 2.12.0
+*2018.05.16*
+
+### New Feature
+* Add new code generation scheme for instrumenting code with PAPI;
+* add new code generator : PapifyC
+* add new tab in the scenario editor to configure the Papi events to monitor;
+
+### Changes
+* Update coding policies to 1.2.4 (fix line split);
+* Update DFTools to 1.6.0+;
+* Mintor refactoring of the Codegen;
+* Adding new facilities method in PiGraph;
+* Enforced use of DAG properties instead of SDF properties when conversion of an SDF graph is done;
+* Initialization of data size property in SDFEdge before dag conversion;
+* Adding workflow task for converting Single rate SDF graph to DAG;
+* Deprecating use of Schedule/Mapping task using SDF as input in favor to the new ones with DAG as input;
+
+### Bug fix
+
+
 ## Release version 2.11.0
 *2018.04.23*
 

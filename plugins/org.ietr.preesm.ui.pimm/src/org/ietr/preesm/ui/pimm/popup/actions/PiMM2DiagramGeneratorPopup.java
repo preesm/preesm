@@ -93,19 +93,19 @@ import org.ietr.preesm.ui.pimm.layout.AutoLayoutFeature;
 public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
 
   private static final IWorkbench     WORKBENCH      = PreesmUIPlugin.getDefault().getWorkbench();
-  private static final Shell          SHELL          = WORKBENCH.getModalDialogShellProvider().getShell();
+  private static final Shell          SHELL          = PiMM2DiagramGeneratorPopup.WORKBENCH.getModalDialogShellProvider().getShell();
   private static final IWorkspace     WORKSPACE      = ResourcesPlugin.getWorkspace();
   private static final IWorkspaceRoot WORKSPACE_ROOT = PiMM2DiagramGeneratorPopup.WORKSPACE.getRoot();
 
   @Override
   public Object execute(final ExecutionEvent event) throws ExecutionException {
 
-    final IWorkbenchPage page = WORKBENCH.getActiveWorkbenchWindow().getActivePage();
+    final IWorkbenchPage page = PiMM2DiagramGeneratorPopup.WORKBENCH.getActiveWorkbenchWindow().getActivePage();
     final TreeSelection selection = (TreeSelection) page.getSelection();
 
     final Iterator<?> iterator = selection.iterator();
     while (iterator.hasNext()) {
-      Object next = iterator.next();
+      final Object next = iterator.next();
       if (next instanceof IFile) {
         final IFile file = (IFile) next;
         generateDiagramFile(file);
@@ -123,7 +123,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
 
       int userDecision = SWT.OK;
       if (diagramAlreadyExists) {
-        userDecision = askUserConfirmation(SHELL, diagramFilePath);
+        userDecision = askUserConfirmation(PiMM2DiagramGeneratorPopup.SHELL, diagramFilePath);
 
       }
       if (!diagramAlreadyExists || (userDecision == SWT.OK)) {
@@ -146,7 +146,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
   }
 
   private void closeEditorIfOpen(final IPath diagramFilePath) {
-    final IWorkbench workbench = WORKBENCH;
+    final IWorkbench workbench = PiMM2DiagramGeneratorPopup.WORKBENCH;
     final IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
     final IEditorPart activeEditor = page.getActiveEditor();
     if (activeEditor instanceof PiMMDiagramEditor) {
@@ -228,7 +228,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
   private void openAndPopulateDiagram(final IFile diagramFile) throws PartInitException {
 
     // open editor
-    final IWorkbench workbench = WORKBENCH;
+    final IWorkbench workbench = PiMM2DiagramGeneratorPopup.WORKBENCH;
     final IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
     final IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(diagramFile.getName());
 

@@ -141,7 +141,7 @@ public class DirectEditingAbstractActorNameFeature extends AbstractDirectEditing
     final AbstractVertex vertex = (AbstractVertex) getBusinessObjectForPictogramElement(pe);
     vertex.setName(value);
     if (vertex instanceof InterfaceActor) {
-      InterfaceActor iface = (InterfaceActor) vertex;
+      final InterfaceActor iface = (InterfaceActor) vertex;
       iface.getDataPort().setName(value);
     }
 

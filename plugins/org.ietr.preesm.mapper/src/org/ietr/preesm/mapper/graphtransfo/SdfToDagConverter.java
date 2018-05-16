@@ -3,6 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Jonathan Piat <jpiat@laas.fr> (2008 - 2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
@@ -48,13 +49,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import org.ietr.dftools.algorithm.model.AbstractEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 import org.ietr.dftools.algorithm.model.sdf.visitors.DAGTransformation;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
@@ -111,6 +110,7 @@ public class SdfToDagConverter {
       return null;
     }
     final SDFGraph sdf = sdfIn.clone();
+    SdfToDagConverter.setDataSizeForSDF(sdf, scenario);
     // Generates a dag
     final MapperDAG dag = new MapperDAG(new MapperEdgeFactory(), sdf);
 
@@ -164,6 +164,22 @@ public class SdfToDagConverter {
   }
 
   /**
+   * Sets the data size property of every edge of the HSDF graph
+   *
+   * @param graph
+   *          the graph
+   * @param scenario
+   *          the scenario
+   */
+  private static void setDataSizeForSDF(final SDFGraph graph, final PreesmScenario scenario) {
+    for (final SDFEdge edge : graph.edgeSet()) {
+      final String type = edge.getDataType().toString();
+      final int size = scenario.getSimulationManager().getDataTypeSizeOrDefault(type);
+      edge.setDataSize(new SDFIntEdgePropertyType(size));
+    }
+  }
+
+  /**
    * Retrieves the relative constraints and adds them to the DAG initial properties. It consists in sharing between vertices information stored in VertexMapping
    * objects.
    *
@@ -182,7 +198,7 @@ public class SdfToDagConverter {
 
     // We iterate the dag to add to each vertex its relative constraints (if any)
     for (final DAGVertex dv : dag.vertexSet()) {
-      final String sdfVId = dv.getCorrespondingSDFVertex().getId();
+      final String sdfVId = dv.getId();
 
       // If a group was found, the actor is associated to a group with other actors
       if (manager.hasRelativeConstraint(sdfVId)) {
@@ -314,7 +330,7 @@ public class SdfToDagConverter {
         } else {
           // Default timings are given
           for (final ComponentInstance op : DesignTools.getOperatorInstances(architecture)) {
-            final Timing time = new Timing(op.getComponent().getVlnv().getName(), currentVertex.getCorrespondingSDFVertex().getId(), Timing.DEFAULT_TASK_TIME);
+            final Timing time = new Timing(op.getComponent().getVlnv().getName(), currentVertex.getId(), Timing.DEFAULT_TASK_TIME);
             currentVertexInit.addTiming(time);
           }
         }
@@ -347,7 +363,7 @@ public class SdfToDagConverter {
         for (final String opDef : scenario.getTimingManager().getMemcpySpeeds().keySet()) {
           final long sut = scenario.getTimingManager().getMemcpySetupTime(opDef);
           final float tpu = scenario.getTimingManager().getMemcpyTimePerUnit(opDef);
-          final Timing timing = new Timing(opDef, currentVertex.getCorrespondingSDFVertex().getId());
+          final Timing timing = new Timing(opDef, currentVertex.getId());
 
           // Depending on the type of vertex, time is given by the size of output or input buffers
           if (SpecialVertexManager.isFork(currentVertex) || SpecialVertexManager.isJoin(currentVertex) || SpecialVertexManager.isEnd(currentVertex)) {
@@ -372,9 +388,7 @@ public class SdfToDagConverter {
    * @param scenario
    *          the scenario
    */
-  @SuppressWarnings("unchecked")
   public static void addInitialEdgeProperties(final MapperDAG dag, final Design architecture, final PreesmScenario scenario) {
-
     /**
      * Importing data edge weights and multiplying by type size when available
      */
@@ -383,27 +397,7 @@ public class SdfToDagConverter {
     while (edgeiterator.hasNext()) {
       final MapperDAGEdge currentEdge = (MapperDAGEdge) edgeiterator.next();
       final EdgeInit currentEdgeInit = currentEdge.getInit();
-
-      int weight = 0;
-
-      // Calculating the edge weight for simulation:
-      // edge production * number of source repetitions * type size
-      for (final AbstractEdge<SDFGraph, SDFAbstractVertex> aggMember : currentEdge.getAggregate()) {
-        final SDFEdge sdfAggMember = (SDFEdge) aggMember;
-        int prod;
-        try {
-          prod = sdfAggMember.getProd().intValue();
-        } catch (final InvalidExpressionException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-          prod = 1;
-        }
-        final int nbRepeat = currentEdge.getSource().getNbRepeat().intValue();
-        final int typeSize = scenario.getSimulationManager().getDataTypeSizeOrDefault(sdfAggMember.getDataType().toString());
-        weight += prod * nbRepeat * typeSize;
-      }
-
-      currentEdgeInit.setDataSize(weight);
+      currentEdgeInit.setDataSize(currentEdge.getWeight().intValue());
 
     }
   }
@@ -420,7 +414,7 @@ public class SdfToDagConverter {
    */
   public static void addInitialConstraintsProperties(final MapperDAG dag, final Design architecture, final PreesmScenario scenario) {
     /**
-     * Importing scenario: Only the timings corresponding to allowed mappings are set.
+     * Importing scenario: Only the timings to allowed mappings are set.
      */
 
     // Iterating over constraint groups
@@ -436,9 +430,7 @@ public class SdfToDagConverter {
       for (final DAGVertex v : dag.vertexSet()) {
         final MapperDAGVertex mv = (MapperDAGVertex) v;
 
-        final SDFAbstractVertex correspondingVertex = mv.getCorrespondingSDFVertex();
-
-        final String lookingFor = correspondingVertex.getInfo();
+        final String lookingFor = mv.getInfo();
 
         if (sdfVertexIds.contains(lookingFor)) {
 

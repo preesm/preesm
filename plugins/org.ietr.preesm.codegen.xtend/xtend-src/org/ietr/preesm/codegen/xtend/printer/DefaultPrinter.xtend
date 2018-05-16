@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2016 - 2017)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
  *
@@ -36,6 +36,7 @@
  */
 package org.ietr.preesm.codegen.xtend.printer
 
+import java.util.Collection
 import java.util.LinkedHashMap
 import java.util.List
 import org.ietr.preesm.codegen.xtend.model.codegen.Block
@@ -71,7 +72,7 @@ class DefaultPrinter extends CodegenAbstractPrinter {
 	 * Default implementation: does nothing.
 	 * @see CodegenAbstractPrinter#createSecondaryFiles(List,List)
 	 */
-	override createSecondaryFiles(List<Block> printerBlocks, List<Block> allBlocks) {
+	override createSecondaryFiles(List<Block> printerBlocks, Collection<Block> allBlocks) {
 		return new LinkedHashMap<String,CharSequence>
 	}
 
@@ -79,7 +80,7 @@ class DefaultPrinter extends CodegenAbstractPrinter {
 	 * Default implementation: does nothing.
 	 * @see CodegenAbstractPrinter#preProcessing(List,List)
 	 */
-	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {}
+	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks) {}
 
 	override postProcessing(CharSequence charSeq)  {
 		return charSeq;

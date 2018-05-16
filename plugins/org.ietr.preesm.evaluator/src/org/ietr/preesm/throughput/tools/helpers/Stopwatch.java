@@ -37,28 +37,28 @@ package org.ietr.preesm.throughput.tools.helpers;
 
 /**
  * stopwatch class for time measurements used in benchmarks
- * 
+ *
  * @author hderoui
  *
  */
 public class Stopwatch {
-  private double  startTime;
-  private double  accumulatedTime;
-  private String  label;
-  private boolean isRunning;
-  private String  format;
-  private double  timeConverterFactor;
+  private double       startTime;
+  private double       accumulatedTime;
+  private final String label;
+  private boolean      isRunning;
+  private String       format;
+  private double       timeConverterFactor;
 
   /**
    * a class constructor with a name for the stopwatch
-   * 
+   *
    * @param label
    *          a name for the stopwatch
    */
-  public Stopwatch(String label) {
+  public Stopwatch(final String label) {
     this.label = label;
     this.accumulatedTime = 0;
-    this.setTimeSconds();
+    setTimeSconds();
   }
 
   /**
@@ -67,7 +67,7 @@ public class Stopwatch {
   public Stopwatch() {
     this.label = "stopwatch";
     this.accumulatedTime = 0;
-    this.setTimeSconds();
+    setTimeSconds();
   }
 
   /**
@@ -82,9 +82,9 @@ public class Stopwatch {
    * start the stopwatch
    */
   public void start() {
-    this.reset();
+    reset();
     this.isRunning = true;
-    this.startTime = this.currentTime();
+    this.startTime = currentTime();
 
   }
 
@@ -93,7 +93,7 @@ public class Stopwatch {
    */
   public void stop() {
     if (this.isRunning) {
-      this.accumulatedTime += this.currentTime() - startTime;
+      this.accumulatedTime += currentTime() - this.startTime;
       this.isRunning = false;
     }
   }
@@ -103,7 +103,7 @@ public class Stopwatch {
    */
   public void pause() {
     if (this.isRunning) {
-      this.accumulatedTime += this.currentTime() - startTime;
+      this.accumulatedTime += currentTime() - this.startTime;
     }
   }
 
@@ -111,12 +111,12 @@ public class Stopwatch {
    * resume the stopwatch
    */
   public void resume() {
-    this.startTime = this.currentTime();
+    this.startTime = currentTime();
   }
 
   /**
    * get the current time of the system
-   * 
+   *
    * @return current time
    */
   private double currentTime() {
@@ -125,7 +125,7 @@ public class Stopwatch {
 
   /**
    * get the value of the stopwacth
-   * 
+   *
    * @return time value of the stopwatch
    */
   public double value() {
@@ -134,12 +134,12 @@ public class Stopwatch {
 
   /**
    * get the current value of the stopwatch
-   * 
+   *
    * @return time
    */
   public double watch() {
     if (this.isRunning) {
-      return (this.currentTime() - startTime) + this.accumulatedTime;
+      return (currentTime() - this.startTime) + this.accumulatedTime;
     } else {
       return 0;
     }
@@ -147,7 +147,7 @@ public class Stopwatch {
 
   /**
    * get the name of the stopwatch
-   * 
+   *
    * @return label
    */
   public String getLabel() {
@@ -180,7 +180,7 @@ public class Stopwatch {
 
   /**
    * get the stopwatch time unit
-   * 
+   *
    * @return times unit
    */
   public String getFormat() {

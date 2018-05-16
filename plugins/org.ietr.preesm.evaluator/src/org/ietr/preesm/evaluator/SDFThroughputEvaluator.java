@@ -192,7 +192,7 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator {
     // GLPK.glp_free_env();
 
     // return period;
-    PeriodicScheduleModel_ojAlgo method = new PeriodicScheduleModel_ojAlgo();
+    final PeriodicScheduleModel_ojAlgo method = new PeriodicScheduleModel_ojAlgo();
     return method.computeNormalizedPeriod(sdf).doubleValue();
   }
 

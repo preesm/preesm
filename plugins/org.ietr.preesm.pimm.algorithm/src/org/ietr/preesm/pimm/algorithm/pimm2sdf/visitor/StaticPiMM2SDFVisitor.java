@@ -181,7 +181,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
    *          the p
    */
   @Override
-  public Boolean caseParameter(Parameter p) {
+  public Boolean caseParameter(final Parameter p) {
     if (p.isConfigurationInterface()) {
       final ConfigInputInterface cii = (ConfigInputInterface) p;
       final ConfigInputPort graphPort = cii.getGraphPort();

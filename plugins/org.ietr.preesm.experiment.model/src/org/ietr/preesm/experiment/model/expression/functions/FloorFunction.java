@@ -53,7 +53,7 @@ public class FloorFunction extends AbstractPreesmMathFunction {
   }
 
   @Override
-  protected double compute(double... args) {
+  protected double compute(final double... args) {
     return Math.floor(args[0]);
   }
 

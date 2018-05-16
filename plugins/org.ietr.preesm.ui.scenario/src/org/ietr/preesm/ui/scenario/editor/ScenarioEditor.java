@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Daniel Madroñal <daniel.madronal@upm.es> (2018)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -51,6 +52,7 @@ import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.core.scenario.serialize.ScenarioWriter;
 import org.ietr.preesm.ui.scenario.editor.codegen.CodegenPage;
 import org.ietr.preesm.ui.scenario.editor.constraints.ConstraintsPage;
+import org.ietr.preesm.ui.scenario.editor.papify.PapifyPage;
 import org.ietr.preesm.ui.scenario.editor.parametervalues.PiParametersPage;
 import org.ietr.preesm.ui.scenario.editor.relativeconstraints.RelativeConstraintsPage;
 import org.ietr.preesm.ui.scenario.editor.simulation.SimulationPage;
@@ -139,6 +141,9 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
     final PiParametersPage paramPage = new PiParametersPage(this.scenario, this, "Parameters", "Parameters");
     paramPage.addPropertyListener(this);
 
+    final IFormPage papifyPage = new PapifyPage(this.scenario, this, "Papify", "Papify");
+    papifyPage.addPropertyListener(this);
+
     try {
       addPage(overviewPage);
       addPage(constraintsPage);
@@ -148,6 +153,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
       addPage(codegenPage);
       addPage(variablesPage);
       addPage(paramPage);
+      addPage(papifyPage);
     } catch (final PartInitException e) {
       ErrorWithExceptionDialog.errorDialogWithStackTrace("Could not open scenario", e);
       close(false);

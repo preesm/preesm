@@ -54,7 +54,7 @@ public abstract class AbstractPreesmMathFunction extends PostfixMathCommand {
   }
 
   public final void integrateWithin(final JEP jep) {
-    jep.addFunction(this.getName(), this);
+    jep.addFunction(getName(), this);
   }
 
   /**
@@ -63,11 +63,11 @@ public abstract class AbstractPreesmMathFunction extends PostfixMathCommand {
    */
   @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
-  public void run(Stack stack) throws ParseException {
+  public void run(final Stack stack) throws ParseException {
 
     final double[] args = new double[getArgCount()];
     for (int i = 0; i < getArgCount(); i++) {
-      Object arg = stack.pop();
+      final Object arg = stack.pop();
       if (!(arg instanceof Double)) {
         throw new ParseException("Argument must be a number, whereas it is " + arg + "(" + arg.getClass().getName() + ")");
       }

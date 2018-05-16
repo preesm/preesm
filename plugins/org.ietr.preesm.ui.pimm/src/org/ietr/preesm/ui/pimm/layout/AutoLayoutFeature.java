@@ -960,7 +960,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
         // Make the Fifo go through this gap
         int keptY = (isTop) ? closestGap.start + AutoLayoutFeature.FIFO_SPACE : closestGap.end - AutoLayoutFeature.FIFO_SPACE;
         keptY = (((closestGap.start + AutoLayoutFeature.FIFO_SPACE) <= penultimate.getY())
-            && (closestGap.end == -1 || (closestGap.end - AutoLayoutFeature.FIFO_SPACE) >= penultimate.getY())) ? penultimate.getY() : keptY;
+            && ((closestGap.end == -1) || ((closestGap.end - AutoLayoutFeature.FIFO_SPACE) >= penultimate.getY()))) ? penultimate.getY() : keptY;
         if (keptY != penultimate.getY()) {
           ffc.getBendpoints().add(ffc.getBendpoints().size() - 1,
               Graphiti.getGaCreateService().createPoint(stageWidth.get(stageIdx).end + AutoLayoutFeature.BENDPOINT_SPACE, keptY));

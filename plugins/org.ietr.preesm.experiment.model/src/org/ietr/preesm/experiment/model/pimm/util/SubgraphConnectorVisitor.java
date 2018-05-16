@@ -122,7 +122,7 @@ public class SubgraphConnectorVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean casePiGraph(PiGraph pg) {
+  public Boolean casePiGraph(final PiGraph pg) {
     final PiGraph oldGraph = this.currentGraph;
     this.currentGraph = pg;
     for (final AbstractActor v : pg.getActors()) {
@@ -136,7 +136,7 @@ public class SubgraphConnectorVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseActor(Actor a) {
+  public Boolean caseActor(final Actor a) {
     // If the refinement of the Actor a points to the description of
     // PiGraph, visit it to connect the subgraph to its supergraph
     if (a.isHierarchical()) {
@@ -159,7 +159,7 @@ public class SubgraphConnectorVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseDataInputInterface(DataInputInterface dii) {
+  public Boolean caseDataInputInterface(final DataInputInterface dii) {
     // Connect the interface to the incoming fifo from the outer graph, if
     // any
     if (this.currentActor != null) {
@@ -178,7 +178,7 @@ public class SubgraphConnectorVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseDataOutputInterface(DataOutputInterface doi) {
+  public Boolean caseDataOutputInterface(final DataOutputInterface doi) {
     // Connect the interface to the outgoing fifo to the outer graph, if any
     if (this.currentActor != null) {
       DataOutputPort correspondingPort = null;
@@ -196,9 +196,9 @@ public class SubgraphConnectorVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseConfigInputInterface(ConfigInputInterface cii) {
+  public Boolean caseConfigInputInterface(final ConfigInputInterface cii) {
     // only reconnects if we parse a hierarchical actor and the current actor is the one containing the interface
-    if (this.currentActor != null && cii.getContainingGraph() == this.currentActor) {
+    if ((this.currentActor != null) && (cii.getContainingGraph() == this.currentActor)) {
       // Connect the interface to the incoming dependencies from the outer
       // graph
       ConfigInputPort correspondingPort = null;
@@ -216,7 +216,7 @@ public class SubgraphConnectorVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseConfigOutputInterface(ConfigOutputInterface coi) {
+  public Boolean caseConfigOutputInterface(final ConfigOutputInterface coi) {
     // Connect the interface to the outgoing dependencies to the outer graph
     ConfigOutputPort correspondingPort = null;
     for (final ConfigOutputPort cop : this.currentActor.getConfigOutputPorts()) {
@@ -232,7 +232,7 @@ public class SubgraphConnectorVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseParameter(Parameter p) {
+  public Boolean caseParameter(final Parameter p) {
     // We only do something for ConfigInputInterface (subclass of
     // Parameter), other parameters are visited but nothing should be done
     // DO NOTHING
@@ -240,12 +240,12 @@ public class SubgraphConnectorVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseAbstractActor(AbstractActor aa) {
+  public Boolean caseAbstractActor(final AbstractActor aa) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public Boolean caseAbstractVertex(AbstractVertex av) {
+  public Boolean caseAbstractVertex(final AbstractVertex av) {
     throw new UnsupportedOperationException();
   }
 
@@ -320,7 +320,7 @@ public class SubgraphConnectorVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean casePiSDFRefinement(PiSDFRefinement r) {
+  public Boolean casePiSDFRefinement(final PiSDFRefinement r) {
     throw new UnsupportedOperationException();
   }
 

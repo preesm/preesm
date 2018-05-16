@@ -5,6 +5,7 @@
 
     Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
     Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+    Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
     Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2015)
     Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
     Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
@@ -179,16 +180,16 @@
             type="org.ietr.preesm.mapper.ListSchedulingMapping">
          <inputs>
             <input
-                  id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
-            </input>
-            <input
                   id="architecture"
                   object="org.ietr.dftools.architecture.slam.Design">
             </input>
             <input
                   id="scenario"
                   object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+            <input
+                  id="SDF"
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
             </input>
          </inputs>
          <outputs>
@@ -325,6 +326,147 @@
                   object="org.ietr.preesm.mapper.abc.IAbc">
             </input>
          </inputs>
+      </task>
+      <task
+            id="org.ietr.preesm.mapper.SDF2DAGTransformation"
+            name="Single rate SDF to DAG Transformation"
+            type="org.ietr.preesm.mapper.graphtransfo.SDF2DAGTransformation">
+         <inputs>
+            <input
+                  id="SDF"
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+            <input
+                  id="architecture"
+                  object="org.ietr.dftools.architecture.slam.Design">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="DAG"
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </output>
+         </outputs>
+      </task>
+      <task
+            id="org.ietr.preesm.plugin.mapper.listschedulingfromdag"
+            name="List scheduling algorithm (DAG)"
+            type="org.ietr.preesm.mapper.ListSchedulingMappingFromDAG">
+         <inputs>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+            <input
+                  id="architecture"
+                  object="org.ietr.dftools.architecture.slam.Design">
+            </input>
+            <input
+                  id="DAG"
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="DAG"
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </output>
+            <output
+                  id="ABC"
+                  object="org.ietr.preesm.mapper.abc.IAbc">
+            </output>
+         </outputs>
+      </task>
+      <task
+            id="org.ietr.preesm.plugin.mapper.pfastdag"
+            name="PFAST algorithm (parallel version of FAST) (DAG)"
+            type="org.ietr.preesm.mapper.PFASTMappingFromDAG">
+         <inputs>
+            <input
+                  id="architecture"
+                  object="org.ietr.dftools.architecture.slam.Design">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+            <input
+                  id="DAG"
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="DAG"
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </output>
+            <output
+                  id="ABC"
+                  object="org.ietr.preesm.mapper.abc.IAbc">
+            </output>
+         </outputs>
+      </task>
+      <task
+            id="org.ietr.preesm.plugin.mapper.fastdag"
+            name="FAST algorithm (DAG)"
+            type="org.ietr.preesm.mapper.FASTMappingFromDAG">
+         <inputs>
+            <input
+                  id="architecture"
+                  object="org.ietr.dftools.architecture.slam.Design">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+            <input
+                  id="DAG"
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="DAG"
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </output>
+            <output
+                  id="ABC"
+                  object="org.ietr.preesm.mapper.abc.IAbc">
+            </output>
+         </outputs>
+      </task>
+      <task
+            id="org.ietr.preesm.plugin.mapper.DynamicQueuingTransformationdag"
+            name="Dynamic Queuing Scheduling (DAG)"
+            type="org.ietr.preesm.mapper.DynamicQueuingMappingFromDAG">
+         <inputs>
+            <input
+                  id="architecture"
+                  object="org.ietr.dftools.architecture.slam.Design">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+            <input
+                  id="DAG"
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="DAG"
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </output>
+            <output
+                  id="ABC"
+                  object="org.ietr.preesm.mapper.abc.IAbc">
+            </output>
+         </outputs>
       </task>
    </extension>
 

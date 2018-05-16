@@ -45,7 +45,7 @@
   <parent>
     <groupId>org.ietr.preesm</groupId>
     <artifactId>org.ietr.preesm.releng</artifactId>
-    <version>2.11.0</version>
+    <version>2.12.0</version>
     <relativePath>..</relativePath>
   </parent>
 
@@ -130,7 +130,7 @@
               <strictHostKeyChecking>false</strictHostKeyChecking>
               <mode>send</mode>
               <localPath>${project.build.directory}/deploy/${project.version}/</localPath>
-              <remotePath>/releases/</remotePath>
+              <remotePath>/releases/${project.version}/</remotePath>
             </configuration>
             <goals>
               <goal>sftp-transfert</goal>

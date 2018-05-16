@@ -51,19 +51,19 @@ public class ClassicalMethod {
 
   /**
    * Compute the throughput of the graph using the classical method base on flattening the hierarchy into a srSDF graph
-   * 
+   *
    * @param inputGraph
    *          srSDF graph
    * @return throughput of the graph
    */
-  public double evaluate(SDFGraph inputGraph, boolean withExecRulres) {
+  public double evaluate(final SDFGraph inputGraph, final boolean withExecRulres) {
     System.out.println("Computing the throughput of the graph using classical method ...");
     this.timer = new Stopwatch();
-    timer.start();
+    this.timer.start();
 
     // Phase 1: convert the IBSDF graph to a flat srSDF graph
     System.out.println("Phase 1: convert the IBSDF graph to a flat srSDF graph");
-    SDFGraph srSDF = IBSDFTransformer.convertToSrSDF(inputGraph, withExecRulres);
+    final SDFGraph srSDF = IBSDFTransformer.convertToSrSDF(inputGraph, withExecRulres);
 
     // Phase 2: compute the throughput of the flat srSDF graph using the periodic schedule
     System.out.println("Phase 2: compute the throughput of the flat srSDF graph using the periodic schedule");
@@ -71,13 +71,13 @@ public class ClassicalMethod {
     SDFTransformer.normalize(srSDF);
 
     // -> Step 2: compute the normalized period
-    PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
-    Fraction k = periodic.computeNormalizedPeriod(srSDF, PeriodicScheduler_SDF.Method.LinearProgram_Gurobi);
+    final PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
+    final Fraction k = periodic.computeNormalizedPeriod(srSDF, PeriodicScheduler_SDF.Method.LinearProgram_Gurobi);
 
     // -> Step 3: compute the throughput as 1/k
-    double throughput = 1 / k.doubleValue();
-    timer.stop();
-    System.out.println("Throughput of the graph = " + throughput + " computed in " + timer.toString());
+    final double throughput = 1 / k.doubleValue();
+    this.timer.stop();
+    System.out.println("Throughput of the graph = " + throughput + " computed in " + this.timer.toString());
 
     return throughput;
   }

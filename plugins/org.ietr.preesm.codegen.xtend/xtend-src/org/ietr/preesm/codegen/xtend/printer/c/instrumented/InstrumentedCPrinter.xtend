@@ -38,6 +38,7 @@
 package org.ietr.preesm.codegen.xtend.printer.c.instrumented
 
 import java.util.ArrayList
+import java.util.Collection
 import java.util.LinkedHashMap
 import java.util.List
 import org.ietr.preesm.codegen.xtend.model.codegen.Block
@@ -58,7 +59,7 @@ import org.ietr.preesm.codegen.xtend.printer.c.CPrinter
 /**
  * This printer currently prints instrumented C code for X86 cores with all
  * communications made in the shared memory.
- * 
+ *
  * @author kdesnos
  */
 class InstrumentedCPrinter extends CPrinter {
@@ -79,19 +80,19 @@ class InstrumentedCPrinter extends CPrinter {
 	 * Buffer storing the timing dumped by the actors
 	 */
 	protected Buffer dumpTimedBuffer
-	
+
 	/**
 	 * Buffer storing the number of execution of the actors
 	 */
 	protected Buffer nbExec
-	
+
 	/**
-	 * This map associates each codeElt to its ID 
+	 * This map associates each codeElt to its ID
 	 */
 	protected var LinkedHashMap<CodeElt, Integer> codeEltID = new LinkedHashMap<CodeElt,Integer>()
-	
+
 	/**
-	 * Map associating actor names to their different IDs 
+	 * Map associating actor names to their different IDs
 	 */
 	var actorIDs = new LinkedHashMap<String, List<Integer>>()
 
@@ -99,13 +100,13 @@ class InstrumentedCPrinter extends CPrinter {
 	 * Add instrumentation code to the {@link Block blocks}.<br>
 	 * In the current version, the instrumentation consists of:<br>
 	 * - A shared {@link Buffer} that stores all measured durations.<br>
-	 * - Calls to <code>dumpTime(ID, Buffer)</code> between all actors.<br> 
-	 * 
+	 * - Calls to <code>dumpTime(ID, Buffer)</code> between all actors.<br>
+	 *
 	 * @param blocks
-	 * 			List of the blocks printed by the printer. (will be 
+	 * 			List of the blocks printed by the printer. (will be
 	 * 			modified)
 	 */
-	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {
+	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks) {
 		super.preProcessing(printerBlocks, allBlocks)
 
 		// Create the Buffers
@@ -119,7 +120,7 @@ class InstrumentedCPrinter extends CPrinter {
 		nbExec.type = "int"
 
 		// 1. Scan the blocks to add the dumpTime calls
-		// globalID uniquely identify all calls to dumpTime(globalID)		
+		// globalID uniquely identify all calls to dumpTime(globalID)
 		var globalID = 0;
 
 		// Map associating each ID with the name of what is measures
@@ -219,15 +220,15 @@ class InstrumentedCPrinter extends CPrinter {
 			}, PortDirection.NONE)
 		(printerBlocks.head as CoreBlock).initBlock.codeElts.add(initCall)
 	}
-	
+
 	override printDefinitionsFooter(List<Variable> list) '''
 		int idx;
 		«super.printDefinitionsFooter(list)»
 	'''
-	
+
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
 				pthread_barrier_wait(&iter_barrier);
-				«IF dumpTimedBuffer.creator == block2.eContainer» 
+				«IF dumpTimedBuffer.creator == block2.eContainer»
 						writeTime(«dumpTimedBuffer.doSwitch»,«{
 							val const = CodegenFactory::eINSTANCE.createConstant
 							const.name = "nbDump"
@@ -238,7 +239,7 @@ class InstrumentedCPrinter extends CPrinter {
 				«ENDIF»
 		«super.printCoreLoopBlockFooter(block2)»
 	'''
-	
+
 	def String printInstrumentedCall(CodeElt elt, CharSequence superPrint)'''
 	«IF (state == PrinterState::PRINTING_LOOP_BLOCK) && codeEltID.get(elt) !== null»
 	for(idx=0; idx<*(«nbExec.doSwitch»+«codeEltID.get(elt)»); idx++){
@@ -248,7 +249,7 @@ class InstrumentedCPrinter extends CPrinter {
 	«superPrint»
 	«ENDIF»
 	'''
-	
+
 	/**
 	 * We do not instrument fifo call since this would mess up with the semaphores
 	 */
@@ -256,38 +257,38 @@ class InstrumentedCPrinter extends CPrinter {
 		«IF (state == PrinterState::PRINTING_LOOP_BLOCK) && codeEltID.get(communication) !== null»*(«nbExec.doSwitch»+«codeEltID.get(communication)») = 0;«ENDIF»
 		«super.printSharedMemoryCommunication(communication)»
 	'''
-	
+
 	override printFunctionCall(FunctionCall functionCall) {
 		return printInstrumentedCall(functionCall,super.printFunctionCall(functionCall))
 	}
-	
-	/** 
+
+	/**
 	 * Special call englobes printFork, Join, Broadcast, RoundBuffer
 	 */
 	override caseSpecialCall(SpecialCall specialCall) {
 		return printInstrumentedCall(specialCall,super.caseSpecialCall(specialCall))
 	}
-	
+
 	/**
 	 * We do not instrument fifo call since this would mess up with the memory
 	 */
-	override printFifoCall(FifoCall fifoCall)''' 
+	override printFifoCall(FifoCall fifoCall)'''
 	«IF (state == PrinterState::PRINTING_LOOP_BLOCK) && codeEltID.get(fifoCall) !== null»*(«nbExec.doSwitch»+«codeEltID.get(fifoCall)») = 0;«ENDIF»
 	«super.printFifoCall(fifoCall)»
 	'''
-	
-	override createSecondaryFiles(List<Block> printerBlocks, List<Block> allBlocks) {
+
+	override createSecondaryFiles(List<Block> printerBlocks, Collection<Block> allBlocks) {
 		val result = super.createSecondaryFiles(printerBlocks,allBlocks);
 		result.put("analysis.csv", printAnalysisCsvFile)
 		return result
 	}
-	
+
 	def String printAnalysisCsvFile()'''
 	«FOR entry : actorIDs.entrySet»
 	«entry.key»;"=AVERAGE(«FOR id : entry.value SEPARATOR ';'»«(id).intToColumn»«actorIDs.size + 3»:«(id).intToColumn»65536«ENDFOR»)"
 	«ENDFOR»
 	'''
-	
+
 	def String intToColumn(int i){
 		val alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 		var result = ""
@@ -295,10 +296,10 @@ class InstrumentedCPrinter extends CPrinter {
 		var rest = i
 		do {
 			digit = (rest-1)%26
-			rest = (rest-digit)/26  
+			rest = (rest-digit)/26
 			result = alphabet.charAt(digit) + result
 		} while(rest>0)
 		return result
 	}
-	
+
 }

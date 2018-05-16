@@ -45,20 +45,20 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * 
+ *
  * Unit test of SDFConsistency class
- * 
+ *
  * @author hderoui
- * 
+ *
  */
 public class SDFLivenessTest {
 
   @Test
   public void testLivenessShouldReturnTrue() {
     // generate the SDF graph ABC326
-    SDFGraph ABC = generateSDFGraphABC326();
+    final SDFGraph ABC = generateSDFGraphABC326();
     // check the liveness of the graph
-    boolean live = SDFLiveness.evaluate(ABC);
+    final boolean live = SDFLiveness.evaluate(ABC);
     // check the RV value
     Assert.assertTrue(live);
   }
@@ -66,20 +66,20 @@ public class SDFLivenessTest {
   @Test
   public void testLivenessShouldReturnFalse() {
     // generate the SDF graph ABC326
-    SDFGraph ABC = generateSDFGraphABC326();
+    final SDFGraph ABC = generateSDFGraphABC326();
     // remove the initial delays
-    for (SDFEdge e : ABC.edgeSet()) {
+    for (final SDFEdge e : ABC.edgeSet()) {
       e.setDelay(new SDFIntEdgePropertyType(0));
     }
     // check the liveness of the graph
-    boolean live = SDFLiveness.evaluate(ABC);
+    final boolean live = SDFLiveness.evaluate(ABC);
     // check the RV value
     Assert.assertFalse(live);
   }
 
   /**
    * generate a SDF graph to test methods
-   * 
+   *
    * @return SDF graph
    */
   public SDFGraph generateSDFGraphABC326() {
@@ -88,7 +88,7 @@ public class SDFLivenessTest {
     // RV[A=3, B=2, C=6]
 
     // create SDF graph testABC326
-    SDFGraph graph = new SDFGraph();
+    final SDFGraph graph = new SDFGraph();
     graph.setName("testABC326");
 
     // add actors

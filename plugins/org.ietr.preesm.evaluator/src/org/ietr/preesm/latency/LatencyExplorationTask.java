@@ -53,29 +53,29 @@ import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 public class LatencyExplorationTask extends AbstractTaskImplementation {
 
   @Override
-  public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters, IProgressMonitor monitor, String nodeName, Workflow workflow)
-      throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
     // get the input graph, the scenario for actors duration, and the total number of cores
-    SDFGraph inputGraph = GraphStructureHelper.cloneIBSDF((SDFGraph) inputs.get("SDF"));
-    PreesmScenario inputScenario = (PreesmScenario) inputs.get("scenario");
-    Integer nbCores = Integer.parseInt(parameters.get("nbCores"));
+    final SDFGraph inputGraph = GraphStructureHelper.cloneIBSDF((SDFGraph) inputs.get("SDF"));
+    final PreesmScenario inputScenario = (PreesmScenario) inputs.get("scenario");
+    final Integer nbCores = Integer.parseInt(parameters.get("nbCores"));
 
     // list of latency in function of cores number
-    ArrayList<Double> latencyList = new ArrayList<Double>(nbCores);
+    final ArrayList<Double> latencyList = new ArrayList<>(nbCores);
 
     // explore the latency
     // no available cores => latency = 0
     latencyList.add(0, 0.);
 
     // latency of a single core execution
-    LatencyEvaluationEngine evaluator = new LatencyEvaluationEngine();
-    double maxLatency = evaluator.getMinLatencySingleCore(inputGraph, inputScenario);
+    final LatencyEvaluationEngine evaluator = new LatencyEvaluationEngine();
+    final double maxLatency = evaluator.getMinLatencySingleCore(inputGraph, inputScenario);
     latencyList.add(1, maxLatency);
 
     // latency of a multicore execution
     for (int n = 2; n <= nbCores; n++) {
-      double l = 1;
+      final double l = 1;
       // compute the latency of the graph using n cores
       // call the class for scheduling the graph using n cores
       // parameters(n, null) if null do not construct/return the gantt chart
@@ -86,7 +86,7 @@ public class LatencyExplorationTask extends AbstractTaskImplementation {
     // WorkflowLogger.getLogger().log(Level.WARNING, "ERROR : The graph is deadlock !!");
 
     // set the outputs
-    Map<String, Object> outputs = new HashMap<String, Object>();
+    final Map<String, Object> outputs = new HashMap<>();
     // outputs.put("SDF", inputGraph);
     // outputs.put("scenario", inputScenario);
 
@@ -95,7 +95,7 @@ public class LatencyExplorationTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    Map<String, String> parameters = new HashMap<String, String>();
+    final Map<String, String> parameters = new HashMap<>();
     // parameters.put(,);
     return parameters;
   }

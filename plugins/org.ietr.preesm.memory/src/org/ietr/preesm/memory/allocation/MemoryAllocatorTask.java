@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2015)
  *
@@ -80,7 +81,8 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
     // Each created MEG corresponds to a single memory bank
     // Log the distribution policy used
     if (this.verbose && !this.valueDistribution.equals(AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY)) {
-      this.logger.log(Level.INFO, "Split MEG with " + this.valueDistribution + " policy");
+      final String msg = "Split MEG with " + this.valueDistribution + " policy";
+      this.logger.log(Level.INFO, msg);
     }
 
     // Do the distribution
@@ -89,11 +91,13 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 
     // Log results
     if (this.verbose && !this.valueDistribution.equals(AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY)) {
-      this.logger.log(Level.INFO, "Created " + megs.keySet().size() + " MemExes");
+      final String msg = "Created " + megs.keySet().size() + " MemExes";
+      this.logger.log(Level.INFO, msg);
       for (final Entry<String, MemoryExclusionGraph> entry : megs.entrySet()) {
         final double density = entry.getValue().edgeSet().size() / ((entry.getValue().vertexSet().size() * (entry.getValue().vertexSet().size() - 1)) / 2.0);
-        this.logger.log(Level.INFO, "Memex(" + entry.getKey() + "): " + entry.getValue().vertexSet().size() + " vertices, density=" + density + ":: "
-            + entry.getValue().getTotalSetOfVertices());
+        final String msg2 = "Memex(" + entry.getKey() + "): " + entry.getValue().vertexSet().size() + " vertices, density=" + density + ":: "
+            + entry.getValue().getTotalSetOfVertices();
+        this.logger.log(Level.INFO, msg2);
       }
     }
 
@@ -109,8 +113,9 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
         && ((verticesBeforeDistribution.size() != verticesAfterDistribution.size()) || (verticesBeforeDistribution.size() != verticesInMegs.size()))) {
       // Compute the list of missing vertices
       verticesBeforeDistribution.removeAll(verticesInMegs);
-      this.logger.log(Level.SEVERE, "Problem in the MEG distribution, some memory objects were lost during the distribution.\n" + verticesBeforeDistribution
-          + "\nContact Preesm developers to solve this issue.");
+      final String msg = "Problem in the MEG distribution, some memory objects were lost during the distribution.\n" + verticesBeforeDistribution
+          + "\nContact Preesm developers to solve this issue.";
+      this.logger.log(Level.SEVERE, msg);
     }
 
     for (final Entry<String, MemoryExclusionGraph> entry : megs.entrySet()) {
@@ -121,7 +126,8 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
       createAllocators(meg);
 
       if (this.verbose) {
-        this.logger.log(Level.INFO, "Heat up MemEx for " + memoryBank + " memory bank.");
+        final String msg = "Heat up MemEx for " + memoryBank + " memory bank.";
+        this.logger.log(Level.INFO, msg);
       }
       for (final MemoryExclusionVertex vertex : meg.vertexSet()) {
         meg.getAdjacentVertexOf(vertex);

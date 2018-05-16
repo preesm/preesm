@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
  * Jonathan Piat <jpiat@laas.fr> (2009 - 2011)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
@@ -42,10 +43,12 @@ package org.ietr.preesm.mapper.model;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import org.ietr.dftools.algorithm.model.AbstractEdge;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import org.ietr.dftools.algorithm.model.dag.EdgeAggregate;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.mapper.model.property.DAGMappings;
@@ -200,6 +203,15 @@ public class MapperDAG extends DirectedAcyclicGraph {
       newEdge.setInit(origEdge.getInit().clone());
       newEdge.setTiming(origEdge.getTiming().clone());
       newEdge.copyProperties(origEdge);
+      // Updating the aggregate list with proper reference
+      newEdge.setAggregate(new EdgeAggregate());
+      for (final AbstractEdge<?, ?> e : origEdge.getAggregate()) {
+        final DAGEdge edge = (DAGEdge) e;
+        final DAGEdge newAggEdge = new DAGEdge();
+        newAggEdge.copyProperties(edge);
+        newAggEdge.setContainingEdge(newEdge);
+        newEdge.getAggregate().add(newAggEdge);
+      }
     }
     newDAG.copyProperties(this);
 

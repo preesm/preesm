@@ -135,10 +135,10 @@ public class CreateActorFeature extends AbstractCreateFeature {
   }
 
   public Object[] getObjects() {
-    return objects;
+    return this.objects;
   }
 
-  public void setObjects(Object[] objects) {
+  public void setObjects(final Object[] objects) {
     this.objects = objects;
   }
 

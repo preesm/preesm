@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Hascoet <jhascoet@kalray.eu> (2016)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2015)
@@ -39,10 +39,9 @@
 package org.ietr.preesm.codegen.xtend.task;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -88,7 +87,7 @@ public class CodegenTask extends AbstractTaskImplementation {
     // Generate intermediate model
     final CodegenModelGenerator generator = new CodegenModelGenerator(archi, algo, megs, scenario, workflow);
 
-    final List<Block> codeBlocks = new ArrayList<>(generator.generate());
+    final Collection<Block> codeBlocks = generator.generate();
 
     // Retrieve the desired printer and target folder path
     final String selectedPrinter = parameters.get(CodegenTask.PARAM_PRINTER);

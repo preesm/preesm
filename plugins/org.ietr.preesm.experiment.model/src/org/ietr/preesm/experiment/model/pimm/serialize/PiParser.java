@@ -570,7 +570,7 @@ public class PiParser {
     final String nodeKind = nodeElt.getAttribute(PiIdentifiers.NODE_KIND);
     Configurable vertex;
 
-    InterfaceKind ik = InterfaceKind.get(nodeKind);
+    final InterfaceKind ik = InterfaceKind.get(nodeKind);
     if (ik != null) {
       switch (ik) {
         case DATA_INPUT:

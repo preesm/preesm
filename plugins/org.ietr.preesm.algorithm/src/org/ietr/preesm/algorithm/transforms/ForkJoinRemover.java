@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Jonathan Piat <jpiat@laas.fr> (2009 - 2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
@@ -49,6 +50,8 @@ import org.ietr.dftools.algorithm.iterators.SDFIterator;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGJoinVertex;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
@@ -57,6 +60,8 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.ietr.preesm.core.types.ImplementationPropertyNames;
+import org.ietr.preesm.core.types.VertexType;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -308,15 +313,15 @@ public class ForkJoinRemover {
     // vertices
 
     for (final DAGVertex vert : vertices) {
-      final boolean isTask = vert.getPropertyBean().getValue("vertexType").toString().equals("task");
+      final boolean isTask = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.TASK);
       String vertKind = "";
 
       // Only task vertices have a kind
       if (isTask) {
-        vertKind = vert.getPropertyBean().getValue("kind").toString();
+        vertKind = vert.getKind();
       }
 
-      if (vertKind.equals("dag_fork_vertex") || vertKind.equals("dag_join_vertex")) {
+      if (vertKind.equals(DAGForkVertex.DAG_FORK_VERTEX) || vertKind.equals(DAGJoinVertex.DAG_JOIN_VERTEX)) {
         // If the vertex is a task (an implode or explode vertex)
 
         // Link incoming/outgoing edges of the implode/explode
@@ -333,12 +338,12 @@ public class ForkJoinRemover {
             // Check that the edge is linked to a task (we do
             // not
             // consider edges linked to send/receive)
-            if (incomingEdge.getSource().getPropertyBean().getValue("vertexType").toString().equals("task")
-                && outgoingEdge.getTarget().getPropertyBean().getValue("vertexType").toString().equals("task")) {
+            if (incomingEdge.getSource().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.TASK)
+                && outgoingEdge.getTarget().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.TASK)) {
 
               // Select the edges whose properties must be
               // copied to the new edge
-              final DAGEdge edge = (vert.getPropertyBean().getValue("kind").toString().equals("dag_join_vertex")) ? incomingEdge : outgoingEdge;
+              final DAGEdge edge = (vert.getKind().equals(DAGJoinVertex.DAG_JOIN_VERTEX)) ? incomingEdge : outgoingEdge;
 
               // Create the new edge that bypass the
               // explode/implode

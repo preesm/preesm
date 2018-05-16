@@ -68,12 +68,12 @@ public final class RefinementResolver extends PiMMSwitch<AbstractActor> {
     // disallow external instantiation
   }
 
-  public static final AbstractActor resolveAbstractActor(Refinement r) {
+  public static final AbstractActor resolveAbstractActor(final Refinement r) {
     return new RefinementResolver().doSwitch(r);
   }
 
   @Override
-  public AbstractActor casePiSDFRefinement(PiSDFRefinement ref) {
+  public AbstractActor casePiSDFRefinement(final PiSDFRefinement ref) {
     if ((ref.getFilePath() != null) && ref.getFilePath().getFileExtension().equals("pi")) {
       final URI refinementURI = URI.createPlatformResourceURI(ref.getFilePath().makeRelative().toString(), true);
 
@@ -103,7 +103,7 @@ public final class RefinementResolver extends PiMMSwitch<AbstractActor> {
   }
 
   @Override
-  public AbstractActor caseCHeaderRefinement(CHeaderRefinement ref) {
+  public AbstractActor caseCHeaderRefinement(final CHeaderRefinement ref) {
     if (ref.getLoopPrototype() != null) {
       // Create the actor returned by the function
       final AbstractActor result = PiMMUserFactory.instance.createActor();

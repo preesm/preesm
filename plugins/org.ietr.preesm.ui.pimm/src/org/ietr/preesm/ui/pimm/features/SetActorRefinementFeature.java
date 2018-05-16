@@ -260,7 +260,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
         // The file is either a .pi or a .IDL file.
         validRefinement = true;
         if (refinement == null) {
-          PiSDFRefinement createPiSDFRefinement = PiMMUserFactory.instance.createPiSDFRefinement();
+          final PiSDFRefinement createPiSDFRefinement = PiMMUserFactory.instance.createPiSDFRefinement();
           createPiSDFRefinement.setFilePath(newFilePath);
           actor.setRefinement(createPiSDFRefinement);
         }

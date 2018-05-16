@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2017)
  *
@@ -49,6 +50,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.logging.Level;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.ietr.dftools.algorithm.iterators.DAGIterator;
 import org.ietr.dftools.algorithm.model.CloneableProperty;
@@ -58,14 +60,20 @@ import org.ietr.dftools.algorithm.model.PropertySource;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGBroadcastVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGEndVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGInitVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGJoinVertex;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.WorkflowException;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
+import org.ietr.preesm.core.types.VertexType;
 import org.ietr.preesm.memory.script.Range;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
@@ -211,16 +219,17 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     // As the non-task vertices are removed at the beginning of the build
     // function
     // This if statement could probably be removed. (I keep it just in case)
-    if (edge.getSource().getPropertyBean().getValue("vertexType").toString().equals("task")
-        && edge.getTarget().getPropertyBean().getValue("vertexType").toString().equals("task")) {
+    if (edge.getSource().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.TASK)
+        && edge.getTarget().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.TASK)) {
       newNode = new MemoryExclusionVertex(edge);
 
       final boolean added = addVertex(newNode);
+
       // If false, this means that an equal node is already in the MemEx..
       // somehow..
-      if (added == false) {
+      if (!added) {
         // This may come from several edges belonging to an implodeSet
-        System.out.println("Vertex not added : " + newNode.toString());
+        WorkflowLogger.getLogger().log(Level.WARNING, "Vertex not added : " + newNode.toString());
         newNode = null;
       }
 
@@ -239,17 +248,23 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
   protected void buildFifoMemoryObjects(final DirectedAcyclicGraph dag) {
     // Scan the dag vertices
     for (final DAGVertex vertex : dag.vertexSet()) {
-      final String vertKind = vertex.getPropertyBean().getValue("kind").toString();
+      final String vertKind = vertex.getKind();
 
       // Process Init vertices only
-      if (vertKind.equals("dag_init_vertex")) {
+      if (vertKind.equals(DAGInitVertex.DAG_INIT_VERTEX)) {
 
         final DAGVertex dagInitVertex = vertex;
 
         // Retrieve the corresponding EndVertex
-        final SDFInitVertex sdfInitVertex = (SDFInitVertex) vertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX);
-        final SDFEndVertex sdfEndVertex = (SDFEndVertex) sdfInitVertex.getEndReference();
-        final DAGVertex dagEndVertex = dag.getVertex(sdfEndVertex.getName());
+        final String endReferenceName = (String) vertex.getPropertyBean().getValue(DAGInitVertex.END_REFERENCE);
+        final DAGVertex dagEndVertex = dag.getVertex(endReferenceName);
+        // @farresti:
+        // It may happens that there are no end vertex associated with an init
+        // If a FIFO is ended using getter actors for instance
+        // In that case, should we leave ?
+        if (dagEndVertex == null) {
+          continue;
+        }
 
         // Create the Head Memory Object
         // Get the typeSize
@@ -257,13 +272,17 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         int typeSize = 1; // (size of a token (from the scenario)
         {
           // TODO: Support the supprImplodeExplode option
-          if (dag.outgoingEdgesOf(dagInitVertex).size() != 1) {
+          if (dag.outgoingEdgesOf(dagInitVertex).isEmpty()) {
+            throw new RuntimeException("Init DAG vertex" + dagInitVertex + " has no outgoing edges.\n This is not supported by the MemEx builder");
+          } else if (dag.outgoingEdgesOf(dagInitVertex).size() > 1) {
             throw new RuntimeException("Init DAG vertex " + dagInitVertex + " has several outgoing edges.\n" + "This is not supported by the MemEx builder.\n"
                 + "Set \"ImplodeExplodeSuppr\" and \"Suppr Fork/Join\"" + " options to false in the workflow tasks" + " to get rid of this error.");
           }
           final DAGEdge outgoingEdge = dag.outgoingEdgesOf(dagInitVertex).iterator().next();
           final BufferAggregate buffers = (BufferAggregate) outgoingEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
-          if (buffers.size() != 1) {
+          if (buffers.isEmpty()) {
+            throw new RuntimeException("DAGEdge " + outgoingEdge + " has no buffer properties.\n This is not supported by the MemEx builder.");
+          } else if (buffers.size() > 1) {
             throw new RuntimeException("DAGEdge " + outgoingEdge + " is equivalent to several SDFEdges.\n" + "This is not supported by the MemEx builder.\n"
                 + "Please contact Preesm developers.");
           }
@@ -289,11 +308,13 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
           final Set<MemoryExclusionVertex> endPredecessorsVert = new LinkedHashSet<>();
           for (final DAGEdge edge : endPredecessors) {
-            endPredecessorsVert.add(new MemoryExclusionVertex(edge.getSource().getName(), edge.getSource().getName(), 0));
+            final String sourceName = edge.getSource().getName();
+            endPredecessorsVert.add(new MemoryExclusionVertex(sourceName, sourceName, 0));
           }
           final Set<MemoryExclusionVertex> initSuccessorsVert = new LinkedHashSet<>();
           for (final DAGEdge edge : initSuccessors) {
-            initSuccessorsVert.add(new MemoryExclusionVertex(edge.getTarget().getName(), edge.getTarget().getName(), 0));
+            final String targetName = edge.getTarget().getName();
+            initSuccessorsVert.add(new MemoryExclusionVertex(targetName, targetName, 0));
           }
           betweenVert = (new LinkedHashSet<>(initSuccessorsVert));
           betweenVert.retainAll(endPredecessorsVert);
@@ -327,7 +348,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
         // Create the Memory Object for the remaining of the FIFO (if
         // any)
-        final int fifoDepth = sdfInitVertex.getInitSize();
+        final int fifoDepth = (Integer) dagInitVertex.getPropertyBean().getValue(SDFInitVertex.INIT_SIZE);
         if (fifoDepth > (headMemoryNode.getWeight() / typeSize)) {
           final MemoryExclusionVertex fifoMemoryNode = new MemoryExclusionVertex("FIFO_Body_" + dagEndVertex.getName(), dagInitVertex.getName(),
               (fifoDepth * typeSize) - headMemoryNode.getWeight());
@@ -389,24 +410,25 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     int newOrder = 0;
 
     for (final DAGVertex vert : dagVertices) {
-      final boolean isTask = vert.getPropertyBean().getValue("vertexType").toString().equals("task");
+      final boolean isTask = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.TASK);
       String vertKind = "";
 
       // Only task vertices have a kind
       if (isTask) {
-        vertKind = vert.getPropertyBean().getValue("kind").toString();
+        vertKind = vert.getKind();
       }
 
-      if (vertKind.equals("dag_vertex") || vertKind.equals("dag_broadcast_vertex") // roundbuffers covered
-          || vertKind.equals("dag_init_vertex") || vertKind.equals("dag_end_vertex") || vertKind.equals("dag_fork_vertex")
-          || vertKind.equals("dag_join_vertex")) {
+      // if (isTask) seem simpler ?
+      if (vertKind.equals(DAGVertex.DAG_VERTEX) || vertKind.equals(DAGBroadcastVertex.DAG_BROADCAST_VERTEX) // roundbuffers covered
+          || vertKind.equals(DAGInitVertex.DAG_INIT_VERTEX) || vertKind.equals(DAGEndVertex.DAG_END_VERTEX) || vertKind.equals(DAGForkVertex.DAG_FORK_VERTEX)
+          || vertKind.equals(DAGJoinVertex.DAG_JOIN_VERTEX)) {
         // If the dagVertex is a task (except implode/explode task), set
         // the scheduling Order which will be used as a unique ID for
         // each vertex
         vert.getPropertyBean().setValue(localOrdering, newOrder);
         newOrder++;
 
-        if (vert.incomingEdges().size() == 0) {
+        if (vert.incomingEdges().isEmpty()) {
           sourcesVertices.add(vert);
         }
       } else {
@@ -452,11 +474,8 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       // 3. Outgoing Edges processing
 
       // Retrieve the vertex to process
-      final int vertexID = (Integer) vertexDAG.getPropertyBean().getValue(localOrdering); // Retrieve
-      // the
-      // vertex
-      // unique
-      // ID
+      // Retrieve the vertex unique ID
+      final int vertexID = (Integer) vertexDAG.getPropertyBean().getValue(localOrdering);
 
       // 1. Fork/Join/Broadcast/Roundbuffer specific processing
       // Not usable yet ! Does not work because output edges are not
@@ -481,7 +500,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       // 2. Working Memory specific Processing
       // If the current vertex has some working memory, create the
       // associated MemoryExclusionGraphVertex
-      final Integer wMem = (Integer) vertexDAG.getCorrespondingSDFVertex().getPropertyBean().getValue("working_memory");
+      final Integer wMem = (Integer) vertexDAG.getPropertyBean().getValue("working_memory");
       if (wMem != null) {
         final MemoryExclusionVertex workingMemoryNode = new MemoryExclusionVertex(vertexDAG.getName(), vertexDAG.getName(), wMem);
         workingMemoryNode.setVertex(vertexDAG);
@@ -741,8 +760,8 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
     // DAG_FIFO_ALLOCATION
     @SuppressWarnings("unchecked")
-    final Map<MemoryExclusionVertex, Integer> dagFifoAlloc = (Map<MemoryExclusionVertex, Integer>) getPropertyBean()
-        .getValue(MemoryExclusionGraph.DAG_FIFO_ALLOCATION);
+    final Map<MemoryExclusionVertex,
+        Integer> dagFifoAlloc = (Map<MemoryExclusionVertex, Integer>) getPropertyBean().getValue(MemoryExclusionGraph.DAG_FIFO_ALLOCATION);
     if (dagFifoAlloc != null) {
       final Map<MemoryExclusionVertex, Integer> dagFifoAllocCopy = new LinkedHashMap<>();
       for (final Entry<MemoryExclusionVertex, Integer> fifoAlloc : dagFifoAlloc.entrySet()) {
@@ -753,8 +772,8 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
     // WORKING_MEM_ALLOCATION
     @SuppressWarnings("unchecked")
-    final Map<MemoryExclusionVertex, Integer> wMemAlloc = (Map<MemoryExclusionVertex, Integer>) getPropertyBean()
-        .getValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION);
+    final Map<MemoryExclusionVertex,
+        Integer> wMemAlloc = (Map<MemoryExclusionVertex, Integer>) getPropertyBean().getValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION);
     if (wMemAlloc != null) {
       final Map<MemoryExclusionVertex, Integer> wMemAllocCopy = new LinkedHashMap<>();
       for (final Entry<MemoryExclusionVertex, Integer> wMem : wMemAlloc.entrySet()) {
@@ -873,8 +892,8 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
       // DIVIDED_PARTS_HOSTS
       @SuppressWarnings("unchecked")
-      final List<MemoryExclusionVertex> dividedPartHosts = (List<MemoryExclusionVertex>) vertex.getPropertyBean()
-          .getValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS);
+      final List<
+          MemoryExclusionVertex> dividedPartHosts = (List<MemoryExclusionVertex>) vertex.getPropertyBean().getValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS);
       if (dividedPartHosts != null) {
         final List<MemoryExclusionVertex> dividedPartHostCopy = new ArrayList<>();
         for (final MemoryExclusionVertex host : dividedPartHosts) {
@@ -1439,21 +1458,21 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     while (iterDAGVertices.hasNext()) {
       final DAGVertex currentVertex = iterDAGVertices.next();
 
-      final boolean isTask = currentVertex.getPropertyBean().getValue("vertexType").toString().equals("task");
+      final boolean isTask = currentVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.TASK);
 
       String vertKind = "";
 
       // Only task vertices have a kind
       if (isTask) {
-        vertKind = currentVertex.getPropertyBean().getValue("kind").toString();
+        vertKind = currentVertex.getKind();
       }
 
-      if (vertKind.equals("dag_vertex") || vertKind.equals("dag_broadcast_vertex") || vertKind.equals("dag_init_vertex") || vertKind.equals("dag_end_vertex")
-          || vertKind.equals("dag_fork_vertex") || vertKind.equals("dag_join_vertex")) {
+      if (vertKind.equals(DAGVertex.DAG_VERTEX) || vertKind.equals(DAGBroadcastVertex.DAG_BROADCAST_VERTEX) || vertKind.equals(DAGInitVertex.DAG_INIT_VERTEX)
+          || vertKind.equals(DAGEndVertex.DAG_END_VERTEX) || vertKind.equals(DAGForkVertex.DAG_FORK_VERTEX) || vertKind.equals(DAGJoinVertex.DAG_JOIN_VERTEX)) {
         final int schedulingOrder = (Integer) currentVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
         verticesMap.put(schedulingOrder, currentVertex);
 
-        if (vertKind.equals("dag_init_vertex")) {
+        if (vertKind.equals(DAGInitVertex.DAG_INIT_VERTEX)) {
           initVertices.add(currentVertex);
         }
       } else {
@@ -1461,7 +1480,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       }
     }
 
-    if (initVertices.size() == 0) {
+    if (initVertices.isEmpty()) {
       // Nothing to update !
       return;
     }
@@ -1505,9 +1524,8 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     // Now, remove fifo exclusion
     for (final DAGVertex dagInitVertex : initVertices) {
       // Retrieve the corresponding EndVertex
-      final SDFInitVertex sdfInitVertex = (SDFInitVertex) dagInitVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX);
-      final SDFEndVertex sdfEndVertex = (SDFEndVertex) sdfInitVertex.getEndReference();
-      final DAGVertex dagEndVertex = scheduledDAG.getVertex(sdfEndVertex.getName());
+      final String endReferenceName = (String) dagInitVertex.getPropertyBean().getValue(DAGInitVertex.END_REFERENCE);
+      final DAGVertex dagEndVertex = scheduledDAG.getVertex(endReferenceName);
 
       // Compute the list of all edges between init and end
       Set<DAGEdge> edgesBetween;
@@ -1520,7 +1538,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       }
 
       // Remove exclusions with all buffer in the list (if any)
-      if (edgesBetween.size() != 0) {
+      if (!edgesBetween.isEmpty()) {
 
         // retrieve the head MObj for current fifo
         // size does not matter ("that's what she said") to retrieve the
@@ -1639,11 +1657,8 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
     // Same a verticesPredecessors but only store predecessors that results
     // from scheduling info
-    Map<String, Set<MemoryExclusionVertex>> newVerticesPredecessors;
-    newVerticesPredecessors = new LinkedHashMap<>();
-
-    final DAGIterator iterDAGVertices = new DAGIterator(dag); // Iterator on DAG
-    // vertices
+    final Map<String, Set<MemoryExclusionVertex>> newVerticesPredecessors = new LinkedHashMap<>();
+    final DAGIterator iterDAGVertices = new DAGIterator(dag); // Iterator on DAG vertices
 
     // Create an array list of the DAGVertices, in scheduling order.
     // As the DAG are scanned following the precedence order, the
@@ -1653,17 +1668,17 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     while (iterDAGVertices.hasNext()) {
       final DAGVertex currentVertex = iterDAGVertices.next();
 
-      final boolean isTask = currentVertex.getPropertyBean().getValue("vertexType").toString().equals("task");
+      final boolean isTask = currentVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.TASK);
 
       String vertKind = "";
 
       // Only task vertices have a kind
       if (isTask) {
-        vertKind = currentVertex.getPropertyBean().getValue("kind").toString();
+        vertKind = currentVertex.getKind();
       }
 
-      if (vertKind.equals("dag_vertex") || vertKind.equals("dag_broadcast_vertex") || vertKind.equals("dag_init_vertex") || vertKind.equals("dag_end_vertex")
-          || vertKind.equals("dag_fork_vertex") || vertKind.equals("dag_join_vertex")) {
+      if (vertKind.equals(DAGVertex.DAG_VERTEX) || vertKind.equals(DAGBroadcastVertex.DAG_BROADCAST_VERTEX) || vertKind.equals(DAGInitVertex.DAG_INIT_VERTEX)
+          || vertKind.equals(DAGEndVertex.DAG_END_VERTEX) || vertKind.equals(DAGForkVertex.DAG_FORK_VERTEX) || vertKind.equals(DAGJoinVertex.DAG_JOIN_VERTEX)) {
         final int schedulingOrder = (Integer) currentVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
         verticesMap.put(schedulingOrder, currentVertex);
       }
@@ -1682,10 +1697,11 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
       // retrieve new predecessor list, if any.
       // else, create an empty one
-      Set<MemoryExclusionVertex> newPredecessors = newVerticesPredecessors.get(currentVertex.getName());
+      final String vertexName = currentVertex.getName();
+      Set<MemoryExclusionVertex> newPredecessors = newVerticesPredecessors.get(vertexName);
       if (newPredecessors == null) {
         newPredecessors = new LinkedHashSet<>();
-        newVerticesPredecessors.put(currentVertex.getName(), newPredecessors);
+        newVerticesPredecessors.put(vertexName, newPredecessors);
       }
 
       // Retrieve component
@@ -1707,7 +1723,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       lastVerticesScheduled.put(comp, currentVertex);
 
       // Exclude all "old" predecessors from "new" list
-      newPredecessors.removeAll(this.verticesPredecessors.get(currentVertex.getName()));
+      newPredecessors.removeAll(this.verticesPredecessors.get(vertexName));
 
       if (!newPredecessors.isEmpty()) {
         // Remove exclusion between the Exclusion Vertex corresponding
@@ -1716,7 +1732,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
         // Re-create the working memory exclusion vertex (weight does
         // not matter to find the vertex in the Memex)
-        final MemoryExclusionVertex wMemVertex = new MemoryExclusionVertex(currentVertex.getName(), currentVertex.getName(), 0);
+        final MemoryExclusionVertex wMemVertex = new MemoryExclusionVertex(vertexName, vertexName, 0);
         if (containsVertex(wMemVertex)) {
           for (final MemoryExclusionVertex newPredecessor : newPredecessors) {
             if (this.removeEdge(wMemVertex, newPredecessor) == null) {
@@ -1729,7 +1745,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         // to outgoing edges of the currentVertex, and ExclusionVertices
         // in newPredecessors list
         for (final DAGEdge outgoingEdge : currentVertex.outgoingEdges()) {
-          if (outgoingEdge.getTarget().getPropertyBean().getValue("vertexType").toString().equals("task")) {
+          if (outgoingEdge.getTarget().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.TASK)) {
             final MemoryExclusionVertex edgeVertex = new MemoryExclusionVertex(outgoingEdge);
             for (final MemoryExclusionVertex newPredecessor : newPredecessors) {
               if (this.removeEdge(edgeVertex, newPredecessor) == null) {
@@ -1747,12 +1763,13 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
             // Update newPredecessor list of successors
             // DAGVertices (the target of the current edge)
             Set<MemoryExclusionVertex> successorPredecessor;
-            successorPredecessor = newVerticesPredecessors.get(outgoingEdge.getTarget().getName());
+            final String targetName = outgoingEdge.getTarget().getName();
+            successorPredecessor = newVerticesPredecessors.get(targetName);
             if (successorPredecessor == null) {
               // if successor did not have a new predecessor
               // list, create one
               successorPredecessor = new LinkedHashSet<>();
-              newVerticesPredecessors.put(outgoingEdge.getTarget().getName(), successorPredecessor);
+              newVerticesPredecessors.put(targetName, successorPredecessor);
             }
             successorPredecessor.addAll(newPredecessors);
             // Add the working memory object to the
@@ -1785,7 +1802,8 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       {
         // Re-create the working memory exclusion vertex (weight does
         // not matter to find the vertex in the Memex)
-        final MemoryExclusionVertex wMemVertex = new MemoryExclusionVertex(vertex.getName(), vertex.getName(), 0);
+        final String vertexName = vertex.getName();
+        final MemoryExclusionVertex wMemVertex = new MemoryExclusionVertex(vertexName, vertexName, 0);
         int index;
         if ((index = memExVertices.indexOf(wMemVertex)) != -1) {
           // The working memory exists
@@ -1796,7 +1814,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       /** 2- Retrieve the MemEx Vertices of outgoing edges (if any) */
       {
         for (final DAGEdge outgoingEdge : vertex.outgoingEdges()) {
-          if (outgoingEdge.getTarget().getPropertyBean().getValue("vertexType").toString().equals("task")) {
+          if (outgoingEdge.getTarget().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.TASK)) {
             final MemoryExclusionVertex edgeVertex = new MemoryExclusionVertex(outgoingEdge);
             int index;
             if ((index = memExVertices.indexOf(edgeVertex)) != -1) {

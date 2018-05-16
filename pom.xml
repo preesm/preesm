@@ -42,7 +42,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ietr.preesm</groupId>
   <artifactId>org.ietr.preesm.parent</artifactId>
-  <version>2.11.0</version>
+  <version>2.12.0</version>
   <packaging>pom</packaging>
 
   <!-- More Project Information -->
@@ -80,7 +80,7 @@
     <sonar-version>3.3.0.603</sonar-version>
     <rcptt-version>2.2.0</rcptt-version>
     <checkstyle-version>8.8</checkstyle-version>
-    <preesm.coding.policy.version>1.2.2</preesm.coding.policy.version>
+    <preesm.coding.policy.version>1.2.4</preesm.coding.policy.version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <preesm.p2.repo>http://preesm.insa-rennes.fr/repo/complete/</preesm.p2.repo>

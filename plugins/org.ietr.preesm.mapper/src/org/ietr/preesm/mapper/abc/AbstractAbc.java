@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
@@ -47,8 +48,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGInitVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
@@ -209,8 +209,8 @@ public abstract class AbstractAbc implements IAbc {
     verticesToAssociate.add(vertex);
 
     if (SpecialVertexManager.isInit(vertex)) {
-      final SDFEndVertex sdfEndVertex = (SDFEndVertex) ((SDFInitVertex) vertex.getCorrespondingSDFVertex()).getEndReference();
-      final MapperDAGVertex end = (MapperDAGVertex) this.implementation.getVertex(sdfEndVertex.getName());
+      final String endReferenceName = (String) vertex.getPropertyBean().getValue(DAGInitVertex.END_REFERENCE);
+      final MapperDAGVertex end = (MapperDAGVertex) (this.dag.getVertex(endReferenceName));
       verticesToAssociate.add(end);
     }
 

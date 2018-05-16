@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2015)
@@ -200,7 +201,7 @@ public class MemExBroadcastMerger {
       // mergeable.
       boolean readOnly = true;
       for (final AbstractEdge<?, ?> aggrEdge : edge.getAggregate()) {
-        final SDFStringEdgePropertyType modifier = ((SDFEdge) aggrEdge).getTargetPortModifier();
+        final SDFStringEdgePropertyType modifier = ((DAGEdge) aggrEdge).getTargetPortModifier();
         // Check that all aggregated edges have the adequate
         // modifier
         if ((modifier == null) || !modifier.toString().contains(SDFEdge.MODIFIER_READ_ONLY)) {
@@ -296,7 +297,7 @@ public class MemExBroadcastMerger {
       // mergeable.
       boolean writeOnly = true;
       for (final AbstractEdge<?, ?> aggrEdge : edge.getAggregate()) {
-        final SDFStringEdgePropertyType modifier = ((SDFEdge) aggrEdge).getSourcePortModifier();
+        final SDFStringEdgePropertyType modifier = ((DAGEdge) aggrEdge).getSourcePortModifier();
         // Check that all aggregated edges have the adequate
         // modifier
         if ((modifier == null) || !modifier.toString().contains(SDFEdge.MODIFIER_WRITE_ONLY)) {

@@ -45,42 +45,42 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * 
+ *
  * Unit test of IBSDFConsistency class
- * 
+ *
  * @author hderoui
- * 
+ *
  */
 public class IBSDFLivenessTest {
 
   @Test
   public void testLivenessShouldReturnTrue() {
     // generate the IBSDF graph AB[DEF]C
-    SDFGraph ibsdf = generateIBSDFGraph();
+    final SDFGraph ibsdf = generateIBSDFGraph();
     // check the liveness of the ibsdf graph
-    boolean live = IBSDFLiveness.evaluate(ibsdf);
+    final boolean live = IBSDFLiveness.evaluate(ibsdf);
     Assert.assertTrue(live);
   }
 
   @Test
   public void testLivenessShouldReturnFalse() {
     // generate the IBSDF graph AB[DEF]C
-    SDFGraph ibsdf = generateIBSDFGraph();
+    final SDFGraph ibsdf = generateIBSDFGraph();
     // remove the initial delays of the subgraph
-    SDFGraph subgraph = (SDFGraph) ibsdf.getVertex("B").getGraphDescription();
-    for (SDFEdge e : subgraph.edgeSet()) {
+    final SDFGraph subgraph = (SDFGraph) ibsdf.getVertex("B").getGraphDescription();
+    for (final SDFEdge e : subgraph.edgeSet()) {
       e.setDelay(new SDFIntEdgePropertyType(0));
     }
 
     // check the liveness of the ibsdf graph
-    boolean live = IBSDFLiveness.evaluate(ibsdf);
+    final boolean live = IBSDFLiveness.evaluate(ibsdf);
     Assert.assertFalse(live);
 
   }
 
   /**
    * generate a IBSDF graph to test methods
-   * 
+   *
    * @return IBSDF graph
    */
   public SDFGraph generateIBSDFGraph() {
@@ -100,7 +100,7 @@ public class IBSDFLivenessTest {
     // the resulted rates of edges : aE=(6,1); Fc=(3,12)
 
     // create the subgraph
-    SDFGraph subgraph = new SDFGraph();
+    final SDFGraph subgraph = new SDFGraph();
     subgraph.setName("subgraph");
     GraphStructureHelper.addActor(subgraph, "D", null, null, 1., null, null);
     GraphStructureHelper.addActor(subgraph, "E", null, null, 1., null, null);
@@ -115,7 +115,7 @@ public class IBSDFLivenessTest {
     GraphStructureHelper.addEdge(subgraph, "F", null, "c", null, 3, 1, 0, null);
 
     // create the top graph and add the subgraph to the hierarchical actor B
-    SDFGraph topgraph = new SDFGraph();
+    final SDFGraph topgraph = new SDFGraph();
     topgraph.setName("topgraph");
     GraphStructureHelper.addActor(topgraph, "A", null, null, null, null, null);
     GraphStructureHelper.addActor(topgraph, "B", subgraph, null, null, null, null);
