@@ -172,8 +172,8 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
     final Delay res = super.createDelay();
     // 1. Set default expression
     res.setExpression(createExpression());
-    // 2. Set the default level of persistence (none)
-    res.setLevel(PersistenceLevel.NONE);
+    // 2. Set the default level of persistence (permanent)
+    res.setLevel(PersistenceLevel.PERMANENT);
     // 3. Create the non executable actor associated with the Delay directly here
     res.setActor(PiMMUserFactory.instance.createDelayActor(res));
 
