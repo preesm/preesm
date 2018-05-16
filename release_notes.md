@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 2.12.0
+*2018.05.16*
 
 ### New Feature
 * Add new code generation scheme for instrumenting code with PAPI;
