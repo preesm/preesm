@@ -70,23 +70,23 @@ public abstract class GraphStructureHelper {
    *          the name of the source actor
    * @param srcPortName
    *          the name of the source port
-   * @param trgActorName
+   * @param tgtActorName
    *          the name of the target actor
-   * @param trgPortName
+   * @param tgtPortName
    *          the name of the target port
-   * @param prod_rate
+   * @param prodRate
    *          the production rate of the edge
-   * @param cons_rate
+   * @param consRate
    *          the consumption rate of the edge
    * @param delay
    *          the delay of the edge
-   * @param base
+   * @param baseEdge
    *          the parent edge
    * @return the created SDF edge
    */
 
-  public static SDFEdge addEdge(final SDFGraph graph, final String srcActorName, final String srcPortName, final String trgActorName, final String trgPortName,
-      final int prod_rate, final int cons_rate, final int delay, final SDFEdge base) {
+  public static SDFEdge addEdge(final SDFGraph graph, final String srcActorName, final String srcPortName, final String tgtActorName, final String tgtPortName,
+      final int prodRate, final int consRate, final int delay, final SDFEdge baseEdge) {
     // get the source actor if not exists create one
     SDFAbstractVertex srcActor = graph.getVertex(srcActorName);
     if (srcActor == null) {
@@ -97,36 +97,36 @@ public abstract class GraphStructureHelper {
     if (srcPortName != null) {
       srcPort = srcActor.getInterface(srcPortName);
       if (srcPort == null) {
-        srcPort = GraphStructureHelper.addSinkPort(srcActor, srcPortName, prod_rate);
+        srcPort = GraphStructureHelper.addSinkPort(srcActor, srcPortName, prodRate);
       }
     } else {
-      srcPort = GraphStructureHelper.addSinkPort(srcActor, Identifier.generateOutputPortId() + "_to_" + trgActorName, prod_rate);
+      srcPort = GraphStructureHelper.addSinkPort(srcActor, Identifier.generateOutputPortId() + "_to_" + tgtActorName, prodRate);
     }
 
     // get the target actor if not exists create one
-    SDFAbstractVertex tgtActor = graph.getVertex(trgActorName);
+    SDFAbstractVertex tgtActor = graph.getVertex(tgtActorName);
     if (tgtActor == null) {
-      tgtActor = GraphStructureHelper.addActor(graph, trgActorName, null, null, null, null, null);
+      tgtActor = GraphStructureHelper.addActor(graph, tgtActorName, null, null, null, null, null);
     }
     // get the target port if not exists create one
     SDFInterfaceVertex tgtPort;
-    if (trgPortName != null) {
-      tgtPort = tgtActor.getInterface(trgPortName);
+    if (tgtPortName != null) {
+      tgtPort = tgtActor.getInterface(tgtPortName);
       if (tgtPort == null) {
-        tgtPort = GraphStructureHelper.addSrcPort(tgtActor, trgPortName, cons_rate);
+        tgtPort = GraphStructureHelper.addSrcPort(tgtActor, tgtPortName, consRate);
       }
     } else {
-      tgtPort = GraphStructureHelper.addSrcPort(tgtActor, Identifier.generateInputPortId() + "_from_" + srcActorName, cons_rate);
+      tgtPort = GraphStructureHelper.addSrcPort(tgtActor, Identifier.generateInputPortId() + "_from_" + srcActorName, consRate);
     }
 
     // add the edge to the srSDF graph
     final SDFEdge edge = graph.addEdge(srcActor, srcPort, tgtActor, tgtPort);
-    edge.setPropertyValue("edgeName", "from_" + srcActorName + "_" + srcPortName + "_to_" + trgActorName + "_" + trgPortName);
+    edge.setPropertyValue("edgeName", "from_" + srcActorName + "_" + srcPortName + "_to_" + tgtActorName + "_" + tgtPortName);
     edge.setPropertyValue("edgeId", Identifier.generateEdgeId());
-    edge.setProd(new SDFIntEdgePropertyType(prod_rate));
-    edge.setCons(new SDFIntEdgePropertyType(cons_rate));
+    edge.setProd(new SDFIntEdgePropertyType(prodRate));
+    edge.setCons(new SDFIntEdgePropertyType(consRate));
     edge.setDelay(new SDFIntEdgePropertyType(delay));
-    edge.setPropertyValue("baseEdge", base);
+    edge.setPropertyValue("baseEdge", baseEdge);
 
     return edge;
   }
@@ -140,18 +140,18 @@ public abstract class GraphStructureHelper {
    *          name of the actor
    * @param subgraph
    *          subgraph of the actor if is hierarchical
-   * @param rv
+   * @param repititionFactor
    *          repetition factor of the actor
-   * @param l
+   * @param latency
    *          the execution duration of the actor
-   * @param z
+   * @param normalizedPortsRate
    *          the normalized consumption/production rate of the actor
-   * @param Base
-   *          the actor base
+   * @param baseActor
+   *          the base actor from the source IBSDF graph
    * @return the created actor
    */
-  public static SDFAbstractVertex addActor(final SDFGraph graph, final String actorName, final SDFGraph subgraph, final Integer rv, final Double l,
-      final Double z, final SDFAbstractVertex Base) {
+  public static SDFAbstractVertex addActor(final SDFGraph graph, final String actorName, final SDFGraph subgraph, final Integer repititionFactor,
+      final Double latency, final Double normalizedPortsRate, final SDFAbstractVertex baseActor) {
     final SDFAbstractVertex actor = new SDFVertex(graph);
     // set the name
     actor.setId(actorName);
@@ -163,23 +163,23 @@ public abstract class GraphStructureHelper {
     }
 
     // set the repetition factor
-    if (rv != null) {
-      actor.setNbRepeat(rv);
+    if (repititionFactor != null) {
+      actor.setNbRepeat(repititionFactor);
     }
 
     // set the execution duration
-    if (l != null) {
-      actor.setPropertyValue("duration", l);
+    if (latency != null) {
+      actor.setPropertyValue("duration", latency);
     }
 
     // set the normalized consumption/production rate
-    if (z != null) {
-      actor.setPropertyValue("normalizedRate", z);
+    if (normalizedPortsRate != null) {
+      actor.setPropertyValue("normalizedRate", normalizedPortsRate);
     }
 
     // set the base actor
-    if (Base != null) {
-      actor.setPropertyValue("baseActor", Base);
+    if (baseActor != null) {
+      actor.setPropertyValue("baseActor", baseActor);
     } else {
       actor.setPropertyValue("baseActor", actor);
     }

@@ -75,13 +75,8 @@ public class SDFDoubleEdgePropertyType extends AbstractEdgePropertyType<Double> 
     return new SDFDoubleEdgePropertyType(this.value);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#intValue()
-   */
   @Override
-  public int intValue() {
+  public long longValue() {
     return this.value.intValue();
   }
 

@@ -58,9 +58,9 @@ public class SDFConsistencyTest {
     // compute the repetition vector (RV) of ABC326
     SDFConsistency.computeRV(ABC);
     // check the RV value
-    Assert.assertEquals(3, ABC.getVertex("A").getNbRepeat());
-    Assert.assertEquals(2, ABC.getVertex("B").getNbRepeat());
-    Assert.assertEquals(6, ABC.getVertex("C").getNbRepeat());
+    Assert.assertEquals(3L, ABC.getVertex("A").getNbRepeat());
+    Assert.assertEquals(2L, ABC.getVertex("B").getNbRepeat());
+    Assert.assertEquals(6L, ABC.getVertex("C").getNbRepeat());
   }
 
   @Test
