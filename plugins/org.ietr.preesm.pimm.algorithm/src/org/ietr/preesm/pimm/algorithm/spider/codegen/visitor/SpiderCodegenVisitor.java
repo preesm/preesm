@@ -775,10 +775,10 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     throw new UnsupportedOperationException();
   }
 
-  @Override
-  public Boolean caseConfigInputInterface(final ConfigInputInterface cii) {
-    throw new UnsupportedOperationException();
-  }
+  // @Override
+  // public Boolean caseConfigInputInterface(final ConfigInputInterface cii) {
+  // throw new UnsupportedOperationException();
+  // }
 
   @Override
   public Boolean caseConfigInputPort(final ConfigInputPort cip) {

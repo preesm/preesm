@@ -44,7 +44,6 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
@@ -300,10 +299,10 @@ public class SpiderPreProcessVisitor extends PiMMSwitch<Boolean> {
     return true;
   }
 
-  @Override
-  public Boolean caseConfigInputInterface(final ConfigInputInterface cii) {
-    throw new UnsupportedOperationException();
-  }
+  // @Override
+  // public Boolean caseConfigInputInterface(final ConfigInputInterface cii) {
+  // throw new UnsupportedOperationException();
+  // }
 
   @Override
   public Boolean caseDelay(final Delay d) {
