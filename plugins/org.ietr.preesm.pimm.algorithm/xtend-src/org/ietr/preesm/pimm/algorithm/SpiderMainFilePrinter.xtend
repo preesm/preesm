@@ -200,7 +200,12 @@ class SpiderMainFilePrinter {
 			Spider::iterate();
 
 			// Printing Gantt
-			if (cfg.traceEnabled) Spider::printGantt("gantt.pgantt", "gantt_tex.dat", &stat);
+			if (cfg.traceEnabled) {
+				Spider::printGantt("gantt.pgantt", "gantt_tex.dat", &stat);
+				printf("Total execution time: %lf ms\n",  (stat.execTime + stat.schedTime) / 1000000.);
+				printf("Application execution time: %lf ms\n",  stat.execTime / 1000000.);
+				printf("SPIDER overhead time: %lf ms\n",  stat.schedTime / 1000000.);
+			}
 
 		}
 		}catch(const char* s){
