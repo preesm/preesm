@@ -8,6 +8,7 @@ PREESM Changelog
 
 ### Changes
 * Fix Papify codegen configuration;
+* Enable notifications to Slack vaader-ietr#preesm;
 
 ### Bug fix
 
