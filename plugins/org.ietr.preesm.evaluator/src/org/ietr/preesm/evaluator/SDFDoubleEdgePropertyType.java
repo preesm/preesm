@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * blaunay <bapt.launay@gmail.com> (2015)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -75,13 +75,8 @@ public class SDFDoubleEdgePropertyType extends AbstractEdgePropertyType<Double> 
     return new SDFDoubleEdgePropertyType(this.value);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#intValue()
-   */
   @Override
-  public int intValue() {
+  public long longValue() {
     return this.value.intValue();
   }
 

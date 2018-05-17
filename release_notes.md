@@ -1,6 +1,18 @@
 PREESM Changelog
 ================
 
+## Release version 2.12.1
+*2018.05.17*
+
+### New Feature
+
+### Changes
+* Update DFTools to 1.7.0+;
+* Update code to be compatible with new version of DFTools that uses longs instead of integers;
+
+### Bug fix
+
+
 ## Release version 2.12.0
 *2018.05.16*
 

@@ -80,12 +80,14 @@ public class PeriodicScheduleModel_ojAlgo_tests {
     graph.setName("testABC3");
 
     // add actors
-    GraphStructureHelper.addActor(graph, "A", null, 3, 1., null, null);
+    GraphStructureHelper.addActor(graph, "A" /* name */, null /* subgraph */, 3 /* repetition factor */, 1. /* latency */, null /* normalizedRate */ ,
+        null /* base actor */);
     GraphStructureHelper.addActor(graph, "B", null, 2, 1., null, null);
     GraphStructureHelper.addActor(graph, "C", null, 6, 1., null, null);
 
     // add edges
-    GraphStructureHelper.addEdge(graph, "A", null, "B", null, 2, 3, 6, null);
+    GraphStructureHelper.addEdge(graph, "A" /* srcActor */, null /* srcPort */, "B" /* tgtActor */, null /* tgtPort */, 2 /* prod */, 3 /* cons */,
+        6 /* delay */, null);
     GraphStructureHelper.addEdge(graph, "B", null, "C", null, 3, 1, 0, null);
     GraphStructureHelper.addEdge(graph, "C", null, "A", null, 2, 4, 0, null);
 

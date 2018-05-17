@@ -348,7 +348,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
         // Create the Memory Object for the remaining of the FIFO (if
         // any)
-        final int fifoDepth = (Integer) dagInitVertex.getPropertyBean().getValue(SDFInitVertex.INIT_SIZE);
+        final int fifoDepth = ((Long) dagInitVertex.getPropertyBean().getValue(SDFInitVertex.INIT_SIZE)).intValue();
         if (fifoDepth > (headMemoryNode.getWeight() / typeSize)) {
           final MemoryExclusionVertex fifoMemoryNode = new MemoryExclusionVertex("FIFO_Body_" + dagEndVertex.getName(), dagInitVertex.getName(),
               (fifoDepth * typeSize) - headMemoryNode.getWeight());

@@ -36,6 +36,7 @@
 package org.ietr.preesm.mathematicalModels;
 
 import java.util.Hashtable;
+import java.util.Map;
 import org.apache.commons.lang3.math.Fraction;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
@@ -52,7 +53,7 @@ import org.ojalgo.optimisation.Variable;
  *
  */
 public class PeriodicScheduleModel_ojAlgo implements SolverMethod {
-  public Hashtable<String, Variable> edgeVariables;
+  public Map<String, Variable> edgeVariables;
 
   /**
    * @param SDF
@@ -61,8 +62,6 @@ public class PeriodicScheduleModel_ojAlgo implements SolverMethod {
    */
   @Override
   public Fraction computeNormalizedPeriod(final SDFGraph SDF) {
-    // Stopwatch timerPerSche = new Stopwatch();
-    // timerPerSche.start();
 
     // ----- Variables ---------------------------------------------
     this.edgeVariables = new Hashtable<>(SDF.edgeSet().size());
@@ -108,9 +107,6 @@ public class PeriodicScheduleModel_ojAlgo implements SolverMethod {
     // ----- solve the problem -------------------------------------
     final Optimisation.Result result = model.maximise();
     final Fraction period = Fraction.getFraction(result.getValue());
-
-    // timerPerSche.stop();
-    // System.out.println("SDF Graph Scheduled in " + timerPerSche.toString());
 
     // set he normalized period
     SDF.setPropertyValue("normalizedPeriod", period);
