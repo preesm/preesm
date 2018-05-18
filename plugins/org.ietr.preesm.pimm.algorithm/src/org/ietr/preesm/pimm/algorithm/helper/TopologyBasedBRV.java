@@ -117,25 +117,25 @@ public class TopologyBasedBRV extends PiBRV {
    */
   private static ArrayList<Rational> computeRationnalNullSpace(final double[][] matrix) {
     final ArrayList<Rational> vrb = new ArrayList<>();
-    final int li = matrix.length;
-    int col = 1;
+    final int numberOfRows = matrix.length;
+    int numberOfColumns = 1;
 
-    if (li != 0) {
-      col = matrix[0].length;
+    if (numberOfRows != 0) {
+      numberOfColumns = matrix[0].length;
     }
 
-    if ((li == 0) || (col == 1)) {
-      for (int i = 0; i < col; i++) {
+    if ((numberOfRows == 0) || (numberOfColumns == 1)) {
+      for (int i = 0; i < numberOfColumns; i++) {
         vrb.add(new Rational(1, 1));
       }
       return vrb;
     }
 
-    final Rational[][] rationnalTopology = new Rational[li][col];
+    final Rational[][] rationnalTopology = new Rational[numberOfRows][numberOfColumns];
 
-    for (int i = 0; i < li; i++) {
-      for (int j = 0; j < col; j++) {
-        rationnalTopology[i][j] = new Rational(((Double) matrix[i][j]).intValue(), 1);
+    for (int i = 0; i < numberOfRows; i++) {
+      for (int j = 0; j < numberOfColumns; j++) {
+        rationnalTopology[i][j] = new Rational(((Double) matrix[i][j]).longValue(), 1);
       }
     }
     int switchIndices = 1;
@@ -146,10 +146,10 @@ public class TopologyBasedBRV extends PiBRV {
       switchIndices++;
     }
     int pivot = 0;
-    for (int i = 0; i < col; i++) {
+    for (int i = 0; i < numberOfColumns; i++) {
       double pivotMax = 0;
       int maxIndex = i;
-      for (int t = i; t < li; t++) {
+      for (int t = i; t < numberOfRows; t++) {
         if (Math.abs(rationnalTopology[t][i].doubleValue()) > pivotMax) {
           maxIndex = t;
           pivotMax = Math.abs(rationnalTopology[t][i].doubleValue());
@@ -166,26 +166,26 @@ public class TopologyBasedBRV extends PiBRV {
         break;
       }
       final Rational odlPivot = rationnalTopology[i][i].clone();
-      for (int t = i; t < col; t++) {
+      for (int t = i; t < numberOfColumns; t++) {
         rationnalTopology[i][t] = Rational.div(rationnalTopology[i][t], odlPivot);
       }
-      for (int j = i + 1; j < li; j++) {
+      for (int j = i + 1; j < numberOfRows; j++) {
         if (!rationnalTopology[j][i].zero()) {
           final Rational oldji = new Rational(rationnalTopology[j][i].getNum(), rationnalTopology[j][i].getDenum());
-          for (int k = 0; k < col; k++) {
+          for (int k = 0; k < numberOfColumns; k++) {
             rationnalTopology[j][k] = Rational.sub(rationnalTopology[j][k],
                 Rational.prod(rationnalTopology[i][k], Rational.div(oldji, rationnalTopology[pivot][pivot])));
           }
         }
       }
     }
-    for (int i = 0; i < col; i++) {
+    for (int i = 0; i < numberOfColumns; i++) {
       vrb.add(new Rational(1, 1));
     }
-    int i = li - 1;
+    int i = numberOfRows - 1;
     while (i >= 0) {
       Rational val = new Rational(0, 0);
-      for (int k = i + 1; k < col; k++) {
+      for (int k = i + 1; k < numberOfColumns; k++) {
         val = Rational.add(val, Rational.prod(rationnalTopology[i][k], vrb.get(k)));
       }
       if (!val.zero()) {
