@@ -996,6 +996,9 @@ public class SRVerticesLinker {
     vertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
   }
 
+  /**
+   *
+   */
   class SourceConnection {
     private DAGVertex source;
     private Long      production;
@@ -1020,6 +1023,9 @@ public class SRVerticesLinker {
     }
   }
 
+  /**
+   *
+   */
   class SinkConnection {
     private DAGVertex sink;
     private Long      consumption;

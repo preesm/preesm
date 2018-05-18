@@ -387,9 +387,6 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Methods below are unused and unimplemented visit methods.
-   *
-   * @param dop
-   *          the dop
    */
 
   @Override
