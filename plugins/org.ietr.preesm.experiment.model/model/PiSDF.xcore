@@ -584,7 +584,7 @@ class Delay extends Configurable, ExpressionHolder {
 	op DataOutputPort getSetterPort() {
 		return Optional.ofNullable(actor.dataInputPort.incomingFifo.sourcePort).orElse(null)
 	}
-	 
+	
 	op unique void setName(String newName) {
 		if (newName !== null) {
 			if (newName.empty) {
@@ -597,11 +597,31 @@ class Delay extends Configurable, ExpressionHolder {
 			actor.setName(name)			
 		}
 	}
-	
+		
+	 /*
+	 * Return a {@link String} unique ID for Delay.
+	 * This ID should be unique.
+	 */
 	op unique String getId() {
 		var String srcName = Optional.ofNullable(containingFifo).map[sourcePort.containingActor.getName()].orElse("")
+		var String srcPortName = Optional.ofNullable(containingFifo).map[sourcePort.name].orElse("")
 		var String tgtName = Optional.ofNullable(containingFifo).map[targetPort.containingActor.getName()].orElse("")
-		return "delay_" + srcName + "__" + tgtName
+		var String tgtPortName = Optional.ofNullable(containingFifo).map[targetPort.name].orElse("")
+		var String delayID = srcName + "_" + srcPortName + "__" + tgtName + "_" + tgtPortName
+		var containingGraph = Optional.ofNullable(containingFifo).map[containingPiGraph].orElse(null)
+		while (containingGraph.containingPiGraph !== null) {
+			delayID = containingGraph.name + "_" + delayID
+			containingGraph = containingGraph.containingPiGraph
+		}
+		return "delay_" + delayID
+	}
+	
+	op unique String getShortId() {
+		var String srcName = Optional.ofNullable(containingFifo).map[sourcePort.containingActor.getName()].orElse("")
+		var String srcPortName = Optional.ofNullable(containingFifo).map[sourcePort.name].orElse("")
+		var String tgtName = Optional.ofNullable(containingFifo).map[targetPort.containingActor.getName()].orElse("")
+		var String tgtPortName = Optional.ofNullable(containingFifo).map[targetPort.name].orElse("")
+		return srcName + "_" + srcPortName + "__" + tgtName + "_" + tgtPortName
 	}
 }
 

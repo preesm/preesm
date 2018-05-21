@@ -383,16 +383,20 @@ public class PiMMHandler {
       // he did it explicitly.
       for (final Fifo fifo : graph.getFifosWithDelay()) {
         final Delay delay = fifo.getDelay();
+        String delayShortID = delay.getShortId();
         if (delay.getLevel().equals(PersistenceLevel.LOCAL)) {
+          delay.setName(delayShortID);
           replaceLocalDelay(graph, delay);
         } else if (delay.getLevel().equals(PersistenceLevel.PERMANENT)) {
           // In the case of a permanent delay we have to make it go up to the top.
           PiGraph currentGraph = graph;
           Delay currentDelay = delay;
           do {
+            currentDelay.setName(delayShortID);
             final Delay newDelay = replaceLocalDelay(currentGraph, currentDelay);
-            newDelay.setLevel(PersistenceLevel.LOCAL);
+            newDelay.setLevel(PersistenceLevel.PERMANENT);
             // Update current graph and delay
+            delayShortID = currentGraph.getName() + "_" + delayShortID;
             currentGraph = currentGraph.getContainingPiGraph();
             currentDelay = newDelay;
           } while (currentGraph.getContainingPiGraph() != null);
@@ -422,14 +426,17 @@ public class PiMMHandler {
     // 2. We create the interfaces that we need to communicate with the upper level
     // Add the DataInputInterface to the graph
     final DataInputInterface setterIn = PiMMUserFactory.instance.createDataInputInterface();
-    final String setterName = "in_" + delay.getId();
+    // We remove the "delay_" mention at the beginning
+    // TODO: fix this with much shorter name !
+    final String delayShortID = delay.getName();
+    final String setterName = "in_" + delayShortID;
     setterIn.setName(setterName);
     setterIn.getDataPort().setName(setterName);
     setterIn.getDataPort().setAnnotation(PortMemoryAnnotation.READ_ONLY);
     setterIn.getDataPort().getExpression().setExpressionString(delayExpression);
     // Add the DataOutputInterface to the graph
     final DataOutputInterface getterOut = PiMMUserFactory.instance.createDataOutputInterface();
-    final String getterName = "out_" + delay.getId();
+    final String getterName = "out_" + delayShortID;
     getterOut.setName(getterName);
     getterOut.getDataPort().setName(getterName);
     getterOut.getDataPort().setAnnotation(PortMemoryAnnotation.WRITE_ONLY);

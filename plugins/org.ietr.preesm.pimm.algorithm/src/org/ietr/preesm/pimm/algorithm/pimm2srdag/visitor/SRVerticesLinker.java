@@ -927,7 +927,7 @@ public class SRVerticesLinker {
   private DAGVertex createInitVertex(final String fixID, final MapperVertexFactory vertexFactory) {
     final DAGVertex initVertex = vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX);
     setVertexDefault(initVertex, fixID);
-    initVertex.getPropertyBean().setValue(DAGInitVertex.INIT_SIZE, (int) this.delays);
+    initVertex.getPropertyBean().setValue(DAGInitVertex.INIT_SIZE, this.delays);
     this.dag.addVertex(initVertex);
     return initVertex;
   }
@@ -996,6 +996,9 @@ public class SRVerticesLinker {
   }
 
   /**
+   * Class modeling source connection for single rate edge connections
+   * 
+   * @author farresti
    *
    */
   class SourceConnection {
@@ -1023,6 +1026,9 @@ public class SRVerticesLinker {
   }
 
   /**
+   * Class modeling sink connection for single rate edge connections
+   * 
+   * @author farresti
    *
    */
   class SinkConnection {

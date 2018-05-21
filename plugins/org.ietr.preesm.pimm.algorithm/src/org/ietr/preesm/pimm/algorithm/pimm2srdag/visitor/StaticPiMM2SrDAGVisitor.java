@@ -385,10 +385,6 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     return this.result;
   }
 
-  /**
-   * Methods below are unused and unimplemented visit methods.
-   */
-
   @Override
   public Boolean caseDelayActor(final DelayActor actor) {
     throw new UnsupportedOperationException();
