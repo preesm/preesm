@@ -278,8 +278,8 @@ public class SpiderCodegen {
     return this.cppString.toString();
   }
 
-  public String generateMainCode(final PiGraph pg) {
-    return SpiderMainFilePrinter.print(pg, this.coreIds.size());
+  public String generateMainCode(final PiGraph pg, final boolean usingPapify) {
+    return SpiderMainFilePrinter.print(pg, this.coreIds.size(), usingPapify);
   }
 
   /**
