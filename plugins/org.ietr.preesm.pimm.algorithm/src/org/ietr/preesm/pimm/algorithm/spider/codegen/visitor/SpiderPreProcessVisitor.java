@@ -194,8 +194,6 @@ public class SpiderPreProcessVisitor extends PiMMSwitch<Boolean> {
       this.functionMap.put(a, this.functionMap.size());
       if (!(a.getRefinement() instanceof CHeaderRefinement)) {
         WorkflowLogger.getLogger().warning("Actor " + a.getName() + " doesn't have correct refinement.");
-      } else if (((CHeaderRefinement) (a.getRefinement())).getInitPrototype() != null) {
-        WorkflowLogger.getLogger().warning("Init function of Actor " + a.getName() + " will not be handled");
       }
     }
 
