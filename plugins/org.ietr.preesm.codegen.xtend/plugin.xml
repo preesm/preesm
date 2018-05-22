@@ -155,7 +155,7 @@
    <printers
          language="PapifyC">
       <printer
-            class="org.ietr.preesm.codegen.xtend.printer.c.instrumented.PapifyCPrinter"
+            class="org.ietr.preesm.codegen.xtend.printer.c.instrumented.PapifyCPrinterActors"
             extension=".c">
          <core_type
                type="x86">
