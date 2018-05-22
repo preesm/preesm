@@ -310,7 +310,10 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   private void comboDataInit(final Combo combo) {
 
     combo.removeAll();
-    for (final String id : this.scenario.getOrderedOperatorIds()) {
+    /*
+     * for (final String id : this.scenario.getOrderedOperatorIds()) { combo.add(id); }
+     */
+    for (final String id : this.scenario.getActorNames()) {
       combo.add(id);
     }
   }
