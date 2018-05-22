@@ -129,23 +129,14 @@ class PapifyCPrinterActors extends CPrinter {
 		// for each block
 		PE_id = 0;
 		for (Block block : printerBlocks){
-
 			//The configuration is performed per actor
-			event_names = "";
-			block.definitions.add({
-				var const = CodegenFactory.eINSTANCE.createConstantString
-				const.name = ""
-				const.value = ""
-				const
-			})
 			for(CodeElt elts : (block as CoreBlock).loopBlock.codeElts){
 				includedEvents = new LinkedHashSet();
+				event_names = "";
 				if(elts.eClass.name.equals("FunctionCall")){
 					//Add Papify action variable
-					block.definitions.get(block.definitions.length-1).name;
 					var String name = (elts as FunctionCall).actorName;
-					config = papifyConfig.getCorePapifyConfigGroups(name);
-		
+					config = papifyConfig.getCorePapifyConfigGroups(name);		
 					if(config !== null){
 						//Get component
 						//Get events
@@ -166,16 +157,7 @@ class PapifyCPrinterActors extends CPrinter {
 								}
 							}
 						}
-							code_set_size = includedEvents.length;
-					}
-					PE_id++;
-				}
-			}
-			// if the core instance is being papified
-			if(eventMonitoring == true || timingMonitoring == true){
-				for(CodeElt elts : (block as CoreBlock).loopBlock.codeElts){
-					//For all the FunctionCalls within the main code loop
-					if(elts.eClass.name.equals("FunctionCall")){
+						code_set_size = includedEvents.length;
 						//Add Papify action variable
 						block.definitions.add({
 							var const = CodegenFactory.eINSTANCE.createBuffer
@@ -268,10 +250,9 @@ class PapifyCPrinterActors extends CPrinter {
 						(elts as FunctionCall).addParameter(block.definitions.get(block.definitions.length-1), PortDirection.NONE);
 						block.definitions.remove(block.definitions.length-1);
 					}
+					PE_id++;
 				}
 			}
-			eventMonitoring = false;
-			timingMonitoring = false;
 		}
 		super.preProcessing(printerBlocks, allBlocks)
 	}
