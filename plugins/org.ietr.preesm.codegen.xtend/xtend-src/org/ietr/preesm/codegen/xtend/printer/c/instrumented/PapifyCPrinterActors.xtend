@@ -236,10 +236,10 @@ class PapifyCPrinterActors extends CPrinter {
 						//Create a function to configure the papification
 						(block as CoreBlock).initBlock.codeElts.add({
 							var func = CodegenFactory.eINSTANCE.createFunctionCall()
-							func.name = "configure_papify"
+							func.name = "configure_papify_actor_dynamic"
 							func.addParameter(block.definitions.get(block.definitions.length-7), PortDirection.OUTPUT)
 							func.addParameter(block.definitions.get(block.definitions.length-6), PortDirection.INPUT)
-							func.addParameter(block.definitions.get(block.definitions.length-5), PortDirection.INPUT)
+							//func.addParameter(block.definitions.get(block.definitions.length-5), PortDirection.INPUT)
 							func.addParameter(block.definitions.get(block.definitions.length-4), PortDirection.INPUT)
 							func.addParameter(block.definitions.get(block.definitions.length-3), PortDirection.INPUT)
 							func.addParameter(block.definitions.get(block.definitions.length-2), PortDirection.INPUT)
@@ -282,6 +282,22 @@ class PapifyCPrinterActors extends CPrinter {
 					actor_count++;
 				}
 			}
+			//Create a constant with the PE id
+			block.definitions.add({
+				var const = CodegenFactory.eINSTANCE.createConstant
+				const.name = "PE_id"
+				const.value = PE_id;
+				const
+			})
+			(block as CoreBlock).initBlock.codeElts.add({
+				var func = CodegenFactory.eINSTANCE.createFunctionCall()
+				func.name = "configure_papify_PE_dynamic"
+				func.addParameter(block.definitions.get(block.definitions.length-6), PortDirection.INPUT)
+				func.addParameter(block.definitions.get(block.definitions.length-1), PortDirection.INPUT)
+				func.actorName = "Papify --> configure papification of ".concat(block.name)
+				func
+			})
+			block.definitions.remove(block.definitions.length-1);
 			PE_id++;
 		}
 		super.preProcessing(printerBlocks, allBlocks)
@@ -311,20 +327,20 @@ class PapifyCPrinterActors extends CPrinter {
 			«ENDIF»
 			«IF (functionCall.parameters.get(functionCall.parameters.length-2) as Constant).value == 1»
 				// Monitoring Start for «functionCall.actorName»
-				event_start(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-1) as Constant).getValue»);
+				event_start_dynamic(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-1) as Constant).getValue»);
 				event_start_papify_timing(papify_actions_«functionCall.actorName»);
 				«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-3) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 				// Monitoring Stop for «functionCall.actorName»
 				event_stop_papify_timing(papify_actions_«functionCall.actorName»);
-				event_stop(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-1) as Constant).getValue»);
+				event_stop_dynamic(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-1) as Constant).getValue»);
 				event_write_file(papify_actions_«functionCall.actorName»);
 			«ENDIF»
 			«IF (functionCall.parameters.get(functionCall.parameters.length-2) as Constant).value == 2»
 				// Monitoring Start for «functionCall.actorName»
-				event_start(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-1) as Constant).getValue»);
+				event_start_dynamic(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-1) as Constant).getValue»);
 				«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-3) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 				// Monitoring Stop for «functionCall.actorName»
-				event_stop(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-1) as Constant).getValue»);
+				event_stop_dynamic(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-1) as Constant).getValue»);
 				event_write_file(papify_actions_«functionCall.actorName»);
 			«ENDIF»
 		«ELSE»
