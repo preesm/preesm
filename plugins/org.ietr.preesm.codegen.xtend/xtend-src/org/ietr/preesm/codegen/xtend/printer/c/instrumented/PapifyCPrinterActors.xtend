@@ -79,9 +79,13 @@ class PapifyCPrinterActors extends CPrinter {
 	 */
 		var int code_set_size;
 		var int PE_id;
+		var int actor_count;
 		var boolean eventMonitoring = false;
 		var boolean timingMonitoring = false;
+		var boolean config_added = false;
+		var int config_position;
 		PapifyConfigManager papifyConfig;
+		List<PapifyConfig> configSet = new ArrayList();
 		PapifyConfig config;
 		PapiComponent comp;
 		Set<PapiEvent> events;
@@ -128,6 +132,7 @@ class PapifyCPrinterActors extends CPrinter {
 
 		// for each block
 		PE_id = 0;
+		actor_count = 0;
 		for (Block block : printerBlocks){
 			//The configuration is performed per actor
 			for(CodeElt elts : (block as CoreBlock).loopBlock.codeElts){
@@ -136,7 +141,21 @@ class PapifyCPrinterActors extends CPrinter {
 				if(elts.eClass.name.equals("FunctionCall")){
 					//Add Papify action variable
 					var String name = (elts as FunctionCall).actorName;
-					config = papifyConfig.getCorePapifyConfigGroups(name);		
+					config = papifyConfig.getCorePapifyConfigGroups(name);
+					(elts as FunctionCall).actorName = name.concat("_" + actor_count);
+					//if(!configSet.contains(config)){
+					config_added = false;
+					config_position = -1;
+					for (PapifyConfig tmp : configSet){
+						if(tmp.PAPIComponent.equals(config.PAPIComponent) && tmp.PAPIEvents.equals(config.PAPIEvents)){
+							config_added = true
+							config_position = configSet.indexOf(tmp);
+						}
+					}	
+					if(!config_added){
+						configSet.add(config);
+						config_position = configSet.indexOf(config);						
+					}	
 					if(config !== null){
 						//Get component
 						//Get events
@@ -206,11 +225,11 @@ class PapifyCPrinterActors extends CPrinter {
 							const.comment = "Papify events"
 							const
 						})
-						//Create a constant with the PE id
+						//Create a constant with the actor id
 						block.definitions.add({
 							var const = CodegenFactory.eINSTANCE.createConstant
-							const.name = "PE_id"
-							const.value = PE_id
+							const.name = "Actor_id"
+							const.value = config_position;
 							const
 						})
 						(elts as FunctionCall).addParameter(block.definitions.get(block.definitions.length-1), PortDirection.NONE);
@@ -249,10 +268,21 @@ class PapifyCPrinterActors extends CPrinter {
 						})
 						(elts as FunctionCall).addParameter(block.definitions.get(block.definitions.length-1), PortDirection.NONE);
 						block.definitions.remove(block.definitions.length-1);
+						
+						//Create a constant with the PE id
+						block.definitions.add({
+							var const = CodegenFactory.eINSTANCE.createConstant
+							const.name = "PE_id"
+							const.value = PE_id;
+							const
+						})
+						(elts as FunctionCall).addParameter(block.definitions.get(block.definitions.length-1), PortDirection.NONE);
+						block.definitions.remove(block.definitions.length-1);
 					}
-					PE_id++;
+					actor_count++;
 				}
 			}
+			PE_id++;
 		}
 		super.preProcessing(printerBlocks, allBlocks)
 	}
@@ -270,31 +300,31 @@ class PapifyCPrinterActors extends CPrinter {
 	 * 			Funtion that is being printed
 	 */
 	override printFunctionCall(FunctionCall functionCall) '''
-		«IF state == PrinterState::PRINTING_LOOP_BLOCK && functionCall.parameters.get(functionCall.parameters.length-1).name.equals("Papified")»
-			«IF (functionCall.parameters.get(functionCall.parameters.length-1) as Constant).value == 0»
+		«IF state == PrinterState::PRINTING_LOOP_BLOCK && functionCall.parameters.get(functionCall.parameters.length-2).name.equals("Papified")»
+			«IF (functionCall.parameters.get(functionCall.parameters.length-2) as Constant).value == 0»
 				// Monitoring Start for «functionCall.actorName»
 				event_start_papify_timing(papify_actions_«functionCall.actorName»);
-				«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-2) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
+				«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-3) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 				// Monitoring Stop for «functionCall.actorName»
 				event_stop_papify_timing(papify_actions_«functionCall.actorName»);
 				event_write_file(papify_actions_«functionCall.actorName»);
 			«ENDIF»
-			«IF (functionCall.parameters.get(functionCall.parameters.length-1) as Constant).value == 1»
+			«IF (functionCall.parameters.get(functionCall.parameters.length-2) as Constant).value == 1»
 				// Monitoring Start for «functionCall.actorName»
-				event_start(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-2) as Constant).getValue»);
+				event_start(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-1) as Constant).getValue»);
 				event_start_papify_timing(papify_actions_«functionCall.actorName»);
-				«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-2) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
+				«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-3) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 				// Monitoring Stop for «functionCall.actorName»
 				event_stop_papify_timing(papify_actions_«functionCall.actorName»);
-				event_stop(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-2) as Constant).getValue»);
+				event_stop(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-1) as Constant).getValue»);
 				event_write_file(papify_actions_«functionCall.actorName»);
 			«ENDIF»
-			«IF (functionCall.parameters.get(functionCall.parameters.length-1) as Constant).value == 2»
+			«IF (functionCall.parameters.get(functionCall.parameters.length-2) as Constant).value == 2»
 				// Monitoring Start for «functionCall.actorName»
-				event_start(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-2) as Constant).getValue»);
-				«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-2) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
+				event_start(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-1) as Constant).getValue»);
+				«functionCall.name»(«FOR param : functionCall.parameters.subList(0, functionCall.parameters.length-3) SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 				// Monitoring Stop for «functionCall.actorName»
-				event_stop(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-2) as Constant).getValue»);
+				event_stop(papify_actions_«functionCall.actorName», «(functionCall.parameters.get(functionCall.parameters.length-1) as Constant).getValue»);
 				event_write_file(papify_actions_«functionCall.actorName»);
 			«ENDIF»
 		«ELSE»

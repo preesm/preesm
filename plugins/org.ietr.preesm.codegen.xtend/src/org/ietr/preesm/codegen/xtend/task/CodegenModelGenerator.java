@@ -1342,7 +1342,12 @@ public class CodegenModelGenerator {
     // Create the corresponding FunctionCall
     final FunctionCall func = CodegenFactory.eINSTANCE.createFunctionCall();
     func.setName(prototype.getFunctionName());
-    func.setActorName(dagVertex.getName());
+    // func.setActorName(dagVertex.getName());
+    String fullPathName = dagVertex.getInfo();
+    final int indexFirstH = fullPathName.indexOf("/");
+    fullPathName = fullPathName.substring(indexFirstH + 1);
+    final String fullName = fullPathName.replace("/", "_");
+    func.setActorName(fullName);
 
     // Retrieve the Arguments that must correspond to the incoming data
     // fifos
