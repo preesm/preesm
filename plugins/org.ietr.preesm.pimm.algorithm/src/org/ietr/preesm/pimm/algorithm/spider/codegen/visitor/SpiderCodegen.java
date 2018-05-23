@@ -338,7 +338,9 @@ public class SpiderCodegen {
    * Generate Papify configs for each actors
    * 
    * @param pg
+   *          The main graph
    * @param scenario
+   *          Preesm scenario
    * @return the string
    */
   public String generatePapifyCode(final PiGraph pg, final PreesmScenario scenario) {
@@ -367,7 +369,6 @@ public class SpiderCodegen {
         }
 
       }
-      // append("\t" + SpiderNameGenerator.getFunctionName(aa).toUpperCase() + "_FCT" + " = " + this.functionMap.get(aa) + ",\n");
     }
 
     append("std::map<lrtFct, PapifyConfig*> get_" + pg.getName() + "_papifyConfigs() {\n");
@@ -391,12 +392,25 @@ public class SpiderCodegen {
     return this.cppString.toString();
   }
 
+  /**
+   * Generate the static initialization functions
+   * 
+   * @param corePapifyConfigGroups
+   *          Group of papify
+   * @param actor
+   *          Current actor being papified
+   * @param uniqueEventSets
+   *          Map of unique event set
+   * @param eventSetID
+   *          The current event set ID
+   * @return true if the actor has the same event set as an existing one, false else
+   */
   private boolean generatePapifyConfig(final PapifyConfig corePapifyConfigGroups, final AbstractActor actor,
       final HashMap<ArrayList<String>, Integer> uniqueEventSets, final Integer eventSetID) {
     PapiComponent papiComponent = corePapifyConfigGroups.getPAPIComponent();
     Set<PapiEvent> papiEvents = corePapifyConfigGroups.getPAPIEvents();
 
-    Set<PapiEvent> includedEvents = new LinkedHashSet();
+    Set<PapiEvent> includedEvents = new LinkedHashSet<>();
     ArrayList<String> eventNames = new ArrayList<>();
 
     boolean eventMonitoring = false;
@@ -404,9 +418,6 @@ public class SpiderCodegen {
 
     final PapiEvent timingEvent = new PapiEvent();
     timingEvent.setName("Timing");
-    // timingEvent.setDesciption("Event to time through PAPI_get_time()");
-    // timingEvent.setIndex(9999);
-    // timingEvent.setModifiers(new ArrayList<PapiEventModifier>());
     for (PapiEvent event : papiEvents) {
       if (event.getName().equals(timingEvent.getName())) {
         timingMonitoring = true;
