@@ -144,19 +144,19 @@ class PapifyCPrinterActors extends CPrinter {
 					config = papifyConfig.getCorePapifyConfigGroups(name);
 					(elts as FunctionCall).actorName = name.concat("_" + actor_count);
 					//if(!configSet.contains(config)){
-					config_added = false;
-					config_position = -1;
-					for (PapifyConfig tmp : configSet){
-						if(tmp.PAPIComponent.equals(config.PAPIComponent) && tmp.PAPIEvents.equals(config.PAPIEvents)){
-							config_added = true
-							config_position = configSet.indexOf(tmp);
-						}
-					}	
-					if(!config_added){
-						configSet.add(config);
-						config_position = configSet.indexOf(config);						
-					}	
 					if(config !== null){
+						config_added = false;
+						config_position = -1;
+						for (PapifyConfig tmp : configSet){
+							if(tmp.PAPIComponent.equals(config.PAPIComponent) && tmp.PAPIEvents.equals(config.PAPIEvents)){
+								config_added = true
+								config_position = configSet.indexOf(tmp);
+							}
+						}	
+						if(!config_added){
+							configSet.add(config);
+							config_position = configSet.indexOf(config);						
+						}	
 						//Get component
 						//Get events
 						comp = config.getPAPIComponent();
