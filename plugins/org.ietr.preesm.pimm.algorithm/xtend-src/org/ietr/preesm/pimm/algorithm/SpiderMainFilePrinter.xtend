@@ -183,8 +183,8 @@ class SpiderMainFilePrinter {
 		
 		«IF usingPapify»
 			// Papify initialization
-			event_init_multiplex();
 			cfg.usePapify = true;
+			cfg.papifyJobInfo = get_«pg.name»_papifyConfigs();
 		«ELSE»
 			// Papify instrumentation will not be used
 			cfg.usePapify = false;
@@ -193,7 +193,7 @@ class SpiderMainFilePrinter {
 		try {
 			// Spider initialisation
 			Spider::init(cfg);
-
+			
 	 «IF !pg.actorsWithRefinement.isEmpty()»
 	 // Actor initializations
 		«FOR actor : pg.actorsWithRefinement»
@@ -202,17 +202,17 @@ class SpiderMainFilePrinter {
 		  «ENDIF»
 		«ENDFOR»
 	«ENDIF»
-
+	
 			// PiSDF graph construction
 			init_«pg.name»();
-
+	
 			printf("Start\n");
-
+	
 			// Main loop, exception handling can be removed to increase performance
 			for(int i=0; i<NB_ITERATION && !stopThreads; i++){
 				// Compute the SR-DAG, scheduling and executing the main graph
 				Spider::iterate();
-
+	
 				// Printing Gantt
 				if (cfg.traceEnabled) {
 					Spider::printGantt("gantt.pgantt", "gantt_tex.dat", &stat);

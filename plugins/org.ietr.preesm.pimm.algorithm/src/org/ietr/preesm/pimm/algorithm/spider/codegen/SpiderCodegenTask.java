@@ -98,6 +98,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     final String hCode = launcher.generateHeaderCode(pg);
     // TODO: add config as parameters from workflow
     final String mCode = launcher.generateMainCode(pg, usingPapify);
+    final String papifyCode = launcher.generatePapifyCode(pg, scenario);
 
     // Get the workspace
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -113,6 +114,12 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     final IFolder f = workspace.getRoot().getFolder(new Path(codegenPath));
     final File folder = new File(f.getRawLocation().toOSString());
     folder.mkdirs();
+    if (folder.isDirectory()) {
+      // clean the folder
+      for (File file : folder.listFiles()) {
+        file.delete();
+      }
+    }
 
     // Create the files
     final String hFilePath = pg.getName() + ".h";
@@ -150,6 +157,17 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
       cppMainWriter.write(mCode);
     } catch (final IOException e) {
       e.printStackTrace();
+    }
+
+    // Write papify file
+    if (usingPapify) {
+      final String cppPapifyfilePath = "papify_" + pg.getName() + ".cpp";
+      final File cppPapifyFile = new File(folder, cppPapifyfilePath);
+      try (FileWriter cppPapifyWriter = new FileWriter(cppPapifyFile)) {
+        cppPapifyWriter.write(papifyCode);
+      } catch (final IOException e) {
+        e.printStackTrace();
+      }
     }
 
     // Return an empty output map
