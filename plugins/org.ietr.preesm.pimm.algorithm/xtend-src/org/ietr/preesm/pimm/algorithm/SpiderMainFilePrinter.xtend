@@ -208,8 +208,8 @@ class SpiderMainFilePrinter {
 					printf("SPIDER overhead time: %lf ms\n",  stat.schedTime / 1000000.);
 				}
 			}
-		} catch(const char* s) {
-			printf("Exception : %s\n", s);
+		} catch(std::exception &e) {
+			printf("Exception : %s\n", e.what());
 		}
 
 		printf("finished\n");
