@@ -680,9 +680,19 @@ public class CodegenModelGenerator {
           }
           final FunctionCall functionCall = generateFunctionCall(dagVertex, loopPrototype, false);
 
+          // Check for papify in the dagVertex
+          Object value = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CONFIGURATION);
+          if (value != null) {
+            // Do the papify codegen start
+          }
+
           registerCallVariableToCoreBlock(operatorBlock, functionCall);
           // Add the function call to the operatorBlock
           operatorBlock.getLoopBlock().getCodeElts().add(functionCall);
+
+          if (value != null) {
+            // Do the papify codegen stop
+          }
 
           // Save the functionCall in the dagvertexFunctionCall Map
           this.dagVertexCalls.put(dagVertex, functionCall);
@@ -1342,13 +1352,7 @@ public class CodegenModelGenerator {
     // Create the corresponding FunctionCall
     final FunctionCall func = CodegenFactory.eINSTANCE.createFunctionCall();
     func.setName(prototype.getFunctionName());
-    // func.setActorName(dagVertex.getName());
-    String fullPathName = dagVertex.getInfo();
-    final int indexFirstH = fullPathName.indexOf("/");
-    fullPathName = fullPathName.substring(indexFirstH + 1);
-    final String fullName = fullPathName.replace("/", "_");
-    func.setActorName(fullName);
-
+    func.setActorName(dagVertex.getName());
     // Retrieve the Arguments that must correspond to the incoming data
     // fifos
     final Entry<List<Variable>, List<PortDirection>> callVars = generateCallVariables(dagVertex, prototype, isInit);
@@ -1359,6 +1363,41 @@ public class CodegenModelGenerator {
 
     identifyMergedInputRange(callVars);
 
+    return func;
+  }
+
+  /**
+   * This method creates the event start function call for PAPI instrumentation
+   * 
+   * @param dagVertex
+   *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
+   * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
+   */
+  protected FunctionCall generatePapifyStartFunctionCall(final DAGVertex dagVertex) {
+    // Create the corresponding FunctionCall
+    final FunctionCall func = CodegenFactory.eINSTANCE.createFunctionCall();
+    func.setName("event_start");
+    String fullPathName = dagVertex.getInfo();
+    final int indexFirstH = fullPathName.indexOf("/");
+    fullPathName = fullPathName.substring(indexFirstH + 1);
+    final String fullName = fullPathName.replace("/", "_");
+    func.setActorName(fullName);
+
+    // dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CONFIGURATION);
+
+    return func;
+  }
+
+  /**
+   * This method creates the event start function call for PAPI instrumentation
+   * 
+   * @param dagVertex
+   *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
+   * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
+   */
+  protected FunctionCall generatePapifyStopFunctionCall(final DAGVertex dagVertex) {
+    // Create the corresponding FunctionCall
+    final FunctionCall func = CodegenFactory.eINSTANCE.createFunctionCall();
     return func;
   }
 

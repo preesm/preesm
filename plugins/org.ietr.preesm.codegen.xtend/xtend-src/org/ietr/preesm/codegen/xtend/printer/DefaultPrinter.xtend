@@ -57,6 +57,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
+import org.ietr.preesm.codegen.xtend.model.codegen.PapifyAction
 
 /**
  * This {@link DefaultPrinter} is a dummy implementation of the
@@ -101,6 +102,8 @@ class DefaultPrinter extends CodegenAbstractPrinter {
 	override printCommunication(Communication communication) ''''''
 
 	override printConstant(Constant constant) ''''''
+	
+	override printPapifyAction(PapifyAction action) ''''''
 
 	override printConstantDeclaration(Constant constant) ''''''
 

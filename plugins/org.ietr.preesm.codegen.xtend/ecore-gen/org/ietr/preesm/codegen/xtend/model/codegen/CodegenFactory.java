@@ -213,6 +213,14 @@ public interface CodegenFactory extends EFactory {
   BufferIterator createBufferIterator();
 
   /**
+   * Returns a new object of class '<em>Papify Action</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @return a new object of class '<em>Papify Action</em>'.
+   * @generated
+   */
+  PapifyAction createPapifyAction();
+
+  /**
    * Returns the package supported by this factory. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the package supported by this factory.

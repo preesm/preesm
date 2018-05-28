@@ -188,5 +188,26 @@
             </input>
          </inputs>
       </task>
+      <task
+            id="Papify Engine Task"
+            name="Papify Engine Task"
+            type=" org.ietr.preesm.codegen.xtend.task.CodegenPapifyEngineTask">
+            <inputs>
+            	<input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            	</input>
+	            <input
+	                  id="DAG"
+	                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+	            </input>
+            </inputs>
+         <outputs>
+            <output
+                  id="DAG"
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </output>
+         </outputs>
+      </task>
    </extension>
 </plugin>

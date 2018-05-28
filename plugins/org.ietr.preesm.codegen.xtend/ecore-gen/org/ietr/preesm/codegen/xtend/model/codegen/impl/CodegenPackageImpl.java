@@ -70,6 +70,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
+import org.ietr.preesm.codegen.xtend.model.codegen.PapifyAction;
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
@@ -253,6 +254,13 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
    * @generated
    */
   private EClass bufferIteratorEClass = null;
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  private EClass papifyActionEClass = null;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
@@ -1228,6 +1236,16 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
   }
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public EClass getPapifyAction() {
+    return this.papifyActionEClass;
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @return the direction
@@ -1428,6 +1446,8 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
     createEAttribute(this.bufferIteratorEClass, CodegenPackage.BUFFER_ITERATOR__ITER_SIZE);
     createEReference(this.bufferIteratorEClass, CodegenPackage.BUFFER_ITERATOR__ITER);
 
+    this.papifyActionEClass = createEClass(CodegenPackage.PAPIFY_ACTION);
+
     // Create enums
     this.directionEEnum = createEEnum(CodegenPackage.DIRECTION);
     this.delimiterEEnum = createEEnum(CodegenPackage.DELIMITER);
@@ -1489,6 +1509,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
     this.finiteLoopBlockEClass.getESuperTypes().add(getLoopBlock());
     this.intVarEClass.getESuperTypes().add(getVariable());
     this.bufferIteratorEClass.getESuperTypes().add(getSubBuffer());
+    this.papifyActionEClass.getESuperTypes().add(getVariable());
 
     // Initialize classes and features; add operations and parameters
     initEClass(this.blockEClass, Block.class, "Block", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
@@ -1756,6 +1777,9 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
     initEReference(getBufferIterator_Iter(), getIntVar(), null, "iter", null, 0, 1, BufferIterator.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
         EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
         !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+
+    initEClass(this.papifyActionEClass, PapifyAction.class, "PapifyAction", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
+        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
 
     // Initialize enums and add enum literals
     initEEnum(this.directionEEnum, Direction.class, "Direction");
