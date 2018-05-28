@@ -177,34 +177,39 @@ class SpiderMainFilePrinter {
 		cfg.useGraphOptim = true;
 		cfg.useActorPrecedence = true;
 
-		// Spider initialisation
-		Spider::init(cfg);
-
-		/* Actor initialisation here if needed */
+		try {
+			// Spider initialisation
+			Spider::init(cfg);
+			
+	 «IF !pg.actorsWithRefinement.isEmpty()»
+				// Actor initializations
 		«FOR actor : pg.actorsWithRefinement»
 		  «IF actor.refinement instanceof CHeaderRefinement && (actor.refinement as CHeaderRefinement).getInitPrototype !== null»
-		    «printInitCall(actor)»
+				«"\t\t"+ printInitCall(actor)»
 		  «ENDIF»
 		«ENDFOR»
-
-		// PiSDF graph construction
-		init_«pg.name»();
-
-		printf("Start\n");
-
-		// Main loop, exeption handling can be removed to increase performance
-		try{
-		//int i=1;{
-		for(int i=0; i<NB_ITERATION && !stopThreads; i++){
-
-			Spider::iterate();
-
-			// Printing Gantt
-			if (cfg.traceEnabled) Spider::printGantt("gantt.pgantt", "gantt_tex.dat", &stat);
-
-		}
-		}catch(const char* s){
-			printf("Exception : %s\n", s);
+	«ENDIF»
+	
+			// PiSDF graph construction
+			init_«pg.name»();
+	
+			printf("Start\n");
+	
+			// Main loop, exception handling can be removed to increase performance
+			for(int i=0; i<NB_ITERATION && !stopThreads; i++){
+				// Compute the SR-DAG, scheduling and executing the main graph
+				Spider::iterate();
+	
+				// Printing Gantt
+				if (cfg.traceEnabled) {
+					Spider::printGantt("gantt.pgantt", "gantt_tex.dat", &stat);
+					printf("Total execution time: %lf ms\n",  (stat.execTime + stat.schedTime) / 1000000.);
+					printf("Application execution time: %lf ms\n",  stat.execTime / 1000000.);
+					printf("SPIDER overhead time: %lf ms\n",  stat.schedTime / 1000000.);
+				}
+			}
+		} catch(std::exception &e) {
+			printf("Exception : %s\n", e.what());
 		}
 
 		printf("finished\n");

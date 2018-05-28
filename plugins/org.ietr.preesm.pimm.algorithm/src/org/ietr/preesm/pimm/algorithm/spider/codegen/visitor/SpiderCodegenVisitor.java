@@ -194,7 +194,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     // And then visit pg as a PiGraph, generating the method to build its
     // C++ corresponding PiSDFGraph
 
-    append("\n// Method building PiSDFGraph");
+    append("\n// Method building PiSDFGraph: ");
     append(pg.getName() + "\n");
 
     // Generating the method prototype
@@ -775,10 +775,10 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     throw new UnsupportedOperationException();
   }
 
-  @Override
-  public Boolean caseConfigInputInterface(final ConfigInputInterface cii) {
-    throw new UnsupportedOperationException();
-  }
+  // @Override
+  // public Boolean caseConfigInputInterface(final ConfigInputInterface cii) {
+  // throw new UnsupportedOperationException();
+  // }
 
   @Override
   public Boolean caseConfigInputPort(final ConfigInputPort cip) {
