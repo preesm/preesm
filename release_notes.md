@@ -10,10 +10,11 @@ PREESM Changelog
 * Fix Papify codegen configuration;
 * Enable notifications to Slack vaader-ietr#preesm;
 * Update DFTools to 1.7.2+;
-* Changed Spider codegen to catch runtime_error exception instead of const char*
-* In spider codegen, the try - catch in the main auto generated now englobe the init as well
+* Changed Spider codegen to catch runtime_error exception instead of const char*;
+* In spider codegen, the try - catch in the main auto generated now englobe the init as well;
 
 ### Bug fix
+* Fix issue with copy/paste when reconnecting dependencies;
 
 
 ## Release version 2.12.1
