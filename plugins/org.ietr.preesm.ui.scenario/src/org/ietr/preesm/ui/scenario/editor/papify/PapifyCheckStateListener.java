@@ -65,6 +65,8 @@ import org.ietr.preesm.core.scenario.papi.PapiEvent;
 import org.ietr.preesm.core.scenario.papi.PapifyConfig;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 import org.ietr.preesm.ui.scenario.editor.ISDFCheckStateListener;
@@ -324,7 +326,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
       try {
         final PiGraph graph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
         for (final AbstractActor vertex : graph.getAllActors()) {
-          if (!(vertex instanceof PiGraph)) {
+          if (!(vertex instanceof PiGraph) && !(vertex instanceof DataInputInterface) && !(vertex instanceof DataOutputInterface)) {
             finalName = vertex.getVertexPath().substring(vertex.getVertexPath().indexOf('/') + 1);
             result.add(finalName);
           }
