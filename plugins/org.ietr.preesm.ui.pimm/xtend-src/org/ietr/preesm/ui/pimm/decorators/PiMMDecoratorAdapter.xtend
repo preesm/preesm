@@ -57,7 +57,7 @@ import java.util.LinkedHashMap
  *
  * @author kdesnos
  */
-public class PiMMDecoratorAdapter extends EContentAdapter {
+class PiMMDecoratorAdapter extends EContentAdapter {
 
 	@Accessors
 	Map<PictogramElement, IDecorator[]> pesAndDecorators

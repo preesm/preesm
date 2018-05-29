@@ -314,7 +314,7 @@ class Match {
 /**
  * This enumeration represent the type of the current {@link Match}
  */
-public enum MatchType {
+enum MatchType {
 
 	/**
 	 * The {@link Match} links several inputs (or outputs) together.

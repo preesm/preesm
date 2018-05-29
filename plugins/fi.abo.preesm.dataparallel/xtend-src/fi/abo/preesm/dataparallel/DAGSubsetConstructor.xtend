@@ -61,17 +61,17 @@ interface DAGSubsetConstructor extends DAGConstructor {
 	 * 
 	 * @return Unmodifiable List of nodes that are seen in the subset
 	 */
-	public def List<SDFAbstractVertex> getSeenNodes()
+	def List<SDFAbstractVertex> getSeenNodes()
 	
 	/**
 	 * Get the original DAG for the subset
 	 * 
 	 * @return A {@link PureDAGConstructor} instance that was used to create subset
 	 */
-	public def PureDAGConstructor getOriginalDAG()
+	def PureDAGConstructor getOriginalDAG()
 	
 	/**
 	 * Method for operation visitor
 	 */
-	public def void accept(DAGCommonOperations visitor)
+	def void accept(DAGCommonOperations visitor)
 }

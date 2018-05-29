@@ -54,14 +54,14 @@ import org.junit.runners.Parameterized
 
 /**
  * Property based test to check {@link DAG2DAG} construction
- * 
+ *
  * @author Sudeep Kanur
  */
 @RunWith(Parameterized)
 class DAG2DAGTest {
-	
+
 	protected val SDF2DAG dagGen
-	
+
 	/**
 	 * Has the following parameters from {@link Util#provideAllGraphs}:
 	 * <ol>
@@ -71,7 +71,7 @@ class DAG2DAGTest {
 	new(SDF2DAG dagGen) {
 		this.dagGen = dagGen
 	}
-	
+
 	/**
 	 * Generates following parameters from {@link Util#provideAllGraphs}:
 	 * <ol>
@@ -79,23 +79,23 @@ class DAG2DAGTest {
 	 * </ol>
 	 */
 	@Parameterized.Parameters
-	public static def Collection<Object[]> instancesToTest() {
+	static def Collection<Object[]> instancesToTest() {
 		val parameters = newArrayList
-		
+
 		Util.provideAllGraphs.forEach[sdf |
 			val dagGen = new SDF2DAG(sdf)
 			parameters.add(#[dagGen])
 		]
-		
-		Util.provideAllGraphs.forEach[ sdf |			
+
+		Util.provideAllGraphs.forEach[ sdf |
 			// Get strongly connected components
 			val strongCompDetector = new KosarajuStrongConnectivityInspector(sdf)
-					
+
 			// Collect strongly connected component that has loops in it
 			// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
 			strongCompDetector.stronglyConnectedSets.forEach[ subgraphSet |
 				val subgraph = new AsSubgraph(sdf.clone, subgraphSet)
-				val cycleDetector = new CycleDetector(subgraph) 
+				val cycleDetector = new CycleDetector(subgraph)
 				if(cycleDetector.detectCycles) {
 					// ASSUMPTION: Strongly connected component of a directed graph contains atleast
 					// one loop
@@ -104,45 +104,45 @@ class DAG2DAGTest {
 				}
 			]
 		]
-		
+
 		return parameters
 	}
-	
+
 	/**
 	 * Actor of {@link DAG2DAG#instance2Actor} gives the same actor from {@link SDF2DAG#instance2Actor} map
 	 * <p>
 	 * <i>Strong Test</i>
 	 */
 	@Test
-	public def void bothInstancesLeadToSameActor() {
+	def void bothInstancesLeadToSameActor() {
 		val newDagGen = new DAG2DAG(dagGen)
 		newDagGen.instance2Actor.forEach[instance, actor |
 			val newActor = newDagGen.instance2Actor.get(instance)
 			// Check that the new map does return an actor and not null
 			Assert.assertTrue(newActor !== null)
-			
+
 			// Now check that its same as old actor
 			Assert.assertEquals(newActor, actor)
 		]
 	}
-	
+
 	/**
 	 * Changing levels of one {@link SDF2DAG} does not modify the levels of {@link DAG2DAG}
 	 * <p>
-	 * <i>Strong Test</i> 
+	 * <i>Strong Test</i>
 	 */
 	@Test
-	public def void graphsAreOperationInvariant() {
+	def void graphsAreOperationInvariant() {
 		val newDagGen = new DAG2DAG(dagGen)
 		var levelOp = new LevelsOperations
 		dagGen.accept(levelOp)
 		var oldLevels = new HashMap(levelOp.levels)
 		val maxLevel = OperationsUtils.getMaxLevel(oldLevels)
-		
+
 		// Now modify one level
 		val indexInstance = oldLevels.keySet.get(0)
 		oldLevels.put(indexInstance, maxLevel)
-		
+
 		// Now construct the new DAG and check if the levels are modified
 		levelOp = new LevelsOperations
 		newDagGen.accept(levelOp)

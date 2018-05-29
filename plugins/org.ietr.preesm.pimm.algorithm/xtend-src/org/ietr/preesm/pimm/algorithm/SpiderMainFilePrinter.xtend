@@ -180,26 +180,26 @@ class SpiderMainFilePrinter {
 		try {
 			// Spider initialisation
 			Spider::init(cfg);
-			
+
 	 «IF !pg.actorsWithRefinement.isEmpty()»
-				// Actor initializations
+	 // Actor initializations
 		«FOR actor : pg.actorsWithRefinement»
 		  «IF actor.refinement instanceof CHeaderRefinement && (actor.refinement as CHeaderRefinement).getInitPrototype !== null»
 				«"\t\t"+ printInitCall(actor)»
 		  «ENDIF»
 		«ENDFOR»
 	«ENDIF»
-	
+
 			// PiSDF graph construction
 			init_«pg.name»();
-	
+
 			printf("Start\n");
-	
+
 			// Main loop, exception handling can be removed to increase performance
 			for(int i=0; i<NB_ITERATION && !stopThreads; i++){
 				// Compute the SR-DAG, scheduling and executing the main graph
 				Spider::iterate();
-	
+
 				// Printing Gantt
 				if (cfg.traceEnabled) {
 					Spider::printGantt("gantt.pgantt", "gantt_tex.dat", &stat);

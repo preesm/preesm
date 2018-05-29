@@ -64,32 +64,32 @@ final class DAGSubset extends AbstractDAGConstructor implements DAGSubsetConstru
 	 * Holds the original DAG
 	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
-	private val SDFGraph inputGraph
+	val SDFGraph inputGraph
 
 	/**
 	 * Holds the root node
 	 */
-	private val SDFAbstractVertex rootNode
+	val SDFAbstractVertex rootNode
 
 	/**
 	 * Holds the original DAG constructor
 	 */
-	private val PureDAGConstructor dagGen
+	val PureDAGConstructor dagGen
 
 	/**
 	 * List of nodes that are seen in the current subset of DAG
 	 */
-	private val List<SDFAbstractVertex> seenNodes
+	val List<SDFAbstractVertex> seenNodes
 
 	/**
 	 * List of instances of source actors
 	 */
-	private val List<SDFAbstractVertex> sourceInstances
+	val List<SDFAbstractVertex> sourceInstances
 
 	/**
 	 * List of instances of sink actors
 	 */
-	private val List<SDFAbstractVertex> sinkInstances
+	val List<SDFAbstractVertex> sinkInstances
 
 	/**
 	 * Constructor
@@ -156,7 +156,7 @@ final class DAGSubset extends AbstractDAGConstructor implements DAGSubsetConstru
 	 *
 	 * @return Look up table consisting of relevant actors and its instances
 	 */
-	public override Map<SDFAbstractVertex, List<SDFAbstractVertex>> getActor2Instances() {
+	override Map<SDFAbstractVertex, List<SDFAbstractVertex>> getActor2Instances() {
 		val actor2Instances = new LinkedHashMap(dagGen.getActor2Instances)
 		for(actor: dagGen.actor2Instances.keySet) {
 			val instances = actor2Instances.get(actor).filter[instance | seenNodes.contains(instance)].toList
@@ -175,7 +175,7 @@ final class DAGSubset extends AbstractDAGConstructor implements DAGSubsetConstru
 	 *
 	 * @return Lookup table consisting of instances and its relevant actors
 	 */
-	public override Map<SDFAbstractVertex, SDFAbstractVertex> getInstance2Actor() {
+	override Map<SDFAbstractVertex, SDFAbstractVertex> getInstance2Actor() {
 		return new LinkedHashMap(dagGen.instance2Actor.filter[key, value | seenNodes.contains(key)])
 	}
 
@@ -185,7 +185,7 @@ final class DAGSubset extends AbstractDAGConstructor implements DAGSubsetConstru
 	 *
 	 * @return Lookup table consisting of implode/explode instances belonging to the DAG and its instances
 	 */
-	public override Map<SDFAbstractVertex, SDFAbstractVertex> getExplodeImplodeOrigInstances() {
+	override Map<SDFAbstractVertex, SDFAbstractVertex> getExplodeImplodeOrigInstances() {
 		return new LinkedHashMap(dagGen.explodeImplodeOrigInstances.filter[key, value | seenNodes.contains(value)])
 	}
 
@@ -196,7 +196,7 @@ final class DAGSubset extends AbstractDAGConstructor implements DAGSubsetConstru
 	 * @return true if input is valid, or exception is thrown (false is never returned)
 	 * @throws SDF4JException if the input graph is not a valid DAG or if root node does not exist
 	 */
-	public def boolean checkInputIsValid() throws SDF4JException {
+	def boolean checkInputIsValid() throws SDF4JException {
 		// Check if there are cycles
 		val cycleDetector = new CycleDetector<SDFAbstractVertex, SDFEdge>(inputGraph)
 		if(cycleDetector.detectCycles) {
@@ -238,14 +238,14 @@ final class DAGSubset extends AbstractDAGConstructor implements DAGSubsetConstru
 	/**
 	 * {@link DAGConstructor#getSourceInstances}
 	 */
-	public override getSourceInstances() {
+	override getSourceInstances() {
 		return sourceInstances
 	}
 
 	/**
 	 * {@link DAGConstructor#getSinkInstances}
 	 */
-	public override getSinkInstances() {
+	override getSinkInstances() {
 		return sinkInstances
 	}
 

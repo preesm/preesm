@@ -71,7 +71,7 @@ import java.util.Arrays
  */
 class FilesManager {
 
-	private static val BUFFER_SIZE = 1024
+	static val BUFFER_SIZE = 1024
 
 	/**
 	 * Returns the File found at the given path
@@ -81,7 +81,7 @@ class FilesManager {
 	 * @param bundleFilter
 	 * 			A filter to indicate in which bundle to look for
 	 */
-	public static def File getFile(String path, String bundleFilter) {
+	static def File getFile(String path, String bundleFilter) {
 		val sanitizedPath = path.sanitize
 		val file = new File(sanitizedPath)
 		if(file !== null && file.exists) return file else return null

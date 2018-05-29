@@ -45,11 +45,11 @@ class SDFExporter extends SDF2GraphmlExporter {
 	new() {
 		super()
 	}
-	
-	public def void export(SDFGraph algorithm, String xmlPath) {
+
+	def void export(SDFGraph algorithm, String xmlPath) {
 		val exporter = new GMLSDFExporter
 		try {
-			exporter.export(algorithm, xmlPath + ".graphml")	
+			exporter.export(algorithm, xmlPath + ".graphml")
 		} catch(CoreException ex) {
 			ex.printStackTrace
 		}

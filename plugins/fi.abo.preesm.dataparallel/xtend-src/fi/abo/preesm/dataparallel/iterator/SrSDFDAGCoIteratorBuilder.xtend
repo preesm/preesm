@@ -47,7 +47,7 @@ import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 
 /**
  * Helper builder class for {@link SrSDFDAGCoIterator}
- * 
+ *
  * @see {@link SrSDFDAGCoIterator}
  * @author Sudeep Kanur
  */
@@ -56,7 +56,7 @@ class SrSDFDAGCoIteratorBuilder {
 	 * Logger instance
 	 */
 	var Logger logger
-	
+
 	/**
 	 * A DAG as {@link SDFGraph} instance obtained from implementations
 	 * of {@link PureDAGConstructor}
@@ -67,16 +67,16 @@ class SrSDFDAGCoIteratorBuilder {
 	 * Node chain graph of the original SrSDF
 	 */
 	var NodeChainGraph ncg
-	
+
 	/**
-	 * List of visitable nodes that are defined in the 
-	 * {@link SrSDFDAGCoIteratorBuilder#dag} 
+	 * List of visitable nodes that are defined in the
+	 * {@link SrSDFDAGCoIteratorBuilder#dag}
 	 */
 	var List<SDFAbstractVertex> visitableNodes
-	
+
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param logger A Workflow logger
 	 */
 	new(Logger logger) {
@@ -85,75 +85,75 @@ class SrSDFDAGCoIteratorBuilder {
 		this.ncg = null
 		this.visitableNodes = null
 	}
-	
+
 	new() {
 		this(null)
 	}
-	
+
 	/**
 	 * Add DAG graph (not generator) produced from the output of a {@link PureDAGConstructor}
 	 * implementor
-	 * 
+	 *
 	 * @param dag DAG obtained by {@link PureDAGConstructor#getOutputGraph}
-	 * @return Builder instance to continue building 
+	 * @return Builder instance to continue building
 	 */
-	public def SrSDFDAGCoIteratorBuilder addDAG(SDFGraph dag) {
+	def SrSDFDAGCoIteratorBuilder addDAG(SDFGraph dag) {
 		this.dag = dag
 		return this
 	}
-	
+
 	/**
 	 * Add {@link NodeChainGraph} of single rate graph obtained by {@link ToHSDFVisitor}
-	 * 
+	 *
 	 * @param ncg A {@link NodeChainGraph} of Single rate graph of the SDF
 	 * @return Builder instance to continue building
 	 */
-	public def SrSDFDAGCoIteratorBuilder addNodeChainGraph(NodeChainGraph ncg) {
+	def SrSDFDAGCoIteratorBuilder addNodeChainGraph(NodeChainGraph ncg) {
 		this.ncg = ncg
 		return this
 	}
-	
+
 	/**
 	 * Add visitable nodes
 	 * <p>
 	 * Visitable nodes are those nodes of the DAG that <i>must</i> be seen in the SrSDF graph
-	 * 
+	 *
 	 * @param visitableNodes List of visitable nodes of DAG
 	 * @return Builder instance to continue building
 	 */
-	public def SrSDFDAGCoIteratorBuilder addVisitableNodes(List<SDFAbstractVertex> visitableNodes){
+	def SrSDFDAGCoIteratorBuilder addVisitableNodes(List<SDFAbstractVertex> visitableNodes){
 		this.visitableNodes = visitableNodes
 		return this
 	}
-	
+
 	/**
 	 * Return the coiterator instance
-	 * 
+	 *
 	 * @return {@link SrSDFDAGCoIterator} instance
 	 */
-	public def SrSDFDAGCoIterator build() throws SDF4JException {
+	def SrSDFDAGCoIterator build() throws SDF4JException {
 		if(dag === null) {
 			throw new SDF4JException("Co-iterator builder needs a DAG. Use addDAG method.")
 		}
-		
+
 		if(visitableNodes === null) {
-			throw new SDF4JException("Co-iterator builder needs visitable nodes. 
+			throw new SDF4JException("Co-iterator builder needs visitable nodes.
 									Use addVisitableNodes method.")
 		}
-		
+
 		if(ncg === null) {
 			throw new SDF4JException("Co-iterator builder needs node chain graphs.
 									Use addNodeChainGraphs method.")
 		}
-		
+
 		visitableNodes.forEach[node |
 			if(!(dag.vertexSet.contains(node))) {
 				throw new SDF4JException("Node: " + node.name + " does not exist in source graph")
 			}
 		]
-		
+
 		if(logger === null) {
-			return new SrSDFDAGCoIterator(dag, ncg, visitableNodes)	
+			return new SrSDFDAGCoIterator(dag, ncg, visitableNodes)
 		} else {
 			return new SrSDFDAGCoIterator(dag, ncg, visitableNodes, logger)
 		}
