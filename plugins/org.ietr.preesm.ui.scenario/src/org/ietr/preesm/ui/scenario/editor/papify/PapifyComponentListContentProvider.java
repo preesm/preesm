@@ -83,10 +83,8 @@ public class PapifyComponentListContentProvider implements IStructuredContentPro
       boolean checkingEvents = false;
       boolean componentAdded = false;
 
-      // for (int i = 0; i < inputPapiEventInfo.getComponents().size(); i++) {
       for (int i = inputPapiEventInfo.getComponents().size() - 1; i >= 0; i--) {
         compAux = inputPapiEventInfo.getComponents().get(i);
-        // for (int j = 0; j < compAux.getEventSets().size(); j++) {
         for (int j = compAux.getEventSets().size() - 1; j >= 0; j--) {
           eventSetAux = compAux.getEventSets().get(j);
           checkingEvents = eventSetAux.getEvents().isEmpty();

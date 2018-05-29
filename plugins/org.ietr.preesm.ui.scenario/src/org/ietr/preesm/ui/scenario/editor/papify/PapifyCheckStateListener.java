@@ -40,6 +40,7 @@ package org.ietr.preesm.ui.scenario.editor.papify;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -55,10 +56,17 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.ietr.dftools.algorithm.importer.InvalidModelException;
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.papi.PapiComponent;
 import org.ietr.preesm.core.scenario.papi.PapiEvent;
 import org.ietr.preesm.core.scenario.papi.PapifyConfig;
+import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 import org.ietr.preesm.ui.scenario.editor.ISDFCheckStateListener;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 import org.ietr.preesm.ui.scenario.editor.PreesmAlgorithmTreeContentProvider;
@@ -223,7 +231,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
       final Combo combo = ((Combo) e.getSource());
       final String item = combo.getItem(combo.getSelectionIndex());
 
-      this.currentOpId = item;
+      this.currentOpId = item.replace('/', '_');
       updateComponentCheck();
       updateEventCheck();
     }
@@ -310,10 +318,32 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   private void comboDataInit(final Combo combo) {
 
     combo.removeAll();
-    /*
-     * for (final String id : this.scenario.getOrderedOperatorIds()) { combo.add(id); }
-     */
-    for (final String id : this.scenario.getActorNames()) {
+    final Set<String> result = new LinkedHashSet<>();
+    String finalName;
+    if (this.scenario.isPISDFScenario()) {
+      try {
+        final PiGraph graph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
+        for (final AbstractActor vertex : graph.getAllActors()) {
+          if (!(vertex instanceof PiGraph)) {
+            finalName = vertex.getVertexPath().substring(vertex.getVertexPath().indexOf('/') + 1);
+            result.add(finalName);
+          }
+        }
+      } catch (CoreException | InvalidModelException e) {
+        e.printStackTrace();
+      }
+    } else if (this.scenario.isIBSDFScenario()) {
+      try {
+        final SDFGraph graph = ScenarioParser.getSDFGraph(this.scenario.getAlgorithmURL());
+        for (final SDFAbstractVertex vertex : graph.vertexSet()) {
+          result.add(vertex.getName());
+        }
+      } catch (final InvalidModelException e) {
+        e.printStackTrace();
+      }
+    }
+
+    for (final String id : result) {
       combo.add(id);
     }
   }
