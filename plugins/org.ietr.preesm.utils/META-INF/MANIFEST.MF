@@ -1,6 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PREESM utilities
+Automatic-Module-Name: org.ietr.preesm.utils
 Bundle-SymbolicName: org.ietr.preesm.utils
 Bundle-Version: 2.12.1.qualifier
 Bundle-Activator: org.ietr.preesm.utils.Activator

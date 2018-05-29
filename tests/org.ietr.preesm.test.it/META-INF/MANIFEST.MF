@@ -1,6 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm Integration Tests
+Automatic-Module-Name: org.ietr.preesm.test.it
 Bundle-SymbolicName: org.ietr.preesm.test.it
 Bundle-Version: 2.12.1.qualifier
 Bundle-Vendor: IETR/INSA Rennes

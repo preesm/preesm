@@ -1,6 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Clustering
+Automatic-Module-Name: org.ietr.preesm.clustering
 Bundle-SymbolicName: org.ietr.preesm.clustering;singleton:=true
 Bundle-Version: 2.12.1.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

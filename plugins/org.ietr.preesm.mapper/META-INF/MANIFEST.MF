@@ -1,6 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm mapper Plug-in
+Automatic-Module-Name: org.ietr.preesm.mapper
 Bundle-SymbolicName: org.ietr.preesm.mapper;singleton:=true
 Bundle-Version: 2.12.1.qualifier
 Bundle-Activator: org.ietr.preesm.mapper.activator.Activator

@@ -1,6 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: RCP Utils
+Automatic-Module-Name: org.ietr.preesm.rcp.utils
 Bundle-SymbolicName: org.ietr.preesm.rcp.utils;singleton:=true
 Bundle-Version: 2.12.1.qualifier
 Bundle-Vendor: IETR/INSA Rennes

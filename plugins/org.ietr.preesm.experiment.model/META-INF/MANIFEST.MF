@@ -1,6 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm PiSDF metamodel
+Automatic-Module-Name: org.ietr.preesm.experiment.model
 Bundle-SymbolicName: org.ietr.preesm.experiment.model;singleton:=true
 Bundle-Version: 2.12.1.qualifier
 Require-Bundle: org.eclipse.core.runtime,
