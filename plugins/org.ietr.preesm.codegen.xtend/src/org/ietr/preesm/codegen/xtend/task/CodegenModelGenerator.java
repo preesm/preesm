@@ -681,8 +681,13 @@ public class CodegenModelGenerator {
           final FunctionCall functionCall = generateFunctionCall(dagVertex, loopPrototype, false);
 
           // Check for papify in the dagVertex
-          Object value = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CONFIGURATION);
-          if (value != null) {
+          System.out.println("1");
+          String papifying = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CONFIGURATION, String.class);
+          if (papifying.equals("Papifying")) {
+            System.out.println("A");
+            final FunctionCall functionCallPapifyStart = generatePapifyStartFunctionCall(dagVertex);
+            operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStart);
+            this.dagVertexCalls.put(dagVertex, functionCallPapifyStart);
             // Do the papify codegen start
           }
 
@@ -690,7 +695,10 @@ public class CodegenModelGenerator {
           // Add the function call to the operatorBlock
           operatorBlock.getLoopBlock().getCodeElts().add(functionCall);
 
-          if (value != null) {
+          if (papifying.equals("Papifying")) {
+            final FunctionCall functionCallPapifyStop = generatePapifyStopFunctionCall(dagVertex);
+            operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStop);
+            this.dagVertexCalls.put(dagVertex, functionCallPapifyStop);
             // Do the papify codegen stop
           }
 
@@ -1389,7 +1397,7 @@ public class CodegenModelGenerator {
   }
 
   /**
-   * This method creates the event start function call for PAPI instrumentation
+   * This method creates the event stop function call for PAPI instrumentation
    * 
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
@@ -1398,6 +1406,12 @@ public class CodegenModelGenerator {
   protected FunctionCall generatePapifyStopFunctionCall(final DAGVertex dagVertex) {
     // Create the corresponding FunctionCall
     final FunctionCall func = CodegenFactory.eINSTANCE.createFunctionCall();
+    func.setName("event_stop");
+    String fullPathName = dagVertex.getInfo();
+    final int indexFirstH = fullPathName.indexOf("/");
+    fullPathName = fullPathName.substring(indexFirstH + 1);
+    final String fullName = fullPathName.replace("/", "_");
+    func.setActorName(fullName);
     return func;
   }
 

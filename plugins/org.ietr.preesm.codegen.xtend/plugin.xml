@@ -189,9 +189,9 @@
          </inputs>
       </task>
       <task
-            id="Papify Engine Task"
+            id="org.ietr.preesm.codegen.xtend.task.CodegenPapifyEngineTask"
             name="Papify Engine Task"
-            type=" org.ietr.preesm.codegen.xtend.task.CodegenPapifyEngineTask">
+            type="org.ietr.preesm.codegen.xtend.task.CodegenPapifyEngineTask">
             <inputs>
             	<input
                   id="scenario"

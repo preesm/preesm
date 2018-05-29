@@ -40,8 +40,15 @@
  */
 package org.ietr.preesm.codegen.xtend.task;
 
+import java.util.Set;
+import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.papi.PapiComponent;
+import org.ietr.preesm.core.scenario.papi.PapiEvent;
+import org.ietr.preesm.core.scenario.papi.PapiEventModifier;
+import org.ietr.preesm.core.scenario.papi.PapifyConfig;
+import org.ietr.preesm.core.scenario.papi.PapifyConfigManager;
 
 /**
  * The Class PapifyEngine.
@@ -63,6 +70,37 @@ public class PapifyEngine {
   }
 
   public DirectedAcyclicGraph generate() {
-    return new DirectedAcyclicGraph();
+
+    PapifyConfigManager papifyConfig;
+    Set<PapifyConfig> configSet;
+    PapifyConfig config;
+    PapiComponent comp;
+    Set<PapiEvent> events;
+    Set<PapiEvent> includedEvents;
+    PapiEvent timingEvent = new PapiEvent();
+    Set<PapiEventModifier> modifTimingList = null;
+
+    DirectedAcyclicGraph outputDAG = new DirectedAcyclicGraph();
+
+    timingEvent.setName("Timing");
+    timingEvent.setDesciption("Event to time through PAPI_get_time()");
+    timingEvent.setIndex(9999);
+
+    if (this.scenario.getPapifyConfigManager() != null) {
+      papifyConfig = this.scenario.getPapifyConfigManager();
+    }
+
+    String message = "Papifying";
+
+    for (final DAGVertex vertex : this.dag.vertexSet()) {
+      // vertex.getPropertyBean().setValue(PAPIFY_CONFIGURATION, true);
+      // outputDAG.vertexSet().remove(vertex);
+      this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_CONFIGURATION, message);
+      System.out.println("B");
+      System.out.println(this.dag.getVertex(vertex.getName()).getPropertyBean().getValue(PapifyEngine.PAPIFY_CONFIGURATION, String.class));
+
+    }
+
+    return this.dag;
   }
 }
