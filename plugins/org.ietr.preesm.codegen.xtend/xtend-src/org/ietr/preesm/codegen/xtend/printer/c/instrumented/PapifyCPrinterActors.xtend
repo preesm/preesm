@@ -149,7 +149,7 @@ class PapifyCPrinterActors extends CPrinter {
 						config_position = -1;
 						for (PapifyConfig tmp : configSet){
 							if(tmp.PAPIComponent.equals(config.PAPIComponent) && tmp.PAPIEvents.equals(config.PAPIEvents)){
-								config_added = true
+								config_added = true;
 								config_position = configSet.indexOf(tmp);
 							}
 						}	
