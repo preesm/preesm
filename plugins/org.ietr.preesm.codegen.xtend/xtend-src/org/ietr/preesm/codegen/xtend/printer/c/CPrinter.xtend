@@ -383,7 +383,8 @@ class CPrinter extends DefaultPrinter {
 		 * @date «new Date»
 		 *
 		 */
-
+		// no monitoring by default
+		#define _PREESM_MONITOR_INIT
 		#define _GNU_SOURCE
 		#ifdef _WIN32
 		#include <windows.h>
@@ -438,7 +439,11 @@ class CPrinter extends DefaultPrinter {
 		}
 
 
-		int main(void) {
+		int main(void) {	
+			#ifdef _PREESM_MONITOR_INIT
+			mkdir("papify-output", 0777); 
+			event_init_multiplex();
+			#endif
 			// Declaring thread pointers
 			pthread_t coreThreads[_PREESM_NBTHREADS_];
 			void *(*coreThreadComputations[_PREESM_NBTHREADS_])(void *) = {
