@@ -78,13 +78,26 @@ public class PapifyEngine {
   /** The original DAG **/
   private final DirectedAcyclicGraph dag;
 
+  /**
+   * Initialize the PapifyEngine
+   *
+   * @param dag
+   *          the input dag
+   * @param scenario
+   *          the input scenario
+   */
   public PapifyEngine(final DirectedAcyclicGraph dag, final PreesmScenario scenario) {
     this.dag = dag;
     this.scenario = scenario;
   }
 
+  /**
+   * Include all the properties required by the CodegenModelGenerator to correctly instrument the generated code
+   *
+   */
   public DirectedAcyclicGraph generate() {
 
+    // Variables to check whether an actor has a monitoring configuration
     PapifyConfigManager papifyConfig = null;
     ArrayList<PapifyConfig> configSet = new ArrayList<>();
     PapifyConfig config;
@@ -97,6 +110,7 @@ public class PapifyEngine {
     boolean configAdded = false;
     int configPosition;
 
+    // The timing event
     timingEvent.setName("Timing");
     timingEvent.setDesciption("Event to time through PAPI_get_time()");
     timingEvent.setIndex(9999);
@@ -108,15 +122,17 @@ public class PapifyEngine {
       String message = "Papifying";
       String finalName;
 
+      // For each vertex, check the monitoring
       for (final DAGVertex vertex : this.dag.vertexSet()) {
         finalName = vertex.getInfo();
         if (finalName != null) {
           finalName = vertex.getInfo().substring(vertex.getInfo().indexOf('/') + 1).replace('/', '_');
           config = papifyConfig.getCorePapifyConfigGroups(finalName);
           if (config != null) {
-            System.out.println(finalName);
             configAdded = false;
             configPosition = -1;
+
+            // Check if the current monitoring has already been included
             for (PapifyConfig tmp : configSet) {
               if (tmp.getPAPIComponent().equals(config.getPAPIComponent()) && tmp.getPAPIEvents().equals(config.getPAPIEvents())) {
                 configAdded = true;
@@ -128,25 +144,31 @@ public class PapifyEngine {
               configPosition = configSet.indexOf(config);
             }
 
+            // The variable to store the monitoring
             PapifyAction papifyActionName = CodegenFactory.eINSTANCE.createPapifyAction();
             papifyActionName.setName("papify_actions_".concat(vertex.getName()));
 
+            // Set the id associated to the Papify configuration
             Constant papifyConfigNumber = CodegenFactory.eINSTANCE.createConstant();
             papifyConfigNumber.setValue(configPosition);
 
             // Get component
-            // Get events
             comp = config.getPAPIComponent();
+            // Get events
             events = config.getPAPIEvents();
             String eventNames = "";
             includedEvents.clear();
+
+            // At the beginning there is no monitoring
             this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_MONITOR_EVENTS, "No");
             this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_MONITOR_TIMING, "No");
             for (PapiEvent singleEvent : events) {
               if (singleEvent.equals(timingEvent)) {
+                // Monitoring time
                 this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_MONITOR_TIMING, "Yes");
               } else if (comp.containsEvent(singleEvent)) {
                 includedEvents.add(singleEvent);
+                // Monitoring events
                 this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_MONITOR_EVENTS, "Yes");
                 if (eventNames.equals("")) {
                   eventNames = singleEvent.getName();
@@ -156,25 +178,30 @@ public class PapifyEngine {
               }
             }
 
+            // AAdd the PAPI component name
             ConstantString componentName = CodegenFactory.eINSTANCE.createConstantString();
             componentName.setName("component_name".concat(vertex.getName()));
             componentName.setValue(comp.getId());
             componentName.setComment("PAPI component name");
 
+            // Add the actor name
             ConstantString actorName = CodegenFactory.eINSTANCE.createConstantString();
             actorName.setName("actor_name".concat(vertex.getName()));
             actorName.setValue(vertex.getName());
             actorName.setComment("Actor name");
 
+            // Add the size of the CodeSet
             Constant codeSetSize = CodegenFactory.eINSTANCE.createConstant();
             codeSetSize.setName("CodeSetSize");
             codeSetSize.setValue(includedEvents.size());
 
+            // Add the names of all the events
             ConstantString eventSetNames = CodegenFactory.eINSTANCE.createConstantString();
             eventSetNames.setName("allEventNames");
             eventSetNames.setValue(eventNames);
             eventSetNames.setComment("Papify events");
 
+            // Set all the properties to the vertex
             this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_CONFIGURATION, message);
             this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_ACTION_NAME, papifyActionName);
             this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_COMPONENT_NAME, componentName);
