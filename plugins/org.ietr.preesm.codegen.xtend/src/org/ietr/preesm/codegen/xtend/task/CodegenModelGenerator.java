@@ -720,7 +720,7 @@ public class CodegenModelGenerator {
             String papifyMonitoringTiming = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_MONITOR_TIMING, String.class);
             if (papifyMonitoringTiming != null && papifyMonitoringTiming.equals("Yes")) {
               // Generate Papify start timing function
-              final FunctionCall functionCallPapifyTimingStart = generatePapifyStartTimingFunctionCall(dagVertex);
+              final FunctionCall functionCallPapifyTimingStart = generatePapifyStartTimingFunctionCall(dagVertex, operatorBlock);
               // Add the Papify start timing function to the loop
               operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStart);
             }
@@ -735,7 +735,7 @@ public class CodegenModelGenerator {
             String papifyMonitoringTiming = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_MONITOR_TIMING, String.class);
             if (papifyMonitoringTiming != null && papifyMonitoringTiming.equals("Yes")) {
               // Generate Papify stop timing function
-              final FunctionCall functionCallPapifyTimingStop = generatePapifyStopTimingFunctionCall(dagVertex);
+              final FunctionCall functionCallPapifyTimingStop = generatePapifyStopTimingFunctionCall(dagVertex, operatorBlock);
               // Add the Papify stop timing function to the loop
               operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStop);
             }
@@ -1500,11 +1500,15 @@ public class CodegenModelGenerator {
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
    * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
-  protected FunctionCall generatePapifyStartTimingFunctionCall(final DAGVertex dagVertex) {
+  protected FunctionCall generatePapifyStartTimingFunctionCall(final DAGVertex dagVertex, final CoreBlock operatorBlock) {
     // Create the corresponding FunctionCall
+    Constant papifyPEId = CodegenFactory.eINSTANCE.createConstant();
+    papifyPEId.setName("PE_id");
+    papifyPEId.setValue(this.PapifiedPEs.indexOf(operatorBlock.getName()));
     final FunctionCall func = CodegenFactory.eINSTANCE.createFunctionCall();
     func.setName("event_start_papify_timing");
     func.addParameter(dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME, PapifyAction.class), PortDirection.INPUT);
+    func.addParameter(papifyPEId, PortDirection.INPUT);
     func.setActorName(dagVertex.getName());
     return func;
   }
@@ -1536,11 +1540,15 @@ public class CodegenModelGenerator {
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
    * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
-  protected FunctionCall generatePapifyStopTimingFunctionCall(final DAGVertex dagVertex) {
+  protected FunctionCall generatePapifyStopTimingFunctionCall(final DAGVertex dagVertex, final CoreBlock operatorBlock) {
     // Create the corresponding FunctionCall
+    Constant papifyPEId = CodegenFactory.eINSTANCE.createConstant();
+    papifyPEId.setName("PE_id");
+    papifyPEId.setValue(this.PapifiedPEs.indexOf(operatorBlock.getName()));
     final FunctionCall func = CodegenFactory.eINSTANCE.createFunctionCall();
     func.setName("event_stop_papify_timing");
     func.addParameter(dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME, PapifyAction.class), PortDirection.INPUT);
+    func.addParameter(papifyPEId, PortDirection.INPUT);
     func.setActorName(dagVertex.getName());
     return func;
   }
