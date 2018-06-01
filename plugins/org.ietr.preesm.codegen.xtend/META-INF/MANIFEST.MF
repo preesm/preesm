@@ -1,6 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm code generation plug-in (XTend)
+Automatic-Module-Name: org.ietr.preesm.codegen.xtend
 Bundle-SymbolicName: org.ietr.preesm.codegen.xtend;singleton:=true
 Bundle-ClassPath: .
 Bundle-Vendor: IETR/INSA Rennes
@@ -19,5 +20,5 @@ Export-Package: org.ietr.preesm.codegen.xtend.model.codegen,
  org.ietr.preesm.codegen.xtend.model.codegen.impl,
  org.ietr.preesm.codegen.xtend.model.codegen.util,
  org.ietr.preesm.codegen.xtend.task
-Bundle-Version: 2.12.1
+Bundle-Version: 2.12.2
 

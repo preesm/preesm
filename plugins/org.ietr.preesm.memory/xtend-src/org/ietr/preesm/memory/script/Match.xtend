@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2014)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -314,7 +314,7 @@ class Match {
 /**
  * This enumeration represent the type of the current {@link Match}
  */
-public enum MatchType {
+enum MatchType {
 
 	/**
 	 * The {@link Match} links several inputs (or outputs) together.

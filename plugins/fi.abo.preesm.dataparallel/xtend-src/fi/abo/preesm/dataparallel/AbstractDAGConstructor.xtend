@@ -48,7 +48,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
  *
  * @author Sudeep Kanur
  */
-public abstract class AbstractDAGConstructor implements DAGConstructor {
+abstract class AbstractDAGConstructor implements DAGConstructor {
 
 	/**
 	 * Logger to optionally log messages for debugging purposes
@@ -109,7 +109,7 @@ public abstract class AbstractDAGConstructor implements DAGConstructor {
 	/**
 	 * {@link DAGConstructor#log}
 	 */
-	public override void log(Level level, String message) {
+	override void log(Level level, String message) {
 		logger?.log(level, message)
 	}
 

@@ -78,7 +78,7 @@ class CPrinter extends DefaultPrinter {
 	/**
 	 * Set to true if a main file should be generated. Set at object creation in constructor.
 	 */
-	private final boolean generateMainFile;
+	final boolean generateMainFile;
 
 	def boolean generateMainFile() {
 		return this.generateMainFile;

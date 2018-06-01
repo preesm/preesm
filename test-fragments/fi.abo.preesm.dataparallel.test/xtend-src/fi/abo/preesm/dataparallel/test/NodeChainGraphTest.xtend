@@ -103,7 +103,7 @@ class NodeChainGraphTest {
 	 * </ol>
 	 */
 	@Parameterized.Parameters
-	public static def Collection<Object[]> instancesToTest() {
+	static def Collection<Object[]> instancesToTest() {
 		val parameters = newArrayList
 		Util.provideAllGraphs.forEach[sdf |
 			//[SDF graph,

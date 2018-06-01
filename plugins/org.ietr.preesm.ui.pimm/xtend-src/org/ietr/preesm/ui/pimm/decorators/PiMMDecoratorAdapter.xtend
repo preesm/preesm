@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -57,7 +57,7 @@ import java.util.LinkedHashMap
  *
  * @author kdesnos
  */
-public class PiMMDecoratorAdapter extends EContentAdapter {
+class PiMMDecoratorAdapter extends EContentAdapter {
 
 	@Accessors
 	Map<PictogramElement, IDecorator[]> pesAndDecorators

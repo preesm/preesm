@@ -1,7 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2017)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -177,34 +178,39 @@ class SpiderMainFilePrinter {
 		cfg.useGraphOptim = true;
 		cfg.useActorPrecedence = true;
 
-		// Spider initialisation
-		Spider::init(cfg);
+		try {
+			// Spider initialisation
+			Spider::init(cfg);
 
-		/* Actor initialisation here if needed */
+	 «IF !pg.actorsWithRefinement.isEmpty()»
+	 // Actor initializations
 		«FOR actor : pg.actorsWithRefinement»
 		  «IF actor.refinement instanceof CHeaderRefinement && (actor.refinement as CHeaderRefinement).getInitPrototype !== null»
-		    «printInitCall(actor)»
+				«"\t\t"+ printInitCall(actor)»
 		  «ENDIF»
 		«ENDFOR»
+	«ENDIF»
 
-		// PiSDF graph construction
-		init_«pg.name»();
+			// PiSDF graph construction
+			init_«pg.name»();
 
-		printf("Start\n");
+			printf("Start\n");
 
-		// Main loop, exeption handling can be removed to increase performance
-		try{
-		//int i=1;{
-		for(int i=0; i<NB_ITERATION && !stopThreads; i++){
+			// Main loop, exception handling can be removed to increase performance
+			for(int i=0; i<NB_ITERATION && !stopThreads; i++){
+				// Compute the SR-DAG, scheduling and executing the main graph
+				Spider::iterate();
 
-			Spider::iterate();
-
-			// Printing Gantt
-			if (cfg.traceEnabled) Spider::printGantt("gantt.pgantt", "gantt_tex.dat", &stat);
-
-		}
-		}catch(const char* s){
-			printf("Exception : %s\n", s);
+				// Printing Gantt
+				if (cfg.traceEnabled) {
+					Spider::printGantt("gantt.pgantt", "gantt_tex.dat", &stat);
+					printf("Total execution time: %lf ms\n",  (stat.execTime + stat.schedTime) / 1000000.);
+					printf("Application execution time: %lf ms\n",  stat.execTime / 1000000.);
+					printf("SPIDER overhead time: %lf ms\n",  stat.schedTime / 1000000.);
+				}
+			}
+		} catch(std::exception &e) {
+			printf("Exception : %s\n", e.what());
 		}
 
 		printf("finished\n");

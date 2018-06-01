@@ -49,29 +49,29 @@ import fi.abo.preesm.dataparallel.PureDAGConstructor
 
 /**
  * A topological order iterator that traverses a subset of DAG
- * 
- * @author Sudeep Kanur 
+ *
+ * @author Sudeep Kanur
  */
 class SubsetTopologicalIterator extends BreadthFirstIterator<SDFAbstractVertex, SDFEdge> implements DAGTopologicalIteratorInterface {
-	
+
 	/**
 	 * Instances and its associated sources
 	 */
-	private val Map<SDFAbstractVertex, List<SDFAbstractVertex>> instanceSources
-	
+	val Map<SDFAbstractVertex, List<SDFAbstractVertex>> instanceSources
+
 	/**
 	 * Instances encountered
 	 */
-	private val List<SDFAbstractVertex> instanceEncountered
-	
+	val List<SDFAbstractVertex> instanceEncountered
+
 	/**
 	 * The original graph supplied by the client
 	 */
-	private val SDFGraph inputGraph
-	
+	val SDFGraph inputGraph
+
 	/**
 	 * Constructor. Mainly used in plugin
-	 * 
+	 *
 	 * @param dagGen {@link PureDAGConstructor} instance containing original DAG
 	 * @param rootNode Root node
 	 * @param logger For loggin purposes
@@ -82,10 +82,10 @@ class SubsetTopologicalIterator extends BreadthFirstIterator<SDFAbstractVertex, 
 		this.inputGraph = dagGen.getOutputGraph
 		this.instanceSources = newLinkedHashMap
 		this.instanceEncountered = newArrayList
-		
+
 		val rootInstances = inputGraph.vertexSet
 			.filter[instance | inputGraph.incomingEdgesOf(instance).size == 0].toList
-			
+
 		if(!rootInstances.contains(rootNode)) {
 			if(!dagGen.outputGraph.vertexSet.contains(rootNode)) {
 				throw new NoSuchElementException("Node " + rootNode.name + " does not exist in the DAG!")
@@ -93,13 +93,13 @@ class SubsetTopologicalIterator extends BreadthFirstIterator<SDFAbstractVertex, 
 				throw new NoSuchElementException("Node " + rootNode.name + " is not a root node!")
 			}
 		}
-		
+
 		// Iterate first to get the subset of DAG in question
 		new BreadthFirstIterator<SDFAbstractVertex, SDFEdge>(inputGraph, rootNode)
-		.forEach[seenNode | 
+		.forEach[seenNode |
 			instanceSources.put(seenNode, newArrayList)
 		]
-		
+
 		// Now find the predecessor/source of relevant instances
 		instanceSources.forEach[node, sources |
 			sources.addAll(inputGraph.incomingEdgesOf(node)
@@ -108,10 +108,10 @@ class SubsetTopologicalIterator extends BreadthFirstIterator<SDFAbstractVertex, 
 				.toList)
 		]
 	}
-	
+
 	/**
 	 * Constructor used in Test setup
-	 * 
+	 *
 	 * @param dagGen {@link PureDAGConstructor} instance containing a original DAG
 	 * @param rootNode Root node
 	 * @throws NoSuchElementException If root node does not exist or is not a root node
@@ -119,10 +119,10 @@ class SubsetTopologicalIterator extends BreadthFirstIterator<SDFAbstractVertex, 
 	new(PureDAGConstructor dagGen, SDFAbstractVertex rootNode) throws NoSuchElementException {
 		this(dagGen, rootNode, null)
 	}
-	
+
 	/**
 	 * Overrides {@link BreadthFirstIterator#encounterVertex}.
-	 * Run encounterVertex only when all of the source nodes (that is seen in the 
+	 * Run encounterVertex only when all of the source nodes (that is seen in the
 	 * subset of the DAG) is encountered before.
 	 */
 	protected override encounterVertex(SDFAbstractVertex node, SDFEdge edge) {
@@ -139,13 +139,13 @@ class SubsetTopologicalIterator extends BreadthFirstIterator<SDFAbstractVertex, 
 			}
 		}
 	}
-	
+
 	/**
 	 * Get a look up table of instances and its associated sources
-	 * 
+	 *
 	 * @return Unmodifiable map of instances mapped to a list of its sources
 	 */
-	public override Map<SDFAbstractVertex, List<SDFAbstractVertex>> getInstanceSources() {
+	override Map<SDFAbstractVertex, List<SDFAbstractVertex>> getInstanceSources() {
 		return Collections.unmodifiableMap(instanceSources)
-	}	
+	}
 }

@@ -3,6 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2015 - 2017)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2015)
  *
@@ -44,7 +45,6 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
@@ -195,8 +195,6 @@ public class SpiderPreProcessVisitor extends PiMMSwitch<Boolean> {
       this.functionMap.put(a, this.functionMap.size());
       if (!(a.getRefinement() instanceof CHeaderRefinement)) {
         WorkflowLogger.getLogger().warning("Actor " + a.getName() + " doesn't have correct refinement.");
-      } else if (((CHeaderRefinement) (a.getRefinement())).getInitPrototype() != null) {
-        WorkflowLogger.getLogger().warning("Init function of Actor " + a.getName() + " will not be handled");
       }
     }
 
@@ -300,10 +298,10 @@ public class SpiderPreProcessVisitor extends PiMMSwitch<Boolean> {
     return true;
   }
 
-  @Override
-  public Boolean caseConfigInputInterface(final ConfigInputInterface cii) {
-    throw new UnsupportedOperationException();
-  }
+  // @Override
+  // public Boolean caseConfigInputInterface(final ConfigInputInterface cii) {
+  // throw new UnsupportedOperationException();
+  // }
 
   @Override
   public Boolean caseDelay(final Delay d) {

@@ -55,22 +55,22 @@ import org.jgrapht.graph.AsSubgraph
 
 /**
  * <b>Manual test</b> for verifying root and exit instances and actors of {@link RootExitOperations}
- * 
+ *
  * @author Sudeep Kanur
  */
 @RunWith(Parameterized)
 class RootExitVisitorManualTest {
-	
+
 	protected val PureDAGConstructor dagGen
-	
+
 	protected val List<String> rootNodeNames
-	
+
 	protected val List<String> exitNodeNames
-	
+
 	protected val List<String> actorNames
-	
+
 	protected val boolean checkCounts
-	
+
 	/**
 	 * Has the following <b>manually defined</b> parameters
 	 * <ol>
@@ -81,10 +81,10 @@ class RootExitVisitorManualTest {
 	 *  <li> <code>true</code> if the test must perform counting, <code>false</code> otherwise
 	 * </ol>
 	 */
-	new(PureDAGConstructor dagGen, 
-		List<String> rootNodeNames, 
-		List<String> exitNodeNames, 
-		List<String> actorNames, 
+	new(PureDAGConstructor dagGen,
+		List<String> rootNodeNames,
+		List<String> exitNodeNames,
+		List<String> actorNames,
 		boolean checkCounts
 	) {
 		this.dagGen = dagGen
@@ -93,7 +93,7 @@ class RootExitVisitorManualTest {
 		this.actorNames = actorNames.sort()
 		this.checkCounts = checkCounts
 	}
-	
+
 	/**
 	 * Generates following <b>manually defined</b> parameters
 	 * <ol>
@@ -105,9 +105,9 @@ class RootExitVisitorManualTest {
 	 * </ol>
 	 */
 	@Parameterized.Parameters
-	public static def Collection<Object[]> instancesToTest() {
+	static def Collection<Object[]> instancesToTest() {
 		val parameters = newArrayList
-		
+
 		val parameterArray = #[
 			#[ExampleGraphs.acyclicTwoActors, #["a_0", "a_1", "a_2", "a_3", "a_4", "b_0"], #["b_1", "b_2"], #["a", "b"]],
 			#[ExampleGraphs.twoActorSelfLoop, #["a_0", "b_0"], #["a_4", "b_1", "b_2"], #["a", "b"]],
@@ -119,7 +119,7 @@ class RootExitVisitorManualTest {
 			#[ExampleGraphs.mixedNetwork1, #["b_0", "c_0", "z_0", "z_1", "z_2", "z_3", "z_4", "z_5"], #["a_1", "a_2", "b_1", "e_0", "e_1", "e_2"], #["b", "c", "z"]],
 			#[ExampleGraphs.mixedNetwork2, #["b_0", "z_0", "z_1", "z_2", "z_3", "z_4", "z_5"], #["a_1", "a_2", "e_0", "e_1", "e_2"], #["b", "z"]]
 		]
-		
+
 		// Add SDF2DAG instances
 		parameterArray.forEach[
 			parameters.add(#[new SDF2DAG(it.get(0) as SDFGraph)
@@ -129,7 +129,7 @@ class RootExitVisitorManualTest {
 						   , true
 			])
 		]
-		
+
 		// Add DAG2DAG instances
 		parameterArray.forEach[
 			val dagGen = new SDF2DAG(it.get(0) as SDFGraph)
@@ -140,15 +140,15 @@ class RootExitVisitorManualTest {
 						   , true
 			])
 		]
-		
+
 		// Test on subgraphs
-		parameterArray.forEach[ 
+		parameterArray.forEach[
 			val sdf = it.get(0) as SDFGraph
 			// Get strongly connected components
 			val strongCompDetector = new KosarajuStrongConnectivityInspector(sdf)
-		
+
 			val stronglyConnectedComponents = strongCompDetector.stronglyConnectedSets.size
-			
+
 			// Collect strongly connected component that has loops in it
 			// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
 			strongCompDetector.stronglyConnectedComponents.forEach[ subgraph |
@@ -158,12 +158,12 @@ class RootExitVisitorManualTest {
 				if(cycleDetector.detectCycles) {
 					// ASSUMPTION: Strongly connected component of a directed graph contains atleast
 					// one loop
-					if( (stronglyConnectedComponents == 1) 
-						&& 
-						((it.get(0) as SDFGraph).vertexSet.size 
-							== 
+					if( (stronglyConnectedComponents == 1)
+						&&
+						((it.get(0) as SDFGraph).vertexSet.size
+							==
 						strongCompDetector.stronglyConnectedSets.get(0).size)) {
-						
+
 						// Add SDF2DAG instances
 						val dagGen = new SDF2DAG(subgraphDir)
 						parameters.add(#[dagGen
@@ -172,7 +172,7 @@ class RootExitVisitorManualTest {
 										, it.get(3) as List<String>
 										, true
 						])
-						
+
 						// Add DAG2DAG instances
 						parameters.add(#[new DAG2DAG(dagGen)
 										, it.get(1) as List<String>
@@ -182,15 +182,15 @@ class RootExitVisitorManualTest {
 						])
 					} else {
 						val dagGen = new SDF2DAG(subgraphDir)
-						
+
 						// Add SDF2DAG instances
 						parameters.add(#[dagGen
 										, it.get(1) as List<String>
 										, it.get(2) as List<String>
 										, it.get(3) as List<String>
 										, false
-						])	
-						
+						])
+
 						// Add DAG2DAG instances
 						parameters.add(#[new DAG2DAG(dagGen)
 										, it.get(1) as List<String>
@@ -202,45 +202,45 @@ class RootExitVisitorManualTest {
 				}
 			]
 		]
-		
+
 		return parameters
 	}
-	
+
 	/**
 	 * Manually determined root instances match the computed ones
 	 */
 	@org.junit.Test
-	public def void checkRootInstances() {
+	def void checkRootInstances() {
 		val rootOp = new RootExitOperations
 		dagGen.accept(rootOp)
 		if(checkCounts) {
-			Assert.assertEquals(rootNodeNames, rootOp.rootInstances.map[node | node.name].sort)	
+			Assert.assertEquals(rootNodeNames, rootOp.rootInstances.map[node | node.name].sort)
 		}
 	}
-	
+
 	/**
 	 * Manually determined exit instances match the computed ones
 	 */
 	@org.junit.Test
-	public def void checkExitInstances() {
+	def void checkExitInstances() {
 		val exitOp = new RootExitOperations
 		dagGen.accept(exitOp)
 		if(checkCounts) {
 			Assert.assertEquals(exitNodeNames, exitOp.exitInstances.map[node | node.name].sort)
 		}
 	}
-	
+
 	/**
 	 * Manually determined actors match the computed ones
 	 */
 	@org.junit.Test
-	public def void checkActors() {
+	def void checkActors() {
 		val actorOp = new RootExitOperations
 		dagGen.accept(actorOp)
 		if(checkCounts) {
 			Assert.assertEquals(actorNames, actorOp.rootActors.map[node | node.name].sort)
 		}
-		
+
 		// Make sure instances are not disturbed
 		if(checkCounts) {
 			Assert.assertEquals(rootNodeNames, actorOp.rootInstances.map[node | node.name].sort)

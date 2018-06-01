@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -71,7 +71,7 @@ import java.util.Arrays
  */
 class FilesManager {
 
-	private static val BUFFER_SIZE = 1024
+	static val BUFFER_SIZE = 1024
 
 	/**
 	 * Returns the File found at the given path
@@ -81,7 +81,7 @@ class FilesManager {
 	 * @param bundleFilter
 	 * 			A filter to indicate in which bundle to look for
 	 */
-	public static def File getFile(String path, String bundleFilter) {
+	static def File getFile(String path, String bundleFilter) {
 		val sanitizedPath = path.sanitize
 		val file = new File(sanitizedPath)
 		if(file !== null && file.exists) return file else return null

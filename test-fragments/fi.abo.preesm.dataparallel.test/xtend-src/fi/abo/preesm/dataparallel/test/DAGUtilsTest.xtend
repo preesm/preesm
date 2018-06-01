@@ -50,15 +50,15 @@ import fi.abo.preesm.dataparallel.test.util.Util
 
 /**
  * Property based test for {@link DAGUtils#findVertex}
- * 
+ *
  * @author Sudeep Kanur
  */
 @RunWith(Parameterized)
 class DAGUtilsTest {
 	val SDFGraph hsdf
-	
+
 	val SDFGraph dag
-	
+
 	/**
 	 * Has the following parameters from {@link Util#provideAllGraphs}:
 	 * <ol>
@@ -70,7 +70,7 @@ class DAGUtilsTest {
 		this.hsdf = hsdf
 		this.dag = dag
 	}
-	
+
 	/**
 	 * Generates the following parameters from {@link Util#provideAllGraphs}:
 	 * <ol>
@@ -79,9 +79,9 @@ class DAGUtilsTest {
 	 * </ol>
 	 */
 	@Parameterized.Parameters
-	public static def Collection<Object[]> instancesToTest() {
+	static def Collection<Object[]> instancesToTest() {
 		val parameters = newArrayList
-		
+
 		Util.provideAllGraphs
 			.forEach[ sdf |
 				val dagGen = new SDF2DAG(sdf)
@@ -89,10 +89,10 @@ class DAGUtilsTest {
 				sdf.accept(toHSDF)
 				parameters.add(#[toHSDF.output, dagGen.outputGraph])
 			]
-		
+
 		return parameters
 	}
-	
+
 	/**
 	 * Vertices in each graphs have unique names
 	 * <p>
@@ -100,28 +100,28 @@ class DAGUtilsTest {
 	 * <i>Strong Test</i>
 	 */
 	@org.junit.Test
-	public def void nameAreUnique() {
+	def void nameAreUnique() {
 		val hsdfNameList = newArrayList
-		hsdf.vertexSet.forEach[vertex | 
+		hsdf.vertexSet.forEach[vertex |
 			Assert.assertTrue(!hsdfNameList.contains(vertex.name))
 			hsdfNameList.add(vertex.name)
 		]
-		
+
 		val dagNameList = newArrayList
 		dag.vertexSet.forEach[vertex |
 			Assert.assertTrue(!dagNameList.contains(vertex.name))
 			dagNameList.add(vertex.name)
 		]
 	}
-	
+
 	/**
 	 * All vertices, except implode/explode of SrSDF should also exist in DAG
 	 * <p>
 	 * <i>Weak Test</i>
 	 */
 	@org.junit.Test
-	public def void hsdfAndDAGareSame() {
-		
+	def void hsdfAndDAGareSame() {
+
 		// Check every vertex of hsdf is in dag
 		hsdf.vertexSet.forEach[vertex |
 			val dagVertex = DAGUtils.findVertex(vertex, hsdf, dag)
@@ -129,9 +129,9 @@ class DAGUtilsTest {
 				Assert.assertFalse(dagVertex === null)
 			}
 		]
-		
+
 		// Check every vertex of dag is in hsdf
-		dag.vertexSet.forEach[vertex | 
+		dag.vertexSet.forEach[vertex |
 			val hsdfVertex = DAGUtils.findVertex(vertex, dag, hsdf)
 			if(! (vertex instanceof SDFForkVertex) && !(vertex instanceof SDFJoinVertex)) {
 				Assert.assertFalse(hsdfVertex === null)

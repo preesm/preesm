@@ -13,6 +13,9 @@ notifications:
   email:
     on_success: change
     on_failure: always
+  slack:
+    rooms:
+      - vaader-ietr:EEtUq0RrGRpHSXWZiEApSDwS#preesm
 
 addons:
   sonarcloud:

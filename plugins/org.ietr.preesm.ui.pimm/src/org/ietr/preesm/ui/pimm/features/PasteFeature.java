@@ -393,10 +393,9 @@ public class PasteFeature extends AbstractPasteFeature {
     }
 
     final PiGraph pigraph = getPiGraph();
-    final EList<Dependency> dependencies = pigraph.getDependencies();
 
     final List<Dependency> newDependencies = new LinkedList<>();
-    for (final Dependency dep : dependencies) {
+    for (final Dependency dep : pigraph.getDependencies()) {
       final ConfigInputPort getter = dep.getGetter();
       if (originalParameterizable.getConfigInputPorts().contains(getter)) {
         final ISetter setter = dep.getSetter();
@@ -414,7 +413,7 @@ public class PasteFeature extends AbstractPasteFeature {
     }
 
     for (final Dependency newDep : newDependencies) {
-      dependencies.add(newDep);
+      pigraph.addDependency(newDep);
       addGraphicalRepresentationForDependency(newDep);
     }
   }

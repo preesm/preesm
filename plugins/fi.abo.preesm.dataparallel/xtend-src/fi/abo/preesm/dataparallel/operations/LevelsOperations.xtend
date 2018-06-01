@@ -53,31 +53,31 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph
  * DAG Operation to obtain the level set of a DAG.
  * Use {@link OperationsUtils} to obtain level sets and other information
  * that can be gleamed from levels.
- * 
+ *
  * @author Sudeep Kanur
  */
 class LevelsOperations implements DAGCommonOperations {
-	
-	private var SDFGraph dag
-	
-	private var List<SDFAbstractVertex> seenNodes
-	
-	private var DAGTopologicalIteratorInterface iterator
-	
-	private var Map<SDFAbstractVertex, List<SDFAbstractVertex>> instanceSources
-	
-	private var Map<SDFAbstractVertex, SDFAbstractVertex> forkJoinOrigInstance
-	
+
+	var SDFGraph dag
+
+	var List<SDFAbstractVertex> seenNodes
+
+	var DAGTopologicalIteratorInterface iterator
+
+	var Map<SDFAbstractVertex, List<SDFAbstractVertex>> instanceSources
+
+	var Map<SDFAbstractVertex, SDFAbstractVertex> forkJoinOrigInstance
+
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	val Map<SDFAbstractVertex, Integer> levels
-	
+
 	new() {
 		levels = newLinkedHashMap
 		instanceSources = newLinkedHashMap
 	}
-	
+
 	/**
-	 * Helper function to compute all the levels. 
+	 * Helper function to compute all the levels.
 	 * The computation leverages the fact that only those instances
 	 * seen in a DAG is considered. Hence, the implementation is safe
 	 * for a pure DAG as well as a subset of a DAG.
@@ -100,19 +100,19 @@ class LevelsOperations implements DAGCommonOperations {
 				}
 			}
 		}
-		
+
 		// Properly set the implode and explode according to the level of its original
 		levels.keySet.forEach[node |
-			if(forkJoinOrigInstance.keySet.contains(node)) 
+			if(forkJoinOrigInstance.keySet.contains(node))
 				levels.put(node, levels.get(forkJoinOrigInstance.get(node)))
 		]
 	}
-	
+
 	/**
 	 * Visitor method to compute levels of a {@link SDF2DAG} instance.
 	 * <p>
 	 * Use {@link LevelsOperations#levels} to get the levels computed.
-	 * 
+	 *
 	 * @param dagGen A {@link SDF2DAG} instance
 	 */
 	override visit(SDF2DAG dagGen) {
@@ -123,10 +123,10 @@ class LevelsOperations implements DAGCommonOperations {
 		instanceSources.putAll(iterator.instanceSources)
 		computeAllLevels
 	}
-	
+
 	/**
 	 * Visitor method to compute levels of a {@link DAGSubset} instance.
-	 * <p> 
+	 * <p>
 	 * Use {@link LevelsOperations#levels} to get the levels computed.
 	 * <p>
 	 * @param dagGen A {@link DAGSubset} instance
@@ -134,7 +134,7 @@ class LevelsOperations implements DAGCommonOperations {
 	override visit(DAGSubset dagGen) {
 		dag = dagGen.inputGraph
 		seenNodes = dagGen.seenNodes
-		
+
 		// Get the root node and subsequently the iterator
 		val rootVisitor = new RootExitOperations()
 		dagGen.accept(rootVisitor)
@@ -145,18 +145,18 @@ class LevelsOperations implements DAGCommonOperations {
 			throw new DAGComputationBug("Root instances set cannot be empty")
 		}
 		val rootNode = rootNodes.get(0)
-		
+
 		iterator = new SubsetTopologicalIterator(dagGen.originalDAG, rootNode)
 		forkJoinOrigInstance = dagGen.explodeImplodeOrigInstances
 		instanceSources.putAll(new DAGTopologicalIterator(dagGen.originalDAG).instanceSources)
 		computeAllLevels
 	}
-	
+
 	/**
 	 * Visitor method to compute levels of a {@link DAG2DAG} instance.
 	 * <p>
 	 * Use {@link LevelsOperations#levels} to get the levels computed.
-	 * 
+	 *
 	 * @param dagGen A {@link DAG2DAG} instance
 	 */
 	override visit(DAG2DAG dagGen) {
@@ -165,7 +165,7 @@ class LevelsOperations implements DAGCommonOperations {
 		iterator = new DAGTopologicalIterator(dagGen)
 		forkJoinOrigInstance = dagGen.explodeImplodeOrigInstances
 		instanceSources.putAll(iterator.instanceSources)
-		computeAllLevels	
+		computeAllLevels
 	}
-	
+
 }
