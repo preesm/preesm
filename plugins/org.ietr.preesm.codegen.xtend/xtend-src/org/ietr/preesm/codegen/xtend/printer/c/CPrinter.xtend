@@ -384,7 +384,6 @@ class CPrinter extends DefaultPrinter {
 		 *
 		 */
 		// no monitoring by default
-		#define _PREESM_MONITOR_INIT
 		#define _GNU_SOURCE
 		#ifdef _WIN32
 		#include <windows.h>
