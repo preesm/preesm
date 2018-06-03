@@ -198,7 +198,7 @@ public class PiParser {
       // Fill the graph with parsed information
       parsePi(rootElt, graph);
     } catch (final RuntimeException e) {
-      throw new PiGraphException("Could not parse the input graph", e);
+      throw new PiGraphException("Could not parse the input graph: \n" + e.getMessage(), e);
     }
 
     return graph;
@@ -571,6 +571,10 @@ public class PiParser {
 
     if (delay.getLevel().equals(PersistenceLevel.PERMANENT) && ((setter != null) || (getter != null))) {
       throw new PiGraphException("Delay with global persistence can not be connected to a setter nor a getter actor.");
+    }
+
+    if (((setter != null) && (getter == null)) || ((getter != null) && (setter == null))) {
+      throw new PiGraphException("Asymetric configuration for delay setter / getter actor is not yet supported.\nPlease Contact PREESM developers.");
     }
 
     // 7. Add the refinement for the INIT of the delay (if it exists)
