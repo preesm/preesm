@@ -117,7 +117,9 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
     Connection preConnection = null;
     for (final Connection connection : incomingConnections) {
       final Object obj = getBusinessObjectForPictogramElement(connection);
-      if (obj instanceof Fifo) {
+      // With setter delay, there can be multiple FIFOs
+      // We have to choose the correct one
+      if (obj instanceof Fifo && (((Fifo) obj).getDelay() != null)) {
         preConnection = connection;
         break;
       }
@@ -125,8 +127,22 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
     if (preConnection == null) {
       throw new IllegalStateException();
     }
-    // There is only one outgoing connection, the Fifo one.
-    final Connection postConnection = cba.getOutgoingConnections().get(0);
+    // There may be multiple connections if the delay has a getter
+    final List<Connection> outgoingConnections = cba.getOutgoingConnections();
+    Connection postConnection = null;
+    // We look for the connection with the same object as the pre connection
+    final Object preConnectionObj = getBusinessObjectForPictogramElement(preConnection);
+    for (final Connection connection : outgoingConnections) {
+      final Object obj = getBusinessObjectForPictogramElement(connection);
+      if (obj == preConnectionObj) {
+        postConnection = connection;
+        break;
+      }
+    }
+
+    if (postConnection == null) {
+      throw new IllegalStateException();
+    }
 
     // Copy the bendpoints to the unique remaining connection.
     // Reconnect it.
