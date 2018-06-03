@@ -206,7 +206,12 @@ class PiGraph extends AbstractActor, Graph {
 	op unique boolean removeActor(AbstractActor actor) {
 		vertices.remove(actor);
 	}
-
+	
+	op unique boolean removeDelay(Delay delay) {
+		removeActor(delay.actor)
+		vertices.remove(delay)
+	}
+	
 	op unique Parameter[] getOnlyParameters(){
 		return parameters.filter(it | !((it instanceof ConfigInputInterface) || (it instanceof ConfigOutputInterface) )).toEList.unmodifiableView
 	}
