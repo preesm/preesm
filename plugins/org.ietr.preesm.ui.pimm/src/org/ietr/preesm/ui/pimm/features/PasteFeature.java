@@ -341,6 +341,10 @@ public class PasteFeature extends AbstractPasteFeature {
     customContext.setLocation(connectionMidpoint.getX(), connectionMidpoint.getY());
     addDelayFeature.execute(customContext);
 
+    // Remove the secondary delay that was created in addDelayFeature
+    copiedFifo.getContainingPiGraph().removeDelay(copiedFifo.getDelay());
+    copiedFifo.setDelay(null);
+
     // one delay is created during the addDelayFeature: overwrite it with the copy
     copiedFifo.setDelay(delayCopy);
 
