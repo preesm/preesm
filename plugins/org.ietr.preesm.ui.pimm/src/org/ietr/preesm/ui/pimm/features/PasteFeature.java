@@ -269,7 +269,7 @@ public class PasteFeature extends AbstractPasteFeature {
     if (targetParameterizable instanceof AbstractVertex) {
       targetOk = this.copiedObjects.containsKey(targetParameterizable);
     } else if (targetParameterizable instanceof Delay) {
-      final Fifo fifo = (Fifo) targetParameterizable.eContainer();
+      final Fifo fifo = ((Delay) targetParameterizable).getContainingFifo();
       final EObject fifoSource = fifo.getSourcePort().eContainer();
       final EObject fifoTarget = fifo.getTargetPort().eContainer();
       targetOk = this.copiedObjects.containsKey(fifoSource) && this.copiedObjects.containsKey(fifoTarget);
