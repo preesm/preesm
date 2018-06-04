@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Fix Prees about page in product;
 
 ### Bug fix
 
