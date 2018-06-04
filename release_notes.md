@@ -8,6 +8,7 @@ PREESM Changelog
 
 ### Changes
 * Fix Prees about page in product;
+* Fix Spider code generation to make it compatible with latest spider version;
 
 ### Bug fix
 

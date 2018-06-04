@@ -58,6 +58,7 @@ class SpiderMainFilePrinter {
 
 	#include <stdio.h>
 	#include <stdlib.h>
+	#include <stdexcept>
 
 	/* Include your files here */
 	«FOR actor : pg.actorsWithRefinement»
@@ -176,7 +177,6 @@ class SpiderMainFilePrinter {
 		cfg.verbose = false;
 		cfg.traceEnabled = false;
 		cfg.useGraphOptim = true;
-		cfg.useActorPrecedence = true;
 
 		try {
 			// Spider initialisation
@@ -209,22 +209,20 @@ class SpiderMainFilePrinter {
 					printf("SPIDER overhead time: %lf ms\n",  stat.schedTime / 1000000.);
 				}
 			}
+			
+			printf("finished\n");
+	
+			// PiSDF graph destruction
+			free_«pg.name»();
+	
+			Spider::clean();
+			
+			// Actor finalisation here if needed
+			
 		} catch(std::exception &e) {
 			printf("Exception : %s\n", e.what());
 		}
-
-		printf("finished\n");
-
-		// PiSDF graph destruction
-		free_«pg.name»();
-
-		Spider::clean();
-
-		/* Actor finalisation here if needed */
-
-
-
-
+		
 		return 0;
 	}
 
