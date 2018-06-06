@@ -6,6 +6,11 @@ import org.ietr.preesm.mapper.schedule.Schedule;
 import org.junit.Assert;
 import org.junit.Test;
 
+/**
+ *
+ * @author anmorvan
+ *
+ */
 public class JsonParserTest {
 
   @Test

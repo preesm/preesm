@@ -9,57 +9,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
-class ScheduleEntry {
-  @JsonProperty(required = true)
-  String actorName;
-
-  @JsonProperty(required = true)
-  int singleRateInstanceNumber;
-
-  @JsonProperty(required = true)
-  int start;
-
-  @JsonProperty(required = false)
-  int startN;
-
-  @JsonProperty(required = true)
-  int end;
-
-  @JsonProperty(required = false)
-  int endN;
-
-  @JsonProperty(required = false)
-  int core;
-
-  @JsonProperty(required = true)
-  String processingElementName;
-
-  @JsonProperty(required = false)
-  int graphIteration;
-
-}
-
-class BufferEntity {
-  @JsonProperty(required = true)
-  String producer;
-  @JsonProperty(required = true)
-  String consumer;
-
-  @JsonProperty(required = true)
-  double initValue;
-  @JsonProperty(required = true)
-  double initValueN;
-}
-
-class ActorEntity {
-  @JsonProperty(required = true)
-  String actor;
-  @JsonProperty(required = true)
-  double delay;
-  @JsonProperty(required = true)
-  int    repeat;
-}
-
+/**
+ *
+ */
 public class Schedule {
 
   private static final String read(final File fileName) throws IOException {
@@ -74,16 +26,25 @@ public class Schedule {
     return sb.toString();
   }
 
+  /**
+   *
+   */
   public static final Schedule parseJsonFile(final File inputJsonFile) throws IOException {
     final String fileContent = Schedule.read(inputJsonFile);
     return Schedule.parseJsonString(fileContent);
   }
 
+  /**
+   *
+   */
   public static final Schedule parseJsonString(final String inputJsonString) throws IOException {
     final ObjectMapper mapper = new ObjectMapper();
     return mapper.readValue(inputJsonString, Schedule.class);
   }
 
+  /**
+   *
+   */
   public static final String unparseSchedule(final Schedule schedule) throws JsonProcessingException {
     final ObjectMapper mapper = new ObjectMapper();
     return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schedule);
