@@ -627,9 +627,9 @@ Version 1.0 dated 2006-09-05.]]>
       <import feature="org.eclipse.cdt"/>
 
       <!-- IETR dependencies -->
-      <import feature="org.ietr.externaldeps.aio.deps" version="3.0.0" match="greaterOrEqual"/>
-      <import feature="org.ietr.graphiti.feature" version="1.6.0" match="greaterOrEqual"/>
-      <import feature="org.ietr.dftools.feature" version="1.7.2" match="greaterOrEqual"/>
+      <import feature="org.ietr.externaldeps.aio.deps" version="3.2.0" match="compatible"/>
+      <import feature="org.ietr.graphiti.feature" version="1.8.0" match="compatible"/>
+      <import feature="org.ietr.dftools.feature" version="1.7.2" match="compatible"/>
       <!--
 		If building along with Graphiti and/or DFTools source (without Preesm Meta
 		Dev Feature), the following features are not available. That is because the
