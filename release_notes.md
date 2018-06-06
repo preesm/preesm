@@ -10,6 +10,7 @@ PREESM Changelog
 * Fix Prees about page in product;
 * Fix Spider code generation to make it compatible with latest spider version;
 * Fix dependency creation via UI: show warning when trying to drop the end of a dependency on an interface;
+* Cleanup code;
 
 ### Bug fix
 
