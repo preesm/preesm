@@ -46,6 +46,7 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
@@ -53,6 +54,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
@@ -275,6 +277,13 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 
     // Re-check if getter and setter are non-null (in case a port creation
     // failed or was aborted)
+
+    if (getter instanceof DataPort) {
+      MessageDialog.openWarning(null, "Preesm Error", "Can not connect dependencies to data ports. Try connecting the dependency to the containing actor.\n"
+          + "\nNote: if you are trying to connect the dependency to an interface, drop its end on the interface name.");
+      return null;
+    }
+
     if ((getter != null) && (setter != null)) {
       // Create new business object
       final Dependency dependendy = createDependency(setter, (ConfigInputPort) getter);

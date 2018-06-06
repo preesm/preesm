@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2017) :
+    Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) :
 
-    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
     Julien Heulot <julien.heulot@insa-rennes.fr> (2015)
 
     This software is a computer program whose purpose is to help prototyping
@@ -79,6 +79,20 @@
                name="preferenceCustomization"
                value="plugin_customization.ini">
          </property>
+         <property
+				name="aboutText"
+				value="PREESM ['prɪzəm] is an open source rapid prototyping tool. It simulates signal processing applications and generates code for heterogeneous multi/many-core embedded systems. Its dataflow language eases the description of parallel signal processing applications.
+
+PREESM is released under the CeCILL-C License.
+
+Please visit our webpage for more info : http://preesm.org/
+"/>
+		<property
+				name="aboutImage"
+				value="icons/preesmLogo_48x48.bmp"/>
+
+
+
       </product>
    </extension>
 </plugin>

@@ -1,6 +1,24 @@
 PREESM Changelog
 ================
 
+## Release version 2.12.3
+*2018.06.06*
+
+### New Feature
+
+### Changes
+* Fix Prees about page in product;
+* Fix Spider code generation to make it compatible with latest spider version;
+* Fix dependency creation via UI: show warning when trying to drop the end of a dependency on an interface;
+* Cleanup code;
+* Add upper version (exclusive) in dependencies:
+  * Update ExternalDeps to [3.2.0,4.0.0);
+  * Update Graphiti to [1.8.0,2.0.0);
+  * Update DFTools to [1.7.3,2.0.0);
+
+### Bug fix
+
+
 ## Release version 2.12.2
 *2018.06.01*
 
