@@ -500,6 +500,8 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
         append(aaTimings.get(coreType));
         append("\");\n");
       }
+    } else {
+    	WorkflowLogger.getLogger().log(Level.WARNING, "Actor " + aa.getName() + " does not have timing information.");
     }
 
     append("\n");

@@ -105,7 +105,13 @@ public final class SpiderNameGenerator {
    * @return the method name
    */
   public static String getMethodName(final PiGraph pg) {
-    return pg.getName();
+    String finalName = pg.getName();
+    PiGraph containingPiGraph = pg.getContainingPiGraph();
+    while (containingPiGraph != null) {
+      finalName = containingPiGraph.getName() + "_" + finalName;
+      containingPiGraph = containingPiGraph.getContainingPiGraph();
+    }
+    return finalName;
   }
 
   /**
@@ -116,7 +122,7 @@ public final class SpiderNameGenerator {
    * @return the function name
    */
   public static String getFunctionName(final AbstractActor aa) {
-    return ((PiGraph) aa.eContainer()).getName() + "_" + aa.getName();
+    return getMethodName(aa.getContainingPiGraph()) + "_" + aa.getName();
   }
 
   /**
