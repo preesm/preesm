@@ -440,7 +440,7 @@ class CPrinter extends DefaultPrinter {
 
 		int main(void) {	
 			#ifdef _PREESM_MONITOR_INIT
-			mkdir("papify-output", 0777); 
+			mkdir("papify-output", 0777);
 			event_init_multiplex();
 			#endif
 			// Declaring thread pointers
@@ -471,6 +471,9 @@ class CPrinter extends DefaultPrinter {
 			for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
 				pthread_join(coreThreads[i], NULL);
 			}
+			#ifdef _PREESM_MONITOR_INIT
+			event_destroy();
+			#endif
 
 			return 0;
 		}
