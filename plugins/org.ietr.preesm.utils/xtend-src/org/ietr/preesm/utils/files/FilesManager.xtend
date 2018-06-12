@@ -37,28 +37,27 @@ package org.ietr.preesm.utils.files;
 
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
+import java.io.BufferedReader
 import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
+import java.io.InputStreamReader
 import java.io.PrintStream
 import java.net.MalformedURLException
 import java.net.URI
 import java.net.URISyntaxException
 import java.net.URL
+import java.util.Arrays
 import java.util.Collections
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import org.eclipse.core.runtime.Assert
-import org.eclipse.core.runtime.FileLocator
-import org.osgi.framework.FrameworkUtil
 
 import static org.ietr.preesm.utils.files.Result.*
-import java.util.Arrays
 
 /**
  * Utility class to manipulate files. It brings everything needed to extract files
@@ -281,32 +280,8 @@ class FilesManager {
 	 * @return
 	 * 			An URL for an existing file, or null
 	 */
-	def static URL getUrl(String path, String bundleFilter) throws MalformedURLException , IOException {
-
-		// Search in all reachable bundles for the given path resource
-		val bundle = FrameworkUtil::getBundle(FilesManager)
-		val url = if (bundle !== null) {
-				val bundles = Arrays.asList(bundle.bundleContext.bundles)
-				bundles
-					// Search only in plugins containing the bundleFilter String
-				.filter[symbolicName.contains(bundleFilter)]
-					// We want an URL to the resource
-				.map[getEntry(path)]
-					// We keep the first URL not null (we found the resource)
-				.findFirst[it !== null]
-			}
-			// Fallback, we are not in a bundle context (maybe unit tests execution?),
-			// we use the default ClassLoader method. The problem with this method is
-			// that it is not possible to locate resources in other jar archives (even
-			// if they are in the classpath)
-			else {
-				FilesManager.getResource(path)
-			}
-
-		if (#["bundle", "bundleresource", "bundleentry"].contains(url?.protocol?.toLowerCase))
-			return FileLocator.resolve(url)
-		else
-			return url
+	def static URL getUrl(String path, String ... bundleNames) throws MalformedURLException , IOException {
+		return URLResolver.findFirstInPluginList(path, bundleNames);
 	}
 
 	/**
@@ -410,41 +385,20 @@ class FilesManager {
 	 * @throws FileNotFoundException
 	 * 			If the file doesn't exists
 	 */
-	static def String readFile(String path, String bundleFilter) throws IOException , URISyntaxException {
-
-		val url = getUrl(path, bundleFilter)
+	static def String readFile(String path, String ... bundleNames) throws IOException , URISyntaxException {
+		val url = getUrl(path, bundleNames)
 		if (url === null) {
 			throw new FileNotFoundException(path)
 		}
-
-		val inputStream = if (url.protocol.equals("jar")) {
-				val splittedURL = Arrays.asList(url.file.split("!"))
-				val jar = new JarFile(splittedURL.head.substring(5))
-				val entryPath = splittedURL.last
-				val updatedPath = if (entryPath.startsWith("/")) {
-						entryPath.substring(1)
-					} else {
-						path
-					}
-				val res = jar.getInputStream(jar.getEntry(updatedPath))
-				jar.close
-				res
-			} else {
-				new FileInputStream(new File(url.toURI))
-			}
-
-		var readLength = 0
-		var buffer = newByteArrayOfSize(BUFFER_SIZE)
-
-		val bufferedInput = new BufferedInputStream(inputStream)
-		val outputStream = new ByteArrayOutputStream
-
-		while ((readLength = bufferedInput.read(buffer)) != -1) {
-			outputStream.write(buffer, 0, readLength)
+		var InputStream in = url.openStream()
+		var BufferedReader reader = new BufferedReader(new InputStreamReader(in))
+		var StringBuilder builder;
+		var String line;
+		while ((line = reader.readLine()) !== null) {
+			builder.append(line+"\n");
 		}
-
-		bufferedInput.close
-		return outputStream.toString
+		reader.close();
+		return builder.toString
 	}
 
 	/**

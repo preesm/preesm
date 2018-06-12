@@ -45,6 +45,7 @@ import bsh.ParseException
 import java.io.File
 import java.io.IOException
 import java.net.URISyntaxException
+import java.net.URL
 import java.util.ArrayList
 import java.util.LinkedHashMap
 import java.util.List
@@ -52,10 +53,8 @@ import java.util.Map
 import java.util.Set
 import java.util.logging.Level
 import java.util.logging.Logger
-import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.runtime.CoreException
 import org.eclipse.core.runtime.IPath
-import org.eclipse.core.runtime.Path
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.ietr.dftools.algorithm.model.dag.DAGEdge
 import org.ietr.dftools.algorithm.model.dag.DAGVertex
@@ -73,14 +72,11 @@ import org.ietr.dftools.workflow.WorkflowException
 import org.ietr.dftools.workflow.tools.WorkflowLogger
 import org.ietr.preesm.core.scenario.PreesmScenario
 import org.ietr.preesm.core.types.DataType
-import org.ietr.preesm.memory.script.Buffer
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex
-import org.ietr.preesm.utils.files.ContainersManager
-import org.ietr.preesm.utils.files.FilesManager
+import org.ietr.preesm.utils.files.URLResolver
 
 import static extension org.ietr.preesm.memory.script.Range.*
-import org.ietr.dftools.algorithm.model.AbstractEdge
 
 enum CheckPolicy {
 	NONE,
@@ -101,19 +97,11 @@ class ScriptRunner {
 	// Name of bundle where to look for files (allow not to search into all projects)
 	public static final String bundleId = "org.ietr.preesm.memory"
 
-	// Name of the IProject where to extract script files
-	public static final String tmpProjectName = bundleId + "." + "temporary"
-
-	// Name of the IFolder where to extract script files
-	public static final String tmpFolderPath = IPath.SEPARATOR + SCRIPT_FOLDER + IPath.SEPARATOR
-
-	public static final String copiedScriptsPath = tmpProjectName + IPath.SEPARATOR + tmpFolderPath
-
 	// Paths to the special scripts files
-	public static final String JOIN = copiedScriptsPath + JOIN_SCRIPT
-	public static final String FORK = copiedScriptsPath + FORK_SCRIPT
-	public static final String ROUNDBUFFER = copiedScriptsPath + ROUNDBUFFER_SCRIPT
-	public static final String BROADCAST = copiedScriptsPath + BROADCAST_SCRIPT
+	public static final String JOIN = SCRIPT_FOLDER + IPath.SEPARATOR + JOIN_SCRIPT
+	public static final String FORK = SCRIPT_FOLDER + IPath.SEPARATOR + FORK_SCRIPT
+	public static final String ROUNDBUFFER = SCRIPT_FOLDER + IPath.SEPARATOR + ROUNDBUFFER_SCRIPT
+	public static final String BROADCAST = SCRIPT_FOLDER + IPath.SEPARATOR + BROADCAST_SCRIPT
 
 	/**
 	 * Helper method to get the incoming {@link SDFEdge}s of an {@link
@@ -153,7 +141,7 @@ class ScriptRunner {
 	 * A {@link Map} that associates each {@link DAGVertex} with a
 	 * memory script to this memory script {@link File}.
 	 */
-	val scriptedVertices = new LinkedHashMap<DAGVertex, File>();
+	val scriptedVertices = new LinkedHashMap<DAGVertex, URL>();
 
 	/**
 	 * Each {@link List} of {@link Buffer} stored in this {@link List}
@@ -193,8 +181,11 @@ class ScriptRunner {
 
 			// Do the checks
 			val invalidVertices = newArrayList
-			scriptResults.forEach[vertex, result|
-				if(!checkResult(scriptedVertices.get(vertex), result)) invalidVertices.add(vertex)]
+			scriptResults.forEach[vertex, result| {
+				val URL dingenskirchen = scriptedVertices.get(vertex)
+				if(!checkResult(dingenskirchen, result))
+					invalidVertices.add(vertex)
+			}]
 
 			// Remove invalid results
 			invalidVertices.forEach[scriptResults.remove(it)]
@@ -231,7 +222,7 @@ class ScriptRunner {
 	 * @return <code>true</code> if all checks were valid, <code>false</code>
 	 *         otherwise.
 	 */
-	def boolean checkResult(File script, Pair<List<Buffer>, List<Buffer>> result) {
+	def boolean checkResult(URL script, Pair<List<Buffer>, List<Buffer>> result) {
 		val allBuffers = new ArrayList<Buffer>
 		allBuffers.addAll(result.key)
 		allBuffers.addAll(result.value)
@@ -346,15 +337,12 @@ class ScriptRunner {
 
 		// Create temporary containers for special scripts files
 		// and extract special script files and fill the map with it
-		val project = ContainersManager.createProject(tmpProjectName)
-		ContainersManager.createFolderInto(tmpFolderPath, project)
-		FilesManager.extract(tmpFolderPath, tmpProjectName, bundleId)
 
 		// Special scripts files
-		val specialScriptFiles = new LinkedHashMap<String, File>()
+		val specialScriptFiles = new LinkedHashMap<String, URL>()
 
 		// Script files already found
-		val scriptFiles = new LinkedHashMap<String, File>();
+		val scriptFiles = new LinkedHashMap<String, URL>();
 
 		putSpecialScriptFile(specialScriptFiles, JOIN, bundleId)
 		putSpecialScriptFile(specialScriptFiles, FORK, bundleId)
@@ -362,12 +350,6 @@ class ScriptRunner {
 		putSpecialScriptFile(specialScriptFiles, BROADCAST, bundleId)
 
 		// Retrieve the original sdf folder
-		val workspace = ResourcesPlugin.getWorkspace
-		val root = workspace.getRoot
-
-		// Logger is used to display messages in the console
-		val logger = WorkflowLogger.getLogger
-
 		// Identify all actors with a memory Script
 		for (dagVertex : dag.vertexSet) {
 			val sdfVertex = dagVertex.propertyBean.getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex)
@@ -380,14 +362,12 @@ class ScriptRunner {
 							// Retrieve the script path as a relative path to the
 							// graphml
 							var scriptFile = scriptFiles.get(pathString)
-							if (scriptFile === null)
-								scriptFile = root.getFile(new Path(pathString)).rawLocation.makeAbsolute.toFile
-							if (scriptFile.exists) {
-								scriptedVertices.put(dagVertex, scriptFile)
+							if (scriptFile === null) {
+								scriptFile = URLResolver.findFirst(pathString)
+							}
+							if (scriptFile !== null) {
 								scriptFiles.put(pathString, scriptFile)
-							} else {
-								val message = "Memory script of vertex " + dagVertex.getName() + " is invalid: \"" +pathString + "\". Change it in the graphml editor."
-								logger.log(Level.WARNING, message)
+								scriptedVertices.put(dagVertex, scriptFile)
 							}
 						}
 					}
@@ -408,9 +388,6 @@ class ScriptRunner {
 			}
 		}
 
-		// Remove all temporary objects (containers created, files extracted)
-		ContainersManager.deleteProject(project)
-
 		return scriptedVertices.size
 	}
 
@@ -418,9 +395,8 @@ class ScriptRunner {
 	 * Associate a script file to a special DAGVertex if this script file have been extracted,
 	 * display an error otherwise
 	 */
-	private def void associateScriptToSpecialVertex(DAGVertex dagVertex, String vertexName, File scriptFile) {
-
-		if (scriptFile === null || !scriptFile.exists) {
+	private def void associateScriptToSpecialVertex(DAGVertex dagVertex, String vertexName, URL scriptFile) {
+		if (scriptFile === null) {
 			val message = "Memory script [" + scriptFile + "] of [" + vertexName + "] vertices not found. Please contact Preesm developers."
 
 			throw new IllegalStateException(message);
@@ -432,8 +408,8 @@ class ScriptRunner {
 	/**
 	 * Get the special script file at the right path and put it into the map
 	 */
-	private def void putSpecialScriptFile(Map<String, File> specialScriptFiles, String filePath, String bundleFilter) {
-		var File file = FilesManager.getFile(filePath, bundleFilter)
+	private def void putSpecialScriptFile(Map<String, URL> specialScriptFiles, String filePath, String bundleFilter) {
+		var URL file = URLResolver.findFirstInPluginList(filePath, #[bundleFilter])
 		if(file !== null) specialScriptFiles.put(filePath, file)
 	}
 
@@ -1584,11 +1560,13 @@ class ScriptRunner {
 	def void run() throws EvalError {
 		// For each vertex with a script
 		for (e : scriptedVertices.entrySet) {
-			runScript(e.key, e.value)
+			val key = e.key
+			val value = e.value
+			runScript(key, value)
 		}
 	}
 
-	def void runScript(DAGVertex dagVertex, File script) throws EvalError {
+	def void runScript(DAGVertex dagVertex, URL script) throws EvalError {
 		val interpreter = new Interpreter();
 
 		// TODO : isolate Interpreter initializatino
@@ -1605,8 +1583,8 @@ class ScriptRunner {
 
 		parameters.put("alignment", alignment)
 
-		// Create the input/output lists	
-		// @farresti: I use toSet instead of toList as it retrieves the unique reference of the edge	
+		// Create the input/output lists
+		// @farresti: I use toSet instead of toList as it retrieves the unique reference of the edge
 		val incomingEdges = dagVertex.incomingEdges.map[it.aggregate.map[edge | (edge as DAGEdge)]].flatten.toSet
 		val inputs = incomingEdges.map[
 			val dataType = it.propertyBean.getValue(SDFEdge::DATA_TYPE)
@@ -1623,7 +1601,7 @@ class ScriptRunner {
 					'''SDFEdge «it.source.name»_«it.sourceLabel»->«it.target.name»_«it.targetLabel» has unknows type «
 						dataType.toString». Add the corresponding data type to the scenario.''', exc)
 			}].toList
-			
+
 		val outgoingEdges = dagVertex.outgoingEdges.map[it.aggregate.map[edge | (edge as DAGEdge)]].flatten.toSet
 		val outputs = outgoingEdges.map[
 			val dataType = it.propertyBean.getValue(SDFEdge::DATA_TYPE)
@@ -1663,8 +1641,10 @@ class ScriptRunner {
 			interpreter.set("outputs", outputs)
 		try {
 
+
 			// Run the script
-			interpreter.source(script.absolutePath);
+			val readURL = URLResolver.readURL(script)
+			interpreter.eval(readURL)
 
 			// Store the result if the execution was successful
 			scriptResults.put(dagVertex, inputs -> outputs)
