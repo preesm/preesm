@@ -79,7 +79,7 @@
     <findbugs-version>3.0.4</findbugs-version>
     <sonar-version>3.3.0.603</sonar-version>
     <rcptt-version>2.2.0</rcptt-version>
-    <checkstyle-version>8.8</checkstyle-version>
+    <checkstyle-version>8.10</checkstyle-version>
     <preesm.coding.policy.version>1.2.4</preesm.coding.policy.version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

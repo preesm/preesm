@@ -69,7 +69,7 @@
         <repository>
           <id>Checkstyle</id>
           <layout>p2</layout>
-          <url>http://eclipse-cs.sf.net/update/</url>
+          <url>https://dl.bintray.com/eclipse-cs/eclipse-cs/8.10.0/</url>
         </repository>
         <repository>
           <id>Sonarlint</id>

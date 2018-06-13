@@ -584,7 +584,7 @@ Version 1.0 dated 2006-09-05.]]>
       <discovery label="M2E Code Quality Connectors" url="http://m2e-code-quality.github.io/m2e-code-quality/site/latest/"/>
       <discovery label="M2E Settings Connectors" url="https://preesm.github.io/m2e-settings/site/"/>
       <!-- Checkstyle main repos -->
-      <discovery label="Checkstyle" url="http://eclipse-cs.sf.net/update/"/>
+      <discovery label="Checkstyle" url="https://dl.bintray.com/eclipse-cs/eclipse-cs/8.10.0/"/>
       <!-- Sonarlint main repos -->
       <discovery label="Sonarlint" url="http://eclipse.sonarlint.org/"/>
 
