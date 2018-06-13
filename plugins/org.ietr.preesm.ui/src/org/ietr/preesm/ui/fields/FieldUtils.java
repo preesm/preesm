@@ -8,12 +8,18 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Text;
 
+/**
+ *
+ */
 public class FieldUtils {
 
   private FieldUtils() {
     // disallow instantiation
   }
 
+  /**
+   *
+   */
   public static final boolean testPathValidInWorkspace(String textFieldContent) {
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
     final IWorkspaceRoot root = workspace.getRoot();
@@ -21,6 +27,9 @@ public class FieldUtils {
     return findMember != null;
   }
 
+  /**
+   *
+   */
   public static final void colorRedOnCondition(final Text text, final boolean condition) {
     if (condition) {
       text.setBackground(new Color(null, 240, 150, 150));
