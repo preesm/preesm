@@ -10,6 +10,7 @@ PREESM Changelog
 * Fix checkstyle configuration;
 
 ### Bug fix
+* Fix issue #61;
 
 
 ## Release version 2.12.3
