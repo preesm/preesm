@@ -23,6 +23,7 @@ Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
 Export-Package: org.ietr.preesm.ui,
  org.ietr.preesm.ui.console,
+ org.ietr.preesm.ui.fields,
  org.ietr.preesm.ui.perspective,
  org.ietr.preesm.ui.utils,
  org.ietr.preesm.ui.wizards
