@@ -60,6 +60,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -246,7 +247,12 @@ public class CodegenEngine {
         final IWorkspace workspace = ResourcesPlugin.getWorkspace();
         workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
         final IFolder f = workspace.getRoot().getFolder(new Path(this.codegenPath));
-        final File folder = new File(f.getRawLocation().toOSString());
+        final IPath rawLocation = f.getRawLocation();
+        if (rawLocation == null) {
+          throw new CodegenException("Could not find target project for given path [" + this.codegenPath + "]. Please change path in the scenario editor.");
+        }
+        final String osString = rawLocation.toOSString();
+        File folder = new File(osString);
         if (!folder.exists()) {
           folder.mkdirs();
           WorkflowLogger.getLogger().info("Created missing target dir [" + folder.getAbsolutePath() + "] during codegen");
