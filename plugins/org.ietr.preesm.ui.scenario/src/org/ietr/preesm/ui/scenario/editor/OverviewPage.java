@@ -39,15 +39,9 @@ package org.ietr.preesm.ui.scenario.editor;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -66,6 +60,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.ui.fields.FieldUtils;
 
 /**
  * This page contains general informations of the scenario including current algorithm and current architecture.
@@ -243,14 +238,8 @@ public class OverviewPage extends FormPage {
 
   private void colorRedIfFileAbsent(final Text text) {
     final String textFieldContent = text.getText();
-    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-    final IWorkspaceRoot root = workspace.getRoot();
-    final IResource findMember = root.findMember(Path.fromOSString(textFieldContent));
-    if (findMember == null) {
-      text.setBackground(new Color(null, 240, 150, 150));
-    } else {
-      text.setBackground(new Color(null, 255, 255, 255));
-    }
+    final boolean testPathValidInWorkspace = FieldUtils.testPathValidInWorkspace(textFieldContent);
+    FieldUtils.colorRedOnCondition(text, !testPathValidInWorkspace);
   }
 
 }
