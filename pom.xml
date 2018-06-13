@@ -293,6 +293,7 @@
           <configLocation>/VAADER_checkstyle.xml</configLocation>
           <failsOnError>true</failsOnError>
           <includes>**/*.java</includes>
+          <sourceDirectories>src/</sourceDirectories>
           <consoleOutput>true</consoleOutput>
         </configuration>
         <dependencies>
