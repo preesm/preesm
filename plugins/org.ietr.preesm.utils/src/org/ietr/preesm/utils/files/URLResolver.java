@@ -100,7 +100,12 @@ public final class URLResolver {
   }
 
   private final URL resolveURLFromWorkspace(final String location, final List<String> projectFilterList) throws MalformedURLException {
-    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    final IWorkspace workspace;
+    try {
+      workspace = ResourcesPlugin.getWorkspace();
+    } catch (final Exception e) {
+      return null;
+    }
     if (workspace == null) {
       // Eclipse is not running (call from plain Java or JUnit)
       return null;
