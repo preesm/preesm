@@ -152,16 +152,6 @@
             </core_type>
          </printer>
       </printers>
-   <printers
-         language="PapifyC">
-      <printer
-            class="org.ietr.preesm.codegen.xtend.printer.c.instrumented.PapifyCPrinterActorsWorkflowTask"
-            extension=".c">
-         <core_type
-               type="x86">
-         </core_type>
-      </printer>
-   </printers>
    </extension>
    <extension
          point="org.ietr.dftools.workflow.tasks">
