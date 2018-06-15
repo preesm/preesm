@@ -65,6 +65,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 import org.ietr.preesm.codegen.xtend.printer.DefaultPrinter
 import org.ietr.preesm.codegen.xtend.task.CodegenException
+import org.ietr.preesm.codegen.xtend.model.codegen.PapifyAction
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -382,7 +383,7 @@ class CPrinter extends DefaultPrinter {
 		 * @date «new Date»
 		 *
 		 */
-
+		// no monitoring by default
 		#define _GNU_SOURCE
 		#ifdef _WIN32
 		#include <windows.h>
@@ -437,7 +438,11 @@ class CPrinter extends DefaultPrinter {
 		}
 
 
-		int main(void) {
+		int main(void) {	
+			#ifdef _PREESM_MONITOR_INIT
+			mkdir("papify-output", 0777);
+			event_init_multiplex();
+			#endif
 			// Declaring thread pointers
 			pthread_t coreThreads[_PREESM_NBTHREADS_];
 			void *(*coreThreadComputations[_PREESM_NBTHREADS_])(void *) = {
@@ -466,6 +471,9 @@ class CPrinter extends DefaultPrinter {
 			for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
 				pthread_join(coreThreads[i], NULL);
 			}
+			#ifdef _PREESM_MONITOR_INIT
+			event_destroy();
+			#endif
 
 			return 0;
 		}
@@ -488,6 +496,8 @@ class CPrinter extends DefaultPrinter {
 	override printConstant(Constant constant) '''«constant.value»«IF !constant.name.nullOrEmpty»/*«constant.name»*/«ENDIF»'''
 
 	override printConstantString(ConstantString constant) '''"«constant.value»"'''
+
+	override printPapifyAction(PapifyAction action) '''«action.name»'''
 
 	override printBuffer(Buffer buffer) '''«buffer.name»'''
 

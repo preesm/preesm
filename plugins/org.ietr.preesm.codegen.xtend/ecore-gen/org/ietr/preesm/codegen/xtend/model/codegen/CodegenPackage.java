@@ -1847,6 +1847,64 @@ public interface CodegenPackage extends EPackage {
   int BUFFER_ITERATOR_FEATURE_COUNT = CodegenPackage.SUB_BUFFER_FEATURE_COUNT + 2;
 
   /**
+   * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.PapifyActionImpl <em>Papify Action</em>}' class. <!-- begin-user-doc
+   * --> <!-- end-user-doc -->
+   *
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.PapifyActionImpl
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getPapifyAction()
+   * @generated
+   */
+  int PAPIFY_ACTION = 24;
+
+  /**
+   * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int PAPIFY_ACTION__COMMENT = CodegenPackage.VARIABLE__COMMENT;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int PAPIFY_ACTION__NAME = CodegenPackage.VARIABLE__NAME;
+
+  /**
+   * The feature id for the '<em><b>Type</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int PAPIFY_ACTION__TYPE = CodegenPackage.VARIABLE__TYPE;
+
+  /**
+   * The feature id for the '<em><b>Creator</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int PAPIFY_ACTION__CREATOR = CodegenPackage.VARIABLE__CREATOR;
+
+  /**
+   * The feature id for the '<em><b>Users</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int PAPIFY_ACTION__USERS = CodegenPackage.VARIABLE__USERS;
+
+  /**
+   * The number of structural features of the '<em>Papify Action</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   * @ordered
+   */
+  int PAPIFY_ACTION_FEATURE_COUNT = CodegenPackage.VARIABLE_FEATURE_COUNT + 0;
+
+  /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Direction <em>Direction</em>}' enum. <!-- begin-user-doc --> <!--
    * end-user-doc -->
    *
@@ -1854,7 +1912,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDirection()
    * @generated
    */
-  int DIRECTION = 24;
+  int DIRECTION = 25;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Delimiter <em>Delimiter</em>}' enum. <!-- begin-user-doc --> <!--
@@ -1864,7 +1922,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDelimiter()
    * @generated
    */
-  int DELIMITER = 25;
+  int DELIMITER = 26;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialType <em>Special Type</em>}' enum. <!-- begin-user-doc --> <!--
@@ -1874,7 +1932,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getSpecialType()
    * @generated
    */
-  int SPECIAL_TYPE = 26;
+  int SPECIAL_TYPE = 27;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation <em>Fifo Operation</em>}' enum. <!-- begin-user-doc --> <!--
@@ -1884,7 +1942,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getFifoOperation()
    * @generated
    */
-  int FIFO_OPERATION = 27;
+  int FIFO_OPERATION = 28;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.PortDirection <em>Port Direction</em>}' enum. <!-- begin-user-doc --> <!--
@@ -1894,7 +1952,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getPortDirection()
    * @generated
    */
-  int PORT_DIRECTION = 28;
+  int PORT_DIRECTION = 29;
 
   /**
    * The meta object id for the '<em>range</em>' data type. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1903,7 +1961,7 @@ public interface CodegenPackage extends EPackage {
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getrange()
    * @generated
    */
-  int RANGE = 29;
+  int RANGE = 30;
 
   /**
    * Returns the meta object for class ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Block <em>Block</em>} '. <!-- begin-user-doc --> <!-- end-user-doc
@@ -2761,6 +2819,16 @@ public interface CodegenPackage extends EPackage {
   EReference getBufferIterator_Iter();
 
   /**
+   * Returns the meta object for class '{@link org.ietr.preesm.codegen.xtend.model.codegen.PapifyAction <em>Papify Action</em>}'. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   *
+   * @return the meta object for class '<em>Papify Action</em>'.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.PapifyAction
+   * @generated
+   */
+  EClass getPapifyAction();
+
+  /**
    * Returns the meta object for enum '{@link org.ietr.preesm.codegen.xtend.model.codegen.Direction <em>Direction</em>}'. <!-- begin-user-doc --> <!--
    * end-user-doc -->
    *
@@ -3472,6 +3540,16 @@ public interface CodegenPackage extends EPackage {
      * @generated
      */
     EReference BUFFER_ITERATOR__ITER = CodegenPackage.eINSTANCE.getBufferIterator_Iter();
+
+    /**
+     * The meta object literal for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.PapifyActionImpl <em>Papify Action</em>}' class. <!--
+     * begin-user-doc --> <!-- end-user-doc -->
+     *
+     * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.PapifyActionImpl
+     * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getPapifyAction()
+     * @generated
+     */
+    EClass PAPIFY_ACTION = CodegenPackage.eINSTANCE.getPapifyAction();
 
     /**
      * The meta object literal for the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Direction <em>Direction</em>}' enum. <!-- begin-user-doc --> <!--

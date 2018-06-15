@@ -60,6 +60,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
+import org.ietr.preesm.codegen.xtend.model.codegen.PapifyAction;
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
@@ -234,6 +235,11 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
     @Override
     public Adapter caseBufferIterator(final BufferIterator object) {
       return createBufferIteratorAdapter();
+    }
+
+    @Override
+    public Adapter casePapifyAction(final PapifyAction object) {
+      return createPapifyActionAdapter();
     }
 
     @Override
@@ -564,6 +570,19 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
    * @generated
    */
   public Adapter createBufferIteratorAdapter() {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.PapifyAction <em>Papify Action</em>}'. <!-- begin-user-doc
+   * --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases
+   * anyway. <!-- end-user-doc -->
+   *
+   * @return the new adapter.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.PapifyAction
+   * @generated
+   */
+  public Adapter createPapifyActionAdapter() {
     return null;
   }
 

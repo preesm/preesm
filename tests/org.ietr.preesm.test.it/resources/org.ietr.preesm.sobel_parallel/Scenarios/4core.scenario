@@ -64,7 +64,7 @@
 	    <parameterValues/>
 	    <papifyConfigs xmlUrl="/org.ietr.preesm.sobel_parallel/Code/Papi_new_info.xml">
 	    <papifyConfig>
-	        <coreId coreId="Core0"/>
+	        <coreId coreId="Sobel"/>
 	        <PapiComponent componentId="perf_event" componentIndex="0" componentType="CPU">
 	            <eventSet type="NATIVE">
 	                <event
@@ -2463,7 +2463,7 @@
 	    </papifyConfig>
 	    
         <papifyConfig>
-            <coreId coreId="Core1"/>
+            <coreId coreId="Split"/>
             <PapiComponent componentId="perf_event" componentIndex="0" componentType="CPU">
                 <eventSet type="NATIVE">
                     <event
@@ -4867,7 +4867,7 @@
         </papifyConfig>
         
         <papifyConfig>
-            <coreId coreId="Core2"/>
+            <coreId coreId="Merge"/>
             <PapiComponent componentId="perf_event" componentIndex="0" componentType="CPU">
                 <eventSet type="NATIVE">
                     <event

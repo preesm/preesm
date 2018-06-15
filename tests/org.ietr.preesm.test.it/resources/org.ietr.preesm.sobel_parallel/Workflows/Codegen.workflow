@@ -65,7 +65,7 @@
     <dftools:task
         pluginId="org.ietr.preesm.codegen.xtend.task.CodegenTask" taskId="Code Generation">
         <dftools:data key="variables">
-            <dftools:variable name="Printer" value="PapifyC"/>
+            <dftools:variable name="Printer" value="C"/>
         </dftools:data>
     </dftools:task>
     <dftools:task
@@ -76,6 +76,10 @@
         <dftools:data key="variables">
             <dftools:variable name="path" value="Algo/generated/flatten"/>
         </dftools:data>
+    </dftools:task>
+    <dftools:task
+        pluginId="org.ietr.preesm.codegen.xtend.task.CodegenPapifyEngineTask" taskId="Papify Config">
+        <dftools:data key="variables"/>
     </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="Display Gantt"/>
@@ -105,8 +109,6 @@
         targetport="scenario" to="Code Generation"/>
     <dftools:dataTransfer from="scenario" sourceport="architecture"
         targetport="architecture" to="Code Generation"/>
-    <dftools:dataTransfer from="Scheduling" sourceport="DAG"
-        targetport="DAG" to="Code Generation"/>
     <dftools:dataTransfer from="scenario" sourceport="PiMM"
         targetport="PiMM" to="StaticPiMM2SDF"/>
     <dftools:dataTransfer from="StaticPiMM2SDF" sourceport="SDF"
@@ -117,4 +119,10 @@
         targetport="void" to="MEG Builder"/>
     <dftools:dataTransfer from="HierarchyFlattening" sourceport="SDF"
         targetport="SDF" to="Flat SDF Exporter"/>
+    <dftools:dataTransfer from="scenario" sourceport="scenario"
+        targetport="scenario" to="Papify Config"/>
+    <dftools:dataTransfer from="Scheduling" sourceport="DAG"
+        targetport="DAG" to="Papify Config"/>
+    <dftools:dataTransfer from="Papify Config" sourceport="DAG"
+        targetport="DAG" to="Code Generation"/>
 </dftools:workflow>

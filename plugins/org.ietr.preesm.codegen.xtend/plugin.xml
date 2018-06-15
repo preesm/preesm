@@ -155,7 +155,7 @@
    <printers
          language="PapifyC">
       <printer
-            class="org.ietr.preesm.codegen.xtend.printer.c.instrumented.PapifyCPrinter"
+            class="org.ietr.preesm.codegen.xtend.printer.c.instrumented.PapifyCPrinterActorsWorkflowTask"
             extension=".c">
          <core_type
                type="x86">
@@ -187,6 +187,27 @@
                   object="org.ietr.preesm.core.scenario.PreesmScenario">
             </input>
          </inputs>
+      </task>
+      <task
+            id="org.ietr.preesm.codegen.xtend.task.CodegenPapifyEngineTask"
+            name="Papify Engine Task"
+            type="org.ietr.preesm.codegen.xtend.task.CodegenPapifyEngineTask">
+            <inputs>
+            	<input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            	</input>
+	            <input
+	                  id="DAG"
+	                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+	            </input>
+            </inputs>
+         <outputs>
+            <output
+                  id="DAG"
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </output>
+         </outputs>
       </task>
    </extension>
 </plugin>

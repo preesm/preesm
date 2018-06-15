@@ -59,6 +59,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
+import org.ietr.preesm.codegen.xtend.model.codegen.PapifyAction;
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
@@ -446,6 +447,20 @@ public class CodegenSwitch<T> extends Switch<T> {
         }
         return result;
       }
+      case CodegenPackage.PAPIFY_ACTION: {
+        final PapifyAction papifyAction = (PapifyAction) theEObject;
+        T result = casePapifyAction(papifyAction);
+        if (result == null) {
+          result = caseVariable(papifyAction);
+        }
+        if (result == null) {
+          result = caseCommentable(papifyAction);
+        }
+        if (result == null) {
+          result = defaultCase(theEObject);
+        }
+        return result;
+      }
       default:
         return defaultCase(theEObject);
     }
@@ -784,6 +799,20 @@ public class CodegenSwitch<T> extends Switch<T> {
    * @generated
    */
   public T caseBufferIterator(final BufferIterator object) {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Papify Action</em>'. <!-- begin-user-doc --> This implementation returns null;
+   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   *
+   * @param object
+   *          the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Papify Action</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T casePapifyAction(final PapifyAction object) {
     return null;
   }
 
