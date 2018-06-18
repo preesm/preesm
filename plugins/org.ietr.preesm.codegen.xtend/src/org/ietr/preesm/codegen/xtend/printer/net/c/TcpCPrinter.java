@@ -4,11 +4,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.ietr.preesm.codegen.xtend.CodegenPlugin;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
+import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter;
+import org.ietr.preesm.codegen.xtend.model.codegen.Direction;
+import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
+import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
 import org.ietr.preesm.codegen.xtend.printer.c.CPrinter;
 import org.ietr.preesm.codegen.xtend.task.CodegenException;
 import org.ietr.preesm.utils.files.URLResolver;
@@ -19,6 +28,84 @@ import org.ietr.preesm.utils.files.URLResolver;
  *
  */
 public class TcpCPrinter extends CPrinter {
+
+  @Override
+  public CharSequence printDeclarationsHeader(List<Variable> list) {
+    return "";
+  }
+
+  @Override
+  public CharSequence printCoreInitBlockHeader(CallBlock callBlock) {
+    final int coreID = ((CoreBlock) callBlock.eContainer()).getCoreID();
+    StringBuilder ff = new StringBuilder();
+    ff.append("#include \"socketcom.h\"\n");
+    ff.append("void *computationThread_Core");
+    ff.append(coreID);
+    ff.append("(void *arg) {\n");
+
+    ff.append("  int* socketFileDescriptors = (int*)arg;\n");
+    ff.append("  int processingElementID = socketFileDescriptors[" + this.getEngine().getCodeBlocks().size() + "];\n");
+
+    // ff.append(" int* socketFileDescriptors = (int*)arg;\n");
+
+    ff.append("  \n" + "#ifdef _PREESM_TCP_DEBUG_\n" + "  printf(\"[TCP-DEBUG] Core" + coreID + " READY\\n\");\n" + "#endif\n\n");
+    return ff.toString();
+  }
+
+  @Override
+  public CharSequence printCoreLoopBlockHeader(LoopBlock block2) {
+    final CoreBlock eContainer = (CoreBlock) block2.eContainer();
+
+    final int coreID = eContainer.getCoreID();
+    StringBuilder res = new StringBuilder();
+    res.append("  int iterationCount = 0;\n");
+    res.append("  while(1){\n");
+    res.append("    iterationCount++;\n");
+    res.append("#ifdef _PREESM_TCP_DEBUG_\n" + "    printf(\"[TCP-DEBUG] Core" + coreID + " iteration #%d - at barrier\\n\",iterationCount);\n" + "#endif\n");
+    res.append("    preesm_barrier(socketFileDescriptors, " + coreID + ", " + this.getEngine().getCodeBlocks().size() + ");\n");
+    res.append("#ifdef _PREESM_TCP_DEBUG_\n" + "    printf(\"[TCP-DEBUG] Core" + coreID + " iteration #%d - barrier passed\\n\",iterationCount);\n"
+        + "#endif\n    \n    ");
+    return res.toString();
+  }
+
+  @Override
+  public CharSequence printSharedMemoryCommunication(SharedMemoryCommunication communication) {
+    final StringBuilder functionCallBuilder = new StringBuilder("preesm_");
+
+    final Direction direction = communication.getDirection();
+    final int to = communication.getReceiveEnd().getCoreContainer().getCoreID();
+    final int from = communication.getSendStart().getCoreContainer().getCoreID();
+    switch (direction) {
+      case SEND:
+        functionCallBuilder.append("send_");
+        break;
+      case RECEIVE:
+        functionCallBuilder.append("receive_");
+        break;
+      default:
+        throw new UnsupportedOperationException("Unsupported [" + direction + "] communication direction.");
+    }
+
+    final Delimiter delimiter = communication.getDelimiter();
+    switch (delimiter) {
+      case START:
+        functionCallBuilder.append("start");
+        break;
+      case END:
+        functionCallBuilder.append("end");
+        break;
+      default:
+        throw new UnsupportedOperationException("Unsupported [" + direction + "] communication direction.");
+    }
+    final int size = communication.getData().getSize();
+
+    final String dataAddress = communication.getData().getName();
+
+    functionCallBuilder
+        .append("(" + from + ", " + to + ", socketFileDescriptors, " + dataAddress + ", " + size + ", \"" + dataAddress + " " + size + "\"" + ");\n");
+
+    return functionCallBuilder.toString();
+  }
 
   @Override
   public String printMain(final List<Block> printerBlocks) {
@@ -35,7 +122,16 @@ public class TcpCPrinter extends CPrinter {
 
     // 2- init context
     final VelocityContext context = new VelocityContext();
-    context.put("name", "World");
+    context.put("PREESM_DATE", new Date().toString());
+    context.put("PREESM_PRINTER", this.getClass().getSimpleName());
+    context.put("PREESM_NBTHREADS", printerBlocks.size());
+
+    final List<String> threadFunctionNames = printerBlocks.stream().map(CoreBlock.class::cast).map(CoreBlock::getCoreID)
+        .map(i -> String.format("computationThread_Core%d", i)).collect(Collectors.toList());
+
+    context.put("PREESM_THREAD_FUNCTIONS_DECLS", "void* " + String.join("(void *arg);\nvoid* ", threadFunctionNames) + "(void *arg);\n");
+
+    context.put("PREESM_THREAD_FUNCTIONS", "&" + String.join(",&", threadFunctionNames));
 
     // 3- init template reader
     final String templateLocalURL = "templates/tcp/main.c";
