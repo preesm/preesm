@@ -181,11 +181,11 @@ class PiGraph extends AbstractActor, Graph {
 	op unique Dependency[] getDependencies() {
 		return edges.filter(Dependency).toEList.unmodifiableView
 	}
-	
+
 	op unique boolean removeActor(AbstractActor actor) {
 		vertices.remove(actor);
 	}
-	
+
 	op unique Parameter[] getOnlyParameters(){
 		return parameters.filter(it | !((it instanceof ConfigInputInterface) || (it instanceof ConfigOutputInterface) )).toEList.unmodifiableView
 	}
@@ -215,15 +215,15 @@ class PiGraph extends AbstractActor, Graph {
 	op Parameter lookupParameterGivenGraph(String parameterName , String graphName) {
 		return allParameters.findFirst[it.name == parameterName && (it.containingGraph as PiGraph).name == graphName]
 	}
-	
+
     /*
-	* Lookup within all the data ports of the graph and return the one corresponding to the given interface actor.
-	* The dataport, null if it was not found (should not happen)
-	*/
-	op DataPort lookupDataPortFromInterface(InterfaceActor i) {
-		return allDataPorts.findFirst[it.name == i.name]
+     * Find the first {@link DataPort} of this {@link PiGraph} whose name matches the name of the {@link InterfaceActor} given as argument.
+     * Return null if none matches.
+	 */
+	op DataPort lookupGraphDataPortForInterfaceActor(InterfaceActor interfaceActor) {
+		return allDataPorts.findFirst[it.name == interfaceActor.name]
 	}
-	
+
 	op AbstractVertex lookupVertex(String vertexName) {
 		return (actors + parameters).findFirst[it.name == vertexName]
 	}

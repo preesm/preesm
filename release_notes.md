@@ -9,6 +9,7 @@ PREESM Changelog
 ### Changes
 * Fix checkstyle configuration;
 * Refactor FilesManager: rewrite in plain java and use proper URL resolver;
+* Add PiGraph helper operation;
 
 ### Bug fix
 * Fix issue #61;
