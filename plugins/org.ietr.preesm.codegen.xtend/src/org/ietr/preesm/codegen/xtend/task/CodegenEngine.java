@@ -297,26 +297,28 @@ public class CodegenEngine {
       final CodegenAbstractPrinter printer = this.realPrinters.get(printerAndBlocks.getKey());
       final IWorkspace workspace = ResourcesPlugin.getWorkspace();
       for (final Block b : printerAndBlocks.getValue()) {
+        final String fileContentString = printer.postProcessing(printer.doSwitch(b)).toString();
         final IFile iFile = workspace.getRoot().getFile(new Path(this.codegenPath + b.getName() + extension));
+        final IFolder iFolder = workspace.getRoot().getFolder(new Path(this.codegenPath));
         try {
-          final IFolder iFolder = workspace.getRoot().getFolder(new Path(this.codegenPath));
           if (!iFolder.exists()) {
             iFolder.create(false, true, new NullProgressMonitor());
           }
           if (!iFile.exists()) {
             iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
           }
-          iFile.setContents(new ByteArrayInputStream(printer.postProcessing(printer.doSwitch(b)).toString().getBytes()), true, false,
-              new NullProgressMonitor());
-
-        } catch (final CoreException ex) {
-          ex.printStackTrace();
+          final byte[] bytes = fileContentString.getBytes();
+          iFile.setContents(new ByteArrayInputStream(bytes), true, false, new NullProgressMonitor());
+        } catch (CoreException e) {
+          throw new CodegenException("Could not generated source file for " + b.getName(), e);
         }
+
       }
 
       // Print secondary files
       for (final Entry<String, CharSequence> entry : printer.createSecondaryFiles(printerAndBlocks.getValue(), this.codeBlocks).entrySet()) {
-        final IFile iFile = workspace.getRoot().getFile(new Path(this.codegenPath + entry.getKey()));
+        final String secondaryFileName = entry.getKey();
+        final IFile iFile = workspace.getRoot().getFile(new Path(this.codegenPath + secondaryFileName));
         try {
           final IFolder iFolder = workspace.getRoot().getFolder(new Path(this.codegenPath));
           if (!iFolder.exists()) {
@@ -325,9 +327,10 @@ public class CodegenEngine {
           if (!iFile.exists()) {
             iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
           }
-          iFile.setContents(new ByteArrayInputStream(entry.getValue().toString().getBytes()), true, false, new NullProgressMonitor());
+          final CharSequence secondaryFileContent = entry.getValue();
+          iFile.setContents(new ByteArrayInputStream(secondaryFileContent.toString().getBytes()), true, false, new NullProgressMonitor());
         } catch (final CoreException ex) {
-          ex.printStackTrace();
+          throw new CodegenException("Could not generated source file for " + secondaryFileName, ex);
         }
 
       }
