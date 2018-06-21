@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.ietr.preesm.codegen.xtend.CodegenPlugin;
@@ -126,8 +127,8 @@ public class TcpCPrinter extends CPrinter {
     context.put("PREESM_PRINTER", this.getClass().getSimpleName());
     context.put("PREESM_NBTHREADS", printerBlocks.size());
 
-    final List<String> threadFunctionNames = printerBlocks.stream().map(CoreBlock.class::cast).map(CoreBlock::getCoreID)
-        .map(i -> String.format("computationThread_Core%d", i)).collect(Collectors.toList());
+    final List<String> threadFunctionNames = IntStream.range(0, printerBlocks.size()).mapToObj(i -> String.format("computationThread_Core%d", i))
+        .collect(Collectors.toList());
 
     context.put("PREESM_THREAD_FUNCTIONS_DECLS", "void* " + String.join("(void *arg);\nvoid* ", threadFunctionNames) + "(void *arg);\n");
 
