@@ -43,6 +43,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -616,8 +617,31 @@ public class CodegenModelGenerator {
     // This objective is to give a unique ID to each coreBlock.
     // Alphabetical order of coreBlock name is used to determine the id (in an attempt to limit randomness)
     {
+
+      final Comparator<CoreBlock> c = new Comparator<CoreBlock>() {
+        public int compare(CoreBlock cb1, CoreBlock cb2) {
+          final String o1 = cb1.getName();
+          final String o2 = cb2.getName();
+
+          final String o1StringPart = o1.replaceAll("\\d", "");
+          final String o2StringPart = o2.replaceAll("\\d", "");
+
+          if (o1StringPart.equalsIgnoreCase(o2StringPart)) {
+            return extractInt(o1) - extractInt(o2);
+          } else {
+            return o1.compareTo(o2);
+          }
+        }
+
+        int extractInt(String s) {
+          String num = s.replaceAll("\\D", "");
+          // return 0 if no digits found
+          return num.isEmpty() ? 0 : Integer.parseInt(num);
+        }
+      };
+
       final AtomicInteger id = new AtomicInteger(0); // Need this because non-final argument cannot be used within lambda expressions.
-      this.coreBlocks.values().stream().sorted((cb1, cb2) -> cb1.getName().compareTo(cb2.getName())).forEach(cb -> cb.setCoreID(id.getAndIncrement()));
+      this.coreBlocks.values().stream().sorted(c).forEach(cb -> cb.setCoreID(id.getAndIncrement()));
     }
 
     // 3 - Put the buffer definition in their right place
@@ -1426,7 +1450,7 @@ public class CodegenModelGenerator {
 
   /**
    * This method creates the event configure PE function call for PAPI instrumentation
-   * 
+   *
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
    * @return The {@link FunctionCall} corresponding to the {@link CoreBlock operatorBlock} firing.
@@ -1453,7 +1477,7 @@ public class CodegenModelGenerator {
 
   /**
    * This method creates the event configure actor function call for PAPI instrumentation
-   * 
+   *
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
    * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
@@ -1477,7 +1501,7 @@ public class CodegenModelGenerator {
 
   /**
    * This method creates the event start function call for PAPI instrumentation
-   * 
+   *
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
    * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
@@ -1501,7 +1525,7 @@ public class CodegenModelGenerator {
 
   /**
    * This method creates the event start Papify timing function call for PAPI instrumentation
-   * 
+   *
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
    * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
@@ -1524,7 +1548,7 @@ public class CodegenModelGenerator {
 
   /**
    * This method creates the event stop function call for PAPI instrumentation
-   * 
+   *
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
    * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
@@ -1547,7 +1571,7 @@ public class CodegenModelGenerator {
 
   /**
    * This method creates the event stop Papify timing function call for PAPI instrumentation
-   * 
+   *
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
    * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
@@ -1570,7 +1594,7 @@ public class CodegenModelGenerator {
 
   /**
    * This method creates the event write Papify function call for PAPI instrumentation
-   * 
+   *
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
    * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
