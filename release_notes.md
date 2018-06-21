@@ -10,6 +10,7 @@ PREESM Changelog
 * Fix checkstyle configuration;
 * Refactor FilesManager: rewrite in plain java and use proper URL resolver;
 * Add PiGraph helper operation;
+* Fix codegen core comparator for giving proper core ID;
 
 ### Bug fix
 * Fix issue #61;
