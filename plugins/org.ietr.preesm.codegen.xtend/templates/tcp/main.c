@@ -36,6 +36,7 @@ pthread_barrier_t iter_barrier;
 int stopThreads;
 
 void actualThreadComputations(int processingElementID) {
+  registry[processingElementID].id = processingElementID;
   int socketFileDescriptors[_PREESM_NBTHREADS_ + 1];
   socketFileDescriptors[_PREESM_NBTHREADS_] = processingElementID;
 
@@ -56,33 +57,62 @@ void * threadComputations (void *arg) {
   return NULL;
 }
 
+
+void initMainPEConfig(ProcessingElement registry[_PREESM_NBTHREADS_]) {
+  char * buffer = 0;
+  long length;
+  FILE * f = fopen ("socketcom.conf", "r");
+  if (f) {
+    fseek (f, 0, SEEK_END);
+    length = ftell (f);
+    fseek (f, 0, SEEK_SET);
+    buffer = malloc (length);
+    if (buffer) {
+      fread (buffer, 1, length, f);
+    }
+    fclose (f);
+    char *r = buffer;
+    char *tok = r, *end = r;
+    strsep(&end, ":");
+    char* host = strdup(tok);
+    tok = end;
+    strsep(&end, ":");
+    char* portStr  = tok;
+    int port = atoi(portStr);
+    free(r);
+    strcpy(registry[0].host,host);
+    registry[0].port = port;
+    registry[0].id = 0;
+  } else {
+    registry[0].port = 25400;
+    registry[0].id = 0;
+    strcpy(registry[0].host,"127.0.0.1");
+    printf("Warning: Could not locate file 'socketcom.conf'. Using '127.0.0.1:25400'.\n");
+  }
+}
+
 int main(int argc, char** argv) {
-//  stopThreads = 0;
   signal(SIGSEGV, handler);
   signal(SIGPIPE, handler);
 
-  // TODO overide pes array with values from config file/arguments
-  for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
-    registry[i].id = i;
-    registry[i].host = "127.0.0.1";
-    registry[i].port=(PREESM_COM_PORT+i);
-  }
+  initMainPEConfig(registry);
+
   if (argc == 2) {
     // read ID from arguments
     int peId = atoi(argv[1]);
 #[[#]]#ifdef _PREESM_TCP_DEBUG_
-  printf("[TCP-DEBUG] Runnin %d only\n", peId);
+  printf("[TCP-DEBUG] Running %d only\n", peId);
 #[[#]]#endif
-
-//    pthread_barrier_init(&iter_barrier, NULL, 1);
     actualThreadComputations(peId);
   } else {
-//	pthread_barrier_init(&iter_barrier, NULL, _PREESM_NBTHREADS_);
     // launch all IDs in separate threads
     pthread_t threads[_PREESM_NBTHREADS_];
     int threadArguments[_PREESM_NBTHREADS_];
     for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
       threadArguments[i] = i;
+#[[#]]#ifdef _PREESM_TCP_DEBUG_
+  printf("[TCP-DEBUG] Launching %d\n", i);
+#[[#]]#endif
       pthread_create(&threads[i], NULL, threadComputations, &(threadArguments[i]));
     }
     for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
