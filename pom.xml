@@ -74,12 +74,12 @@
   </scm>
 
   <properties>
-    <jacoco-version>0.7.9</jacoco-version>
-    <tycho-version>1.0.0</tycho-version>
-    <findbugs-version>3.0.4</findbugs-version>
-    <sonar-version>3.3.0.603</sonar-version>
-    <rcptt-version>2.2.0</rcptt-version>
+    <jacoco-version>0.8.1</jacoco-version>
+    <tycho-version>1.2.0</tycho-version>
+    <findbugs-version>3.0.5</findbugs-version>
+    <sonar-version>3.4.1.1168</sonar-version>
     <checkstyle-version>8.10</checkstyle-version>
+    <rcptt-version>2.3.0</rcptt-version>
     <preesm.coding.policy.version>1.2.4</preesm.coding.policy.version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -108,15 +108,15 @@
   <repositories>
     <!-- add Eclipse repository to resolve dependencies -->
     <repository>
-      <id>Oxygen</id>
+      <id>Eclipse</id>
       <layout>p2</layout>
-      <url>${eclipse.mirror}/releases/oxygen/</url>
+      <url>${eclipse.mirror}/releases/photon/</url>
     </repository>
     <!-- add Eclipse updates for latest releases -->
     <repository>
-      <id>Oxygen Updates</id>
+      <id>Eclipse Updates</id>
       <layout>p2</layout>
-      <url>${eclipse.mirror}/eclipse/updates/4.7</url>
+      <url>${eclipse.mirror}/eclipse/updates/4.8</url>
     </repository>
     <!-- add TMF repository for latest Xtend -->
     <repository>
@@ -197,7 +197,7 @@
       <plugin>
         <groupId>org.eclipse.tycho</groupId>
         <artifactId>tycho-compiler-plugin</artifactId>
-        <version>1.0.0</version>
+        <version>${tycho-version}</version>
         <configuration>
           <useProjectSettings>false</useProjectSettings>
         </configuration>
@@ -244,7 +244,7 @@
       <plugin>
         <groupId>org.eclipse.xtend</groupId>
         <artifactId>xtend-maven-plugin</artifactId>
-        <version>2.11.0</version>
+        <version>2.14.0</version>
         <executions>
           <execution>
             <goals>
@@ -262,7 +262,7 @@
       <!-- Make sure clean goal removes xtend generated files -->
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
-        <version>2.4.1</version>
+        <version>3.1.0</version>
         <configuration>
           <filesets>
             <fileset>

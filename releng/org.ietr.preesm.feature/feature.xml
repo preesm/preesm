@@ -52,7 +52,7 @@
       Copyright (c) 2008-2017, IETR/INSA Rennes. All rights reserved.
    </copyright>
 
-   <license url="http://www.cecill.info">
+   <license url="http://www.cecill.info"><![CDATA[
       CeCILL-C FREE SOFTWARE LICENSE AGREEMENT
 
 
@@ -568,18 +568,18 @@ disagreements or disputes shall be referred to the Paris Courts having
 jurisdiction, by the more diligent Party.
 
 
-Version 1.0 dated 2006-09-05.
+Version 1.0 dated 2006-09-05.]]>
    </license>
 
    <url>
-      <discovery label="Oxygen" url="http://mirror.ibcp.fr/pub/eclipse/releases/oxygen/"/>
-      <discovery label="Oxygen Updates" url="http://mirror.ibcp.fr/pub/eclipse/eclipse/updates/4.7"/>
+      <discovery label="Eclipse" url="http://mirror.ibcp.fr/pub/eclipse/releases/photon/"/>
+      <discovery label="Eclipse Updates" url="http://mirror.ibcp.fr/pub/eclipse/eclipse/updates/4.8"/>
       <discovery label="TMF Releases" url="http://mirror.ibcp.fr/pub/eclipse/modeling/tmf/xtext/updates/releases/"/>
       <discovery label="Preesm" url="http://preesm.insa-rennes.fr/repo/complete/"/>
    </url>
 
    <requires>
-      <import feature="org.eclipse.xtext.xbase.lib" version="2.11" match="greaterOrEqual"/>
+      <import feature="org.eclipse.xtext.xbase.lib" version="2.14" match="greaterOrEqual"/>
       <import feature="org.eclipse.tm.terminal.feature"/>
       <import feature="org.eclipse.cdt"/>
    </requires>
