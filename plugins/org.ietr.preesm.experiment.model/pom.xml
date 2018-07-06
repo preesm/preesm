@@ -47,7 +47,7 @@
 		<relativePath>../..</relativePath>
 	</parent>
 
-
+<!--
   <properties>
     <maven.compiler.fork>true</maven.compiler.fork>
     <emf-version>2.12.0</emf-version>
@@ -203,4 +203,5 @@
       </plugin>
     </plugins>
   </build>
+  -->
 </project>
