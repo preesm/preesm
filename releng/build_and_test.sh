@@ -60,17 +60,17 @@ time (
   echo ""
   echo "Build & Package (offline)"
   echo ""
-  (cd $DIR && mvn --offline -e -C -B -V package -fae -Dmaven.test.skip=true) || exit 6
+  (cd $DIR && mvn -e -C -B -V package -fae -Dmaven.test.skip=true) || exit 6
   # build and run tests (offline)
   echo ""
   echo "Test all & Run Sonar (offline)"
   echo ""
-  (cd $DIR && mvn --offline -e -C -B -V verify -fae) || exit 7
+  (cd $DIR && mvn -e -C -B -V verify -fae) || exit 7
   #package update site (offline, no tests)
   echo ""
   echo "Package update site (offline)"
   echo ""
-  (cd $DIR && mvn --offline -e -C -B -V -P doUpdateSite package -fae -Dmaven.test.skip=true) || exit 8
+  (cd $DIR && mvn -e -C -B -V -P doUpdateSite package -fae -Dmaven.test.skip=true) || exit 8
 )
 
 if [ -x /usr/bin/Xvfb ]; then

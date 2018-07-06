@@ -11,10 +11,13 @@ PREESM Changelog
 * Refactor FilesManager: rewrite in plain java and use proper URL resolver;
 * Add PiGraph helper operation;
 * Fix codegen core comparator for giving proper core ID;
+* Update to Eclipse Photon;
+* Force Graphiti to [1.9.0,2.0.0);
+* Force DFTools to [1.8.0,2.0.0);
+* Update Xtend/Xtext to 2.14.0+;
 
 ### Bug fix
 * Fix issue #61;
-
 
 ## Release version 2.12.3
 *2018.06.06*
