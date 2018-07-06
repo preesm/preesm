@@ -69,10 +69,6 @@ class SpiderMainFilePrinter {
 
 	#include "../generated/«pg.name».h"
 	
-	«IF usingPapify»
-		#include "eventLib.h"
-	«ENDIF»
-	
 	#define SH_MEM_SIZE 0x04000000
 
 	#define NB_LRT «nbCores»
@@ -195,7 +191,7 @@ class SpiderMainFilePrinter {
 			Spider::init(cfg);
 			
 	 «IF !pg.actorsWithRefinement.isEmpty()»
-	 // Actor initializations
+		 // Actor initializations
 		«FOR actor : pg.actorsWithRefinement»
 		  «IF actor.refinement instanceof CHeaderRefinement && (actor.refinement as CHeaderRefinement).getInitPrototype !== null»
 				«"\t\t"+ printInitCall(actor)»
@@ -228,6 +224,11 @@ class SpiderMainFilePrinter {
 			free_«pg.name»();
 	
 			Spider::clean();
+			
+			«IF !pg.actorsWithRefinement.isEmpty()»
+					 // Freeing PapifyConfigs 
+					free_«pg.name»_papifyConfigs(cfg.papifyJobInfo);
+			«ENDIF»
 			
 			// Actor finalisation here if needed
 			
