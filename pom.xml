@@ -149,7 +149,7 @@
       <plugin>
         <groupId>org.commonjava.maven.plugins</groupId>
         <artifactId>directory-maven-plugin</artifactId>
-        <version>0.1</version>
+        <version>0.3.1</version>
         <executions>
           <execution>
             <id>directories</id>
@@ -258,6 +258,13 @@
             </configuration>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.equinox.common</artifactId>
+            <version>3.10.0</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <!-- Make sure clean goal removes xtend generated files -->
       <plugin>
@@ -378,7 +385,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.0.2</version>
+        <version>3.1.1</version>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -391,6 +398,28 @@
         <version>${sonar-version}</version>
       </plugin>
 
+      <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>3.0.0-M2</version>
+          <configuration>
+            <rules>
+              <bannedPlugins>
+                <excludes>
+                  <exclude>org.apache.maven.plugins:maven-verifier-plugin</exclude>
+                </excludes>
+                <message>Please consider using the maven-invoker-plugin (http://maven.apache.org/plugins/maven-invoker-plugin/)!</message>
+              </bannedPlugins>
+              <requireMavenVersion>
+                <version>3.3.9</version>
+              </requireMavenVersion>
+              <requireJavaVersion>
+                <version>1.8</version>
+              </requireJavaVersion>
+              <!--<dependencyConvergence/>-->
+            </rules>
+          </configuration>
+        </plugin>
     </plugins>
   </build>
 
