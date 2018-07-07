@@ -15,9 +15,11 @@ PREESM Changelog
 * Force Graphiti to [1.9.0,2.0.0);
 * Force DFTools to [1.8.0,2.0.0);
 * Update Xtend/Xtext to 2.14.0+;
+* Fix papify codegen for spider
 
 ### Bug fix
 * Fix issue #61;
+
 
 ## Release version 2.12.3
 *2018.06.06*
