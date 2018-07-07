@@ -190,14 +190,14 @@ class SpiderMainFilePrinter {
 			// Spider initialisation
 			Spider::init(cfg);
 			
-	 «IF !pg.actorsWithRefinement.isEmpty()»
-		 // Actor initializations
-		«FOR actor : pg.actorsWithRefinement»
-		  «IF actor.refinement instanceof CHeaderRefinement && (actor.refinement as CHeaderRefinement).getInitPrototype !== null»
-				«"\t\t"+ printInitCall(actor)»
-		  «ENDIF»
-		«ENDFOR»
-	«ENDIF»
+		 «IF !pg.actorsWithRefinement.isEmpty()»
+			// Actor initializations
+			«FOR actor : pg.actorsWithRefinement»
+			  «IF actor.refinement instanceof CHeaderRefinement && (actor.refinement as CHeaderRefinement).getInitPrototype !== null»
+					«"\t\t"+ printInitCall(actor)»
+			  «ENDIF»
+			«ENDFOR»
+		«ENDIF»
 	
 			// PiSDF graph construction
 			init_«pg.name»();
@@ -225,7 +225,7 @@ class SpiderMainFilePrinter {
 	
 			Spider::clean();
 			
-			«IF !pg.actorsWithRefinement.isEmpty()»
+			«IF usingPapify»
 					 // Freeing PapifyConfigs 
 					free_«pg.name»_papifyConfigs(cfg.papifyJobInfo);
 			«ENDIF»
