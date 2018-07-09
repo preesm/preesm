@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 2.13.0
+*2018.07.09*
 
 ### New Feature
 * New code generation with TCP communications - first prototype implementation;

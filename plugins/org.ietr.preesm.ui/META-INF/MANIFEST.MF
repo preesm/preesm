@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Preesm UI
 Automatic-Module-Name: org.ietr.preesm.ui
 Bundle-SymbolicName: org.ietr.preesm.ui;singleton:=true
-Bundle-Version: 2.12.3.qualifier
+Bundle-Version: 2.13.0
 Bundle-Activator: org.ietr.preesm.ui.PreesmUIPlugin
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",

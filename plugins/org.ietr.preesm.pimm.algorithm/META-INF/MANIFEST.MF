@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Preesm PISDF graph transformation plug-in
 Automatic-Module-Name: org.ietr.preesm.pimm.algorithm
 Bundle-SymbolicName: org.ietr.preesm.pimm.algorithm;singleton:=true
-Bundle-Version: 2.12.3.qualifier
+Bundle-Version: 2.13.0
 Bundle-Activator: org.ietr.preesm.pimm.algorithm.Activator
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.core.runtime,
