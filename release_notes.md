@@ -5,6 +5,7 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* New code generation with TCP communications - first prototype implementation;
 
 ### Changes
 * Fix checkstyle configuration;
