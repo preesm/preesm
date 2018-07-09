@@ -65,6 +65,9 @@ import org.ietr.preesm.pimm.algorithm.spider.codegen.visitor.SpiderCodegen;
  */
 public class SpiderCodegenTask extends AbstractTaskImplementation {
 
+  /** The Constant PARAM_PRINTER. */
+  public static final String PARAM_PAPIFY = "Papify";
+
   /*
    * (non-Javadoc)
    *
@@ -78,6 +81,14 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     // Retrieve inputs
     final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph pg = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
+    // Check if we are using papify instrumentation
+    final String papifyParameter = parameters.get(SpiderCodegenTask.PARAM_PAPIFY);
+    final boolean usingPapify;
+    if (papifyParameter != null) {
+      usingPapify = papifyParameter.equals("true");
+    } else {
+      usingPapify = false;
+    }
 
     final SpiderCodegen launcher = new SpiderCodegen(scenario);
 
@@ -85,7 +96,9 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     final String graphCode = launcher.generateGraphCode(pg);
     final String fctCode = launcher.generateFunctionCode(pg);
     final String hCode = launcher.generateHeaderCode(pg);
-    final String mCode = launcher.generateMainCode(pg);
+    // TODO: add config as parameters from workflow
+    final String mCode = launcher.generateMainCode(pg, usingPapify);
+    final String papifyCode = launcher.generatePapifyCode(pg, scenario);
 
     // Get the workspace
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -101,6 +114,12 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     final IFolder f = workspace.getRoot().getFolder(new Path(codegenPath));
     final File folder = new File(f.getRawLocation().toOSString());
     folder.mkdirs();
+    if (folder.isDirectory()) {
+      // clean the folder
+      for (File file : folder.listFiles()) {
+        file.delete();
+      }
+    }
 
     // Create the files
     final String hFilePath = pg.getName() + ".h";
@@ -138,6 +157,17 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
       cppMainWriter.write(mCode);
     } catch (final IOException e) {
       e.printStackTrace();
+    }
+
+    // Write papify file
+    if (usingPapify) {
+      final String cppPapifyfilePath = "papify_" + pg.getName() + ".cpp";
+      final File cppPapifyFile = new File(folder, cppPapifyfilePath);
+      try (FileWriter cppPapifyWriter = new FileWriter(cppPapifyFile)) {
+        cppPapifyWriter.write(papifyCode);
+      } catch (final IOException e) {
+        e.printStackTrace();
+      }
     }
 
     // Return an empty output map
