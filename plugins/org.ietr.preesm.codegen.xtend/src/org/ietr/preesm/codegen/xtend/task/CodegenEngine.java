@@ -91,6 +91,10 @@ public class CodegenEngine {
   /** The code blocks. */
   private final Collection<Block> codeBlocks;
 
+  public Collection<Block> getCodeBlocks() {
+    return codeBlocks;
+  }
+
   /** The registered printers and blocks. */
   private Map<IConfigurationElement, List<Block>> registeredPrintersAndBlocks;
 
