@@ -118,8 +118,8 @@ public class LCMBasedBRV extends PiBRV {
       final long sourceRV = this.graphBRV.get(sourceActor);
       final long targetRV = this.graphBRV.get(targetActor);
       if ((sourceRV * prod) != (targetRV * cons)) {
-        throw new PiMMHelperException(
-            "Graph non consistent: edge source production " + Long.toString(prod * sourceRV) + "!= edge target consumption " + Long.toString(cons * targetRV));
+        throw new PiMMHelperException("Graph non consistent: edge source production " + sourceActor.getName() + " " + Long.toString(prod * sourceRV)
+            + "!= edge target consumption " + Long.toString(cons * targetRV));
       }
     }
   }
