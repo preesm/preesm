@@ -42,7 +42,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ietr.preesm</groupId>
   <artifactId>org.ietr.preesm.parent</artifactId>
-  <version>2.12.3</version>
+  <version>2.13.0</version>
   <packaging>pom</packaging>
 
   <!-- More Project Information -->
@@ -74,12 +74,12 @@
   </scm>
 
   <properties>
-    <jacoco-version>0.7.9</jacoco-version>
-    <tycho-version>1.0.0</tycho-version>
-    <findbugs-version>3.0.4</findbugs-version>
-    <sonar-version>3.3.0.603</sonar-version>
-    <rcptt-version>2.2.0</rcptt-version>
-    <checkstyle-version>8.8</checkstyle-version>
+    <jacoco-version>0.8.1</jacoco-version>
+    <tycho-version>1.2.0</tycho-version>
+    <findbugs-version>3.0.5</findbugs-version>
+    <sonar-version>3.4.1.1168</sonar-version>
+    <checkstyle-version>8.10</checkstyle-version>
+    <rcptt-version>2.3.0</rcptt-version>
     <preesm.coding.policy.version>1.2.4</preesm.coding.policy.version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -108,15 +108,15 @@
   <repositories>
     <!-- add Eclipse repository to resolve dependencies -->
     <repository>
-      <id>Oxygen</id>
+      <id>Eclipse</id>
       <layout>p2</layout>
-      <url>${eclipse.mirror}/releases/oxygen/</url>
+      <url>${eclipse.mirror}/releases/photon/</url>
     </repository>
     <!-- add Eclipse updates for latest releases -->
     <repository>
-      <id>Oxygen Updates</id>
+      <id>Eclipse Updates</id>
       <layout>p2</layout>
-      <url>${eclipse.mirror}/eclipse/updates/4.7</url>
+      <url>${eclipse.mirror}/eclipse/updates/4.8</url>
     </repository>
     <!-- add TMF repository for latest Xtend -->
     <repository>
@@ -149,7 +149,7 @@
       <plugin>
         <groupId>org.commonjava.maven.plugins</groupId>
         <artifactId>directory-maven-plugin</artifactId>
-        <version>0.1</version>
+        <version>0.3.1</version>
         <executions>
           <execution>
             <id>directories</id>
@@ -197,7 +197,7 @@
       <plugin>
         <groupId>org.eclipse.tycho</groupId>
         <artifactId>tycho-compiler-plugin</artifactId>
-        <version>1.0.0</version>
+        <version>${tycho-version}</version>
         <configuration>
           <useProjectSettings>false</useProjectSettings>
         </configuration>
@@ -244,7 +244,7 @@
       <plugin>
         <groupId>org.eclipse.xtend</groupId>
         <artifactId>xtend-maven-plugin</artifactId>
-        <version>2.11.0</version>
+        <version>2.14.0</version>
         <executions>
           <execution>
             <goals>
@@ -258,11 +258,18 @@
             </configuration>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.equinox.common</artifactId>
+            <version>3.10.0</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <!-- Make sure clean goal removes xtend generated files -->
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
-        <version>2.4.1</version>
+        <version>3.1.0</version>
         <configuration>
           <filesets>
             <fileset>
@@ -293,6 +300,7 @@
           <configLocation>/VAADER_checkstyle.xml</configLocation>
           <failsOnError>true</failsOnError>
           <includes>**/*.java</includes>
+          <sourceDirectories>src/</sourceDirectories>
           <consoleOutput>true</consoleOutput>
         </configuration>
         <dependencies>
@@ -377,7 +385,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.0.2</version>
+        <version>3.1.1</version>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -390,6 +398,28 @@
         <version>${sonar-version}</version>
       </plugin>
 
+      <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>3.0.0-M2</version>
+          <configuration>
+            <rules>
+              <bannedPlugins>
+                <excludes>
+                  <exclude>org.apache.maven.plugins:maven-verifier-plugin</exclude>
+                </excludes>
+                <message>Please consider using the maven-invoker-plugin (http://maven.apache.org/plugins/maven-invoker-plugin/)!</message>
+              </bannedPlugins>
+              <requireMavenVersion>
+                <version>3.3.9</version>
+              </requireMavenVersion>
+              <requireJavaVersion>
+                <version>1.8</version>
+              </requireJavaVersion>
+              <!--<dependencyConvergence/>-->
+            </rules>
+          </configuration>
+        </plugin>
     </plugins>
   </build>
 

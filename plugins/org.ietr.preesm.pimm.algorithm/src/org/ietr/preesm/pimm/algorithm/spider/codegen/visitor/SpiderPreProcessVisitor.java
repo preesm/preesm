@@ -176,6 +176,7 @@ public class SpiderPreProcessVisitor extends PiMMSwitch<Boolean> {
     for (final ConfigOutputPort p : aa.getConfigOutputPorts()) {
       doSwitch(p);
     }
+    this.actorNames.put(aa.getVertexPath().replace("/", "_"), aa);
     return true;
   }
 
@@ -197,8 +198,6 @@ public class SpiderPreProcessVisitor extends PiMMSwitch<Boolean> {
         WorkflowLogger.getLogger().warning("Actor " + a.getName() + " doesn't have correct refinement.");
       }
     }
-
-    this.actorNames.put(a.getName(), a);
 
     caseAbstractActor(a);
     return true;

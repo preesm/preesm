@@ -64,6 +64,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
+import org.ietr.preesm.codegen.xtend.model.codegen.PapifyAction;
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
@@ -156,6 +157,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
         return createIntVar();
       case CodegenPackage.BUFFER_ITERATOR:
         return createBufferIterator();
+      case CodegenPackage.PAPIFY_ACTION:
+        return createPapifyAction();
       default:
         throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
     }
@@ -456,6 +459,17 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
   public BufferIterator createBufferIterator() {
     final BufferIteratorImpl bufferIterator = new BufferIteratorImpl();
     return bufferIterator;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  @Override
+  public PapifyAction createPapifyAction() {
+    final PapifyActionImpl papifyAction = new PapifyActionImpl();
+    return papifyAction;
   }
 
   /**

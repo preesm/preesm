@@ -38,7 +38,7 @@
 <feature
       id="org.ietr.preesm.dev.feature"
       label="PREESM Developper Requirements (Meta Feature)"
-      version="2.12.3">
+      version="2.13.0">
 
    <description url="http://org/">
       This feature embeds all required Eclipse plugins for developping PREESM. That includes XTend, GEF, EMF, Graphiti (Eclipse) Plus SDKs, along with Checkstyle integration for Eclipse, Maven integration for Eclipse (and appropriate extension), and other IETR dependencies (third party libraries, DFTools and Graphiti).
@@ -570,21 +570,21 @@ Version 1.0 dated 2006-09-05.]]>
    <!-- The following section tells where to lookup missing imported features -->
    <url>
       <!-- Eclipse main repos -->
-      <discovery label="Oxygen" url="http://mirror.ibcp.fr/pub/eclipse/releases/oxygen/"/>
-      <discovery label="Oxygen Updates" url="http://mirror.ibcp.fr/pub/eclipse/eclipse/updates/4.7"/>
+      <discovery label="Eclipse" url="http://mirror.ibcp.fr/pub/eclipse/releases/photon/"/>
+      <discovery label="Eclipse Updates" url="http://mirror.ibcp.fr/pub/eclipse/eclipse/updates/4.8"/>
 
       <!-- TMF Repo for latest xtend -->
       <discovery label="TMF Releases" url="http://mirror.ibcp.fr/pub/eclipse/modeling/tmf/xtext/updates/releases/"/>
 
       <!-- RCPTT -->
-      <discovery label="RCPTT" url="http://mirror.ibcp.fr/pub/eclipse/rcptt/release/2.2.0/repository/"/>
+      <discovery label="RCPTT" url="http://mirror.ibcp.fr/pub/eclipse/rcptt/release/2.3.0/repository/"/>
 
       <!-- M2E extension -->
       <discovery label="M2E Tycho" url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST/"/>
-      <discovery label="M2E Code Quality Connectors" url="http://m2e-code-quality.github.io/m2e-code-quality/site/latest/"/>
+      <discovery label="M2E Code Quality Connectors" url="https://preesm.github.io/m2e-code-quality/site/latest/"/>
       <discovery label="M2E Settings Connectors" url="https://preesm.github.io/m2e-settings/site/"/>
       <!-- Checkstyle main repos -->
-      <discovery label="Checkstyle" url="http://eclipse-cs.sf.net/update/"/>
+      <discovery label="Checkstyle" url="https://dl.bintray.com/eclipse-cs/eclipse-cs/8.10.0/"/>
       <!-- Sonarlint main repos -->
       <discovery label="Sonarlint" url="http://eclipse.sonarlint.org/"/>
 
@@ -599,7 +599,7 @@ Version 1.0 dated 2006-09-05.]]>
       <import feature="org.eclipse.sdk"/>
 
       <!-- Modeling capabilities -->
-      <import feature="org.eclipse.xtend.sdk" version="2.11.0" match="greaterOrEqual"/>
+      <import feature="org.eclipse.xtend.sdk" version="2.14.0" match="greaterOrEqual"/>
       <import feature="org.eclipse.gef.sdk"/>
       <import feature="org.eclipse.emf.sdk"/>
       <import feature="org.eclipse.emf.ecoretools.sdk"/>
@@ -612,7 +612,7 @@ Version 1.0 dated 2006-09-05.]]>
       <import feature="net.sf.eclipsecs"/>
 
       <!-- m2e (Maven for Eclipse) -->
-      <import feature="org.eclipse.m2e.feature"/>
+      <import feature="org.eclipse.m2e.feature"  version="1.9.0" match="greaterOrEqual"/>
       <import feature="com.basistech.m2e.code.quality.checkstyle.feature"/>
       <import feature="org.sonatype.tycho.m2e.feature"/>
       <import feature="nl.topicus.m2e.settings.feature" version="2.1.0" match="greaterOrEqual"/>
@@ -628,8 +628,8 @@ Version 1.0 dated 2006-09-05.]]>
 
       <!-- IETR dependencies -->
       <import feature="org.ietr.externaldeps.aio.deps" version="3.2.0" match="compatible"/>
-      <import feature="org.ietr.graphiti.feature" version="1.8.0" match="compatible"/>
-      <import feature="org.ietr.dftools.feature" version="1.7.2" match="compatible"/>
+      <import feature="org.ietr.graphiti.feature" version="1.9.0" match="compatible"/>
+      <import feature="org.ietr.dftools.feature" version="1.8.0" match="compatible"/>
       <!--
 		If building along with Graphiti and/or DFTools source (without Preesm Meta
 		Dev Feature), the following features are not available. That is because the

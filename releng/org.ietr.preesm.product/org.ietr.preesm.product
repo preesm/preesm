@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Preesm" uid="org.ietr.preesm.product" id="org.ietr.preesm.rcp.utils.product" application="org.eclipse.ui.ide.workbench" version="2.12.3" useFeatures="true" includeLaunchers="true">
+<product name="Preesm" uid="org.ietr.preesm.product" id="org.ietr.preesm.rcp.utils.product" application="org.eclipse.ui.ide.workbench" version="2.13.0" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/org.ietr.preesm.rcp.utils/icons/preesmLogo_48x48.png"/>
       <text>
-         PREESM ['prɪzəm] is an open source rapid prototyping tool. It simulates signal processing applications and generates code for heterogeneous multi/many-core embedded systems. Its dataflow language eases the description of parallel signal processing applications.
+         PREESM [&apos;prɪzəm] is an open source rapid prototyping tool. It simulates signal processing applications and generates code for heterogeneous multi/many-core embedded systems. Its dataflow language eases the description of parallel signal processing applications.
          
          PREESM is released under the CeCILL-C License.
          
@@ -36,7 +36,6 @@
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
    </vm>
@@ -567,6 +566,8 @@ Version 1.0 dated 2006-09-05.
    </plugins>
 
    <features>
+      <feature id="org.ietr.graphiti.feature"/>
+      <feature id="org.ietr.dftools.feature"/>
       <feature id="org.ietr.preesm.feature"/>
       <feature id="org.eclipse.platform"/>
       <feature id="org.eclipse.equinox.p2.user.ui"/>

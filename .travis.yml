@@ -14,6 +14,8 @@ notifications:
     on_success: change
     on_failure: always
   slack:
+    on_success: change
+    on_failure: always
     rooms:
       - vaader-ietr:EEtUq0RrGRpHSXWZiEApSDwS#preesm
 
@@ -62,11 +64,11 @@ jobs:
     - stage : Clean (offline)
       script: mvn --offline -e -C -B -V -P doUpdateSite -Dtycho.mode=maven clean
     - stage : Build code and package (offline, no tests)
-      script: mvn --offline -e -C -B -V package -fae -Dmaven.test.skip=true
+      script: mvn -e -C -B -V package -fae -Dmaven.test.skip=true
     - stage : Test and run sonar (offline)
-      script: mvn --offline -e -C -B -V verify sonar:sonar -fae
+      script: mvn -e -C -B -V verify sonar:sonar -fae
     - stage : Package Update-Site (offline, no tests)
-      script: mvn --offline -e -C -B -V -P doUpdateSite package -fae -Dmaven.test.skip=true
+      script: mvn -e -C -B -V -P doUpdateSite package -fae -Dmaven.test.skip=true
 
 #skip install step before each stage by running the /bin/true command
 install: true

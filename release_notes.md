@@ -1,6 +1,28 @@
 PREESM Changelog
 ================
 
+## Release version 2.13.0
+*2018.07.09*
+
+### New Feature
+* New code generation with TCP communications - first prototype implementation;
+
+### Changes
+* Fix checkstyle configuration;
+* Refactor FilesManager: rewrite in plain java and use proper URL resolver;
+* Add PiGraph helper operation;
+* Fix codegen core comparator for giving proper core ID;
+* Update to Eclipse Photon;
+* Force Graphiti to [1.9.0,2.0.0);
+* Force DFTools to [1.8.0,2.0.0);
+* Update Xtend/Xtext to 2.14.0+;
+* Fix papify codegen for spider;
+* Cleanup Preesm-Papify;
+
+### Bug fix
+* Fix issue #61;
+
+
 ## Release version 2.12.3
 *2018.06.06*
 
@@ -32,6 +54,7 @@ PREESM Changelog
 * In spider codegen, the try - catch in the main auto generated now englobe the init as well;
 * Update manifest files;
 * Fix xtend warnings;
+* Adding papify code generation for spider
 
 ### Bug fix
 * Fix issue with copy/paste when reconnecting dependencies;

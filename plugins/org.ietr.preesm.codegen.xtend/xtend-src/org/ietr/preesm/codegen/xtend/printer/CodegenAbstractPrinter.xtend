@@ -2,7 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Daniel Madroñal <daniel.madronal@upm.es> (2017)
+ * Daniel Madroñal <daniel.madronal@upm.es> (2017 - 2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2016)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
  *
@@ -68,6 +68,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 import org.ietr.preesm.codegen.xtend.model.codegen.util.CodegenSwitch
 import org.ietr.preesm.codegen.xtend.task.CodegenEngine
 import org.ietr.preesm.codegen.xtend.task.CodegenException
+import org.ietr.preesm.codegen.xtend.model.codegen.PapifyAction
 
 enum PrinterState {
 	PRINTING_DEFINITIONS,
@@ -419,6 +420,10 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 
 		return printConstant(constant)
 	}
+	
+	override casePapifyAction(PapifyAction action) {
+		return printPapifyAction(action)
+	}
 
 	override caseConstantString(ConstantString constant) {
 		if (state.equals(PrinterState::PRINTING_DEFINITIONS))
@@ -689,6 +694,18 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printConstant(Constant constant)
+	
+	/**
+	 * Method called to print a {@link PapifyAction} outside the
+	 * {@link CoreBlock#getDefinitions() definition} or the
+	 * {@link CoreBlock#getDeclarations() declaration} of a
+	 * {@link CoreBlock}
+	 *
+	 * @param action
+	 *            the {@link PapifyAction} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printPapifyAction(PapifyAction action)
 
 	/**
 	 * Method called to print a {@link Constant} within the

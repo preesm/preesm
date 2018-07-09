@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2011)
  *
@@ -57,6 +57,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.ui.fields.FieldUtils;
 import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 
@@ -190,10 +191,11 @@ public class CodegenPage extends FormPage {
     toolkit.createLabel(client, fileEdit);
 
     final Text text = toolkit.createText(client, initValue, SWT.SINGLE);
+    colorRedIfFileAbsent(text);
     text.setData(title);
     text.addModifyListener(e -> {
       final Text text1 = (Text) e.getSource();
-
+      colorRedIfFileAbsent(text1);
       CodegenPage.this.scenario.getCodegenManager().setCodegenDirectory(text1.getText());
 
       firePropertyChange(IEditorPart.PROP_DIRTY);
@@ -209,4 +211,18 @@ public class CodegenPage extends FormPage {
 
     toolkit.paintBordersFor(client);
   }
+
+  private void colorRedIfFileAbsent(final Text text) {
+    final String codegenDirPath = text.getText().replaceAll("//", "/");
+    final String sanitizedPath;
+    if (codegenDirPath.startsWith("/")) {
+      sanitizedPath = codegenDirPath.substring(1);
+    } else {
+      sanitizedPath = codegenDirPath;
+    }
+    final String rootSegment = sanitizedPath.substring(0, sanitizedPath.indexOf("/"));
+    final boolean testPathValidInWorkspace = FieldUtils.testPathValidInWorkspace("/" + rootSegment);
+    FieldUtils.colorRedOnCondition(text, !testPathValidInWorkspace);
+  }
+
 }

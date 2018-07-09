@@ -70,6 +70,8 @@ import org.ietr.preesm.mapper.params.AbcParameters;
  *
  * @author pmenuet
  * @author mpelcat
+ *
+ * @deprecated see {@link ListSchedulingMappingFromDAG}
  */
 @Deprecated
 public class ListSchedulingMapping extends AbstractMapping {
