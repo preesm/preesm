@@ -64,6 +64,7 @@ import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
+import org.ietr.preesm.experiment.model.PiGraphException;
 import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
@@ -332,7 +333,11 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     }
     // Handle input parameters as instance arguments
     for (final ConfigInputPort p : a.getConfigInputPorts()) {
-      final ISetter setter = p.getIncomingDependency().getSetter();
+      final Dependency incomingDependency = p.getIncomingDependency();
+      if (incomingDependency == null) {
+        throw new PiGraphException("Actor config input port '" + a.getVertexPath() + "." + p.getName() + "' is not connected.", new NullPointerException());
+      }
+      final ISetter setter = incomingDependency.getSetter();
       if (setter instanceof Parameter) {
         final Parameter param = (Parameter) setter;
         final Argument arg = new Argument(p.getName());
