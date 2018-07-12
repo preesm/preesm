@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Enable XCore codegen plugin back in Maven (https://github.com/eclipse/xtext/issues/1233);
 
 ### Bug fix
 * Fix issue #62
