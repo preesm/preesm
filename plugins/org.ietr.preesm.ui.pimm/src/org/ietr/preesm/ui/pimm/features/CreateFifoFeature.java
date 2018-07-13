@@ -47,6 +47,7 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
@@ -54,6 +55,7 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.PersistenceLevel;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.PortKind;
@@ -108,6 +110,18 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
         PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
             "A port cannot be connected to several FIFOs");
         return false;
+      }
+
+      // Same check that the one in the canStartConnection
+      final DataInputPort targetPort = (DataInputPort) target;
+      final AbstractActor targetActor = targetPort.getContainingActor();
+      if (targetActor instanceof DelayActor) {
+        final Delay delay = ((DelayActor) targetActor).getLinkedDelay();
+        if (delay.getLevel() == PersistenceLevel.LOCAL || delay.getLevel() == PersistenceLevel.PERMANENT) {
+          PiMMUtil.setToolTip(getFeatureProvider(), context.getSourceAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
+              "A delay with permanent data tokens persistence can not be connected to a getter actor.");
+          return false;
+        }
       }
 
       return true;
@@ -301,6 +315,17 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
           // Indeed, it seems to me that the coexistence of a unique
           // fifo and one or several dependencies is not a problem
           // since each connection has a very precise semantics.
+        }
+        // we need to check if we start from a delay that it is allowed
+        final DataOutputPort sourcePort = (DataOutputPort) source;
+        final AbstractActor sourceActor = sourcePort.getContainingActor();
+        if (sourceActor instanceof DelayActor) {
+          final Delay delay = ((DelayActor) sourceActor).getLinkedDelay();
+          if (delay.getLevel() == PersistenceLevel.PERMANENT || delay.getLevel() == PersistenceLevel.LOCAL) {
+            PiMMUtil.setToolTip(getFeatureProvider(), context.getSourceAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
+                "A delay with permanent data tokens persistence can not be connected to a setter actor.");
+            return false;
+          }
         }
         return true;
       } else {
