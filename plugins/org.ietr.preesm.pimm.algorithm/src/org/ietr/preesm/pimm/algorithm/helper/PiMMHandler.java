@@ -376,7 +376,7 @@ public class PiMMHandler {
     }
   }
 
-  private void recursiveRemovePersistence(final PiGraph graph) {
+  private void recursiveRemovePersistence(final PiGraph graph) throws PiMMHelperException {
     final boolean isTop = graph.getContainingPiGraph() == null;
     if (!isTop) {
       // We assume that if the user want to make a delay persist across multiple levels,
@@ -385,9 +385,15 @@ public class PiMMHandler {
         final Delay delay = fifo.getDelay();
         String delayShortID = delay.getShortId();
         if (delay.getLevel().equals(PersistenceLevel.LOCAL)) {
+          if (delay.hasGetterActor() || delay.hasSetterActor()) {
+            throw new PiMMHelperException("Delay with local persistence can not be connected to a setter nor a getter actor.");
+          }
           delay.setName(delayShortID);
           replaceLocalDelay(graph, delay);
         } else if (delay.getLevel().equals(PersistenceLevel.PERMANENT)) {
+          if (delay.hasGetterActor() || delay.hasSetterActor()) {
+            throw new PiMMHelperException("Delay with global persistence can not be connected to a setter nor a getter actor.");
+          }
           // In the case of a permanent delay we have to make it go up to the top.
           PiGraph currentGraph = graph;
           Delay currentDelay = delay;
@@ -400,6 +406,10 @@ public class PiMMHandler {
             currentGraph = currentGraph.getContainingPiGraph();
             currentDelay = newDelay;
           } while (currentGraph.getContainingPiGraph() != null);
+        } else {
+          if (((delay.hasSetterActor()) && !(delay.hasGetterActor())) || ((delay.hasGetterActor()) && (!delay.hasSetterActor()))) {
+            throw new PiMMHelperException("Asymetric configuration for delay setter / getter actor is not yet supported.\nPlease Contact PREESM developers.");
+          }
         }
       }
     }
@@ -479,6 +489,7 @@ public class PiMMHandler {
 
     // 5. Finally we add a delay to this FIFO as well
     final Delay delayPersistence = PiMMUserFactory.instance.createDelay();
+    delayPersistence.setLevel(PersistenceLevel.NONE);
     delayPersistence.getSizeExpression().setExpressionString(delayExpression);
     fifoPersistence.setDelay(delayPersistence);
     graph.getContainingPiGraph().addDelay(delayPersistence);

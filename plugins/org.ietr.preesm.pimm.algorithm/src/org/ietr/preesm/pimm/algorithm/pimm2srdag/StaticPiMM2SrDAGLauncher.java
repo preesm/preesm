@@ -105,7 +105,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     try {
       timer.start();
       // 1. First we resolve all parameters.
-      // It must be done first because, when removing persistence local parameters have to be known at upper level
+      // It must be done first because, when removing persistence, local parameters have to be known at upper level
       this.piHandler.resolveAllParameters();
       timer.stop();
       String msg = "Parameters and rates evaluations: " + timer + "s.";
