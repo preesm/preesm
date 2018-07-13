@@ -251,7 +251,7 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
     data.left = new FormAttachment(0, 0);
     data.right = new FormAttachment(this.persistenceComboLevel, -ITabbedPropertyConstants.HSPACE);
     data.top = new FormAttachment(this.lblValue);
-    this.persistenceComboLevel.setLayoutData(data);
+    this.persistenceLabelLevel.setLayoutData(data);
 
     this.txtExpression.addModifyListener(e -> updateProperties());
 
@@ -285,9 +285,9 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
             ((SetPersistenceLevelFeature) feature).setCurrentPL(pl);
 
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
-            final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
-            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout);
-            getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+            // final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
+            // final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout);
+            // getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
           }
         }
 

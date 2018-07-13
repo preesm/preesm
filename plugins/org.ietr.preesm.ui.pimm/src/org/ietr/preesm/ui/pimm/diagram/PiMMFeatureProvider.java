@@ -159,6 +159,7 @@ import org.ietr.preesm.ui.pimm.features.RenameActorPortFeature;
 import org.ietr.preesm.ui.pimm.features.SetActorMemoryScriptFeature;
 import org.ietr.preesm.ui.pimm.features.SetActorRefinementFeature;
 import org.ietr.preesm.ui.pimm.features.SetFifoTypeFeature;
+import org.ietr.preesm.ui.pimm.features.SetPersistenceLevelFeature;
 import org.ietr.preesm.ui.pimm.features.SetPortMemoryAnnotationFeature;
 import org.ietr.preesm.ui.pimm.features.SetVisibleAllDependenciesFeature;
 import org.ietr.preesm.ui.pimm.features.SetVisibleDependenciesFromParameterFeature;
@@ -413,11 +414,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     }
 
     if (obj instanceof Delay) {
-      final ICustomFeature[] delayFeatures = new ICustomFeature[] { new SetActorRefinementFeature(this), new ClearActorRefinementFeature(this),
-          new OpenRefinementFeature(this) };
-      for (final ICustomFeature feature : delayFeatures) {
-        features.add(feature);
-      }
+      features.add(new SetPersistenceLevelFeature(this));
     }
 
     return features.toArray(new ICustomFeature[features.size()]);
