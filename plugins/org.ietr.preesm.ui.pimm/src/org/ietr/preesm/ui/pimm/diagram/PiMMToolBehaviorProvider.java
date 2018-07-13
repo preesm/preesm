@@ -139,7 +139,7 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
               sb.append("That means the links from the diagram file to the PiSDF file are obsolete. ");
               sb.append("This can cause issues when exploring or manipulating the application specification. ");
               sb.append("\n\n");
-              sb.append("For this reason, editing this graph is disabled.");
+              sb.append("For this reason, editing this graph is disabled, and display might even fail.");
               sb.append("\n\n");
               sb.append("This can be fixed by generating a new diagram file from the pi file (note that the layout will be recomputed). ");
               sb.append("To do so, right click on the pi file, then on \"Preem / Generate .diagram\".");
