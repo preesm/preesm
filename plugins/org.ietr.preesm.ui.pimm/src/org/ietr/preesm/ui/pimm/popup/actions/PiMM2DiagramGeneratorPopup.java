@@ -86,6 +86,7 @@ import org.ietr.preesm.ui.PreesmUIPlugin;
 import org.ietr.preesm.ui.pimm.diagram.PiMMDiagramEditor;
 import org.ietr.preesm.ui.pimm.features.PasteFeature;
 import org.ietr.preesm.ui.pimm.layout.AutoLayoutFeature;
+import org.ietr.preesm.ui.utils.ErrorWithExceptionDialog;
 
 /**
  *
@@ -141,7 +142,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
       }
     } catch (final Exception cause) {
       final String message = "Could not generate diagram from PiMM model file";
-      throw new ExecutionException(message, cause);
+      ErrorWithExceptionDialog.errorDialogWithStackTrace(message, cause);
     }
   }
 

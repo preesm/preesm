@@ -8,6 +8,7 @@ PREESM Changelog
 
 ### Changes
 * Enable XCore codegen plugin back in Maven (https://github.com/eclipse/xtext/issues/1233);
+* Properly display errors in a dialog when generating diagram from .pi file fails;
 
 ### Bug fix
 * Fix issue #62
