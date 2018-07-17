@@ -86,7 +86,6 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
     }
 
     // Do the distribution
-    Distributor.setLogger(this.logger);
     final Map<String, MemoryExclusionGraph> megs = Distributor.distributeMeg(this.valueDistribution, memEx, this.alignment);
 
     // Log results
