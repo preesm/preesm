@@ -40,14 +40,11 @@
  */
 package org.ietr.preesm.mapper;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -63,20 +60,13 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.params.FastAlgoParameters;
 
-// TODO: Auto-generated Javadoc
 /**
  * FAST is a sequential mapping/scheduling method based on list scheduling followed by a neighborhood search phase. It was invented by Y-K Kwok.
  *
  * @author pmenuet
  * @author mpelcat
  */
-public class FASTMappingFromDAG extends AbstractMapping {
-
-  /**
-   * Instantiates a new FAST mapping.
-   */
-  public FASTMappingFromDAG() {
-  }
+public class FASTMappingFromDAG extends AbstractMappingFromDAG {
 
   /*
    * (non-Javadoc)
@@ -93,22 +83,8 @@ public class FASTMappingFromDAG extends AbstractMapping {
     return parameters;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.AbstractMapping#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
-   * org.ietr.dftools.workflow.elements.Workflow)
-   */
-  @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
-
-    final Map<String, Object> outputs = new LinkedHashMap<>();
-    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
-    MapperDAG dag = (MapperDAG) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
-    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
-
-    super.execute(inputs, parameters, monitor, nodeName, workflow);
+  protected void schedule(final Design architecture, final PreesmScenario scenario, final MapperDAG dag, final Map<String, String> parameters,
+      final Map<String, Object> outputs) {
 
     final FastAlgoParameters fastParams = new FastAlgoParameters(parameters);
     final AbcParameters abcParams = new AbcParameters(parameters);
@@ -127,7 +103,7 @@ public class FASTMappingFromDAG extends AbstractMapping {
 
     final InitialLists initialLists = new InitialLists();
     if (!initialLists.constructInitialLists(dag, simu)) {
-      return outputs;
+      return;
     }
 
     final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
@@ -137,13 +113,13 @@ public class FASTMappingFromDAG extends AbstractMapping {
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
 
-    dag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false, fastParams.isDisplaySolutions(), monitor, taskSched);
+    MapperDAG resDag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false, fastParams.isDisplaySolutions(), null, taskSched);
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
 
-    final IAbc simu2 = AbstractAbc.getInstance(abcParams, dag, architecture, scenario);
+    final IAbc simu2 = AbstractAbc.getInstance(abcParams, resDag, architecture, scenario);
     // Transfer vertices are automatically regenerated
-    simu2.setDAG(dag);
+    simu2.setDAG(resDag);
 
     // The transfers are reordered using the best found order during
     // scheduling
@@ -153,7 +129,7 @@ public class FASTMappingFromDAG extends AbstractMapping {
     // The mapper dag properties are put in the property bean to be
     // transfered to code generation
     try {
-      tagDAG.tag(dag, architecture, scenario, simu2, abcParams.getEdgeSchedType());
+      tagDAG.tag(resDag, architecture, scenario, simu2, abcParams.getEdgeSchedType());
     } catch (final InvalidExpressionException e) {
       throw (new WorkflowException(e.getMessage()));
     }
@@ -161,13 +137,12 @@ public class FASTMappingFromDAG extends AbstractMapping {
     // A simple task scheduler avoids new task swaps and ensures reuse of
     // previous order.
     simu2.setTaskScheduler(new SimpleTaskSched());
-    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, resDag);
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, simu2);
 
     super.clean(architecture, scenario);
-    super.checkSchedulingResult(parameters, dag);
+    super.checkSchedulingResult(parameters, resDag);
 
-    return outputs;
   }
 
 }

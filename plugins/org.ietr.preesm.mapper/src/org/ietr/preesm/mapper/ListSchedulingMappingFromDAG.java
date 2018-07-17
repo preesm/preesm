@@ -40,14 +40,11 @@
  */
 package org.ietr.preesm.mapper;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -62,41 +59,16 @@ import org.ietr.preesm.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.params.AbcParameters;
 
-// TODO: Auto-generated Javadoc
 /**
  * List scheduling is a cheep, greedy, sequential mapping/scheduling method.
  *
  * @author pmenuet
  * @author mpelcat
  */
-public class ListSchedulingMappingFromDAG extends AbstractMapping {
+public class ListSchedulingMappingFromDAG extends AbstractMappingFromDAG {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.AbstractMapping#getDefaultParameters()
-   */
-  @Override
-  public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = super.getDefaultParameters();
-    return parameters;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.AbstractMapping#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
-   * org.ietr.dftools.workflow.elements.Workflow)
-   */
-  @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
-
-    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
-    final MapperDAG dag = (MapperDAG) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
-    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
-
-    super.execute(inputs, parameters, monitor, nodeName, workflow);
+  protected void schedule(final Design architecture, final PreesmScenario scenario, final MapperDAG dag, final Map<String, String> parameters,
+      final Map<String, Object> outputs) {
 
     final AbcParameters abcParameters = new AbcParameters(parameters);
 
@@ -112,7 +84,7 @@ public class ListSchedulingMappingFromDAG extends AbstractMapping {
     final boolean couldConstructInitialLists = initial.constructInitialLists(dag, simu);
     if (!couldConstructInitialLists) {
       WorkflowLogger.getLogger().log(Level.SEVERE, "Error in scheduling");
-      return null;
+      return;
     }
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
@@ -135,18 +107,15 @@ public class ListSchedulingMappingFromDAG extends AbstractMapping {
     try {
       tagSDF.tag(dag, architecture, scenario, simu2, abcParameters.getEdgeSchedType());
     } catch (final InvalidExpressionException e) {
-      e.printStackTrace();
-      throw (new WorkflowException(e.getMessage()));
+      throw new WorkflowException(e.getMessage());
     }
 
-    final Map<String, Object> outputs = new LinkedHashMap<>();
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, simu2);
 
     super.clean(architecture, scenario);
     super.checkSchedulingResult(parameters, dag);
 
-    return outputs;
   }
 
 }

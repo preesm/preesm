@@ -40,10 +40,8 @@
  */
 package org.ietr.preesm.mapper;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.types.DAGDefaultVertexPropertyType;
@@ -62,7 +60,6 @@ import org.ietr.dftools.architecture.slam.component.Operator;
 import org.ietr.dftools.architecture.slam.link.Link;
 import org.ietr.dftools.architecture.slam.link.LinkFactory;
 import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
@@ -71,6 +68,7 @@ import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.mapper.abc.AbstractAbc;
 import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
+import org.ietr.preesm.mapper.abc.route.calcul.RouteCalculator;
 import org.ietr.preesm.mapper.abc.taskscheduling.SimpleTaskSched;
 import org.ietr.preesm.mapper.algo.dynamic.DynamicQueuingScheduler;
 import org.ietr.preesm.mapper.graphtransfo.TagDAG;
@@ -80,20 +78,13 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.property.EdgeInit;
 import org.ietr.preesm.mapper.params.AbcParameters;
 
-// TODO: Auto-generated Javadoc
 /**
  * Plug-in class for dynamic queuing scheduling. Dynamic queuing is a type of list scheduling that enables study of multiple graph iterations.
  *
  * @author mpelcat
  * @author kdesnos (minor bugfix)
  */
-public class DynamicQueuingMappingFromDAG extends AbstractMapping {
-
-  /**
-   * Instantiates a new dynamic queuing mapping.
-   */
-  public DynamicQueuingMappingFromDAG() {
-  }
+public class DynamicQueuingMappingFromDAG extends AbstractMappingFromDAG {
 
   /*
    * (non-Javadoc)
@@ -113,25 +104,13 @@ public class DynamicQueuingMappingFromDAG extends AbstractMapping {
     return parameters;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.AbstractMapping#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
-   * org.ietr.dftools.workflow.elements.Workflow)
-   */
-  @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
-
-    final Map<String, Object> outputs = new LinkedHashMap<>();
-    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
-    final MapperDAG dag = (MapperDAG) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
-    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+  protected void schedule(final Design architecture, final PreesmScenario scenario, final MapperDAG dag, final Map<String, String> parameters,
+      final Map<String, Object> outputs) {
 
     // The graph may be repeated a predefined number of times
     // with a predefined period
-    final int iterationNr = Integer.valueOf(parameters.get("iterationNr"));
-    final int iterationPeriod = Integer.valueOf(parameters.get("iterationPeriod"));
+    final int iterationNr = Integer.parseInt(parameters.get("iterationNr"));
+    final int iterationPeriod = Integer.parseInt(parameters.get("iterationPeriod"));
 
     // Repeating the graph to simulate several calls. Repetitions are
     // delayed through
@@ -185,14 +164,14 @@ public class DynamicQueuingMappingFromDAG extends AbstractMapping {
       }
     }
 
-    super.execute(inputs, parameters, monitor, nodeName, workflow);
+    RouteCalculator.recalculate(architecture, scenario);
 
     final AbcParameters abcParameters = new AbcParameters(parameters);
 
     // Repeating the graph to simulate several calls.
     if (iterationNr != 0) {
-      WorkflowLogger.getLogger().log(Level.INFO,
-          "Repetition of the graph " + iterationNr + " time(s) with period " + iterationPeriod + " required in dynamic scheduling");
+      final String message = "Repetition of the graph " + iterationNr + " time(s) with period " + iterationPeriod + " required in dynamic scheduling";
+      WorkflowLogger.getLogger().log(Level.INFO, message);
 
       // Creating virtual actors to delay iterations
       MapperDAGVertex lastCreatedVertex = null;
@@ -285,8 +264,7 @@ public class DynamicQueuingMappingFromDAG extends AbstractMapping {
     try {
       tagSDF.tag(dag, architecture, scenario, simu2, abcParameters.getEdgeSchedType());
     } catch (final InvalidExpressionException e) {
-      e.printStackTrace();
-      throw (new WorkflowException(e.getMessage()));
+      throw new WorkflowException(e.getMessage());
     }
 
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
@@ -297,7 +275,6 @@ public class DynamicQueuingMappingFromDAG extends AbstractMapping {
 
     WorkflowLogger.getLogger().log(Level.INFO, "End of Dynamic Scheduling");
 
-    return outputs;
   }
 
 }
