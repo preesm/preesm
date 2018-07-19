@@ -40,28 +40,16 @@
  */
 package org.ietr.preesm.mapper;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
+import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.mapper.abc.AbstractAbc;
-import org.ietr.preesm.mapper.abc.IAbc;
-import org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
-import org.ietr.preesm.mapper.abc.taskscheduling.TopologicalTaskSched;
-import org.ietr.preesm.mapper.algo.list.InitialLists;
-import org.ietr.preesm.mapper.algo.pfast.PFastAlgorithm;
 import org.ietr.preesm.mapper.graphtransfo.SdfToDagConverter;
-import org.ietr.preesm.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.mapper.model.MapperDAG;
-import org.ietr.preesm.mapper.params.AbcParameters;
-import org.ietr.preesm.mapper.params.PFastAlgoParameters;
 
-// TODO: Auto-generated Javadoc
 /**
  * PFAST is a parallel mapping/scheduling method based on list scheduling followed by a neighborhood search phase. It was invented by Y-K Kwok.
  *
@@ -69,101 +57,20 @@ import org.ietr.preesm.mapper.params.PFastAlgoParameters;
  * @author pmenuet
  */
 @Deprecated
-public class PFASTMapping extends AbstractMapping {
+public class PFASTMapping extends PFASTMappingFromDAG {
 
-  /**
-   * Instantiates a new PFAST mapping.
-   */
-  public PFASTMapping() {
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.AbstractMapping#getDefaultParameters()
-   */
-  @Override
-  public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = super.getDefaultParameters();
-
-    parameters.put("nodesMin", "5");
-    parameters.put("procNumber", "1");
-    parameters.put("displaySolutions", "false");
-    parameters.put("fastTime", "100");
-    parameters.put("fastLocalSearchTime", "10");
-    parameters.put("fastNumber", "100");
-
-    return parameters;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.AbstractMapping#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
-   * org.ietr.dftools.workflow.elements.Workflow)
-   */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
+      final String nodeName, final Workflow workflow) {
 
-    final Map<String, Object> outputs = new LinkedHashMap<>();
-    final Design architecture = (Design) inputs.get("architecture");
-    final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
-    final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+    final SDFGraph algorithm = (SDFGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH);
+    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
+    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
-    super.execute(inputs, parameters, monitor, nodeName, workflow);
+    final MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario);
+    inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
 
-    final PFastAlgoParameters pFastParams = new PFastAlgoParameters(parameters);
-    final AbcParameters abcParameters = new AbcParameters(parameters);
-
-    MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario);
-
-    // calculates the DAG span length on the architecture main operator (the
-    // tasks that can
-    // not be executed by the main operator are deported without transfer
-    // time to other operator
-    calculateSpan(dag, architecture, scenario, abcParameters);
-
-    final IAbc simu = new InfiniteHomogeneousAbc(abcParameters, dag, architecture, abcParameters.getSimulatorType().getTaskSchedType(), scenario);
-
-    final InitialLists initial = new InitialLists();
-
-    if (!initial.constructInitialLists(dag, simu)) {
-      return null;
-    }
-
-    final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
-    simu.resetDAG();
-
-    final IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture, scenario);
-
-    final PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
-
-    dag = pfastAlgorithm.map(dag, architecture, scenario, initial, abcParameters, pFastParams, false, 0, pFastParams.isDisplaySolutions(), null, taskSched);
-
-    simu2.setDAG(dag);
-
-    // simu2.plotImplementation();
-
-    // The transfers are reordered using the best found order during
-    // scheduling
-    simu2.reschedule(pfastAlgorithm.getBestTotalOrder());
-    final TagDAG tagSDF = new TagDAG();
-
-    try {
-      tagSDF.tag(dag, architecture, scenario, simu2, abcParameters.getEdgeSchedType());
-    } catch (final InvalidExpressionException e) {
-      e.printStackTrace();
-      throw (new WorkflowException(e.getMessage()));
-    }
-
-    outputs.put("DAG", dag);
-    outputs.put("ABC", simu2);
-
-    super.clean(architecture, scenario);
-    super.checkSchedulingResult(parameters, dag);
-
-    return outputs;
+    return super.execute(inputs, parameters, monitor, nodeName, workflow);
   }
 
 }

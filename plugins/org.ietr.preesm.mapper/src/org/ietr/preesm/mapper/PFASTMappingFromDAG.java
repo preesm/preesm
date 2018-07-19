@@ -40,13 +40,10 @@
  */
 package org.ietr.preesm.mapper;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbstractAbc;
@@ -60,20 +57,13 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.params.PFastAlgoParameters;
 
-// TODO: Auto-generated Javadoc
 /**
  * PFAST is a parallel mapping/scheduling method based on list scheduling followed by a neighborhood search phase. It was invented by Y-K Kwok.
  *
  * @author mwipliez
  * @author pmenuet
  */
-public class PFASTMappingFromDAG extends AbstractMapping {
-
-  /**
-   * Instantiates a new PFAST mapping.
-   */
-  public PFASTMappingFromDAG() {
-  }
+public class PFASTMappingFromDAG extends AbstractMappingFromDAG {
 
   /*
    * (non-Javadoc)
@@ -94,22 +84,8 @@ public class PFASTMappingFromDAG extends AbstractMapping {
     return parameters;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.AbstractMapping#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
-   * org.ietr.dftools.workflow.elements.Workflow)
-   */
-  @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
-
-    final Map<String, Object> outputs = new LinkedHashMap<>();
-    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
-    MapperDAG dag = (MapperDAG) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
-    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
-
-    super.execute(inputs, parameters, monitor, nodeName, workflow);
+  protected void schedule(final Design architecture, final PreesmScenario scenario, final MapperDAG dag, final Map<String, String> parameters,
+      final Map<String, Object> outputs) {
 
     final PFastAlgoParameters pFastParams = new PFastAlgoParameters(parameters);
     final AbcParameters abcParameters = new AbcParameters(parameters);
@@ -125,7 +101,7 @@ public class PFASTMappingFromDAG extends AbstractMapping {
     final InitialLists initial = new InitialLists();
 
     if (!initial.constructInitialLists(dag, simu)) {
-      return null;
+      return;
     }
 
     final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
@@ -135,11 +111,10 @@ public class PFASTMappingFromDAG extends AbstractMapping {
 
     final PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
 
-    dag = pfastAlgorithm.map(dag, architecture, scenario, initial, abcParameters, pFastParams, false, 0, pFastParams.isDisplaySolutions(), null, taskSched);
+    MapperDAG resdag = pfastAlgorithm.map(dag, architecture, scenario, initial, abcParameters, pFastParams, false, 0, pFastParams.isDisplaySolutions(), null,
+        taskSched);
 
-    simu2.setDAG(dag);
-
-    // simu2.plotImplementation();
+    simu2.setDAG(resdag);
 
     // The transfers are reordered using the best found order during
     // scheduling
@@ -147,19 +122,17 @@ public class PFASTMappingFromDAG extends AbstractMapping {
     final TagDAG tagSDF = new TagDAG();
 
     try {
-      tagSDF.tag(dag, architecture, scenario, simu2, abcParameters.getEdgeSchedType());
+      tagSDF.tag(resdag, architecture, scenario, simu2, abcParameters.getEdgeSchedType());
     } catch (final InvalidExpressionException e) {
-      e.printStackTrace();
-      throw (new WorkflowException(e.getMessage()));
+      throw new WorkflowException(e.getMessage());
     }
 
-    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, resdag);
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, simu2);
 
     super.clean(architecture, scenario);
-    super.checkSchedulingResult(parameters, dag);
+    super.checkSchedulingResult(parameters, resdag);
 
-    return outputs;
   }
 
 }

@@ -48,6 +48,7 @@ import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.impl.latency.SpanLengthCalculator;
 import org.ietr.preesm.mapper.abc.route.calcul.RouteCalculator;
@@ -55,7 +56,6 @@ import org.ietr.preesm.mapper.checker.CommunicationOrderChecker;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.params.AbcParameters;
 
-// TODO: Auto-generated Javadoc
 /**
  * Generic class representing the scheduling algorithm behaviour.
  *
@@ -63,7 +63,7 @@ import org.ietr.preesm.mapper.params.AbcParameters;
  * @author mpelcat
  * @author kdesnos
  */
-public abstract class AbstractMapping extends AbstractTaskImplementation {
+public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation {
 
   /** The Constant PARAM_CHECK. */
   public static final String PARAM_CHECK = "Check";
@@ -82,15 +82,22 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
+      final String nodeName, final Workflow workflow) {
 
-    final Design architecture = (Design) inputs.get("architecture");
-    final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
+    final MapperDAG dag = (MapperDAG) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
+    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     // Asking to recalculate routes
     RouteCalculator.recalculate(architecture, scenario);
-    return null;
+
+    final Map<String, Object> outputs = new LinkedHashMap<>();
+    schedule(architecture, scenario, dag, parameters, outputs);
+    return outputs;
   }
+
+  protected abstract void schedule(final Design architecture, final PreesmScenario scenario, final MapperDAG dag, final Map<String, String> parameters,
+      final Map<String, Object> outputs);
 
   /**
    * Generic mapping message.
@@ -114,7 +121,7 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
     parameters.put("simulatorType", "LooselyTimed");
     parameters.put("edgeSchedType", "Simple");
     parameters.put("balanceLoads", "false");
-    parameters.put(AbstractMapping.PARAM_CHECK, AbstractMapping.VALUE_CHECK_TRUE);
+    parameters.put(AbstractMappingFromDAG.PARAM_CHECK, AbstractMappingFromDAG.VALUE_CHECK_TRUE);
     return parameters;
   }
 
@@ -140,7 +147,7 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
    *          Scheduled {@link DirectedAcyclicGraph}.
    */
   protected void checkSchedulingResult(final Map<String, String> parameters, final DirectedAcyclicGraph dag) {
-    if (parameters.get(AbstractMapping.PARAM_CHECK).equals(AbstractMapping.VALUE_CHECK_TRUE)) {
+    if (parameters.get(AbstractMappingFromDAG.PARAM_CHECK).equals(AbstractMappingFromDAG.VALUE_CHECK_TRUE)) {
       CommunicationOrderChecker.checkCommunicationOrder(dag);
     }
   }
