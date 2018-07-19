@@ -3,7 +3,6 @@
  */
 package org.ietr.preesm.pimm.algorithm.pimm2srdag;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -89,7 +88,9 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
   @Override
   public Map<String, String> getDefaultParameters() {
     // TODO Auto-generated method stub
-    return Collections.emptyMap();
+    final LinkedHashMap<String, String> res = new LinkedHashMap<>();
+    res.put(CONSISTENCY_METHOD, LCM_METHOD);
+    return res;
   }
 
   /*
