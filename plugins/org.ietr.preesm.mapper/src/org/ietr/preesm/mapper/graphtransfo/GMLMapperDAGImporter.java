@@ -90,7 +90,7 @@ public class GMLMapperDAGImporter extends GMLImporter<MapperDAG, MapperDAGVertex
    */
   @Override
   public MapperDAG parseGraph(final Element graphElt) {
-    final MapperDAG graph = new MapperDAG(this.localFactory, null);
+    final MapperDAG graph = new MapperDAG(this.localFactory);
     parseKeys(graphElt, graph);
     graph.setReferenceSdfGraph((SDFGraph) graph.getPropertyBean().getValue(ImplementationPropertyNames.Graph_SdfReferenceGraph));
     final NodeList childList = graphElt.getChildNodes();
