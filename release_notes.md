@@ -10,6 +10,7 @@ PREESM Changelog
 * Enable XCore codegen plugin back in Maven (https://github.com/eclipse/xtext/issues/1233);
 * Properly display errors in a dialog when generating diagram from .pi file fails;
 * Update MapperDAG to keep a reference to the PiSDF; Refactor constructor accordingly;
+* Update MathFunctionHelper to have lcm/gcd on longs;
 
 
 ### Bug fix

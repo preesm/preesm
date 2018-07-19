@@ -62,6 +62,24 @@ public abstract class MathFunctionsHelper {
   }
 
   /**
+   * computes the Greatest Common Divisor (GCD) of two long
+   *
+   * @param a
+   *          long number
+   * @param b
+   *          long number
+   * @return the gcd of a and b
+   */
+  public static long gcd(long a, long b) {
+    while (b > 0) {
+      final long temp = b;
+      b = a % b;
+      a = temp;
+    }
+    return a;
+  }
+
+  /**
    * computes the Greatest Common Divisor (GCD) of a vector of doubles
    *
    * @param input
@@ -86,6 +104,19 @@ public abstract class MathFunctionsHelper {
    * @return lcm of a and b
    */
   public static double lcm(final double a, final double b) {
+    return a * (b / MathFunctionsHelper.gcd(a, b));
+  }
+
+  /**
+   * computes the Least Common Multiple (LCM) of two long
+   *
+   * @param a
+   *          long number
+   * @param b
+   *          long number
+   * @return lcm of a and b
+   */
+  public static long lcm(final long a, final long b) {
     return a * (b / MathFunctionsHelper.gcd(a, b));
   }
 
