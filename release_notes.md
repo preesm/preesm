@@ -15,6 +15,7 @@ PREESM Changelog
   * Add helper operations in PiGraph;
   * Refactor accessors and fix typos;
   * Add Delay name and id handling;
+* Refactor schedulers (and remove obsolete one);
 
 ### Bug fix
 * Fix issue #62
