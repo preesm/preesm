@@ -49,6 +49,7 @@ import java.util.logging.Level;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.workflow.WorkflowException;
@@ -113,7 +114,11 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     }
 
     final IFolder f = workspace.getRoot().getFolder(new Path(codegenPath));
-    final File folder = new File(f.getRawLocation().toOSString());
+    final IPath rawLocation = f.getRawLocation();
+    if (rawLocation == null) {
+      throw new WorkflowException("Could not find target project for given path [" + codegenPath + "]. Please change path in the scenario editor.");
+    }
+    final File folder = new File(rawLocation.toOSString());
     folder.mkdirs();
     if (folder.isDirectory()) {
       // clean the folder

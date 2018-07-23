@@ -19,6 +19,7 @@ PREESM Changelog
 
 ### Bug fix
 * Fix issue #62
+* Fix issue #61 - include spider codegen;
 
 ## Release version 2.13.0
 *2018.07.09*
