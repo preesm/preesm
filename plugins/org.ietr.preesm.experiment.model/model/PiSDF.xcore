@@ -162,9 +162,6 @@ class PiGraph extends AbstractActor, Graph {
 	op unique boolean addParameter(Parameter parameter) {
 		vertices.add(parameter)
 	}
-	op unique boolean addDelay(Delay delay) {
-		vertices.add(delay)
-	}
 	op unique boolean addFifo(Fifo fifo) {
 		edges.add(fifo)
 	}
@@ -178,25 +175,15 @@ class PiGraph extends AbstractActor, Graph {
 	op unique AbstractActor[] getActors(){
 		return vertices.filter(AbstractActor).toEList.unmodifiableView
 	}
-	op unique AbstractActor[] getOnlyActors(){
-		return (actors.filter(it|!(it instanceof PiGraph))).toEList.unmodifiableView
-	}
 	op unique Fifo[] getFifos() {
 		return edges.filter(Fifo).toEList.unmodifiableView
 	}
 	op unique Dependency[] getDependencies() {
 		return edges.filter(Dependency).toEList.unmodifiableView
 	}
-	op unique Delay[] getDelays() {
-		return getFifos().map[delay].filterNull.toEList.unmodifiableView
-	}
 
 	op unique boolean removeActor(AbstractActor actor) {
 		vertices.remove(actor);
-	}
-
-	op unique boolean removeDelay(Delay delay) {
-		vertices.remove(delay)
 	}
 
 	op unique Parameter[] getOnlyParameters(){
@@ -215,6 +202,9 @@ class PiGraph extends AbstractActor, Graph {
 	op unique Parameter[] getAllParameters() {
 		return (parameters + childrenGraphs.map[allParameters].flatten).toEList.unmodifiableView
 	}
+	op unique AbstractActor[] getOnlyActors(){
+		return (actors.filter(it|!(it instanceof PiGraph))).toEList.unmodifiableView
+	}
 	op unique PiGraph[] getChildrenGraphs() {
 		return (actors.filter(PiGraph) + actorsWithRefinement.filter[isHierarchical].map[subGraph]).toEList.
 			unmodifiableView
@@ -222,21 +212,8 @@ class PiGraph extends AbstractActor, Graph {
 	op unique AbstractActor[] getAllActors() {
 		return (actors + childrenGraphs.map[allActors].flatten).toEList.unmodifiableView
 	}
-
-	op unique ConfigInputInterface[] getConfigInputInterfaces() {
-		return parameters.filter(ConfigInputInterface).toEList.unmodifiableView
-	}
-
-	op unique DataInputInterface[] getDataInputInterfaces() {
-		return actors.filter(DataInputInterface).toEList.unmodifiableView
-	}
-
-	op unique DataOutputInterface[] getDataOutputInterfaces() {
-		return actors.filter(DataOutputInterface).toEList.unmodifiableView
-	}
-
 	op Parameter lookupParameterGivenGraph(String parameterName , String graphName) {
-		return allParameters.findFirst[it.name == parameterName && (it.containingPiGraph).name == graphName]
+		return allParameters.findFirst[it.name == parameterName && (it.containingGraph as PiGraph).name == graphName]
 	}
 
     /*
@@ -253,24 +230,13 @@ class PiGraph extends AbstractActor, Graph {
 	op Fifo lookupFifo(String fifoId) {
 		return fifos.findFirst[it.id == fifoId]
 	}
-
-	op unique Fifo[] getFifosWithDelay() {
-		return (fifos.filter[delay !== null]).toEList.unmodifiableView
-	}
-
-	op unique Fifo[] getFifosWithoutDelay() {
-		return (fifos.filter[delay === null]).toEList.unmodifiableView
-	}
 }
 
 abstract class ExecutableActor extends AbstractActor {
 }
 
-interface RefinementContainer {
+class Actor extends ExecutableActor {
 	contains Refinement refinement
-}
-
-class Actor extends ExecutableActor, RefinementContainer {
 	IPath memoryScriptPath
 	op boolean isConfigurationActor() {
 		return configOutputPorts.map[outgoingDependencies].filter[!it.isEmpty].map[it.get(0)].map[getter].exists[true]
@@ -330,7 +296,7 @@ abstract class DataPort extends Port, ExpressionHolder {
 	}
 	op String getId() {
 		val String actorName = Optional.ofNullable(getContainingActor()).map[name].orElseThrow [
-			new PiGraphException("Data port " + this + " is not contained in an AbstractActor.")
+			new PiGraphException("Data port " + this + " is not contained in an AbstracytActor.")
 		];
 		val String portName = Optional.ofNullable(name).filter[!it.isEmpty()].map["." + it].orElse("");
 		return actorName + portName;
@@ -381,10 +347,6 @@ class Fifo extends Edge {
 	refers DataInputPort targetPort opposite incomingFifo
 	contains Delay delay opposite containingFifo
 	String ^type = "void"
-
-	op PiGraph getContainingPiGraph() {
-		return containingGraph as PiGraph
-	}
 
 	/*
 	 * Return a {@link String} composed as follow:<br>
@@ -455,7 +417,6 @@ class PiSDFRefinement extends Refinement {
 	}
 }
 
-
 class CHeaderRefinement extends Refinement {
 	contains FunctionPrototype loopPrototype
 	contains FunctionPrototype initPrototype
@@ -467,7 +428,7 @@ class CHeaderRefinement extends Refinement {
 
 class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 	op Expression getValueExpression() {
-		return getExpression
+		return expression
 	}
 	op boolean isLocallyStatic() {
 		// a parameter is static if all its setters are static (or it has no setter)
@@ -491,49 +452,14 @@ interface ISetter {
 	op boolean isLocallyStatic()
 }
 
-
 class Delay extends Configurable, ExpressionHolder {
 	op Expression getSizeExpression() {
 		return getExpression
 	}
 	container readonly Fifo containingFifo opposite delay
 
-	op unique void setName(String newName) {
-		if (newName !== null) {
-			if (newName.empty) {
-				var String srcName = Optional.ofNullable(containingFifo).map[sourcePort.containingActor.getName()].orElse("")
-				var String tgtName = Optional.ofNullable(containingFifo).map[targetPort.containingActor.getName()].orElse("")
-				super.setName("delay_" + srcName + "--" + tgtName)
-			} else {
-				super.setName(newName)
-			}
-		}
-	}
-
-	 /*
-	 * Return a {@link String} unique ID for Delay.
-	 * This ID should be unique.
-	 */
-	op unique String getId() {
-		var String srcName = Optional.ofNullable(containingFifo).map[sourcePort.containingActor.getName()].orElse("")
-		var String srcPortName = Optional.ofNullable(containingFifo).map[sourcePort.name].orElse("")
-		var String tgtName = Optional.ofNullable(containingFifo).map[targetPort.containingActor.getName()].orElse("")
-		var String tgtPortName = Optional.ofNullable(containingFifo).map[targetPort.name].orElse("")
-		var String delayID = srcName + "_" + srcPortName + "__" + tgtName + "_" + tgtPortName
-		var containingGraph = Optional.ofNullable(containingFifo).map[containingPiGraph].orElse(null)
-		while (containingGraph.containingPiGraph !== null) {
-			delayID = containingGraph.name + "_" + delayID
-			containingGraph = containingGraph.containingPiGraph
-		}
-		return "delay_" + delayID
-	}
-
-	op unique String getShortId() {
-		var String srcName = Optional.ofNullable(containingFifo).map[sourcePort.containingActor.getName()].orElse("")
-		var String srcPortName = Optional.ofNullable(containingFifo).map[sourcePort.name].orElse("")
-		var String tgtName = Optional.ofNullable(containingFifo).map[targetPort.containingActor.getName()].orElse("")
-		var String tgtPortName = Optional.ofNullable(containingFifo).map[targetPort.name].orElse("")
-		return srcName + "_" + srcPortName + "__" + tgtName + "_" + tgtPortName
+	op PiGraph getContainingGraph() {
+		return containingFifo.containingGraph as PiGraph
 	}
 }
 

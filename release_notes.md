@@ -11,10 +11,7 @@ PREESM Changelog
 * Properly display errors in a dialog when generating diagram from .pi file fails;
 * Update MapperDAG to keep a reference to the PiSDF; Refactor constructor accordingly;
 * Update MathFunctionHelper to have lcm/gcd on longs;
-* Refactor and update PiMM model:
-  * Add helper operations in PiGraph;
-  * Refactor accessors and fix typos;
-  * Add Delay name and id handling;
+
 * Refactor schedulers (and remove obsolete one);
 
 ### Bug fix
