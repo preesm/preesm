@@ -89,6 +89,8 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
       outputs.put("SDF", algorithm.clone()); /* we now extract repetition vector into non-flattened hierarchical actors. */
       HierarchyFlattening.LOGGER.log(Level.INFO, "flattening depth = 0: no flattening");
       return outputs;
+    } else if (depth < 0) {
+      depth = Integer.MAX_VALUE;
     }
 
     HierarchyFlattening.LOGGER.setLevel(Level.FINEST);

@@ -29,7 +29,7 @@
 \pgfsetlayers{bg,main}  % set the order of the layers (main is the standard layer)
 
 \newcommand{\preesm}{P\textsc{reesm}\xspace}
-\newcommand{\version}{version 2.2.10\xspace}
+\newcommand{\version}{version 2.13.0\xspace}
 
 
 \title{{\Huge\preesm Documentation} \\ 
@@ -257,7 +257,8 @@
 		\tabParam{\textit{depth} & \multicolumn{2}{p{13.00cm}|}{This parameter is used to select the number of hierarchy levels that will be flattened by the workflow task.} \\
 			\tabValue{
 				\valueDef{$0$}{The input \gls{ibsdf} graph is copied to the output port of the workflow task with no modification.}
-				\valueDef{$n \in \mathbb{N}^*$}{The first $n$ levels of the hierarchical \gls{ibsdf} graph are flattened.}
+				\valueDef{$n \in \mathbb{N}^+$}{The first $n$ levels of the hierarchical \gls{ibsdf} graph are flattened.}
+				\valueDef{$n < 0$}{All levels are flattened (up to $2^{31} - 1$)}
 			}
 		}
 		
