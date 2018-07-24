@@ -118,7 +118,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
       if (targetActor instanceof DelayActor) {
         final Delay delay = ((DelayActor) targetActor).getLinkedDelay();
         if (delay.getLevel().equals(PersistenceLevel.LOCAL) || delay.getLevel().equals(PersistenceLevel.PERMANENT)) {
-          PiMMUtil.setToolTip(getFeatureProvider(), context.getSourceAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
+          PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
               "A delay with permanent data tokens persistence can not be connected to a getter actor.");
           return false;
         }

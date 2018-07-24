@@ -39,7 +39,6 @@
 package org.ietr.preesm.ui.pimm.layout;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -323,21 +322,38 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
   private void findCandidates(final List<Fifo> feedbackFifos, final Set<AbstractActor> nextStage, final List<AbstractActor> currentStage) {
     for (final AbstractActor actor : currentStage) {
-      if (actor instanceof DelayActor) {
-        final Delay delay = ((DelayActor) actor).getLinkedDelay();
-        final Fifo fifo = delay.getContainingFifo();
-        if (!feedbackFifos.contains(fifo) && (fifo != null)) {
-          final DataInputPort targetPort = fifo.getTargetPort();
-          final AbstractActor eContainer = (AbstractActor) targetPort.eContainer();
-          nextStage.add(eContainer);
-        }
-      }
+      // if (actor instanceof DelayActor) {
+      // final Delay delay = ((DelayActor) actor).getLinkedDelay();
+      // final Fifo fifo = delay.getContainingFifo();
+      // if (!feedbackFifos.contains(fifo) && (fifo != null)) {
+      // final DataInputPort targetPort = fifo.getTargetPort();
+      // final AbstractActor targetActor = targetPort.getContainingActor();
+      // nextStage.add(targetActor);
+      // }
+      // } else {
+      // for (final DataOutputPort port : actor.getDataOutputPorts()) {
+      // final Fifo outgoingFifo = port.getOutgoingFifo();
+      // if (!feedbackFifos.contains(outgoingFifo) && (outgoingFifo != null)) {
+      // final DataInputPort targetPort = outgoingFifo.getTargetPort();
+      // final AbstractActor targetActor = targetPort.getContainingActor();
+      // // We skip the delay actors for now
+      // if (targetActor instanceof DelayActor) {
+      // continue;
+      // }
+      // nextStage.add(targetActor);
+      // }
+      // }
+      // }
       for (final DataOutputPort port : actor.getDataOutputPorts()) {
         final Fifo outgoingFifo = port.getOutgoingFifo();
         if (!feedbackFifos.contains(outgoingFifo) && (outgoingFifo != null)) {
           final DataInputPort targetPort = outgoingFifo.getTargetPort();
-          final AbstractActor eContainer = (AbstractActor) targetPort.eContainer();
-          nextStage.add(eContainer);
+          final AbstractActor targetActor = targetPort.getContainingActor();
+          // We skip the delay actors for now
+          if (targetActor instanceof DelayActor) {
+            continue;
+          }
+          nextStage.add(targetActor);
         }
       }
     }
@@ -352,17 +368,29 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       boolean hasUnstagedPredecessor = false;
       for (final DataInputPort port : actor.getDataInputPorts()) {
         final Fifo incomingFifo = port.getIncomingFifo();
-        hasUnstagedPredecessor |= !feedbackFifos.contains(incomingFifo) && (incomingFifo != null)
-            && !processedActors.contains(incomingFifo.getSourcePort().eContainer());
-        // For delay with setter/getter, the delay Actor must always be in the previous stage
-        if ((incomingFifo != null) && (incomingFifo.getDelay() != null)) {
-          if (incomingFifo.getDelay().hasSetterActor()) {
-            hasUnstagedPredecessor |= !processedActors.contains(incomingFifo.getDelay().getActor());
-            hasUnstagedPredecessor |= !processedActors.contains(incomingFifo.getDelay().getSetterActor());
-          } else if (incomingFifo.getDelay().hasGetterActor()) {
-            hasUnstagedPredecessor |= !processedActors.contains(incomingFifo.getDelay().getActor());
-          }
+        final boolean isFeedbackFifo = feedbackFifos.contains(incomingFifo);
+        boolean containedInProcessedActor = true;
+        boolean predecessorIsDelayActor = false;
+        if (incomingFifo != null) {
+          final AbstractActor containingActor = incomingFifo.getSourcePort().getContainingActor();
+          containedInProcessedActor = processedActors.contains(containingActor);
+          predecessorIsDelayActor = containingActor instanceof DelayActor;
         }
+        // If predecessor is a DelayActor, override the decision
+        if (predecessorIsDelayActor) {
+          continue;
+        }
+        hasUnstagedPredecessor |= !isFeedbackFifo && !containedInProcessedActor;
+
+        // For delay with setter/getter, the delay Actor must always be in the previous stage
+        // if ((incomingFifo != null) && (incomingFifo.getDelay() != null)) {
+        // if (incomingFifo.getDelay().hasSetterActor()) {
+        // hasUnstagedPredecessor |= !processedActors.contains(incomingFifo.getDelay().getActor());
+        // hasUnstagedPredecessor |= !processedActors.contains(incomingFifo.getDelay().getSetterActor());
+        // } else if (incomingFifo.getDelay().hasGetterActor()) {
+        // hasUnstagedPredecessor |= !processedActors.contains(incomingFifo.getDelay().getActor());
+        // }
+        // }
       }
       if (hasUnstagedPredecessor) {
         iter.remove();
@@ -1030,7 +1058,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       stageSrc.forEach(a -> a.getDataOutputPorts().forEach(p -> outgoingFifos.add(p.getOutgoingFifo())));
 
       // Ignoring fifos going to delay actor
-      // outgoingFifos.removeIf(f -> f.getTargetPort().getContainingActor() instanceof NonExecutableActor);
+      outgoingFifos.removeIf(f -> (f != null)
+          && ((f.getTargetPort().getContainingActor() instanceof DelayActor) || (f.getSourcePort().getContainingActor() instanceof DelayActor)));
 
       // Remove feedback fifos
       outgoingFifos.removeAll(this.feedbackFifos);
@@ -1040,8 +1069,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
       // Remove all FIFOs ending at next stage from the interstage Fifo
       // list
-      interStageFifos.removeIf(f -> (f == null) || stageDst.contains(f.getTargetPort().eContainer())
-          || (f.getDelay() != null && (f.getDelay().hasSetterActor() || f.getDelay().hasGetterActor())));
+      interStageFifos.removeIf(f -> (f == null) || stageDst.contains(f.getTargetPort().eContainer()));
 
       // Layout Fifos to reach the next stage without going over an actor
       layoutInterStageFifos(diagram, interStageFifos, this.stageWidth.get(i + 1), this.stagesGaps.get(i + 1));
@@ -1099,6 +1127,39 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     }
   }
 
+  private void layoutFifoToDelay(final Diagram diagram, final int currentY, final int currentX, final FreeFormConnection ffc, final Delay delay) {
+    // Get the gap end of the delay
+    // (or the gap just before if the delay is a feedback
+    // delay
+    // of an actor)
+    final PictogramElement delayPE = DiagramPiGraphLinkHelper.getDelayPE(diagram, delay.getContainingFifo());
+    final GraphicsAlgorithm delayGA = delayPE.getGraphicsAlgorithm();
+
+    int gapEnd = -1;
+    for (int i = 0; i < this.stageWidth.size(); i++) {
+      final Range range = this.stageWidth.get(i);
+      // If the delay is within this stage
+      if ((range.start < delayGA.getX()) && (range.end > delayGA.getX())) {
+        gapEnd = range.start;
+      }
+
+      // If the delay is between this stage and the
+      // previous
+      if ((i > 0) && (range.start > delayGA.getX()) && (gapEnd == -1)) {
+        gapEnd = range.start;
+      }
+    }
+
+    // Add a new bendpoint on top of the gap
+    final int xPos = gapEnd - AutoLayoutFeature.BENDPOINT_SPACE - currentX;
+    ffc.getBendpoints().add(Graphiti.getGaCreateService().createPoint(xPos, currentY));
+
+    // Add a bendpoint next to the delay
+    int yPos = delayGA.getY();
+    yPos += ((delayGA.getX() < xPos) && ((delayGA.getX() + delayGA.getWidth()) > xPos)) ? -AutoLayoutFeature.FIFO_SPACE : 3 * AutoLayoutFeature.FIFO_SPACE;
+    ffc.getBendpoints().add(Graphiti.getGaCreateService().createPoint(xPos, yPos));
+  }
+
   /**
    * Layout {@link Fifo} spanning over multiple stages of {@link AbstractActor}.
    *
@@ -1128,6 +1189,15 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     while (iter.hasNext()) {
       final Fifo fifo = iter.next();
       final FreeFormConnection ffc = fifoFfcMap.get(fifo);
+
+      AbstractActor containingActor = fifo.getTargetPort().getContainingActor();
+
+      if (containingActor instanceof DelayActor) {
+        final int currentX = ffc.getBendpoints().get(0).getX();
+        final int currentY = ffc.getBendpoints().get(0).getY();
+        layoutFifoToDelay(diagram, currentY, currentX, ffc, ((DelayActor) containingActor).getLinkedDelay());
+      }
+
       final Point penultimate = ffc.getBendpoints().get(ffc.getBendpoints().size() - 2);
 
       // Check Gaps one by one
@@ -1230,29 +1300,29 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       int maxX = 0;
       // First we need to sort the stage so that the delay actor on feedback loop are
       // always processed after the concerned actor
-      for (final AbstractActor actor : stage) {
-        // Check for delay actor belonging to a feedback loop
-        if (actor instanceof DelayActor) {
-          final Delay delay = ((DelayActor) actor).getLinkedDelay();
-          final Fifo fifo = delay.getContainingFifo();
-          // Check if the fifo is a feedback fifo
-          if (this.feedbackFifos.contains(fifo)) {
-            int indexDelay = stage.indexOf(actor);
-            // source or target does not matter, it is a feedback loop
-            int indexLoopedActor = stage.indexOf(fifo.getSourcePort().getContainingActor());
-            if (indexLoopedActor < 0) {
-              // try with target, delay actor and feedback actor should be on the same stage
-              indexLoopedActor = stage.indexOf(fifo.getTargetPort().getContainingActor());
-              if (indexLoopedActor < 0) {
-                throw new RuntimeException("Delay Actor and feedback actor should be on same layout stage !");
-              }
-            }
-            if (indexDelay < indexLoopedActor) {
-              Collections.swap(stage, indexDelay, indexLoopedActor);
-            }
-          }
-        }
-      }
+      // for (final AbstractActor actor : stage) {
+      // // Check for delay actor belonging to a feedback loop
+      // if (actor instanceof DelayActor) {
+      // final Delay delay = ((DelayActor) actor).getLinkedDelay();
+      // final Fifo fifo = delay.getContainingFifo();
+      // // Check if the fifo is a feedback fifo
+      // if (this.feedbackFifos.contains(fifo)) {
+      // int indexDelay = stage.indexOf(actor);
+      // // source or target does not matter, it is a feedback loop
+      // int indexLoopedActor = stage.indexOf(fifo.getSourcePort().getContainingActor());
+      // if (indexLoopedActor < 0) {
+      // // try with target, delay actor and feedback actor should be on the same stage
+      // indexLoopedActor = stage.indexOf(fifo.getTargetPort().getContainingActor());
+      // if (indexLoopedActor < 0) {
+      // throw new RuntimeException("Delay Actor and feedback actor should be on same layout stage !");
+      // }
+      // }
+      // if (indexDelay < indexLoopedActor) {
+      // Collections.swap(stage, indexDelay, indexLoopedActor);
+      // }
+      // }
+      // }
+      // }
       for (final AbstractActor actor : stage) {
         final PictogramElement actorPE = DiagramPiGraphLinkHelper.getActorPE(diagram, actor);
 
@@ -1293,7 +1363,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     final List<AbstractActor> actors = new ArrayList<>(graph.getActors());
 
     // 2. Remove Delay Actors that are not connected to avoid weird delay placement
-    actors.removeIf(this::removeDelayActor);
+    actors.removeIf(a -> (a instanceof DelayActor));
 
     actors.sort((a1, a2) -> a1.getName().compareTo(a2.getName()));
 
@@ -1305,7 +1375,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   }
 
   /**
-   * Remove a delay actor if it is not connected to a setter or a getter actor as it should not be layout.
+   * Remove a delay actor if it is not connected to a setter nor a getter actor as it should not be layout.
    *
    * @param actor
    *          the {@link AbstractActor} tested
