@@ -66,12 +66,12 @@ time (
     echo ""
     echo "Test all & Run Sonar"
     echo ""
-    (cd $DIR && mvn -e -C -B -V verify sonar:sonar -fae) || exit 7
+    (cd $DIR && mvn -e -C -B -V verify sonar:sonar -fae) || exit 71
   else
     echo ""
     echo "Test all"
     echo ""
-    (cd $DIR && mvn -e -C -B -V verify -fae) || exit 7
+    (cd $DIR && mvn -e -C -B -V verify -fae) || exit 72
   fi
   #package update site (offline, no tests)
   echo ""
