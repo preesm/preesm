@@ -62,7 +62,7 @@ time (
   echo ""
   (cd $DIR && mvn -e -C -B -V package -fae -Dmaven.test.skip=true) || exit 6
   # build and run tests (offline)
-  if [ -z ${TRAVIS+x} ]; then
+  if [ ! -z ${TRAVIS+x} ]; then
     echo ""
     echo "Test all & Run Sonar"
     echo ""
