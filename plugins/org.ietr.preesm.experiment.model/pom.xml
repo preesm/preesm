@@ -62,14 +62,14 @@
   <repositories>
 		<repository>
 			<id>emf</id>
-			<url>https://oss.sonatype.org/content/repositories/orgeclipseemf-1054/</url>
+			<url>https://oss.sonatype.org/content/repositories/orgeclipseemf-1057/</url>
 		</repository>
 	</repositories>
 
 	<pluginRepositories>
 		<pluginRepository>
 			<id>emfp</id>
-			<url>https://oss.sonatype.org/content/repositories/orgeclipseemf-1054/</url>
+			<url>https://oss.sonatype.org/content/repositories/orgeclipseemf-1057/</url>
 		</pluginRepository>
 	</pluginRepositories>
 
