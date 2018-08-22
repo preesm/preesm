@@ -26,16 +26,6 @@ addons:
       secure: "7edfa331c5de80bf665aee04f0e9dbcbc3efa122"
     branches: .*
 
-#enable Maven local repo caching
-cache:
-  directories:
-  - $HOME/.m2
-
-#enable the dummy X server (xfvb) for running the UI tests
-before_script:
-  - "export DISPLAY=:99.0"
-  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
-
 #######################
 # Actual build stages
 #######################
@@ -49,26 +39,7 @@ before_script:
 # issue is comming from.
 #######################
 
-jobs:
-  include:
-    - stage : Validate POM
-      script: mvn -U -e -C -B -V -P doUpdateSite -Dtycho.mode=maven help:help -q
-    - stage : Fetch Maven Dependencies
-      script:
-        - ./releng/fetch-rcptt-runner.sh
-        - travis_retry mvn -U -e -C -B -V -P doUpdateSite -Dtycho.mode=maven dependency:go-offline
-    - stage : Run Checkstyle (offline)
-      script: mvn --offline -e -C -B -V -Dtycho.mode=maven checkstyle:check
-    - stage : Fetch P2 Dependencies
-      script: travis_retry mvn -U -e -C -B -V -P doUpdateSite help:help
-    - stage : Clean (offline)
-      script: mvn --offline -e -C -B -V -P doUpdateSite -Dtycho.mode=maven clean
-    - stage : Build code and package (offline, no tests)
-      script: mvn -e -C -B -V package -fae -Dmaven.test.skip=true
-    - stage : Test and run sonar (offline)
-      script: mvn -e -C -B -V verify sonar:sonar -fae
-    - stage : Package Update-Site (offline, no tests)
-      script: mvn -e -C -B -V -P doUpdateSite package -fae -Dmaven.test.skip=true
+script: timeout 120m ./releng/build_and_test.sh
 
 #skip install step before each stage by running the /bin/true command
 install: true
