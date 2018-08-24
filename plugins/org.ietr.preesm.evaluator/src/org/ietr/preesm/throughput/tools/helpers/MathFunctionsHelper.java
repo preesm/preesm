@@ -45,7 +45,7 @@ public abstract class MathFunctionsHelper {
 
   /**
    * computes the Greatest Common Divisor (GCD) of two doubles
-   * 
+   *
    * @param a
    *          double number
    * @param b
@@ -137,21 +137,8 @@ public abstract class MathFunctionsHelper {
   }
 
   /**
-   * computes the Least Common Multiple (LCM) of two long
-   * 
-   * @param a
-   *          long number
-   * @param b
-   *          long number
-   * @return lcm of a and b
-   */
-  public static long lcm(long a, long b) {
-    return a * (b / gcd(a, b));
-  }
-
-  /**
    * computes the Least Common Multiple (LCM) of a vector of long
-   * 
+   *
    * @param input
    *          an array of long
    * @return the lcm

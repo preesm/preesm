@@ -116,26 +116,6 @@ public class MapperDAG extends DirectedAcyclicGraph {
   public MapperDAG(final MapperEdgeFactory factory, final SDFGraph graph) {
     this(factory, graph, null);
   }
-    this.piSDFGraph = null;
-    setScheduleCost(0L);
-
-    getPropertyBean().setValue(MapperDAG.MAPPING_PROPERTY, new DAGMappings());
-    getPropertyBean().setValue(MapperDAG.TIMING_PROPERTY, new DAGTimings());
-
-  }
-
-  /**
-   * Creactor of a DAG from a edge factory and a PiMM graph.
-   *
-   * @param factory
-   *          the factory
-   * @param graph
-   *          the graph
-   */
-  public MapperDAG(final MapperEdgeFactory factory, final PiGraph graph) {
-    super(factory);
-    this.sdfGraph = null;
-    this.piSDFGraph = graph;
 
   /**
    * Creactor of a DAG from a edge factory and a PiMM graph.
