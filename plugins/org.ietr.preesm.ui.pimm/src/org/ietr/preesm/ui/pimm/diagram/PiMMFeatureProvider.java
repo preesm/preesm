@@ -88,6 +88,7 @@ import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
@@ -158,6 +159,7 @@ import org.ietr.preesm.ui.pimm.features.RenameActorPortFeature;
 import org.ietr.preesm.ui.pimm.features.SetActorMemoryScriptFeature;
 import org.ietr.preesm.ui.pimm.features.SetActorRefinementFeature;
 import org.ietr.preesm.ui.pimm.features.SetFifoTypeFeature;
+import org.ietr.preesm.ui.pimm.features.SetPersistenceLevelFeature;
 import org.ietr.preesm.ui.pimm.features.SetPortMemoryAnnotationFeature;
 import org.ietr.preesm.ui.pimm.features.SetVisibleAllDependenciesFeature;
 import org.ietr.preesm.ui.pimm.features.SetVisibleDependenciesFromParameterFeature;
@@ -286,9 +288,10 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       final PiMMAddFeatureSelectionSwitch piMMAddFeatureSelectionSwitch = new PiMMAddFeatureSelectionSwitch();
       addFeature = piMMAddFeatureSelectionSwitch.doSwitch((EObject) newObject);
     } else if (newObject instanceof IFile) {
-      if (getBusinessObjectForPictogramElement(context.getTargetContainer()) instanceof Actor) {
+      final Object businessObjectForPictogramElement = getBusinessObjectForPictogramElement(context.getTargetContainer());
+      if (businessObjectForPictogramElement instanceof Actor || businessObjectForPictogramElement instanceof Delay) {
         addFeature = new AddRefinementFeature(this);
-      } else if (getBusinessObjectForPictogramElement(context.getTargetContainer()) instanceof PiGraph) {
+      } else if (businessObjectForPictogramElement instanceof PiGraph) {
         addFeature = new AddActorFromRefinementFeature(this);
       } else {
         addFeature = null;
@@ -351,6 +354,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     if (!isEditable()) {
       return new ICustomFeature[0];
     }
+
     final ArrayList<ICustomFeature> features = new ArrayList<>();
 
     final PictogramElement[] pes = context.getPictogramElements();
@@ -358,6 +362,10 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       return new ICustomFeature[0];
     }
     final Object obj = getBusinessObjectForPictogramElement(pes[0]);
+
+    if (obj instanceof DelayActor) {
+      return new ICustomFeature[0];
+    }
 
     if (obj instanceof PiGraph) {
       features.add(new SetVisibleAllDependenciesFeature(this, true));
@@ -403,6 +411,10 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     if (obj instanceof Fifo) {
       features.add(new AddDelayFeature(this));
       features.add(new SetFifoTypeFeature(this));
+    }
+
+    if (obj instanceof Delay) {
+      features.add(new SetPersistenceLevelFeature(this));
     }
 
     return features.toArray(new ICustomFeature[features.size()]);

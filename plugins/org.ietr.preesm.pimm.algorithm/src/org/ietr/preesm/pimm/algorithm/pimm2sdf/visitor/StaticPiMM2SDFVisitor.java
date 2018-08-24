@@ -83,6 +83,7 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
@@ -304,6 +305,17 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
       this.piPort2Vx.put(cop, aa);
     }
     caseConfigurable(aa);
+    return true;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitActor(org.ietr.preesm.experiment.model.pimm.Actor)
+   */
+  @Override
+  public Boolean caseDelayActor(final DelayActor a) {
+    // DO NOTHING
     return true;
   }
 

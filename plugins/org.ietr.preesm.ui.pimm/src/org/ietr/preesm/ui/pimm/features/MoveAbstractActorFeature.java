@@ -262,7 +262,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
                       this.implicitlyMovedDelay.add(del);
                       // Add all the connection to the
                       // double connections lists
-                      final Fifo fifo = (Fifo) del.eContainer();
+                      final Fifo fifo = (Fifo) del.getContainingFifo();
                       final List<PictogramElement> fifoPEs = Graphiti.getLinkService().getPictogramElements(getDiagram(), fifo);
                       for (final PictogramElement fifoPE : fifoPEs) {
                         if (fifoPE instanceof FreeFormConnection) {
@@ -291,7 +291,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
                       // Add all the connection to the
                       // double connections lists
                       final Delay del = ((Fifo) bo).getDelay();
-                      final Fifo fifo = (Fifo) del.eContainer();
+                      final Fifo fifo = (Fifo) del.getContainingFifo();
                       final List<PictogramElement> fifoPEs = Graphiti.getLinkService().getPictogramElements(getDiagram(), fifo);
                       for (final PictogramElement fifoPE : fifoPEs) {
                         if (fifoPE instanceof FreeFormConnection) {

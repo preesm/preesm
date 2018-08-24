@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">prediction</data>
+        <node expr="3" id="state_space_size" kind="param"/>
+        <node expr="1" id="action_space_size" kind="param"/>
+        <node expr="2" id="state_angular_size" kind="param"/>
+        <node id="Environment" kind="actor">
+            <data key="graph_desc">Code/include/environment.h</data>
+            <loop name="step_noreward">
+                <param direction="IN" isConfig="true"
+                    name="state_space_size" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="action_space_size" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="state_angular_size" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="state_angular_in" type="float "/>
+                <param direction="OUT" isConfig="false"
+                    name="state_angular_out" type="float "/>
+                <param direction="IN" isConfig="false"
+                    name="input_actions" type="float "/>
+                <param direction="OUT" isConfig="false"
+                    name="state_observation" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="state_space_size"/>
+            <port kind="cfg_input" name="action_space_size"/>
+            <port kind="cfg_input" name="state_angular_size"/>
+            <port annotation="NONE" expr="action_space_size"
+                kind="input" name="input_actions"/>
+            <port annotation="NONE" expr="state_angular_size"
+                kind="input" name="state_angular_in"/>
+            <port annotation="NONE" expr="state_space_size"
+                kind="output" name="state_observation"/>
+            <port annotation="NONE" expr="state_angular_size"
+                kind="output" name="state_angular_out"/>
+        </node>
+        <node id="Actor_MLP" kind="actor">
+            <data key="graph_desc">Algo/prediction/actor_mlp.pi</data>
+            <port kind="cfg_input" name="state_space_size"/>
+            <port kind="cfg_input" name="action_space_size"/>
+            <port annotation="NONE" expr="state_space_size" kind="input" name="state"/>
+            <port annotation="NONE" expr="action_space_size"
+                kind="output" name="action"/>
+        </node>
+        <node id="renderEnv" kind="actor">
+            <data key="graph_desc">Code/include/render.h</data>
+            <loop name="renderEnv">
+                <param direction="IN" isConfig="true" name="size" type="int"/>
+                <param direction="IN" isConfig="false" name="state" type="float "/>
+            </loop>
+            <init name="renderInit"/>
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="state"/>
+        </node>
+        <node id="broadcastState" kind="broadcast">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="state"/>
+            <port annotation="NONE" expr="size" kind="output" name="state_out0"/>
+            <port annotation="NONE" expr="size" kind="output" name="state_out1"/>
+        </node>
+        <edge kind="fifo" source="Actor_MLP" sourceport="action"
+            target="Environment" targetport="input_actions" type="float"/>
+        <edge kind="fifo" source="broadcastState"
+            sourceport="state_out0" target="renderEnv"
+            targetport="state" type="float"/>
+        <edge expr="state_space_size" kind="fifo" source="Environment"
+            sourceport="state_observation" target="Actor_MLP"
+            targetport="state" type="float">
+            <data key="delay"/>
+        </edge>
+        <edge kind="fifo" source="Environment"
+            sourceport="state_angular_out" target="broadcastState"
+            targetport="state" type="float"/>
+        <edge expr="state_angular_size" kind="fifo"
+            source="broadcastState" sourceport="state_out1"
+            target="Environment" targetport="state_angular_in" type="float">
+            <data key="delay"/>
+        </edge>
+        <edge kind="dependency" source="state_space_size"
+            target="Environment" targetport="state_space_size"/>
+        <edge kind="dependency" source="state_space_size"
+            target="Actor_MLP" targetport="state_space_size"/>
+        <edge kind="dependency" source="action_space_size"
+            target="Environment" targetport="action_space_size"/>
+        <edge kind="dependency" source="action_space_size"
+            target="Actor_MLP" targetport="action_space_size"/>
+        <edge kind="dependency" source="state_angular_size"
+            target="Environment" targetport="state_angular_size"/>
+        <edge kind="dependency" source="state_space_size" target="Environment.state_observation-Actor_MLP.state"/>
+        <edge kind="dependency" source="state_angular_size" target="broadcastState.state_out1-Environment.state_angular_in"/>
+        <edge kind="dependency" source="state_angular_size"
+            target="broadcastState" targetport="size"/>
+        <edge kind="dependency" source="state_angular_size"
+            target="renderEnv" targetport="size"/>
+    </graph>
+</graphml>

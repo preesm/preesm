@@ -48,6 +48,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.ExpressionHolder;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
@@ -137,7 +138,7 @@ public class ExpressionEvaluator {
         result.put(param.getName(), value);
       } else if (holder instanceof DataPort) {
         final AbstractActor containingActor = ((DataPort) holder).getContainingActor();
-        if (containingActor instanceof InterfaceActor) {
+        if (containingActor instanceof InterfaceActor || containingActor instanceof DelayActor) {
           result.put(param.getName(), value);
         } else {
           final ConfigInputPort configInputPort = containingActor.lookupConfigInputPortConnectedWithParameter(param);

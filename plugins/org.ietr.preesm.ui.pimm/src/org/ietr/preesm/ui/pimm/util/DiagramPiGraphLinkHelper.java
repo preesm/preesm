@@ -46,6 +46,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.ILinkService;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -84,7 +85,13 @@ public class DiagramPiGraphLinkHelper {
    */
   public static PictogramElement getActorPE(final Diagram diagram, final AbstractActor actor) throws RuntimeException {
     // Get the PE
-    final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, actor);
+    final List<PictogramElement> pes;
+    if (actor instanceof DelayActor) {
+      pes = Graphiti.getLinkService().getPictogramElements(diagram, ((DelayActor) actor).getLinkedDelay());
+    } else {
+      pes = Graphiti.getLinkService().getPictogramElements(diagram, actor);
+    }
+
     PictogramElement actorPE = null;
     for (final PictogramElement pe : pes) {
       if (pe instanceof ContainerShape) {

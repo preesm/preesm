@@ -68,7 +68,9 @@ import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Configurable;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
@@ -267,7 +269,7 @@ public class PasteFeature extends AbstractPasteFeature {
     if (targetParameterizable instanceof AbstractVertex) {
       targetOk = this.copiedObjects.containsKey(targetParameterizable);
     } else if (targetParameterizable instanceof Delay) {
-      final Fifo fifo = (Fifo) targetParameterizable.eContainer();
+      final Fifo fifo = ((Delay) targetParameterizable).getContainingFifo();
       final EObject fifoSource = fifo.getSourcePort().eContainer();
       final EObject fifoTarget = fifo.getTargetPort().eContainer();
       targetOk = this.copiedObjects.containsKey(fifoSource) && this.copiedObjects.containsKey(fifoTarget);
@@ -320,6 +322,7 @@ public class PasteFeature extends AbstractPasteFeature {
 
     final AddFifoFeature addFifoFeature = new AddFifoFeature(getFeatureProvider());
     final PictogramElement add = addFifoFeature.add(context);
+
     return (FreeFormConnection) add;
   }
 
@@ -338,6 +341,10 @@ public class PasteFeature extends AbstractPasteFeature {
     customContext.setLocation(connectionMidpoint.getX(), connectionMidpoint.getY());
     addDelayFeature.execute(customContext);
 
+    // Remove the secondary delay that was created in addDelayFeature
+    copiedFifo.getContainingPiGraph().removeDelay(copiedFifo.getDelay());
+    copiedFifo.setDelay(null);
+
     // one delay is created during the addDelayFeature: overwrite it with the copy
     copiedFifo.setDelay(delayCopy);
 
@@ -351,6 +358,16 @@ public class PasteFeature extends AbstractPasteFeature {
     // add input port anchors
     final EList<ConfigInputPort> configInputPorts = delayCopy.getConfigInputPorts();
     for (final ConfigInputPort port : configInputPorts) {
+      final IPeService peService = GraphitiUi.getPeService();
+      final Anchor chopboxAnchor = peService.getChopboxAnchor((AnchorContainer) createdPEs.get(0));
+      chopboxAnchor.setReferencedGraphicsAlgorithm(createdPEs.get(0).getGraphicsAlgorithm());
+      this.links.put(port, chopboxAnchor);
+    }
+
+    // add input port anchors
+    final DelayActor actor = delayCopy.getActor();
+    final EList<DataPort> delayPorts = actor.getAllDataPorts();
+    for (final DataPort port : delayPorts) {
       final IPeService peService = GraphitiUi.getPeService();
       final Anchor chopboxAnchor = peService.getChopboxAnchor((AnchorContainer) createdPEs.get(0));
       chopboxAnchor.setReferencedGraphicsAlgorithm(createdPEs.get(0).getGraphicsAlgorithm());

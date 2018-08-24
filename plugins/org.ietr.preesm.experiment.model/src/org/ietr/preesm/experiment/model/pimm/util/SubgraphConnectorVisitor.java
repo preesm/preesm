@@ -56,6 +56,7 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
@@ -242,6 +243,11 @@ public class SubgraphConnectorVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseAbstractActor(final AbstractActor aa) {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Boolean caseDelayActor(final DelayActor da) {
+    return true;
   }
 
   @Override

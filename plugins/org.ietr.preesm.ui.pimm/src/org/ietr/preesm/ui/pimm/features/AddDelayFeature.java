@@ -59,6 +59,7 @@ import org.eclipse.graphiti.services.IPeLayoutService;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 /**
  * Add feature responsible for creating and adding a delay to a {@link Fifo}.
@@ -150,6 +151,10 @@ public class AddDelayFeature extends AbstractCustomFeature {
     // Create the Delay and add it to the Fifo
     final Delay delay = PiMMUserFactory.instance.createDelay();
     fifo.setDelay(delay);
+    delay.getActor().setName(delay.getId());
+
+    final PiGraph graph = fifo.getContainingPiGraph();
+    graph.addDelay(delay);
 
     // Get the GaService
     final IGaService gaService = Graphiti.getGaService();

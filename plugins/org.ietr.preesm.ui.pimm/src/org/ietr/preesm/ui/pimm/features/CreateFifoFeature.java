@@ -47,11 +47,15 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.PersistenceLevel;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.PortKind;
@@ -92,11 +96,12 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     // connection.
     // We assume that the canStartConnection is already true
 
-    // Refresh to remove all remaining tooltip;
+    // Refresh to remove all remaining tooltip
     getDiagramBehavior().refresh();
 
     // True if the connection is created between an input and an output port
-    final Port target = getPort(context.getTargetAnchor());
+    final Port target = getTargetPort(context, context.getTargetAnchor());
+
     final boolean targetOK = ((target != null) && (target instanceof DataInputPort));
     if (targetOK) {
       // Check that no Fifo is connected to the ports
@@ -105,6 +110,18 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
         PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
             "A port cannot be connected to several FIFOs");
         return false;
+      }
+
+      // Same check that the one in the canStartConnection
+      final DataInputPort targetPort = (DataInputPort) target;
+      final AbstractActor targetActor = targetPort.getContainingActor();
+      if (targetActor instanceof DelayActor) {
+        final Delay delay = ((DelayActor) targetActor).getLinkedDelay();
+        if (delay.getLevel().equals(PersistenceLevel.LOCAL) || delay.getLevel().equals(PersistenceLevel.PERMANENT)) {
+          PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
+              "A delay with permanent data tokens persistence can not be connected to a getter actor.");
+          return false;
+        }
       }
 
       return true;
@@ -117,7 +134,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
       return false;
     }
 
-    // False if the target is an outputPort
+    // False if the target is a config input port
     if ((target != null) && (target instanceof ConfigInputPort)) {
       // Create tooltip message
       PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
@@ -190,6 +207,26 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     return null;
   }
 
+  protected Port getSourcePort(final ICreateConnectionContext context, Anchor sourceAnchor) {
+    final PictogramElement sourcePe = context.getSourcePictogramElement();
+    final Object obj = getBusinessObjectForPictogramElement(sourcePe);
+    if (obj instanceof Delay) {
+      final DelayActor actor = ((Delay) obj).getActor();
+      return actor.getDataOutputPort();
+    }
+    return getPort(sourceAnchor);
+  }
+
+  protected Port getTargetPort(final ICreateConnectionContext context, Anchor targetAnchor) {
+    final PictogramElement targetPe = context.getTargetPictogramElement();
+    final Object obj = getBusinessObjectForPictogramElement(targetPe);
+    if (obj instanceof Delay) {
+      final DelayActor actor = ((Delay) obj).getActor();
+      return actor.getDataInputPort();
+    }
+    return getPort(targetAnchor);
+  }
+
   /*
    * (non-Javadoc)
    *
@@ -202,8 +239,8 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     // get Ports which should be connected
     Anchor sourceAnchor = context.getSourceAnchor();
     Anchor targetAnchor = context.getTargetAnchor();
-    Port source = getPort(sourceAnchor);
-    Port target = getPort(targetAnchor);
+    Port source = getSourcePort(context, sourceAnchor);
+    Port target = getTargetPort(context, targetAnchor);
 
     // Create the sourcePort if needed
     if (source == null) {
@@ -261,9 +298,11 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
    */
   @Override
   public boolean canStartConnection(final ICreateConnectionContext context) {
+
     // Return true if the connection starts at an output port (config or
     // not)
-    final Port source = getPort(context.getSourceAnchor());
+    Anchor sourceAnchor = context.getSourceAnchor();
+    final Port source = getSourcePort(context, sourceAnchor);
     if ((source != null) && (source instanceof DataOutputPort)) {
       // Check that no Fifo is connected to the ports
       if (((DataOutputPort) source).getOutgoingFifo() == null) {
@@ -276,6 +315,17 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
           // Indeed, it seems to me that the coexistence of a unique
           // fifo and one or several dependencies is not a problem
           // since each connection has a very precise semantics.
+        }
+        // we need to check if we start from a delay that it is allowed
+        final DataOutputPort sourcePort = (DataOutputPort) source;
+        final AbstractActor sourceActor = sourcePort.getContainingActor();
+        if (sourceActor instanceof DelayActor) {
+          final Delay delay = ((DelayActor) sourceActor).getLinkedDelay();
+          if (delay.getLevel().equals(PersistenceLevel.PERMANENT) || delay.getLevel().equals(PersistenceLevel.LOCAL)) {
+            PiMMUtil.setToolTip(getFeatureProvider(), context.getSourceAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
+                "A delay with permanent data tokens persistence can not be connected to a setter actor.");
+            return false;
+          }
         }
         return true;
       } else {

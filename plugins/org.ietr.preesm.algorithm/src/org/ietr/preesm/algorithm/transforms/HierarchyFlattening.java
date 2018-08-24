@@ -43,6 +43,7 @@ package org.ietr.preesm.algorithm.transforms;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.transformations.IbsdfFlattener;
@@ -77,6 +78,8 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
     final Map<String, Object> outputs = new LinkedHashMap<>();
     final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
     final String depthS = parameters.get("depth");
+    StopWatch timer = new StopWatch();
+    timer.start();
 
     int depth;
     if (depthS != null) {
@@ -129,6 +132,9 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
       outputs.put("SDF", algorithm.clone());
       throw (new WorkflowException("Inconsistent Hierarchy, graph can't be flattened"));
     }
+
+    timer.stop();
+    WorkflowLogger.getLogger().log(Level.INFO, "Flattening: " + timer.toString() + "s.");
 
     return outputs;
   }

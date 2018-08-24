@@ -166,23 +166,31 @@ public class AddFifoFeature extends AbstractAddFeature {
     // Move source
     final Anchor start = connection.getStart();
     final GraphicsAlgorithm referencedGraphicsAlgorithm = start.getReferencedGraphicsAlgorithm();
-    ContainerShape cs = (ContainerShape) referencedGraphicsAlgorithm.getPictogramElement();
-    MoveShapeContext moveCtxt = new MoveShapeContext(cs);
-    moveCtxt.setDeltaX(0);
-    moveCtxt.setDeltaY(0);
-    ILocation csLoc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(cs);
-    moveCtxt.setLocation(csLoc.getX(), csLoc.getY());
-    moveFeature.moveShape(moveCtxt);
+    ContainerShape cs;
+    MoveShapeContext moveCtxt;
+    ILocation csLoc;
+    if (referencedGraphicsAlgorithm != null) {
+      cs = (ContainerShape) referencedGraphicsAlgorithm.getPictogramElement();
+      moveCtxt = new MoveShapeContext(cs);
+      moveCtxt.setDeltaX(0);
+      moveCtxt.setDeltaY(0);
+      csLoc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(cs);
+      moveCtxt.setLocation(csLoc.getX(), csLoc.getY());
+      moveFeature.moveShape(moveCtxt);
+    }
+
     // Move target
     final Anchor end = connection.getEnd();
     final GraphicsAlgorithm referencedGraphicsAlgorithm2 = end.getReferencedGraphicsAlgorithm();
-    cs = (ContainerShape) referencedGraphicsAlgorithm2.getPictogramElement();
-    moveCtxt = new MoveShapeContext(cs);
-    moveCtxt.setDeltaX(0);
-    moveCtxt.setDeltaY(0);
-    csLoc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(cs);
-    moveCtxt.setLocation(csLoc.getX(), csLoc.getY());
-    moveFeature.moveShape(moveCtxt);
+    if (referencedGraphicsAlgorithm2 != null) {
+      cs = (ContainerShape) referencedGraphicsAlgorithm2.getPictogramElement();
+      moveCtxt = new MoveShapeContext(cs);
+      moveCtxt.setDeltaX(0);
+      moveCtxt.setDeltaY(0);
+      csLoc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(cs);
+      moveCtxt.setLocation(csLoc.getX(), csLoc.getY());
+      moveFeature.moveShape(moveCtxt);
+    }
 
     // Create the associated Polyline
     final IGaService gaService = Graphiti.getGaService();

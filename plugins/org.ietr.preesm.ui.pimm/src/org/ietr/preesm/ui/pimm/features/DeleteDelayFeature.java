@@ -51,6 +51,7 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 
 /**
@@ -77,6 +78,7 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
    */
   @Override
   public void preDelete(final IDeleteContext context) {
+
     // Transform the two connections linked to the delay back into a single
     // one. before deleting the delay.
     final PictogramElement pictogramElement = context.getPictogramElement();
@@ -86,6 +88,11 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
       // this delay could have been already deleted by the delete actor feature when selecting multiple elements
       disconnectDelayFromFifo(context);
     }
+
+    // Remove the contained delay actor
+    final Delay delay = (Delay) getBusinessObjectForPictogramElement(pictogramElement);
+    final DelayActor delayActor = delay.getActor();
+    delayActor.getContainingPiGraph().removeActor(delayActor);
 
     // Super call to delete the dependencies linked to the delay
     // Do it after deleting the connection (if it exists) to avoid looping infinitely
@@ -110,7 +117,9 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
     Connection preConnection = null;
     for (final Connection connection : incomingConnections) {
       final Object obj = getBusinessObjectForPictogramElement(connection);
-      if (obj instanceof Fifo) {
+      // With setter delay, there can be multiple FIFOs
+      // We have to choose the correct one
+      if (obj instanceof Fifo && (((Fifo) obj).getDelay() != null)) {
         preConnection = connection;
         break;
       }
@@ -118,8 +127,22 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
     if (preConnection == null) {
       throw new IllegalStateException();
     }
-    // There is only one outgoing connection, the Fifo one.
-    final Connection postConnection = cba.getOutgoingConnections().get(0);
+    // There may be multiple connections if the delay has a getter
+    final List<Connection> outgoingConnections = cba.getOutgoingConnections();
+    Connection postConnection = null;
+    // We look for the connection with the same object as the pre connection
+    final Object preConnectionObj = getBusinessObjectForPictogramElement(preConnection);
+    for (final Connection connection : outgoingConnections) {
+      final Object obj = getBusinessObjectForPictogramElement(connection);
+      if (obj == preConnectionObj) {
+        postConnection = connection;
+        break;
+      }
+    }
+
+    if (postConnection == null) {
+      throw new IllegalStateException();
+    }
 
     // Copy the bendpoints to the unique remaining connection.
     // Reconnect it.
