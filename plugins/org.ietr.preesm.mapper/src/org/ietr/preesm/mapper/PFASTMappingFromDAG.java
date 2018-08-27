@@ -41,15 +41,16 @@
 package org.ietr.preesm.mapper;
 
 import java.util.Map;
+import java.util.logging.Level;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbstractAbc;
 import org.ietr.preesm.mapper.abc.IAbc;
-import org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
-import org.ietr.preesm.mapper.abc.taskscheduling.TopologicalTaskSched;
+import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.mapper.algo.list.InitialLists;
 import org.ietr.preesm.mapper.algo.pfast.PFastAlgorithm;
 import org.ietr.preesm.mapper.graphtransfo.TagDAG;
@@ -84,37 +85,20 @@ public class PFASTMappingFromDAG extends AbstractMappingFromDAG {
     return parameters;
   }
 
-  protected MapperDAG schedule(final Design architecture, final PreesmScenario scenario, final MapperDAG dag, final Map<String, String> parameters,
-      final Map<String, Object> outputs) {
-
-    final PFastAlgoParameters pFastParams = new PFastAlgoParameters(parameters);
-    final AbcParameters abcParameters = new AbcParameters(parameters);
-
-    // calculates the DAG span length on the architecture main operator (the
-    // tasks that can
-    // not be executed by the main operator are deported without transfer
-    // time to other operator
-    calculateSpan(dag, architecture, scenario, abcParameters);
-
-    final IAbc simu = new InfiniteHomogeneousAbc(abcParameters, dag, architecture, abcParameters.getSimulatorType().getTaskSchedType(), scenario);
-
-    final InitialLists initial = new InitialLists();
-
-    if (!initial.constructInitialLists(dag, simu)) {
-      return dag;
-    }
-
-    final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
-    simu.resetDAG();
+  protected IAbc schedule(final Map<String, Object> outputs, Map<String, String> parameters, InitialLists initial, PreesmScenario scenario,
+      AbcParameters abcParameters, MapperDAG dag, Design architecture, AbstractTaskSched taskSched) {
 
     final IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture, scenario);
 
-    final PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
+    WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
 
+    final PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
+    final PFastAlgoParameters pFastParams = new PFastAlgoParameters(parameters);
     MapperDAG resdag = pfastAlgorithm.map(dag, architecture, scenario, initial, abcParameters, pFastParams, false, 0, pFastParams.isDisplaySolutions(), null,
         taskSched);
 
     simu2.setDAG(resdag);
+    WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
 
     // The transfers are reordered using the best found order during
     // scheduling
@@ -129,7 +113,7 @@ public class PFASTMappingFromDAG extends AbstractMappingFromDAG {
 
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, simu2);
 
-    return resdag;
+    return simu2;
   }
 
 }

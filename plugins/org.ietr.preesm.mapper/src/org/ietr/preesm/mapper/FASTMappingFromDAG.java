@@ -50,9 +50,8 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbstractAbc;
 import org.ietr.preesm.mapper.abc.IAbc;
-import org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
+import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.mapper.abc.taskscheduling.SimpleTaskSched;
-import org.ietr.preesm.mapper.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.mapper.algo.fast.FastAlgorithm;
 import org.ietr.preesm.mapper.algo.list.InitialLists;
 import org.ietr.preesm.mapper.graphtransfo.TagDAG;
@@ -83,36 +82,13 @@ public class FASTMappingFromDAG extends AbstractMappingFromDAG {
     return parameters;
   }
 
-  protected MapperDAG schedule(final Design architecture, final PreesmScenario scenario, final MapperDAG dag, final Map<String, String> parameters,
-      final Map<String, Object> outputs) {
-
-    final FastAlgoParameters fastParams = new FastAlgoParameters(parameters);
-    final AbcParameters abcParams = new AbcParameters(parameters);
-
-    if (dag == null) {
-      throw (new WorkflowException(" graph can't be scheduled, check console messages"));
-    }
-
-    // calculates the DAG span length on the architecture main operator (the
-    // tasks that can
-    // not be executed by the main operator are deported without transfer
-    // time to other operator
-    calculateSpan(dag, architecture, scenario, abcParams);
-
-    final IAbc simu = new InfiniteHomogeneousAbc(abcParams, dag, architecture, abcParams.getSimulatorType().getTaskSchedType(), scenario);
-
-    final InitialLists initialLists = new InitialLists();
-    if (!initialLists.constructInitialLists(dag, simu)) {
-      return dag;
-    }
-
-    final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
-    simu.resetDAG();
-
-    final FastAlgorithm fastAlgorithm = new FastAlgorithm(initialLists, scenario);
+  protected IAbc schedule(final Map<String, Object> outputs, Map<String, String> parameters, InitialLists initial, PreesmScenario scenario,
+      AbcParameters abcParams, MapperDAG dag, Design architecture, AbstractTaskSched taskSched) {
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
 
+    final FastAlgoParameters fastParams = new FastAlgoParameters(parameters);
+    final FastAlgorithm fastAlgorithm = new FastAlgorithm(initial, scenario);
     MapperDAG resDag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false, fastParams.isDisplaySolutions(), null, taskSched);
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
@@ -139,7 +115,7 @@ public class FASTMappingFromDAG extends AbstractMappingFromDAG {
     simu2.setTaskScheduler(new SimpleTaskSched());
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, simu2);
 
-    return resDag;
+    return simu2;
   }
 
 }

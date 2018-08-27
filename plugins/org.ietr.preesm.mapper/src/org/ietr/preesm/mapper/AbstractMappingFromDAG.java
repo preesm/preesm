@@ -42,6 +42,7 @@ package org.ietr.preesm.mapper;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.architecture.slam.Design;
@@ -49,9 +50,15 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.mapper.abc.IAbc;
+import org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.SpanLengthCalculator;
 import org.ietr.preesm.mapper.abc.route.calcul.RouteCalculator;
+import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
+import org.ietr.preesm.mapper.abc.taskscheduling.TopologicalTaskSched;
+import org.ietr.preesm.mapper.algo.list.InitialLists;
 import org.ietr.preesm.mapper.checker.CommunicationOrderChecker;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.optimizer.RedundantSynchronizationCleaner;
@@ -88,6 +95,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
       final String nodeName, final Workflow workflow) {
 
+    final Map<String, Object> outputs = new LinkedHashMap<>();
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final MapperDAG dag = (MapperDAG) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
     final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
@@ -95,20 +103,45 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     // Asking to recalculate routes
     RouteCalculator.recalculate(architecture, scenario);
 
-    final Map<String, Object> outputs = new LinkedHashMap<>();
-    final MapperDAG resDag = schedule(architecture, scenario, dag, parameters, outputs);
+    if (dag == null) {
+      throw (new WorkflowException(" graph can't be scheduled, check console messages"));
+    }
 
-    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, resDag);
+    final AbcParameters abcParams = new AbcParameters(parameters);
 
-    clean(architecture, scenario);
-    removeRedundantSynchronization(parameters, dag);
-    checkSchedulingResult(parameters, resDag);
+    // calculates the DAG span length on the architecture main operator (the
+    // tasks that can not be executed by the main operator are deported
+    // without transfer time to other operator)
+    calculateSpan(dag, architecture, scenario, abcParams);
 
+    final IAbc simu = new InfiniteHomogeneousAbc(abcParams, dag, architecture, abcParams.getSimulatorType().getTaskSchedType(), scenario);
+
+    final InitialLists initial = new InitialLists();
+    final boolean couldConstructInitialLists = initial.constructInitialLists(dag, simu);
+    if (!couldConstructInitialLists) {
+      WorkflowLogger.getLogger().log(Level.SEVERE, "Error in scheduling");
+      outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
+    } else {
+
+      // Using topological task scheduling in list scheduling: the t-level
+      // order of the infinite homogeneous simulation
+      final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
+      simu.resetDAG();
+
+      final IAbc resSimu = schedule(outputs, parameters, initial, scenario, abcParams, dag, architecture, taskSched);
+      final MapperDAG resDag = resSimu.getDAG();
+
+      outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, resDag);
+
+      clean(architecture, scenario);
+      removeRedundantSynchronization(parameters, dag);
+      checkSchedulingResult(parameters, resDag);
+    }
     return outputs;
   }
 
-  protected abstract MapperDAG schedule(final Design architecture, final PreesmScenario scenario, final MapperDAG dag, final Map<String, String> parameters,
-      final Map<String, Object> outputs);
+  protected abstract IAbc schedule(final Map<String, Object> outputs, Map<String, String> parameters, InitialLists initial, PreesmScenario scenario,
+      AbcParameters abcParams, MapperDAG dag, Design architecture, AbstractTaskSched taskSched);
 
   /**
    * Generic mapping message.
