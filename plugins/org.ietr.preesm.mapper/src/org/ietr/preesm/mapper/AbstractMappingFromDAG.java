@@ -217,8 +217,8 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
    *          Scheduled {@link DirectedAcyclicGraph}.
    */
   protected void removeRedundantSynchronization(final Map<String, String> parameters, final DirectedAcyclicGraph dag) {
-    String string = parameters.get(AbstractMappingFromDAG.PARAM_OPTIMIZE);
-    if (string.equals(AbstractMappingFromDAG.VALUE_TRUE)) {
+    final String paramValue = parameters.get(AbstractMappingFromDAG.PARAM_OPTIMIZE);
+    if (paramValue.equals(AbstractMappingFromDAG.VALUE_TRUE)) {
       RedundantSynchronizationCleaner.cleanRedundantSynchronization(dag);
     }
   }

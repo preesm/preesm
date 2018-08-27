@@ -82,7 +82,7 @@ public class RedundantSynchronizationCleaner {
    */
   public static void cleanRedundantSynchronization(final DirectedAcyclicGraph dag) {
     // Get the groups of synchronization.
-    final Map<ComponentInstance, List<List<TransferVertex>>> syncGroups = RedundantSynchronizationCleaner.createSyncGroupsPerComponents(dag);
+    final Map<ComponentInstance, List<ConsecutiveTransferList>> syncGroups = RedundantSynchronizationCleaner.createSyncGroupsPerComponents(dag);
 
     // Build lookup map giving the components corresponding to each sync vertex
     final Map<TransferVertex, ComponentInstance> lookupSyncComponent = new LinkedHashMap<>();
@@ -183,11 +183,11 @@ public class RedundantSynchronizationCleaner {
    *          the scheduled {@link DirectedAcyclicGraph} from which communication are extracted
    * @return the described {@link Map}
    */
-  private static Map<ComponentInstance, List<List<TransferVertex>>> createSyncGroupsPerComponents(final DirectedAcyclicGraph dag) {
-    // This Map associates to each component a List of all its communications.
+  private static Map<ComponentInstance, List<ConsecutiveTransferList>> createSyncGroupsPerComponents(final DirectedAcyclicGraph dag) {
+    // This Map associates to each component of the architecture a List of all its communications.
     // Communications are stored as a List of list where each set represents a group of consecutive receive communication primitive that is not
     // "interrupted" by any other computation.
-    final Map<ComponentInstance, List<List<TransferVertex>>> syncGroups = new LinkedHashMap<>();
+    final Map<ComponentInstance, List<ConsecutiveTransferList>> syncGroups = new LinkedHashMap<>();
 
     // Fill the syncGroups
     final TopologicalDAGIterator iterDAGVertices = new TopologicalDAGIterator(dag); // Iterator on DAG vertices
@@ -206,14 +206,14 @@ public class RedundantSynchronizationCleaner {
       // If the currentVertex is a synchronization, store it in the comGroups
       if (isSynchronization) {
         // Get or create the appropriate sync group
-        List<TransferVertex> syncGroup;
+        ConsecutiveTransferList syncGroup;
         if (!syncGroups.containsKey(component) || !lastVertexScheduled.get(component)) {
           // If the component still has no group OR if its last scheduled vertex is not a sync.
           // Create a new group
-          syncGroup = new LinkedList<>();
+          syncGroup = new ConsecutiveTransferList();
         } else {
           // The component is associated with a group AND the last scheduled vertex was a communication.
-          final List<List<TransferVertex>> componentSyncGroup = syncGroups.get(component);
+          final List<ConsecutiveTransferList> componentSyncGroup = syncGroups.get(component);
           syncGroup = componentSyncGroup.get(componentSyncGroup.size() - 1);
         }
         syncGroup.add((TransferVertex) currentVertex);
@@ -221,7 +221,7 @@ public class RedundantSynchronizationCleaner {
         // Store the syncGroup (if needed) with the appropriate component.
         if (!syncGroups.containsKey(component)) {
           // Create first group of the component
-          final List<List<TransferVertex>> componentList = new LinkedList<>();
+          final List<ConsecutiveTransferList> componentList = new LinkedList<>();
           syncGroups.put(component, componentList);
           componentList.add(syncGroup);
         } else if (!lastVertexScheduled.get(component)) {
@@ -242,8 +242,8 @@ public class RedundantSynchronizationCleaner {
    * @param comGroups
    *          see previous function
    */
-  private static void debugList(final Map<ComponentInstance, List<List<TransferVertex>>> comGroups) {
-    for (final Entry<ComponentInstance, List<List<TransferVertex>>> e : comGroups.entrySet()) {
+  private static void debugList(final Map<ComponentInstance, List<ConsecutiveTransferList>> comGroups) {
+    for (final Entry<ComponentInstance, List<ConsecutiveTransferList>> e : comGroups.entrySet()) {
       final ComponentInstance componentInstance = e.getKey();
       final String componentName = componentInstance.getInstanceName();
       final StringBuilder sb = new StringBuilder(componentName + ": ");
