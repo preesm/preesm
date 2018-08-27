@@ -81,8 +81,9 @@ public class PFASTMappingFromDAG extends AbstractMappingFromDAG {
     return parameters;
   }
 
-  protected IAbc schedule(final Map<String, Object> outputs, Map<String, String> parameters, InitialLists initial, PreesmScenario scenario,
-      AbcParameters abcParameters, MapperDAG dag, Design architecture, AbstractTaskSched taskSched) {
+  @Override
+  protected IAbc schedule(final Map<String, Object> outputs, final Map<String, String> parameters, final InitialLists initial, final PreesmScenario scenario,
+      final AbcParameters abcParameters, final MapperDAG dag, final Design architecture, final AbstractTaskSched taskSched) {
 
     final IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture, scenario);
 
@@ -90,8 +91,8 @@ public class PFASTMappingFromDAG extends AbstractMappingFromDAG {
 
     final PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
     final PFastAlgoParameters pFastParams = new PFastAlgoParameters(parameters);
-    MapperDAG resdag = pfastAlgorithm.map(dag, architecture, scenario, initial, abcParameters, pFastParams, false, 0, pFastParams.isDisplaySolutions(), null,
-        taskSched);
+    final MapperDAG resdag = pfastAlgorithm.map(dag, architecture, scenario, initial, abcParameters, pFastParams, false, 0, pFastParams.isDisplaySolutions(),
+        null, taskSched);
 
     simu2.setDAG(resdag);
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");

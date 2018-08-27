@@ -61,8 +61,9 @@ import org.ietr.preesm.mapper.params.AbcParameters;
  */
 public class ListSchedulingMappingFromDAG extends AbstractMappingFromDAG {
 
-  protected IAbc schedule(final Map<String, Object> outputs, Map<String, String> parameters, InitialLists initial, PreesmScenario scenario,
-      AbcParameters abcParameters, MapperDAG dag, Design architecture, AbstractTaskSched taskSched) {
+  @Override
+  protected IAbc schedule(final Map<String, Object> outputs, final Map<String, String> parameters, final InitialLists initial, final PreesmScenario scenario,
+      final AbcParameters abcParameters, final MapperDAG dag, final Design architecture, final AbstractTaskSched taskSched) {
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
 

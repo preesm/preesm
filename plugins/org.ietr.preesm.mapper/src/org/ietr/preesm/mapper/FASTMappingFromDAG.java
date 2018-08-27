@@ -78,14 +78,16 @@ public class FASTMappingFromDAG extends AbstractMappingFromDAG {
     return parameters;
   }
 
-  protected IAbc schedule(final Map<String, Object> outputs, Map<String, String> parameters, InitialLists initial, PreesmScenario scenario,
-      AbcParameters abcParams, MapperDAG dag, Design architecture, AbstractTaskSched taskSched) {
+  @Override
+  protected IAbc schedule(final Map<String, Object> outputs, final Map<String, String> parameters, final InitialLists initial, final PreesmScenario scenario,
+      final AbcParameters abcParams, final MapperDAG dag, final Design architecture, final AbstractTaskSched taskSched) {
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
 
     final FastAlgoParameters fastParams = new FastAlgoParameters(parameters);
     final FastAlgorithm fastAlgorithm = new FastAlgorithm(initial, scenario);
-    MapperDAG resDag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false, fastParams.isDisplaySolutions(), null, taskSched);
+    final MapperDAG resDag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false, fastParams.isDisplaySolutions(), null,
+        taskSched);
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
 
