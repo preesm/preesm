@@ -50,6 +50,7 @@ import org.ietr.dftools.architecture.slam.attributes.Parameter;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
+import org.ietr.preesm.mapper.AbstractMappingFromDAG;
 import org.ietr.preesm.mapper.model.special.ReceiveVertex;
 import org.ietr.preesm.mapper.model.special.SendVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
@@ -57,14 +58,14 @@ import org.ietr.preesm.mapper.model.special.TransferVertex;
 /**
  * The purpose of this class is to remove redundant synchronization created during the scheduling of an application. <br>
  * <br>
- * A synchronization is a communication supported by a communication node with the "zero-copy" properties. If several synchronization occur between a give pair
- * of core, come of them may be redundant, which means that they enforce a synchronization which is already enforced by a previous synchronization.
+ * A synchronization is a communication supported by a communication node with the "zero-copy" properties. If several synchronization occur between a given pair
+ * of core, some of them may be redundant. That means they enforce a synchronization which is already enforced by a previous synchronization, and can therefore
+ * be safely removed.
  *
  * @author kdesnos
  *
  */
 public class RedundantSynchronizationCleaner {
-  public static final String TRUE      = "true";
   public static final String ZERO_COPY = "zero-copy";
 
   /**
@@ -264,7 +265,7 @@ public class RedundantSynchronizationCleaner {
     for (final ComponentInstance component : communicationSteps) {
       boolean isZeroCopy = false;
       for (final Parameter p : component.getParameters()) {
-        isZeroCopy |= p.getKey().equals(RedundantSynchronizationCleaner.ZERO_COPY) && p.getValue().equals(RedundantSynchronizationCleaner.TRUE);
+        isZeroCopy |= p.getKey().equals(RedundantSynchronizationCleaner.ZERO_COPY) && p.getValue().equals(AbstractMappingFromDAG.VALUE_TRUE);
       }
       isSyncWait &= isZeroCopy;
     }

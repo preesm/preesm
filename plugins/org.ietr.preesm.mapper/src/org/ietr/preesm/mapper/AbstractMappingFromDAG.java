@@ -131,6 +131,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
       simu.resetDAG();
 
       final IAbc resSimu = schedule(outputs, parameters, initial, scenario, abcParams, dag, architecture, taskSched);
+
       final MapperDAG resDag = resSimu.getDAG();
       final TagDAG tagSDF = new TagDAG();
 
