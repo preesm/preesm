@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
@@ -60,6 +61,7 @@ import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.mapper.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.mapper.algo.list.InitialLists;
 import org.ietr.preesm.mapper.checker.CommunicationOrderChecker;
+import org.ietr.preesm.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.optimizer.RedundantSynchronizationCleaner;
 import org.ietr.preesm.mapper.params.AbcParameters;
@@ -130,7 +132,15 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
 
       final IAbc resSimu = schedule(outputs, parameters, initial, scenario, abcParams, dag, architecture, taskSched);
       final MapperDAG resDag = resSimu.getDAG();
+      final TagDAG tagSDF = new TagDAG();
 
+      try {
+        tagSDF.tag(dag, architecture, scenario, resSimu, abcParams.getEdgeSchedType());
+      } catch (final InvalidExpressionException e) {
+        throw new WorkflowException(e.getMessage());
+      }
+
+      outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, resSimu);
       outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, resDag);
 
       clean(architecture, scenario);

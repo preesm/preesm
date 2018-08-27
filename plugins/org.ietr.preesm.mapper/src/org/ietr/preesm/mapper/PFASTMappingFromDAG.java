@@ -42,10 +42,7 @@ package org.ietr.preesm.mapper;
 
 import java.util.Map;
 import java.util.logging.Level;
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbstractAbc;
@@ -53,7 +50,6 @@ import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.mapper.algo.list.InitialLists;
 import org.ietr.preesm.mapper.algo.pfast.PFastAlgorithm;
-import org.ietr.preesm.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.params.PFastAlgoParameters;
@@ -103,15 +99,6 @@ public class PFASTMappingFromDAG extends AbstractMappingFromDAG {
     // The transfers are reordered using the best found order during
     // scheduling
     simu2.reschedule(pfastAlgorithm.getBestTotalOrder());
-    final TagDAG tagSDF = new TagDAG();
-
-    try {
-      tagSDF.tag(resdag, architecture, scenario, simu2, abcParameters.getEdgeSchedType());
-    } catch (final InvalidExpressionException e) {
-      throw new WorkflowException(e.getMessage());
-    }
-
-    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, simu2);
 
     return simu2;
   }
