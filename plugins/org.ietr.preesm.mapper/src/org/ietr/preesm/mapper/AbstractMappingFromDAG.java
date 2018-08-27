@@ -125,8 +125,8 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     parameters.put("simulatorType", "LooselyTimed");
     parameters.put("edgeSchedType", "Simple");
     parameters.put("balanceLoads", "false");
-    parameters.put(AbstractMappingFromDAG.PARAM_CHECK, AbstractMappingFromDAG.VALUE_CHECK_TRUE);
-    parameters.put(AbstractMapping.PARAM_OPTIMIZE, AbstractMapping.VALUE_FALSE);
+    parameters.put(AbstractMappingFromDAG.PARAM_CHECK, AbstractMappingFromDAG.VALUE_TRUE);
+    parameters.put(AbstractMappingFromDAG.PARAM_OPTIMIZE, AbstractMappingFromDAG.VALUE_FALSE);
     return parameters;
   }
 
@@ -152,21 +152,21 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
    *          Scheduled {@link DirectedAcyclicGraph}.
    */
   protected void checkSchedulingResult(final Map<String, String> parameters, final DirectedAcyclicGraph dag) {
-    if (parameters.get(AbstractMappingFromDAG.PARAM_CHECK).equals(AbstractMappingFromDAG.VALUE_CHECK_TRUE)) {
+    if (parameters.get(AbstractMappingFromDAG.PARAM_CHECK).equals(AbstractMappingFromDAG.VALUE_TRUE)) {
       CommunicationOrderChecker.checkCommunicationOrder(dag);
     }
   }
 
   /**
    * This method performs optional optimization of the communications generated in the schedule.
-   * 
+   *
    * @param parameters
    *          {@link Map} of parameters values that were given to the mapper workflow task.
    * @param dag
    *          Scheduled {@link DirectedAcyclicGraph}.
    */
   protected void removeRedundantSynchronization(final Map<String, String> parameters, final DirectedAcyclicGraph dag) {
-    if (parameters.get(AbstractMapping.PARAM_OPTIMIZE).equals(AbstractMapping.VALUE_TRUE)) {
+    if (parameters.get(AbstractMappingFromDAG.PARAM_OPTIMIZE).equals(AbstractMappingFromDAG.VALUE_TRUE)) {
       RedundantSynchronizationCleaner.cleanRedundantSynchronization(dag);
     }
   }

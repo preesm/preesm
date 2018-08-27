@@ -141,6 +141,7 @@ public class FASTMappingFromDAG extends AbstractMappingFromDAG {
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, simu2);
 
     super.clean(architecture, scenario);
+    super.removeRedundantSynchronization(parameters, dag);
     super.checkSchedulingResult(parameters, resDag);
 
   }
