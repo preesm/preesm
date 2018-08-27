@@ -83,7 +83,7 @@ public class FASTMappingFromDAG extends AbstractMappingFromDAG {
     return parameters;
   }
 
-  protected void schedule(final Design architecture, final PreesmScenario scenario, final MapperDAG dag, final Map<String, String> parameters,
+  protected MapperDAG schedule(final Design architecture, final PreesmScenario scenario, final MapperDAG dag, final Map<String, String> parameters,
       final Map<String, Object> outputs) {
 
     final FastAlgoParameters fastParams = new FastAlgoParameters(parameters);
@@ -103,7 +103,7 @@ public class FASTMappingFromDAG extends AbstractMappingFromDAG {
 
     final InitialLists initialLists = new InitialLists();
     if (!initialLists.constructInitialLists(dag, simu)) {
-      return;
+      return dag;
     }
 
     final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
@@ -137,13 +137,9 @@ public class FASTMappingFromDAG extends AbstractMappingFromDAG {
     // A simple task scheduler avoids new task swaps and ensures reuse of
     // previous order.
     simu2.setTaskScheduler(new SimpleTaskSched());
-    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, resDag);
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, simu2);
 
-    super.clean(architecture, scenario);
-    super.removeRedundantSynchronization(parameters, dag);
-    super.checkSchedulingResult(parameters, resDag);
-
+    return resDag;
   }
 
 }

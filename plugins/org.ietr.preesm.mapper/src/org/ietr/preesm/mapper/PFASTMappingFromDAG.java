@@ -84,7 +84,7 @@ public class PFASTMappingFromDAG extends AbstractMappingFromDAG {
     return parameters;
   }
 
-  protected void schedule(final Design architecture, final PreesmScenario scenario, final MapperDAG dag, final Map<String, String> parameters,
+  protected MapperDAG schedule(final Design architecture, final PreesmScenario scenario, final MapperDAG dag, final Map<String, String> parameters,
       final Map<String, Object> outputs) {
 
     final PFastAlgoParameters pFastParams = new PFastAlgoParameters(parameters);
@@ -101,7 +101,7 @@ public class PFASTMappingFromDAG extends AbstractMappingFromDAG {
     final InitialLists initial = new InitialLists();
 
     if (!initial.constructInitialLists(dag, simu)) {
-      return;
+      return dag;
     }
 
     final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
@@ -127,13 +127,9 @@ public class PFASTMappingFromDAG extends AbstractMappingFromDAG {
       throw new WorkflowException(e.getMessage());
     }
 
-    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, resdag);
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, simu2);
 
-    super.clean(architecture, scenario);
-    super.removeRedundantSynchronization(parameters, dag);
-    super.checkSchedulingResult(parameters, resdag);
-
+    return resdag;
   }
 
 }

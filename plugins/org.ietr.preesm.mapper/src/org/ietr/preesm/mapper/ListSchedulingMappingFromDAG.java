@@ -67,7 +67,7 @@ import org.ietr.preesm.mapper.params.AbcParameters;
  */
 public class ListSchedulingMappingFromDAG extends AbstractMappingFromDAG {
 
-  protected void schedule(final Design architecture, final PreesmScenario scenario, final MapperDAG dag, final Map<String, String> parameters,
+  protected MapperDAG schedule(final Design architecture, final PreesmScenario scenario, final MapperDAG dag, final Map<String, String> parameters,
       final Map<String, Object> outputs) {
 
     final AbcParameters abcParameters = new AbcParameters(parameters);
@@ -84,7 +84,7 @@ public class ListSchedulingMappingFromDAG extends AbstractMappingFromDAG {
     final boolean couldConstructInitialLists = initial.constructInitialLists(dag, simu);
     if (!couldConstructInitialLists) {
       WorkflowLogger.getLogger().log(Level.SEVERE, "Error in scheduling");
-      return;
+      return dag;
     }
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
@@ -110,12 +110,9 @@ public class ListSchedulingMappingFromDAG extends AbstractMappingFromDAG {
       throw new WorkflowException(e.getMessage());
     }
 
-    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, simu2);
 
-    super.clean(architecture, scenario);
-    super.removeRedundantSynchronization(parameters, dag);
-    super.checkSchedulingResult(parameters, dag);
+    return dag;
 
   }
 

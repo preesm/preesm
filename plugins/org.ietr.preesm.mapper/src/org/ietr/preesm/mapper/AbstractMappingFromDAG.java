@@ -96,11 +96,18 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     RouteCalculator.recalculate(architecture, scenario);
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
-    schedule(architecture, scenario, dag, parameters, outputs);
+    final MapperDAG resDag = schedule(architecture, scenario, dag, parameters, outputs);
+
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, resDag);
+
+    clean(architecture, scenario);
+    removeRedundantSynchronization(parameters, dag);
+    checkSchedulingResult(parameters, resDag);
+
     return outputs;
   }
 
-  protected abstract void schedule(final Design architecture, final PreesmScenario scenario, final MapperDAG dag, final Map<String, String> parameters,
+  protected abstract MapperDAG schedule(final Design architecture, final PreesmScenario scenario, final MapperDAG dag, final Map<String, String> parameters,
       final Map<String, Object> outputs);
 
   /**
