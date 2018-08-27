@@ -192,47 +192,35 @@ public class RedundantSynchronizationCleaner {
     // Fill the syncGroups
     final TopologicalDAGIterator iterDAGVertices = new TopologicalDAGIterator(dag); // Iterator on DAG vertices
     // Store if the type of the last DAGVertex scheduled on each core (during the scan of the DAG) is sync or not (to identify groups)
-    final Map<ComponentInstance, Boolean> lastVertexScheduled = new LinkedHashMap<>();
+    final Map<ComponentInstance, Boolean> lastVertexScheduledIsSyncPerComponent = new LinkedHashMap<>();
     while (iterDAGVertices.hasNext()) {
       final DAGVertex currentVertex = iterDAGVertices.next();
+
+      // Get component
+      final ComponentInstance component = (ComponentInstance) currentVertex.getPropertyBean().getValue("Operator");
 
       // Get vertex type
       final boolean isCommunication = currentVertex instanceof TransferVertex;
       final boolean isSynchronization = isCommunication && RedundantSynchronizationCleaner.isSynchronizationTransfer((TransferVertex) currentVertex);
 
-      // Get component
-      final ComponentInstance component = (ComponentInstance) currentVertex.getPropertyBean().getValue("Operator");
-
       // If the currentVertex is a synchronization, store it in the comGroups
       if (isSynchronization) {
-        // Get or create the appropriate sync group
-        ConsecutiveTransferList syncGroup;
-        if (!syncGroups.containsKey(component) || !lastVertexScheduled.get(component)) {
-          // If the component still has no group OR if its last scheduled vertex is not a sync.
-          // Create a new group
-          syncGroup = new ConsecutiveTransferList();
+        // syncGroups.getOrDefault(component, defaultValue)
+        final boolean lastVertexOnComponentWasSync = lastVertexScheduledIsSyncPerComponent.getOrDefault(component, false);
+        final List<ConsecutiveTransferList> componentSyncGroup = syncGroups.getOrDefault(component, new LinkedList<>());
+        if (componentSyncGroup.isEmpty() || !lastVertexOnComponentWasSync) {
+          componentSyncGroup.add(new ConsecutiveTransferList((TransferVertex) currentVertex));
+          syncGroups.put(component, componentSyncGroup);
         } else {
           // The component is associated with a group AND the last scheduled vertex was a communication.
-          final List<ConsecutiveTransferList> componentSyncGroup = syncGroups.get(component);
-          syncGroup = componentSyncGroup.get(componentSyncGroup.size() - 1);
+          componentSyncGroup.get(componentSyncGroup.size() - 1).add((TransferVertex) currentVertex);
         }
-        syncGroup.add((TransferVertex) currentVertex);
-
-        // Store the syncGroup (if needed) with the appropriate component.
-        if (!syncGroups.containsKey(component)) {
-          // Create first group of the component
-          final List<ConsecutiveTransferList> componentList = new LinkedList<>();
-          syncGroups.put(component, componentList);
-          componentList.add(syncGroup);
-        } else if (!lastVertexScheduled.get(component)) {
-          // Add the new sync group to the component
-          syncGroups.get(component).add(syncGroup);
-        } // Else to both ifs, the vertex was directly added to an existing sync group in previous if statement.
       }
 
       // Save last vertex (replace previously saved type)
-      lastVertexScheduled.put(component, isSynchronization);
+      lastVertexScheduledIsSyncPerComponent.put(component, isSynchronization);
     }
+    debugList(syncGroups);
     return syncGroups;
   }
 
@@ -247,10 +235,26 @@ public class RedundantSynchronizationCleaner {
       final ComponentInstance componentInstance = e.getKey();
       final String componentName = componentInstance.getInstanceName();
       final StringBuilder sb = new StringBuilder(componentName + ": ");
+      boolean first = true;
       for (final List<TransferVertex> set : e.getValue()) {
-        sb.append(set.size() + "-");
+        if (first) {
+          first = false;
+        } else {
+          sb.append("-");
+        }
+        sb.append(set.size() + "[");
+        for (TransferVertex tv : set) {
+          if (tv.getSource().getEffectiveComponent() == componentInstance) {
+            sb.append("S");
+          } else if (tv.getTarget().getEffectiveComponent() == componentInstance) {
+            sb.append("R");
+          } else {
+            sb.append("T");
+          }
+        }
+        sb.append("]");
       }
-      WorkflowLogger.getLogger().log(Level.INFO, "{0}", sb);
+      WorkflowLogger.getLogger().log(Level.INFO, sb.toString());
     }
 
   }

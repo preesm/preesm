@@ -10,6 +10,11 @@ import org.ietr.preesm.mapper.model.special.TransferVertex;
  */
 public class ConsecutiveTransferList extends ArrayList<TransferVertex> {
 
+  public ConsecutiveTransferList(TransferVertex currentVertex) {
+    super();
+    this.add(currentVertex);
+  }
+
   /**
    *
    */
