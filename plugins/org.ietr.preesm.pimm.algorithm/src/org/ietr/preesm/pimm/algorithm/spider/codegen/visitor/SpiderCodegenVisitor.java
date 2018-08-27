@@ -613,9 +613,9 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
 
     if (f.getDelay() != null) {
       // append("\t\t/*Delay*/ \"(" + delay + ")*sizeof(" + f.getType() + ")\",0);\n\n");
-      append("\t\t/*Delay*/ \"(" + delay + ")*" + typeSize + "\",0);\n\n");
+      append("\t\t/*Delay*/ \"(" + delay + ") * " + typeSize + "\", 0, 0, 0, true);\n\n");
     } else {
-      append("\t\t/*Delay*/ \"0\",0);\n\n");
+      append("\t\t/*Delay*/ \"0\", 0, 0, 0, false);\n\n");
     }
     return true;
   }

@@ -13,11 +13,14 @@ PREESM Changelog
 * Update MathFunctionHelper to have lcm/gcd on longs
 * Refactor schedulers (and remove obsolete one);;
 * Flatten everything when depth level is set to negative values;
-* Add support for Delay initialization
+* Add support for Delay initialization:
   * Extand semantic of Delay in the PiSDF Model;
   * Add setter and getter actors for intializing and flushing delays;
   * Add support in standard passes (use PiMM to SRDAG);
   * Add graphical support in PiSDF Editor (partial - autolayout can fail when using delay innitialization);
+* Fix spider codegen:
+  * Set delay persistence to have the same default behavior as Preesm;
+  * Fix indentation;
 
 ### Bug fix
 * Fix issue #62
