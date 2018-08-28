@@ -5,6 +5,13 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* Add support for Delay initialization:
+  * Extand semantic of Delay in the PiSDF Model;
+  * Add setter and getter actors for intializing and flushing delays;
+  * Add support in standard passes (use PiMM to SRDAG);
+  * Add graphical support in PiSDF Editor (partial - autolayout can fail when using delay innitialization);
+* Add prototype of SyncOptimizer: remove redundant synchronizations when working with zero-copy memories;
+* Add sample JSon I/O for schedule/timing;
 
 ### Changes
 * Enable XCore codegen plugin back in Maven (https://github.com/eclipse/xtext/issues/1233);
@@ -13,16 +20,10 @@ PREESM Changelog
 * Update MathFunctionHelper to have lcm/gcd on longs;
 * Refactor schedulers (and remove obsolete one);
 * Flatten everything when depth level is set to negative values;
-* Add support for Delay initialization:
-  * Extand semantic of Delay in the PiSDF Model;
-  * Add setter and getter actors for intializing and flushing delays;
-  * Add support in standard passes (use PiMM to SRDAG);
-  * Add graphical support in PiSDF Editor (partial - autolayout can fail when using delay innitialization);
 * Fix spider codegen:
   * Set delay persistence to have the same default behavior as Preesm;
   * Fix indentation;
-* Add prototype of SyncOptimizer: remove redundant synchronizations when working with zero-copy memories;
-* Mintor refactoring;
+* Minor refactoring;
 
 ### Bug fix
 * Fix issue #62
