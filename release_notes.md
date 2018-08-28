@@ -10,8 +10,8 @@ PREESM Changelog
 * Enable XCore codegen plugin back in Maven (https://github.com/eclipse/xtext/issues/1233);
 * Properly display errors in a dialog when generating diagram from .pi file fails;
 * Update MapperDAG to keep a reference to the PiSDF; Refactor constructor accordingly;
-* Update MathFunctionHelper to have lcm/gcd on longs
-* Refactor schedulers (and remove obsolete one);;
+* Update MathFunctionHelper to have lcm/gcd on longs;
+* Refactor schedulers (and remove obsolete one);
 * Flatten everything when depth level is set to negative values;
 * Add support for Delay initialization:
   * Extand semantic of Delay in the PiSDF Model;
@@ -22,6 +22,7 @@ PREESM Changelog
   * Set delay persistence to have the same default behavior as Preesm;
   * Fix indentation;
 * Add prototype of SyncOptimizer: remove redundant synchronizations when working with zero-copy memories;
+* Mintor refactoring;
 
 ### Bug fix
 * Fix issue #62
