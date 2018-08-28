@@ -21,6 +21,7 @@ PREESM Changelog
 * Fix spider codegen:
   * Set delay persistence to have the same default behavior as Preesm;
   * Fix indentation;
+* Add prototype of SyncOptimizer: remove redundant synchronizations when working with zero-copy memories;
 
 ### Bug fix
 * Fix issue #62
