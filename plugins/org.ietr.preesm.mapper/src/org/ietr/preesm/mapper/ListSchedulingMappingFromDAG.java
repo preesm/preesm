@@ -42,20 +42,14 @@ package org.ietr.preesm.mapper;
 
 import java.util.Map;
 import java.util.logging.Level;
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbstractAbc;
 import org.ietr.preesm.mapper.abc.IAbc;
-import org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
-import org.ietr.preesm.mapper.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.mapper.algo.list.InitialLists;
 import org.ietr.preesm.mapper.algo.list.KwokListScheduler;
-import org.ietr.preesm.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.params.AbcParameters;
 
@@ -67,33 +61,12 @@ import org.ietr.preesm.mapper.params.AbcParameters;
  */
 public class ListSchedulingMappingFromDAG extends AbstractMappingFromDAG {
 
-  protected void schedule(final Design architecture, final PreesmScenario scenario, final MapperDAG dag, final Map<String, String> parameters,
-      final Map<String, Object> outputs) {
-
-    final AbcParameters abcParameters = new AbcParameters(parameters);
-
-    // calculates the DAG span length on the architecture main operator (the
-    // tasks that can not be executed by the main operator are deported
-    // without transfer time to other operator)
-    calculateSpan(dag, architecture, scenario, abcParameters);
-
-    final IAbc simu = new InfiniteHomogeneousAbc(abcParameters, dag, architecture, abcParameters.getSimulatorType().getTaskSchedType(), scenario);
-
-    final InitialLists initial = new InitialLists();
-
-    final boolean couldConstructInitialLists = initial.constructInitialLists(dag, simu);
-    if (!couldConstructInitialLists) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "Error in scheduling");
-      return;
-    }
+  @Override
+  protected IAbc schedule(final Map<String, Object> outputs, final Map<String, String> parameters, final InitialLists initial, final PreesmScenario scenario,
+      final AbcParameters abcParameters, final MapperDAG dag, final Design architecture, final AbstractTaskSched taskSched) {
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
 
-    // Using topological task scheduling in list scheduling: the t-level
-    // order of the infinite homogeneous simulation
-    final AbstractTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
-
-    simu.resetDAG();
     final IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture, scenario);
     simu2.setTaskScheduler(taskSched);
 
@@ -102,19 +75,7 @@ public class ListSchedulingMappingFromDAG extends AbstractMappingFromDAG {
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
 
-    final TagDAG tagSDF = new TagDAG();
-
-    try {
-      tagSDF.tag(dag, architecture, scenario, simu2, abcParameters.getEdgeSchedType());
-    } catch (final InvalidExpressionException e) {
-      throw new WorkflowException(e.getMessage());
-    }
-
-    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
-    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, simu2);
-
-    super.clean(architecture, scenario);
-    super.checkSchedulingResult(parameters, dag);
+    return simu2;
 
   }
 

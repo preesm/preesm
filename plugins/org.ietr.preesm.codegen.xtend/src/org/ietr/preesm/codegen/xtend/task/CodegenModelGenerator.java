@@ -1289,6 +1289,14 @@ public class CodegenModelGenerator {
     insertCommunication(operatorBlock, dagVertex, newCommZoneComplement);
 
     // No semaphore here, semaphore are only for SS->RE and RE->SR
+
+    // Check if this is a redundant communication
+    Boolean b = (Boolean) dagVertex.getPropertyBean().getValue("Redundant");
+    if (b != null && b.equals(Boolean.valueOf(true))) {
+      // Mark communication are redundant.
+      newComm.setRedundant(true);
+      newCommZoneComplement.setRedundant(true);
+    }
   }
 
   /**

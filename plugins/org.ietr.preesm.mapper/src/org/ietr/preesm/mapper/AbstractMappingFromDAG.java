@@ -42,18 +42,28 @@ package org.ietr.preesm.mapper;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.mapper.abc.IAbc;
+import org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.SpanLengthCalculator;
 import org.ietr.preesm.mapper.abc.route.calcul.RouteCalculator;
+import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
+import org.ietr.preesm.mapper.abc.taskscheduling.TopologicalTaskSched;
+import org.ietr.preesm.mapper.algo.list.InitialLists;
 import org.ietr.preesm.mapper.checker.CommunicationOrderChecker;
+import org.ietr.preesm.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.mapper.model.MapperDAG;
+import org.ietr.preesm.mapper.optimizer.RedundantSynchronizationCleaner;
 import org.ietr.preesm.mapper.params.AbcParameters;
 
 /**
@@ -68,11 +78,14 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
   /** The Constant PARAM_CHECK. */
   public static final String PARAM_CHECK = "Check";
 
+  /** The Constant PARAM_OPTIMIZE. */
+  public static final String PARAM_OPTIMIZE = "Optimize synchronization";
+
   /** The Constant VALUE_CHECK_FALSE. */
-  public static final String VALUE_CHECK_FALSE = "False";
+  public static final String VALUE_FALSE = "False";
 
   /** The Constant VALUE_CHECK_TRUE. */
-  public static final String VALUE_CHECK_TRUE = "True";
+  public static final String VALUE_TRUE = "True";
 
   /*
    * (non-Javadoc)
@@ -84,6 +97,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
       final String nodeName, final Workflow workflow) {
 
+    final Map<String, Object> outputs = new LinkedHashMap<>();
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final MapperDAG dag = (MapperDAG) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
     final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
@@ -91,13 +105,54 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     // Asking to recalculate routes
     RouteCalculator.recalculate(architecture, scenario);
 
-    final Map<String, Object> outputs = new LinkedHashMap<>();
-    schedule(architecture, scenario, dag, parameters, outputs);
+    if (dag == null) {
+      throw (new WorkflowException(" graph can't be scheduled, check console messages"));
+    }
+
+    final AbcParameters abcParams = new AbcParameters(parameters);
+
+    // calculates the DAG span length on the architecture main operator (the
+    // tasks that can not be executed by the main operator are deported
+    // without transfer time to other operator)
+    calculateSpan(dag, architecture, scenario, abcParams);
+
+    final IAbc simu = new InfiniteHomogeneousAbc(abcParams, dag, architecture, abcParams.getSimulatorType().getTaskSchedType(), scenario);
+
+    final InitialLists initial = new InitialLists();
+    final boolean couldConstructInitialLists = initial.constructInitialLists(dag, simu);
+    if (!couldConstructInitialLists) {
+      WorkflowLogger.getLogger().log(Level.SEVERE, "Error in scheduling");
+      outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
+    } else {
+
+      // Using topological task scheduling in list scheduling: the t-level
+      // order of the infinite homogeneous simulation
+      final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
+      simu.resetDAG();
+
+      final IAbc resSimu = schedule(outputs, parameters, initial, scenario, abcParams, dag, architecture, taskSched);
+
+      final MapperDAG resDag = resSimu.getDAG();
+      final TagDAG tagSDF = new TagDAG();
+
+      try {
+        tagSDF.tag(dag, architecture, scenario, resSimu, abcParams.getEdgeSchedType());
+      } catch (final InvalidExpressionException e) {
+        throw new WorkflowException(e.getMessage());
+      }
+
+      outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, resSimu);
+      outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, resDag);
+
+      clean(architecture, scenario);
+      removeRedundantSynchronization(parameters, dag);
+      checkSchedulingResult(parameters, resDag);
+    }
     return outputs;
   }
 
-  protected abstract void schedule(final Design architecture, final PreesmScenario scenario, final MapperDAG dag, final Map<String, String> parameters,
-      final Map<String, Object> outputs);
+  protected abstract IAbc schedule(final Map<String, Object> outputs, Map<String, String> parameters, InitialLists initial, PreesmScenario scenario,
+      AbcParameters abcParams, MapperDAG dag, Design architecture, AbstractTaskSched taskSched);
 
   /**
    * Generic mapping message.
@@ -121,7 +176,8 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     parameters.put("simulatorType", "LooselyTimed");
     parameters.put("edgeSchedType", "Simple");
     parameters.put("balanceLoads", "false");
-    parameters.put(AbstractMappingFromDAG.PARAM_CHECK, AbstractMappingFromDAG.VALUE_CHECK_TRUE);
+    parameters.put(AbstractMappingFromDAG.PARAM_CHECK, AbstractMappingFromDAG.VALUE_TRUE);
+    parameters.put(AbstractMappingFromDAG.PARAM_OPTIMIZE, AbstractMappingFromDAG.VALUE_FALSE);
     return parameters;
   }
 
@@ -147,8 +203,23 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
    *          Scheduled {@link DirectedAcyclicGraph}.
    */
   protected void checkSchedulingResult(final Map<String, String> parameters, final DirectedAcyclicGraph dag) {
-    if (parameters.get(AbstractMappingFromDAG.PARAM_CHECK).equals(AbstractMappingFromDAG.VALUE_CHECK_TRUE)) {
+    if (parameters.get(AbstractMappingFromDAG.PARAM_CHECK).equals(AbstractMappingFromDAG.VALUE_TRUE)) {
       CommunicationOrderChecker.checkCommunicationOrder(dag);
+    }
+  }
+
+  /**
+   * This method performs optional optimization of the communications generated in the schedule.
+   *
+   * @param parameters
+   *          {@link Map} of parameters values that were given to the mapper workflow task.
+   * @param dag
+   *          Scheduled {@link DirectedAcyclicGraph}.
+   */
+  protected void removeRedundantSynchronization(final Map<String, String> parameters, final DirectedAcyclicGraph dag) {
+    final String paramValue = parameters.get(AbstractMappingFromDAG.PARAM_OPTIMIZE);
+    if (paramValue.equals(AbstractMappingFromDAG.VALUE_TRUE)) {
+      RedundantSynchronizationCleaner.cleanRedundantSynchronization(dag);
     }
   }
 

@@ -42,20 +42,15 @@ package org.ietr.preesm.mapper;
 
 import java.util.Map;
 import java.util.logging.Level;
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbstractAbc;
 import org.ietr.preesm.mapper.abc.IAbc;
-import org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
+import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.mapper.abc.taskscheduling.SimpleTaskSched;
-import org.ietr.preesm.mapper.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.mapper.algo.fast.FastAlgorithm;
 import org.ietr.preesm.mapper.algo.list.InitialLists;
-import org.ietr.preesm.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.params.FastAlgoParameters;
@@ -83,37 +78,16 @@ public class FASTMappingFromDAG extends AbstractMappingFromDAG {
     return parameters;
   }
 
-  protected void schedule(final Design architecture, final PreesmScenario scenario, final MapperDAG dag, final Map<String, String> parameters,
-      final Map<String, Object> outputs) {
-
-    final FastAlgoParameters fastParams = new FastAlgoParameters(parameters);
-    final AbcParameters abcParams = new AbcParameters(parameters);
-
-    if (dag == null) {
-      throw (new WorkflowException(" graph can't be scheduled, check console messages"));
-    }
-
-    // calculates the DAG span length on the architecture main operator (the
-    // tasks that can
-    // not be executed by the main operator are deported without transfer
-    // time to other operator
-    calculateSpan(dag, architecture, scenario, abcParams);
-
-    final IAbc simu = new InfiniteHomogeneousAbc(abcParams, dag, architecture, abcParams.getSimulatorType().getTaskSchedType(), scenario);
-
-    final InitialLists initialLists = new InitialLists();
-    if (!initialLists.constructInitialLists(dag, simu)) {
-      return;
-    }
-
-    final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
-    simu.resetDAG();
-
-    final FastAlgorithm fastAlgorithm = new FastAlgorithm(initialLists, scenario);
+  @Override
+  protected IAbc schedule(final Map<String, Object> outputs, final Map<String, String> parameters, final InitialLists initial, final PreesmScenario scenario,
+      final AbcParameters abcParams, final MapperDAG dag, final Design architecture, final AbstractTaskSched taskSched) {
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
 
-    MapperDAG resDag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false, fastParams.isDisplaySolutions(), null, taskSched);
+    final FastAlgoParameters fastParams = new FastAlgoParameters(parameters);
+    final FastAlgorithm fastAlgorithm = new FastAlgorithm(initial, scenario);
+    final MapperDAG resDag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false, fastParams.isDisplaySolutions(), null,
+        taskSched);
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
 
@@ -124,25 +98,10 @@ public class FASTMappingFromDAG extends AbstractMappingFromDAG {
     // The transfers are reordered using the best found order during
     // scheduling
     simu2.reschedule(fastAlgorithm.getBestTotalOrder());
-    final TagDAG tagDAG = new TagDAG();
 
-    // The mapper dag properties are put in the property bean to be
-    // transfered to code generation
-    try {
-      tagDAG.tag(resDag, architecture, scenario, simu2, abcParams.getEdgeSchedType());
-    } catch (final InvalidExpressionException e) {
-      throw (new WorkflowException(e.getMessage()));
-    }
-
-    // A simple task scheduler avoids new task swaps and ensures reuse of
-    // previous order.
     simu2.setTaskScheduler(new SimpleTaskSched());
-    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, resDag);
-    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, simu2);
 
-    super.clean(architecture, scenario);
-    super.checkSchedulingResult(parameters, resDag);
-
+    return simu2;
   }
 
 }

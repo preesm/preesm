@@ -73,6 +73,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getNodes <em>Nodes</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getReceiveRelease <em>Receive Release</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getSendReserve <em>Send Reserve</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#isRedundant <em>Redundant</em>}</li>
  * </ul>
  *
  * @generated
@@ -80,7 +81,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
 public class CommunicationImpl extends CallImpl implements Communication {
   /**
    * The default value of the '{@link #getDirection() <em>Direction</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getDirection()
    * @generated
    * @ordered
@@ -89,7 +90,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getDirection() <em>Direction</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getDirection()
    * @generated
    * @ordered
@@ -98,7 +99,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The default value of the '{@link #getDelimiter() <em>Delimiter</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getDelimiter()
    * @generated
    * @ordered
@@ -107,7 +108,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getDelimiter() <em>Delimiter</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getDelimiter()
    * @generated
    * @ordered
@@ -116,7 +117,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getData() <em>Data</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getData()
    * @generated
    * @ordered
@@ -125,7 +126,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getSendStart() <em>Send Start</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getSendStart()
    * @generated
    * @ordered
@@ -134,7 +135,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getSendEnd() <em>Send End</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getSendEnd()
    * @generated
    * @ordered
@@ -143,7 +144,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getReceiveStart() <em>Receive Start</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getReceiveStart()
    * @generated
    * @ordered
@@ -152,7 +153,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getReceiveEnd() <em>Receive End</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getReceiveEnd()
    * @generated
    * @ordered
@@ -161,7 +162,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The default value of the '{@link #getId() <em>Id</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getId()
    * @generated
    * @ordered
@@ -170,7 +171,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getId() <em>Id</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getId()
    * @generated
    * @ordered
@@ -179,7 +180,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getNodes() <em>Nodes</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getNodes()
    * @generated
    * @ordered
@@ -188,7 +189,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getReceiveRelease() <em>Receive Release</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getReceiveRelease()
    * @generated
    * @ordered
@@ -197,12 +198,30 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
   /**
    * The cached value of the '{@link #getSendReserve() <em>Send Reserve</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getSendReserve()
    * @generated
    * @ordered
    */
   protected Communication sendReserve;
+
+  /**
+   * The default value of the '{@link #isRedundant() <em>Redundant</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @see #isRedundant()
+   * @generated
+   * @ordered
+   */
+  protected static final boolean REDUNDANT_EDEFAULT = false;
+
+  /**
+   * The cached value of the '{@link #isRedundant() <em>Redundant</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @see #isRedundant()
+   * @generated
+   * @ordered
+   */
+  protected boolean redundant = CommunicationImpl.REDUNDANT_EDEFAULT;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
@@ -645,6 +664,30 @@ public class CommunicationImpl extends CallImpl implements Communication {
   }
 
   /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   */
+  @Override
+  public boolean isRedundant() {
+    return this.redundant;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
+   */
+  @Override
+  public void setRedundant(final boolean newRedundant) {
+    final boolean oldRedundant = this.redundant;
+    this.redundant = newRedundant;
+    if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__REDUNDANT, oldRedundant, this.redundant));
+    }
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
    * @return the core container
@@ -742,6 +785,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
           return getSendReserve();
         }
         return basicGetSendReserve();
+      case CodegenPackage.COMMUNICATION__REDUNDANT:
+        return isRedundant();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -793,6 +838,9 @@ public class CommunicationImpl extends CallImpl implements Communication {
       case CodegenPackage.COMMUNICATION__SEND_RESERVE:
         setSendReserve((Communication) newValue);
         return;
+      case CodegenPackage.COMMUNICATION__REDUNDANT:
+        setRedundant((Boolean) newValue);
+        return;
     }
     super.eSet(featureID, newValue);
   }
@@ -840,6 +888,9 @@ public class CommunicationImpl extends CallImpl implements Communication {
       case CodegenPackage.COMMUNICATION__SEND_RESERVE:
         setSendReserve((Communication) null);
         return;
+      case CodegenPackage.COMMUNICATION__REDUNDANT:
+        setRedundant(CommunicationImpl.REDUNDANT_EDEFAULT);
+        return;
     }
     super.eUnset(featureID);
   }
@@ -877,6 +928,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
         return this.receiveRelease != null;
       case CodegenPackage.COMMUNICATION__SEND_RESERVE:
         return this.sendReserve != null;
+      case CodegenPackage.COMMUNICATION__REDUNDANT:
+        return this.redundant != CommunicationImpl.REDUNDANT_EDEFAULT;
     }
     return super.eIsSet(featureID);
   }
@@ -900,6 +953,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
     result.append(this.delimiter);
     result.append(", id: ");
     result.append(this.id);
+    result.append(", redundant: ");
+    result.append(this.redundant);
     result.append(')');
     return result.toString();
   }

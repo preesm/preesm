@@ -58,7 +58,7 @@ public interface Constant extends Variable {
    * If the meaning of the '<em>Value</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Value</em>' attribute.
    * @see #setValue(long)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getConstant_Value()
@@ -70,7 +70,7 @@ public interface Constant extends Variable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Constant#getValue <em>Value</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Value</em>' attribute.
    * @see #getValue()
