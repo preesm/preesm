@@ -36,10 +36,8 @@ package org.ietr.preesm.mapper.optimizer;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
@@ -74,6 +72,10 @@ public class RedundantSynchronizationCleaner {
   private RedundantSynchronizationCleaner() {
   }
 
+  private static final ComponentInstance findComponent(DAGVertex vertex) {
+    return (ComponentInstance) vertex.getPropertyBean().getValue("Operator");
+  }
+
   /**
    * Analyzes the communications in the {@link DirectedAcyclicGraph} and remove redundant synchronizations.
    *
@@ -82,19 +84,10 @@ public class RedundantSynchronizationCleaner {
    */
   public static void cleanRedundantSynchronization(final DirectedAcyclicGraph dag) {
     // Get the groups of synchronization.
-    final Map<ComponentInstance, List<ConsecutiveTransferList>> syncGroups = RedundantSynchronizationCleaner.createSyncGroupsPerComponents(dag);
-
-    // Build lookup map giving the components corresponding to each sync vertex
-    final Map<TransferVertex, ComponentInstance> lookupSyncComponent = new LinkedHashMap<>();
-    // Build lookup map giving the group of sync to which each sync vertex belongs
-    final Map<TransferVertex, List<TransferVertex>> lookupSyncGroup = new LinkedHashMap<>();
-    syncGroups.forEach((comp, list) -> list.forEach(list2 -> list2.forEach(vert -> {
-      lookupSyncComponent.put(vert, comp);
-      lookupSyncGroup.put(vert, list2);
-    })));
+    final ConsecutiveTransfers syncGroups = RedundantSynchronizationCleaner.createSyncGroupsPerComponents(dag);
 
     // Get the list of components
-    final Set<ComponentInstance> components = syncGroups.keySet();
+    final Set<ComponentInstance> components = syncGroups.getComponents();
 
     // Scan the DAG to identify the precedence relationships enforced by each communication
 
@@ -108,19 +101,19 @@ public class RedundantSynchronizationCleaner {
     // Along the scan: Index of sender registered to receiver vertex
     final Map<ReceiveVertex, SyncIndex> registeredSenderSyncIndex = new LinkedHashMap<>();
 
-    // Along the scan: register the receive vertex of synchronization to Be Removed
+    // Along the scan: register the transfer vertex (send AND receive) of synchronization to Be Removed
     final Set<TransferVertex> toBeRemoved = new LinkedHashSet<>();
 
     final TopologicalDAGIterator iterDAGVertices = new TopologicalDAGIterator(dag); // Iterator on DAG vertices
     while (iterDAGVertices.hasNext()) {
       final DAGVertex currentVertex = iterDAGVertices.next();
       // Get component
-      final ComponentInstance component = (ComponentInstance) currentVertex.getPropertyBean().getValue("Operator");
+      final ComponentInstance component = findComponent(currentVertex);
 
-      final List<TransferVertex> transfersForCurrentVertex = lookupSyncGroup.get(currentVertex);
+      final List<TransferVertex> groupForCurrentVertex = syncGroups.lookupSyncGroup(currentVertex);
       // When the beginning of a sync group is reached
       if ((currentVertex instanceof TransferVertex) && RedundantSynchronizationCleaner.isSynchronizationTransfer((TransferVertex) currentVertex)
-          && transfersForCurrentVertex.get(0).equals(currentVertex)) {
+          && groupForCurrentVertex.get(0).equals(currentVertex)) {
         // Increase self syncIndex
         lastSyncedPerComp.get(component).increment(component);
       }
@@ -135,11 +128,11 @@ public class RedundantSynchronizationCleaner {
 
       // When the end of a sync group is reached
       if ((currentVertex instanceof TransferVertex) && RedundantSynchronizationCleaner.isSynchronizationTransfer((TransferVertex) currentVertex)
-          && transfersForCurrentVertex.get(transfersForCurrentVertex.size() - 1).equals(currentVertex)) {
+          && groupForCurrentVertex.get(groupForCurrentVertex.size() - 1).equals(currentVertex)) {
 
         // Remove redundant sync from the group
         final SyncIndex coveredIdx = lastSyncedPerComp.get(component).clone();
-        for (final TransferVertex syncVertex : transfersForCurrentVertex) {
+        for (final TransferVertex syncVertex : groupForCurrentVertex) {
           if (syncVertex instanceof ReceiveVertex) {
             // Is the receive vertex already covered (either by the currentSyncIndex of the core, OR by another receive of the group.
             if (registeredSenderSyncIndex.get(syncVertex).strictlySmallerOrEqual(coveredIdx)) {
@@ -156,7 +149,7 @@ public class RedundantSynchronizationCleaner {
         }
 
         // Update the syncIndex of the component
-        final List<TransferVertex> syncGroup = transfersForCurrentVertex;
+        final List<TransferVertex> syncGroup = groupForCurrentVertex;
         // Sanity check: self-index cannot be greater than current group index
         if (coveredIdx.syncIndexPerComponent.get(component) > syncGroups.get(component).indexOf(syncGroup)) {
           throw new WorkflowException("Problem in communication order. There seems to be a deadlock.");
@@ -168,9 +161,9 @@ public class RedundantSynchronizationCleaner {
     }
 
     // Do the removal
-    // dag.removeAllVertices(toBeRemoved);
+    dag.removeAllVertices(toBeRemoved);
     toBeRemoved.forEach(transferVertex -> transferVertex.setPropertyValue("Redundant", Boolean.valueOf(true)));
-
+    WorkflowLogger.getLogger().log(Level.INFO, toBeRemoved.toString());
     RedundantSynchronizationCleaner.debugList(syncGroups);
   }
 
@@ -183,11 +176,11 @@ public class RedundantSynchronizationCleaner {
    *          the scheduled {@link DirectedAcyclicGraph} from which communication are extracted
    * @return the described {@link Map}
    */
-  private static Map<ComponentInstance, List<ConsecutiveTransferList>> createSyncGroupsPerComponents(final DirectedAcyclicGraph dag) {
+  private static ConsecutiveTransfers createSyncGroupsPerComponents(final DirectedAcyclicGraph dag) {
     // This Map associates to each component of the architecture a List of all its communications.
     // Communications are stored as a List of list where each set represents a group of consecutive receive communication primitive that is not
     // "interrupted" by any other computation.
-    final Map<ComponentInstance, List<ConsecutiveTransferList>> syncGroups = new LinkedHashMap<>();
+    final ConsecutiveTransfers syncGroups = new ConsecutiveTransfers();
 
     // Fill the syncGroups
     final TopologicalDAGIterator iterDAGVertices = new TopologicalDAGIterator(dag); // Iterator on DAG vertices
@@ -195,9 +188,8 @@ public class RedundantSynchronizationCleaner {
     final Map<ComponentInstance, Boolean> lastVertexScheduledIsSyncPerComponent = new LinkedHashMap<>();
     while (iterDAGVertices.hasNext()) {
       final DAGVertex currentVertex = iterDAGVertices.next();
-
       // Get component
-      final ComponentInstance component = (ComponentInstance) currentVertex.getPropertyBean().getValue("Operator");
+      final ComponentInstance component = findComponent(currentVertex);
 
       // Get vertex type
       final boolean isCommunication = currentVertex instanceof TransferVertex;
@@ -207,13 +199,12 @@ public class RedundantSynchronizationCleaner {
       if (isSynchronization) {
         // syncGroups.getOrDefault(component, defaultValue)
         final boolean lastVertexOnComponentWasSync = lastVertexScheduledIsSyncPerComponent.getOrDefault(component, false);
-        final List<ConsecutiveTransferList> componentSyncGroup = syncGroups.getOrDefault(component, new LinkedList<>());
-        if (componentSyncGroup.isEmpty() || !lastVertexOnComponentWasSync) {
-          componentSyncGroup.add(new ConsecutiveTransferList((TransferVertex) currentVertex));
-          syncGroups.put(component, componentSyncGroup);
+
+        if (syncGroups.isEmpty(component) || !lastVertexOnComponentWasSync) {
+          syncGroups.addNewGroup(component, (TransferVertex) currentVertex);
         } else {
           // The component is associated with a group AND the last scheduled vertex was a communication.
-          componentSyncGroup.get(componentSyncGroup.size() - 1).add((TransferVertex) currentVertex);
+          syncGroups.addInGroup(component, (TransferVertex) currentVertex);
         }
       }
 
@@ -230,33 +221,8 @@ public class RedundantSynchronizationCleaner {
    * @param comGroups
    *          see previous function
    */
-  private static void debugList(final Map<ComponentInstance, List<ConsecutiveTransferList>> comGroups) {
-    for (final Entry<ComponentInstance, List<ConsecutiveTransferList>> e : comGroups.entrySet()) {
-      final ComponentInstance componentInstance = e.getKey();
-      final String componentName = componentInstance.getInstanceName();
-      final StringBuilder sb = new StringBuilder(componentName + ": ");
-      boolean first = true;
-      for (final List<TransferVertex> set : e.getValue()) {
-        if (first) {
-          first = false;
-        } else {
-          sb.append("-");
-        }
-        sb.append(set.size() + "[");
-        for (TransferVertex tv : set) {
-          if (tv.getSource().getEffectiveComponent() == componentInstance) {
-            sb.append("S");
-          } else if (tv.getTarget().getEffectiveComponent() == componentInstance) {
-            sb.append("R");
-          } else {
-            sb.append("T");
-          }
-        }
-        sb.append("]");
-      }
-      WorkflowLogger.getLogger().log(Level.INFO, sb.toString());
-    }
-
+  private static void debugList(final ConsecutiveTransfers comGroups) {
+    WorkflowLogger.getLogger().log(Level.INFO, "Synchronization Consecutive Lists : \n" + comGroups.toString());
   }
 
   /**

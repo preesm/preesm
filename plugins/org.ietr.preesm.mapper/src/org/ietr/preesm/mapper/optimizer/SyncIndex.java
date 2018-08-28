@@ -9,7 +9,7 @@ import org.ietr.dftools.architecture.slam.ComponentInstance;
 
 /**
  * Utility class used to store per component index of the last sync group executed.
- * 
+ *
  * @author kdesnos
  *
  */
@@ -59,7 +59,7 @@ class SyncIndex {
 
   /**
    * Update this with the max index of itself versus the one of the {@link SyncIndex} passed as a paramater for each {@link ComponentInstance}.
-   * 
+   *
    * @param a
    *          the {@link SyncIndex} used to update the max value
    */
