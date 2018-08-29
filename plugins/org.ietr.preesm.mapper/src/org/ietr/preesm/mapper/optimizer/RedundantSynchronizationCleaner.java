@@ -167,10 +167,10 @@ public class RedundantSynchronizationCleaner {
     }
 
     // Do the removal
-    dag.removeAllVertices(toBeRemoved);
+    // - removing from the dag would sum up to "dag.removeAllVertices(toBeRemoved);"
+    // - however we actually keep them and mark them redundant.
     toBeRemoved.forEach(transferVertex -> transferVertex.setPropertyValue("Redundant", Boolean.valueOf(true)));
-    WorkflowLogger.getLogger().log(Level.INFO, toBeRemoved.toString());
-    RedundantSynchronizationCleaner.debugList(syncGroups);
+    WorkflowLogger.getLogger().log(Level.INFO, "removing " + toBeRemoved.size() + " syncs");
   }
 
   /**
