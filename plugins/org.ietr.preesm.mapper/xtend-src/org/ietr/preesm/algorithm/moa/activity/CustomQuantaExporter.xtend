@@ -355,7 +355,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 			if (vertex instanceof PiGraph) {
 				parseQuantaForPISDFGraph(w, vertex as PiGraph, operators)
 			} else if (vertex instanceof Actor) {
-				val actor = vertex as Actor;
+				val actor = vertex;
 
 				// Handle unconnected graphs from hierarchical vertices
 				val refinement = actor.getRefinement();
