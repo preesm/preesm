@@ -222,9 +222,14 @@ public class CodegenPage extends FormPage {
     } else {
       sanitizedPath = codegenDirPath;
     }
-    final String rootSegment = sanitizedPath.substring(0, sanitizedPath.indexOf("/"));
-    final boolean testPathValidInWorkspace = FieldUtils.testPathValidInWorkspace("/" + rootSegment);
-    FieldUtils.colorRedOnCondition(text, !testPathValidInWorkspace);
+    final int indexOf = sanitizedPath.indexOf("/");
+    if (indexOf >= 0) {
+      final String rootSegment = sanitizedPath.substring(0, indexOf);
+      final boolean testPathValidInWorkspace = FieldUtils.testPathValidInWorkspace("/" + rootSegment);
+      FieldUtils.colorRedOnCondition(text, !testPathValidInWorkspace);
+    } else {
+      FieldUtils.colorRedOnCondition(text, true);
+    }
   }
 
 }
