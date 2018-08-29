@@ -26,10 +26,12 @@ PREESM Changelog
 * Minor refactoring;
 * Update coding policies to 1.3.0;
   * also fix code;
+* Improve scenario editor;
 
 ### Bug fix
 * Fix issue #62
 * Fix issue #61 - include spider codegen;
+* Fix issue #68
 
 ## Release version 2.13.0
 *2018.07.09*

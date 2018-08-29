@@ -54,6 +54,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -124,17 +125,26 @@ public class RelativeConstraintsPage extends FormPage implements IPropertyListen
     form.setText(Messages.getString("RelativeConstraints.title"));
 
     final GridLayout layout = new GridLayout();
-    form.getBody().setLayout(layout);
+    final Composite body = form.getBody();
+    body.setLayout(layout);
 
-    // Timing file chooser section
-    createFileSection(managedForm, Messages.getString("RelativeConstraints.file"),
-        Messages.getString("RelativeConstraints.fileDescription"), Messages.getString("RelativeConstraints.fileEdit"),
-        this.scenario.getTimingManager().getExcelFileURL(), Messages.getString("RelativeConstraints.fileBrowseTitle"),
-        "xls");
+    if (this.scenario.isProperlySet()) {
+      // Timing file chooser section
+      createFileSection(managedForm, Messages.getString("RelativeConstraints.file"),
+          Messages.getString("RelativeConstraints.fileDescription"), Messages.getString("RelativeConstraints.fileEdit"),
+          this.scenario.getTimingManager().getExcelFileURL(), Messages.getString("RelativeConstraints.fileBrowseTitle"),
+          "xls");
 
-    createRelativeConstraintsSection(managedForm, Messages.getString("RelativeConstraints.title"),
-        Messages.getString("RelativeConstraints.description"));
-
+      createRelativeConstraintsSection(managedForm, Messages.getString("RelativeConstraints.title"),
+          Messages.getString("RelativeConstraints.description"));
+    } else {
+      final FormToolkit toolkit = managedForm.getToolkit();
+      final Label lbl = toolkit.createLabel(body,
+          "Please properly set Algorithm and Architecture paths on the overview tab, then save, close and "
+              + "reopen this file to enable other tabs.");
+      lbl.setEnabled(true);
+      body.setEnabled(false);
+    }
     managedForm.refresh();
     managedForm.reflow(true);
 
