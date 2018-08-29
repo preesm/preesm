@@ -135,11 +135,7 @@ public class PreesmScenario {
    * @return true, if is PISDF scenario
    */
   public boolean isPISDFScenario() {
-    if (this.algorithmURL.endsWith(".pi")) {
-      return true;
-    } else {
-      return false;
-    }
+    return this.algorithmURL.endsWith(".pi");
   }
 
   /**
@@ -148,11 +144,18 @@ public class PreesmScenario {
    * @return true, if is IBSDF scenario
    */
   public boolean isIBSDFScenario() {
-    if (this.algorithmURL.endsWith(".graphml")) {
-      return true;
-    } else {
-      return false;
-    }
+    return this.algorithmURL.endsWith(".graphml");
+  }
+
+  /**
+   * Checks if is IBSDF scenario.
+   *
+   * @return true, if is IBSDF scenario
+   */
+  public boolean isProperlySet() {
+    final boolean hasProperAlgo = isIBSDFScenario() || isPISDFScenario();
+    final boolean hasProperArchi = this.architectureURL.endsWith(".slam");
+    return hasProperAlgo && hasProperArchi;
   }
 
   /**
@@ -166,7 +169,7 @@ public class PreesmScenario {
     } else if (isIBSDFScenario()) {
       return getSDFActorNames();
     } else {
-      return null;
+      return Collections.emptySet();
     }
   }
 
