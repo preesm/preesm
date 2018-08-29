@@ -63,6 +63,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -133,27 +134,37 @@ public class TimingsPage extends FormPage implements IPropertyListener {
     super.createFormContent(managedForm);
 
     final ScrolledForm form = managedForm.getForm();
-    // FormToolkit toolkit = managedForm.getToolkit();
     form.setText(Messages.getString("Timings.title"));
 
     final GridLayout layout = new GridLayout();
-    form.getBody().setLayout(layout);
+    final Composite body = form.getBody();
+    body.setLayout(layout);
 
-    // Timing file chooser section
-    createFileSection(managedForm, Messages.getString("Timings.timingFile"),
-        Messages.getString("Timings.timingFileDescription"), Messages.getString("Timings.timingFileEdit"),
-        this.scenario.getTimingManager().getExcelFileURL(), Messages.getString("Timings.timingFileBrowseTitle"),
-        new LinkedHashSet<>(Arrays.asList("xls", "csv")));
+    if (this.scenario.isProperlySet()) {
 
-    createTimingsSection(managedForm, Messages.getString("Timings.title"), Messages.getString("Timings.description"));
+      // Timing file chooser section
+      createFileSection(managedForm, Messages.getString("Timings.timingFile"),
+          Messages.getString("Timings.timingFileDescription"), Messages.getString("Timings.timingFileEdit"),
+          this.scenario.getTimingManager().getExcelFileURL(), Messages.getString("Timings.timingFileBrowseTitle"),
+          new LinkedHashSet<>(Arrays.asList("xls", "csv")));
 
-    // Data type section
-    createMemcopySpeedsSection(managedForm, Messages.getString("Timings.MemcopySpeeds.title"),
-        Messages.getString("Timings.MemcopySpeeds.description"));
+      createTimingsSection(managedForm, Messages.getString("Timings.title"), Messages.getString("Timings.description"));
+
+      // Data type section
+      createMemcopySpeedsSection(managedForm, Messages.getString("Timings.MemcopySpeeds.title"),
+          Messages.getString("Timings.MemcopySpeeds.description"));
+
+    } else {
+      final FormToolkit toolkit = managedForm.getToolkit();
+      final Label lbl = toolkit.createLabel(body,
+          "Please properly set Algorithm and Architecture paths on the overview tab, then save, close and "
+              + "reopen this file to enable other tabs.");
+      lbl.setEnabled(true);
+      body.setEnabled(false);
+    }
 
     managedForm.refresh();
     managedForm.reflow(true);
-
   }
 
   /**

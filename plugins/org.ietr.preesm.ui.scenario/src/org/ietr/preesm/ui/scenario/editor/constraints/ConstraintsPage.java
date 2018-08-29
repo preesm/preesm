@@ -47,6 +47,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
@@ -108,17 +109,27 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 
     final ScrolledForm f = managedForm.getForm();
     f.setText(Messages.getString("Constraints.title"));
-    f.getBody().setLayout(new GridLayout());
+    final Composite body = f.getBody();
+    body.setLayout(new GridLayout());
 
-    // Constrints file chooser section
-    createFileSection(managedForm, Messages.getString("Constraints.file"),
-        Messages.getString("Constraints.fileDescription"), Messages.getString("Constraints.fileEdit"),
-        this.scenario.getConstraintGroupManager().getExcelFileURL(), Messages.getString("Constraints.fileBrowseTitle"),
-        "xls");
+    if (this.scenario.isProperlySet()) {
+      // Constrints file chooser section
+      createFileSection(managedForm, Messages.getString("Constraints.file"),
+          Messages.getString("Constraints.fileDescription"), Messages.getString("Constraints.fileEdit"),
+          this.scenario.getConstraintGroupManager().getExcelFileURL(),
+          Messages.getString("Constraints.fileBrowseTitle"), "xls");
 
-    createConstraintsSection(managedForm, Messages.getString("Constraints.title"),
-        Messages.getString("Constraints.description"));
+      createConstraintsSection(managedForm, Messages.getString("Constraints.title"),
+          Messages.getString("Constraints.description"));
 
+    } else {
+      final FormToolkit toolkit = managedForm.getToolkit();
+      final Label lbl = toolkit.createLabel(body,
+          "Please properly set Algorithm and Architecture paths on the overview tab, then save, close and "
+              + "reopen this file to enable other tabs.");
+      lbl.setEnabled(true);
+      body.setEnabled(false);
+    }
     managedForm.refresh();
     managedForm.reflow(true);
 
