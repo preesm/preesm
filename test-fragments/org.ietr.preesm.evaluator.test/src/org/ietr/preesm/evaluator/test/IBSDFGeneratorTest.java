@@ -43,8 +43,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * Generator of hierarchical graphs (IBSDF) from alive SDF graphs generated with <a href="https://github.com/bbodin/turbine/">Turbine</a>, the only parameter to
- * give is the number of actors. Used independently from the throughput evaluator to create instances for test
+ * Generator of hierarchical graphs (IBSDF) from alive SDF graphs generated with
+ * <a href="https://github.com/bbodin/turbine/">Turbine</a>, the only parameter to give is the number of actors. Used
+ * independently from the throughput evaluator to create instances for test
  *
  * @author blaunay
  *
@@ -56,7 +57,8 @@ public class IBSDFGeneratorTest {
    */
   @Test
   /*
-   * The tested class requires system specific configuration (turbine installed and path configured ...) TODO: ask Hamza Deroui about it
+   * The tested class requires system specific configuration (turbine installed and path configured ...) TODO: ask Hamza
+   * Deroui about it
    */
   @Ignore
   public void testGenerator() throws IOException, InterruptedException, SDF4JException, InvalidExpressionException {

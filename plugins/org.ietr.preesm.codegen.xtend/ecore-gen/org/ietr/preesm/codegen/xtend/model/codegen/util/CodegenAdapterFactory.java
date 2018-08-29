@@ -68,8 +68,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
 
 // TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> The <b>Adapter Factory</b> for the model. It provides an adapter <code>createXXX</code> method for each class of the model. <!--
- * end-user-doc -->
+ * <!-- begin-user-doc --> The <b>Adapter Factory</b> for the model. It provides an adapter <code>createXXX</code>
+ * method for each class of the model. <!-- end-user-doc -->
  * 
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage
  * @generated
@@ -94,8 +94,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Returns whether this factory is applicable for the type of the object. <!-- begin-user-doc --> This implementation returns <code>true</code> if the object
-   * is either the model's package or is an instance object of the model. <!-- end-user-doc -->
+   * Returns whether this factory is applicable for the type of the object. <!-- begin-user-doc --> This implementation
+   * returns <code>true</code> if the object is either the model's package or is an instance object of the model. <!--
+   * end-user-doc -->
    * 
    * @return whether this factory is applicable for the type of the object.
    * @generated
@@ -262,9 +263,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.Block <em>Block</em>}'. <!-- begin-user-doc --> This
-   * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
-   * end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.Block
+   * <em>Block</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily ignore
+   * cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    * 
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.Block
@@ -275,9 +276,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.CodeElt <em>Code Elt</em>}'. <!-- begin-user-doc --> This
-   * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
-   * end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.CodeElt <em>Code
+   * Elt</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    * 
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodeElt
@@ -288,9 +289,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.Call <em>Call</em>}'. <!-- begin-user-doc --> This default
-   * implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
-   * end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.Call
+   * <em>Call</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily ignore
+   * cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    * 
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.Call
@@ -301,9 +302,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable <em>Variable</em>}'. <!-- begin-user-doc --> This
-   * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
-   * end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable
+   * <em>Variable</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily ignore
+   * cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    * 
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.Variable
@@ -314,9 +315,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer <em>Buffer</em>}'. <!-- begin-user-doc --> This
-   * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
-   * end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer
+   * <em>Buffer</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily ignore
+   * cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    * 
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.Buffer
@@ -327,9 +328,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer <em>Sub Buffer</em>}'. <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer <em>Sub
+   * Buffer</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    * 
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
@@ -340,9 +341,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.Constant <em>Constant</em>}'. <!-- begin-user-doc --> This
-   * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
-   * end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.Constant
+   * <em>Constant</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily ignore
+   * cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    * 
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.Constant
@@ -353,9 +354,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class ' {@link org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall <em>Function Call</em>}'. <!--
-   * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
-   * all the cases anyway. <!-- end-user-doc -->
+   * Creates a new adapter for an object of class ' {@link org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
+   * <em>Function Call</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily
+   * ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    *
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
@@ -366,9 +367,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication <em>Communication</em>}'. <!--
-   * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
-   * all the cases anyway. <!-- end-user-doc -->
+   * Creates a new adapter for an object of class ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication
+   * <em>Communication</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily
+   * ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    *
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.Communication
@@ -379,9 +380,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock <em>Core Block</em>}'. <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock <em>Core
+   * Block</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    * 
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
@@ -392,9 +393,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock <em>Actor Block</em>}'. <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock
+   * <em>Actor Block</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily
+   * ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    * 
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock
@@ -405,9 +406,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock <em>Loop Block</em>}'. <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock <em>Loop
+   * Block</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    * 
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
@@ -418,9 +419,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.ActorCall <em>Actor Call</em>}'. <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.ActorCall
+   * <em>Actor Call</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily
+   * ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    * 
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.ActorCall
@@ -431,9 +432,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.CallBlock <em>Call Block</em>}'. <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.CallBlock <em>Call
+   * Block</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    * 
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CallBlock
@@ -444,9 +445,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall <em>Special Call</em>}'. <!-- begin-user-doc
-   * --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases
-   * anyway. <!-- end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
+   * <em>Special Call</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily
+   * ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    * 
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
@@ -457,9 +458,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall <em>Fifo Call</em>}'. <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall <em>Fifo
+   * Call</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    * 
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
@@ -470,9 +471,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.Commentable <em>Commentable</em>}'. <!-- begin-user-doc
-   * --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases
-   * anyway. <!-- end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.Commentable
+   * <em>Commentable</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily
+   * ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    * 
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.Commentable
@@ -483,9 +484,10 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class ' {@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode <em>Communication Node</em>}'. <!--
-   * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
-   * all the cases anyway. <!-- end-user-doc -->
+   * Creates a new adapter for an object of class ' {@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode
+   * <em>Communication Node</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can
+   * easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
+   * end-user-doc -->
    *
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode
@@ -496,9 +498,10 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication <em>Shared Memory
-   * Communication</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case
-   * when inheritance will catch all the cases anyway. <!-- end-user-doc -->
+   * Creates a new adapter for an object of class
+   * '{@link org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication <em>Shared Memory
+   * Communication</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily ignore
+   * cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    * 
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
@@ -509,9 +512,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class ' {@link org.ietr.preesm.codegen.xtend.model.codegen.ConstantString <em>Constant String</em>}'. <!--
-   * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
-   * all the cases anyway. <!-- end-user-doc -->
+   * Creates a new adapter for an object of class ' {@link org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
+   * <em>Constant String</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily
+   * ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    *
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
@@ -522,9 +525,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer <em>Null Buffer</em>}'. <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
+   * <em>Null Buffer</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily
+   * ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    * 
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
@@ -535,9 +538,10 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock <em>Finite Loop Block</em>}'. <!--
-   * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
-   * all the cases anyway. <!-- end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
+   * <em>Finite Loop Block</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can
+   * easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
+   * end-user-doc -->
    *
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
@@ -548,9 +552,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.IntVar <em>Int Var</em>}'. <!-- begin-user-doc --> This
-   * default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
-   * end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.IntVar <em>Int
+   * Var</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    * 
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.IntVar
@@ -561,9 +565,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator <em>Buffer Iterator</em>}'. <!--
-   * begin-user-doc --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch
-   * all the cases anyway. <!-- end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator
+   * <em>Buffer Iterator</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily
+   * ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    *
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator
@@ -574,9 +578,9 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.PapifyAction <em>Papify Action</em>}'. <!-- begin-user-doc
-   * --> This default implementation returns null so that we can easily ignore cases; it's useful to ignore a case when inheritance will catch all the cases
-   * anyway. <!-- end-user-doc -->
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.PapifyAction
+   * <em>Papify Action</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we can easily
+   * ignore cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!-- end-user-doc -->
    *
    * @return the new adapter.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.PapifyAction
@@ -587,7 +591,8 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
   }
 
   /**
-   * Creates a new adapter for the default case. <!-- begin-user-doc --> This default implementation returns null. <!-- end-user-doc -->
+   * Creates a new adapter for the default case. <!-- begin-user-doc --> This default implementation returns null. <!--
+   * end-user-doc -->
    * 
    * @return the new adapter.
    * @generated

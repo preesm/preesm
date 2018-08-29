@@ -56,7 +56,8 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 public class CopyFeature extends AbstractCopyFeature {
 
   /**
-   * Structural class to store the copied elements. The EObject inheritance is used for enabling the Graphiti clipboard (only stores EObjects).
+   * Structural class to store the copied elements. The EObject inheritance is used for enabling the Graphiti clipboard
+   * (only stores EObjects).
    */
   public static class VertexCopy extends EObjectImpl {
     public int              originalX;

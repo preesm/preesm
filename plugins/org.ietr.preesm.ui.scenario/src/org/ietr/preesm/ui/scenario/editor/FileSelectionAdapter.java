@@ -122,7 +122,8 @@ public class FileSelectionAdapter extends SelectionAdapter {
   @Override
   public void widgetSelected(final SelectionEvent e) {
 
-    final IPath browseFiles = FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), this.title, this.fileExtensions);
+    final IPath browseFiles = FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+        this.title, this.fileExtensions);
     this.filePath.setText(browseFiles.toOSString());
   }
 }

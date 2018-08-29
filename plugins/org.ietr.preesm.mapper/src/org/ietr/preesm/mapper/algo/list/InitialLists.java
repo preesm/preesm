@@ -151,7 +151,8 @@ public class InitialLists implements Cloneable {
    *          the abc
    * @return : true if a vertex was found
    */
-  private boolean choosePredecessor(final MapperDAG dag, final MapperDAGVertex currentvertex, final List<MapperDAGVertex> orderlist, final LatencyAbc abc) {
+  private boolean choosePredecessor(final MapperDAG dag, final MapperDAGVertex currentvertex,
+      final List<MapperDAGVertex> orderlist, final LatencyAbc abc) {
 
     MapperDAGVertex cpnvertex = null;
 
@@ -197,7 +198,8 @@ public class InitialLists implements Cloneable {
    *          the archi
    * @return : MapperDAGVertex
    */
-  private MapperDAGVertex ibnChoice(final MapperDAG dag, final Set<DAGVertex> predset, final List<MapperDAGVertex> orderlist, final LatencyAbc archi) {
+  private MapperDAGVertex ibnChoice(final MapperDAG dag, final Set<DAGVertex> predset,
+      final List<MapperDAGVertex> orderlist, final LatencyAbc archi) {
 
     final Iterator<DAGVertex> iter = predset.iterator();
     MapperDAGVertex currentvertex = null;
@@ -222,7 +224,8 @@ public class InitialLists implements Cloneable {
         blevelmax = bLevel;
         tlevelmax = tLevel;
       } else if (bLevel == -1) {
-        WorkflowLogger.getLogger().log(Level.SEVERE, "CPN list construction: b-level can not be computed for vertex " + currentvertex);
+        WorkflowLogger.getLogger().log(Level.SEVERE,
+            "CPN list construction: b-level can not be computed for vertex " + currentvertex);
       }
 
     }
@@ -232,8 +235,8 @@ public class InitialLists implements Cloneable {
   }
 
   /**
-   * constructCPN : Critical Path implemented in the CPN-DominantList (Critical Path Nodes= CPN) and the FCP-list (Final Critical Path = FCP). See YK Kwok
-   * thesis p.59
+   * constructCPN : Critical Path implemented in the CPN-DominantList (Critical Path Nodes= CPN) and the FCP-list (Final
+   * Critical Path = FCP). See YK Kwok thesis p.59
    *
    * @param dag
    *          the dag
@@ -245,7 +248,8 @@ public class InitialLists implements Cloneable {
    *          the abc
    * @return true, if successful
    */
-  public boolean constructCPN(final MapperDAG dag, final List<MapperDAGVertex> cpnDominant, final List<MapperDAGVertex> criticalPath, final LatencyAbc abc) {
+  public boolean constructCPN(final MapperDAG dag, final List<MapperDAGVertex> cpnDominant,
+      final List<MapperDAGVertex> criticalPath, final LatencyAbc abc) {
 
     WorkflowLogger.getLogger().log(Level.INFO, "Starting to build CPN list");
 
@@ -318,7 +322,8 @@ public class InitialLists implements Cloneable {
       while (!(cpnDominant.contains(currentvertex))) {
         // If no predecessor was found
         if (!choosePredecessor(dag, currentvertex, cpnDominant, abc)) {
-          WorkflowLogger.getLogger().log(Level.SEVERE, "No predecessor was found for vertex: " + currentvertex.getName());
+          WorkflowLogger.getLogger().log(Level.SEVERE,
+              "No predecessor was found for vertex: " + currentvertex.getName());
           return false;
         }
       }
@@ -330,7 +335,8 @@ public class InitialLists implements Cloneable {
   }
 
   /**
-   * constructCPNobn: Add to the CPN dominant list and the Blocking Node list all the remaining nodes in a decreasing order of b-level.
+   * constructCPNobn: Add to the CPN dominant list and the Blocking Node list all the remaining nodes in a decreasing
+   * order of b-level.
    *
    * @param dag
    *          the dag
@@ -361,8 +367,8 @@ public class InitialLists implements Cloneable {
    * constructCPNDominantlist: Construct the CPN dominant List and the other lists necessary for the initial scheduler
    *
    * <p>
-   * A CPN is a node included in a critical path. An IBN is a node from which there is a path reaching a CPN. An OBN is a node which is neither a CPN nor an
-   * IBN.
+   * A CPN is a node included in a critical path. An IBN is a node from which there is a path reaching a CPN. An OBN is
+   * a node which is neither a CPN nor an IBN.
    * </p>
    *
    * @param dag

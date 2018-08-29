@@ -59,7 +59,8 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
   boolean hasDoneChanges = true;
 
   /**
-   * When a file is drag and dropped on an graph, the feature attempts to create a new {@link Actor} and to set this file as the refinement of the actor.
+   * When a file is drag and dropped on an graph, the feature attempts to create a new {@link Actor} and to set this
+   * file as the refinement of the actor.
    *
    * <p>
    * Works only for IDL, H and PI files.

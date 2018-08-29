@@ -48,7 +48,8 @@ import org.ietr.preesm.ui.PreesmUIPlugin;
 import org.ietr.preesm.ui.wizards.PreesmProjectNature;
 
 /**
- * Class for pop-up menu on IProjects, allowing to generate PreesmScenarios from the content of the Algo and Archi folders.
+ * Class for pop-up menu on IProjects, allowing to generate PreesmScenarios from the content of the Algo and Archi
+ * folders.
  *
  * @author cguy
  */

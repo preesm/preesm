@@ -52,7 +52,8 @@ public class SDFValidator extends DataflowValidator {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.graphiti.validators.DataflowValidator#validate(org.ietr.dftools.graphiti.model.Graph, org.eclipse.core.resources.IFile)
+   * @see org.ietr.dftools.graphiti.validators.DataflowValidator#validate(org.ietr.dftools.graphiti.model.Graph,
+   * org.eclipse.core.resources.IFile)
    */
   @Override
   public boolean validate(final Graph graph, final IFile file) {

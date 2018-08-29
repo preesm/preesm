@@ -108,7 +108,8 @@ public class LayoutPortFeature extends AbstractLayoutFeature {
     IDimension size = gaService.calculateSize(graphicsAlgorithm);
     for (final GraphicsAlgorithm ga : graphicsAlgorithm.getGraphicsAlgorithmChildren()) {
       if (ga instanceof Text) {
-        final IDimension calculateTextSize = GraphitiUi.getUiLayoutService().calculateTextSize(port.getName(), ((Text) ga).getFont());
+        final IDimension calculateTextSize = GraphitiUi.getUiLayoutService().calculateTextSize(port.getName(),
+            ((Text) ga).getFont());
         size = calculateTextSize == null ? size : calculateTextSize;
       }
     }
@@ -120,10 +121,11 @@ public class LayoutPortFeature extends AbstractLayoutFeature {
 
     // Layout the invisible rectangle
     if (bra.getRelativeWidth() == 0.0) {
-      gaService.setLocationAndSize(graphicsAlgorithm, 0, 0, size.getWidth() + anchorGaSize + labelGaSpace, size.getHeight());
-    } else {
-      gaService.setLocationAndSize(graphicsAlgorithm, -size.getWidth() - anchorGaSize - labelGaSpace, 0, size.getWidth() + anchorGaSize + labelGaSpace,
+      gaService.setLocationAndSize(graphicsAlgorithm, 0, 0, size.getWidth() + anchorGaSize + labelGaSpace,
           size.getHeight());
+    } else {
+      gaService.setLocationAndSize(graphicsAlgorithm, -size.getWidth() - anchorGaSize - labelGaSpace, 0,
+          size.getWidth() + anchorGaSize + labelGaSpace, size.getHeight());
     }
 
     // Layout the children of the bra
@@ -146,7 +148,8 @@ public class LayoutPortFeature extends AbstractLayoutFeature {
           gaService.setLocation(ga, 0, 0 + ((portFontHeight - anchorGaSize) / 2));
         } else {
           // output port
-          gaService.setLocation(ga, graphicsAlgorithm.getWidth() - anchorGaSize, 0 + ((portFontHeight - anchorGaSize) / 2));
+          gaService.setLocation(ga, graphicsAlgorithm.getWidth() - anchorGaSize,
+              0 + ((portFontHeight - anchorGaSize) / 2));
         }
       }
 
@@ -158,7 +161,8 @@ public class LayoutPortFeature extends AbstractLayoutFeature {
           // portFontHeight - PORT_ANCHOR_GA_SIZE - 2) / 2
         } else {
           // output port
-          gaService.setLocation(ga, graphicsAlgorithm.getWidth() - anchorGaSize - 1, -1 + ((portFontHeight - anchorGaSize) / 2));
+          gaService.setLocation(ga, graphicsAlgorithm.getWidth() - anchorGaSize - 1,
+              -1 + ((portFontHeight - anchorGaSize) / 2));
         }
       }
     }

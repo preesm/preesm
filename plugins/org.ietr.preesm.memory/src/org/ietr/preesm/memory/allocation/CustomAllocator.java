@@ -51,8 +51,8 @@ import org.jgrapht.graph.SimpleGraph;
 // TODO: Auto-generated Javadoc
 /**
  * This implementation of the MemoryAllocator mainly is based on a custom algorithm. <br>
- * The algorithm used in this implementation is based on a coloring approach of a MemoryExclusionGraph derived from the input graph. A description of the
- * algorithm is made in allocate() comments.
+ * The algorithm used in this implementation is based on a coloring approach of a MemoryExclusionGraph derived from the
+ * input graph. A description of the algorithm is made in allocate() comments.
  *
  * @author kdesnos
  * @deprecated This algorithm hasn't been updated to fulfill the alignment constraints. (2013/10/23)
@@ -76,11 +76,12 @@ public class CustomAllocator extends MemoryAllocator {
    * <b>1 -</b> Build G<sub>exclu</sub>the MemoryExclusionGraph from this.graph<br>
    * <b>2 -</b> Get G<sub>inclu</sub> the complementary to G<sub>exclu</sub> exclusion graph<br>
    * <b>3 -</b> Let i := 0<br>
-   * <b>4 -</b> Find C<sub>i</sub> the maximum-weight clique in G<sub>inclu</sub>.(Each element <i>elt</i> of C<sub>i</sub> is then a vertex of the clique)<br>
+   * <b>4 -</b> Find C<sub>i</sub> the maximum-weight clique in G<sub>inclu</sub>.(Each element <i>elt</i> of
+   * C<sub>i</sub> is then a vertex of the clique)<br>
    * <b>5 -</b> Let CWeight := maximum<sub>i</sub>(weight(<i>elt<sub>i</sub></i>))<br>
    * <b>6 -</b> For each element <i>elt</i> of C<sub>i</sub> (in descending order of weights)<br>
-   * <b>6.1 -</b> For each neighbor <i>neigh</i> of <i>elt</i> (excluding neighbors from previous elements) in G<sub>exclu</sub> (in descending order of
-   * weights)<br>
+   * <b>6.1 -</b> For each neighbor <i>neigh</i> of <i>elt</i> (excluding neighbors from previous elements) in
+   * G<sub>exclu</sub> (in descending order of weights)<br>
    * <b>6.1.1 -</b> Let NWeight := <i>neigh</i>.weight + weight(<i>elt</i>)<br>
    * <b>6.1.2 -</b> If (NWeight < CWeight + <i>neigh</i>.weight) Then add <i>neigh</i> to elt and Goto(5)<br>
    * <b>7 -</b> Remove all vertices of C<sub>i</sub> from G<sub>exclu</sub> and G<sub>inclu</sub><br>
@@ -256,7 +257,8 @@ public class CustomAllocator extends MemoryAllocator {
   }
 
   /**
-   * This method is used to order a list of elements wher each element is a set of vertices. The resulting list is ordered in decreasing weight order.
+   * This method is used to order a list of elements wher each element is a set of vertices. The resulting list is
+   * ordered in decreasing weight order.
    *
    * @param elementList
    *          the list to order.

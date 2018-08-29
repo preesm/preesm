@@ -27,7 +27,8 @@ import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 /**
  * @author farresti
  *
- *         This structure is wrapper around the PiGraph class that provides multiple useful methods for accessing special properties of a PiGraph rapidly
+ *         This structure is wrapper around the PiGraph class that provides multiple useful methods for accessing
+ *         special properties of a PiGraph rapidly
  *
  */
 public class PiMMHandler {
@@ -138,7 +139,8 @@ public class PiMMHandler {
   /**
    * Returns the FIFOs contained in a given connectedComponent.<br>
    * The function is coherent with the type of connectedComponent passed as input. <br>
-   * This means that if no interface actor are present in the CC, the function will not return any FIFO connected to an interface actor.
+   * This means that if no interface actor are present in the CC, the function will not return any FIFO connected to an
+   * interface actor.
    *
    * First call to the method will be slower as it needs to extract the FIFOs.<br>
    * Subsequent calls will directly return the corresponding list.
@@ -174,7 +176,8 @@ public class PiMMHandler {
    * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  private void extractFifosFromActor(final boolean containsInterfaceActors, final AbstractActor actor, final List<Fifo> fifos) throws PiMMHelperException {
+  private void extractFifosFromActor(final boolean containsInterfaceActors, final AbstractActor actor,
+      final List<Fifo> fifos) throws PiMMHelperException {
     for (final DataPort port : actor.getAllDataPorts()) {
       final Fifo fifo = port.getFifo();
       if (fifo == null) {
@@ -182,7 +185,8 @@ public class PiMMHandler {
       }
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
-      if (!containsInterfaceActors && ((sourceActor instanceof InterfaceActor) || (targetActor instanceof InterfaceActor))) {
+      if (!containsInterfaceActors
+          && ((sourceActor instanceof InterfaceActor) || (targetActor instanceof InterfaceActor))) {
         continue;
       }
       if (!fifos.contains(fifo)) {
@@ -230,7 +234,8 @@ public class PiMMHandler {
    * The returned List does not contain any interface actors.
    *
    * First access can be slow since the List of CCs has to be computed. <br>
-   * This method uses getAllConnectedComponents to extract connected components, i.e a call to getAllConnectedComponents afterward will be fast.
+   * This method uses getAllConnectedComponents to extract connected components, i.e a call to getAllConnectedComponents
+   * afterward will be fast.
    *
    * @return all CCs contained in the associated graph (read only access)
    * @throws PiMMHelperException
@@ -249,14 +254,16 @@ public class PiMMHandler {
   }
 
   /**
-   * Fetch all subgraphs contained in a PiSDF graph. All subgraphs returned by this method do not contain interface actors.
+   * Fetch all subgraphs contained in a PiSDF graph. All subgraphs returned by this method do not contain interface
+   * actors.
    *
    * @param listCCs
    *          the full subgraphs
    * @param listCCsWOInterfaces
    *          list of subgraphs without interface actors to be updated
    */
-  private static void ccsWOInterfacesFetcher(final List<List<AbstractActor>> listCCs, final List<List<AbstractActor>> listCCsWOInterfaces) {
+  private static void ccsWOInterfacesFetcher(final List<List<AbstractActor>> listCCs,
+      final List<List<AbstractActor>> listCCsWOInterfaces) {
     if (listCCs.isEmpty()) {
       return;
     }
@@ -279,7 +286,8 @@ public class PiMMHandler {
    * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  private static void ccsFetcher(final PiGraph graph, final List<List<AbstractActor>> listCCs) throws PiMMHelperException {
+  private static void ccsFetcher(final PiGraph graph, final List<List<AbstractActor>> listCCs)
+      throws PiMMHelperException {
     // Fetch all actors without interfaces in the PiGraph
     final List<AbstractActor> fullActorList = new ArrayList<>();
     fullActorList.addAll(graph.getActors());
@@ -314,7 +322,8 @@ public class PiMMHandler {
    * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  private static void iterativeCCFetcher(final AbstractActor actor, final List<AbstractActor> cc) throws PiMMHelperException {
+  private static void iterativeCCFetcher(final AbstractActor actor, final List<AbstractActor> cc)
+      throws PiMMHelperException {
     for (final DataOutputPort output : actor.getDataOutputPorts()) {
       final Fifo fifo = output.getOutgoingFifo();
       if (fifo == null) {
@@ -360,7 +369,7 @@ public class PiMMHandler {
 
   /**
    * Remove the persistence levels and replace them with the appropriate interfaces.
-   * 
+   *
    * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
@@ -386,13 +395,15 @@ public class PiMMHandler {
         String delayShortID = delay.getShortId();
         if (delay.getLevel().equals(PersistenceLevel.LOCAL)) {
           if (delay.hasGetterActor() || delay.hasSetterActor()) {
-            throw new PiMMHelperException("Delay with local persistence can not be connected to a setter nor a getter actor.");
+            throw new PiMMHelperException(
+                "Delay with local persistence can not be connected to a setter nor a getter actor.");
           }
           delay.setName(delayShortID);
           replaceLocalDelay(graph, delay);
         } else if (delay.getLevel().equals(PersistenceLevel.PERMANENT)) {
           if (delay.hasGetterActor() || delay.hasSetterActor()) {
-            throw new PiMMHelperException("Delay with global persistence can not be connected to a setter nor a getter actor.");
+            throw new PiMMHelperException(
+                "Delay with global persistence can not be connected to a setter nor a getter actor.");
           }
           // In the case of a permanent delay we have to make it go up to the top.
           PiGraph currentGraph = graph;
@@ -407,8 +418,11 @@ public class PiMMHandler {
             currentDelay = newDelay;
           } while (currentGraph.getContainingPiGraph() != null);
         } else {
-          if (((delay.hasSetterActor()) && !(delay.hasGetterActor())) || ((delay.hasGetterActor()) && (!delay.hasSetterActor()))) {
-            throw new PiMMHelperException("Asymetric configuration for delay setter / getter actor is not yet supported.\nPlease Contact PREESM developers.");
+          if (((delay.hasSetterActor()) && !(delay.hasGetterActor()))
+              || ((delay.hasGetterActor()) && (!delay.hasSetterActor()))) {
+            throw new PiMMHelperException(
+                "Asymetric configuration for delay setter / getter actor is not yet supported.\n"
+                    + "Please Contact PREESM developers.");
           }
         }
       }
@@ -420,7 +434,7 @@ public class PiMMHandler {
 
   /**
    * Replace a locally persistent delay.
-   * 
+   *
    * @param graph
    *          the graph in which the delay is contained
    * @param delay

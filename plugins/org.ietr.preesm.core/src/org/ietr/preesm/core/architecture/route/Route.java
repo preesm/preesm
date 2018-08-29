@@ -44,7 +44,8 @@ import org.ietr.dftools.architecture.slam.ComponentInstance;
 
 // TODO: Auto-generated Javadoc
 /**
- * A route contains several Route Steps. It links operators. To operators directly connected have a route with one route step.
+ * A route contains several Route Steps. It links operators. To operators directly connected have a route with one route
+ * step.
  *
  * @author mpelcat
  */

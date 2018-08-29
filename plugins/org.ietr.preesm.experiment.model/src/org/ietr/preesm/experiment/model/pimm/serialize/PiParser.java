@@ -132,19 +132,21 @@ public class PiParser {
       final SubgraphConnectorVisitor connector = new SubgraphConnectorVisitor();
       connector.connectSubgraphs(pigraph);
     } catch (final WrappedException e) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "The algorithm file \"" + uri + "\" specified by the scenario does not exist any more.");
+      WorkflowLogger.getLogger().log(Level.SEVERE,
+          "The algorithm file \"" + uri + "\" specified by the scenario does not exist any more.");
     }
 
     return pigraph;
   }
 
   /**
-   * Retrieve the value of a property of the given {@link Element}. A property is a data element child of the given element.<br>
+   * Retrieve the value of a property of the given {@link Element}. A property is a data element child of the given
+   * element.<br>
    * <br>
    *
    * <p>
-   * This method will iterate over the properties of the element so it might not be a good idea to use it in a method that would successively retrieve all
-   * properties of the element.
+   * This method will iterate over the properties of the element so it might not be a good idea to use it in a method
+   * that would successively retrieve all properties of the element.
    * </p>
    *
    * @author Jonathan Piat
@@ -157,7 +159,8 @@ public class PiParser {
   protected static String getProperty(final Element elt, final String propertyName) {
     final NodeList childList = elt.getChildNodes();
     for (int i = 0; i < childList.getLength(); i++) {
-      if (childList.item(i).getNodeName().equals("data") && ((Element) childList.item(i)).getAttribute("key").equals(propertyName)) {
+      if (childList.item(i).getNodeName().equals("data")
+          && ((Element) childList.item(i)).getAttribute("key").equals(propertyName)) {
         return childList.item(i).getTextContent();
       }
     }
@@ -270,11 +273,13 @@ public class PiParser {
           switch (eltName) {
             case PiIdentifiers.REFINEMENT_LOOP:
               elmt = (Element) elt;
-              hrefinement.setLoopPrototype(parseFunctionPrototype(elmt, elmt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
+              hrefinement.setLoopPrototype(
+                  parseFunctionPrototype(elmt, elmt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
               break;
             case PiIdentifiers.REFINEMENT_INIT:
               elmt = (Element) elt;
-              hrefinement.setInitPrototype(parseFunctionPrototype(elmt, elmt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
+              hrefinement.setInitPrototype(
+                  parseFunctionPrototype(elmt, elmt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
               break;
             default:
               // ignore #text and other children
@@ -411,7 +416,8 @@ public class PiParser {
       targetPortName = (targetPortName.isEmpty()) ? null : targetPortName;
       final ConfigInputPort iPort = (ConfigInputPort) target.lookupPort(targetPortName);
       if (iPort == null) {
-        throw new PiGraphException("Dependency target port " + targetPortName + " does not exist for vertex " + getterName);
+        throw new PiGraphException(
+            "Dependency target port " + targetPortName + " does not exist for vertex " + getterName);
       }
       dependency.setGetter(iPort);
     }
@@ -423,7 +429,8 @@ public class PiParser {
     }
 
     if ((dependency.getGetter() == null) || (dependency.getSetter() == null)) {
-      throw new PiGraphException("There was a problem parsing the following dependency: " + setterName + "=>" + getterName);
+      throw new PiGraphException(
+          "There was a problem parsing the following dependency: " + setterName + "=>" + getterName);
     }
 
     // Add the new dependency to the graph
@@ -431,7 +438,8 @@ public class PiParser {
   }
 
   /**
-   * Parse an edge {@link Element} of the Pi description. An edge {@link Element} can be a parameter dependency or a FIFO of the parsed graph.
+   * Parse an edge {@link Element} of the Pi description. An edge {@link Element} can be a parameter dependency or a
+   * FIFO of the parsed graph.
    *
    * @param edgeElt
    *          The edge {@link Element} to parse
@@ -575,7 +583,8 @@ public class PiParser {
       if (delayActor.getRefinement() instanceof CHeaderRefinement) {
         final CHeaderRefinement hrefinement = (CHeaderRefinement) delayActor.getRefinement();
         if (!delayActor.isValidRefinement(hrefinement)) {
-          throw new PiGraphException("Delay INIT prototype must match following prototype: void init(IN int size, OUT <type>* fifo)");
+          throw new PiGraphException(
+              "Delay INIT prototype must match following prototype: void init(IN int size, OUT <type>* fifo)");
         }
         final String delayInitPrototype = "Delay INIT function used: " + hrefinement.getLoopPrototype().getName();
         WorkflowLogger.getLogger().log(Level.INFO, delayInitPrototype);
@@ -644,7 +653,8 @@ public class PiParser {
   }
 
   /**
-   * Parse a node {@link Element} of the Pi description. A node {@link Element} can be a parameter or an vertex of the parsed graph.
+   * Parse a node {@link Element} of the Pi description. A node {@link Element} can be a parameter or an vertex of the
+   * parsed graph.
    *
    * @param nodeElt
    *          The node {@link Element} to parse
@@ -715,9 +725,11 @@ public class PiParser {
     }
     // Sanity check for special actors
     if ((vertex instanceof BroadcastActor) && (((AbstractActor) vertex).getDataInputPorts().size() > 1)) {
-      throw new PiGraphException("Broadcast with multiple input detected [" + vertex.getName() + "].\n Broadcast actors can only have one input!");
+      throw new PiGraphException("Broadcast with multiple input detected [" + vertex.getName()
+          + "].\n Broadcast actors can only have one input!");
     } else if ((vertex instanceof ForkActor) && (((AbstractActor) vertex).getDataInputPorts().size() > 1)) {
-      throw new PiGraphException("ForkActor with multiple input detected [" + vertex.getName() + "].\n Fork actors can only have one input!");
+      throw new PiGraphException(
+          "ForkActor with multiple input detected [" + vertex.getName() + "].\n Fork actors can only have one input!");
     }
   }
 
@@ -780,7 +792,8 @@ public class PiParser {
       case DATA_INPUT:
         // Throw an error if the parsed vertex is not an actor
         if (!(vertex instanceof AbstractActor)) {
-          throw new PiGraphException("Parsed data port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
+          throw new PiGraphException(
+              "Parsed data port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
         }
 
         DataInputPort iPort;
@@ -802,7 +815,8 @@ public class PiParser {
       case DATA_OUTPUT:
         // Throw an error if the parsed vertex is not an actor
         if (!(vertex instanceof AbstractActor)) {
-          throw new PiGraphException("Parsed data port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
+          throw new PiGraphException(
+              "Parsed data port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
         }
 
         DataOutputPort oPort;
@@ -830,7 +844,8 @@ public class PiParser {
       case CFG_OUTPUT:
         // Throw an error if the parsed vertex is not an actor
         if (!(vertex instanceof AbstractActor)) {
-          throw new PiGraphException("Parsed config. port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
+          throw new PiGraphException(
+              "Parsed config. port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
         }
         final ConfigOutputPort oCfgPort = PiMMUserFactory.instance.createConfigOutputPort();
         oCfgPort.setName(portName);

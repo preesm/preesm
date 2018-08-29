@@ -102,8 +102,8 @@ public class TimeKeeper implements Observer {
   // // Final Time Section
 
   /**
-   * Gives the final time of the given vertex in the current implementation. If current implementation information is not enough to calculate this timing,
-   * returns UNAVAILABLE
+   * Gives the final time of the given vertex in the current implementation. If current implementation information is
+   * not enough to calculate this timing, returns UNAVAILABLE
    *
    * @param vertex
    *          the vertex
@@ -124,7 +124,8 @@ public class TimeKeeper implements Observer {
   }
 
   /**
-   * Gives the total implementation time if possible. If current implementation information is not enough to calculate this timing, returns UNAVAILABLE
+   * Gives the total implementation time if possible. If current implementation information is not enough to calculate
+   * this timing, returns UNAVAILABLE
    *
    * @return the final time
    */
@@ -148,7 +149,8 @@ public class TimeKeeper implements Observer {
   }
 
   /**
-   * Gives the implementation time on the given operator if possible. It considers a partially mapped graph and ignores the non mapped vertices
+   * Gives the implementation time on the given operator if possible. It considers a partially mapped graph and ignores
+   * the non mapped vertices
    *
    * @param component
    *          the component

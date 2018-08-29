@@ -102,7 +102,8 @@ public class CreateParameterFeature extends AbstractCreateFeature {
     String newParameterName = "ParameterName";
 
     // TODO create a parameter name validator
-    newParameterName = PiMMUtil.askString("Create Parameter", question, newParameterName, new VertexNameValidator(graph, null));
+    newParameterName = PiMMUtil.askString("Create Parameter", question, newParameterName,
+        new VertexNameValidator(graph, null));
     if ((newParameterName == null) || (newParameterName.trim().length() == 0)) {
       this.hasDoneChanges = false; // If this is not done, the graph is
       // considered modified.

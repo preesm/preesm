@@ -92,7 +92,8 @@ public class SetActorMemoryScriptFeature extends AbstractCustomFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.
+   * ICustomContext)
    */
   @Override
   public boolean canExecute(final ICustomContext context) {
@@ -112,7 +113,8 @@ public class SetActorMemoryScriptFeature extends AbstractCustomFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see
+   * org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
    */
   @Override
   public void execute(final ICustomContext context) {
@@ -147,7 +149,8 @@ public class SetActorMemoryScriptFeature extends AbstractCustomFeature {
     // Ask user for memory script
     final Set<String> fileExtensions = new LinkedHashSet<>();
     fileExtensions.add("bsh");
-    final IPath newFilePath = FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), dialogTitle, fileExtensions);
+    final IPath newFilePath = FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+        dialogTitle, fileExtensions);
 
     if ((newFilePath != null) && (newFilePath != actor.getMemoryScriptPath())) {
       this.hasDoneChanges = true;

@@ -79,8 +79,8 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.mapper.abc.route.CommunicationRouterImplementer#removeVertices(org.ietr.preesm. mapper.model.MapperDAGEdge,
-   * org.ietr.preesm.mapper.abc.transaction.TransactionManager)
+   * @see org.ietr.preesm.mapper.abc.route.CommunicationRouterImplementer#removeVertices(org.ietr.preesm.
+   * mapper.model.MapperDAGEdge, org.ietr.preesm.mapper.abc.transaction.TransactionManager)
    */
   @Override
   public void removeVertices(final MapperDAGEdge edge, final TransactionManager transactions) {
@@ -117,8 +117,9 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
    * @return the transaction
    */
   @Override
-  public Transaction addVertices(final AbstractRouteStep routeStep, final MapperDAGEdge edge, final TransactionManager transactions, final int type,
-      final int routeStepIndex, final Transaction lastTransaction, final List<Object> alreadyCreatedVertices) {
+  public Transaction addVertices(final AbstractRouteStep routeStep, final MapperDAGEdge edge,
+      final TransactionManager transactions, final int type, final int routeStepIndex,
+      final Transaction lastTransaction, final List<Object> alreadyCreatedVertices) {
 
     if (routeStep instanceof DmaRouteStep) {
       // Adding the transfers
@@ -134,8 +135,8 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 
         for (final ComponentInstance node : nodes) {
           final int nodeIndex = nodes.indexOf(node);
-          transaction = new AddTransferVertexTransaction("transfer", lastTransaction, getEdgeScheduler(), edge, getImplementation(), getOrderManager(),
-              routeStepIndex, nodeIndex, routeStep, transferTime, node, true);
+          transaction = new AddTransferVertexTransaction("transfer", lastTransaction, getEdgeScheduler(), edge,
+              getImplementation(), getOrderManager(), routeStepIndex, nodeIndex, routeStep, transferTime, node, true);
           transactions.add(transaction);
         }
 
@@ -147,8 +148,8 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
         for (final Object o : alreadyCreatedVertices) {
           if (o instanceof TransferVertex) {
             final TransferVertex v = (TransferVertex) o;
-            if (v.getSource().equals(edge.getSource()) && v.getTarget().equals(edge.getTarget()) && (v.getRouteStep() == routeStep)
-                && (v.getNodeIndex() == 0)) {
+            if (v.getSource().equals(edge.getSource()) && v.getTarget().equals(edge.getTarget())
+                && (v.getRouteStep() == routeStep) && (v.getNodeIndex() == 0)) {
               // Finding the edge where to add an overhead
               incomingEdge = (MapperDAGEdge) v.incomingEdges().toArray()[0];
             }
@@ -159,9 +160,11 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
         final Dma dmaDef = dmaStep.getDma();
         final long overheadTime = dmaDef.getSetupTime();
         if (incomingEdge != null) {
-          transactions.add(new AddOverheadVertexTransaction(incomingEdge, getImplementation(), routeStep, overheadTime, getOrderManager()));
+          transactions.add(new AddOverheadVertexTransaction(incomingEdge, getImplementation(), routeStep, overheadTime,
+              getOrderManager()));
         } else {
-          WorkflowLogger.getLogger().log(Level.FINE, "The transfer following vertex" + edge.getSource() + "was not found. We could not add overhead.");
+          WorkflowLogger.getLogger().log(Level.FINE,
+              "The transfer following vertex" + edge.getSource() + "was not found. We could not add overhead.");
         }
 
       } else if (type == CommunicationRouter.synchroType) {
@@ -172,7 +175,8 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
         for (final Object o : alreadyCreatedVertices) {
           if (o instanceof TransferVertex) {
             final TransferVertex v = (TransferVertex) o;
-            if (v.getSource().equals(edge.getSource()) && v.getTarget().equals(edge.getTarget()) && (v.getRouteStep() == routeStep)) {
+            if (v.getSource().equals(edge.getSource()) && v.getTarget().equals(edge.getTarget())
+                && (v.getRouteStep() == routeStep)) {
               toSynchronize.add(v);
             }
 
@@ -183,17 +187,19 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
         // have consecutive total order and be scheduled
         // simultaneously).
         /*
-         * if (toSynchronize.size() > 1) { ImplementationCleaner cleaner = new ImplementationCleaner( getOrderManager(), getImplementation());
-         * PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder( getOrderManager(), getImplementation()); MapperDAGVertex last = null; last = null;
+         * if (toSynchronize.size() > 1) { ImplementationCleaner cleaner = new ImplementationCleaner( getOrderManager(),
+         * getImplementation()); PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder( getOrderManager(),
+         * getImplementation()); MapperDAGVertex last = null; last = null;
          *
-         * for (MapperDAGVertex v : toSynchronize) { cleaner.unscheduleVertex(v); last = getOrderManager().synchronize(last, v); adder.scheduleVertex(v); }
+         * for (MapperDAGVertex v : toSynchronize) { cleaner.unscheduleVertex(v); last =
+         * getOrderManager().synchronize(last, v); adder.scheduleVertex(v); }
          *
          * }
          */
       } else if (type == CommunicationRouter.sendReceiveType) {
 
-        final Transaction transaction = new AddSendReceiveTransaction(lastTransaction, edge, getImplementation(), getOrderManager(), routeStepIndex, routeStep,
-            TransferVertex.SEND_RECEIVE_COST);
+        final Transaction transaction = new AddSendReceiveTransaction(lastTransaction, edge, getImplementation(),
+            getOrderManager(), routeStepIndex, routeStep, TransferVertex.SEND_RECEIVE_COST);
 
         transactions.add(transaction);
         return transaction;

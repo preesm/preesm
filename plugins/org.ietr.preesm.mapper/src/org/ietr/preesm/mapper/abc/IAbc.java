@@ -53,8 +53,9 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 // TODO: Auto-generated Javadoc
 /**
- * Abc (architecture benchmark computer) keeps an internal graph (implementation) and is assigned an external graph (dag). The internal graph receives
- * dynamically special vertices (tansfers, overheads, send/receive...) to reflect graph simulation.
+ * Abc (architecture benchmark computer) keeps an internal graph (implementation) and is assigned an external graph
+ * (dag). The internal graph receives dynamically special vertices (tansfers, overheads, send/receive...) to reflect
+ * graph simulation.
  *
  * @author mpelcat
  */
@@ -96,16 +97,16 @@ public interface IAbc {
   public void updateFinalCosts();
 
   /**
-   * Gives the implementation time of the implementation if possible. If current implementation information is not enough to calculate this timing, returns
-   * TIME_UNKNOWN
+   * Gives the implementation time of the implementation if possible. If current implementation information is not
+   * enough to calculate this timing, returns TIME_UNKNOWN
    *
    * @return the final cost
    */
   public long getFinalCost();
 
   /**
-   * Gives the final time of the given vertex in the current implementation. If current implementation information is not enough to calculate this timing,
-   * returns TIME_UNKNOWN
+   * Gives the final time of the given vertex in the current implementation. If current implementation information is
+   * not enough to calculate this timing, returns TIME_UNKNOWN
    *
    * @param vertex
    *          the vertex
@@ -114,7 +115,8 @@ public interface IAbc {
   public long getFinalCost(MapperDAGVertex vertex);
 
   /**
-   * Gives the implementation time on the given operator if possible. It considers a partially mapped graph and ignores the non mapped vertices
+   * Gives the implementation time on the given operator if possible. It considers a partially mapped graph and ignores
+   * the non mapped vertices
    *
    * @param component
    *          the component
@@ -176,9 +178,9 @@ public interface IAbc {
   public long getCost(MapperDAGEdge edge);
 
   /**
-   * maps the vertex on the operator the rank is the scheduling order. The current rank is maintained in simulator. User can choose to update the rank to the
-   * current one or to keep the rank set during last implementation (changing or not the scheduling order). User can also choose to remap the whole group or
-   * only the current vertex.
+   * maps the vertex on the operator the rank is the scheduling order. The current rank is maintained in simulator. User
+   * can choose to update the rank to the current one or to keep the rank set during last implementation (changing or
+   * not the scheduling order). User can also choose to remap the whole group or only the current vertex.
    *
    * @param vertex
    *          the vertex
@@ -191,7 +193,8 @@ public interface IAbc {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public void map(MapperDAGVertex vertex, ComponentInstance operator, boolean updateRank, boolean remapGroup) throws WorkflowException;
+  public void map(MapperDAGVertex vertex, ComponentInstance operator, boolean updateRank, boolean remapGroup)
+      throws WorkflowException;
 
   /**
    * Unmap.
@@ -225,7 +228,8 @@ public interface IAbc {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public boolean isMapable(MapperDAGVertex vertex, ComponentInstance operator, boolean protectGroupMapping) throws WorkflowException;
+  public boolean isMapable(MapperDAGVertex vertex, ComponentInstance operator, boolean protectGroupMapping)
+      throws WorkflowException;
 
   /**
    * Extracting from the Abc information the data to display in the Gantt chart.
@@ -313,16 +317,18 @@ public interface IAbc {
   // public void rescheduleTransfers(List<MapperDAGVertex> orderlist);
 
   /**
-   * Looks for an operator able to execute currentvertex (preferably the given operator or an operator with same type) If the boolean protectGroupMapping is
-   * true and at least one vertex is mapped in the current vertex group, this unique operator is compared to the prefered one. Otherwise, the prefered operator
-   * is checked of belonging to available operators of the group.
+   * Looks for an operator able to execute currentvertex (preferably the given operator or an operator with same type)
+   * If the boolean protectGroupMapping is true and at least one vertex is mapped in the current vertex group, this
+   * unique operator is compared to the prefered one. Otherwise, the prefered operator is checked of belonging to
+   * available operators of the group.
    */
-  public ComponentInstance findOperator(MapperDAGVertex currentvertex, ComponentInstance preferedOperator, boolean protectGroupMapping)
-      throws WorkflowException;
+  public ComponentInstance findOperator(MapperDAGVertex currentvertex, ComponentInstance preferedOperator,
+      boolean protectGroupMapping) throws WorkflowException;
 
   /**
-   * Looks for operators able to execute currentvertex. If the boolean protectGroupMapping is true and at least one vertex is mapped in the current vertex
-   * group, this unique operator is returned. Otherwise, the intersection of the available operators for the group is returned.
+   * Looks for operators able to execute currentvertex. If the boolean protectGroupMapping is true and at least one
+   * vertex is mapped in the current vertex group, this unique operator is returned. Otherwise, the intersection of the
+   * available operators for the group is returned.
    *
    * @param currentvertex
    *          the currentvertex
@@ -332,6 +338,7 @@ public interface IAbc {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public List<ComponentInstance> getCandidateOperators(MapperDAGVertex currentvertex, boolean protectGroupMapping) throws WorkflowException;
+  public List<ComponentInstance> getCandidateOperators(MapperDAGVertex currentvertex, boolean protectGroupMapping)
+      throws WorkflowException;
 
 }

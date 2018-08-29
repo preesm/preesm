@@ -56,7 +56,8 @@ import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.params.FastAlgoParameters;
 
 /**
- * FAST is a sequential mapping/scheduling method based on list scheduling followed by a neighborhood search phase. It was invented by Y-K Kwok.
+ * FAST is a sequential mapping/scheduling method based on list scheduling followed by a neighborhood search phase. It
+ * was invented by Y-K Kwok.
  *
  * @author pmenuet
  * @author mpelcat
@@ -79,15 +80,16 @@ public class FASTMappingFromDAG extends AbstractMappingFromDAG {
   }
 
   @Override
-  protected IAbc schedule(final Map<String, Object> outputs, final Map<String, String> parameters, final InitialLists initial, final PreesmScenario scenario,
-      final AbcParameters abcParams, final MapperDAG dag, final Design architecture, final AbstractTaskSched taskSched) {
+  protected IAbc schedule(final Map<String, Object> outputs, final Map<String, String> parameters,
+      final InitialLists initial, final PreesmScenario scenario, final AbcParameters abcParams, final MapperDAG dag,
+      final Design architecture, final AbstractTaskSched taskSched) {
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
 
     final FastAlgoParameters fastParams = new FastAlgoParameters(parameters);
     final FastAlgorithm fastAlgorithm = new FastAlgorithm(initial, scenario);
-    final MapperDAG resDag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false, fastParams.isDisplaySolutions(), null,
-        taskSched);
+    final MapperDAG resDag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false,
+        fastParams.isDisplaySolutions(), null, taskSched);
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
 

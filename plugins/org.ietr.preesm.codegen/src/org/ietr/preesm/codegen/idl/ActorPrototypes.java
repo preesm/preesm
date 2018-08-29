@@ -118,7 +118,8 @@ public class ActorPrototypes implements IRefinement {
    */
   public void setInitPrototype(final Prototype init, final int i) {
     if (this.initPrototypes.containsKey(i)) {
-      WorkflowLogger.getLogger().log(Level.WARNING, "IDL: Init phase number (-)" + i + " was defined several time for file " + this.path);
+      WorkflowLogger.getLogger().log(Level.WARNING,
+          "IDL: Init phase number (-)" + i + " was defined several time for file " + this.path);
     }
     this.initPrototypes.put(i, init);
   }

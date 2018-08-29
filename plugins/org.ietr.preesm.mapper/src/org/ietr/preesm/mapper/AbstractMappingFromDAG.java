@@ -90,12 +90,12 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
-   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
+   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
@@ -116,7 +116,8 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     // without transfer time to other operator)
     calculateSpan(dag, architecture, scenario, abcParams);
 
-    final IAbc simu = new InfiniteHomogeneousAbc(abcParams, dag, architecture, abcParams.getSimulatorType().getTaskSchedType(), scenario);
+    final IAbc simu = new InfiniteHomogeneousAbc(abcParams, dag, architecture,
+        abcParams.getSimulatorType().getTaskSchedType(), scenario);
 
     final InitialLists initial = new InitialLists();
     final boolean couldConstructInitialLists = initial.constructInitialLists(dag, simu);
@@ -151,8 +152,9 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     return outputs;
   }
 
-  protected abstract IAbc schedule(final Map<String, Object> outputs, Map<String, String> parameters, InitialLists initial, PreesmScenario scenario,
-      AbcParameters abcParams, MapperDAG dag, Design architecture, AbstractTaskSched taskSched);
+  protected abstract IAbc schedule(final Map<String, Object> outputs, Map<String, String> parameters,
+      InitialLists initial, PreesmScenario scenario, AbcParameters abcParams, MapperDAG dag, Design architecture,
+      AbstractTaskSched taskSched);
 
   /**
    * Generic mapping message.
@@ -195,7 +197,8 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
   }
 
   /**
-   * This method performs optional checks to verify the integrity of a schedule. It should be call at the end of all scheduler implementations.
+   * This method performs optional checks to verify the integrity of a schedule. It should be call at the end of all
+   * scheduler implementations.
    *
    * @param parameters
    *          {@link Map} of parameters values that were given to the mapper workflow task.
@@ -224,8 +227,8 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
   }
 
   /**
-   * Calculates the DAG span length on the architecture main operator (the tasks that cannot be executed by the main operator are deported without transfer time
-   * to other operator).
+   * Calculates the DAG span length on the architecture main operator (the tasks that cannot be executed by the main
+   * operator are deported without transfer time to other operator).
    *
    * @param dag
    *          the dag
@@ -238,10 +241,11 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
    * @throws WorkflowException
    *           the workflow exception
    */
-  protected void calculateSpan(final MapperDAG dag, final Design archi, final PreesmScenario scenario, final AbcParameters parameters)
-      throws WorkflowException {
+  protected void calculateSpan(final MapperDAG dag, final Design archi, final PreesmScenario scenario,
+      final AbcParameters parameters) throws WorkflowException {
 
-    final SpanLengthCalculator spanCalc = new SpanLengthCalculator(parameters, dag, archi, parameters.getSimulatorType().getTaskSchedType(), scenario);
+    final SpanLengthCalculator spanCalc = new SpanLengthCalculator(parameters, dag, archi,
+        parameters.getSimulatorType().getTaskSchedType(), scenario);
     spanCalc.resetDAG();
 
   }

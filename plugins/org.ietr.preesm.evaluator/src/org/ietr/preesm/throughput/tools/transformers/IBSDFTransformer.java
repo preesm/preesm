@@ -72,7 +72,8 @@ public abstract class IBSDFTransformer {
     while (!actorsToReplcae.isEmpty()) {
       // replace the hierarchical actor
       final SDFAbstractVertex h = actorsToReplcae.elements().nextElement();
-      final SDFGraph srSubgraph = srSDFsubgraphList.get(((SDFAbstractVertex) h.getPropertyBean().getValue("baseActor")).getName());
+      final SDFGraph srSubgraph = srSDFsubgraphList
+          .get(((SDFAbstractVertex) h.getPropertyBean().getValue("baseActor")).getName());
       GraphStructureHelper.replaceHierarchicalActor(flatSrSDF, h, srSubgraph);
 
       // add the hierarchical actors of the subgraph to the list of actors to replace
@@ -143,14 +144,18 @@ public abstract class IBSDFTransformer {
         final SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
         if (baseActor instanceof SDFSourceInterfaceVertex) {
           // input interface
-          GraphStructureHelper.addEdge(srSDF, actor.getName(), "to_start", "start", "from_" + actor.getName(), 1, 1, 0, null);
+          GraphStructureHelper.addEdge(srSDF, actor.getName(), "to_start", "start", "from_" + actor.getName(), 1, 1, 0,
+              null);
         } else if (baseActor instanceof SDFSinkInterfaceVertex) {
           // output interface
-          GraphStructureHelper.addEdge(srSDF, "end", "to_" + actor.getName(), actor.getName(), "from_end", 1, 1, 0, null);
+          GraphStructureHelper.addEdge(srSDF, "end", "to_" + actor.getName(), actor.getName(), "from_end", 1, 1, 0,
+              null);
         } else {
           // add the connection between the actor and start/end actor
-          GraphStructureHelper.addEdge(srSDF, "start", "to_" + actor.getName(), actor.getName(), "from_start", 1, 1, 0, null);
-          GraphStructureHelper.addEdge(srSDF, actor.getName(), "to_end", "end", "from_" + actor.getName(), 1, 1, 0, null);
+          GraphStructureHelper.addEdge(srSDF, "start", "to_" + actor.getName(), actor.getName(), "from_start", 1, 1, 0,
+              null);
+          GraphStructureHelper.addEdge(srSDF, actor.getName(), "to_end", "end", "from_" + actor.getName(), 1, 1, 0,
+              null);
         }
       }
     }

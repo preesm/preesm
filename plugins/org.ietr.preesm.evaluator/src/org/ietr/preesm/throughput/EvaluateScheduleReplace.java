@@ -63,9 +63,9 @@ public class EvaluateScheduleReplace {
   public Stopwatch timer;
   // private PreesmScenario preesmScenario;
   /*
-   * Evaluate-Schedule-Replace technique : Evaluate the throughput of a relaxed execution of an ibsdf graph. It consists of three main process, Evaluate,
-   * Schedule and Replace. The technique analyze the subgraph in terms of time dependencies and replace it with a small graph that represents its execution
-   * behavior :o :o :o
+   * Evaluate-Schedule-Replace technique : Evaluate the throughput of a relaxed execution of an ibsdf graph. It consists
+   * of three main process, Evaluate, Schedule and Replace. The technique analyze the subgraph in terms of time
+   * dependencies and replace it with a small graph that represents its execution behavior :o :o :o
    *
    */
 
@@ -111,7 +111,8 @@ public class EvaluateScheduleReplace {
     }
     for (final SDFAbstractVertex actor : actorToReplace) {
       final SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
-      GraphStructureHelper.replaceHierarchicalActor(srSDF, actor, this.subgraphExecutionModelList.get(baseActor.getName()));
+      GraphStructureHelper.replaceHierarchicalActor(srSDF, actor,
+          this.subgraphExecutionModelList.get(baseActor.getName()));
     }
 
     // Step 4: compute the throughput of the top graph using the periodic schedule
@@ -163,7 +164,8 @@ public class EvaluateScheduleReplace {
     }
     for (final SDFAbstractVertex actor : actorToReplace) {
       final SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
-      GraphStructureHelper.replaceHierarchicalActor(srSDF, actor, this.subgraphExecutionModelList.get(baseActor.getName()));
+      GraphStructureHelper.replaceHierarchicalActor(srSDF, actor,
+          this.subgraphExecutionModelList.get(baseActor.getName()));
     }
 
     // delete all replacement graphs that are no longer needed
@@ -265,9 +267,11 @@ public class EvaluateScheduleReplace {
     // create the interfaces and connect them to their associated time actor
     for (final IInterface iInterface : HActor.getInterfaces()) {
       // add the interface to the subgraph execution model
-      final SDFAbstractVertex subgraphInterface = subgraph.getVertex(((SDFInterfaceVertex) iInterface).getName() + "_1");
-      final SDFAbstractVertex SEM_inetrface = GraphStructureHelper.addActor(subgraphExecutionModel, subgraphInterface.getName(), null,
-          subgraphInterface.getNbRepeatAsInteger(), (Double) subgraphInterface.getPropertyBean().getValue("duration"), null,
+      final SDFAbstractVertex subgraphInterface = subgraph
+          .getVertex(((SDFInterfaceVertex) iInterface).getName() + "_1");
+      final SDFAbstractVertex SEM_inetrface = GraphStructureHelper.addActor(subgraphExecutionModel,
+          subgraphInterface.getName(), null, subgraphInterface.getNbRepeatAsInteger(),
+          (Double) subgraphInterface.getPropertyBean().getValue("duration"), null,
           (SDFAbstractVertex) subgraphInterface.getPropertyBean().getValue("baseActor"));
 
       // get the execution start date of the interface
@@ -285,10 +289,12 @@ public class EvaluateScheduleReplace {
       // connect the interface to its associated time line actor
       if (iInterface instanceof SDFSourceInterfaceVertex) {
         // case of input interface : add an edge from the interface to the time actor
-        GraphStructureHelper.addEdge(subgraphExecutionModel, SEM_inetrface.getName(), null, timeActor.getName(), null, 1, 1, 0, null);
+        GraphStructureHelper.addEdge(subgraphExecutionModel, SEM_inetrface.getName(), null, timeActor.getName(), null,
+            1, 1, 0, null);
       } else if (iInterface instanceof SDFSinkInterfaceVertex) {
         // case of output interface : add an edge from the time actor to the interface
-        GraphStructureHelper.addEdge(subgraphExecutionModel, timeActor.getName(), null, SEM_inetrface.getName(), null, 1, 1, 0, null);
+        GraphStructureHelper.addEdge(subgraphExecutionModel, timeActor.getName(), null, SEM_inetrface.getName(), null,
+            1, 1, 0, null);
       }
     }
 
@@ -300,13 +306,14 @@ public class EvaluateScheduleReplace {
     for (int i = 0; i < (orderedTimeLine.size() - 1); i++) {
       // add the transition actor to the subgraph execution model
       final SDFAbstractVertex TransitionActor = GraphStructureHelper.addActor(subgraphExecutionModel,
-          "time" + orderedTimeLine.get(i) + "_to_time" + orderedTimeLine.get(i + 1), null, 1, orderedTimeLine.get(i + 1) - orderedTimeLine.get(i), null, null);
+          "time" + orderedTimeLine.get(i) + "_to_time" + orderedTimeLine.get(i + 1), null, 1,
+          orderedTimeLine.get(i + 1) - orderedTimeLine.get(i), null, null);
 
       // add time actor i with the time actor i+1 through the transition actor
-      GraphStructureHelper.addEdge(subgraphExecutionModel, timeLineActors.get(orderedTimeLine.get(i)).getName(), null, TransitionActor.getName(), null, 1, 1, 0,
-          null);
-      GraphStructureHelper.addEdge(subgraphExecutionModel, TransitionActor.getName(), null, timeLineActors.get(orderedTimeLine.get(i + 1)).getName(), null, 1,
-          1, 0, null);
+      GraphStructureHelper.addEdge(subgraphExecutionModel, timeLineActors.get(orderedTimeLine.get(i)).getName(), null,
+          TransitionActor.getName(), null, 1, 1, 0, null);
+      GraphStructureHelper.addEdge(subgraphExecutionModel, TransitionActor.getName(), null,
+          timeLineActors.get(orderedTimeLine.get(i + 1)).getName(), null, 1, 1, 0, null);
     }
 
     // add the period actor
@@ -318,12 +325,14 @@ public class EvaluateScheduleReplace {
       final SDFAbstractVertex lastTimeActor = timeLineActors.get(lastTime);
 
       // create the period actor
-      final SDFAbstractVertex periodActor = GraphStructureHelper.addActor(subgraphExecutionModel, "period", null, 1, K.getNumerator() - (lastTime - firstTime),
-          null, null);
+      final SDFAbstractVertex periodActor = GraphStructureHelper.addActor(subgraphExecutionModel, "period", null, 1,
+          K.getNumerator() - (lastTime - firstTime), null, null);
 
       // connect the period actor to the time line
-      GraphStructureHelper.addEdge(subgraphExecutionModel, lastTimeActor.getName(), null, periodActor.getName(), null, 1, 1, 0, null);
-      GraphStructureHelper.addEdge(subgraphExecutionModel, periodActor.getName(), null, fistTimeActor.getName(), null, 1, 1, K.getDenominator(), null);
+      GraphStructureHelper.addEdge(subgraphExecutionModel, lastTimeActor.getName(), null, periodActor.getName(), null,
+          1, 1, 0, null);
+      GraphStructureHelper.addEdge(subgraphExecutionModel, periodActor.getName(), null, fistTimeActor.getName(), null,
+          1, 1, K.getDenominator(), null);
     }
 
     return subgraphExecutionModel;

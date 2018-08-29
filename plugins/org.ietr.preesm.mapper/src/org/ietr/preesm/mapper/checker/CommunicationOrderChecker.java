@@ -51,8 +51,9 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 
 /**
- * The purpose of the {@link CommunicationOrderChecker} is to verify the order of communications resulting from a scheduling. In particular, the checker
- * verifies if the Send and Receive communication primitives for each pair of core is always scheduled with the exact same order on both sides. For example:<br>
+ * The purpose of the {@link CommunicationOrderChecker} is to verify the order of communications resulting from a
+ * scheduling. In particular, the checker verifies if the Send and Receive communication primitives for each pair of
+ * core is always scheduled with the exact same order on both sides. For example:<br>
  * <ul>
  * <li>Correct schedule:
  * <ul>
@@ -98,7 +99,8 @@ public class CommunicationOrderChecker {
     while (iterDAGVertices.hasNext()) {
       final DAGVertex currentVertex = iterDAGVertices.next();
 
-      final String vertexType = currentVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).toString();
+      final String vertexType = currentVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
+          .toString();
       final boolean isSend = vertexType.equals("send");
       final boolean isReceive = vertexType.equals("receive");
 
@@ -106,7 +108,8 @@ public class CommunicationOrderChecker {
       final ComponentInstance comp = (ComponentInstance) currentVertex.getPropertyBean().getValue("Operator");
 
       // Get scheduling order
-      final int schedulingOrder = (Integer) currentVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
+      final int schedulingOrder = (Integer) currentVertex.getPropertyBean()
+          .getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
       if (isSend) {
         sendVerticesMap.put(schedulingOrder, currentVertex);
         sendComponents.add(comp);
@@ -124,28 +127,31 @@ public class CommunicationOrderChecker {
 
         // Collect sender and receivers DAGVertices for this pair (in scheduling order)
         final List<DAGVertex> senders = new ArrayList<>(sendVerticesMap.values());
-        senders.removeIf(vertex -> !((ComponentInstance) vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator)).equals(sendComponent));
+        senders.removeIf(vertex -> !((ComponentInstance) vertex.getPropertyBean()
+            .getValue(ImplementationPropertyNames.Vertex_Operator)).equals(sendComponent));
 
         final List<DAGVertex> receivers = new ArrayList<>(recvVerticesMap.values());
-        receivers
-            .removeIf(vertex -> !((ComponentInstance) vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator)).equals(recvComponent));
+        receivers.removeIf(vertex -> !((ComponentInstance) vertex.getPropertyBean()
+            .getValue(ImplementationPropertyNames.Vertex_Operator)).equals(recvComponent));
 
         // Get corresponding edges (in scheduling order)
         final List<DAGEdge> senderDagEdges = new ArrayList<>(senders.size());
-        senders
-            .forEach(sender -> senderDagEdges.add((DAGEdge) sender.getPropertyBean().getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge)));
+        senders.forEach(sender -> senderDagEdges.add(
+            (DAGEdge) sender.getPropertyBean().getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge)));
         final List<DAGEdge> receiverDagEdges = new ArrayList<>(receivers.size());
-        receivers.forEach(
-            receiver -> receiverDagEdges.add((DAGEdge) receiver.getPropertyBean().getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge)));
+        receivers.forEach(receiver -> receiverDagEdges.add((DAGEdge) receiver.getPropertyBean()
+            .getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge)));
 
-        // Keep only the DAGEdges in common (they are the one corresponding to communications between the selected sender and receiver
+        // Keep only the DAGEdges in common (they are the one corresponding to communications between the selected
+        // sender and receiver
         receiverDagEdges.retainAll(senderDagEdges);
         senderDagEdges.retainAll(receiverDagEdges);
 
         // Throws an exception if the schedule is incorrect.
         if (!senderDagEdges.equals(receiverDagEdges)) {
-          throw new WorkflowException("Order of communication primitives (Send/Receive) is not preserved between components " + sendComponent + " and "
-              + recvComponent + ". Contact Preesm developers for more information.");
+          throw new WorkflowException(
+              "Order of communication primitives (Send/Receive) is not preserved between components " + sendComponent
+                  + " and " + recvComponent + ". Contact Preesm developers for more information.");
         }
       }
     }

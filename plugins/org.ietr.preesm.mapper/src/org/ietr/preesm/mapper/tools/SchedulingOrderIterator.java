@@ -72,8 +72,8 @@ public class SchedulingOrderIterator extends ImplementationIterator {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.plugin.mapper.tools.ImplantationIterator#compare(org. ietr.preesm.plugin.mapper.model.MapperDAGVertex,
-   * org.ietr.preesm.plugin.mapper.model.MapperDAGVertex)
+   * @see org.ietr.preesm.plugin.mapper.tools.ImplantationIterator#compare(org.
+   * ietr.preesm.plugin.mapper.model.MapperDAGVertex, org.ietr.preesm.plugin.mapper.model.MapperDAGVertex)
    */
   @Override
   public int compare(final MapperDAGVertex arg0, final MapperDAGVertex arg1) {

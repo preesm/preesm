@@ -138,11 +138,13 @@ public class VariablesPage extends FormPage implements IPropertyListener {
     if (this.scenario.isIBSDFScenario()) {
 
       // Variable file chooser section
-      createFileSection(managedForm, Messages.getString("Variables.excelFile"), Messages.getString("Variables.excelFileDescription"),
-          Messages.getString("Variables.excelFileEdit"), this.scenario.getVariablesManager().getExcelFileURL(),
-          Messages.getString("Variables.excelFileBrowseTitle"), "xls");
+      createFileSection(managedForm, Messages.getString("Variables.excelFile"),
+          Messages.getString("Variables.excelFileDescription"), Messages.getString("Variables.excelFileEdit"),
+          this.scenario.getVariablesManager().getExcelFileURL(), Messages.getString("Variables.excelFileBrowseTitle"),
+          "xls");
 
-      createVariablesSection(managedForm, Messages.getString("Variables.title"), Messages.getString("Variables.description"));
+      createVariablesSection(managedForm, Messages.getString("Variables.title"),
+          Messages.getString("Variables.description"));
 
       managedForm.refresh();
       managedForm.reflow(true);
@@ -164,7 +166,8 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
-    final Composite container = createSection(managedForm, title, desc, 1, new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
+    final Composite container = createSection(managedForm, title, desc, 1,
+        new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
     final FormToolkit toolkit = managedForm.getToolkit();
 
     addTable(container, toolkit);
@@ -185,12 +188,13 @@ public class VariablesPage extends FormPage implements IPropertyListener {
    *          the grid data
    * @return the composite
    */
-  public Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns, final GridData gridData) {
+  public Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns,
+      final GridData gridData) {
 
     final ScrolledForm form = mform.getForm();
     final FormToolkit toolkit = mform.getToolkit();
-    final Section section = toolkit.createSection(form.getBody(),
-        ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    final Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
+        | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
     section.setText(title);
     section.setDescription(desc);
     toolkit.createCompositeSeparator(section);
@@ -229,7 +233,8 @@ public class VariablesPage extends FormPage implements IPropertyListener {
     final Composite tablecps = toolkit.createComposite(parent);
     tablecps.setVisible(true);
 
-    this.tableViewer = new TableViewer(tablecps, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
+    this.tableViewer = new TableViewer(tablecps,
+        SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
     final Table table = this.tableViewer.getTable();
     table.setLayout(new GridLayout());
     table.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -248,7 +253,8 @@ public class VariablesPage extends FormPage implements IPropertyListener {
     final TableColumn column2 = new TableColumn(table, SWT.NONE, 1);
     column2.setText(Messages.getString("Variables.variableValueColumn"));
 
-    this.tableViewer.addDoubleClickListener(e -> labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection()));
+    this.tableViewer
+        .addDoubleClickListener(e -> labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection()));
 
     final Table tref = table;
     final Composite comp = tablecps;
@@ -302,15 +308,16 @@ public class VariablesPage extends FormPage implements IPropertyListener {
         final String init = "newType";
 
         final IInputValidator validator = newText -> {
-          if ((VariablesPage.this.currentGraph != null) && VariablesPage.this.currentGraph.getVariables().keySet().contains(newText)) {
+          if ((VariablesPage.this.currentGraph != null)
+              && VariablesPage.this.currentGraph.getVariables().keySet().contains(newText)) {
             return null;
           } else {
             return "the top graph does not contain the variable.";
           }
         };
 
-        final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), dialogTitle, dialogMessage, init,
-            validator);
+        final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+            dialogTitle, dialogMessage, init, validator);
         if (dialog.open() == Window.OK) {
           VariablesPage.this.scenario.getVariablesManager().setVariable(dialog.getValue(), "0");
           VariablesPage.this.tableViewer.refresh();
@@ -370,8 +377,8 @@ public class VariablesPage extends FormPage implements IPropertyListener {
    * @param fileExtension
    *          the file extension
    */
-  private void createFileSection(final IManagedForm mform, final String title, final String desc, final String fileEdit, final String initValue,
-      final String browseTitle, final String fileExtension) {
+  private void createFileSection(final IManagedForm mform, final String title, final String desc, final String fileEdit,
+      final String initValue, final String browseTitle, final String fileExtension) {
 
     final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
     gridData.heightHint = 120;
@@ -417,7 +424,8 @@ public class VariablesPage extends FormPage implements IPropertyListener {
     text.setLayoutData(gd);
 
     // Add a "Refresh" button to the scenario editor
-    final Button refreshButton = toolkit.createButton(client, Messages.getString("Variables.variablesFileRefresh"), SWT.PUSH);
+    final Button refreshButton = toolkit.createButton(client, Messages.getString("Variables.variablesFileRefresh"),
+        SWT.PUSH);
     refreshButton.addSelectionListener(new SelectionListener() {
 
       @Override
@@ -440,7 +448,8 @@ public class VariablesPage extends FormPage implements IPropertyListener {
     final SelectionAdapter browseAdapter = new FileSelectionAdapter(text, browseTitle, fileExtension);
     browseButton.addSelectionListener(browseAdapter);
 
-    final Button exportButton = toolkit.createButton(client, Messages.getString("Variables.variablesExportExcel"), SWT.PUSH);
+    final Button exportButton = toolkit.createButton(client, Messages.getString("Variables.variablesExportExcel"),
+        SWT.PUSH);
     exportButton.addSelectionListener(new ExcelVariablesWriter(this.scenario));
 
     toolkit.paintBordersFor(client);

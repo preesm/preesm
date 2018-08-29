@@ -55,8 +55,9 @@ import org.ietr.preesm.core.scenario.Timing;
 
 // TODO: Auto-generated Javadoc
 /**
- * This class is a visitor for SDF graphs whose purpose is to export the visited graph into the DIF format. The visitor should be used only on Single-rate SDF.
- * Each actor of the graph can be given a parameter "nb_node" which will be used in the exported format.
+ * This class is a visitor for SDF graphs whose purpose is to export the visited graph into the DIF format. The visitor
+ * should be used only on Single-rate SDF. Each actor of the graph can be given a parameter "nb_node" which will be used
+ * in the exported format.
  *
  * <p>
  * All edges with delays are removed from the exported graph.
@@ -67,8 +68,8 @@ import org.ietr.preesm.core.scenario.Timing;
  * </p>
  *
  * <p>
- * This class is a quick solution to convert very specific graph to the DIF. It is not well coded and should be replaced with a better solution in the future.
- * (Or simply removed if not used anymore)
+ * This class is a quick solution to convert very specific graph to the DIF. It is not well coded and should be replaced
+ * with a better solution in the future. (Or simply removed if not used anymore)
  * </p>
  *
  * @author kdesnos
@@ -181,7 +182,8 @@ public class DIFExporterVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVe
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model. AbstractVertex)
+   * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.
+   * AbstractVertex)
    */
   @Override
   public void visit(final SDFAbstractVertex vertex) throws SDF4JException {
@@ -239,7 +241,8 @@ public class DIFExporterVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVe
   }
 
   /**
-   * This method is called after a graph has been visited by the visitor and write the resulting DIF graph into a text file.
+   * This method is called after a graph has been visited by the visitor and write the resulting DIF graph into a text
+   * file.
    *
    * @param file
    *          the file where to write the DIF graph

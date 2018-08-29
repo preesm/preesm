@@ -70,12 +70,12 @@ public class CodegenTask extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute( java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
-   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute( java.util.Map, java.util.Map,
+   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // Retrieve inputs
     final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
@@ -122,7 +122,8 @@ public class CodegenTask extends AbstractTaskImplementation {
     final Set<String> languages = new LinkedHashSet<>();
     final IExtensionRegistry registry = Platform.getExtensionRegistry();
 
-    final IConfigurationElement[] elements = registry.getConfigurationElementsFor("org.ietr.preesm.codegen.xtend.printers");
+    final IConfigurationElement[] elements = registry
+        .getConfigurationElementsFor("org.ietr.preesm.codegen.xtend.printers");
     for (final IConfigurationElement element : elements) {
       languages.add(element.getAttribute("language"));
     }

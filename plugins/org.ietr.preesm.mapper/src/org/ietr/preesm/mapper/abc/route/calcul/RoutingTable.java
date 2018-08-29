@@ -87,7 +87,8 @@ public class RoutingTable {
     public boolean equals(final Object obj) {
       if (obj instanceof OperatorCouple) {
         final OperatorCouple doublet = (OperatorCouple) obj;
-        if (doublet.getOp1().getInstanceName().equals(getOp1().getInstanceName()) && doublet.getOp2().getInstanceName().equals(getOp2().getInstanceName())) {
+        if (doublet.getOp1().getInstanceName().equals(getOp1().getInstanceName())
+            && doublet.getOp2().getInstanceName().equals(getOp2().getInstanceName())) {
           return true;
         }
       }

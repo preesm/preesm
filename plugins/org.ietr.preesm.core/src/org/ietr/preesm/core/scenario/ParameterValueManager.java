@@ -119,7 +119,8 @@ public class ParameterValueManager {
    * @param parent
    *          the parent
    */
-  public void addActorDependentParameterValue(final Parameter parameter, final Set<Integer> values, final String parent) {
+  public void addActorDependentParameterValue(final Parameter parameter, final Set<Integer> values,
+      final String parent) {
     final ParameterValue pValue = new ParameterValue(parameter, ParameterType.ACTOR_DEPENDENT, parent);
     pValue.setValues(values);
     this.parameterValues.add(pValue);
@@ -139,7 +140,8 @@ public class ParameterValueManager {
       inputParametersNames.add(p.getName());
     }
 
-    addParameterDependentParameterValue(param, param.getExpression().getExpressionString(), inputParametersNames, parent);
+    addParameterDependentParameterValue(param, param.getExpression().getExpressionString(), inputParametersNames,
+        parent);
   }
 
   /**
@@ -154,7 +156,8 @@ public class ParameterValueManager {
    * @param parent
    *          the parent
    */
-  public void addParameterDependentParameterValue(final Parameter parameter, final String expression, final Set<String> inputParameters, final String parent) {
+  public void addParameterDependentParameterValue(final Parameter parameter, final String expression,
+      final Set<String> inputParameters, final String parent) {
     final ParameterValue pValue = new ParameterValue(parameter, ParameterType.PARAMETER_DEPENDENT, parent);
     pValue.setExpression(expression);
     pValue.setInputParameters(inputParameters);

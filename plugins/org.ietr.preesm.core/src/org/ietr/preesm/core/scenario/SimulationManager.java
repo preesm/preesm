@@ -59,8 +59,8 @@ public class SimulationManager {
   private String mainOperatorName = "";
 
   /**
-   * Average transfer size sizes in base unit (usually byte). This size is used while calculating the routing table. The routes between operators are static and
-   * will be optimized for the given data size.
+   * Average transfer size sizes in base unit (usually byte). This size is used while calculating the routing table. The
+   * routes between operators are static and will be optimized for the given data size.
    */
   private long averageDataSize = Route.averageTransfer;
 

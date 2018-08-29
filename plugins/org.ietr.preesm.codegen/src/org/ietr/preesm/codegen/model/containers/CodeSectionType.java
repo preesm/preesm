@@ -48,14 +48,14 @@ public class CodeSectionType {
    */
   public enum MajorType {
 
-    /** The fifoinit. */
-    FIFOINIT,
-    /** The cominit. */
-    COMINIT,
-    /** The init. */
-    INIT,
-    /** The loop. */
-    LOOP
+  /** The fifoinit. */
+  FIFOINIT,
+  /** The cominit. */
+  COMINIT,
+  /** The init. */
+  INIT,
+  /** The loop. */
+  LOOP
   }
 
   /** Main code block identification. */

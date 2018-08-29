@@ -37,8 +37,8 @@ package org.ietr.preesm.utils.files;
 
 // TODO: Auto-generated Javadoc
 /**
- * Used to store files writing results. It maintains the number of really written files in an operation, and the number of cached files (not written because
- * already up-to-date)
+ * Used to store files writing results. It maintains the number of really written files in an operation, and the number
+ * of cached files (not written because already up-to-date)
  *
  * <p>
  * Code adapted from ORCC (net.sf.orcc.util, https://github.com/orcc/orcc)

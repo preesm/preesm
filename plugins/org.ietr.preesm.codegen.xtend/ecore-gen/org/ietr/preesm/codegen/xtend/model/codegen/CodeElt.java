@@ -38,7 +38,8 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
 import org.eclipse.emf.ecore.EObject;
 
 /**
- * <!-- begin-user-doc --> A {@link CodeElt} is either a {@link Block} of code a {@link Call} to a function or another primitive.<br>
+ * <!-- begin-user-doc --> A {@link CodeElt} is either a {@link Block} of code a {@link Call} to a function or another
+ * primitive.<br>
  * A {@link CodeElt} can be contained in the {@link Block#getCodeElts()} list of a parent {@link Block}.
  *
  * <!-- end-user-doc -->

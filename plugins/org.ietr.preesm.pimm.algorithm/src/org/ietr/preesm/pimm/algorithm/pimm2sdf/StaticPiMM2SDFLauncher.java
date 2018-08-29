@@ -108,7 +108,8 @@ public class StaticPiMM2SDFLauncher {
     for (final ParameterValue paramValue : parameterValues) {
       switch (paramValue.getType()) {
         case ACTOR_DEPENDENT:
-          throw new StaticPiMM2SDFException("Parameter " + paramValue.getName() + " is depends on a configuration actor. It is thus impossible to use the"
+          throw new StaticPiMM2SDFException("Parameter " + paramValue.getName()
+              + " is depends on a configuration actor. It is thus impossible to use the"
               + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF"
               + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
         case INDEPENDENT:

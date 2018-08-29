@@ -43,10 +43,11 @@ import org.eclipse.emf.common.util.Enumerator;
 
 // TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> The {@link Delimiter} is used to determine whether a {@link Communication} {@link Call} {@link #START starts} or {@link #END ends} a
- * communication zone. <br>
- * Data can be sent/received as soon a communication zone {@link #START starts} and until this zone {@link #END ends}. If the {@link #END} of a zone is reached
- * before the completion of the corresponding, the process must wait until the communication completes before pursuing its computation. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> The {@link Delimiter} is used to determine whether a {@link Communication} {@link Call}
+ * {@link #START starts} or {@link #END ends} a communication zone. <br>
+ * Data can be sent/received as soon a communication zone {@link #START starts} and until this zone {@link #END ends}.
+ * If the {@link #END} of a zone is reached before the completion of the corresponding, the process must wait until the
+ * communication completes before pursuing its computation. <!-- end-user-doc -->
  * 
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getDelimiter()
  * @model
@@ -74,7 +75,8 @@ public enum Delimiter implements Enumerator {
   /**
    * The '<em><b>START</b></em>' literal value. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of '<em><b>START</b></em>' literal object isn't clear, there really should be more of a description here...
+   * If the meaning of '<em><b>START</b></em>' literal object isn't clear, there really should be more of a description
+   * here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -88,7 +90,8 @@ public enum Delimiter implements Enumerator {
   /**
    * The '<em><b>END</b></em>' literal value. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of '<em><b>END</b></em>' literal object isn't clear, there really should be more of a description here...
+   * If the meaning of '<em><b>END</b></em>' literal object isn't clear, there really should be more of a description
+   * here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -107,14 +110,16 @@ public enum Delimiter implements Enumerator {
   private static final Delimiter[] VALUES_ARRAY = new Delimiter[] { START, END, };
 
   /**
-   * A public read-only list of all the '<em><b>Delimiter</b></em>' enumerators. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * A public read-only list of all the '<em><b>Delimiter</b></em>' enumerators. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @generated
    */
   public static final List<Delimiter> VALUES = Collections.unmodifiableList(Arrays.asList(Delimiter.VALUES_ARRAY));
 
   /**
-   * Returns the '<em><b>Delimiter</b></em>' literal with the specified literal value. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * Returns the '<em><b>Delimiter</b></em>' literal with the specified literal value. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @param literal
    *          the literal.
@@ -131,7 +136,8 @@ public enum Delimiter implements Enumerator {
   }
 
   /**
-   * Returns the '<em><b>Delimiter</b></em>' literal with the specified name. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * Returns the '<em><b>Delimiter</b></em>' literal with the specified name. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
    * 
    * @param name
    *          the name.
@@ -148,7 +154,8 @@ public enum Delimiter implements Enumerator {
   }
 
   /**
-   * Returns the '<em><b>Delimiter</b></em>' literal with the specified integer value. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * Returns the '<em><b>Delimiter</b></em>' literal with the specified integer value. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @param value
    *          the integer value.
@@ -231,7 +238,8 @@ public enum Delimiter implements Enumerator {
   }
 
   /**
-   * Returns the literal value of the enumerator, which is its string representation. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * Returns the literal value of the enumerator, which is its string representation. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @generated
    */

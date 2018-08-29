@@ -78,9 +78,11 @@ public class WorkflowRunnerPopup extends AbstractHandler {
         final ITabbedPropertySheetPageContributor graph = (ITabbedPropertySheetPageContributor) firstElement;
         final String contributorId = graph.getContributorId();
         if (org.ietr.dftools.graphiti.ui.properties.PropertiesConstants.CONTRIBUTOR_ID.equals(contributorId)) {
-          // get there when the active selection is within a tab with id PropertiesConstants.CONTRIBUTOR_ID from Graphiti package.
+          // get there when the active selection is within a tab with id PropertiesConstants.CONTRIBUTOR_ID from
+          // Graphiti package.
           // this is one way to make sure the command is triggered from Graphiti editor
-          final IWorkbenchPage page = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+          final IWorkbenchPage page = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow()
+              .getActivePage();
           final IEditorPart activeEditor = page.getActiveEditor();
           final IEditorInput input = activeEditor.getEditorInput();
           workflowFile = ResourceUtil.getFile(input);
@@ -89,7 +91,8 @@ public class WorkflowRunnerPopup extends AbstractHandler {
     }
 
     if (workflowFile == null) {
-      final String message = "Could not locate Workflow file from active selection [" + activeSelection + "] of type [" + activeSelection.getClass() + "]";
+      final String message = "Could not locate Workflow file from active selection [" + activeSelection + "] of type ["
+          + activeSelection.getClass() + "]";
       throw new UnsupportedOperationException(message);
     }
 

@@ -38,8 +38,8 @@ package org.ietr.preesm.core.types;
 
 // TODO: Auto-generated Javadoc
 /**
- * Objects used to tag the DAG edges. The buffer couple definition is transmitted to the code generation. One buffer is created for the source and one for the
- * destination.
+ * Objects used to tag the DAG edges. The buffer couple definition is transmitted to the code generation. One buffer is
+ * created for the source and one for the destination.
  *
  * @author mpelcat
  *
@@ -70,7 +70,8 @@ public class BufferProperties {
    * @param size
    *          the size
    */
-  public BufferProperties(final DataType dataType, final String sourceOutputPortID, final String destInputPortID, final int size) {
+  public BufferProperties(final DataType dataType, final String sourceOutputPortID, final String destInputPortID,
+      final int size) {
     super();
     this.dataType = dataType;
     this.destInputPortID = destInputPortID;

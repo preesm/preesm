@@ -78,7 +78,8 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
    * @param propertyListener
    *          the property listener
    */
-  public MemCopySpeedLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer, final IPropertyListener propertyListener) {
+  public MemCopySpeedLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer,
+      final IPropertyListener propertyListener) {
     super();
     this.scenario = scenario;
     this.tableViewer = tableViewer;
@@ -215,14 +216,14 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
       final String initSetupTime = String.valueOf(speed.getSetupTime());
       final String initSpeed = String.valueOf(1.0 / speed.getTimePerUnit());
 
-      final InputDialog dialogSetupTime = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message, initSetupTime,
-          intValidator);
+      final InputDialog dialogSetupTime = new InputDialog(
+          PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message, initSetupTime, intValidator);
 
       title = Messages.getString("Timings.MemcopySpeeds.dialog.timePerUnitTitle");
       message = Messages.getString("Timings.MemcopySpeeds.dialog.timePerUnitMessage") + speed.getOperatorDef();
 
-      final InputDialog dialogTimePerUnit = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message, initSpeed,
-          floatValidator);
+      final InputDialog dialogTimePerUnit = new InputDialog(
+          PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message, initSpeed, floatValidator);
 
       if (dialogSetupTime.open() == Window.OK) {
         if (dialogTimePerUnit.open() == Window.OK) {

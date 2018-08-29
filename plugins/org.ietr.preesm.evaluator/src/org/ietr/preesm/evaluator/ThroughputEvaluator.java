@@ -65,7 +65,8 @@ public abstract class ThroughputEvaluator {
   public abstract double launch(SDFGraph inputGraph) throws InvalidExpressionException;
 
   /**
-   * Returns the throughput of the graph given its optimal normalized period, the throughput is the minimal throughput of an actor of the graph.
+   * Returns the throughput of the graph given its optimal normalized period, the throughput is the minimal throughput
+   * of an actor of the graph.
    *
    * @param period
    *          the period
@@ -84,9 +85,11 @@ public abstract class ThroughputEvaluator {
       } else {
         // throughput actor = 1/(K*Z)
         if (vertex.getInterfaces().get(0) instanceof SDFSourceInterfaceVertex) {
-          tmp = 1.0 / (period * (double) (((SDFEdge) vertex.getAssociatedEdge(vertex.getInterfaces().get(0))).getCons().getValue()));
+          tmp = 1.0 / (period
+              * (double) (((SDFEdge) vertex.getAssociatedEdge(vertex.getInterfaces().get(0))).getCons().getValue()));
         } else {
-          tmp = 1.0 / (period * (double) (((SDFEdge) vertex.getAssociatedEdge(vertex.getInterfaces().get(0))).getProd().getValue()));
+          tmp = 1.0 / (period
+              * (double) (((SDFEdge) vertex.getAssociatedEdge(vertex.getInterfaces().get(0))).getProd().getValue()));
         }
       }
       // We are looking for the actor with the smallest throughput

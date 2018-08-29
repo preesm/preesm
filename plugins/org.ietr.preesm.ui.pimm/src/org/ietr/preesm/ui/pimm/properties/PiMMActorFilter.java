@@ -50,7 +50,8 @@ import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 public class PiMMActorFilter extends AbstractPropertySectionFilter {
 
   /**
-   * Check the given {@link PictogramElement} for acceptance. Returns true, if {@link PictogramElement} is accepted, otherwise false.
+   * Check the given {@link PictogramElement} for acceptance. Returns true, if {@link PictogramElement} is accepted,
+   * otherwise false.
    *
    * @param pictogramElement
    *          the pictogram element

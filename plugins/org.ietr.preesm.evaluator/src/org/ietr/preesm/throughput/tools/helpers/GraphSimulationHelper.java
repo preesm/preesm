@@ -135,10 +135,11 @@ public class GraphSimulationHelper {
    * Executes an actor n times.
    *
    *
-   * Before calling this method, you should verify if the actor is ready to be fired n times. In case of insufficient data tokens on its input edges, it will
-   * results to a negative delays on the edges.
+   * Before calling this method, you should verify if the actor is ready to be fired n times. In case of insufficient
+   * data tokens on its input edges, it will results to a negative delays on the edges.
    *
-   * if n < 0 it will cancel n executions == remove data tokens from the output edges and restore them in the input edges.
+   * if n < 0 it will cancel n executions == remove data tokens from the output edges and restore them in the input
+   * edges.
    *
    * @param actor
    *          SDF actor

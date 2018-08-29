@@ -174,7 +174,8 @@ public class DesignTools {
   public static Set<Component> getOperatorComponents(final Design design) {
     final Set<Component> operators = new LinkedHashSet<>();
 
-    for (final org.ietr.dftools.architecture.slam.component.Component component : design.getComponentHolder().getComponents()) {
+    for (final org.ietr.dftools.architecture.slam.component.Component component : design.getComponentHolder()
+        .getComponents()) {
       if (component instanceof Operator) {
         operators.add(component);
       }
@@ -237,7 +238,8 @@ public class DesignTools {
    * @param intersectInstances
    *          the intersect instances
    */
-  public static void retainAll(final List<ComponentInstance> instances, final List<ComponentInstance> intersectInstances) {
+  public static void retainAll(final List<ComponentInstance> instances,
+      final List<ComponentInstance> intersectInstances) {
     final Iterator<ComponentInstance> iterator = instances.iterator();
     while (iterator.hasNext()) {
       final ComponentInstance current = iterator.next();

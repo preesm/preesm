@@ -69,7 +69,8 @@ public class PapifyComponentLabelProvider implements ITableLabelProvider, Select
    * @param propertyListener
    *          the property listener
    */
-  public PapifyComponentLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer, final IPropertyListener propertyListener) {
+  public PapifyComponentLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer,
+      final IPropertyListener propertyListener) {
     super();
     this.tableViewer = tableViewer;
   }

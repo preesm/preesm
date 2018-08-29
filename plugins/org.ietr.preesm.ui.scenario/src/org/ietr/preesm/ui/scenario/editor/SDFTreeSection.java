@@ -78,8 +78,8 @@ public class SDFTreeSection extends SectionPart {
    * @param checkStateListener
    *          the check state listener
    */
-  public SDFTreeSection(final PreesmScenario scenario, final Section inputSection, final FormToolkit toolkit, final int style, final IPropertyListener listener,
-      final ISDFCheckStateListener checkStateListener) {
+  public SDFTreeSection(final PreesmScenario scenario, final Section inputSection, final FormToolkit toolkit,
+      final int style, final IPropertyListener listener, final ISDFCheckStateListener checkStateListener) {
     super(inputSection);
 
     this.section = inputSection;

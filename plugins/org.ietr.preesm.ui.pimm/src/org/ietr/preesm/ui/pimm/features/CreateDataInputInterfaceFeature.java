@@ -99,7 +99,8 @@ public class CreateDataInputInterfaceFeature extends AbstractCreateFeature {
     final String question = "Enter new Source Interface name";
     String newSrcName = "SrcInterfaceName";
 
-    newSrcName = PiMMUtil.askString("Create Source Interface", question, newSrcName, new VertexNameValidator(graph, null));
+    newSrcName = PiMMUtil.askString("Create Source Interface", question, newSrcName,
+        new VertexNameValidator(graph, null));
     if ((newSrcName == null) || (newSrcName.trim().length() == 0)) {
       this.hasDoneChanges = false; // If this is not done, the graph is
       // considered modified.

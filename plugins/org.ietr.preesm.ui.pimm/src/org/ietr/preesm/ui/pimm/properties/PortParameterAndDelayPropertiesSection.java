@@ -78,7 +78,8 @@ import org.ietr.preesm.ui.pimm.features.SetPortMemoryAnnotationFeature;
  * @author Romina Racca
  * @author jheulot
  */
-public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUpdater implements ITabbedPropertyConstants {
+public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUpdater
+    implements ITabbedPropertyConstants {
 
   /** The lbl name. */
   private CLabel lblName;
@@ -107,13 +108,17 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
   /** The first column width. */
   private final int FIRST_COLUMN_WIDTH = 200;
 
-  /** A text expression can be as an expression: value numbers, trigonometric functions, expression of condition "if (cond, true value, false value)". */
+  /**
+   * A text expression can be as an expression: value numbers, trigonometric functions, expression of condition "if
+   * (cond, true value, false value)".
+   */
   private Text txtExpression;
 
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.ui.views.properties.tabbed.AbstractPropertySection#createControls(org.eclipse.swt.widgets.Composite,
+   * @see
+   * org.eclipse.ui.views.properties.tabbed.AbstractPropertySection#createControls(org.eclipse.swt.widgets.Composite,
    * org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
    */
   @Override
@@ -198,7 +203,8 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
         pes[0] = getSelectedPictogramElement();
 
         final CustomContext context = new CustomContext(pes);
-        final ICustomFeature[] setPotMemoryAnnotationFeature = getDiagramTypeProvider().getFeatureProvider().getCustomFeatures(context);
+        final ICustomFeature[] setPotMemoryAnnotationFeature = getDiagramTypeProvider().getFeatureProvider()
+            .getCustomFeatures(context);
 
         for (final ICustomFeature feature : setPotMemoryAnnotationFeature) {
           if (feature instanceof SetPortMemoryAnnotationFeature) {
@@ -221,7 +227,8 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
             final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
-            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout);
+            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+                .getLayoutFeature(contextLayout);
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
           }
         }
@@ -263,7 +270,8 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
         pes[0] = getSelectedPictogramElement();
 
         final CustomContext context = new CustomContext(pes);
-        final ICustomFeature[] setDelayPersistenceFeature = getDiagramTypeProvider().getFeatureProvider().getCustomFeatures(context);
+        final ICustomFeature[] setDelayPersistenceFeature = getDiagramTypeProvider().getFeatureProvider()
+            .getCustomFeatures(context);
 
         for (final ICustomFeature feature : setDelayPersistenceFeature) {
           if (feature instanceof SetPersistenceLevelFeature) {
@@ -286,7 +294,8 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
             // final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
-            // final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout);
+            // final ILayoutFeature layoutFeature =
+            // getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout);
             // getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
           }
         }
@@ -302,7 +311,8 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
   }
 
   /**
-   * Update the {@link Port}/{@link Delay}/{@link Parameter} {@link Expression} with the value stored in the txtEpression.
+   * Update the {@link Port}/{@link Delay}/{@link Parameter} {@link Expression} with the value stored in the
+   * txtEpression.
    */
   private void updateProperties() {
     final PictogramElement pe = getSelectedPictogramElement();
@@ -386,7 +396,8 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
     this.txtExpression.setEnabled(false);
 
     if (pictogramElement != null) {
-      final Object businessObject = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pictogramElement);
+      final Object businessObject = Graphiti.getLinkService()
+          .getBusinessObjectForLinkedPictogramElement(pictogramElement);
       if (businessObject == null) {
         return;
       }

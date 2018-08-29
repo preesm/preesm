@@ -56,9 +56,10 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 
 // TODO: Auto-generated Javadoc
 /**
- * The purpose of this {@link Adapter} is to observe the {@link PiGraph#getActors()} list of a {@link PiGraph} to detect the addition, the deletion and the
- * renaming of {@link PiGraph} interfaces in order to automatically compute the repercussions on {@link PiGraph#getInputPorts()},
- * {@link PiGraph#getOutputPorts()} and {@link PiGraph#getConfigInputPorts()}.
+ * The purpose of this {@link Adapter} is to observe the {@link PiGraph#getActors()} list of a {@link PiGraph} to detect
+ * the addition, the deletion and the renaming of {@link PiGraph} interfaces in order to automatically compute the
+ * repercussions on {@link PiGraph#getInputPorts()}, {@link PiGraph#getOutputPorts()} and
+ * {@link PiGraph#getConfigInputPorts()}.
  *
  * @author kdesnos
  *
@@ -75,8 +76,9 @@ public class GraphInterfaceObserver extends AdapterImpl {
   /**
    * Method called when an Interface is possibly added to the Observed {@link PiGraph}. <br>
    * <br>
-   * This Method create the {@link Port} port corresponding to the added {@link InterfaceActor} or {@link Parameter} and add it to the
-   * {@link PiGraph#getInputPorts()}, the {@link PiGraph#getOutputPorts()}, or the {@link PiGraph#getConfigInputPorts()} list of the {@link PiGraph}.
+   * This Method create the {@link Port} port corresponding to the added {@link InterfaceActor} or {@link Parameter} and
+   * add it to the {@link PiGraph#getInputPorts()}, the {@link PiGraph#getOutputPorts()}, or the
+   * {@link PiGraph#getConfigInputPorts()} list of the {@link PiGraph}.
    *
    * @param vertex
    *          The {@link InterfaceActor} or {@link Parameter} added to the {@link PiGraph}
@@ -160,7 +162,8 @@ public class GraphInterfaceObserver extends AdapterImpl {
 
     // Check if the vertices or Parameters are concerned by this
     // notification
-    if ((notification.getNotifier() instanceof PiGraph) && (notification.getFeatureID(null) == PiMMPackage.PI_GRAPH__VERTICES)) {
+    if ((notification.getNotifier() instanceof PiGraph)
+        && (notification.getFeatureID(null) == PiMMPackage.PI_GRAPH__VERTICES)) {
 
       final PiGraph graph = (PiGraph) notification.getNotifier();
 
@@ -208,8 +211,9 @@ public class GraphInterfaceObserver extends AdapterImpl {
   /**
    * Method called when an Interface is possibly removed to the Observed {@link PiGraph}. <br>
    * <br>
-   * This Method remove the {@link Port} port corresponding to the removed {@link InterfaceActor} or {@link Parameter} and from the
-   * {@link PiGraph#getInputPorts()}, the {@link PiGraph#getOutputPorts()}, or the {@link PiGraph#getConfigInputPorts()} list of the {@link PiGraph}.
+   * This Method remove the {@link Port} port corresponding to the removed {@link InterfaceActor} or {@link Parameter}
+   * and from the {@link PiGraph#getInputPorts()}, the {@link PiGraph#getOutputPorts()}, or the
+   * {@link PiGraph#getConfigInputPorts()} list of the {@link PiGraph}.
    *
    * @param vertex
    *          The {@link InterfaceActor} or {@link Parameter} removed from the {@link PiGraph}

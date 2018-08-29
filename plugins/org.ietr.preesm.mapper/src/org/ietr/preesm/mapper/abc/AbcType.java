@@ -69,7 +69,8 @@ public class AbcType {
   private String name = null;
 
   /**
-   * True if the tasks are switched while mapping using algorithms that do further tests than the mapping/scheduling chosen algorithm.
+   * True if the tasks are switched while mapping using algorithms that do further tests than the mapping/scheduling
+   * chosen algorithm.
    */
   private TaskSchedType taskSchedType = null;
 

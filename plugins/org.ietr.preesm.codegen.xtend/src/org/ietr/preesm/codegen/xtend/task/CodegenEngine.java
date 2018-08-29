@@ -180,7 +180,8 @@ public class CodegenEngine {
     // 1. Get the printers of the desired "language"
     final Set<IConfigurationElement> usablePrinters = new LinkedHashSet<>();
     final IExtensionRegistry registry = Platform.getExtensionRegistry();
-    final IConfigurationElement[] elements = registry.getConfigurationElementsFor("org.ietr.preesm.codegen.xtend.printers");
+    final IConfigurationElement[] elements = registry
+        .getConfigurationElementsFor("org.ietr.preesm.codegen.xtend.printers");
     for (final IConfigurationElement element : elements) {
       if (element.getAttribute("language").equals(selectedPrinter)) {
         for (final IConfigurationElement child : element.getChildren()) {
@@ -216,7 +217,8 @@ public class CodegenEngine {
           }
           blocks.add(b);
         } else {
-          throw new WorkflowException("Could not find a printer for language \"" + selectedPrinter + "\" and core type \"" + coreType + "\".");
+          throw new WorkflowException(
+              "Could not find a printer for language \"" + selectedPrinter + "\" and core type \"" + coreType + "\".");
         }
       } else {
         throw new WorkflowException("Only CoreBlock CodeBlocks can be printed in the current version of Preesm.");
@@ -236,7 +238,8 @@ public class CodegenEngine {
     // - Do the pre-processing
     // - Save the printers in a map
     this.realPrinters = new LinkedHashMap<>();
-    for (final Entry<IConfigurationElement, List<Block>> printerAndBlocks : this.registeredPrintersAndBlocks.entrySet()) {
+    for (final Entry<IConfigurationElement, List<Block>> printerAndBlocks : this.registeredPrintersAndBlocks
+        .entrySet()) {
       final String extension = printerAndBlocks.getKey().getAttribute("extension");
       CodegenAbstractPrinter printer = null;
       try {
@@ -253,13 +256,15 @@ public class CodegenEngine {
         final IFolder f = workspace.getRoot().getFolder(new Path(this.codegenPath));
         final IPath rawLocation = f.getRawLocation();
         if (rawLocation == null) {
-          throw new CodegenException("Could not find target project for given path [" + this.codegenPath + "]. Please change path in the scenario editor.");
+          throw new CodegenException("Could not find target project for given path [" + this.codegenPath
+              + "]. Please change path in the scenario editor.");
         }
         final String osString = rawLocation.toOSString();
         File folder = new File(osString);
         if (!folder.exists()) {
           folder.mkdirs();
-          WorkflowLogger.getLogger().info("Created missing target dir [" + folder.getAbsolutePath() + "] during codegen");
+          WorkflowLogger.getLogger()
+              .info("Created missing target dir [" + folder.getAbsolutePath() + "] during codegen");
         }
         workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
         if (!f.exists()) {
@@ -280,7 +285,8 @@ public class CodegenEngine {
           }
         }
       } catch (CoreException | FileNotFoundException e) {
-        throw new WorkflowException("Could not access target directory [" + this.codegenPath + "] during code generation", e);
+        throw new WorkflowException(
+            "Could not access target directory [" + this.codegenPath + "] during code generation", e);
       }
 
       // initialize printer engine
@@ -296,7 +302,8 @@ public class CodegenEngine {
    * Prints the.
    */
   public void print() {
-    for (final Entry<IConfigurationElement, List<Block>> printerAndBlocks : this.registeredPrintersAndBlocks.entrySet()) {
+    for (final Entry<IConfigurationElement, List<Block>> printerAndBlocks : this.registeredPrintersAndBlocks
+        .entrySet()) {
       final String extension = printerAndBlocks.getKey().getAttribute("extension");
       final CodegenAbstractPrinter printer = this.realPrinters.get(printerAndBlocks.getKey());
       final IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -320,7 +327,8 @@ public class CodegenEngine {
       }
 
       // Print secondary files
-      for (final Entry<String, CharSequence> entry : printer.createSecondaryFiles(printerAndBlocks.getValue(), this.codeBlocks).entrySet()) {
+      for (final Entry<String, CharSequence> entry : printer
+          .createSecondaryFiles(printerAndBlocks.getValue(), this.codeBlocks).entrySet()) {
         final String secondaryFileName = entry.getKey();
         final IFile iFile = workspace.getRoot().getFile(new Path(this.codegenPath + secondaryFileName));
         try {
@@ -332,7 +340,8 @@ public class CodegenEngine {
             iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
           }
           final CharSequence secondaryFileContent = entry.getValue();
-          iFile.setContents(new ByteArrayInputStream(secondaryFileContent.toString().getBytes()), true, false, new NullProgressMonitor());
+          iFile.setContents(new ByteArrayInputStream(secondaryFileContent.toString().getBytes()), true, false,
+              new NullProgressMonitor());
         } catch (final CoreException ex) {
           throw new CodegenException("Could not generated source file for " + secondaryFileName, ex);
         }

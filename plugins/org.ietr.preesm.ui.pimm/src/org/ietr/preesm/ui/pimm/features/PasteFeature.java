@@ -84,8 +84,8 @@ import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.ui.pimm.features.CopyFeature.VertexCopy;
 
 /**
- * Graphiti feature that implements the Paste feature for PiMM Vertices. Creates a new copy of the PiMM element recursively, and insert pictogram elements for
- * vertices and children elements.
+ * Graphiti feature that implements the Paste feature for PiMM Vertices. Creates a new copy of the PiMM element
+ * recursively, and insert pictogram elements for vertices and children elements.
  *
  * @author anmorvan
  *
@@ -164,7 +164,8 @@ public class PasteFeature extends AbstractPasteFeature {
     this.links.clear();
   }
 
-  private Map<VertexCopy, Pair<Integer, Integer>> caluclatePositions(final IPasteContext context, final List<VertexCopy> copies) {
+  private Map<VertexCopy, Pair<Integer, Integer>> caluclatePositions(final IPasteContext context,
+      final List<VertexCopy> copies) {
     final Map<VertexCopy, Pair<Integer, Integer>> positions = new LinkedHashMap<>();
     // determine the surrounding box
     int maxX = Integer.MIN_VALUE;
@@ -231,7 +232,8 @@ public class PasteFeature extends AbstractPasteFeature {
     }
   }
 
-  private void connectDep(final PiGraph targetPiGraph, final ISetter setter, final ConfigInputPort getter, final Parameterizable targetParameterizable) {
+  private void connectDep(final PiGraph targetPiGraph, final ISetter setter, final ConfigInputPort getter,
+      final Parameterizable targetParameterizable) {
     final Configurable copiedParameterizable = this.copiedObjects.get(targetParameterizable);
     // lookup copied setter
     ISetter copiedSetter = null;
@@ -329,7 +331,8 @@ public class PasteFeature extends AbstractPasteFeature {
   /**
    *
    */
-  public void addGraphicalRepresentationForDelay(final Fifo copiedFifo, final FreeFormConnection fifoConnection, final Delay delayCopy) {
+  public void addGraphicalRepresentationForDelay(final Fifo copiedFifo, final FreeFormConnection fifoConnection,
+      final Delay delayCopy) {
 
     // the add delay feature can only execute if the fifos delay is null.
     copiedFifo.setDelay(null);
@@ -381,7 +384,8 @@ public class PasteFeature extends AbstractPasteFeature {
       final DataInputPort targetPort = fifo.getTargetPort();
       final EObject sourceVertex = sourcePort.eContainer();
       final EObject targetVertex = targetPort.eContainer();
-      if (((sourceVertex != null) && (sourceVertex instanceof AbstractActor)) && ((targetVertex != null) && (targetVertex instanceof AbstractActor))) {
+      if (((sourceVertex != null) && (sourceVertex instanceof AbstractActor))
+          && ((targetVertex != null) && (targetVertex instanceof AbstractActor))) {
         // ok
         final AbstractActor source = (AbstractActor) sourceVertex;
         final AbstractActor target = (AbstractActor) targetVertex;
@@ -403,7 +407,8 @@ public class PasteFeature extends AbstractPasteFeature {
     }
   }
 
-  private void autoConnectInputConfigPorts(final Configurable originalParameterizable, final Configurable parameterizableCopy) {
+  private void autoConnectInputConfigPorts(final Configurable originalParameterizable,
+      final Configurable parameterizableCopy) {
 
     if (getPiGraph() != getOriginalPiGraph()) {
       return;
@@ -478,7 +483,8 @@ public class PasteFeature extends AbstractPasteFeature {
 
     final PictogramElement boPEs = getFeatureProvider().getPictogramElementForBusinessObject(businessObject);
     if (boPEs == null) {
-      final String message = "Business objcet [" + businessObject + "] has no graphical representations (several PictogramElements) : \n";
+      final String message = "Business objcet [" + businessObject
+          + "] has no graphical representations (several PictogramElements) : \n";
       throw new IllegalStateException(message);
     }
     return boPEs;

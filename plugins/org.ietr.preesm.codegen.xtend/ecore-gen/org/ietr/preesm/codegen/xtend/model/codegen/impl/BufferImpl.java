@@ -68,7 +68,8 @@ import org.ietr.preesm.memory.script.Range;
  */
 public class BufferImpl extends VariableImpl implements Buffer {
   /**
-   * The default value of the '{@link #getSize() <em>Size</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The default value of the '{@link #getSize() <em>Size</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
    * 
    * @see #getSize()
    * @generated
@@ -86,7 +87,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
   protected int size = BufferImpl.SIZE_EDEFAULT;
 
   /**
-   * The cached value of the '{@link #getChildrens() <em>Childrens</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getChildrens() <em>Childrens</em>}' reference list. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getChildrens()
    * @generated
@@ -95,7 +97,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
   protected EList<SubBuffer> childrens;
 
   /**
-   * The default value of the '{@link #getTypeSize() <em>Type Size</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The default value of the '{@link #getTypeSize() <em>Type Size</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getTypeSize()
    * @generated
@@ -104,7 +107,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
   protected static final int TYPE_SIZE_EDEFAULT = 0;
 
   /**
-   * The cached value of the '{@link #getTypeSize() <em>Type Size</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getTypeSize() <em>Type Size</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getTypeSize()
    * @generated
@@ -113,7 +117,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
   protected int typeSize = BufferImpl.TYPE_SIZE_EDEFAULT;
 
   /**
-   * The cached value of the '{@link #getMergedRange() <em>Merged Range</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getMergedRange() <em>Merged Range</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getMergedRange()
    * @generated
@@ -122,7 +127,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
   protected EList<Range> mergedRange;
 
   /**
-   * The default value of the '{@link #isLocal() <em>Local</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The default value of the '{@link #isLocal() <em>Local</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
    * 
    * @see #isLocal()
    * @generated
@@ -131,7 +137,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
   protected static final boolean LOCAL_EDEFAULT = false;
 
   /**
-   * The cached value of the '{@link #isLocal() <em>Local</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #isLocal() <em>Local</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
    * 
    * @see #isLocal()
    * @generated
@@ -224,7 +231,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
     final int oldTypeSize = this.typeSize;
     this.typeSize = newTypeSize;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.BUFFER__TYPE_SIZE, oldTypeSize, this.typeSize));
+      eNotify(
+          new ENotificationImpl(this, Notification.SET, CodegenPackage.BUFFER__TYPE_SIZE, oldTypeSize, this.typeSize));
     }
   }
 
@@ -251,7 +259,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
     final EList<Range> oldMergedRange = this.mergedRange;
     this.mergedRange = newMergedRange;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.BUFFER__MERGED_RANGE, oldMergedRange, this.mergedRange));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.BUFFER__MERGED_RANGE, oldMergedRange,
+          this.mergedRange));
     }
   }
 
@@ -296,7 +305,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
    */
   @SuppressWarnings("unchecked")
   @Override
-  public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+  public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID,
+      final NotificationChain msgs) {
     switch (featureID) {
       case CodegenPackage.BUFFER__CHILDRENS:
         return ((InternalEList<InternalEObject>) (InternalEList<?>) getChildrens()).basicAdd(otherEnd, msgs);
@@ -317,7 +327,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
    * @generated
    */
   @Override
-  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID,
+      final NotificationChain msgs) {
     switch (featureID) {
       case CodegenPackage.BUFFER__CHILDRENS:
         return ((InternalEList<?>) getChildrens()).basicRemove(otherEnd, msgs);

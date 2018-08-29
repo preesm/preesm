@@ -99,7 +99,8 @@ public class AbcParameters {
     this.balanceLoads = Boolean.valueOf(textParameters.get("balanceLoads"));
 
     WorkflowLogger.getLogger().log(Level.INFO,
-        "The Abc parameters are: simulatorType=looselyTimed/approximatelyTimed/AccuratelyTimed; edgeSchedType=Simple/Switcher; balanceLoads=true/false");
+        "The Abc parameters are: simulatorType=looselyTimed/approximatelyTimed/AccuratelyTimed; "
+            + "edgeSchedType=Simple/Switcher; balanceLoads=true/false");
   }
 
   /**

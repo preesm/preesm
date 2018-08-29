@@ -48,7 +48,8 @@ public class TutorialsTest {
   @Test
   public void testStereo() throws IOException, CoreException {
     final String projectName = "org.ietr.preesm.stereo";
-    final String[] scenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario", "lowMaxDisparity.scenario", "YUV4core.scenario" };
+    final String[] scenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario",
+        "lowMaxDisparity.scenario", "YUV4core.scenario" };
     final String[] workflows = new String[] { "CodegenMemoryScriptsMixedMerged.workflow", "StaticPiMMCodegen.workflow",
         "StaticPiMMCodegenMemoryScripts.workflow" };
 

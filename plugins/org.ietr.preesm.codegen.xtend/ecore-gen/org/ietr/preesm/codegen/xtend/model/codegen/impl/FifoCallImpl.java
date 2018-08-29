@@ -63,7 +63,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation;
  */
 public class FifoCallImpl extends CallImpl implements FifoCall {
   /**
-   * The default value of the '{@link #getOperation() <em>Operation</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The default value of the '{@link #getOperation() <em>Operation</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getOperation()
    * @generated
@@ -72,7 +73,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
   protected static final FifoOperation OPERATION_EDEFAULT = FifoOperation.PUSH;
 
   /**
-   * The cached value of the '{@link #getOperation() <em>Operation</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getOperation() <em>Operation</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getOperation()
    * @generated
@@ -81,7 +83,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
   protected FifoOperation operation = FifoCallImpl.OPERATION_EDEFAULT;
 
   /**
-   * The cached value of the '{@link #getFifoHead() <em>Fifo Head</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getFifoHead() <em>Fifo Head</em>}' reference. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getFifoHead()
    * @generated
@@ -90,7 +93,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
   protected FifoCall fifoHead;
 
   /**
-   * The cached value of the '{@link #getFifoTail() <em>Fifo Tail</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getFifoTail() <em>Fifo Tail</em>}' reference. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getFifoTail()
    * @generated
@@ -99,7 +103,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
   protected FifoCall fifoTail;
 
   /**
-   * The cached value of the '{@link #getHeadBuffer() <em>Head Buffer</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getHeadBuffer() <em>Head Buffer</em>}' reference. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getHeadBuffer()
    * @generated
@@ -108,7 +113,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
   protected Buffer headBuffer;
 
   /**
-   * The cached value of the '{@link #getBodyBuffer() <em>Body Buffer</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getBodyBuffer() <em>Body Buffer</em>}' reference. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getBodyBuffer()
    * @generated
@@ -159,7 +165,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
     final FifoOperation oldOperation = this.operation;
     this.operation = newOperation == null ? FifoCallImpl.OPERATION_EDEFAULT : newOperation;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.FIFO_CALL__OPERATION, oldOperation, this.operation));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.FIFO_CALL__OPERATION, oldOperation,
+          this.operation));
     }
   }
 
@@ -176,7 +183,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
       this.fifoHead = (FifoCall) eResolveProxy(oldFifoHead);
       if (this.fifoHead != oldFifoHead) {
         if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.FIFO_CALL__FIFO_HEAD, oldFifoHead, this.fifoHead));
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.FIFO_CALL__FIFO_HEAD, oldFifoHead,
+              this.fifoHead));
         }
       }
     }
@@ -205,7 +213,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
     final FifoCall oldFifoHead = this.fifoHead;
     this.fifoHead = newFifoHead;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.FIFO_CALL__FIFO_HEAD, oldFifoHead, this.fifoHead));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.FIFO_CALL__FIFO_HEAD, oldFifoHead,
+          this.fifoHead));
     }
   }
 
@@ -222,7 +231,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
       this.fifoTail = (FifoCall) eResolveProxy(oldFifoTail);
       if (this.fifoTail != oldFifoTail) {
         if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.FIFO_CALL__FIFO_TAIL, oldFifoTail, this.fifoTail));
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.FIFO_CALL__FIFO_TAIL, oldFifoTail,
+              this.fifoTail));
         }
       }
     }
@@ -251,7 +261,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
     final FifoCall oldFifoTail = this.fifoTail;
     this.fifoTail = newFifoTail;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.FIFO_CALL__FIFO_TAIL, oldFifoTail, this.fifoTail));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.FIFO_CALL__FIFO_TAIL, oldFifoTail,
+          this.fifoTail));
     }
   }
 
@@ -268,7 +279,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
       this.headBuffer = (Buffer) eResolveProxy(oldHeadBuffer);
       if (this.headBuffer != oldHeadBuffer) {
         if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.FIFO_CALL__HEAD_BUFFER, oldHeadBuffer, this.headBuffer));
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.FIFO_CALL__HEAD_BUFFER,
+              oldHeadBuffer, this.headBuffer));
         }
       }
     }
@@ -297,7 +309,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
     final Buffer oldHeadBuffer = this.headBuffer;
     this.headBuffer = newHeadBuffer;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.FIFO_CALL__HEAD_BUFFER, oldHeadBuffer, this.headBuffer));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.FIFO_CALL__HEAD_BUFFER, oldHeadBuffer,
+          this.headBuffer));
     }
   }
 
@@ -314,7 +327,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
       this.bodyBuffer = (Buffer) eResolveProxy(oldBodyBuffer);
       if (this.bodyBuffer != oldBodyBuffer) {
         if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.FIFO_CALL__BODY_BUFFER, oldBodyBuffer, this.bodyBuffer));
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.FIFO_CALL__BODY_BUFFER,
+              oldBodyBuffer, this.bodyBuffer));
         }
       }
     }
@@ -343,7 +357,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
     final Buffer oldBodyBuffer = this.bodyBuffer;
     this.bodyBuffer = newBodyBuffer;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.FIFO_CALL__BODY_BUFFER, oldBodyBuffer, this.bodyBuffer));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.FIFO_CALL__BODY_BUFFER, oldBodyBuffer,
+          this.bodyBuffer));
     }
   }
 

@@ -58,7 +58,8 @@ class SyncIndex {
   }
 
   /**
-   * Update this with the max index of itself versus the one of the {@link SyncIndex} passed as a paramater for each {@link ComponentInstance}.
+   * Update this with the max index of itself versus the one of the {@link SyncIndex} passed as a paramater for each
+   * {@link ComponentInstance}.
    *
    * @param a
    *          the {@link SyncIndex} used to update the max value

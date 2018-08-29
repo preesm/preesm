@@ -67,12 +67,16 @@ import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getData <em>Data</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getSendStart <em>Send Start</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getSendEnd <em>Send End</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getReceiveStart <em>Receive Start</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getReceiveEnd <em>Receive End</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getReceiveStart <em>Receive
+ * Start</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getReceiveEnd <em>Receive
+ * End</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getId <em>Id</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getNodes <em>Nodes</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getReceiveRelease <em>Receive Release</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getSendReserve <em>Send Reserve</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getReceiveRelease <em>Receive
+ * Release</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getSendReserve <em>Send
+ * Reserve</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#isRedundant <em>Redundant</em>}</li>
  * </ul>
  *
@@ -80,7 +84,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
  */
 public class CommunicationImpl extends CallImpl implements Communication {
   /**
-   * The default value of the '{@link #getDirection() <em>Direction</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The default value of the '{@link #getDirection() <em>Direction</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getDirection()
    * @generated
@@ -89,7 +94,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
   protected static final Direction DIRECTION_EDEFAULT = Direction.SEND;
 
   /**
-   * The cached value of the '{@link #getDirection() <em>Direction</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getDirection() <em>Direction</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getDirection()
    * @generated
@@ -98,7 +104,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
   protected Direction direction = CommunicationImpl.DIRECTION_EDEFAULT;
 
   /**
-   * The default value of the '{@link #getDelimiter() <em>Delimiter</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The default value of the '{@link #getDelimiter() <em>Delimiter</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getDelimiter()
    * @generated
@@ -107,7 +114,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
   protected static final Delimiter DELIMITER_EDEFAULT = Delimiter.START;
 
   /**
-   * The cached value of the '{@link #getDelimiter() <em>Delimiter</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getDelimiter() <em>Delimiter</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getDelimiter()
    * @generated
@@ -125,7 +133,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
   protected Buffer data;
 
   /**
-   * The cached value of the '{@link #getSendStart() <em>Send Start</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getSendStart() <em>Send Start</em>}' reference. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getSendStart()
    * @generated
@@ -134,7 +143,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
   protected Communication sendStart;
 
   /**
-   * The cached value of the '{@link #getSendEnd() <em>Send End</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getSendEnd() <em>Send End</em>}' reference. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getSendEnd()
    * @generated
@@ -143,7 +153,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
   protected Communication sendEnd;
 
   /**
-   * The cached value of the '{@link #getReceiveStart() <em>Receive Start</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getReceiveStart() <em>Receive Start</em>}' reference. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getReceiveStart()
    * @generated
@@ -152,7 +163,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
   protected Communication receiveStart;
 
   /**
-   * The cached value of the '{@link #getReceiveEnd() <em>Receive End</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getReceiveEnd() <em>Receive End</em>}' reference. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getReceiveEnd()
    * @generated
@@ -179,7 +191,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
   protected int id = CommunicationImpl.ID_EDEFAULT;
 
   /**
-   * The cached value of the '{@link #getNodes() <em>Nodes</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getNodes() <em>Nodes</em>}' containment reference list. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
    * 
    * @see #getNodes()
    * @generated
@@ -188,7 +201,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
   protected EList<CommunicationNode> nodes;
 
   /**
-   * The cached value of the '{@link #getReceiveRelease() <em>Receive Release</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getReceiveRelease() <em>Receive Release</em>}' reference. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
    * 
    * @see #getReceiveRelease()
    * @generated
@@ -197,7 +211,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
   protected Communication receiveRelease;
 
   /**
-   * The cached value of the '{@link #getSendReserve() <em>Send Reserve</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getSendReserve() <em>Send Reserve</em>}' reference. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getSendReserve()
    * @generated
@@ -206,7 +221,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
   protected Communication sendReserve;
 
   /**
-   * The default value of the '{@link #isRedundant() <em>Redundant</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The default value of the '{@link #isRedundant() <em>Redundant</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #isRedundant()
    * @generated
@@ -215,7 +231,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
   protected static final boolean REDUNDANT_EDEFAULT = false;
 
   /**
-   * The cached value of the '{@link #isRedundant() <em>Redundant</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #isRedundant() <em>Redundant</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #isRedundant()
    * @generated
@@ -266,7 +283,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
     final Direction oldDirection = this.direction;
     this.direction = newDirection == null ? CommunicationImpl.DIRECTION_EDEFAULT : newDirection;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__DIRECTION, oldDirection, this.direction));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__DIRECTION, oldDirection,
+          this.direction));
     }
   }
 
@@ -293,7 +311,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
     final Delimiter oldDelimiter = this.delimiter;
     this.delimiter = newDelimiter == null ? CommunicationImpl.DELIMITER_EDEFAULT : newDelimiter;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__DELIMITER, oldDelimiter, this.delimiter));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__DELIMITER, oldDelimiter,
+          this.delimiter));
     }
   }
 
@@ -310,7 +329,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
       this.data = (Buffer) eResolveProxy(oldData);
       if (this.data != oldData) {
         if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__DATA, oldData, this.data));
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__DATA, oldData,
+              this.data));
         }
       }
     }
@@ -359,7 +379,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
       this.sendStart = (Communication) eResolveProxy(oldSendStart);
       if (this.sendStart != oldSendStart) {
         if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__SEND_START, oldSendStart, this.sendStart));
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__SEND_START,
+              oldSendStart, this.sendStart));
         }
       }
     }
@@ -388,7 +409,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
     final Communication oldSendStart = this.sendStart;
     this.sendStart = newSendStart;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__SEND_START, oldSendStart, this.sendStart));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__SEND_START, oldSendStart,
+          this.sendStart));
     }
   }
 
@@ -405,7 +427,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
       this.sendEnd = (Communication) eResolveProxy(oldSendEnd);
       if (this.sendEnd != oldSendEnd) {
         if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__SEND_END, oldSendEnd, this.sendEnd));
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__SEND_END, oldSendEnd,
+              this.sendEnd));
         }
       }
     }
@@ -434,7 +457,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
     final Communication oldSendEnd = this.sendEnd;
     this.sendEnd = newSendEnd;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__SEND_END, oldSendEnd, this.sendEnd));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__SEND_END, oldSendEnd,
+          this.sendEnd));
     }
   }
 
@@ -451,7 +475,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
       this.receiveStart = (Communication) eResolveProxy(oldReceiveStart);
       if (this.receiveStart != oldReceiveStart) {
         if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__RECEIVE_START, oldReceiveStart, this.receiveStart));
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__RECEIVE_START,
+              oldReceiveStart, this.receiveStart));
         }
       }
     }
@@ -480,7 +505,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
     final Communication oldReceiveStart = this.receiveStart;
     this.receiveStart = newReceiveStart;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__RECEIVE_START, oldReceiveStart, this.receiveStart));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__RECEIVE_START,
+          oldReceiveStart, this.receiveStart));
     }
   }
 
@@ -497,7 +523,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
       this.receiveEnd = (Communication) eResolveProxy(oldReceiveEnd);
       if (this.receiveEnd != oldReceiveEnd) {
         if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__RECEIVE_END, oldReceiveEnd, this.receiveEnd));
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__RECEIVE_END,
+              oldReceiveEnd, this.receiveEnd));
         }
       }
     }
@@ -526,7 +553,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
     final Communication oldReceiveEnd = this.receiveEnd;
     this.receiveEnd = newReceiveEnd;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__RECEIVE_END, oldReceiveEnd, this.receiveEnd));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__RECEIVE_END, oldReceiveEnd,
+          this.receiveEnd));
     }
   }
 
@@ -584,7 +612,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
       this.receiveRelease = (Communication) eResolveProxy(oldReceiveRelease);
       if (this.receiveRelease != oldReceiveRelease) {
         if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__RECEIVE_RELEASE, oldReceiveRelease, this.receiveRelease));
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__RECEIVE_RELEASE,
+              oldReceiveRelease, this.receiveRelease));
         }
       }
     }
@@ -613,7 +642,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
     final Communication oldReceiveRelease = this.receiveRelease;
     this.receiveRelease = newReceiveRelease;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__RECEIVE_RELEASE, oldReceiveRelease, this.receiveRelease));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__RECEIVE_RELEASE,
+          oldReceiveRelease, this.receiveRelease));
     }
   }
 
@@ -630,7 +660,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
       this.sendReserve = (Communication) eResolveProxy(oldSendReserve);
       if (this.sendReserve != oldSendReserve) {
         if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__SEND_RESERVE, oldSendReserve, this.sendReserve));
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__SEND_RESERVE,
+              oldSendReserve, this.sendReserve));
         }
       }
     }
@@ -659,7 +690,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
     final Communication oldSendReserve = this.sendReserve;
     this.sendReserve = newSendReserve;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__SEND_RESERVE, oldSendReserve, this.sendReserve));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__SEND_RESERVE, oldSendReserve,
+          this.sendReserve));
     }
   }
 
@@ -683,7 +715,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
     final boolean oldRedundant = this.redundant;
     this.redundant = newRedundant;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__REDUNDANT, oldRedundant, this.redundant));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__REDUNDANT, oldRedundant,
+          this.redundant));
     }
   }
 
@@ -719,7 +752,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
    * @generated
    */
   @Override
-  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID,
+      final NotificationChain msgs) {
     switch (featureID) {
       case CodegenPackage.COMMUNICATION__NODES:
         return ((InternalEList<?>) getNodes()).basicRemove(otherEnd, msgs);

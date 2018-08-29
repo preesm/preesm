@@ -93,7 +93,8 @@ public class ImplementationCleaner {
 
     for (final DAGVertex v : ImplementationCleaner.getAllTransfers(vertex)) {
       if (v instanceof TransferVertex) {
-        this.transactionManager.add(new RemoveVertexTransaction((MapperDAGVertex) v, this.implementation, this.orderManager));
+        this.transactionManager
+            .add(new RemoveVertexTransaction((MapperDAGVertex) v, this.implementation, this.orderManager));
 
       }
     }

@@ -195,7 +195,8 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
           this.maxInitIndex = index;
         }
       } catch (final NumberFormatException e) {
-        WorkflowLogger.getLogger().log(Level.SEVERE, "Badly formatted IDL interface, loop, init or init-i accepted : " + arg0.name());
+        WorkflowLogger.getLogger().log(Level.SEVERE,
+            "Badly formatted IDL interface, loop, init or init-i accepted : " + arg0.name());
       }
     } else if (arg0.name().equals("loop")) {
       // loop phase prototype is in the interphase "loop"
@@ -203,7 +204,8 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
       this.finalPrototypes.setLoopPrototype(this.currentPrototype);
       arg0.body.accept(this);
     } else {
-      WorkflowLogger.getLogger().log(Level.WARNING, "Ignored badly formatted IDL interface, loop, init or init-i accepted : " + arg0.name());
+      WorkflowLogger.getLogger().log(Level.WARNING,
+          "Ignored badly formatted IDL interface, loop, init or init-i accepted : " + arg0.name());
     }
   }
 

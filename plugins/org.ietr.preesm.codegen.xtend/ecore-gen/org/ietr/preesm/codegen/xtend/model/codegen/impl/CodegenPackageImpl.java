@@ -305,11 +305,12 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
   private EDataType rangeEDataType = null;
 
   /**
-   * Creates an instance of the model <b>Package</b>, registered with {@link org.eclipse.emf.ecore.EPackage.Registry EPackage.Registry} by the package package
-   * URI value.
+   * Creates an instance of the model <b>Package</b>, registered with {@link org.eclipse.emf.ecore.EPackage.Registry
+   * EPackage.Registry} by the package package URI value.
    * <p>
-   * Note: the correct way to create the package is via the static factory method {@link #init init()}, which also performs initialization of the package, or
-   * returns the registered package, if one already exists. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * Note: the correct way to create the package is via the static factory method {@link #init init()}, which also
+   * performs initialization of the package, or returns the registered package, if one already exists. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
    * 
    * @see org.eclipse.emf.ecore.EPackage.Registry
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#eNS_URI
@@ -331,8 +332,9 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
    * Creates, registers, and initializes the <b>Package</b> for this model, and for any others upon which it depends.
    *
    * <p>
-   * This method is used to initialize {@link CodegenPackage#eINSTANCE} when that field is accessed. Clients should not invoke it directly. Instead, they should
-   * simply access that field to obtain the package. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * This method is used to initialize {@link CodegenPackage#eINSTANCE} when that field is accessed. Clients should not
+   * invoke it directly. Instead, they should simply access that field to obtain the package. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
    * 
    * @see #eNS_URI
    * @see #createPackageContents()
@@ -345,9 +347,10 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
     }
 
     // Obtain or create and register package
-    final CodegenPackageImpl theCodegenPackage = (CodegenPackageImpl) (EPackage.Registry.INSTANCE.get(CodegenPackage.eNS_URI) instanceof CodegenPackageImpl
-        ? EPackage.Registry.INSTANCE.get(CodegenPackage.eNS_URI)
-        : new CodegenPackageImpl());
+    final CodegenPackageImpl theCodegenPackage = (CodegenPackageImpl) (EPackage.Registry.INSTANCE
+        .get(CodegenPackage.eNS_URI) instanceof CodegenPackageImpl
+            ? EPackage.Registry.INSTANCE.get(CodegenPackage.eNS_URI)
+            : new CodegenPackageImpl());
 
     CodegenPackageImpl.isInited = true;
 
@@ -1340,8 +1343,8 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
   private boolean isCreated = false;
 
   /**
-   * Creates the meta-model objects for the package. This method is guarded to have no affect on any invocation but its first. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
+   * Creates the meta-model objects for the package. This method is guarded to have no affect on any invocation but its
+   * first. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @generated
    */
@@ -1478,8 +1481,8 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
   private boolean isInitialized = false;
 
   /**
-   * Complete the initialization of the package and its meta-model. This method is guarded to have no affect on any invocation but its first. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Complete the initialization of the package and its meta-model. This method is guarded to have no affect on any
+   * invocation but its first. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @generated
    */
@@ -1523,277 +1526,330 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
     this.papifyActionEClass.getESuperTypes().add(getVariable());
 
     // Initialize classes and features; add operations and parameters
-    initEClass(this.blockEClass, Block.class, "Block", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getBlock_CodeElts(), getCodeElt(), null, "codeElts", null, 0, -1, Block.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-        !EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getBlock_Declarations(), getVariable(), getVariable_Users(), "declarations", null, 0, -1, Block.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, !EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEAttribute(getBlock_Name(), this.ecorePackage.getEString(), "name", null, 0, 1, Block.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-        EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+    initEClass(this.blockEClass, Block.class, "Block", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
+        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getBlock_CodeElts(), getCodeElt(), null, "codeElts", null, 0, -1, Block.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, !EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE,
+        !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
         EPackageImpl.IS_ORDERED);
-    initEReference(getBlock_Definitions(), getVariable(), getVariable_Creator(), "definitions", null, 0, -1, Block.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
+    initEReference(getBlock_Declarations(), getVariable(), getVariable_Users(), "declarations", null, 0, -1,
+        Block.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, !EPackageImpl.IS_CHANGEABLE,
+        !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
+        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEAttribute(getBlock_Name(), this.ecorePackage.getEString(), "name", null, 0, 1, Block.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE,
+        !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getBlock_Definitions(), getVariable(), getVariable_Creator(), "definitions", null, 0, -1,
+        Block.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE,
+        EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
-    initEClass(this.codeEltEClass, CodeElt.class, "CodeElt", EPackageImpl.IS_ABSTRACT, EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEClass(this.codeEltEClass, CodeElt.class, "CodeElt", EPackageImpl.IS_ABSTRACT, EPackageImpl.IS_INTERFACE,
+        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
 
-    initEClass(this.callEClass, Call.class, "Call", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getCall_Parameters(), getVariable(), null, "parameters", null, 0, -1, Call.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-        !EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEAttribute(getCall_Name(), this.ecorePackage.getEString(), "name", null, 1, 1, Call.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-        EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+    initEClass(this.callEClass, Call.class, "Call", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
+        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getCall_Parameters(), getVariable(), null, "parameters", null, 0, -1, Call.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, !EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
+        EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
         EPackageImpl.IS_ORDERED);
-    initEReference(getCall_EReference0(), getCall(), null, "EReference0", null, 0, 1, Call.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-        EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEAttribute(getCall_ParameterDirections(), getPortDirection(), "parameterDirections", null, 0, -1, Call.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, !EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEAttribute(getCall_Name(), this.ecorePackage.getEString(), "name", null, 1, 1, Call.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE,
+        !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getCall_EReference0(), getCall(), null, "EReference0", null, 0, 1, Call.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
+        EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
+    initEAttribute(getCall_ParameterDirections(), getPortDirection(), "parameterDirections", null, 0, -1, Call.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE,
+        !EPackageImpl.IS_ID, !EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
-    EOperation op = addEOperation(this.callEClass, null, "addParameter", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+    EOperation op = addEOperation(this.callEClass, null, "addParameter", 0, 1, EPackageImpl.IS_UNIQUE,
+        EPackageImpl.IS_ORDERED);
     addEParameter(op, getVariable(), "variable", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
     addEParameter(op, getPortDirection(), "direction", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     op = addEOperation(this.callEClass, null, "removeParameter", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
     addEParameter(op, getVariable(), "variable", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
-    initEClass(this.variableEClass, Variable.class, "Variable", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getVariable_Name(), this.ecorePackage.getEString(), "name", null, 1, 1, Variable.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEAttribute(getVariable_Type(), this.ecorePackage.getEString(), "type", null, 1, 1, Variable.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getVariable_Creator(), getBlock(), getBlock_Definitions(), "creator", null, 0, 1, Variable.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getVariable_Users(), getBlock(), getBlock_Declarations(), "users", null, 1, -1, Variable.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, !EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-
-    initEClass(this.bufferEClass, Buffer.class, "Buffer", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getBuffer_Size(), this.ecorePackage.getEInt(), "size", null, 1, 1, Buffer.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-        EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+    initEClass(this.variableEClass, Variable.class, "Variable", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
+        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getVariable_Name(), this.ecorePackage.getEString(), "name", null, 1, 1, Variable.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE,
+        EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEAttribute(getVariable_Type(), this.ecorePackage.getEString(), "type", null, 1, 1, Variable.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE,
+        !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getVariable_Creator(), getBlock(), getBlock_Definitions(), "creator", null, 0, 1, Variable.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
+        !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
         EPackageImpl.IS_ORDERED);
-    initEReference(getBuffer_Childrens(), getSubBuffer(), getSubBuffer_Container(), "childrens", null, 0, -1, Buffer.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
+    initEReference(getVariable_Users(), getBlock(), getBlock_Declarations(), "users", null, 1, -1, Variable.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, !EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
+        EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
+
+    initEClass(this.bufferEClass, Buffer.class, "Buffer", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
+        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getBuffer_Size(), this.ecorePackage.getEInt(), "size", null, 1, 1, Buffer.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE,
+        !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getBuffer_Childrens(), getSubBuffer(), getSubBuffer_Container(), "childrens", null, 0, -1,
+        Buffer.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE,
+        !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEAttribute(getBuffer_TypeSize(), this.ecorePackage.getEInt(), "typeSize", null, 1, 1, Buffer.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEAttribute(getBuffer_TypeSize(), this.ecorePackage.getEInt(), "typeSize", null, 1, 1, Buffer.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE,
+        !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
     final EGenericType g1 = createEGenericType(this.ecorePackage.getEEList());
     final EGenericType g2 = createEGenericType(getrange());
     g1.getETypeArguments().add(g2);
-    initEAttribute(getBuffer_MergedRange(), g1, "mergedRange", null, 0, 1, Buffer.class, EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-        EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
-        EPackageImpl.IS_ORDERED);
-    initEAttribute(getBuffer_Local(), this.ecorePackage.getEBoolean(), "local", "false", 0, 1, Buffer.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-
-    initEClass(this.subBufferEClass, SubBuffer.class, "SubBuffer", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getSubBuffer_Container(), getBuffer(), getBuffer_Childrens(), "container", null, 1, 1, SubBuffer.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
+    initEAttribute(getBuffer_MergedRange(), g1, "mergedRange", null, 0, 1, Buffer.class, EPackageImpl.IS_TRANSIENT,
+        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEAttribute(getSubBuffer_Offset(), this.ecorePackage.getEInt(), "offset", null, 1, 1, SubBuffer.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEAttribute(getBuffer_Local(), this.ecorePackage.getEBoolean(), "local", "false", 0, 1, Buffer.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE,
+        !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+
+    initEClass(this.subBufferEClass, SubBuffer.class, "SubBuffer", !EPackageImpl.IS_ABSTRACT,
+        !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getSubBuffer_Container(), getBuffer(), getBuffer_Childrens(), "container", null, 1, 1,
+        SubBuffer.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE,
+        !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
+        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEAttribute(getSubBuffer_Offset(), this.ecorePackage.getEInt(), "offset", null, 1, 1, SubBuffer.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE,
+        !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
     initEClass(this.constantEClass, Constant.class, "Constant", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getConstant_Value(), this.ecorePackage.getELong(), "value", null, 1, 1, Constant.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEAttribute(getConstant_Value(), this.ecorePackage.getELong(), "value", null, 1, 1, Constant.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE,
+        !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
-    initEClass(this.functionCallEClass, FunctionCall.class, "FunctionCall", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getFunctionCall_ActorName(), this.ecorePackage.getEString(), "actorName", null, 1, 1, FunctionCall.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-
-    initEClass(this.communicationEClass, Communication.class, "Communication", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getCommunication_Direction(), getDirection(), "direction", null, 1, 1, Communication.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEAttribute(getCommunication_Delimiter(), getDelimiter(), "delimiter", null, 1, 1, Communication.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getCommunication_Data(), getBuffer(), null, "data", null, 1, 1, Communication.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-        EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getCommunication_SendStart(), getCommunication(), null, "sendStart", null, 0, 1, Communication.class, EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getCommunication_SendEnd(), getCommunication(), null, "sendEnd", null, 0, 1, Communication.class, EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getCommunication_ReceiveStart(), getCommunication(), null, "receiveStart", null, 0, 1, Communication.class, EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getCommunication_ReceiveEnd(), getCommunication(), null, "receiveEnd", null, 0, 1, Communication.class, EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEAttribute(getCommunication_Id(), this.ecorePackage.getEInt(), "id", null, 1, 1, Communication.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getCommunication_Nodes(), getCommunicationNode(), null, "nodes", null, 1, -1, Communication.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getCommunication_ReceiveRelease(), getCommunication(), null, "receiveRelease", null, 0, 1, Communication.class, EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getCommunication_SendReserve(), getCommunication(), null, "sendReserve", null, 0, 1, Communication.class, EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEAttribute(getCommunication_Redundant(), this.ecorePackage.getEBoolean(), "redundant", "false", 0, 1, Communication.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-
-    addEOperation(this.communicationEClass, getCoreBlock(), "getCoreContainer", 1, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
-
-    initEClass(this.coreBlockEClass, CoreBlock.class, "CoreBlock", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getCoreBlock_LoopBlock(), getLoopBlock(), null, "loopBlock", null, 1, 1, CoreBlock.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getCoreBlock_InitBlock(), getCallBlock(), null, "initBlock", null, 1, 1, CoreBlock.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEAttribute(getCoreBlock_CoreType(), this.ecorePackage.getEString(), "coreType", null, 1, 1, CoreBlock.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEAttribute(getCoreBlock_CoreID(), this.ecorePackage.getEInt(), "coreID", null, 1, 1, CoreBlock.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_ID, !EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, !EPackageImpl.IS_ORDERED);
-
-    initEClass(this.actorBlockEClass, ActorBlock.class, "ActorBlock", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getActorBlock_LoopBlock(), getLoopBlock(), null, "loopBlock", null, 1, 1, ActorBlock.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getActorBlock_InitBlock(), getCallBlock(), null, "initBlock", null, 1, 1, ActorBlock.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-
-    initEClass(this.loopBlockEClass, LoopBlock.class, "LoopBlock", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-
-    initEClass(this.actorCallEClass, ActorCall.class, "ActorCall", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-
-    initEClass(this.callBlockEClass, CallBlock.class, "CallBlock", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-
-    initEClass(this.specialCallEClass, SpecialCall.class, "SpecialCall", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getSpecialCall_Type(), getSpecialType(), "type", null, 1, 1, SpecialCall.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-        EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+    initEClass(this.functionCallEClass, FunctionCall.class, "FunctionCall", !EPackageImpl.IS_ABSTRACT,
+        !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getFunctionCall_ActorName(), this.ecorePackage.getEString(), "actorName", null, 1, 1,
+        FunctionCall.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE,
+        !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
         EPackageImpl.IS_ORDERED);
-    initEReference(getSpecialCall_InputBuffers(), getBuffer(), null, "inputBuffers", null, 1, -1, SpecialCall.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, !EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
+
+    initEClass(this.communicationEClass, Communication.class, "Communication", !EPackageImpl.IS_ABSTRACT,
+        !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getCommunication_Direction(), getDirection(), "direction", null, 1, 1, Communication.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE,
+        !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEAttribute(getCommunication_Delimiter(), getDelimiter(), "delimiter", null, 1, 1, Communication.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE,
+        !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getCommunication_Data(), getBuffer(), null, "data", null, 1, 1, Communication.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
+        EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
+    initEReference(getCommunication_SendStart(), getCommunication(), null, "sendStart", null, 0, 1, Communication.class,
+        EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
+        EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
+    initEReference(getCommunication_SendEnd(), getCommunication(), null, "sendEnd", null, 0, 1, Communication.class,
+        EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
+        EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
+    initEReference(getCommunication_ReceiveStart(), getCommunication(), null, "receiveStart", null, 0, 1,
+        Communication.class, EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE,
+        !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getSpecialCall_OutputBuffers(), getBuffer(), null, "outputBuffers", null, 1, -1, SpecialCall.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, !EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
+    initEReference(getCommunication_ReceiveEnd(), getCommunication(), null, "receiveEnd", null, 0, 1,
+        Communication.class, EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE,
+        !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEAttribute(getCommunication_Id(), this.ecorePackage.getEInt(), "id", null, 1, 1, Communication.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE,
+        !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getCommunication_Nodes(), getCommunicationNode(), null, "nodes", null, 1, -1, Communication.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE,
+        !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
+    initEReference(getCommunication_ReceiveRelease(), getCommunication(), null, "receiveRelease", null, 0, 1,
+        Communication.class, EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE,
+        !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
+        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getCommunication_SendReserve(), getCommunication(), null, "sendReserve", null, 0, 1,
+        Communication.class, EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE,
+        !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
+        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEAttribute(getCommunication_Redundant(), this.ecorePackage.getEBoolean(), "redundant", "false", 0, 1,
+        Communication.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE,
+        !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
 
-    addEOperation(this.specialCallEClass, this.ecorePackage.getEBoolean(), "isFork", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+    addEOperation(this.communicationEClass, getCoreBlock(), "getCoreContainer", 1, 1, EPackageImpl.IS_UNIQUE,
+        EPackageImpl.IS_ORDERED);
 
-    addEOperation(this.specialCallEClass, this.ecorePackage.getEBoolean(), "isJoin", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+    initEClass(this.coreBlockEClass, CoreBlock.class, "CoreBlock", !EPackageImpl.IS_ABSTRACT,
+        !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getCoreBlock_LoopBlock(), getLoopBlock(), null, "loopBlock", null, 1, 1, CoreBlock.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
+        EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
+    initEReference(getCoreBlock_InitBlock(), getCallBlock(), null, "initBlock", null, 1, 1, CoreBlock.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
+        EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
+    initEAttribute(getCoreBlock_CoreType(), this.ecorePackage.getEString(), "coreType", null, 1, 1, CoreBlock.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE,
+        !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEAttribute(getCoreBlock_CoreID(), this.ecorePackage.getEInt(), "coreID", null, 1, 1, CoreBlock.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE,
+        EPackageImpl.IS_ID, !EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, !EPackageImpl.IS_ORDERED);
 
-    addEOperation(this.specialCallEClass, this.ecorePackage.getEBoolean(), "isBroadcast", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+    initEClass(this.actorBlockEClass, ActorBlock.class, "ActorBlock", !EPackageImpl.IS_ABSTRACT,
+        !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getActorBlock_LoopBlock(), getLoopBlock(), null, "loopBlock", null, 1, 1, ActorBlock.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
+        EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
+    initEReference(getActorBlock_InitBlock(), getCallBlock(), null, "initBlock", null, 1, 1, ActorBlock.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
+        EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
 
-    addEOperation(this.specialCallEClass, this.ecorePackage.getEBoolean(), "isRoundBuffer", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+    initEClass(this.loopBlockEClass, LoopBlock.class, "LoopBlock", !EPackageImpl.IS_ABSTRACT,
+        !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
 
-    op = addEOperation(this.specialCallEClass, null, "addInputBuffer", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+    initEClass(this.actorCallEClass, ActorCall.class, "ActorCall", !EPackageImpl.IS_ABSTRACT,
+        !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+
+    initEClass(this.callBlockEClass, CallBlock.class, "CallBlock", !EPackageImpl.IS_ABSTRACT,
+        !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+
+    initEClass(this.specialCallEClass, SpecialCall.class, "SpecialCall", !EPackageImpl.IS_ABSTRACT,
+        !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getSpecialCall_Type(), getSpecialType(), "type", null, 1, 1, SpecialCall.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE,
+        !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getSpecialCall_InputBuffers(), getBuffer(), null, "inputBuffers", null, 1, -1, SpecialCall.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, !EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
+        EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
+    initEReference(getSpecialCall_OutputBuffers(), getBuffer(), null, "outputBuffers", null, 1, -1, SpecialCall.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, !EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
+        !EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
+
+    addEOperation(this.specialCallEClass, this.ecorePackage.getEBoolean(), "isFork", 0, 1, EPackageImpl.IS_UNIQUE,
+        EPackageImpl.IS_ORDERED);
+
+    addEOperation(this.specialCallEClass, this.ecorePackage.getEBoolean(), "isJoin", 0, 1, EPackageImpl.IS_UNIQUE,
+        EPackageImpl.IS_ORDERED);
+
+    addEOperation(this.specialCallEClass, this.ecorePackage.getEBoolean(), "isBroadcast", 0, 1, EPackageImpl.IS_UNIQUE,
+        EPackageImpl.IS_ORDERED);
+
+    addEOperation(this.specialCallEClass, this.ecorePackage.getEBoolean(), "isRoundBuffer", 0, 1,
+        EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
+    op = addEOperation(this.specialCallEClass, null, "addInputBuffer", 0, 1, EPackageImpl.IS_UNIQUE,
+        EPackageImpl.IS_ORDERED);
     addEParameter(op, getBuffer(), "buffer", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
-    op = addEOperation(this.specialCallEClass, null, "addOutputBuffer", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+    op = addEOperation(this.specialCallEClass, null, "addOutputBuffer", 0, 1, EPackageImpl.IS_UNIQUE,
+        EPackageImpl.IS_ORDERED);
     addEParameter(op, getBuffer(), "buffer", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
-    op = addEOperation(this.specialCallEClass, null, "removeInputBuffer", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+    op = addEOperation(this.specialCallEClass, null, "removeInputBuffer", 0, 1, EPackageImpl.IS_UNIQUE,
+        EPackageImpl.IS_ORDERED);
     addEParameter(op, getBuffer(), "buffer", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
-    op = addEOperation(this.specialCallEClass, null, "removeOutputBuffer", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+    op = addEOperation(this.specialCallEClass, null, "removeOutputBuffer", 0, 1, EPackageImpl.IS_UNIQUE,
+        EPackageImpl.IS_ORDERED);
     addEParameter(op, getBuffer(), "buffer", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
 
     initEClass(this.fifoCallEClass, FifoCall.class, "FifoCall", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getFifoCall_Operation(), getFifoOperation(), "operation", null, 1, 1, FifoCall.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-        EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+    initEAttribute(getFifoCall_Operation(), getFifoOperation(), "operation", null, 1, 1, FifoCall.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE,
+        !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getFifoCall_FifoHead(), getFifoCall(), null, "fifoHead", null, 0, 1, FifoCall.class,
+        EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
+        EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
         EPackageImpl.IS_ORDERED);
-    initEReference(getFifoCall_FifoHead(), getFifoCall(), null, "fifoHead", null, 0, 1, FifoCall.class, EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-        EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getFifoCall_FifoTail(), getFifoCall(), null, "fifoTail", null, 0, 1, FifoCall.class, EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-        EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getFifoCall_HeadBuffer(), getBuffer(), null, "headBuffer", null, 0, 1, FifoCall.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-        EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getFifoCall_BodyBuffer(), getBuffer(), null, "bodyBuffer", null, 0, 1, FifoCall.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-        EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEReference(getFifoCall_FifoTail(), getFifoCall(), null, "fifoTail", null, 0, 1, FifoCall.class,
+        EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
+        EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
+    initEReference(getFifoCall_HeadBuffer(), getBuffer(), null, "headBuffer", null, 0, 1, FifoCall.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
+        EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
+    initEReference(getFifoCall_BodyBuffer(), getBuffer(), null, "bodyBuffer", null, 0, 1, FifoCall.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
+        EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
 
-    initEClass(this.commentableEClass, Commentable.class, "Commentable", EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getCommentable_Comment(), this.ecorePackage.getEString(), "comment", null, 0, 1, Commentable.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEClass(this.commentableEClass, Commentable.class, "Commentable", EPackageImpl.IS_ABSTRACT,
+        !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getCommentable_Comment(), this.ecorePackage.getEString(), "comment", null, 0, 1, Commentable.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE,
+        !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
-    initEClass(this.communicationNodeEClass, CommunicationNode.class, "CommunicationNode", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getCommunicationNode_Name(), this.ecorePackage.getEString(), "name", null, 1, 1, CommunicationNode.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEAttribute(getCommunicationNode_Type(), this.ecorePackage.getEString(), "type", null, 1, 1, CommunicationNode.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+    initEClass(this.communicationNodeEClass, CommunicationNode.class, "CommunicationNode", !EPackageImpl.IS_ABSTRACT,
+        !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getCommunicationNode_Name(), this.ecorePackage.getEString(), "name", null, 1, 1,
+        CommunicationNode.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE,
+        !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
+    initEAttribute(getCommunicationNode_Type(), this.ecorePackage.getEString(), "type", null, 1, 1,
+        CommunicationNode.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE,
+        !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
 
-    initEClass(this.sharedMemoryCommunicationEClass, SharedMemoryCommunication.class, "SharedMemoryCommunication", !EPackageImpl.IS_ABSTRACT,
+    initEClass(this.sharedMemoryCommunicationEClass, SharedMemoryCommunication.class, "SharedMemoryCommunication",
+        !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+
+    initEClass(this.constantStringEClass, ConstantString.class, "ConstantString", !EPackageImpl.IS_ABSTRACT,
+        !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getConstantString_Value(), this.ecorePackage.getEString(), "value", null, 1, 1, ConstantString.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE,
+        !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+
+    initEClass(this.nullBufferEClass, NullBuffer.class, "NullBuffer", !EPackageImpl.IS_ABSTRACT,
         !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
 
-    initEClass(this.constantStringEClass, ConstantString.class, "ConstantString", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getConstantString_Value(), this.ecorePackage.getEString(), "value", null, 1, 1, ConstantString.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-
-    initEClass(this.nullBufferEClass, NullBuffer.class, "NullBuffer", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-
-    initEClass(this.finiteLoopBlockEClass, FiniteLoopBlock.class, "FiniteLoopBlock", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getFiniteLoopBlock_NbIter(), this.ecorePackage.getEInt(), "nbIter", null, 1, 1, FiniteLoopBlock.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getFiniteLoopBlock_Iter(), getIntVar(), null, "iter", null, 0, 1, FiniteLoopBlock.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
+    initEClass(this.finiteLoopBlockEClass, FiniteLoopBlock.class, "FiniteLoopBlock", !EPackageImpl.IS_ABSTRACT,
+        !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getFiniteLoopBlock_NbIter(), this.ecorePackage.getEInt(), "nbIter", null, 1, 1,
+        FiniteLoopBlock.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE,
+        !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
+    initEReference(getFiniteLoopBlock_Iter(), getIntVar(), null, "iter", null, 0, 1, FiniteLoopBlock.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
+        EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
+    initEReference(getFiniteLoopBlock_InBuffers(), getBufferIterator(), null, "inBuffers", null, 0, -1,
+        FiniteLoopBlock.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE,
+        !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getFiniteLoopBlock_InBuffers(), getBufferIterator(), null, "inBuffers", null, 0, -1, FiniteLoopBlock.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-        EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getFiniteLoopBlock_OutBuffers(), getBufferIterator(), null, "outBuffers", null, 0, -1, FiniteLoopBlock.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
+    initEReference(getFiniteLoopBlock_OutBuffers(), getBufferIterator(), null, "outBuffers", null, 0, -1,
+        FiniteLoopBlock.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE,
+        !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
         EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
-    initEClass(this.intVarEClass, IntVar.class, "IntVar", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-
-    initEClass(this.bufferIteratorEClass, BufferIterator.class, "BufferIterator", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
+    initEClass(this.intVarEClass, IntVar.class, "IntVar", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getBufferIterator_IterSize(), this.ecorePackage.getEInt(), "iterSize", null, 0, 1, BufferIterator.class, !EPackageImpl.IS_TRANSIENT,
-        !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-    initEReference(getBufferIterator_Iter(), getIntVar(), null, "iter", null, 0, 1, BufferIterator.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-        EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
-        !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
-    initEClass(this.papifyActionEClass, PapifyAction.class, "PapifyAction", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-        EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEClass(this.bufferIteratorEClass, BufferIterator.class, "BufferIterator", !EPackageImpl.IS_ABSTRACT,
+        !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getBufferIterator_IterSize(), this.ecorePackage.getEInt(), "iterSize", null, 0, 1,
+        BufferIterator.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE,
+        !EPackageImpl.IS_UNSETTABLE, !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
+    initEReference(getBufferIterator_Iter(), getIntVar(), null, "iter", null, 0, 1, BufferIterator.class,
+        !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
+        EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
+        EPackageImpl.IS_ORDERED);
+
+    initEClass(this.papifyActionEClass, PapifyAction.class, "PapifyAction", !EPackageImpl.IS_ABSTRACT,
+        !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
 
     // Initialize enums and add enum literals
     initEEnum(this.directionEEnum, Direction.class, "Direction");
@@ -1821,7 +1877,8 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
     addEEnumLiteral(this.portDirectionEEnum, PortDirection.NONE);
 
     // Initialize data types
-    initEDataType(this.rangeEDataType, Range.class, "range", EPackageImpl.IS_SERIALIZABLE, !EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+    initEDataType(this.rangeEDataType, Range.class, "range", EPackageImpl.IS_SERIALIZABLE,
+        !EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
 
     // Create resource
     createResource(CodegenPackage.eNS_URI);

@@ -102,8 +102,9 @@ public class AddInvolvementVertexTransaction extends Transaction {
    * @param orderManager
    *          the order manager
    */
-  public AddInvolvementVertexTransaction(final boolean isSender, final MapperDAGEdge edge, final MapperDAG implementation, final AbstractRouteStep step,
-      final long involvementTime, final OrderManager orderManager) {
+  public AddInvolvementVertexTransaction(final boolean isSender, final MapperDAGEdge edge,
+      final MapperDAG implementation, final AbstractRouteStep step, final long involvementTime,
+      final OrderManager orderManager) {
     super();
     this.isSender = isSender;
     this.edge = edge;

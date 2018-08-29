@@ -81,9 +81,10 @@ public abstract class AbstractMemoryScriptTask extends AbstractTaskImplementatio
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> param = new LinkedHashMap<>();
-    param.put(AbstractMemoryScriptTask.PARAM_VERBOSE, "? C {" + AbstractMemoryScriptTask.VALUE_TRUE + ", " + AbstractMemoryScriptTask.VALUE_FALSE + "}");
-    param.put(AbstractMemoryScriptTask.PARAM_CHECK, "? C {" + AbstractMemoryScriptTask.VALUE_CHECK_NONE + ", " + AbstractMemoryScriptTask.VALUE_CHECK_FAST
-        + ", " + AbstractMemoryScriptTask.VALUE_CHECK_THOROUGH + "}");
+    param.put(AbstractMemoryScriptTask.PARAM_VERBOSE,
+        "? C {" + AbstractMemoryScriptTask.VALUE_TRUE + ", " + AbstractMemoryScriptTask.VALUE_FALSE + "}");
+    param.put(AbstractMemoryScriptTask.PARAM_CHECK, "? C {" + AbstractMemoryScriptTask.VALUE_CHECK_NONE + ", "
+        + AbstractMemoryScriptTask.VALUE_CHECK_FAST + ", " + AbstractMemoryScriptTask.VALUE_CHECK_THOROUGH + "}");
     param.put(AbstractMemoryAllocatorTask.PARAM_ALIGNMENT, AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
     param.put(AbstractMemoryScriptTask.PARAM_LOG, AbstractMemoryScriptTask.VALUE_LOG);
 

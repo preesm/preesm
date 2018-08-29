@@ -134,7 +134,8 @@ public class TopologicalTaskSched extends AbstractTaskSched {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#insertVertex(org.ietr.preesm.mapper .model.MapperDAGVertex)
+   * @see org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#insertVertex(org.ietr.preesm.mapper
+   * .model.MapperDAGVertex)
    */
   @Override
   public void insertVertex(final MapperDAGVertex vertex) {

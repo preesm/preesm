@@ -123,7 +123,8 @@ public class PapiEvent {
   @Override
   public String toString() {
     final StringBuilder b = new StringBuilder();
-    b.append(String.format("      <event index=\"%d\" name=\"%s\" desc=\"%s\">%n", this.index, this.name, this.description));
+    b.append(
+        String.format("      <event index=\"%d\" name=\"%s\" desc=\"%s\">%n", this.index, this.name, this.description));
     for (final PapiEventModifier modifier : this.modifiers) {
       b.append(modifier.toString());
     }

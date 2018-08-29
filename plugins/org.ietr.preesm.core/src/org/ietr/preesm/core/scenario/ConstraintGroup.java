@@ -79,7 +79,8 @@ public class ConstraintGroup {
   }
 
   /**
-   * When a vertex is added to the constraints, its hierarchical path is added in its properties in order to separate distinct vertices with same name.
+   * When a vertex is added to the constraints, its hierarchical path is added in its properties in order to separate
+   * distinct vertices with same name.
    *
    * @param vertexId
    *          the vertex id

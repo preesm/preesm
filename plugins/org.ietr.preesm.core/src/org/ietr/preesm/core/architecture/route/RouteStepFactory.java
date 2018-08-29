@@ -48,8 +48,8 @@ import org.ietr.dftools.architecture.slam.link.Link;
 
 // TODO: Auto-generated Javadoc
 /**
- * Depending on the architecture nodes separating two operators, generates a suited route step. The route steps represents one type of connection between two
- * connected operators
+ * Depending on the architecture nodes separating two operators, generates a suited route step. The route steps
+ * represents one type of connection between two connected operators
  *
  * @author mpelcat
  */
@@ -80,7 +80,8 @@ public class RouteStepFactory {
    *          the target
    * @return the route step
    */
-  public AbstractRouteStep getRouteStep(final ComponentInstance source, final List<ComponentInstance> nodes, final ComponentInstance target) {
+  public AbstractRouteStep getRouteStep(final ComponentInstance source, final List<ComponentInstance> nodes,
+      final ComponentInstance target) {
     AbstractRouteStep step = null;
 
     final Dma dma = getDma(nodes, source);
@@ -204,7 +205,8 @@ public class RouteStepFactory {
 
     for (final Link i : this.archi.getLinks()) {
       if (i.getSourceComponentInstance().getInstanceName().equals(op.getInstanceName())
-          && i.getDestinationComponentInstance().getInstanceName().equals(cmp.getInstanceName()) && (i instanceof ControlLink)) {
+          && i.getDestinationComponentInstance().getInstanceName().equals(cmp.getInstanceName())
+          && (i instanceof ControlLink)) {
         return true;
       }
     }

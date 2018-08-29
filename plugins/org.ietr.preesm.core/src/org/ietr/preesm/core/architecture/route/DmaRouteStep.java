@@ -68,7 +68,8 @@ public class DmaRouteStep extends MessageRouteStep {
    * @param dma
    *          the dma
    */
-  public DmaRouteStep(final ComponentInstance sender, final List<ComponentInstance> nodes, final ComponentInstance receiver, final Dma dma) {
+  public DmaRouteStep(final ComponentInstance sender, final List<ComponentInstance> nodes,
+      final ComponentInstance receiver, final Dma dma) {
     super(sender, nodes, receiver);
     this.dma = dma;
   }

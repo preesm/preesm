@@ -125,8 +125,8 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
 
-    this.section = managedForm.getToolkit().createSection(managedForm.getForm().getBody(),
-        ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    this.section = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), ExpandableComposite.TWISTIE
+        | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
 
     this.section.setText(Messages.getString("Parameters.title"));
     this.section.setDescription(Messages.getString("Parameters.description"));
@@ -218,7 +218,8 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
                     }
                   }
 
-                  final boolean equalSet = newValues.containsAll(param.getValues()) && param.getValues().containsAll(newValues);
+                  final boolean equalSet = newValues.containsAll(param.getValues())
+                      && param.getValues().containsAll(newValues);
                   if (modified && !equalSet) {
                     param.getValues().clear();
                     param.getValues().addAll(newValues);

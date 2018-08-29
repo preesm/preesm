@@ -54,17 +54,17 @@ public class ParameterValue {
    */
   public enum ParameterType {
 
-    /** The independent. */
-    // No configuration input port
-    INDEPENDENT,
+  /** The independent. */
+  // No configuration input port
+  INDEPENDENT,
 
-    /** The actor dependent. */
-    // Direct dependency from a configuration actor to this parameter
-    ACTOR_DEPENDENT,
-    // Configuration input ports, but none directly dependent from a
-    /** The parameter dependent. */
-    // configuration actor
-    PARAMETER_DEPENDENT
+  /** The actor dependent. */
+  // Direct dependency from a configuration actor to this parameter
+  ACTOR_DEPENDENT,
+  // Configuration input ports, but none directly dependent from a
+  /** The parameter dependent. */
+  // configuration actor
+  PARAMETER_DEPENDENT
   }
 
   /** Parameter for which we keep value(s). */

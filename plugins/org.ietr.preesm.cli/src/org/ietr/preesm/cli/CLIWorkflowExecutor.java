@@ -103,12 +103,14 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
     try {
       final CommandLineParser parser = new PosixParser();
 
-      final String cliOpts = StringUtils.join((Object[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS), " ");
+      final String cliOpts = StringUtils
+          .join((Object[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS), " ");
       CLIWorkflowLogger.traceln("Starting workflows execution");
       CLIWorkflowLogger.traceln("Command line arguments: " + cliOpts);
 
       // parse the command line arguments
-      final CommandLine line = parser.parse(options, (String[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS));
+      final CommandLine line = parser.parse(options,
+          (String[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS));
 
       if (line.getArgs().length != 1) {
         throw new ParseException("Expected project name as first argument", 0);
@@ -137,7 +139,8 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
         // If there is no workflow path specified, execute all the
         // workflows (files with workflowExt) found in workflowDir of
         // the project
-        workflowPaths = getAllFilePathsIn(CLIWorkflowExecutor.workflowExt, this.project, CLIWorkflowExecutor.workflowDir);
+        workflowPaths = getAllFilePathsIn(CLIWorkflowExecutor.workflowExt, this.project,
+            CLIWorkflowExecutor.workflowDir);
       } else {
         // Otherwise, format the workflowPath and execute it
         if (!workflowPath.contains(projectName)) {
@@ -153,7 +156,8 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
         // If there is no scenario path specified, execute all the
         // scenarios (files with scenarioExt) found in scenarioDir of
         // the project
-        scenarioPaths = getAllFilePathsIn(CLIWorkflowExecutor.scenarioExt, this.project, CLIWorkflowExecutor.scenarioDir);
+        scenarioPaths = getAllFilePathsIn(CLIWorkflowExecutor.scenarioExt, this.project,
+            CLIWorkflowExecutor.scenarioDir);
       } else {
         // Otherwise, format the scenarioPath and execute it
         if (!scenarioPath.contains(projectName)) {
@@ -172,7 +176,8 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
         for (final String sPath : scenarioPaths) {
           CLIWorkflowLogger.traceln("Launching execution of workflow: " + wPath + " with scenario: " + sPath);
           if (!execute(wPath, sPath, null)) {
-            throw new WorkflowException("Workflow " + wPath + " did not complete its execution normally with scenario " + sPath + ".");
+            throw new WorkflowException(
+                "Workflow " + wPath + " did not complete its execution normally with scenario " + sPath + ".");
           }
         }
       }
@@ -198,7 +203,8 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
    * @throws CoreException
    *           the core exception
    */
-  private Set<String> getAllFilePathsIn(final String extension, final IProject project, final String folderName) throws CoreException {
+  private Set<String> getAllFilePathsIn(final String extension, final IProject project, final String folderName)
+      throws CoreException {
     final Set<String> filePaths = new LinkedHashSet<>();
     // Get the IFolder
     final IFolder folder = project.getFolder(folderName);

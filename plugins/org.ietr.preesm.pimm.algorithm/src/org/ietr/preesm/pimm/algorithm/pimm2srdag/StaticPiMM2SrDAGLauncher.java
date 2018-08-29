@@ -126,7 +126,8 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     timer.start();
     // This is needed as the memory allocator does not yet handle multiple edges
     // There is a potential TODO for someone with a brave heart here
-    // if you're doing this, remember to check for addAggregate in TAGDag.java and for createEdge in SRVerticesLinker.java.
+    // if you're doing this, remember to check for addAggregate in TAGDag.java and for createEdge in
+    // SRVerticesLinker.java.
     // also in ScriptRunner.xtend, there is a part where the aggregate list is flatten, check that also
     aggregateEdges(result);
     timer.stop();
@@ -142,7 +143,8 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
    */
   private MapperDAG convert2SRDAG() {
     StaticPiMM2SrDAGVisitor visitor;
-    visitor = new StaticPiMM2SrDAGVisitor(new MapperDAG(new MapperEdgeFactory(), this.graph), this.graphBRV, this.scenario);
+    visitor = new StaticPiMM2SrDAGVisitor(new MapperDAG(new MapperEdgeFactory(), this.graph), this.graphBRV,
+        this.scenario);
     final StopWatch timer = new StopWatch();
     timer.start();
     // Do the actual transformation of PiMM to Single Rate DAG
@@ -218,7 +220,8 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
         final DAGEdge firstEdge = allEdges.remove(0);
         for (final DAGEdge extraEdge : allEdges) {
           // Update the weight
-          firstEdge.setWeight(new DAGDefaultEdgePropertyType(firstEdge.getWeight().intValue() + extraEdge.getWeight().intValue()));
+          firstEdge.setWeight(
+              new DAGDefaultEdgePropertyType(firstEdge.getWeight().intValue() + extraEdge.getWeight().intValue()));
           // Add the aggregate edge
           firstEdge.getAggregate().add(extraEdge.getAggregate().get(0));
           toRemove.add(extraEdge);

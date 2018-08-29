@@ -45,8 +45,8 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 // TODO: Auto-generated Javadoc
 /**
  * This implementation of the MemoryAllocator mainly is an implementation example.<br>
- * The allocation performed here simply consists in allocating each edge of the graph into a dedicated memory space (i.e. there will be no re-use). This memory
- * allocation will always give the worst memory allocation possible. <br>
+ * The allocation performed here simply consists in allocating each edge of the graph into a dedicated memory space
+ * (i.e. there will be no re-use). This memory allocation will always give the worst memory allocation possible. <br>
  *
  * @author kdesnos
  *

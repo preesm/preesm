@@ -73,5 +73,6 @@ public interface ISDFCheckStateListener extends SelectionListener, ICheckStateLi
    * @param propertyListener
    *          the property listener
    */
-  public void setTreeViewer(CheckboxTreeViewer treeViewer, PreesmAlgorithmTreeContentProvider contentProvider, IPropertyListener propertyListener);
+  public void setTreeViewer(CheckboxTreeViewer treeViewer, PreesmAlgorithmTreeContentProvider contentProvider,
+      IPropertyListener propertyListener);
 }

@@ -143,7 +143,8 @@ public class GanttPlotter extends ApplicationFrame {
   }
 
   /**
-   * Creates a dataset from a MapperDAGVertex. This dataset is used to prepare display of a Gantt chart with one line per populated SLAM component.
+   * Creates a dataset from a MapperDAGVertex. This dataset is used to prepare display of a Gantt chart with one line
+   * per populated SLAM component.
    *
    * @param ganttData
    *          the gantt data

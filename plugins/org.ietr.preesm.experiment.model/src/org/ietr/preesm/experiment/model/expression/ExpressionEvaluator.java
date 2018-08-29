@@ -69,7 +69,8 @@ public class ExpressionEvaluator {
   }
 
   /**
-   * Take an {@link Expression}, use its eContainers to lookup parameters and finally evaluates the expression to a long value representing the result
+   * Take an {@link Expression}, use its eContainers to lookup parameters and finally evaluates the expression to a long
+   * value representing the result
    *
    */
   public static final long evaluate(final Expression expression) {

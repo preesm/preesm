@@ -48,8 +48,8 @@ import org.ietr.preesm.experiment.model.pimm.Refinement;
 
 // TODO: Auto-generated Javadoc
 /**
- * Class to check different properties of the Refinements of the Actors of a PiGraph. Entry point is the checkRefinements method. Actors with invalid
- * refinements are kept in several sets
+ * Class to check different properties of the Refinements of the Actors of a PiGraph. Entry point is the
+ * checkRefinements method. Actors with invalid refinements are kept in several sets
  *
  * @author cguy
  *

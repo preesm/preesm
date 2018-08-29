@@ -62,8 +62,8 @@ import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 import org.ietr.preesm.utils.files.WorkspaceUtils;
 
 /**
- * Importing constraints in a scenario from an excel file. The existing timings mean that the task can be mapped on the given operator. Task names are rows
- * while operator types are columns.
+ * Importing constraints in a scenario from an excel file. The existing timings mean that the task can be mapped on the
+ * given operator. Task names are rows while operator types are columns.
  *
  * @author mpelcat
  */
@@ -105,7 +105,8 @@ public class ExcelConstraintsParser {
     final IFile file = workspace.getRoot().getFile(path);
 
     this.scenario.getConstraintGroupManager().removeAll();
-    WorkflowLogger.getLogger().log(Level.INFO, "Importing constraints from an excel sheet. Previously defined constraints are discarded.");
+    WorkflowLogger.getLogger().log(Level.INFO,
+        "Importing constraints from an excel sheet. Previously defined constraints are discarded.");
 
     try {
       final Workbook w = Workbook.getWorkbook(file.getContents());
@@ -154,8 +155,8 @@ public class ExcelConstraintsParser {
    * @param missingOperators
    *          the missing operators
    */
-  private void checkOpPiConstraint(final Workbook w, final String operatorId, final Actor vertex, final Set<String> missingVertices,
-      final Set<String> missingOperators) {
+  private void checkOpPiConstraint(final Workbook w, final String operatorId, final Actor vertex,
+      final Set<String> missingVertices, final Set<String> missingOperators) {
     final String vertexName = vertex.getName();
 
     if (!operatorId.isEmpty() && !vertexName.isEmpty()) {
@@ -177,9 +178,11 @@ public class ExcelConstraintsParser {
       } else {
         if ((vertexCell == null) && !missingVertices.contains(vertexName)) {
           if (vertex.getRefinement() != null) {
-            WorkflowLogger.getLogger().log(Level.WARNING, "No line found in excel sheet for hierarchical vertex: " + vertexName);
+            WorkflowLogger.getLogger().log(Level.WARNING,
+                "No line found in excel sheet for hierarchical vertex: " + vertexName);
           } else {
-            WorkflowLogger.getLogger().log(Level.SEVERE, "No line found in excel sheet for atomic vertex: " + vertexName);
+            WorkflowLogger.getLogger().log(Level.SEVERE,
+                "No line found in excel sheet for atomic vertex: " + vertexName);
           }
           missingVertices.add(vertexName);
         } else if ((operatorCell == null) && !missingOperators.contains(operatorId)) {
@@ -204,8 +207,8 @@ public class ExcelConstraintsParser {
    * @param missingOperators
    *          the missing operators
    */
-  private void checkOpIBSDFConstraint(final Workbook w, final String operatorId, final SDFAbstractVertex vertex, final Set<String> missingVertices,
-      final Set<String> missingOperators) {
+  private void checkOpIBSDFConstraint(final Workbook w, final String operatorId, final SDFAbstractVertex vertex,
+      final Set<String> missingVertices, final Set<String> missingOperators) {
     final String vertexName = vertex.getName();
 
     if (!operatorId.isEmpty() && !vertexName.isEmpty()) {
@@ -227,9 +230,11 @@ public class ExcelConstraintsParser {
       } else {
         if ((vertexCell == null) && !missingVertices.contains(vertexName)) {
           if (vertex.getGraphDescription() != null) {
-            WorkflowLogger.getLogger().log(Level.WARNING, "No line found in excel sheet for hierarchical vertex: " + vertexName);
+            WorkflowLogger.getLogger().log(Level.WARNING,
+                "No line found in excel sheet for hierarchical vertex: " + vertexName);
           } else {
-            WorkflowLogger.getLogger().log(Level.SEVERE, "No line found in excel sheet for atomic vertex: " + vertexName);
+            WorkflowLogger.getLogger().log(Level.SEVERE,
+                "No line found in excel sheet for atomic vertex: " + vertexName);
           }
           missingVertices.add(vertexName);
         } else if ((operatorCell == null) && !missingOperators.contains(operatorId)) {

@@ -152,17 +152,22 @@ public class PapiConfigParser {
 
   private void visitModifier(final Node node) {
     final PapiEventModifier papiEventModifier = new PapiEventModifier();
-    final String name = Optional.ofNullable(node.getAttributes().getNamedItem("name")).map(Node::getTextContent).orElse(null);
-    final String desc = Optional.ofNullable(node.getAttributes().getNamedItem("desc")).map(Node::getTextContent).orElse(null);
+    final String name = Optional.ofNullable(node.getAttributes().getNamedItem("name")).map(Node::getTextContent)
+        .orElse(null);
+    final String desc = Optional.ofNullable(node.getAttributes().getNamedItem("desc")).map(Node::getTextContent)
+        .orElse(null);
     papiEventModifier.setName(name);
     papiEventModifier.setDescription(desc);
     this.modifiers.add(papiEventModifier);
   }
 
   private void visitEvent(final Node node) {
-    final int index = Optional.ofNullable(node.getAttributes().getNamedItem("index")).map(Node::getTextContent).map(Integer::valueOf).orElse(null);
-    final String name = Optional.ofNullable(node.getAttributes().getNamedItem("name")).map(Node::getTextContent).orElse(null);
-    final String desc = Optional.ofNullable(node.getAttributes().getNamedItem("desc")).map(Node::getTextContent).orElse(null);
+    final int index = Optional.ofNullable(node.getAttributes().getNamedItem("index")).map(Node::getTextContent)
+        .map(Integer::valueOf).orElse(null);
+    final String name = Optional.ofNullable(node.getAttributes().getNamedItem("name")).map(Node::getTextContent)
+        .orElse(null);
+    final String desc = Optional.ofNullable(node.getAttributes().getNamedItem("desc")).map(Node::getTextContent)
+        .orElse(null);
     this.modifiers = new ArrayList<>();
     visitChildrenSkippingTexts(node, this::switchEventChildren);
     final PapiEvent event = new PapiEvent();
@@ -177,8 +182,8 @@ public class PapiConfigParser {
     this.events = new ArrayList<>();
     visitChildrenSkippingTexts(node, this::switchEventSetChildren);
     final PapiEventSet eventSet = new PapiEventSet();
-    final PapiEventSetType type = Optional.ofNullable(node.getAttributes().getNamedItem("type")).map(Node::getTextContent).map(PapiEventSetType::valueOf)
-        .orElse(null);
+    final PapiEventSetType type = Optional.ofNullable(node.getAttributes().getNamedItem("type"))
+        .map(Node::getTextContent).map(PapiEventSetType::valueOf).orElse(null);
     eventSet.setType(type);
     eventSet.setEvents(this.events);
     this.eventSets.add(eventSet);
@@ -351,9 +356,12 @@ public class PapiConfigParser {
 
   private void visitComponent(final Node componentNode) {
     final NamedNodeMap attributes = componentNode.getAttributes();
-    final String componentID = Optional.ofNullable(attributes.getNamedItem("id")).map(Node::getTextContent).orElse(null);
-    final String componentIndex = Optional.ofNullable(attributes.getNamedItem("index")).map(Node::getTextContent).orElse(null);
-    final String componentType = Optional.ofNullable(attributes.getNamedItem("type")).map(Node::getTextContent).orElse(null);
+    final String componentID = Optional.ofNullable(attributes.getNamedItem("id")).map(Node::getTextContent)
+        .orElse(null);
+    final String componentIndex = Optional.ofNullable(attributes.getNamedItem("index")).map(Node::getTextContent)
+        .orElse(null);
+    final String componentType = Optional.ofNullable(attributes.getNamedItem("type")).map(Node::getTextContent)
+        .orElse(null);
     final PapiComponent component = new PapiComponent(componentID, componentIndex, componentType);
     this.eventSets = new ArrayList<>();
     visitChildrenSkippingTexts(componentNode, this::switchComponentChildren);

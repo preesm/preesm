@@ -40,7 +40,8 @@ import java.util.List;
 
 // TODO: Auto-generated Javadoc
 /**
- * Transactions are used because these actions can be created and stored while going through a graph and then executed altogether afterwards in the right order.
+ * Transactions are used because these actions can be created and stored while going through a graph and then executed
+ * altogether afterwards in the right order.
  *
  * @author mpelcat
  */

@@ -60,14 +60,16 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getParameters <em>Parameters</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getName <em>Name</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getEReference0 <em>EReference0</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getParameterDirections <em>Parameter Directions</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getParameterDirections <em>Parameter
+ * Directions</em>}</li>
  * </ul>
  *
  * @generated
  */
 public abstract class CallImpl extends EObjectImpl implements Call {
   /**
-   * The cached value of the '{@link #getParameters() <em>Parameters</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getParameters() <em>Parameters</em>}' reference list. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getParameters()
    * @generated
@@ -76,7 +78,8 @@ public abstract class CallImpl extends EObjectImpl implements Call {
   protected EList<Variable> parameters;
 
   /**
-   * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
    * 
    * @see #getName()
    * @generated
@@ -94,7 +97,8 @@ public abstract class CallImpl extends EObjectImpl implements Call {
   protected String name = CallImpl.NAME_EDEFAULT;
 
   /**
-   * The cached value of the '{@link #getEReference0() <em>EReference0</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getEReference0() <em>EReference0</em>}' reference. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getEReference0()
    * @generated
@@ -103,7 +107,8 @@ public abstract class CallImpl extends EObjectImpl implements Call {
   protected Call eReference0;
 
   /**
-   * The cached value of the '{@link #getParameterDirections() <em>Parameter Directions</em>}' attribute list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getParameterDirections() <em>Parameter Directions</em>}' attribute list. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
    * 
    * @see #getParameterDirections()
    * @generated
@@ -185,7 +190,8 @@ public abstract class CallImpl extends EObjectImpl implements Call {
       this.eReference0 = (Call) eResolveProxy(oldEReference0);
       if (this.eReference0 != oldEReference0) {
         if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.CALL__EREFERENCE0, oldEReference0, this.eReference0));
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.CALL__EREFERENCE0, oldEReference0,
+              this.eReference0));
         }
       }
     }
@@ -214,7 +220,8 @@ public abstract class CallImpl extends EObjectImpl implements Call {
     final Call oldEReference0 = this.eReference0;
     this.eReference0 = newEReference0;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.CALL__EREFERENCE0, oldEReference0, this.eReference0));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.CALL__EREFERENCE0, oldEReference0,
+          this.eReference0));
     }
   }
 
@@ -227,7 +234,8 @@ public abstract class CallImpl extends EObjectImpl implements Call {
   @Override
   public EList<PortDirection> getParameterDirections() {
     if (this.parameterDirections == null) {
-      this.parameterDirections = new EDataTypeEList<>(PortDirection.class, this, CodegenPackage.CALL__PARAMETER_DIRECTIONS);
+      this.parameterDirections = new EDataTypeEList<>(PortDirection.class, this,
+          CodegenPackage.CALL__PARAMETER_DIRECTIONS);
     }
     return this.parameterDirections;
   }

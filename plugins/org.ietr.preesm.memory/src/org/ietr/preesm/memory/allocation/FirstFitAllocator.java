@@ -47,9 +47,10 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 
 // TODO: Auto-generated Javadoc
 /**
- * In this class, an adapted version of the first fit allocator is implemented. As the lifetime of the memory elements is not known (because of the self-timed
- * assumption), adaptation had to be made. In particular, the order in which the memory elements are considered had to be defined, as in the original algorithm,
- * this order is the scheduling order. The order chosen in this implementation is a random order. Several random orders are tested, and only the
+ * In this class, an adapted version of the first fit allocator is implemented. As the lifetime of the memory elements
+ * is not known (because of the self-timed assumption), adaptation had to be made. In particular, the order in which the
+ * memory elements are considered had to be defined, as in the original algorithm, this order is the scheduling order.
+ * The order chosen in this implementation is a random order. Several random orders are tested, and only the
  * (best/mediane/average/worst)? is kept. Other orders have been implemented : StableSet and LargestFirst.
  *
  * @author kdesnos

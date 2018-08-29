@@ -56,7 +56,8 @@ public interface Commentable extends EObject {
   /**
    * Returns the value of the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Comment</em>' attribute isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Comment</em>' attribute isn't clear, there really should be more of a description
+   * here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -69,8 +70,8 @@ public interface Commentable extends EObject {
   String getComment();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Commentable#getComment <em>Comment</em>}' attribute. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Commentable#getComment <em>Comment</em>}'
+   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @param value
    *          the new value of the '<em>Comment</em>' attribute.

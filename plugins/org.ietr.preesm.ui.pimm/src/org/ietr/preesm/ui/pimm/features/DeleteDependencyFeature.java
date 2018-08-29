@@ -68,7 +68,8 @@ public class DeleteDependencyFeature extends DefaultDeleteFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.ui.features.DefaultDeleteFeature#preDelete(org.eclipse.graphiti.features.context.IDeleteContext)
+   * @see org.eclipse.graphiti.ui.features.DefaultDeleteFeature#preDelete(org.eclipse.graphiti.features.context.
+   * IDeleteContext)
    */
   @Override
   public void preDelete(final IDeleteContext context) {

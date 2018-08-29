@@ -61,7 +61,8 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
 
   /**
-   * Computes (not necessarily optimally) the throughput on the optimal periodic schedule (if it exists) of a given graph under the given scenario.
+   * Computes (not necessarily optimally) the throughput on the optimal periodic schedule (if it exists) of a given
+   * graph under the given scenario.
    *
    * @param inputGraph
    *          the input graph
@@ -194,14 +195,15 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
 
     // Value all arcs of this level with L - K * H
     for (final SDFEdge edge : g.edgeSet()) {
-      if ((edge.getSource() instanceof SDFSourceInterfaceVertex)
-          || ((edge.getSource().getGraphDescription() != null) && (edge.getSource().getGraphDescription() instanceof SDFGraph))) {
+      if ((edge.getSource() instanceof SDFSourceInterfaceVertex) || ((edge.getSource().getGraphDescription() != null)
+          && (edge.getSource().getGraphDescription() instanceof SDFGraph))) {
         L = 0;
       } else {
         L = this.scenar.getTimingManager().getTimingOrDefault(edge.getSource().getId(), "x86").getTime();
       }
 
-      H = ((double) (edge.getDelay().getValue()) + SDFMathD.gcd((double) (edge.getCons().getValue()), (double) (edge.getProd().getValue())))
+      H = ((double) (edge.getDelay().getValue())
+          + SDFMathD.gcd((double) (edge.getCons().getValue()), (double) (edge.getProd().getValue())))
           - (double) (edge.getCons().getValue());
 
       e.put(edge, -(L - (K * H)));
@@ -233,7 +235,8 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
             // Add it to the graph
             g.addVertex(VertexIn);
             // Create the new incoming edge of this node
-            final SDFEdge EdgeToIn = g.addEdge(vertex.getAssociatedEdge(vertex.getInterface(input)).getSource(), VertexIn);
+            final SDFEdge EdgeToIn = g.addEdge(vertex.getAssociatedEdge(vertex.getInterface(input)).getSource(),
+                VertexIn);
             EdgeToIn.setSourceInterface(vertex.getAssociatedEdge(vertex.getInterface(input)).getSourceInterface());
             EdgeToIn.setTargetInterface(inPortIN);
             // Put the correct rates on the new edge
@@ -258,8 +261,10 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
                 g.addVertex(VertexOut);
                 // Create the edge going from the node out if it does not loop
                 if (vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget() != vertex) {
-                  final SDFEdge EdgeFromOut = g.addEdge(VertexOut, vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget());
-                  EdgeFromOut.setTargetInterface(vertex.getAssociatedEdge(vertex.getInterface(output)).getTargetInterface());
+                  final SDFEdge EdgeFromOut = g.addEdge(VertexOut,
+                      vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget());
+                  EdgeFromOut
+                      .setTargetInterface(vertex.getAssociatedEdge(vertex.getInterface(output)).getTargetInterface());
 
                   // Put the correct rates on the new edge
                   E_in = vertex.getAssociatedEdge(vertex.getSinks().get(0)).getProd();
@@ -297,9 +302,13 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
             v.put(VertexIn.getName(), Double.POSITIVE_INFINITY);
             // check if the incoming edge loops on the actor
             if (vertex.getAssociatedEdge(vertex.getInterface(input)).getSource() == vertex) {
-              final SDFEdge loop = g.addEdge(g.getVertex(VertexIn.getAssociatedEdge(VertexIn.getInterface("in")).getSourceInterface().getName()), VertexIn);
+              final SDFEdge loop = g.addEdge(
+                  g.getVertex(VertexIn.getAssociatedEdge(VertexIn.getInterface("in")).getSourceInterface().getName()),
+                  VertexIn);
               loop.setTargetInterface(VertexIn.getInterface("in"));
-              loop.setSourceInterface(g.getVertex(VertexIn.getAssociatedEdge(VertexIn.getInterface("in")).getSourceInterface().getName()).getInterface("out"));
+              loop.setSourceInterface(
+                  g.getVertex(VertexIn.getAssociatedEdge(VertexIn.getInterface("in")).getSourceInterface().getName())
+                      .getInterface("out"));
               e.put(loop, e.get(EdgeToIn));
               e.remove(EdgeToIn);
             }
@@ -342,14 +351,16 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
       // Relaxation
       for (int i = 1; i <= (v.size() - 1); i++) {
         for (final Map.Entry<SDFEdge, Double> entry : e.entrySet()) {
-          if ((v.get(entry.getKey().getSource().getName()) + entry.getValue()) < v.get(entry.getKey().getTarget().getName())) {
+          if ((v.get(entry.getKey().getSource().getName()) + entry.getValue()) < v
+              .get(entry.getKey().getTarget().getName())) {
             v.put(entry.getKey().getTarget().getName(), v.get(entry.getKey().getSource().getName()) + entry.getValue());
           }
         }
       }
       // Check for negative cycle
       for (final Map.Entry<SDFEdge, Double> entry : e.entrySet()) {
-        if ((v.get(entry.getKey().getSource().getName()) + entry.getValue()) < v.get(entry.getKey().getTarget().getName())) {
+        if ((v.get(entry.getKey().getSource().getName()) + entry.getValue()) < v
+            .get(entry.getKey().getTarget().getName())) {
           // Cycle of negative weight found, condition not respected -> graph not alive
           return null;
         }
@@ -374,7 +385,8 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
   }
 
   /**
-   * Checks if the given graph (containing several levels of hierarchy) respects the condition of liveness. Recursive function.
+   * Checks if the given graph (containing several levels of hierarchy) respects the condition of liveness. Recursive
+   * function.
    *
    * @param g
    *          the g
@@ -392,8 +404,10 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
     // Liveness
     // Value all arcs of this level with M0 + gcd - Zj
     for (final SDFEdge edge : g.edgeSet()) {
-      e.put(edge, (((double) (edge.getDelay().getValue()) + SDFMathD.gcd((double) (edge.getCons().getValue()), (double) (edge.getProd().getValue())))
-          - (double) (edge.getCons().getValue())));
+      e.put(edge,
+          (((double) (edge.getDelay().getValue())
+              + SDFMathD.gcd((double) (edge.getCons().getValue()), (double) (edge.getProd().getValue())))
+              - (double) (edge.getCons().getValue())));
     }
 
     // We need a copy of the set of vertices, since we will add vertices in the original set
@@ -422,7 +436,8 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
             // Add it to the graph
             g.addVertex(VertexIn);
             // Create the new incoming edge of this node
-            final SDFEdge EdgeToIn = g.addEdge(vertex.getAssociatedEdge(vertex.getInterface(input)).getSource(), VertexIn);
+            final SDFEdge EdgeToIn = g.addEdge(vertex.getAssociatedEdge(vertex.getInterface(input)).getSource(),
+                VertexIn);
             EdgeToIn.setSourceInterface(vertex.getAssociatedEdge(vertex.getInterface(input)).getSourceInterface());
             EdgeToIn.setTargetInterface(inPortIN);
             // Put it on the list for the BellmanFord algo
@@ -442,8 +457,10 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
                 g.addVertex(VertexOut);
                 // Create the edge going from the node out
                 if (vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget() != vertex) {
-                  final SDFEdge EdgeFromOut = g.addEdge(VertexOut, vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget());
-                  EdgeFromOut.setTargetInterface(vertex.getAssociatedEdge(vertex.getInterface(output)).getTargetInterface());
+                  final SDFEdge EdgeFromOut = g.addEdge(VertexOut,
+                      vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget());
+                  EdgeFromOut
+                      .setTargetInterface(vertex.getAssociatedEdge(vertex.getInterface(output)).getTargetInterface());
                   EdgeFromOut.setSourceInterface(VertexOut.getSink("out"));
                   // Put it on the list for the BellmanFord algo, remove the ancient one
                   e.put(EdgeFromOut, e.get(vertex.getAssociatedEdge(vertex.getInterface(output))));
@@ -469,9 +486,13 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
             v.put(VertexIn.getName(), Double.POSITIVE_INFINITY);
             // check if the incoming edge loops on the actor
             if (vertex.getAssociatedEdge(vertex.getInterface(input)).getSource() == vertex) {
-              final SDFEdge loop = g.addEdge(g.getVertex(VertexIn.getAssociatedEdge(VertexIn.getInterface("in")).getSourceInterface().getName()), VertexIn);
+              final SDFEdge loop = g.addEdge(
+                  g.getVertex(VertexIn.getAssociatedEdge(VertexIn.getInterface("in")).getSourceInterface().getName()),
+                  VertexIn);
               loop.setTargetInterface(VertexIn.getInterface("in"));
-              loop.setSourceInterface(g.getVertex(VertexIn.getAssociatedEdge(VertexIn.getInterface("in")).getSourceInterface().getName()).getInterface("out"));
+              loop.setSourceInterface(
+                  g.getVertex(VertexIn.getAssociatedEdge(VertexIn.getInterface("in")).getSourceInterface().getName())
+                      .getInterface("out"));
               e.put(loop, e.get(EdgeToIn));
               e.remove(EdgeToIn);
             }
@@ -512,14 +533,16 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
       // Relaxation
       for (int i = 0; i < v.size(); i++) {
         for (final Map.Entry<SDFEdge, Double> entry : e.entrySet()) {
-          if ((v.get(entry.getKey().getSource().getName()) + entry.getValue()) < v.get(entry.getKey().getTarget().getName())) {
+          if ((v.get(entry.getKey().getSource().getName()) + entry.getValue()) < v
+              .get(entry.getKey().getTarget().getName())) {
             v.put(entry.getKey().getTarget().getName(), v.get(entry.getKey().getSource().getName()) + entry.getValue());
           }
         }
       }
       // Check for negative cycle
       for (final Map.Entry<SDFEdge, Double> entry : e.entrySet()) {
-        if ((v.get(entry.getKey().getSource().getName()) + entry.getValue()) < v.get(entry.getKey().getTarget().getName())) {
+        if ((v.get(entry.getKey().getSource().getName()) + entry.getValue()) < v
+            .get(entry.getKey().getTarget().getName())) {
           return null;
         }
       }

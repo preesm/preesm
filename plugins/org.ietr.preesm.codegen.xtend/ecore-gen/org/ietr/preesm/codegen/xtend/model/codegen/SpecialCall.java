@@ -73,8 +73,8 @@ public interface SpecialCall extends Call {
   SpecialType getType();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall#getType <em>Type</em>}' attribute. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall#getType <em>Type</em>}'
+   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @param value
    *          the new value of the '<em>Type</em>' attribute.
@@ -88,7 +88,8 @@ public interface SpecialCall extends Call {
    * Returns the value of the '<em><b>Input Buffers</b></em>' reference list. The list contents are of type
    * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer}. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Input Buffers</em>' reference list isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Input Buffers</em>' reference list isn't clear, there really should be more of a
+   * description here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -103,7 +104,8 @@ public interface SpecialCall extends Call {
    * Returns the value of the '<em><b>Output Buffers</b></em>' reference list. The list contents are of type
    * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer}. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Output Buffers</em>' reference list isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Output Buffers</em>' reference list isn't clear, there really should be more of a
+   * description here...
    * </p>
    * <!-- end-user-doc -->
    * 

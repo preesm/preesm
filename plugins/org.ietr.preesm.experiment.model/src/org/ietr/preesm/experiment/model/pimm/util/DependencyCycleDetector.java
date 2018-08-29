@@ -69,8 +69,8 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
   protected ArrayList<Parameter> branch;
 
   /**
-   * Stores all the {@link Parameter} cycles that were detected. Each element of the {@link ArrayList} is an {@link ArrayList} containing {@link Parameter}
-   * forming a cycle. <br>
+   * Stores all the {@link Parameter} cycles that were detected. Each element of the {@link ArrayList} is an
+   * {@link ArrayList} containing {@link Parameter} forming a cycle. <br>
    * <br>
    * <b> Not all cycles are detected by this algorithm ! </b><br>
    * For example, if two cycles have some links in common, only one of them will be detected.
@@ -130,7 +130,8 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#casePiGraph(org.ietr.preesm.experiment.model.pimm.PiGraph)
+   * @see
+   * org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#casePiGraph(org.ietr.preesm.experiment.model.pimm.PiGraph)
    */
   @Override
   public Void casePiGraph(final PiGraph graph) {
@@ -156,7 +157,8 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseParameter(org.ietr.preesm.experiment.model.pimm.Parameter)
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseParameter(org.ietr.preesm.experiment.model.pimm.
+   * Parameter)
    */
   @Override
   public Void caseParameter(final Parameter parameter) {
@@ -201,7 +203,9 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseConfigInputPort(org.ietr.preesm.experiment.model.pimm.ConfigInputPort)
+   * @see
+   * org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseConfigInputPort(org.ietr.preesm.experiment.model.pimm.
+   * ConfigInputPort)
    */
   @Override
   public Void caseConfigInputPort(final ConfigInputPort port) {
@@ -214,8 +218,8 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
   }
 
   /**
-   * Reset the visitor to use it again. This method will clean the lists of already visited {@link Parameter} contained in the {@link DependencyCycleDetector},
-   * and the list of detected cycles.
+   * Reset the visitor to use it again. This method will clean the lists of already visited {@link Parameter} contained
+   * in the {@link DependencyCycleDetector}, and the list of detected cycles.
    */
   public void clear() {
     this.visited.clear();
@@ -234,7 +238,8 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
 
   /**
    * Retrieve the result of the visitor. This method should be called only after the visitor was executed using
-   * {@link DependencyCycleDetector#doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(object)} method on a {@link Parameter} or on a {@link PiGraph}.
+   * {@link DependencyCycleDetector#doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(object)} method on a
+   * {@link Parameter} or on a {@link PiGraph}.
    *
    * @return true if cycles were detected, false else.
    */

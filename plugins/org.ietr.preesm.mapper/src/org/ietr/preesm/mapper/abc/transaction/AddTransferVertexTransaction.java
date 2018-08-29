@@ -145,9 +145,10 @@ public class AddTransferVertexTransaction extends Transaction {
    * @param scheduleVertex
    *          the schedule vertex
    */
-  public AddTransferVertexTransaction(final String transferType, final Transaction precedingTransaction, final IEdgeSched edgeScheduler,
-      final MapperDAGEdge edge, final MapperDAG implementation, final OrderManager orderManager, final int routeIndex, final int nodeIndex,
-      final AbstractRouteStep step, final long transferTime, final ComponentInstance effectiveComponent, final boolean scheduleVertex) {
+  public AddTransferVertexTransaction(final String transferType, final Transaction precedingTransaction,
+      final IEdgeSched edgeScheduler, final MapperDAGEdge edge, final MapperDAG implementation,
+      final OrderManager orderManager, final int routeIndex, final int nodeIndex, final AbstractRouteStep step,
+      final long transferTime, final ComponentInstance effectiveComponent, final boolean scheduleVertex) {
     super();
     this.transferType = transferType;
     this.precedingTransaction = precedingTransaction;
@@ -190,8 +191,8 @@ public class AddTransferVertexTransaction extends Transaction {
       this.currentSource = (MapperDAGVertex) this.edge.getSource();
     }
 
-    final String tvertexID = "__" + this.transferType + this.routeIndex + "_" + this.nodeIndex + " (" + ((MapperDAGVertex) this.edge.getSource()).getName()
-        + "," + currentTarget.getName() + ")";
+    final String tvertexID = "__" + this.transferType + this.routeIndex + "_" + this.nodeIndex + " ("
+        + ((MapperDAGVertex) this.edge.getSource()).getName() + "," + currentTarget.getName() + ")";
 
     if (this.edge instanceof PrecedenceEdge) {
       WorkflowLogger.getLogger().log(Level.INFO, "no transfer vertex corresponding to a schedule edge");
@@ -199,8 +200,8 @@ public class AddTransferVertexTransaction extends Transaction {
     }
 
     if (this.transferTime > 0) {
-      this.tVertex = new TransferVertex(tvertexID, this.implementation, (MapperDAGVertex) this.edge.getSource(), (MapperDAGVertex) this.edge.getTarget(),
-          this.routeIndex, this.nodeIndex);
+      this.tVertex = new TransferVertex(tvertexID, this.implementation, (MapperDAGVertex) this.edge.getSource(),
+          (MapperDAGVertex) this.edge.getTarget(), this.routeIndex, this.nodeIndex);
       this.implementation.getTimings().dedicate(this.tVertex);
       this.implementation.getMappings().dedicate(this.tVertex);
 

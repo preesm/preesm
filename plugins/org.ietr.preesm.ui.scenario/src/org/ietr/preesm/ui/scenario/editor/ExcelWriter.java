@@ -82,6 +82,7 @@ public abstract class ExcelWriter implements SelectionListener {
    * @throws CoreException
    *           the core exception
    */
-  protected abstract void addCells(WritableSheet sheet) throws InvalidModelException, FileNotFoundException, RowsExceededException, CoreException;
+  protected abstract void addCells(WritableSheet sheet)
+      throws InvalidModelException, FileNotFoundException, RowsExceededException, CoreException;
 
 }

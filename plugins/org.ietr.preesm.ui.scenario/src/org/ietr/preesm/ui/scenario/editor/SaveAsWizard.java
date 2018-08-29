@@ -110,7 +110,8 @@ public class SaveAsWizard extends Wizard implements INewWizard {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
+   * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench,
+   * org.eclipse.jface.viewers.IStructuredSelection)
    */
   @Override
   public void init(final IWorkbench workbench, final IStructuredSelection selection) {

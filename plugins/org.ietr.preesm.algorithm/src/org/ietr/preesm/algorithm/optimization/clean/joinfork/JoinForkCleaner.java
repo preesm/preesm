@@ -63,7 +63,8 @@ import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 
 // TODO: Auto-generated Javadoc
 /**
- * Class cleaning the useless join-fork pairs of vertices which may have been introduced by hierarchy flattening and single rate transformation.
+ * Class cleaning the useless join-fork pairs of vertices which may have been introduced by hierarchy flattening and
+ * single rate transformation.
  *
  * @author cguy
  * @author kdesnos
@@ -140,11 +141,12 @@ public class JoinForkCleaner {
   }
 
   /**
-   * Replace an {@link SDFEdge} between a {@link SDFJoinVertex} and an {@link SDFForkVertex} of a single-rate {@link SDFGraph} with equivalent connections so
-   * that the two {@link SDFForkVertex} and {@link SDFJoinVertex} vertices can be removed from the graph.
+   * Replace an {@link SDFEdge} between a {@link SDFJoinVertex} and an {@link SDFForkVertex} of a single-rate
+   * {@link SDFGraph} with equivalent connections so that the two {@link SDFForkVertex} and {@link SDFJoinVertex}
+   * vertices can be removed from the graph.
    *
-   * <b>The code of this method was strongly inspired by the HSDF transformation, if bugs are found here, it is likely they exist also there</b> (sorry for the
-   * poor code design).
+   * <b>The code of this method was strongly inspired by the HSDF transformation, if bugs are found here, it is likely
+   * they exist also there</b> (sorry for the poor code design).
    *
    * @param replacedEdge
    *          the {@link SDFEdge} to replace.
@@ -239,7 +241,8 @@ public class JoinForkCleaner {
 
       // rest is both the production and consumption rate on the
       // created edge.
-      final int rest = Math.min(sourceEdges.get(sourceIndex).getProd().intValue() - sourceProd, targetEdges.get(targetIndex).getCons().intValue() - targetCons);
+      final int rest = Math.min(sourceEdges.get(sourceIndex).getProd().intValue() - sourceProd,
+          targetEdges.get(targetIndex).getCons().intValue() - targetCons);
 
       // This int represent the number of iteration separating the
       // currently indexed source and target (between which an edge is
@@ -256,13 +259,15 @@ public class JoinForkCleaner {
       final boolean explode = rest < sourceEdges.get(sourceIndex).getProd().intValue();
       final boolean implode = rest < targetEdges.get(targetIndex).getCons().intValue();
       if (explode && !(sourceCopies.get(sourceIndex) instanceof SDFForkVertex)
-          && (!(sourceCopies.get(sourceIndex) instanceof SDFBroadcastVertex) || (sourceCopies.get(sourceIndex) instanceof SDFRoundBufferVertex))) {
+          && (!(sourceCopies.get(sourceIndex) instanceof SDFBroadcastVertex)
+              || (sourceCopies.get(sourceIndex) instanceof SDFRoundBufferVertex))) {
 
         // If an explode must be added
         final SDFAbstractVertex explodeVertex = new SDFForkVertex();
         graph.addVertex(explodeVertex);
         final SDFAbstractVertex originVertex = sourceCopies.get(sourceIndex);
-        explodeVertex.setName("explode_" + originVertex.getName() + "_" + sourceEdges.get(sourceIndex).getSourceInterface().getName());
+        explodeVertex.setName(
+            "explode_" + originVertex.getName() + "_" + sourceEdges.get(sourceIndex).getSourceInterface().getName());
 
         // Replace the source vertex by the explode in the
         // sourceCopies list
@@ -282,12 +287,14 @@ public class JoinForkCleaner {
         // Add a target port modifier to the edge
         newEdge.setTargetPortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
       }
-      if (implode && !(targetCopies.get(targetIndex) instanceof SDFJoinVertex) && !(targetCopies.get(targetIndex) instanceof SDFRoundBufferVertex)) {
+      if (implode && !(targetCopies.get(targetIndex) instanceof SDFJoinVertex)
+          && !(targetCopies.get(targetIndex) instanceof SDFRoundBufferVertex)) {
         // If an implode must be added
         final SDFAbstractVertex implodeVertex = new SDFJoinVertex();
         graph.addVertex(implodeVertex);
         final SDFAbstractVertex originVertex = targetCopies.get(targetIndex);
-        implodeVertex.setName("implode_" + originVertex.getName() + "_" + targetEdges.get(targetIndex).getTargetInterface().getName());
+        implodeVertex.setName(
+            "implode_" + originVertex.getName() + "_" + targetEdges.get(targetIndex).getTargetInterface().getName());
 
         // Replace the target vertex by the implode one in the
         // targetCopies List
@@ -318,12 +325,15 @@ public class JoinForkCleaner {
       // output added to existing fork/broadcast) we rename the
       // new output ports. Contrary to ports of join/roundbuffer, no
       // special processing is needed to order the edges.
-      if ((sourceCopies.get(sourceIndex) == originalSourceCopies.get(sourceIndex)) && (!explode
-          || !((originalSourceCopies.get(sourceIndex) instanceof SDFBroadcastVertex) || (originalSourceCopies.get(sourceIndex) instanceof SDFForkVertex)))) {
+      if ((sourceCopies.get(sourceIndex) == originalSourceCopies.get(sourceIndex))
+          && (!explode || !((originalSourceCopies.get(sourceIndex) instanceof SDFBroadcastVertex)
+              || (originalSourceCopies.get(sourceIndex) instanceof SDFForkVertex)))) {
         // If the source does not need new ports
-        if (sourceCopies.get(sourceIndex).getSink(sourceEdges.get(sourceIndex).getSourceInterface().getName()) != null) {
+        if (sourceCopies.get(sourceIndex)
+            .getSink(sourceEdges.get(sourceIndex).getSourceInterface().getName()) != null) {
           // if the source already has the appropriate interface
-          newEdge.setSourceInterface(sourceCopies.get(sourceIndex).getSink(sourceEdges.get(sourceIndex).getSourceInterface().getName()));
+          newEdge.setSourceInterface(
+              sourceCopies.get(sourceIndex).getSink(sourceEdges.get(sourceIndex).getSourceInterface().getName()));
         } else {
           // if the source does not have the interface.
           newEdge.setSourceInterface(sourceEdges.get(sourceIndex).getSourceInterface().clone());
@@ -346,7 +356,8 @@ public class JoinForkCleaner {
           matcher.find();
           final int existingIdx = Integer.decode(matcher.group(SpecialActorPortsIndexer.groupXX));
           final int newIdx = existingIdx + sourceProd;
-          newInterfaceName = sourceInterface.getName().substring(0, matcher.start(SpecialActorPortsIndexer.groupXX)) + newIdx;
+          newInterfaceName = sourceInterface.getName().substring(0, matcher.start(SpecialActorPortsIndexer.groupXX))
+              + newIdx;
         }
 
         sourceInterface.setName(newInterfaceName);
@@ -364,13 +375,16 @@ public class JoinForkCleaner {
 
       // If the target is not an actor with new ports (because of an
       // explosion)
-      if ((targetCopies.get(targetIndex) == originalTargetCopies.get(targetIndex)) && (!implode
-          || !((originalTargetCopies.get(targetIndex) instanceof SDFRoundBufferVertex) || (originalTargetCopies.get(targetIndex) instanceof SDFJoinVertex)))) {
+      if ((targetCopies.get(targetIndex) == originalTargetCopies.get(targetIndex))
+          && (!implode || !((originalTargetCopies.get(targetIndex) instanceof SDFRoundBufferVertex)
+              || (originalTargetCopies.get(targetIndex) instanceof SDFJoinVertex)))) {
 
         // if the target already has the appropriate interface
-        if (targetCopies.get(targetIndex).getSource(targetEdges.get(targetIndex).getTargetInterface().getName()) != null) {
+        if (targetCopies.get(targetIndex)
+            .getSource(targetEdges.get(targetIndex).getTargetInterface().getName()) != null) {
 
-          newEdge.setTargetInterface(targetCopies.get(targetIndex).getSource(targetEdges.get(targetIndex).getTargetInterface().getName()));
+          newEdge.setTargetInterface(
+              targetCopies.get(targetIndex).getSource(targetEdges.get(targetIndex).getTargetInterface().getName()));
         } else {
           // if the target does not have the interface.
           newEdge.setTargetInterface(targetEdges.get(targetIndex).getTargetInterface().clone());
@@ -398,7 +412,8 @@ public class JoinForkCleaner {
           matcher.find();
           final int existingIdx = Integer.decode(matcher.group(SpecialActorPortsIndexer.groupXX));
           final int newIdx = existingIdx + targetCons;
-          newInterfaceName = targetInterface.getName().substring(0, matcher.start(SpecialActorPortsIndexer.groupXX)) + newIdx;
+          newInterfaceName = targetInterface.getName().substring(0, matcher.start(SpecialActorPortsIndexer.groupXX))
+              + newIdx;
         }
 
         targetInterface.setName(newInterfaceName);
@@ -411,14 +426,16 @@ public class JoinForkCleaner {
 
       // Associate the interfaces to the new edge
       if (targetCopies.get(targetIndex) instanceof SDFVertex) {
-        if (((SDFVertex) targetCopies.get(targetIndex)).getSource(targetEdges.get(targetIndex).getTargetInterface().getName()) != null) {
+        if (((SDFVertex) targetCopies.get(targetIndex))
+            .getSource(targetEdges.get(targetIndex).getTargetInterface().getName()) != null) {
           final SDFInterfaceVertex inputVertex = ((SDFVertex) targetCopies.get(targetIndex))
               .getSource(targetEdges.get(targetIndex).getTargetInterface().getName());
           ((SDFVertex) targetCopies.get(targetIndex)).setInterfaceVertexExternalLink(newEdge, inputVertex);
         }
       }
       if (sourceCopies.get(sourceIndex) instanceof SDFVertex) {
-        if (((SDFVertex) sourceCopies.get(sourceIndex)).getSink(sourceEdges.get(sourceIndex).getSourceInterface().getName()) != null) {
+        if (((SDFVertex) sourceCopies.get(sourceIndex))
+            .getSink(sourceEdges.get(sourceIndex).getSourceInterface().getName()) != null) {
           final SDFInterfaceVertex outputVertex = ((SDFVertex) sourceCopies.get(sourceIndex))
               .getSink(sourceEdges.get(sourceIndex).getSourceInterface().getName());
           ((SDFVertex) sourceCopies.get(sourceIndex)).setInterfaceVertexExternalLink(newEdge, outputVertex);
@@ -440,9 +457,9 @@ public class JoinForkCleaner {
         if (nbDelays < addedDelays) {
           // kdesnos: I added this check, but it will most
           // probably never happen
-          throw new RuntimeException(
-              "Insufficient delays on edge " + replacedEdge.getSource().getName() + "." + replacedEdge.getSourceInterface().getName() + "=>"
-                  + replacedEdge.getTarget().getName() + "." + replacedEdge.getTargetInterface().getName() + ". At least " + addedDelays + " delays missing.");
+          throw new RuntimeException("Insufficient delays on edge " + replacedEdge.getSource().getName() + "."
+              + replacedEdge.getSourceInterface().getName() + "=>" + replacedEdge.getTarget().getName() + "."
+              + replacedEdge.getTargetInterface().getName() + ". At least " + addedDelays + " delays missing.");
         }
         newEdge.setDelay(new SDFIntEdgePropertyType(addedDelays));
         nbDelays = nbDelays - addedDelays;
@@ -451,14 +468,18 @@ public class JoinForkCleaner {
       }
 
       // Preserve delays of sourceEdge and targetEdge.
-      if ((sourceEdges.get(sourceIndex).getDelay().intValue() > 0) || (targetEdges.get(targetIndex).getDelay().intValue() > 0)) {
+      if ((sourceEdges.get(sourceIndex).getDelay().intValue() > 0)
+          || (targetEdges.get(targetIndex).getDelay().intValue() > 0)) {
         // Number of delays is a multiplier of production/consumption
         // rate (since the graph is single-rate).
-        final int multSource = sourceEdges.get(sourceIndex).getDelay().intValue() / sourceEdges.get(sourceIndex).getProd().intValue();
-        final int multTarget = targetEdges.get(targetIndex).getDelay().intValue() / targetEdges.get(targetIndex).getCons().intValue();
+        final int multSource = sourceEdges.get(sourceIndex).getDelay().intValue()
+            / sourceEdges.get(sourceIndex).getProd().intValue();
+        final int multTarget = targetEdges.get(targetIndex).getDelay().intValue()
+            / targetEdges.get(targetIndex).getCons().intValue();
 
         // Compute the new number of delays
-        final int nbPreservedDelays = newEdge.getDelay().intValue() + (multSource * newEdge.getProd().intValue()) + (multTarget * newEdge.getProd().intValue());
+        final int nbPreservedDelays = newEdge.getDelay().intValue() + (multSource * newEdge.getProd().intValue())
+            + (multTarget * newEdge.getProd().intValue());
 
         // Add the delays to the newEdge
         newEdge.setDelay(new SDFIntEdgePropertyType(nbPreservedDelays));

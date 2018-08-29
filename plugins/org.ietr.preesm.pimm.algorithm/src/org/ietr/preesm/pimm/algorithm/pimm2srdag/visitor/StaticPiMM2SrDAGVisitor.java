@@ -95,7 +95,8 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
    * @param dag
    *          the dag
    */
-  public StaticPiMM2SrDAGVisitor(final MapperDAG dag, final Map<AbstractVertex, Long> brv, final PreesmScenario scenario) {
+  public StaticPiMM2SrDAGVisitor(final MapperDAG dag, final Map<AbstractVertex, Long> brv,
+      final PreesmScenario scenario) {
     this.result = dag;
     this.brv = brv;
     this.vertexFactory = MapperVertexFactory.getInstance();
@@ -134,7 +135,9 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#caseAbstractActor(org.ietr.preesm.experiment.model.pimm.AbstractActor)
+   * @see
+   * org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#caseAbstractActor(org.ietr.preesm.experiment.model.pimm.
+   * AbstractActor)
    */
   @Override
   public Boolean caseAbstractActor(final AbstractActor actor) {
@@ -178,7 +181,8 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseBroadcastActor(final BroadcastActor actor) {
-    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory
+        .createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Check the good use of the broadcast
@@ -189,8 +193,9 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
       final Expression outPortRateExpression = out.getPortRateExpression();
       final long prod = Long.parseLong(outPortRateExpression.getExpressionString());
       if (prod != cons) {
-        final String msg = "Warning: Broadcast [" + actor.getVertexPath() + "] have different production/consumption: prod(" + Long.toString(prod)
-            + ") != cons(" + Long.toString(cons) + ")";
+        final String msg = "Warning: Broadcast [" + actor.getVertexPath()
+            + "] have different production/consumption: prod(" + Long.toString(prod) + ") != cons("
+            + Long.toString(cons) + ")";
         WorkflowLogger.getLogger().warning(msg);
       }
     }
@@ -494,7 +499,8 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
   public Boolean casePiGraph(final PiGraph graph) {
     // If there is no actor we leave
     if (graph.getActors().isEmpty()) {
-      throw new UnsupportedOperationException("Can not convert an empty graph. Check the refinement for [" + graph.getVertexPath() + "].");
+      throw new UnsupportedOperationException(
+          "Can not convert an empty graph. Check the refinement for [" + graph.getVertexPath() + "].");
     }
 
     // Add SR-Vertices

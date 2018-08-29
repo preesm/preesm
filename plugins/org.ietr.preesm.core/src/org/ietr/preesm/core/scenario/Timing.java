@@ -51,8 +51,8 @@ import org.nfunk.jep.ParseException;
 
 // TODO: Auto-generated Javadoc
 /**
- * A timing links a vertex (either from SDFGraph or from PiGraph) and an operator definition to a time. Ids are used to make the scenario independent from model
- * implementations.
+ * A timing links a vertex (either from SDFGraph or from PiGraph) and an operator definition to a time. Ids are used to
+ * make the scenario independent from model implementations.
  *
  * @author mpelcat
  */
@@ -83,7 +83,8 @@ public class Timing {
   private boolean isEvaluated;
 
   /**
-   * Operator to which the timing is related (i.e., processing element on which the vertex of the graph takes the given time to execute)
+   * Operator to which the timing is related (i.e., processing element on which the vertex of the graph takes the given
+   * time to execute)
    */
   private final String operatorDefinitionId;
 
@@ -157,7 +158,8 @@ public class Timing {
    * @param inputParameters
    *          the input parameters
    */
-  public Timing(final String operatorId, final String vertexId, final String expression, final Set<String> inputParameters) {
+  public Timing(final String operatorId, final String vertexId, final String expression,
+      final Set<String> inputParameters) {
     this(operatorId, vertexId);
     this.stringValue = expression;
     this.isEvaluated = false;
@@ -197,8 +199,8 @@ public class Timing {
   }
 
   /**
-   * The given time is set if it is strictly positive. Otherwise, 1 is set. In every cases, the expression is set as the corresponding string and considered
-   * evaluated
+   * The given time is set if it is strictly positive. Otherwise, 1 is set. In every cases, the expression is set as the
+   * corresponding string and considered evaluated
    *
    * @param time
    *          the new time we want to set
@@ -207,7 +209,8 @@ public class Timing {
     if (time > 0) {
       this.time = time;
     } else {
-      WorkflowLogger.getLogger().log(Level.WARNING, "Trying to set a non strictly positive time for vertex " + this.vertexId);
+      WorkflowLogger.getLogger().log(Level.WARNING,
+          "Trying to set a non strictly positive time for vertex " + this.vertexId);
       this.time = 1;
     }
     this.stringValue = String.valueOf(this.time);
@@ -298,7 +301,8 @@ public class Timing {
   }
 
   /**
-   * Evaluate the timing expression with the given values for parameters. If the evaluation is successful, isEvaluated is set to true
+   * Evaluate the timing expression with the given values for parameters. If the evaluation is successful, isEvaluated
+   * is set to true
    *
    * @param parametersValues
    *          the map of parameters names and associated values with which we want to evaluate the expression

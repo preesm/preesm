@@ -44,7 +44,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 
 /**
- * <!-- begin-user-doc --> An implementation of the model object '<em><b>Buffer Iterator</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>Buffer Iterator</b></em>'. <!-- end-user-doc
+ * -->
  * <p>
  * The following features are implemented:
  * </p>
@@ -57,7 +58,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
  */
 public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator {
   /**
-   * The default value of the '{@link #getIterSize() <em>Iter Size</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The default value of the '{@link #getIterSize() <em>Iter Size</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getIterSize()
    * @generated
@@ -66,7 +68,8 @@ public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator 
   protected static final int ITER_SIZE_EDEFAULT = 0;
 
   /**
-   * The cached value of the '{@link #getIterSize() <em>Iter Size</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getIterSize() <em>Iter Size</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getIterSize()
    * @generated
@@ -122,7 +125,8 @@ public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator 
     final int oldIterSize = this.iterSize;
     this.iterSize = newIterSize;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.BUFFER_ITERATOR__ITER_SIZE, oldIterSize, this.iterSize));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.BUFFER_ITERATOR__ITER_SIZE, oldIterSize,
+          this.iterSize));
     }
   }
 
@@ -138,7 +142,8 @@ public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator 
       this.iter = (IntVar) eResolveProxy(oldIter);
       if (this.iter != oldIter) {
         if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.BUFFER_ITERATOR__ITER, oldIter, this.iter));
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.BUFFER_ITERATOR__ITER, oldIter,
+              this.iter));
         }
       }
     }

@@ -65,7 +65,8 @@ public class SDF3ExporterEngine {
    * @param path
    *          the path
    */
-  public void printSDFGraphToSDF3File(final SDFGraph sdf, final PreesmScenario scenario, final Design architecture, IPath path) {
+  public void printSDFGraphToSDF3File(final SDFGraph sdf, final PreesmScenario scenario, final Design architecture,
+      IPath path) {
     // Create the exporter
     final Sdf3Printer exporter = new Sdf3Printer(sdf, scenario, architecture);
 

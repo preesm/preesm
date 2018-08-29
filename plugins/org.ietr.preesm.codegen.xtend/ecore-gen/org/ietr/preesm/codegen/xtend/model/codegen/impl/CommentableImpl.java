@@ -57,7 +57,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Commentable;
  */
 public abstract class CommentableImpl extends EObjectImpl implements Commentable {
   /**
-   * The default value of the '{@link #getComment() <em>Comment</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The default value of the '{@link #getComment() <em>Comment</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getComment()
    * @generated
@@ -66,7 +67,8 @@ public abstract class CommentableImpl extends EObjectImpl implements Commentable
   protected static final String COMMENT_EDEFAULT = null;
 
   /**
-   * The cached value of the '{@link #getComment() <em>Comment</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getComment() <em>Comment</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getComment()
    * @generated
@@ -117,7 +119,8 @@ public abstract class CommentableImpl extends EObjectImpl implements Commentable
     final String oldComment = this.comment;
     this.comment = newComment;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMENTABLE__COMMENT, oldComment, this.comment));
+      eNotify(
+          new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMENTABLE__COMMENT, oldComment, this.comment));
     }
   }
 
@@ -190,7 +193,8 @@ public abstract class CommentableImpl extends EObjectImpl implements Commentable
   public boolean eIsSet(final int featureID) {
     switch (featureID) {
       case CodegenPackage.COMMENTABLE__COMMENT:
-        return CommentableImpl.COMMENT_EDEFAULT == null ? this.comment != null : !CommentableImpl.COMMENT_EDEFAULT.equals(this.comment);
+        return CommentableImpl.COMMENT_EDEFAULT == null ? this.comment != null
+            : !CommentableImpl.COMMENT_EDEFAULT.equals(this.comment);
     }
     return super.eIsSet(featureID);
   }

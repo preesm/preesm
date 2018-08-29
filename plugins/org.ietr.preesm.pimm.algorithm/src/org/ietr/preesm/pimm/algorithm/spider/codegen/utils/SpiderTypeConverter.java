@@ -53,12 +53,12 @@ public final class SpiderTypeConverter {
    */
   public enum PiSDFType {
 
-    /** The pisdf type body. */
-    PISDF_TYPE_BODY,
-    /** The pisdf type config. */
-    PISDF_TYPE_CONFIG,
-    /** The pisdf type if. */
-    PISDF_TYPE_IF
+  /** The pisdf type body. */
+  PISDF_TYPE_BODY,
+  /** The pisdf type config. */
+  PISDF_TYPE_CONFIG,
+  /** The pisdf type if. */
+  PISDF_TYPE_IF
   }
 
   /**

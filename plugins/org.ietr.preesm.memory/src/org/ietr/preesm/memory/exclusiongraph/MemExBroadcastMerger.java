@@ -62,9 +62,11 @@ import org.ietr.preesm.memory.script.MemoryScriptEngine;
 // TODO: Auto-generated Javadoc
 /**
  * The purpose of this class is to process a {@link MemoryExclusionGraph MemEx} in order to: <br>
- * - Merge the {@link MemoryExclusionVertex memory objects} corresponding to input/output edges of a {@link SDFBroadcastVertex} on condition that the output
- * edges are only read by their target {@link SDFAbstractVertex}.<br>
- * - Bring back (unmerge) the memory objects after a memory allocation of the {@link MemoryExclusionGraph MemEx} has been performed.
+ * - Merge the {@link MemoryExclusionVertex memory objects} corresponding to input/output edges of a
+ * {@link SDFBroadcastVertex} on condition that the output edges are only read by their target
+ * {@link SDFAbstractVertex}.<br>
+ * - Bring back (unmerge) the memory objects after a memory allocation of the {@link MemoryExclusionGraph MemEx} has
+ * been performed.
  *
  * @author kdesnos
  *
@@ -90,8 +92,8 @@ public class MemExBroadcastMerger {
   private final DirectedAcyclicGraph dag;
 
   /**
-   * This {@link Map} associates a {@link MemoryExclusionVertex memory object} to {@link Set} of {@link MemoryExclusionVertex memory objects} that were merged
-   * during a call to {@link #merge()}.
+   * This {@link Map} associates a {@link MemoryExclusionVertex memory object} to {@link Set} of
+   * {@link MemoryExclusionVertex memory objects} that were merged during a call to {@link #merge()}.
    */
   private final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> mergedObjects;
 
@@ -108,15 +110,17 @@ public class MemExBroadcastMerger {
   }
 
   /**
-   * Merge the {@link MemoryExclusionVertex memory objects} corresponding to input/output edges of a {@link SDFBroadcastVertex} on condition that the output
-   * edges are only read by their target {@link SDFAbstractVertex}.
+   * Merge the {@link MemoryExclusionVertex memory objects} corresponding to input/output edges of a
+   * {@link SDFBroadcastVertex} on condition that the output edges are only read by their target
+   * {@link SDFAbstractVertex}.
    *
    * @return the int
    */
   public int merge() {
     // Create a property in the memex to store a list of merged vertices
     // This list is used by some allocator (eg. scheduling order alloc).
-    this.memEx.setPropertyValue(MemExBroadcastMerger.MERGED_OBJECT_PROPERTY, new LinkedHashSet<MemoryExclusionVertex>());
+    this.memEx.setPropertyValue(MemExBroadcastMerger.MERGED_OBJECT_PROPERTY,
+        new LinkedHashSet<MemoryExclusionVertex>());
 
     // Retrieve the dag vertices in scheduling order.
     final LinkedHashSet<DAGVertex> dagVertices = new LinkedHashSet<>(this.dag.vertexSet().size());
@@ -153,8 +157,8 @@ public class MemExBroadcastMerger {
   }
 
   /**
-   * This method is responsible for merging the {@link MemoryExclusionVertex memory objects} corresponding to the {@link DAGEdge}s of a broadcast
-   * {@link DAGVertex}.
+   * This method is responsible for merging the {@link MemoryExclusionVertex memory objects} corresponding to the
+   * {@link DAGEdge}s of a broadcast {@link DAGVertex}.
    *
    * @param vert
    *          the Broadcast {@link DAGVertex} whose {@link DAGEdge}s are merged (if possible)
@@ -193,7 +197,8 @@ public class MemExBroadcastMerger {
         // current version
         // we do not consider this case.
         mergeableMemObjects.clear();
-        System.out.println("Broadcast " + vert + " was not merged because all its" + " output do not have a size equal to its input.");
+        System.out.println(
+            "Broadcast " + vert + " was not merged because all its" + " output do not have a size equal to its input.");
         break;
       }
 
@@ -255,8 +260,8 @@ public class MemExBroadcastMerger {
   }
 
   /**
-   * This method is responsible for merging the {@link MemoryExclusionVertex memory objects} corresponding to the {@link DAGEdge}s of a roundbuffer
-   * {@link DAGVertex}.
+   * This method is responsible for merging the {@link MemoryExclusionVertex memory objects} corresponding to the
+   * {@link DAGEdge}s of a roundbuffer {@link DAGVertex}.
    *
    * @param vert
    *          the roundbuffer {@link DAGVertex} whose {@link DAGEdge}s are merged (if possible)
@@ -269,9 +274,11 @@ public class MemExBroadcastMerger {
 
     // Retrieve the last memobject
     final SDFAbstractVertex sdfVertex = vert.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex.class);
-    final Map<Integer, SDFEdge> orderedEdges = (Map<Integer, SDFEdge>) sdfVertex.getPropertyBean().getValue(DAGForkVertex.EDGES_ORDER);
+    final Map<Integer,
+        SDFEdge> orderedEdges = (Map<Integer, SDFEdge>) sdfVertex.getPropertyBean().getValue(DAGForkVertex.EDGES_ORDER);
     final SDFEdge lastEdge = orderedEdges.get(Collections.max(orderedEdges.keySet()));
-    final DAGEdge lastDagEdge = this.dag.getEdge(this.dag.getVertex(lastEdge.getSource().getName()), this.dag.getVertex(lastEdge.getTarget().getName()));
+    final DAGEdge lastDagEdge = this.dag.getEdge(this.dag.getVertex(lastEdge.getSource().getName()),
+        this.dag.getVertex(lastEdge.getTarget().getName()));
     MemoryExclusionVertex lastMemObject = new MemoryExclusionVertex(lastDagEdge);
 
     // In the current version we ONLY check if ALL incoming edges
@@ -289,7 +296,8 @@ public class MemExBroadcastMerger {
         // current version
         // we do not consider this case.
         mergeableMemObjects.clear();
-        System.out.println("Roundbuffer " + vert + " was not merged because all its" + " input do not have a size equal to its input.");
+        System.out.println("Roundbuffer " + vert + " was not merged because all its"
+            + " input do not have a size equal to its input.");
         break;
       }
 
@@ -404,19 +412,22 @@ public class MemExBroadcastMerger {
   }
 
   /**
-   * Bring back (unmerge) the memory objects after a memory allocation of the {@link MemoryExclusionGraph MemEx} has been performed.
+   * Bring back (unmerge) the memory objects after a memory allocation of the {@link MemoryExclusionGraph MemEx} has
+   * been performed.
    */
   @SuppressWarnings("unchecked")
   public void unmerge() {
     // Get the edgeAllocation
-    final Map<DAGEdge, Integer> edgeAllocation = (Map<DAGEdge, Integer>) this.memEx.getPropertyBean().getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
+    final Map<DAGEdge, Integer> edgeAllocation = (Map<DAGEdge, Integer>) this.memEx.getPropertyBean()
+        .getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
 
     // Unmerge the memory objects one by one
     for (final Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry : this.mergedObjects.entrySet()) {
       // Get the unmerged object and it allocation.
       MemoryExclusionVertex unmergedObject = entry.getKey();
       unmergedObject = this.memEx.getVertex(unmergedObject);
-      final Integer offset = unmergedObject.getPropertyBean().getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, Integer.class);
+      final Integer offset = unmergedObject.getPropertyBean().getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
+          Integer.class);
 
       // Scan the unmerged objects
       final Set<MemoryExclusionVertex> unmergedObjects = entry.getValue();

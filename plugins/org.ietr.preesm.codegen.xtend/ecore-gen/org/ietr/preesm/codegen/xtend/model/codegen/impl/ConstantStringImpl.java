@@ -44,7 +44,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString;
 
 // TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Constant String</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Constant String</b></em>'. <!-- end-user-doc
+ * -->
  * <p>
  * The following features are implemented:
  * </p>
@@ -56,7 +57,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString;
  */
 public class ConstantStringImpl extends VariableImpl implements ConstantString {
   /**
-   * The default value of the '{@link #getValue() <em>Value</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The default value of the '{@link #getValue() <em>Value</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
    * 
    * @see #getValue()
    * @generated
@@ -65,7 +67,8 @@ public class ConstantStringImpl extends VariableImpl implements ConstantString {
   protected static final String VALUE_EDEFAULT = null;
 
   /**
-   * The cached value of the '{@link #getValue() <em>Value</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getValue() <em>Value</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
    * 
    * @see #getValue()
    * @generated
@@ -116,7 +119,8 @@ public class ConstantStringImpl extends VariableImpl implements ConstantString {
     final String oldValue = this.value;
     this.value = newValue;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.CONSTANT_STRING__VALUE, oldValue, this.value));
+      eNotify(
+          new ENotificationImpl(this, Notification.SET, CodegenPackage.CONSTANT_STRING__VALUE, oldValue, this.value));
     }
   }
 
@@ -189,7 +193,8 @@ public class ConstantStringImpl extends VariableImpl implements ConstantString {
   public boolean eIsSet(final int featureID) {
     switch (featureID) {
       case CodegenPackage.CONSTANT_STRING__VALUE:
-        return ConstantStringImpl.VALUE_EDEFAULT == null ? this.value != null : !ConstantStringImpl.VALUE_EDEFAULT.equals(this.value);
+        return ConstantStringImpl.VALUE_EDEFAULT == null ? this.value != null
+            : !ConstantStringImpl.VALUE_EDEFAULT.equals(this.value);
     }
     return super.eIsSet(featureID);
   }

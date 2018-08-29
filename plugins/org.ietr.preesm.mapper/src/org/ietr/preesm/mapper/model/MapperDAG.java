@@ -240,7 +240,8 @@ public class MapperDAG extends DirectedAcyclicGraph {
 
       final String sourceName = source.getName();
       final String targetName = target.getName();
-      final MapperDAGEdge newEdge = (MapperDAGEdge) newDAG.addEdge(newDAG.getVertex(sourceName), newDAG.getVertex(targetName));
+      final MapperDAGEdge newEdge = (MapperDAGEdge) newDAG.addEdge(newDAG.getVertex(sourceName),
+          newDAG.getVertex(targetName));
       newEdge.setInit(origEdge.getInit().clone());
       newEdge.setTiming(origEdge.getTiming().clone());
       newEdge.copyProperties(origEdge);
@@ -335,7 +336,8 @@ public class MapperDAG extends DirectedAcyclicGraph {
       currentvertex = (MapperDAGVertex) currentv;
 
       // Special vertices have null info
-      if ((currentvertex.getCorrespondingSDFVertex().getInfo() != null) && currentvertex.getCorrespondingSDFVertex().getInfo().equals(sdfvertex.getInfo())) {
+      if ((currentvertex.getCorrespondingSDFVertex().getInfo() != null)
+          && currentvertex.getCorrespondingSDFVertex().getInfo().equals(sdfvertex.getInfo())) {
         currentset.add(currentvertex);
       }
     }

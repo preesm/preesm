@@ -90,7 +90,8 @@ public class LatencyEvaluationEngine {
     }
 
     this.timer.stop();
-    System.out.println("Minimum Latency of the graph = " + minLatencySingleCore + " computed in " + this.timer.toString());
+    System.out
+        .println("Minimum Latency of the graph = " + minLatencySingleCore + " computed in " + this.timer.toString());
 
     return minLatencySingleCore;
   }
@@ -100,7 +101,8 @@ public class LatencyEvaluationEngine {
    *
    * @return subgraph latency
    */
-  public double getSubgraphMinLatencySinlgeCore(final SDFAbstractVertex hierarchicalActor, final PreesmScenario scenario) {
+  public double getSubgraphMinLatencySinlgeCore(final SDFAbstractVertex hierarchicalActor,
+      final PreesmScenario scenario) {
     // sum l(a)*rv_global(a) -- not the local RV
     double subgraphLatency = 0;
 
@@ -132,7 +134,8 @@ public class LatencyEvaluationEngine {
   }
 
   /**
-   * computes the minimum latency of the IBSDF graph which is equivalent to a multi-core execution with unlimited number of available cores
+   * computes the minimum latency of the IBSDF graph which is equivalent to a multi-core execution with unlimited number
+   * of available cores
    *
    * @return minLatency
    */
@@ -157,7 +160,8 @@ public class LatencyEvaluationEngine {
     // re-time the IBSDF graph
     if (retiming) {
       GraphStructureHelper.retime(graph);
-      System.out.println("Computing the minimum Latency of the graph using the decomposition technique after a retinming phase ...");
+      System.out.println(
+          "Computing the minimum Latency of the graph using the decomposition technique after a retinming phase ...");
     } else {
       System.out.println("Computing the minimum Latency of the graph using the decomposition technique ...");
     }
@@ -188,7 +192,8 @@ public class LatencyEvaluationEngine {
     }
     for (final SDFAbstractVertex actor : actorToReplace) {
       final SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
-      GraphStructureHelper.replaceHierarchicalActor(topgraph_dag, actor, this.replacementSubgraphlList.get(baseActor.getName()));
+      GraphStructureHelper.replaceHierarchicalActor(topgraph_dag, actor,
+          this.replacementSubgraphlList.get(baseActor.getName()));
     }
 
     // Step 4: compute the longest path of the top graph
@@ -227,7 +232,8 @@ public class LatencyEvaluationEngine {
     }
     for (final SDFAbstractVertex actor : actorToReplace) {
       final SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
-      GraphStructureHelper.replaceHierarchicalActor(subgraph_dag, actor, this.replacementSubgraphlList.get(baseActor.getName()));
+      GraphStructureHelper.replaceHierarchicalActor(subgraph_dag, actor,
+          this.replacementSubgraphlList.get(baseActor.getName()));
     }
 
     // delete all replacement graphs that are no longer needed
@@ -305,19 +311,24 @@ public class LatencyEvaluationEngine {
         final Double output_distance = distance.get(output.getName());
         if (output_distance != Double.NEGATIVE_INFINITY) {
           // // add a new actor representing the distance between the current input actor and the current output actor
-          // SDFAbstractVertex distanceActor = GraphStructureHelper.addActor(replGraph, actor.getName() + "_" + output.getName(), null, 1,
+          // SDFAbstractVertex distanceActor = GraphStructureHelper.addActor(replGraph, actor.getName() + "_" +
+          // output.getName(), null, 1,
           // distance.get(output.getName()),
           // null,
           // null);
           // // add the duration of the new actor to the scenario
-          // // _scenario.getTimingManager().setTiming(distanceActor.getId(), "x86", distance.get(output.getName()).longValue());
+          // // _scenario.getTimingManager().setTiming(distanceActor.getId(), "x86",
+          // distance.get(output.getName()).longValue());
           //
           // // ad the input and output edge
-          // GraphStructureHelper.addEdge(replGraph, actor.getName(), null, distanceActor.getName(), null, 1, 1, 0, null);
-          // GraphStructureHelper.addEdge(replGraph, distanceActor.getName(), null, output.getName(), null, 1, 1, 0, null);
+          // GraphStructureHelper.addEdge(replGraph, actor.getName(), null, distanceActor.getName(), null, 1, 1, 0,
+          // null);
+          // GraphStructureHelper.addEdge(replGraph, distanceActor.getName(), null, output.getName(), null, 1, 1, 0,
+          // null);
 
           // add edge
-          final SDFEdge e = GraphStructureHelper.addEdge(replGraph, actor.getName(), null, output.getName(), null, 1, 1, 0, null);
+          final SDFEdge e = GraphStructureHelper.addEdge(replGraph, actor.getName(), null, output.getName(), null, 1, 1,
+              0, null);
           e.setPropertyValue("weight_LP", output_distance);
         }
       }

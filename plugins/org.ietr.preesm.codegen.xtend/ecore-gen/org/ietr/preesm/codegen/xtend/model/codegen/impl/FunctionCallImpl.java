@@ -56,7 +56,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
  */
 public class FunctionCallImpl extends CallImpl implements FunctionCall {
   /**
-   * The default value of the '{@link #getActorName() <em>Actor Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The default value of the '{@link #getActorName() <em>Actor Name</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getActorName()
    * @generated
@@ -64,7 +65,8 @@ public class FunctionCallImpl extends CallImpl implements FunctionCall {
    */
   protected static final String ACTOR_NAME_EDEFAULT = null;
   /**
-   * The cached value of the '{@link #getActorName() <em>Actor Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getActorName() <em>Actor Name</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @see #getActorName()
    * @generated
@@ -115,7 +117,8 @@ public class FunctionCallImpl extends CallImpl implements FunctionCall {
     final String oldActorName = this.actorName;
     this.actorName = newActorName;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.FUNCTION_CALL__ACTOR_NAME, oldActorName, this.actorName));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.FUNCTION_CALL__ACTOR_NAME, oldActorName,
+          this.actorName));
     }
   }
 
@@ -188,7 +191,8 @@ public class FunctionCallImpl extends CallImpl implements FunctionCall {
   public boolean eIsSet(final int featureID) {
     switch (featureID) {
       case CodegenPackage.FUNCTION_CALL__ACTOR_NAME:
-        return FunctionCallImpl.ACTOR_NAME_EDEFAULT == null ? this.actorName != null : !FunctionCallImpl.ACTOR_NAME_EDEFAULT.equals(this.actorName);
+        return FunctionCallImpl.ACTOR_NAME_EDEFAULT == null ? this.actorName != null
+            : !FunctionCallImpl.ACTOR_NAME_EDEFAULT.equals(this.actorName);
     }
     return super.eIsSet(featureID);
   }

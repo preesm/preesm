@@ -102,7 +102,8 @@ public class GraphStrucutureHelperTest_detail {
     }
 
     System.out.println("\nPartial topological sorting computed in " + timer.toString() + ", the ordered actors: ");
-    final ArrayList<SDFAbstractVertex> partialTopologicalSorting = GraphStructureHelper.partialTopologicalSorting(dag.getVertex("5"));
+    final ArrayList<SDFAbstractVertex> partialTopologicalSorting = GraphStructureHelper
+        .partialTopologicalSorting(dag.getVertex("5"));
     for (int i = 0; i < partialTopologicalSorting.size(); i++) {
       System.out.print(partialTopologicalSorting.get(i).getName() + " ");
     }
@@ -145,13 +146,15 @@ public class GraphStrucutureHelperTest_detail {
     }
 
     System.out.println("\nPartial topological sorting computed in " + timer.toString() + ", the ordered actors: ");
-    final ArrayList<SDFAbstractVertex> partialTopologicalSorting = GraphStructureHelper.partialTopologicalSorting(dag.getVertex("0"));
+    final ArrayList<SDFAbstractVertex> partialTopologicalSorting = GraphStructureHelper
+        .partialTopologicalSorting(dag.getVertex("0"));
     for (int i = 0; i < partialTopologicalSorting.size(); i++) {
       System.out.print(partialTopologicalSorting.get(i).getName() + " ");
     }
 
     timer.start();
-    final Hashtable<String, Double> distance = GraphStructureHelper.getLongestPathToAllTargets(dag.getVertex("0"), null, partialTopologicalSorting);
+    final Hashtable<String, Double> distance = GraphStructureHelper.getLongestPathToAllTargets(dag.getVertex("0"), null,
+        partialTopologicalSorting);
     timer.stop();
 
     System.out.println("Longest paths computed in " + timer.toString() + ", the distance: ");

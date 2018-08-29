@@ -77,8 +77,8 @@ public class FastAlgoParameters {
       this.fastLocalSearchTime = Integer.valueOf(textParameters.get("fastLocalSearchTime"));
     }
 
-    WorkflowLogger.getLogger().log(Level.INFO,
-        "The Fast algo parameters are: displaySolutions=true/false; fastTime in seconds; fastLocalSearchTime in seconds");
+    WorkflowLogger.getLogger().log(Level.INFO, "The Fast algo parameters are: displaySolutions=true/false; "
+        + "fastTime in seconds; fastLocalSearchTime in seconds");
   }
 
   /**

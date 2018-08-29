@@ -51,7 +51,8 @@ public class MapperGanttToolTipGenerator implements CategoryToolTipGenerator {
   /*
    * (non-Javadoc)
    *
-   * @see org.jfree.chart.labels.CategoryToolTipGenerator#generateToolTip(org.jfree .data.category.CategoryDataset, int, int)
+   * @see org.jfree.chart.labels.CategoryToolTipGenerator#generateToolTip(org.jfree .data.category.CategoryDataset, int,
+   * int)
    */
   @Override
   public String generateToolTip(final CategoryDataset set, final int row, final int column) {
@@ -60,12 +61,14 @@ public class MapperGanttToolTipGenerator implements CategoryToolTipGenerator {
 
     final TaskSeriesCollection collection = (TaskSeriesCollection) set;
 
-    if ((collection.getSeries(0).getItemCount() > column) && (collection.getSeries(0).get(column).getSubtaskCount() > row)) {
+    if ((collection.getSeries(0).getItemCount() > column)
+        && (collection.getSeries(0).get(column).getSubtaskCount() > row)) {
       final Task currentTask = collection.getSeries(0).get(column).getSubtask(row);
       final long startTime = currentTask.getDuration().getStart().getTime();
       final long endTime = currentTask.getDuration().getEnd().getTime();
 
-      tooltip.append(currentTask.getDescription() + "(" + startTime + "-" + endTime + "-" + (endTime - startTime) + ")");
+      tooltip
+          .append(currentTask.getDescription() + "(" + startTime + "-" + endTime + "-" + (endTime - startTime) + ")");
     }
 
     return tooltip.toString();

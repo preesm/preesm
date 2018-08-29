@@ -111,11 +111,13 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
     f.getBody().setLayout(new GridLayout());
 
     // Constrints file chooser section
-    createFileSection(managedForm, Messages.getString("Constraints.file"), Messages.getString("Constraints.fileDescription"),
-        Messages.getString("Constraints.fileEdit"), this.scenario.getConstraintGroupManager().getExcelFileURL(),
-        Messages.getString("Constraints.fileBrowseTitle"), "xls");
+    createFileSection(managedForm, Messages.getString("Constraints.file"),
+        Messages.getString("Constraints.fileDescription"), Messages.getString("Constraints.fileEdit"),
+        this.scenario.getConstraintGroupManager().getExcelFileURL(), Messages.getString("Constraints.fileBrowseTitle"),
+        "xls");
 
-    createConstraintsSection(managedForm, Messages.getString("Constraints.title"), Messages.getString("Constraints.description"));
+    createConstraintsSection(managedForm, Messages.getString("Constraints.title"),
+        Messages.getString("Constraints.description"));
 
     managedForm.refresh();
     managedForm.reflow(true);
@@ -139,8 +141,8 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 
     final ScrolledForm form = mform.getForm();
     final FormToolkit toolkit = mform.getToolkit();
-    final Section section = toolkit.createSection(form.getBody(),
-        ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    final Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
+        | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
     section.setText(title);
     section.setDescription(desc);
     toolkit.createCompositeSeparator(section);
@@ -162,12 +164,13 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
    *          the grid data
    * @return the composite
    */
-  public Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns, final GridData gridData) {
+  public Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns,
+      final GridData gridData) {
 
     final ScrolledForm form = mform.getForm();
     final FormToolkit toolkit = mform.getToolkit();
-    final Section section = toolkit.createSection(form.getBody(),
-        ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    final Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
+        | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
     section.setText(title);
     section.setDescription(desc);
     toolkit.createCompositeSeparator(section);
@@ -207,7 +210,8 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
     this.checkStateListener = new ConstraintsCheckStateListener(section, this.scenario);
 
     // Creates the section part containing the tree with SDF vertices
-    new SDFTreeSection(this.scenario, section, managedForm.getToolkit(), Section.DESCRIPTION, this, this.checkStateListener);
+    new SDFTreeSection(this.scenario, section, managedForm.getToolkit(), Section.DESCRIPTION, this,
+        this.checkStateListener);
   }
 
   /**
@@ -244,8 +248,8 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
    * @param fileExtension
    *          the file extension
    */
-  private void createFileSection(final IManagedForm mform, final String title, final String desc, final String fileEdit, final String initValue,
-      final String browseTitle, final String fileExtension) {
+  private void createFileSection(final IManagedForm mform, final String title, final String desc, final String fileEdit,
+      final String initValue, final String browseTitle, final String fileExtension) {
 
     final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
     gridData.heightHint = 120;

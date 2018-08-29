@@ -77,7 +77,8 @@ public abstract class AbstractCommunicationRouter {
    * @param orderManager
    *          the order manager
    */
-  public AbstractCommunicationRouter(final MapperDAG implementation, final IEdgeSched edgeScheduler, final OrderManager orderManager) {
+  public AbstractCommunicationRouter(final MapperDAG implementation, final IEdgeSched edgeScheduler,
+      final OrderManager orderManager) {
     super();
     this.implementers = new LinkedHashMap<>();
     setManagers(implementation, edgeScheduler, orderManager);
@@ -143,7 +144,8 @@ public abstract class AbstractCommunicationRouter {
    * @param orderManager
    *          the order manager
    */
-  public void setManagers(final MapperDAG implementation, final IEdgeSched edgeScheduler, final OrderManager orderManager) {
+  public void setManagers(final MapperDAG implementation, final IEdgeSched edgeScheduler,
+      final OrderManager orderManager) {
     this.implementation = implementation;
     this.edgeScheduler = edgeScheduler;
     this.orderManager = orderManager;

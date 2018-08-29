@@ -39,7 +39,8 @@ import org.eclipse.emf.ecore.EObject;
 
 // TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> A representation of the model object ' <em><b>Communication Node</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A representation of the model object ' <em><b>Communication Node</b></em>'. <!-- end-user-doc
+ * -->
  *
  * <p>
  * The following features are supported:
@@ -70,8 +71,8 @@ public interface CommunicationNode extends EObject {
   String getName();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode#getName <em>Name</em>}' attribute. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode#getName <em>Name</em>}'
+   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @param value
    *          the new value of the '<em>Name</em>' attribute.
@@ -96,8 +97,8 @@ public interface CommunicationNode extends EObject {
   String getType();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode#getType <em>Type</em>}' attribute. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode#getType <em>Type</em>}'
+   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @param value
    *          the new value of the '<em>Type</em>' attribute.

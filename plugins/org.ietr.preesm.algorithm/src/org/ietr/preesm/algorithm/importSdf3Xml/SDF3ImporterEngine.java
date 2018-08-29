@@ -87,7 +87,8 @@ public class SDF3ImporterEngine {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public SDFGraph importFrom(final IPath path, final PreesmScenario scenario, final Design architecture, final Logger logger) throws WorkflowException {
+  public SDFGraph importFrom(final IPath path, final PreesmScenario scenario, final Design architecture,
+      final Logger logger) throws WorkflowException {
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
     final IFile iFile = workspace.getRoot().getFile(path);
 
@@ -144,7 +145,8 @@ public class SDF3ImporterEngine {
         entry.getKey().setInfo(entry.getKey().getName());
         constraint.addConstraint(component.getInstanceName(), entry.getKey());
         // Set the timing of the actor
-        final Timing t = scenario.getTimingManager().addTiming(entry.getKey().getName(), component.getComponent().getVlnv().getName());
+        final Timing t = scenario.getTimingManager().addTiming(entry.getKey().getName(),
+            component.getComponent().getVlnv().getName());
         t.setTime(entry.getValue());
       }
     }

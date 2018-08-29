@@ -51,7 +51,9 @@ public class RelativeConstraintManager {
   /** Integer representing no relative constraint. */
   public static final int NONE = -1;
 
-  /** List of all relative constraints as groups represented by integers and linked to vertices represented by their ID. */
+  /**
+   * List of all relative constraints as groups represented by integers and linked to vertices represented by their ID.
+   */
   private final Map<String, Integer> relativeConstraints;
 
   /** Path to a file containing relative constraints. */

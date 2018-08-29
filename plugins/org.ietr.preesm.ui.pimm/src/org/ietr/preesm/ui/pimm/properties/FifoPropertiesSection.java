@@ -98,7 +98,8 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.ui.views.properties.tabbed.AbstractPropertySection#createControls(org.eclipse.swt.widgets.Composite,
+   * @see
+   * org.eclipse.ui.views.properties.tabbed.AbstractPropertySection#createControls(org.eclipse.swt.widgets.Composite,
    * org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
    */
   @Override
@@ -218,7 +219,8 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
           final DataPort port = ((Fifo) bo).getSourcePort();
           updateDataPortProperties(port, FifoPropertiesSection.this.txtSourcePortExpression);
           final PictogramElement pict = Graphiti.getLinkService().getPictogramElements(getDiagram(), port).get(0);
-          getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators((PictogramElement) pict.eContainer());
+          getDiagramTypeProvider().getDiagramBehavior()
+              .refreshRenderingDecorators((PictogramElement) pict.eContainer());
         }
       }
       refresh();
@@ -236,7 +238,8 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
           final DataPort port = ((Fifo) bo).getTargetPort();
           updateDataPortProperties(port, FifoPropertiesSection.this.txtTargetPortExpression);
           final PictogramElement pict = Graphiti.getLinkService().getPictogramElements(getDiagram(), port).get(0);
-          getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators((PictogramElement) pict.eContainer());
+          getDiagramTypeProvider().getDiagramBehavior()
+              .refreshRenderingDecorators((PictogramElement) pict.eContainer());
         }
       }
 

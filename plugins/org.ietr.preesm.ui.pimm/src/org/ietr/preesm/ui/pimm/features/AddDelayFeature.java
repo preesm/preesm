@@ -74,7 +74,8 @@ public class AddDelayFeature extends AbstractCustomFeature {
   public static final int DELAY_SIZE = 16;
 
   /**
-   * XXX Hack to keep track of created PEs in order to link them with the proper delay (not the one created in the execute() method...)
+   * XXX Hack to keep track of created PEs in order to link them with the proper delay (not the one created in the
+   * execute() method...)
    */
   private List<PictogramElement> createdPEs;
 
@@ -111,7 +112,8 @@ public class AddDelayFeature extends AbstractCustomFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.
+   * ICustomContext)
    */
   @Override
   public boolean canExecute(final ICustomContext context) {
@@ -134,7 +136,8 @@ public class AddDelayFeature extends AbstractCustomFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see
+   * org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
    */
   @Override
   public void execute(final ICustomContext context) {
@@ -173,8 +176,8 @@ public class AddDelayFeature extends AbstractCustomFeature {
       ellipse.setForeground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
       ellipse.setLineWidth(1);
       ellipse.setLineVisible(false);
-      gaService.setLocationAndSize(ellipse, context.getX() - (AddDelayFeature.DELAY_SIZE / 2), context.getY() - (AddDelayFeature.DELAY_SIZE / 2),
-          AddDelayFeature.DELAY_SIZE, AddDelayFeature.DELAY_SIZE);
+      gaService.setLocationAndSize(ellipse, context.getX() - (AddDelayFeature.DELAY_SIZE / 2),
+          context.getY() - (AddDelayFeature.DELAY_SIZE / 2), AddDelayFeature.DELAY_SIZE, AddDelayFeature.DELAY_SIZE);
     }
     link(containerShape, delay);
     this.createdPEs.add(containerShape);
@@ -211,8 +214,8 @@ public class AddDelayFeature extends AbstractCustomFeature {
    * @param posY
    *          the pos Y
    */
-  public void connectDelayToFifo(final FreeFormConnection connection, final Fifo fifo, final ContainerShape containerShape, final ChopboxAnchor cba,
-      final int posX, final int posY) {
+  public void connectDelayToFifo(final FreeFormConnection connection, final Fifo fifo,
+      final ContainerShape containerShape, final ChopboxAnchor cba, final int posX, final int posY) {
 
     final IGaService gaService = Graphiti.getGaService();
 

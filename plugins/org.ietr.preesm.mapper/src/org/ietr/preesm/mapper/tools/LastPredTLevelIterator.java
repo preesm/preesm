@@ -41,7 +41,8 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 // TODO: Auto-generated Javadoc
 /**
- * Iterates the graph in ascending or descending order of the highest TLevel of its predecessors without taking precedence into account.
+ * Iterates the graph in ascending or descending order of the highest TLevel of its predecessors without taking
+ * precedence into account.
  *
  * @author mpelcat
  */

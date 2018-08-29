@@ -61,7 +61,8 @@ public class PathComparator implements Comparator<IHierarchicalVertex> {
     int diff = 0;
 
     if (o1.getStoredVertex() instanceof SDFAbstractVertex) {
-      diff = ((SDFAbstractVertex) o1.getStoredVertex()).getInfo().compareTo(((SDFAbstractVertex) o2.getStoredVertex()).getInfo());
+      diff = ((SDFAbstractVertex) o1.getStoredVertex()).getInfo()
+          .compareTo(((SDFAbstractVertex) o2.getStoredVertex()).getInfo());
 
     }
 

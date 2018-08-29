@@ -68,13 +68,14 @@ public class KwokListScheduler {
    * @param simu
    *          the simu
    * @param minimizeVStartorOpEnd
-   *          If true, we minimize the starting date of the vertex; if false, we minimize the current scheduling length on the considered operator
+   *          If true, we minimize the starting date of the vertex; if false, we minimize the current scheduling length
+   *          on the considered operator
    * @return the long
    * @throws WorkflowException
    *           the workflow exception
    */
-  private long listImplementationCost(final MapperDAG dag, MapperDAGVertex vertex, final ComponentInstance operator, final IAbc simu,
-      final boolean minimizeVStartorOpEnd) throws WorkflowException {
+  private long listImplementationCost(final MapperDAG dag, MapperDAGVertex vertex, final ComponentInstance operator,
+      final IAbc simu, final boolean minimizeVStartorOpEnd) throws WorkflowException {
 
     // check the vertex is into the DAG
     vertex = dag.getMapperDAGVertex(vertex.getName());
@@ -92,8 +93,8 @@ public class KwokListScheduler {
   }
 
   /**
-   * schedule: Do a mapping with the help of the lists (CPN-Dominant list, Blocking node list and the FCP list) and the architecture. It can take one vertex
-   * already mapped with a particular operator chosen by the user and only one.
+   * schedule: Do a mapping with the help of the lists (CPN-Dominant list, Blocking node list and the FCP list) and the
+   * architecture. It can take one vertex already mapped with a particular operator chosen by the user and only one.
    *
    * @param dag
    *          the dag
@@ -110,8 +111,8 @@ public class KwokListScheduler {
    *           the workflow exception
    */
 
-  public MapperDAG schedule(final MapperDAG dag, final List<MapperDAGVertex> orderlist, final IAbc archisimu, final ComponentInstance operatorfcp,
-      final MapperDAGVertex fcpvertex) throws WorkflowException {
+  public MapperDAG schedule(final MapperDAG dag, final List<MapperDAGVertex> orderlist, final IAbc archisimu,
+      final ComponentInstance operatorfcp, final MapperDAGVertex fcpvertex) throws WorkflowException {
 
     final boolean minimizeVStartorOpEnd = false;
 
@@ -134,7 +135,8 @@ public class KwokListScheduler {
           if (!groupOperators.isEmpty()) {
             archisimu.map(currentvertex, groupOperators.get(0), true, false);
           } else {
-            logger.log(Level.SEVERE, "Found no operator for: " + currentvertex + ". Certainly a relative constraint problem.");
+            logger.log(Level.SEVERE,
+                "Found no operator for: " + currentvertex + ". Certainly a relative constraint problem.");
           }
         }
       } else {
@@ -147,7 +149,8 @@ public class KwokListScheduler {
           chosenoperator = (ComponentInstance) opList.toArray()[0];
         } else {
           for (final ComponentInstance currentoperator : opList) {
-            final long test = listImplementationCost(dag, currentvertex, currentoperator, archisimu, minimizeVStartorOpEnd);
+            final long test = listImplementationCost(dag, currentvertex, currentoperator, archisimu,
+                minimizeVStartorOpEnd);
             // test the earliest ready operator
             if (test < time) {
               chosenoperator = currentoperator;

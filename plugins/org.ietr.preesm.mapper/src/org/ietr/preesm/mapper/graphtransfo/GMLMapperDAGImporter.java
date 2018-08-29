@@ -71,7 +71,8 @@ public class GMLMapperDAGImporter extends GMLImporter<MapperDAG, MapperDAGVertex
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.importer.GMLImporter#parseEdge(org.w3c.dom.Element, org.ietr.dftools.algorithm.model.AbstractGraph)
+   * @see org.ietr.dftools.algorithm.importer.GMLImporter#parseEdge(org.w3c.dom.Element,
+   * org.ietr.dftools.algorithm.model.AbstractGraph)
    */
   @Override
   public void parseEdge(final Element edgeElt, final MapperDAG parentGraph) {
@@ -92,7 +93,8 @@ public class GMLMapperDAGImporter extends GMLImporter<MapperDAG, MapperDAGVertex
   public MapperDAG parseGraph(final Element graphElt) {
     final MapperDAG graph = new MapperDAG(this.localFactory);
     parseKeys(graphElt, graph);
-    graph.setReferenceSdfGraph((SDFGraph) graph.getPropertyBean().getValue(ImplementationPropertyNames.Graph_SdfReferenceGraph));
+    graph.setReferenceSdfGraph(
+        (SDFGraph) graph.getPropertyBean().getValue(ImplementationPropertyNames.Graph_SdfReferenceGraph));
     final NodeList childList = graphElt.getChildNodes();
     for (int i = 0; i < childList.getLength(); i++) {
       if (childList.item(i).getNodeName().equals("node")) {
@@ -112,7 +114,8 @@ public class GMLMapperDAGImporter extends GMLImporter<MapperDAG, MapperDAGVertex
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.importer.GMLImporter#parsePort(org.w3c.dom.Element, org.ietr.dftools.algorithm.model.AbstractGraph)
+   * @see org.ietr.dftools.algorithm.importer.GMLImporter#parsePort(org.w3c.dom.Element,
+   * org.ietr.dftools.algorithm.model.AbstractGraph)
    */
   @Override
   public MapperDAGVertex parsePort(final Element portElt, final MapperDAG parentGraph) {
@@ -123,7 +126,8 @@ public class GMLMapperDAGImporter extends GMLImporter<MapperDAG, MapperDAGVertex
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.importer.GMLImporter#parseNode(org.w3c.dom.Element, org.ietr.dftools.algorithm.model.AbstractGraph)
+   * @see org.ietr.dftools.algorithm.importer.GMLImporter#parseNode(org.w3c.dom.Element,
+   * org.ietr.dftools.algorithm.model.AbstractGraph)
    */
   @Override
   public MapperDAGVertex parseNode(final Element vertexElt, final MapperDAG parentGraph) {

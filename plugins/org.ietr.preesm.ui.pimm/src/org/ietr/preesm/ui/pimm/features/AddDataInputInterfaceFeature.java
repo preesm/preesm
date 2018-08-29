@@ -103,7 +103,8 @@ public class AddDataInputInterfaceFeature extends AbstractAddDataInterfacefeatur
   @Override
   public boolean canAdd(final IAddContext context) {
     // Check that the user wants to add an SourceInterface to the Diagram
-    return ((context != null) && (context.getNewObject() instanceof DataInputInterface)) && (context.getTargetContainer() instanceof Diagram);
+    return ((context != null) && (context.getNewObject() instanceof DataInputInterface))
+        && (context.getTargetContainer() instanceof Diagram);
   }
 
 }

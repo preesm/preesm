@@ -89,7 +89,8 @@ public class ASAPScheduler_DAG {
           this.simulator.consume(targetActor, 1);
 
           // set the finish date
-          final double finishDate = this.simulator.getStartDate(targetActor) + this.simulator.getActorDuration(targetActor);
+          final double finishDate = this.simulator.getStartDate(targetActor)
+              + this.simulator.getActorDuration(targetActor);
           this.simulator.setfinishDate(targetActor, finishDate);
 
           // add the execution to the list

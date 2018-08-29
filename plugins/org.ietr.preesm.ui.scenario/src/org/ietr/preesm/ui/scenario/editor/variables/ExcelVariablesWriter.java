@@ -142,7 +142,8 @@ public class ExcelVariablesWriter extends ExcelWriter {
    * @see org.ietr.preesm.ui.scenario.editor.ExcelWriter#addCells(jxl.write.WritableSheet)
    */
   @Override
-  protected void addCells(final WritableSheet sheet) throws InvalidModelException, FileNotFoundException, RowsExceededException {
+  protected void addCells(final WritableSheet sheet)
+      throws InvalidModelException, FileNotFoundException, RowsExceededException {
     if (sheet != null) {
 
       int maxVOrdinate = 0;

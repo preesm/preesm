@@ -146,7 +146,8 @@ public class StatEditorInput implements IEditorInput {
   public String getName() {
     if (this.abc instanceof LatencyAbc) {
       this.abc.updateFinalCosts();
-      return "Latency:" + ((LatencyAbc) this.abc).getFinalLatency() + " Cost:" + this.abc.getFinalCost() + " " + WorkflowLogger.getFormattedTime();
+      return "Latency:" + ((LatencyAbc) this.abc).getFinalLatency() + " Cost:" + this.abc.getFinalCost() + " "
+          + WorkflowLogger.getFormattedTime();
     } else {
       return "Stats " + WorkflowLogger.getFormattedTime();
     }

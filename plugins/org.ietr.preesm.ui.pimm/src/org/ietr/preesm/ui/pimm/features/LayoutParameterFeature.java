@@ -95,9 +95,11 @@ public class LayoutParameterFeature extends AbstractLayoutFeature {
   /**
    * Return the new width of the shape. <br>
    * <br>
-   * The new width is computed so that all text are completely visible. Consequently, the method check the width and height of the Text children shape. <br>
+   * The new width is computed so that all text are completely visible. Consequently, the method check the width and
+   * height of the Text children shape. <br>
    * <br>
-   * <b> The method does not apply the new width to the shape. </b> Use {@link LayoutParameterFeature#setNewWith} for that purpose.
+   * <b> The method does not apply the new width to the shape. </b> Use {@link LayoutParameterFeature#setNewWith} for
+   * that purpose.
    *
    * @param childrenShapes
    *          the children shapes of the Actor
@@ -162,7 +164,8 @@ public class LayoutParameterFeature extends AbstractLayoutFeature {
    * @param childrenShapes
    *          the children shapes
    */
-  protected void setNewWidth(final int newWidth, final GraphicsAlgorithm containerGa, final EList<Shape> childrenShapes) {
+  protected void setNewWidth(final int newWidth, final GraphicsAlgorithm containerGa,
+      final EList<Shape> childrenShapes) {
     // Scan the children shapes
     for (final Shape shape : childrenShapes) {
       final GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
@@ -183,7 +186,8 @@ public class LayoutParameterFeature extends AbstractLayoutFeature {
     {
       containerGa.setWidth(newWidth);
       final int height = containerGa.getHeight(); // The height is constant
-      final int[] coord = new int[] { newWidth / 2, 0, newWidth, height - 14, newWidth, height, 0, height, 0, height - 14 };
+      final int[] coord = new int[] { newWidth / 2, 0, newWidth, height - 14, newWidth, height, 0, height, 0,
+          height - 14 };
 
       final List<Point> points = ((Polygon) containerGa).getPoints();
       int i = 0;

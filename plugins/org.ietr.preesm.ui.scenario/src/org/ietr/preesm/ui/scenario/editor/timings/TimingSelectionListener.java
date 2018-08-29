@@ -50,7 +50,8 @@ public class TimingSelectionListener implements ISelectionChangedListener {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.jface.viewers.ISelectionChangedListener#selectionChanged(org.eclipse.jface.viewers.SelectionChangedEvent)
+   * @see org.eclipse.jface.viewers.ISelectionChangedListener#selectionChanged(org.eclipse.jface.viewers.
+   * SelectionChangedEvent)
    */
   @Override
   public void selectionChanged(final SelectionChangedEvent event) {

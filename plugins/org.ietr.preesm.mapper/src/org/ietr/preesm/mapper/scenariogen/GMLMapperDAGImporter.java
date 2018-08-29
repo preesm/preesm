@@ -117,8 +117,9 @@ public class GMLMapperDAGImporter extends GMLImporter<SDFGraph, SDFAbstractVerte
 
     SDFAbstractVertex vertex;
     /*
-     * LinkedHashMap<String, String> attributes = new LinkedHashMap<String, String>(); for (int i = 0; i < vertexElt.getAttributes().getLength(); i++) {
-     * attributes.put(vertexElt.getAttributes().item(i).getNodeName(), vertexElt.getAttributes().item(i).getNodeValue()); }
+     * LinkedHashMap<String, String> attributes = new LinkedHashMap<String, String>(); for (int i = 0; i <
+     * vertexElt.getAttributes().getLength(); i++) { attributes.put(vertexElt.getAttributes().item(i).getNodeName(),
+     * vertexElt.getAttributes().item(i).getNodeValue()); }
      *
      * attributes.put("kind", SDFVertex.VERTEX);
      */
@@ -142,7 +143,8 @@ public class GMLMapperDAGImporter extends GMLImporter<SDFGraph, SDFAbstractVerte
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.importer.GMLImporter#parsePort(org.w3c.dom.Element, org.ietr.dftools.algorithm.model.AbstractGraph)
+   * @see org.ietr.dftools.algorithm.importer.GMLImporter#parsePort(org.w3c.dom.Element,
+   * org.ietr.dftools.algorithm.model.AbstractGraph)
    */
   @Override
   public SDFAbstractVertex parsePort(final Element portElt, final SDFGraph parentGraph) {

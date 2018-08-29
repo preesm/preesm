@@ -149,7 +149,8 @@ public class ExcelTimingWriter extends ExcelWriter {
    *           the core exception
    */
   @Override
-  protected void addCells(final WritableSheet sheet) throws InvalidModelException, FileNotFoundException, CoreException {
+  protected void addCells(final WritableSheet sheet)
+      throws InvalidModelException, FileNotFoundException, CoreException {
     if (sheet != null) {
 
       Integer maxOpAbscissa = 1;

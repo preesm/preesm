@@ -43,8 +43,9 @@ import org.eclipse.emf.common.util.Enumerator;
 
 // TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> The {@link Direction} is used within {@link Communication} {@link Call calls} to determine whether the current {@link Communication}
- * {@link #SEND sends} or {@link #RECEIVE receives} a data. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> The {@link Direction} is used within {@link Communication} {@link Call calls} to determine
+ * whether the current {@link Communication} {@link #SEND sends} or {@link #RECEIVE receives} a data. <!-- end-user-doc
+ * -->
  * 
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getDirection()
  * @model
@@ -72,7 +73,8 @@ public enum Direction implements Enumerator {
   /**
    * The '<em><b>SEND</b></em>' literal value. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of '<em><b>SEND</b></em>' literal object isn't clear, there really should be more of a description here...
+   * If the meaning of '<em><b>SEND</b></em>' literal object isn't clear, there really should be more of a description
+   * here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -86,7 +88,8 @@ public enum Direction implements Enumerator {
   /**
    * The '<em><b>RECEIVE</b></em>' literal value. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of '<em><b>RECEIVE</b></em>' literal object isn't clear, there really should be more of a description here...
+   * If the meaning of '<em><b>RECEIVE</b></em>' literal object isn't clear, there really should be more of a
+   * description here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -105,14 +108,16 @@ public enum Direction implements Enumerator {
   private static final Direction[] VALUES_ARRAY = new Direction[] { SEND, RECEIVE, };
 
   /**
-   * A public read-only list of all the '<em><b>Direction</b></em>' enumerators. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * A public read-only list of all the '<em><b>Direction</b></em>' enumerators. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @generated
    */
   public static final List<Direction> VALUES = Collections.unmodifiableList(Arrays.asList(Direction.VALUES_ARRAY));
 
   /**
-   * Returns the '<em><b>Direction</b></em>' literal with the specified literal value. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * Returns the '<em><b>Direction</b></em>' literal with the specified literal value. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @param literal
    *          the literal.
@@ -129,7 +134,8 @@ public enum Direction implements Enumerator {
   }
 
   /**
-   * Returns the '<em><b>Direction</b></em>' literal with the specified name. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * Returns the '<em><b>Direction</b></em>' literal with the specified name. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
    * 
    * @param name
    *          the name.
@@ -146,7 +152,8 @@ public enum Direction implements Enumerator {
   }
 
   /**
-   * Returns the '<em><b>Direction</b></em>' literal with the specified integer value. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * Returns the '<em><b>Direction</b></em>' literal with the specified integer value. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @param value
    *          the integer value.
@@ -229,7 +236,8 @@ public enum Direction implements Enumerator {
   }
 
   /**
-   * Returns the literal value of the enumerator, which is its string representation. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * Returns the literal value of the enumerator, which is its string representation. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
    * 
    * @generated
    */

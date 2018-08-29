@@ -37,7 +37,8 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
 
 // TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> A {@link Constant} is a {@link Variable} whose value can not be changed. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A {@link Constant} is a {@link Variable} whose value can not be changed. <!-- end-user-doc
+ * -->
  *
  * <p>
  * The following features are supported:
@@ -68,8 +69,8 @@ public interface Constant extends Variable {
   long getValue();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Constant#getValue <em>Value</em>}' attribute. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Constant#getValue <em>Value</em>}'
+   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @param value
    *          the new value of the '<em>Value</em>' attribute.

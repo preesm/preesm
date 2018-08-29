@@ -62,8 +62,8 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 
 /**
- * Implementing the new DFTools scenario node behavior for Preesm. This version generates an architecture with the S-LAM2 meta-model type and an algorithm with
- * the IBSDF type
+ * Implementing the new DFTools scenario node behavior for Preesm. This version generates an architecture with the
+ * S-LAM2 meta-model type and an algorithm with the IBSDF type
  *
  * @author mpelcat
  * @author kdesnos

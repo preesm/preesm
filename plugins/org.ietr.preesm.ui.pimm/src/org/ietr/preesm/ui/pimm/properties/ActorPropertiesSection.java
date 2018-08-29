@@ -129,7 +129,8 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.ui.views.properties.tabbed.AbstractPropertySection#createControls(org.eclipse.swt.widgets.Composite,
+   * @see
+   * org.eclipse.ui.views.properties.tabbed.AbstractPropertySection#createControls(org.eclipse.swt.widgets.Composite,
    * org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
    */
   @Override
@@ -238,13 +239,15 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
         pes[0] = getSelectedPictogramElement();
 
         final CustomContext context = new CustomContext(pes);
-        final ICustomFeature[] clearRefinementFeature = getDiagramTypeProvider().getFeatureProvider().getCustomFeatures(context);
+        final ICustomFeature[] clearRefinementFeature = getDiagramTypeProvider().getFeatureProvider()
+            .getCustomFeatures(context);
 
         for (final ICustomFeature feature : clearRefinementFeature) {
           if (feature instanceof ClearActorRefinementFeature) {
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
             final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
-            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout);
+            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+                .getLayoutFeature(contextLayout);
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
           }
         }
@@ -266,13 +269,15 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
         pes[0] = getSelectedPictogramElement();
 
         final CustomContext context = new CustomContext(pes);
-        final ICustomFeature[] setRefinementFeature = getDiagramTypeProvider().getFeatureProvider().getCustomFeatures(context);
+        final ICustomFeature[] setRefinementFeature = getDiagramTypeProvider().getFeatureProvider()
+            .getCustomFeatures(context);
 
         for (final ICustomFeature feature : setRefinementFeature) {
           if (feature instanceof SetActorRefinementFeature) {
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
             final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
-            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout);
+            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+                .getLayoutFeature(contextLayout);
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
           }
         }
@@ -294,13 +299,15 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
         pes[0] = getSelectedPictogramElement();
 
         final CustomContext context = new CustomContext(pes);
-        final ICustomFeature[] openRefinementFeature = getDiagramTypeProvider().getFeatureProvider().getCustomFeatures(context);
+        final ICustomFeature[] openRefinementFeature = getDiagramTypeProvider().getFeatureProvider()
+            .getCustomFeatures(context);
 
         for (final ICustomFeature feature : openRefinementFeature) {
           if (feature instanceof OpenRefinementFeature) {
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
             final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
-            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout);
+            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+                .getLayoutFeature(contextLayout);
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
           }
         }
@@ -396,13 +403,15 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
         pes[0] = getSelectedPictogramElement();
 
         final CustomContext context = new CustomContext(pes);
-        final ICustomFeature[] clearMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider().getCustomFeatures(context);
+        final ICustomFeature[] clearMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider()
+            .getCustomFeatures(context);
 
         for (final ICustomFeature feature : clearMemoryScriptFeature) {
           if (feature instanceof ClearActorMemoryScriptFeature) {
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
             final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
-            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout);
+            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+                .getLayoutFeature(contextLayout);
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
           }
         }
@@ -424,13 +433,15 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
         pes[0] = getSelectedPictogramElement();
 
         final CustomContext context = new CustomContext(pes);
-        final ICustomFeature[] setMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider().getCustomFeatures(context);
+        final ICustomFeature[] setMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider()
+            .getCustomFeatures(context);
 
         for (final ICustomFeature feature : setMemoryScriptFeature) {
           if (feature instanceof SetActorMemoryScriptFeature) {
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
             final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
-            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout);
+            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+                .getLayoutFeature(contextLayout);
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
           }
         }
@@ -452,13 +463,15 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
         pes[0] = getSelectedPictogramElement();
 
         final CustomContext context = new CustomContext(pes);
-        final ICustomFeature[] openMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider().getCustomFeatures(context);
+        final ICustomFeature[] openMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider()
+            .getCustomFeatures(context);
 
         for (final ICustomFeature feature : openMemoryScriptFeature) {
           if (feature instanceof OpenMemoryScriptFeature) {
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
             final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
-            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout);
+            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+                .getLayoutFeature(contextLayout);
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
           }
         }
@@ -540,12 +553,14 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
               int maxLength = (int) ((this.composite.getBounds().width - this.FIRST_COLUMN_WIDTH) * 0.17);
               maxLength = Math.max(maxLength, 40);
               if (((CHeaderRefinement) refinement).getLoopPrototype() != null) {
-                final String loop = "loop: " + PrototypeFormatter.format(((CHeaderRefinement) refinement).getLoopPrototype());
+                final String loop = "loop: "
+                    + PrototypeFormatter.format(((CHeaderRefinement) refinement).getLoopPrototype());
                 view += (loop.length() <= maxLength) ? loop : loop.substring(0, maxLength) + "...";
                 tooltip = loop;
               }
               if (((CHeaderRefinement) refinement).getInitPrototype() != null) {
-                final String init = "\ninit: " + PrototypeFormatter.format(((CHeaderRefinement) refinement).getInitPrototype());
+                final String init = "\ninit: "
+                    + PrototypeFormatter.format(((CHeaderRefinement) refinement).getInitPrototype());
                 view += (init.length() <= maxLength) ? init : init.substring(0, maxLength) + "...";
                 ;
                 tooltip += init;

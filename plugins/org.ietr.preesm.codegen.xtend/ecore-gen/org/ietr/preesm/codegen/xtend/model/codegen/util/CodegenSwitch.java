@@ -67,9 +67,10 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
 
 // TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> The <b>Switch</b> for the model's inheritance hierarchy. It supports the call {@link #doSwitch(EObject) doSwitch(object)} to invoke
- * the <code>caseXXX</code> method for each class of the model, starting with the actual class of the object and proceeding up the inheritance hierarchy until a
- * non-null result is returned, which is the result of the switch. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> The <b>Switch</b> for the model's inheritance hierarchy. It supports the call
+ * {@link #doSwitch(EObject) doSwitch(object)} to invoke the <code>caseXXX</code> method for each class of the model,
+ * starting with the actual class of the object and proceeding up the inheritance hierarchy until a non-null result is
+ * returned, which is the result of the switch. <!-- end-user-doc -->
  * 
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage
  * @generated
@@ -108,8 +109,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Calls <code>caseXXX</code> for each class of the model until one returns a non null result; it yields that result. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
+   * Calls <code>caseXXX</code> for each class of the model until one returns a non null result; it yields that result.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @return the first non-null result returned by a <code>caseXXX</code> call.
    * @generated
@@ -467,8 +468,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Block</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
-   * non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Block</em>'. <!-- begin-user-doc --> This
+   * implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -481,8 +482,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Code Elt</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
-   * non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Code Elt</em>'. <!-- begin-user-doc --> This
+   * implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -495,8 +496,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Call</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
-   * non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Call</em>'. <!-- begin-user-doc --> This
+   * implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -509,8 +510,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Variable</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
-   * non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Variable</em>'. <!-- begin-user-doc --> This
+   * implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -523,8 +524,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Buffer</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
-   * non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Buffer</em>'. <!-- begin-user-doc --> This
+   * implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -537,8 +538,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Sub Buffer</em>'. <!-- begin-user-doc --> This implementation returns null; returning
-   * a non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Sub Buffer</em>'. <!-- begin-user-doc --> This
+   * implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -551,8 +552,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Constant</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
-   * non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Constant</em>'. <!-- begin-user-doc --> This
+   * implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -565,8 +566,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Function Call</em>'. <!-- begin-user-doc --> This implementation returns null;
-   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Function Call</em>'. <!-- begin-user-doc -->
+   * This implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -579,8 +580,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Communication</em>'. <!-- begin-user-doc --> This implementation returns null;
-   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Communication</em>'. <!-- begin-user-doc -->
+   * This implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -593,8 +594,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Core Block</em>'. <!-- begin-user-doc --> This implementation returns null; returning
-   * a non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Core Block</em>'. <!-- begin-user-doc --> This
+   * implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -607,8 +608,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Actor Block</em>'. <!-- begin-user-doc --> This implementation returns null; returning
-   * a non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Actor Block</em>'. <!-- begin-user-doc -->
+   * This implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -621,8 +622,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Loop Block</em>'. <!-- begin-user-doc --> This implementation returns null; returning
-   * a non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Loop Block</em>'. <!-- begin-user-doc --> This
+   * implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -635,8 +636,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Actor Call</em>'. <!-- begin-user-doc --> This implementation returns null; returning
-   * a non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Actor Call</em>'. <!-- begin-user-doc --> This
+   * implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -649,8 +650,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Call Block</em>'. <!-- begin-user-doc --> This implementation returns null; returning
-   * a non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Call Block</em>'. <!-- begin-user-doc --> This
+   * implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -663,8 +664,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Special Call</em>'. <!-- begin-user-doc --> This implementation returns null;
-   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Special Call</em>'. <!-- begin-user-doc -->
+   * This implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -677,8 +678,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Fifo Call</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
-   * non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Fifo Call</em>'. <!-- begin-user-doc --> This
+   * implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -691,8 +692,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Commentable</em>'. <!-- begin-user-doc --> This implementation returns null; returning
-   * a non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Commentable</em>'. <!-- begin-user-doc -->
+   * This implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -705,8 +706,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Communication Node</em>'. <!-- begin-user-doc --> This implementation returns null;
-   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Communication Node</em>'. <!-- begin-user-doc
+   * --> This implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -719,8 +720,9 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Shared Memory Communication</em>'. <!-- begin-user-doc --> This implementation returns
-   * null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Shared Memory Communication</em>'. <!--
+   * begin-user-doc --> This implementation returns null; returning a non-null result will terminate the switch. <!--
+   * end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -733,8 +735,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Constant String</em>'. <!-- begin-user-doc --> This implementation returns null;
-   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Constant String</em>'. <!-- begin-user-doc -->
+   * This implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -747,8 +749,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Null Buffer</em>'. <!-- begin-user-doc --> This implementation returns null; returning
-   * a non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Null Buffer</em>'. <!-- begin-user-doc -->
+   * This implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -761,8 +763,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Finite Loop Block</em>'. <!-- begin-user-doc --> This implementation returns null;
-   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Finite Loop Block</em>'. <!-- begin-user-doc
+   * --> This implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -775,8 +777,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Int Var</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
-   * non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Int Var</em>'. <!-- begin-user-doc --> This
+   * implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -789,8 +791,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Buffer Iterator</em>'. <!-- begin-user-doc --> This implementation returns null;
-   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Buffer Iterator</em>'. <!-- begin-user-doc -->
+   * This implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.
@@ -803,8 +805,8 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Papify Action</em>'. <!-- begin-user-doc --> This implementation returns null;
-   * returning a non-null result will terminate the switch. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>Papify Action</em>'. <!-- begin-user-doc -->
+   * This implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
    *
    * @param object
    *          the target of the switch.
@@ -817,8 +819,9 @@ public class CodegenSwitch<T> extends Switch<T> {
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>EObject</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
-   * non-null result will terminate the switch, but this is the last case anyway. <!-- end-user-doc -->
+   * Returns the result of interpreting the object as an instance of '<em>EObject</em>'. <!-- begin-user-doc --> This
+   * implementation returns null; returning a non-null result will terminate the switch, but this is the last case
+   * anyway. <!-- end-user-doc -->
    * 
    * @param object
    *          the target of the switch.

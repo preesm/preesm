@@ -51,7 +51,8 @@ public class PiMMFifoFilter extends AbstractPropertySectionFilter {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.ui.platform.AbstractPropertySectionFilter#accept(org.eclipse.graphiti.mm.pictograms.PictogramElement)
+   * @see org.eclipse.graphiti.ui.platform.AbstractPropertySectionFilter#accept(org.eclipse.graphiti.mm.pictograms.
+   * PictogramElement)
    */
   @Override
   protected boolean accept(final PictogramElement pictogramElement) {

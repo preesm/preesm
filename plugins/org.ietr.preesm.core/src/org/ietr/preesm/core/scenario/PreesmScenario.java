@@ -444,7 +444,8 @@ public class PreesmScenario {
    *           the core exception
    */
 
-  public void update(final boolean algorithmChange, final boolean architectureChange) throws InvalidModelException, CoreException {
+  public void update(final boolean algorithmChange, final boolean architectureChange)
+      throws InvalidModelException, CoreException {
     // If the architecture changes, operator ids, operator defintion ids and
     // com node ids are no more valid (they are extracted from the
     // architecture)

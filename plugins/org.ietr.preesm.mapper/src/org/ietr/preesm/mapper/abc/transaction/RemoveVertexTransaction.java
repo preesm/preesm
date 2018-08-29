@@ -72,7 +72,8 @@ public class RemoveVertexTransaction extends Transaction {
    * @param orderManager
    *          the order manager
    */
-  public RemoveVertexTransaction(final MapperDAGVertex vertex, final MapperDAG implementation, final OrderManager orderManager) {
+  public RemoveVertexTransaction(final MapperDAGVertex vertex, final MapperDAG implementation,
+      final OrderManager orderManager) {
     super();
     this.vertex = vertex;
     this.implementation = implementation;

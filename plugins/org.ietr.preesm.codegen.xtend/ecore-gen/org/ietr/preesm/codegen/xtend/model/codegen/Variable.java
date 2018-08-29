@@ -40,8 +40,8 @@ import org.eclipse.emf.common.util.EList;
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> A {@link Variable} is an object that will be used several time in the generated code.<br>
- * It usually is {@link Block#getDeclarations() declared} within a {@link Block code block} before being used as a parameter to the {@link Block#getCodeElts()
- * code elements} of this {@link Block code block}. <br>
+ * It usually is {@link Block#getDeclarations() declared} within a {@link Block code block} before being used as a
+ * parameter to the {@link Block#getCodeElts() code elements} of this {@link Block code block}. <br>
  * Each {@link Variable} has a {@link #getName() name} and a {@link #getType() type}. <!-- end-user-doc -->
  *
  * <p>
@@ -75,8 +75,8 @@ public interface Variable extends Commentable {
   String getName();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getName <em>Name</em>}' attribute. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getName <em>Name</em>}'
+   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @param value
    *          the new value of the '<em>Name</em>' attribute.
@@ -101,8 +101,8 @@ public interface Variable extends Commentable {
   String getType();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getType <em>Type</em>}' attribute. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getType <em>Type</em>}'
+   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @param value
    *          the new value of the '<em>Type</em>' attribute.
@@ -113,9 +113,11 @@ public interface Variable extends Commentable {
 
   /**
    * Returns the value of the '<em><b>Creator</b></em>' container reference. It is bidirectional and its opposite is
-   * '{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDefinitions <em>Definitions</em>}'. <!-- begin-user-doc -->
+   * '{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDefinitions <em>Definitions</em>}'. <!--
+   * begin-user-doc -->
    * <p>
-   * The {@link #getCreator() creator} of a {@link Variable} is the {@link Block} that declare and define the {@link Variable}.
+   * The {@link #getCreator() creator} of a {@link Variable} is the {@link Block} that declare and define the
+   * {@link Variable}.
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -129,8 +131,8 @@ public interface Variable extends Commentable {
   Block getCreator();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator <em>Creator</em>}' container reference. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator <em>Creator</em>}'
+   * container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @param value
    *          the new value of the '<em>Creator</em>' container reference.
@@ -140,12 +142,13 @@ public interface Variable extends Commentable {
   void setCreator(Block value);
 
   /**
-   * Returns the value of the '<em><b>Users</b></em>' reference list. The list contents are of type {@link org.ietr.preesm.codegen.xtend.model.codegen.Block}.
-   * It is bidirectional and its opposite is ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDeclarations <em>Declarations</em>}'. <!--
+   * Returns the value of the '<em><b>Users</b></em>' reference list. The list contents are of type
+   * {@link org.ietr.preesm.codegen.xtend.model.codegen.Block}. It is bidirectional and its opposite is '
+   * {@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDeclarations <em>Declarations</em>}'. <!--
    * begin-user-doc -->
    * <p>
-   * The {@link #getUsers() users} of a {@link Variable} are the {@link Block Blocks} using the {@link Variable}. One of the {@link #getUsers() users} of the
-   * variable is also its {@link #getCreator() creator}.
+   * The {@link #getUsers() users} of a {@link Variable} are the {@link Block Blocks} using the {@link Variable}. One of
+   * the {@link #getUsers() users} of the variable is also its {@link #getCreator() creator}.
    * </p>
    * <!-- end-user-doc -->
    *

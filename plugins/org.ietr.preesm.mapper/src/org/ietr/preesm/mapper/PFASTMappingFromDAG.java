@@ -55,7 +55,8 @@ import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.params.PFastAlgoParameters;
 
 /**
- * PFAST is a parallel mapping/scheduling method based on list scheduling followed by a neighborhood search phase. It was invented by Y-K Kwok.
+ * PFAST is a parallel mapping/scheduling method based on list scheduling followed by a neighborhood search phase. It
+ * was invented by Y-K Kwok.
  *
  * @author mwipliez
  * @author pmenuet
@@ -82,8 +83,9 @@ public class PFASTMappingFromDAG extends AbstractMappingFromDAG {
   }
 
   @Override
-  protected IAbc schedule(final Map<String, Object> outputs, final Map<String, String> parameters, final InitialLists initial, final PreesmScenario scenario,
-      final AbcParameters abcParameters, final MapperDAG dag, final Design architecture, final AbstractTaskSched taskSched) {
+  protected IAbc schedule(final Map<String, Object> outputs, final Map<String, String> parameters,
+      final InitialLists initial, final PreesmScenario scenario, final AbcParameters abcParameters, final MapperDAG dag,
+      final Design architecture, final AbstractTaskSched taskSched) {
 
     final IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture, scenario);
 
@@ -91,8 +93,8 @@ public class PFASTMappingFromDAG extends AbstractMappingFromDAG {
 
     final PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
     final PFastAlgoParameters pFastParams = new PFastAlgoParameters(parameters);
-    final MapperDAG resdag = pfastAlgorithm.map(dag, architecture, scenario, initial, abcParameters, pFastParams, false, 0, pFastParams.isDisplaySolutions(),
-        null, taskSched);
+    final MapperDAG resdag = pfastAlgorithm.map(dag, architecture, scenario, initial, abcParameters, pFastParams, false,
+        0, pFastParams.isDisplaySolutions(), null, taskSched);
 
     simu2.setDAG(resdag);
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");

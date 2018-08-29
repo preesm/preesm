@@ -53,8 +53,8 @@ public class MapperEdgeFactory extends DAGEdgeFactory {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.factories.DAGEdgeFactory#createEdge(org.ietr.dftools.algorithm.model .dag.DAGVertex,
-   * org.ietr.dftools.algorithm.model.dag.DAGVertex)
+   * @see org.ietr.dftools.algorithm.factories.DAGEdgeFactory#createEdge(org.ietr.dftools.algorithm.model
+   * .dag.DAGVertex, org.ietr.dftools.algorithm.model.dag.DAGVertex)
    */
   @Override
   public DAGEdge createEdge(final DAGVertex arg0, final DAGVertex arg1) {

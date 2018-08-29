@@ -126,9 +126,11 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
    * <br>
    *
    * <p>
-   * The new height is computed so that all text are completely visible. Consequently, the method check the width of all Text children shape.<br>
+   * The new height is computed so that all text are completely visible. Consequently, the method check the width of all
+   * Text children shape.<br>
    * <br>
-   * <b> The method does not apply the new height to the shape. </b> Use {@link LayoutActorFeature#setNewHeight} for that purpose.
+   * <b> The method does not apply the new height to the shape. </b> Use {@link LayoutActorFeature#setNewHeight} for
+   * that purpose.
    * </p>
    *
    * @param childrenShapes
@@ -225,9 +227,11 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
    * <br>
    *
    * <p>
-   * The new width is computed so that all text are completely visible. Consequently, the method check the width of all Text children shape. <br>
+   * The new width is computed so that all text are completely visible. Consequently, the method check the width of all
+   * Text children shape. <br>
    * <br>
-   * <b> The method does not apply the new width to the shape. </b> Use {@link LayoutActorFeature#setNewWidth} for that purpose.
+   * <b> The method does not apply the new width to the shape. </b> Use {@link LayoutActorFeature#setNewWidth} for that
+   * purpose.
    * </p>
    *
    * @param childrenShapes
@@ -376,7 +380,8 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
    * @param containerGa
    *          the container ga
    */
-  private void layoutSpecialActor(final ExecutableActor ea, final EList<Shape> childrenShapes, final GraphicsAlgorithm containerGa) {
+  private void layoutSpecialActor(final ExecutableActor ea, final EList<Shape> childrenShapes,
+      final GraphicsAlgorithm containerGa) {
     final IColorConstant backgroundColor;
     final IColorConstant foregroundColor;
     if (ea instanceof BroadcastActor) {
@@ -420,10 +425,13 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
    */
   private void layoutActor(final Actor actor, final EList<Shape> childrenShapes, final GraphicsAlgorithm containerGa) {
     final Refinement refinement = actor.getRefinement();
-    final boolean isHactor = (refinement != null) && (refinement.getFilePath() != null) && refinement.getFilePath().getFileExtension().equals("pi");
+    final boolean isHactor = (refinement != null) && (refinement.getFilePath() != null)
+        && refinement.getFilePath().getFileExtension().equals("pi");
 
-    final IColorConstant bgColor = isHactor ? AddActorFeature.HIERARCHICAL_ACTOR_BACKGROUND : AddActorFeature.ACTOR_BACKGROUND;
-    final IColorConstant fgColor = isHactor ? AddActorFeature.HIERARCHICAL_ACTOR_FOREGROUND : AddActorFeature.ACTOR_FOREGROUND;
+    final IColorConstant bgColor = isHactor ? AddActorFeature.HIERARCHICAL_ACTOR_BACKGROUND
+        : AddActorFeature.ACTOR_BACKGROUND;
+    final IColorConstant fgColor = isHactor ? AddActorFeature.HIERARCHICAL_ACTOR_FOREGROUND
+        : AddActorFeature.ACTOR_FOREGROUND;
 
     for (final Shape shape : childrenShapes) {
       final GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
@@ -449,7 +457,8 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
    *          the anchors of the shape
    * @return true if something was changed
    */
-  protected boolean setNewHeight(final int newHeigt, final EList<Shape> childrenShapes, final EList<Anchor> anchorShapes) {
+  protected boolean setNewHeight(final int newHeigt, final EList<Shape> childrenShapes,
+      final EList<Anchor> anchorShapes) {
     boolean anythingChanged = false;
 
     // No need to change the height of the name
@@ -484,7 +493,8 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
     int y = portFontHeight + LayoutActorFeature.PORT_GAP + LayoutActorFeature.INITIAL_GAP;
     for (int i = 0; i < inputs.size(); i++) {
       final int configSpace = (i < nbConfigInput) ? 0 : maxNbConfigPort - nbConfigInput;
-      final double relativeHeight = (y + ((i + configSpace) * (portFontHeight + LayoutActorFeature.PORT_GAP))) / (double) newHeigt;
+      final double relativeHeight = (y + ((i + configSpace) * (portFontHeight + LayoutActorFeature.PORT_GAP)))
+          / (double) newHeigt;
       if (inputs.get(i).getRelativeHeight() != relativeHeight) {
         anythingChanged = true;
         inputs.get(i).setRelativeHeight(relativeHeight);
@@ -496,7 +506,8 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
     y = portFontHeight + LayoutActorFeature.PORT_GAP + LayoutActorFeature.INITIAL_GAP;
     for (int i = 0; i < outputs.size(); i++) {
       final int configSpace = (i < nbConfigOutput) ? 0 : maxNbConfigPort - nbConfigOutput;
-      final double relativeHeight = (y + ((i + configSpace) * (portFontHeight + LayoutActorFeature.PORT_GAP))) / (double) newHeigt;
+      final double relativeHeight = (y + ((i + configSpace) * (portFontHeight + LayoutActorFeature.PORT_GAP)))
+          / (double) newHeigt;
       if (outputs.get(i).getRelativeHeight() != relativeHeight) {
         anythingChanged = true;
         outputs.get(i).setRelativeHeight(relativeHeight);

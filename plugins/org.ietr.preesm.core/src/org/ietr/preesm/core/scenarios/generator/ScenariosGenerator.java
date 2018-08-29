@@ -107,8 +107,8 @@ public class ScenariosGenerator {
    * Generates a set of PreesmScenario from an IProject.
    *
    * @param project
-   *          the IProject containing the architectures and algorithms. project is supposed to have the PreesmProjectNature and to follow the standard Preesm
-   *          folder hierarchy
+   *          the IProject containing the architectures and algorithms. project is supposed to have the
+   *          PreesmProjectNature and to follow the standard Preesm folder hierarchy
    * @return a set of PreesmScenario, one for each possible pair of architecture and algorithm
    * @throws InvalidModelException
    *           the invalid model exception
@@ -117,7 +117,8 @@ public class ScenariosGenerator {
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  public Set<PreesmScenario> generateScenarios(final IProject project) throws InvalidModelException, CoreException, FileNotFoundException {
+  public Set<PreesmScenario> generateScenarios(final IProject project)
+      throws InvalidModelException, CoreException, FileNotFoundException {
     final IFolder archiDir = project.getFolder(ScenariosGenerator.archiDirName);
     final IFolder algoDir = project.getFolder(ScenariosGenerator.algoDirName);
     return generateScenarios(archiDir, algoDir);
@@ -203,7 +204,8 @@ public class ScenariosGenerator {
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  private PreesmScenario createScenario(final String archiURL, final String algoURL) throws InvalidModelException, CoreException, FileNotFoundException {
+  private PreesmScenario createScenario(final String archiURL, final String algoURL)
+      throws InvalidModelException, CoreException, FileNotFoundException {
     // Create a new PreesmScenario
     final PreesmScenario scenario = new PreesmScenario();
     // Handle factory registry
@@ -255,7 +257,8 @@ public class ScenariosGenerator {
    * @throws CoreException
    *           the core exception
    */
-  private void fillPiScenario(final PreesmScenario scenario, final Design archi, final String algoURL) throws InvalidModelException, CoreException {
+  private void fillPiScenario(final PreesmScenario scenario, final Design archi, final String algoURL)
+      throws InvalidModelException, CoreException {
     final PiGraph algo = PiParser.getPiGraph(algoURL);
     scenario.setAlgorithmURL(algoURL);
     // Get com nodes and cores names
@@ -293,7 +296,8 @@ public class ScenariosGenerator {
    * @throws InvalidModelException
    *           the invalid model exception
    */
-  private void fillSDFScenario(final PreesmScenario scenario, final Design archi, final String algoURL) throws FileNotFoundException, InvalidModelException {
+  private void fillSDFScenario(final PreesmScenario scenario, final Design archi, final String algoURL)
+      throws FileNotFoundException, InvalidModelException {
     final SDFGraph algo = ScenarioParser.getSDFGraph(algoURL);
     scenario.setAlgorithmURL(algoURL);
     // Get com nodes and cores names
@@ -322,8 +326,8 @@ public class ScenariosGenerator {
    * Generates a set of PreesmScenario from an IProject and save them in a folder.
    *
    * @param project
-   *          the IProject containing the architectures and algorithms. project is supposed to have the PreesmProjectNature and to follow the standard Preesm
-   *          folder hierarchy
+   *          the IProject containing the architectures and algorithms. project is supposed to have the
+   *          PreesmProjectNature and to follow the standard Preesm folder hierarchy
    * @throws CoreException
    *           the core exception
    * @throws InvalidModelException
@@ -331,7 +335,8 @@ public class ScenariosGenerator {
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  public void generateAndSaveScenarios(final IProject project) throws CoreException, InvalidModelException, FileNotFoundException {
+  public void generateAndSaveScenarios(final IProject project)
+      throws CoreException, InvalidModelException, FileNotFoundException {
     final IFolder scenarioDir = project.getFolder(ScenariosGenerator.scenarioDirName);
     saveScenarios(generateScenarios(project), scenarioDir);
   }

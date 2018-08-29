@@ -55,8 +55,9 @@ import org.ietr.preesm.algorithm.importSdf3Xml.Sdf3XmlParser;
 
 // TODO: Auto-generated Javadoc
 /**
- * Generator of hierarchical graphs (IBSDF) from alive SDF graphs generated with <a href="https://github.com/bbodin/turbine/">Turbine</a>, the only parameter to
- * give is the number of actors. Used independently from the throughput evaluator to create instances for test
+ * Generator of hierarchical graphs (IBSDF) from alive SDF graphs generated with
+ * <a href="https://github.com/bbodin/turbine/">Turbine</a>, the only parameter to give is the number of actors. Used
+ * independently from the throughput evaluator to create instances for test
  *
  * @author blaunay
  *
@@ -113,7 +114,8 @@ public class IBSDFGenerator {
       remaining_actors -= randomNum;
 
       // Generation of the graph
-      p = Runtime.getRuntime().exec(new String[] { this.path + "SDFGenerator.py", Integer.toString(randomNum), Integer.toString(this.graphSet.size()) });
+      p = Runtime.getRuntime().exec(new String[] { this.path + "SDFGenerator.py", Integer.toString(randomNum),
+          Integer.toString(this.graphSet.size()) });
       p.waitFor();
 
       // Import it in PREESM
@@ -151,7 +153,8 @@ public class IBSDFGenerator {
   }
 
   /**
-   * Inserts the graph g in the vertex v by adding corresponding interfaces and ensuring the liveness of the whole graph.
+   * Inserts the graph g in the vertex v by adding corresponding interfaces and ensuring the liveness of the whole
+   * graph.
    *
    * @param g
    *          the g

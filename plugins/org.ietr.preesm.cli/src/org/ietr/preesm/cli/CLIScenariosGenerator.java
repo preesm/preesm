@@ -74,12 +74,14 @@ public class CLIScenariosGenerator implements IApplication {
     try {
       final CommandLineParser parser = new PosixParser();
 
-      final String cliOpts = StringUtils.join((Object[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS), " ");
+      final String cliOpts = StringUtils
+          .join((Object[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS), " ");
       CLIWorkflowLogger.traceln("Starting scenarios generation");
       CLIWorkflowLogger.traceln("Command line arguments: " + cliOpts);
 
       // parse the command line arguments
-      final CommandLine line = parser.parse(options, (String[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS));
+      final CommandLine line = parser.parse(options,
+          (String[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS));
 
       if (line.getArgs().length != 1) {
         throw new ParseException("Expected project name as first argument", 0);

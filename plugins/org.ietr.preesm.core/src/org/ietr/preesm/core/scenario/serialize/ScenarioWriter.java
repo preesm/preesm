@@ -543,7 +543,8 @@ public class ScenarioWriter {
     }
 
     for (final String opDef : this.scenario.getTimingManager().getMemcpySpeeds().keySet()) {
-      addMemcpySpeed(timings, opDef, this.scenario.getTimingManager().getMemcpySetupTime(opDef), this.scenario.getTimingManager().getMemcpyTimePerUnit(opDef));
+      addMemcpySpeed(timings, opDef, this.scenario.getTimingManager().getMemcpySetupTime(opDef),
+          this.scenario.getTimingManager().getMemcpyTimePerUnit(opDef));
     }
   }
 
@@ -582,7 +583,8 @@ public class ScenarioWriter {
    * @param memcpyTimePerUnit
    *          the memcpy time per unit
    */
-  private void addMemcpySpeed(final Element parent, final String opDef, final long memcpySetupTime, final float memcpyTimePerUnit) {
+  private void addMemcpySpeed(final Element parent, final String opDef, final long memcpySetupTime,
+      final float memcpyTimePerUnit) {
 
     final Element timingelt = this.dom.createElement("memcpyspeed");
     parent.appendChild(timingelt);

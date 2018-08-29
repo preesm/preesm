@@ -61,7 +61,8 @@ public class UpdateActorFeature extends UpdateAbstractVertexFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.UpdateAbstractVertexFeature#canUpdate(org.eclipse.graphiti.features.context.IUpdateContext)
+   * @see org.ietr.preesm.ui.pimm.features.UpdateAbstractVertexFeature#canUpdate(org.eclipse.graphiti.features.context.
+   * IUpdateContext)
    */
   @Override
   public boolean canUpdate(final IUpdateContext context) {
@@ -72,7 +73,9 @@ public class UpdateActorFeature extends UpdateAbstractVertexFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.UpdateAbstractVertexFeature#updateNeeded(org.eclipse.graphiti.features.context.IUpdateContext)
+   * @see
+   * org.ietr.preesm.ui.pimm.features.UpdateAbstractVertexFeature#updateNeeded(org.eclipse.graphiti.features.context.
+   * IUpdateContext)
    */
   @Override
   public IReason updateNeeded(final IUpdateContext context) {
@@ -86,7 +89,8 @@ public class UpdateActorFeature extends UpdateAbstractVertexFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.UpdateAbstractVertexFeature#update(org.eclipse.graphiti.features.context.IUpdateContext)
+   * @see org.ietr.preesm.ui.pimm.features.UpdateAbstractVertexFeature#update(org.eclipse.graphiti.features.context.
+   * IUpdateContext)
    */
   @Override
   public boolean update(final IUpdateContext context) {

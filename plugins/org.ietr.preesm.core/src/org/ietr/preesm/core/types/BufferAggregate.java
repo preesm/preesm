@@ -40,8 +40,8 @@ import java.util.ArrayList;
 
 // TODO: Auto-generated Javadoc
 /**
- * Objects used to tag the SDF edges when they represent more than one buffer each. One edge contains one aggregate in its propertybean. The Aggregate is
- * composed of BufferDefinitions with details on their size, type...
+ * Objects used to tag the SDF edges when they represent more than one buffer each. One edge contains one aggregate in
+ * its propertybean. The Aggregate is composed of BufferDefinitions with details on their size, type...
  *
  * @author mpelcat
  *

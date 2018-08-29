@@ -275,7 +275,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.impl.AbstractFeatureProvider#getAddFeature(org.eclipse.graphiti.features.context.IAddContext)
+   * @see
+   * org.eclipse.graphiti.features.impl.AbstractFeatureProvider#getAddFeature(org.eclipse.graphiti.features.context.
+   * IAddContext)
    */
   @Override
   public IAddFeature getAddFeature(final IAddContext context) {
@@ -288,7 +290,8 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       final PiMMAddFeatureSelectionSwitch piMMAddFeatureSelectionSwitch = new PiMMAddFeatureSelectionSwitch();
       addFeature = piMMAddFeatureSelectionSwitch.doSwitch((EObject) newObject);
     } else if (newObject instanceof IFile) {
-      final Object businessObjectForPictogramElement = getBusinessObjectForPictogramElement(context.getTargetContainer());
+      final Object businessObjectForPictogramElement = getBusinessObjectForPictogramElement(
+          context.getTargetContainer());
       if (businessObjectForPictogramElement instanceof Actor || businessObjectForPictogramElement instanceof Delay) {
         addFeature = new AddRefinementFeature(this);
       } else if (businessObjectForPictogramElement instanceof PiGraph) {
@@ -326,9 +329,11 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     if (!isEditable()) {
       return new ICreateFeature[0];
     }
-    return new ICreateFeature[] { new CreateActorFeature(this), new CreateParameterFeature(this), new CreateConfigInputInterfaceFeature(this),
-        new CreateConfigOutputInterfaceFeature(this), new CreateDataInputInterfaceFeature(this), new CreateDataOutputInterfaceFeature(this),
-        new CreateBroadcastActorFeature(this), new CreateJoinActorFeature(this), new CreateForkActorFeature(this), new CreateRoundBufferActorFeature(this) };
+    return new ICreateFeature[] { new CreateActorFeature(this), new CreateParameterFeature(this),
+        new CreateConfigInputInterfaceFeature(this), new CreateConfigOutputInterfaceFeature(this),
+        new CreateDataInputInterfaceFeature(this), new CreateDataOutputInterfaceFeature(this),
+        new CreateBroadcastActorFeature(this), new CreateJoinActorFeature(this), new CreateForkActorFeature(this),
+        new CreateRoundBufferActorFeature(this) };
   }
 
   @Override
@@ -347,7 +352,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getCustomFeatures(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see
+   * org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getCustomFeatures(org.eclipse.graphiti.features.context.
+   * ICustomContext)
    */
   @Override
   public ICustomFeature[] getCustomFeatures(final ICustomContext context) {
@@ -379,15 +386,17 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     }
 
     if (obj instanceof ExecutableActor) {
-      final ICustomFeature[] actorFeatures = new ICustomFeature[] { new AddDataOutputPortFeature(this), new AddDataInputPortFeature(this),
-          new AddConfigInputPortFeature(this), new AddConfigOutputPortFeature(this) };
+      final ICustomFeature[] actorFeatures = new ICustomFeature[] { new AddDataOutputPortFeature(this),
+          new AddDataInputPortFeature(this), new AddConfigInputPortFeature(this),
+          new AddConfigOutputPortFeature(this) };
       for (final ICustomFeature feature : actorFeatures) {
         features.add(feature);
       }
     }
     if (obj instanceof Actor) {
-      final ICustomFeature[] actorFeatures = new ICustomFeature[] { new SetActorRefinementFeature(this), new ClearActorRefinementFeature(this),
-          new OpenRefinementFeature(this), new SetActorMemoryScriptFeature(this), new ClearActorMemoryScriptFeature(this), new OpenMemoryScriptFeature(this) };
+      final ICustomFeature[] actorFeatures = new ICustomFeature[] { new SetActorRefinementFeature(this),
+          new ClearActorRefinementFeature(this), new OpenRefinementFeature(this), new SetActorMemoryScriptFeature(this),
+          new ClearActorMemoryScriptFeature(this), new OpenMemoryScriptFeature(this) };
       for (final ICustomFeature feature : actorFeatures) {
         features.add(feature);
       }
@@ -481,7 +490,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getDeleteFeature(org.eclipse.graphiti.features.context.IDeleteContext)
+   * @see
+   * org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getDeleteFeature(org.eclipse.graphiti.features.context.
+   * IDeleteContext)
    */
   @Override
   public IDeleteFeature getDeleteFeature(final IDeleteContext context) {
@@ -505,7 +516,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.impl.AbstractFeatureProvider#getDirectEditingFeature(org.eclipse.graphiti.features.context.IDirectEditingContext)
+   * @see
+   * org.eclipse.graphiti.features.impl.AbstractFeatureProvider#getDirectEditingFeature(org.eclipse.graphiti.features.
+   * context.IDirectEditingContext)
    */
   @Override
   public IDirectEditingFeature getDirectEditingFeature(final IDirectEditingContext context) {
@@ -523,7 +536,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.impl.AbstractFeatureProvider#getLayoutFeature(org.eclipse.graphiti.features.context.ILayoutContext)
+   * @see
+   * org.eclipse.graphiti.features.impl.AbstractFeatureProvider#getLayoutFeature(org.eclipse.graphiti.features.context.
+   * ILayoutContext)
    */
   @Override
   public ILayoutFeature getLayoutFeature(final ILayoutContext context) {
@@ -554,7 +569,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getMoveAnchorFeature(org.eclipse.graphiti.features.context.IMoveAnchorContext)
+   * @see
+   * org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getMoveAnchorFeature(org.eclipse.graphiti.features.context.
+   * IMoveAnchorContext)
    */
   @Override
   public IMoveAnchorFeature getMoveAnchorFeature(final IMoveAnchorContext context) {
@@ -565,7 +582,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getMoveShapeFeature(org.eclipse.graphiti.features.context.IMoveShapeContext)
+   * @see
+   * org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getMoveShapeFeature(org.eclipse.graphiti.features.context.
+   * IMoveShapeContext)
    */
   @Override
   public IMoveShapeFeature getMoveShapeFeature(final IMoveShapeContext context) {
@@ -583,7 +602,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.impl.AbstractFeatureProvider#getReconnectionFeature(org.eclipse.graphiti.features.context.IReconnectionContext)
+   * @see
+   * org.eclipse.graphiti.features.impl.AbstractFeatureProvider#getReconnectionFeature(org.eclipse.graphiti.features.
+   * context.IReconnectionContext)
    */
   @Override
   public IReconnectionFeature getReconnectionFeature(final IReconnectionContext context) {
@@ -614,7 +635,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getRemoveFeature(org.eclipse.graphiti.features.context.IRemoveContext)
+   * @see
+   * org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getRemoveFeature(org.eclipse.graphiti.features.context.
+   * IRemoveContext)
    */
   @Override
   public IRemoveFeature getRemoveFeature(final IRemoveContext context) {
@@ -646,7 +669,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getResizeShapeFeature(org.eclipse.graphiti.features.context.IResizeShapeContext)
+   * @see
+   * org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getResizeShapeFeature(org.eclipse.graphiti.features.context
+   * .IResizeShapeContext)
    */
   @Override
   public IResizeShapeFeature getResizeShapeFeature(final IResizeShapeContext context) {
@@ -689,7 +714,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getUpdateFeature(org.eclipse.graphiti.features.context.IUpdateContext)
+   * @see
+   * org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getUpdateFeature(org.eclipse.graphiti.features.context.
+   * IUpdateContext)
    */
   @Override
   public IUpdateFeature getUpdateFeature(final IUpdateContext context) {

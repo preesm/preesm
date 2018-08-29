@@ -75,8 +75,8 @@ public class MemRouteStep extends MessageRouteStep {
    * @param ramNodeIndex
    *          the ram node index
    */
-  public MemRouteStep(final ComponentInstance sender, final List<ComponentInstance> nodes, final ComponentInstance receiver, final Mem mem,
-      final int ramNodeIndex) {
+  public MemRouteStep(final ComponentInstance sender, final List<ComponentInstance> nodes,
+      final ComponentInstance receiver, final Mem mem, final int ramNodeIndex) {
     super(sender, nodes, receiver);
     this.mem = mem;
     this.ramNodeIndex = ramNodeIndex;

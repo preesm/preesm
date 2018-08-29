@@ -63,10 +63,12 @@ import org.ietr.preesm.memory.script.Range;
  * @author kdesnos
  *
  */
-public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> implements IWeightedVertex<Integer>, Comparable<MemoryExclusionVertex> {
+public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
+    implements IWeightedVertex<Integer>, Comparable<MemoryExclusionVertex> {
 
   /**
-   * String used in the {@link PropertyBean} of a {@link MemoryExclusionVertex} to store the offset at which the memory object is stored in memory.
+   * String used in the {@link PropertyBean} of a {@link MemoryExclusionVertex} to store the offset at which the memory
+   * object is stored in memory.
    */
   public static final String MEMORY_OFFSET_PROPERTY = "memory_offset";
 
@@ -74,11 +76,13 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
    * Property of the {@link MemoryExclusionVertex}. The object associated to this property is:<br>
    * <code>
    * List&lt;Pair&lt;MemoryExclusionVertex,Pair&lt;Range,Range&gt;&gt;</code> <br>
-   * This {@link List} stores {@link Pair} of {@link MemoryExclusionVertex} and {@link Pair}. Each {@link Pair} corresponds to a {@link Range} of real tokens of
-   * the memory object and their position in the actual {@link MemoryExclusionVertex} (i.e. the key of the first {@link Pair}). <br>
-   * For the host memory object, this property gives the position of the range of bytes of the host within the memory allocated for it.<br>
-   * For hosted memory object, this property gives the position of the range(s) of bytes of the hosted memory object relatively to the position of the 0 index
-   * of the host memory object within the memory allocated for it.
+   * This {@link List} stores {@link Pair} of {@link MemoryExclusionVertex} and {@link Pair}. Each {@link Pair}
+   * corresponds to a {@link Range} of real tokens of the memory object and their position in the actual
+   * {@link MemoryExclusionVertex} (i.e. the key of the first {@link Pair}). <br>
+   * For the host memory object, this property gives the position of the range of bytes of the host within the memory
+   * allocated for it.<br>
+   * For hosted memory object, this property gives the position of the range(s) of bytes of the hosted memory object
+   * relatively to the position of the 0 index of the host memory object within the memory allocated for it.
    */
   public static final String REAL_TOKEN_RANGE_PROPERTY = "real_token_range";
 
@@ -86,9 +90,10 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
    * Property of the {@link MemoryExclusionVertex}. The object associated to this property is:<br>
    * <code>
    * List&lt;MemoryExclusionVertex&gt;</code><br>
-   * This list contains the fake {@link MemoryExclusionVertex} that are added to the {@link MemoryExclusionGraph} during memory allocation when the current
-   * {@link MemoryExclusionVertex} is divided because of scripts. These fake {@link MemoryExclusionVertex} should be removed from the
-   * {@link MemoryExclusionGraph} if it is {@link MemoryExclusionGraph#deallocate() deallocated}.
+   * This list contains the fake {@link MemoryExclusionVertex} that are added to the {@link MemoryExclusionGraph} during
+   * memory allocation when the current {@link MemoryExclusionVertex} is divided because of scripts. These fake
+   * {@link MemoryExclusionVertex} should be removed from the {@link MemoryExclusionGraph} if it is
+   * {@link MemoryExclusionGraph#deallocate() deallocated}.
    */
   public static final String FAKE_MOBJECT = "fake_mobject";
 
@@ -96,29 +101,33 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
    * Property of the {@link MemoryExclusionVertex}. The object associated to this property is:<br>
    * <code>
    * List&lt;MemoryExclusionVertex&gt;</code><br>
-   * This {@link List} stores {@link MemoryExclusionVertex} corresponding to the {@link MemoryExclusionGraph#getAdjacentVertexOf(MemoryExclusionVertex) adjacent
-   * vertices} of the current {@link MemoryExclusionVertex} before it was merged as a result of memory scripts execution.
+   * This {@link List} stores {@link MemoryExclusionVertex} corresponding to the
+   * {@link MemoryExclusionGraph#getAdjacentVertexOf(MemoryExclusionVertex) adjacent vertices} of the current
+   * {@link MemoryExclusionVertex} before it was merged as a result of memory scripts execution.
    */
   public static final String ADJACENT_VERTICES_BACKUP = "adjacent_vertices_backup";
 
   /**
-   * Property of the {@link MemoryExclusionVertex}. The object associated to this property is an {@link Integer} that corresponds to the space in bytes between
-   * the offset at which the {@link MemoryExclusionVertex} is allocated and the actual beginning of the real token ranges. This property is set after the memory
-   * script execution.
+   * Property of the {@link MemoryExclusionVertex}. The object associated to this property is an {@link Integer} that
+   * corresponds to the space in bytes between the offset at which the {@link MemoryExclusionVertex} is allocated and
+   * the actual beginning of the real token ranges. This property is set after the memory script execution.
    */
   public static final String EMPTY_SPACE_BEFORE = "empty_space_before";
 
   /**
-   * Property of the {@link MemoryExclusionVertex}. The object associated to this property is an {@link Integer} that corresponds to the size in bytes of the
-   * {@link MemoryExclusionVertex} when it hosts merged {@link MemoryExclusionVertex} as a result of scripts execution. This value is stored in case the host
-   * {@link MemoryExclusionVertex} needs to be deallocated, and restored to the size it has when all hosted {@link MemoryExclusionVertex} are merged.
+   * Property of the {@link MemoryExclusionVertex}. The object associated to this property is an {@link Integer} that
+   * corresponds to the size in bytes of the {@link MemoryExclusionVertex} when it hosts merged
+   * {@link MemoryExclusionVertex} as a result of scripts execution. This value is stored in case the host
+   * {@link MemoryExclusionVertex} needs to be deallocated, and restored to the size it has when all hosted
+   * {@link MemoryExclusionVertex} are merged.
    */
   public static final String HOST_SIZE = "host_size";
 
   /**
-   * Property associated to {@link MemoryExclusionVertex} that are divided as a result of the application of memory scripts. The object associated to this
-   * property is a {@link List} of {@link MemoryExclusionVertex} that corresponds to the {@link MemoryExclusionVertex} in which the parts of the divided
-   * {@link MemoryExclusionVertex} will be merged.
+   * Property associated to {@link MemoryExclusionVertex} that are divided as a result of the application of memory
+   * scripts. The object associated to this property is a {@link List} of {@link MemoryExclusionVertex} that corresponds
+   * to the {@link MemoryExclusionVertex} in which the parts of the divided {@link MemoryExclusionVertex} will be
+   * merged.
    */
   public static final String DIVIDED_PARTS_HOSTS = "divided_parts_hosts";
 
@@ -126,8 +135,8 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   public static Map<String, DataType> _dataTypes = new LinkedHashMap<>();
 
   /**
-   * This method is used to associate a map of data types to the MemoryExclusionVertex class. This map will be used when creating a MemEx Vertex from a DAGEdge
-   * to give their real weight to the MemEx graph vertices.
+   * This method is used to associate a map of data types to the MemoryExclusionVertex class. This map will be used when
+   * creating a MemEx Vertex from a DAGEdge to give their real weight to the MemEx graph vertices.
    *
    * @param dataTypes
    *          the map of DataType
@@ -158,19 +167,20 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   private String explodeImplode;
 
   /**
-   * The edge in the DAG that corresponds to this vertex in the exclusion graph. (This attribute is used only if the vertices corresponds to an edge in the dag,
-   * i.e. a transfer between actors)
+   * The edge in the DAG that corresponds to this vertex in the exclusion graph. (This attribute is used only if the
+   * vertices corresponds to an edge in the dag, i.e. a transfer between actors)
    */
   private DAGEdge edge;
 
   /**
-   * The {@link DAGVertex} that corresponds to the actor in the DAG associated to this working memory {@link MemoryExclusionVertex}.
+   * The {@link DAGVertex} that corresponds to the actor in the DAG associated to this working memory
+   * {@link MemoryExclusionVertex}.
    */
   private DAGVertex vertex;
 
   /**
-   * {@link MemoryExclusionVertex} property associated to a {@link List} of {@link Integer} that represent the space <b>in bytes</b> between successive
-   * "subbuffers" of a {@link MemoryExclusionVertex}.
+   * {@link MemoryExclusionVertex} property associated to a {@link List} of {@link Integer} that represent the space
+   * <b>in bytes</b> between successive "subbuffers" of a {@link MemoryExclusionVertex}.
    */
   public static final String INTER_BUFFER_SPACES = "inter_buffer_spaces";
 
@@ -201,7 +211,8 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     // e.printStackTrace();
     // }
     // if datatype is defined, correct the vertex weight
-    final BufferAggregate buffers = (BufferAggregate) inputEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+    final BufferAggregate buffers = (BufferAggregate) inputEdge.getPropertyBean()
+        .getValue(BufferAggregate.propertyBeanName);
     final Iterator<BufferProperties> iter = buffers.iterator();
     int vertexWeight = 0;
     while (iter.hasNext()) {
@@ -280,7 +291,8 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractVertex#connectionRemoved(org.ietr.dftools.algorithm.model.AbstractEdge)
+   * @see
+   * org.ietr.dftools.algorithm.model.AbstractVertex#connectionRemoved(org.ietr.dftools.algorithm.model.AbstractEdge)
    */
   @Override
   public void connectionRemoved(final AbstractEdge<?, ?> e) {
@@ -290,11 +302,13 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
 
   /**
    * Test equality of two {@link MemoryExclusionVertex vertices}.<br>
-   * Two {@link MemoryExclusionVertex vertices} are considered equals if their {@link #getSource() source} and {@link #getSink() sink} are equals. Neither the
-   * weight nor the explodeImplode attributes of the vertices are taken into account to test the equality.
+   * Two {@link MemoryExclusionVertex vertices} are considered equals if their {@link #getSource() source} and
+   * {@link #getSink() sink} are equals. Neither the weight nor the explodeImplode attributes of the vertices are taken
+   * into account to test the equality.
    *
    * <p>
-   * Do not change the way the comparison is done since several other classes relate on it, like ScriptRunner#updateMEG method.
+   * Do not change the way the comparison is done since several other classes relate on it, like ScriptRunner#updateMEG
+   * method.
    * </p>
    *
    * @param o

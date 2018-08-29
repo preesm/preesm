@@ -71,8 +71,8 @@ public class SpanLengthCalculator extends InfiniteHomogeneousAbc {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public SpanLengthCalculator(final AbcParameters params, final MapperDAG dag, final Design archi, final TaskSchedType taskSchedType,
-      final PreesmScenario scenario) throws WorkflowException {
+  public SpanLengthCalculator(final AbcParameters params, final MapperDAG dag, final Design archi,
+      final TaskSchedType taskSchedType, final PreesmScenario scenario) throws WorkflowException {
     super(params, dag, archi, taskSchedType, scenario);
 
     updateTimings();
@@ -85,7 +85,8 @@ public class SpanLengthCalculator extends InfiniteHomogeneousAbc {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc#setEdgeCost(org.ietr.preesm. mapper.model.MapperDAGEdge)
+   * @see org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc#setEdgeCost(org.ietr.preesm.
+   * mapper.model.MapperDAGEdge)
    */
   @Override
   protected void setEdgeCost(final MapperDAGEdge edge) {

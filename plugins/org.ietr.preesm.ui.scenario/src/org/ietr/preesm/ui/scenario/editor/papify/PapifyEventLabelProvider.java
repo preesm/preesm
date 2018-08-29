@@ -68,7 +68,8 @@ public class PapifyEventLabelProvider implements ITableLabelProvider, SelectionL
    * @param propertyListener
    *          the property listener
    */
-  public PapifyEventLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer, final IPropertyListener propertyListener) {
+  public PapifyEventLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer,
+      final IPropertyListener propertyListener) {
     super();
   }
 

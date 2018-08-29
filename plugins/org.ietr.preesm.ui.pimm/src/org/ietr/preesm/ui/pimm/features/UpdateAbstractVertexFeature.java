@@ -129,7 +129,8 @@ public class UpdateAbstractVertexFeature extends AbstractUpdateFeature {
     }
 
     // update needed, if names are different
-    final boolean updateNameNeeded = (((pictogramName == null) && (businessName != null)) || ((pictogramName != null) && !pictogramName.equals(businessName)));
+    final boolean updateNameNeeded = (((pictogramName == null) && (businessName != null))
+        || ((pictogramName != null) && !pictogramName.equals(businessName)));
     if (updateNameNeeded) {
       return Reason.createTrueReason("Name is out of date\nNew name: " + businessName);
     }

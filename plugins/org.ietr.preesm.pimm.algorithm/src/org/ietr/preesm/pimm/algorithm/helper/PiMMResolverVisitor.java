@@ -43,12 +43,14 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * Set the value of parameters of a PiGraph when possible (i.e., if we have currently only one available value, or if we can compute the value)
+   * Set the value of parameters of a PiGraph when possible (i.e., if we have currently only one available value, or if
+   * we can compute the value)
    *
    * @param graph
    *          the PiGraph in which we want to set the values of parameters
    */
-  private static void computeDerivedParameterValues(final PiGraph graph, final LinkedHashMap<Parameter, Long> parameterValues) {
+  private static void computeDerivedParameterValues(final PiGraph graph,
+      final LinkedHashMap<Parameter, Long> parameterValues) {
     // If there is no value or list of values for one Parameter, the value
     // of the parameter is derived (i.e., computed from other parameters
     // values), we can evaluate it (after the values of other parameters
@@ -114,7 +116,8 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
         try {
           PiMMResolverVisitor.resolveExpression(d.getSizeExpression(), jepParser);
         } catch (final ParseException eparse) {
-          throw new RuntimeException("Failed to parse expression for delay [" + d.getName() + "]: " + eparse.getMessage());
+          throw new RuntimeException(
+              "Failed to parse expression for delay [" + d.getName() + "]: " + eparse.getMessage());
         }
       }
     }
@@ -144,8 +147,8 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * Static parameters. There should be no problem of order with ConfigInputInterface as the interfaces depending on local parameters are located in lower
-   * levels of hierarchy.
+   * Static parameters. There should be no problem of order with ConfigInputInterface as the interfaces depending on
+   * local parameters are located in lower levels of hierarchy.
    *
    * @param p
    *          the p
@@ -153,8 +156,10 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseParameter(final Parameter p) {
     if (!p.isLocallyStatic()) {
-      throw new RuntimeException("Parameter " + p.getName() + " is depends on a configuration actor. It is thus impossible to use the"
-          + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF" + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
+      throw new RuntimeException(
+          "Parameter " + p.getName() + " is depends on a configuration actor. It is thus impossible to use the"
+              + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF"
+              + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
     }
     if (!this.parameterValues.containsKey(p)) {
       // Evaluate the expression wrt. the current values of the
@@ -188,7 +193,8 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
       cii.setExpression(pExp);
       this.parameterValues.put(cii, Long.parseLong(expressionString));
     } else {
-      throw new UnsupportedOperationException("In a static PiMM graph, setter of an incomming dependency must be a parameter.");
+      throw new UnsupportedOperationException(
+          "In a static PiMM graph, setter of an incomming dependency must be a parameter.");
     }
     return true;
   }

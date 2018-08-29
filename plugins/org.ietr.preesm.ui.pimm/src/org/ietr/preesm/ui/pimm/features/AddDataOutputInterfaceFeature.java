@@ -103,7 +103,8 @@ public class AddDataOutputInterfaceFeature extends AbstractAddDataInterfacefeatu
   @Override
   public boolean canAdd(final IAddContext context) {
     // Check that the user wants to add an SinkInterface to the Diagram
-    return ((context != null) && (context.getNewObject() instanceof DataOutputInterface)) && (context.getTargetContainer() instanceof Diagram);
+    return ((context != null) && (context.getNewObject() instanceof DataOutputInterface))
+        && (context.getTargetContainer() instanceof Diagram);
   }
 
 }

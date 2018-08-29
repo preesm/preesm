@@ -77,7 +77,8 @@ public class AccuratelyTimedAbc extends LatencyAbc {
    * @param scenario
    *          the scenario
    */
-  public AccuratelyTimedAbc(final AbcParameters params, final MapperDAG dag, final Design archi, final AbcType abcType, final PreesmScenario scenario) {
+  public AccuratelyTimedAbc(final AbcParameters params, final MapperDAG dag, final Design archi, final AbcType abcType,
+      final PreesmScenario scenario) {
     super(params, dag, archi, abcType, scenario);
 
     this.types = new ArrayList<>();

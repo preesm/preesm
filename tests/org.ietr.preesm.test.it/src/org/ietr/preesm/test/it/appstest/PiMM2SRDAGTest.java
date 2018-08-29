@@ -48,7 +48,8 @@ public class PiMM2SRDAGTest {
   @Test
   public void testRL() throws IOException, CoreException {
     final String projectName = "org.ietr.preesm.reinforcement_learning";
-    final String[] scenarios = new String[] { "1corePrediction.scenario", "4corePrediction.scenario", "1coreTraining.scenario", "4coreTraining.scenario" };
+    final String[] scenarios = new String[] { "1corePrediction.scenario", "4corePrediction.scenario",
+        "1coreTraining.scenario", "4coreTraining.scenario" };
     final String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "StaticPiMMCodegen.workflow" };
 
     for (final String workflow : workflows) {
@@ -64,8 +65,10 @@ public class PiMM2SRDAGTest {
   @Test
   public void testStereo() throws IOException, CoreException {
     final String projectName = "org.ietr.preesm.stereo";
-    final String[] scenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario", "lowMaxDisparity.scenario", "YUV4core.scenario" };
-    final String[] workflows = new String[] { "PiMM2SRDAGCodegenMemoryScriptsMixedMerged.workflow", "StaticPiMM2SRDAGCodegen.workflow" };
+    final String[] scenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario",
+        "lowMaxDisparity.scenario", "YUV4core.scenario" };
+    final String[] workflows = new String[] { "PiMM2SRDAGCodegenMemoryScriptsMixedMerged.workflow",
+        "StaticPiMM2SRDAGCodegen.workflow" };
 
     for (final String workflow : workflows) {
       for (final String scenario : scenarios) {

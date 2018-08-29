@@ -57,9 +57,11 @@ import org.jgrapht.graph.SimpleGraph;
  * @param <E>
  *          The edges class
  */
-public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVertex<Integer> & Comparable<V>, E extends DefaultEdge> {
+public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
+    E extends DefaultEdge> {
   /**
-   * This attribute is used by the getN function to store its results. No other method should neither access nor modify it.
+   * This attribute is used by the getN function to store its results. No other method should neither access nor modify
+   * it.
    */
   protected Map<V, Set<V>> adjacentVerticesBackup;
 
@@ -101,14 +103,16 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
    * </p>
    *
    * <p>
-   * In order to speed-up the algorithm, the result of a getN call for a vertex vi is stored in memory. Although this will use a lot of memory, this will avoid
-   * the heavy computation induced for vertices with a lot of edges.<br>
-   * <b>The returned subset should not be modified as it would corrupt the backed-up copy. Make a copy for local use.</b><br>
+   * In order to speed-up the algorithm, the result of a getN call for a vertex vi is stored in memory. Although this
+   * will use a lot of memory, this will avoid the heavy computation induced for vertices with a lot of edges.<br>
+   * <b>The returned subset should not be modified as it would corrupt the backed-up copy. Make a copy for local
+   * use.</b><br>
    * </p>
    *
    * <p>
-   * This method may seems to be a duplicate of method MemoryExclusionGraph.getAdjacentVertexOf(). However, the MaximumWeightClique class is designed to work
-   * with other graphs than MemoryExclusionGraph and duplicating the method was thus necessary.
+   * This method may seems to be a duplicate of method MemoryExclusionGraph.getAdjacentVertexOf(). However, the
+   * MaximumWeightClique class is designed to work with other graphs than MemoryExclusionGraph and duplicating the
+   * method was thus necessary.
    * </p>
    *
    * @param vertex
@@ -181,7 +185,8 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
   }
 
   /**
-   * Method to clear the adjacent vertices lists. (cf. MemoryExclusionGraph.clearAdjacentVerticesBackup comments for more info.)
+   * Method to clear the adjacent vertices lists. (cf. MemoryExclusionGraph.clearAdjacentVerticesBackup comments for
+   * more info.)
    */
   public void clearAdjacentVerticesBackup() {
     this.adjacentVerticesBackup = new LinkedHashMap<>();

@@ -88,12 +88,12 @@ public class SerialMemoryBoundsEstimator extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
-   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
+   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
 
     // Rem: Logger is used to display messages in the console
     final Logger logger = WorkflowLogger.getLogger();
@@ -108,7 +108,8 @@ public class SerialMemoryBoundsEstimator extends AbstractTaskImplementation {
       if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_DEFAULT)) {
         logger.log(Level.INFO, "No solver specified. Heuristic solver used by default.");
       } else {
-        if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_HEURISTIC) || valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_OSTERGARD)
+        if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_HEURISTIC)
+            || valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_OSTERGARD)
             || valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_YAMAGUCHI)) {
           logger.log(Level.INFO, valueSolver + " solver used.");
         } else {
@@ -125,7 +126,8 @@ public class SerialMemoryBoundsEstimator extends AbstractTaskImplementation {
     for (final String memory : memExes.keySet()) {
       final MemoryExclusionGraph memEx = memExes.get(memory);
       final int nbVertices = memEx.vertexSet().size();
-      final double density = memEx.edgeSet().size() / ((memEx.vertexSet().size() * (memEx.vertexSet().size() - 1)) / 2.0);
+      final double density = memEx.edgeSet().size()
+          / ((memEx.vertexSet().size() * (memEx.vertexSet().size() - 1)) / 2.0);
       // Derive bounds
       AbstractMaximumWeightCliqueSolver<MemoryExclusionVertex, DefaultEdge> solver = null;
       if (valueSolver.equals(SerialMemoryBoundsEstimator.VALUE_SOLVER_HEURISTIC)) {
@@ -145,8 +147,8 @@ public class SerialMemoryBoundsEstimator extends AbstractTaskImplementation {
       final int minBound = solver.sumWeight(solver.getHeaviestClique());
       final int maxBound = solver.sumWeight(memEx.vertexSet());
 
-      logger.log(Level.INFO,
-          "Memory(" + memory + ") Vertices = " + nbVertices + " Bound_Max = " + maxBound + " Bound_Min = " + minBound + " Density = " + density);
+      logger.log(Level.INFO, "Memory(" + memory + ") Vertices = " + nbVertices + " Bound_Max = " + maxBound
+          + " Bound_Min = " + minBound + " Density = " + density);
     }
 
     // Generate output

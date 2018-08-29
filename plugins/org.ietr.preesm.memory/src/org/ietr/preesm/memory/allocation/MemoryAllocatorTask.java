@@ -60,12 +60,12 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
-   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
+   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
     init(parameters);
 
     // Retrieve the input of the task
@@ -86,16 +86,18 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
     }
 
     // Do the distribution
-    final Map<String, MemoryExclusionGraph> megs = Distributor.distributeMeg(this.valueDistribution, memEx, this.alignment);
+    final Map<String,
+        MemoryExclusionGraph> megs = Distributor.distributeMeg(this.valueDistribution, memEx, this.alignment);
 
     // Log results
     if (this.verbose && !this.valueDistribution.equals(AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY)) {
       final String msg = "Created " + megs.keySet().size() + " MemExes";
       this.logger.log(Level.INFO, msg);
       for (final Entry<String, MemoryExclusionGraph> entry : megs.entrySet()) {
-        final double density = entry.getValue().edgeSet().size() / ((entry.getValue().vertexSet().size() * (entry.getValue().vertexSet().size() - 1)) / 2.0);
-        final String msg2 = "Memex(" + entry.getKey() + "): " + entry.getValue().vertexSet().size() + " vertices, density=" + density + ":: "
-            + entry.getValue().getTotalSetOfVertices();
+        final double density = entry.getValue().edgeSet().size()
+            / ((entry.getValue().vertexSet().size() * (entry.getValue().vertexSet().size() - 1)) / 2.0);
+        final String msg2 = "Memex(" + entry.getKey() + "): " + entry.getValue().vertexSet().size()
+            + " vertices, density=" + density + ":: " + entry.getValue().getTotalSetOfVertices();
         this.logger.log(Level.INFO, msg2);
       }
     }
@@ -109,11 +111,12 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 
     // Check that the total number of vertices is unchanged
     if (!this.valueDistribution.equals(AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY)
-        && ((verticesBeforeDistribution.size() != verticesAfterDistribution.size()) || (verticesBeforeDistribution.size() != verticesInMegs.size()))) {
+        && ((verticesBeforeDistribution.size() != verticesAfterDistribution.size())
+            || (verticesBeforeDistribution.size() != verticesInMegs.size()))) {
       // Compute the list of missing vertices
       verticesBeforeDistribution.removeAll(verticesInMegs);
-      final String msg = "Problem in the MEG distribution, some memory objects were lost during the distribution.\n" + verticesBeforeDistribution
-          + "\nContact Preesm developers to solve this issue.";
+      final String msg = "Problem in the MEG distribution, some memory objects were lost during the distribution.\n"
+          + verticesBeforeDistribution + "\nContact Preesm developers to solve this issue.";
       this.logger.log(Level.SEVERE, msg);
     }
 

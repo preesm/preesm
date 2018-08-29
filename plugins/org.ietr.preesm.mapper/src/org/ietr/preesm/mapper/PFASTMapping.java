@@ -51,7 +51,8 @@ import org.ietr.preesm.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.mapper.model.MapperDAG;
 
 /**
- * PFAST is a parallel mapping/scheduling method based on list scheduling followed by a neighborhood search phase. It was invented by Y-K Kwok.
+ * PFAST is a parallel mapping/scheduling method based on list scheduling followed by a neighborhood search phase. It
+ * was invented by Y-K Kwok.
  *
  * @author mwipliez
  * @author pmenuet
@@ -60,8 +61,8 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 public class PFASTMapping extends PFASTMappingFromDAG {
 
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     final SDFGraph algorithm = (SDFGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);

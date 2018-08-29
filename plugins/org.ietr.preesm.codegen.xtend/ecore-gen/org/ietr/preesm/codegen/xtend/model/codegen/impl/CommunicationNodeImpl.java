@@ -45,7 +45,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode;
 
 // TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Communication Node</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Communication Node</b></em>'. <!--
+ * end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
@@ -58,7 +59,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode;
  */
 public class CommunicationNodeImpl extends EObjectImpl implements CommunicationNode {
   /**
-   * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
    * 
    * @see #getName()
    * @generated
@@ -76,7 +78,8 @@ public class CommunicationNodeImpl extends EObjectImpl implements CommunicationN
   protected String name = CommunicationNodeImpl.NAME_EDEFAULT;
 
   /**
-   * The default value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The default value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
    * 
    * @see #getType()
    * @generated
@@ -136,7 +139,8 @@ public class CommunicationNodeImpl extends EObjectImpl implements CommunicationN
     final String oldName = this.name;
     this.name = newName;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION_NODE__NAME, oldName, this.name));
+      eNotify(
+          new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION_NODE__NAME, oldName, this.name));
     }
   }
 
@@ -163,7 +167,8 @@ public class CommunicationNodeImpl extends EObjectImpl implements CommunicationN
     final String oldType = this.type;
     this.type = newType;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION_NODE__TYPE, oldType, this.type));
+      eNotify(
+          new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION_NODE__TYPE, oldType, this.type));
     }
   }
 
@@ -244,9 +249,11 @@ public class CommunicationNodeImpl extends EObjectImpl implements CommunicationN
   public boolean eIsSet(final int featureID) {
     switch (featureID) {
       case CodegenPackage.COMMUNICATION_NODE__NAME:
-        return CommunicationNodeImpl.NAME_EDEFAULT == null ? this.name != null : !CommunicationNodeImpl.NAME_EDEFAULT.equals(this.name);
+        return CommunicationNodeImpl.NAME_EDEFAULT == null ? this.name != null
+            : !CommunicationNodeImpl.NAME_EDEFAULT.equals(this.name);
       case CodegenPackage.COMMUNICATION_NODE__TYPE:
-        return CommunicationNodeImpl.TYPE_EDEFAULT == null ? this.type != null : !CommunicationNodeImpl.TYPE_EDEFAULT.equals(this.type);
+        return CommunicationNodeImpl.TYPE_EDEFAULT == null ? this.type != null
+            : !CommunicationNodeImpl.TYPE_EDEFAULT.equals(this.type);
     }
     return super.eIsSet(featureID);
   }

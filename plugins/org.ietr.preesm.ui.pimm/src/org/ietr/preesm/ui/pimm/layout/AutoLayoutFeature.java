@@ -144,7 +144,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     @Override
     public int hashCode() {
-      // see https://stackoverflow.com/questions/11742593/what-is-the-hashcode-for-a-custom-class-having-just-two-int-properties/11742634#11742634
+      // see
+      // https://stackoverflow.com/questions/11742593/what-is-the-hashcode-for-a-custom-class-having-just-two-int-properties/11742634#11742634
       int hash = 17;
       hash = (hash * 31) + this.start;
       hash = (hash * 31) + this.end;
@@ -235,7 +236,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.
+   * ICustomContext)
    */
   @Override
   public boolean canExecute(final ICustomContext context) {
@@ -243,8 +245,9 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   }
 
   /**
-   * Create {@link List} of {@link List} of {@link AbstractActor} where each innermost {@link List} is called a stage. An {@link AbstractActor} is put in a
-   * stage only if all its predecessors (not considering feedbackFifos) are already added to previous stages.
+   * Create {@link List} of {@link List} of {@link AbstractActor} where each innermost {@link List} is called a stage.
+   * An {@link AbstractActor} is put in a stage only if all its predecessors (not considering feedbackFifos) are already
+   * added to previous stages.
    *
    * @param feedbackFifos
    *          {@link List} of {@link Fifo} that are ignored when scanning the predecessors of an actor.
@@ -254,7 +257,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
    *          First stage of {@link Fifo}, given by the {@link #findSrcActors(List, List)}.
    * @return the stage by stage list of actors.
    */
-  protected List<List<AbstractActor>> createActorStages(final List<Fifo> feedbackFifos, final List<AbstractActor> actors, final List<AbstractActor> srcActors) {
+  protected List<List<AbstractActor>> createActorStages(final List<Fifo> feedbackFifos,
+      final List<AbstractActor> actors, final List<AbstractActor> srcActors) {
     final List<List<AbstractActor>> stages = new ArrayList<>();
 
     // init first stage with src actors
@@ -310,8 +314,9 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     return stages;
   }
 
-  private void iterate(final List<Fifo> feedbackFifos, final List<AbstractActor> processedActors, final Set<AbstractActor> nextStage,
-      final List<AbstractActor> currentStage, final List<AbstractActor> dataOutputInterfaces) {
+  private void iterate(final List<Fifo> feedbackFifos, final List<AbstractActor> processedActors,
+      final Set<AbstractActor> nextStage, final List<AbstractActor> currentStage,
+      final List<AbstractActor> dataOutputInterfaces) {
     // Find candidates for the next stage in successors of current one
     findCandidates(feedbackFifos, nextStage, currentStage);
 
@@ -320,7 +325,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     check(feedbackFifos, processedActors, nextStage, dataOutputInterfaces);
   }
 
-  private void findCandidates(final List<Fifo> feedbackFifos, final Set<AbstractActor> nextStage, final List<AbstractActor> currentStage) {
+  private void findCandidates(final List<Fifo> feedbackFifos, final Set<AbstractActor> nextStage,
+      final List<AbstractActor> currentStage) {
     for (final AbstractActor actor : currentStage) {
       // if (actor instanceof DelayActor) {
       // final Delay delay = ((DelayActor) actor).getLinkedDelay();
@@ -359,8 +365,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     }
   }
 
-  private void check(final List<Fifo> feedbackFifos, final List<AbstractActor> processedActors, final Set<AbstractActor> nextStage,
-      final List<AbstractActor> dataOutputInterfaces) {
+  private void check(final List<Fifo> feedbackFifos, final List<AbstractActor> processedActors,
+      final Set<AbstractActor> nextStage, final List<AbstractActor> dataOutputInterfaces) {
     Iterator<AbstractActor> iter;
     iter = nextStage.iterator();
     while (iter.hasNext()) {
@@ -403,8 +409,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   }
 
   /**
-   * Create {@link List} of {@link List} of {@link Parameter} where each innermost {@link List} is called a stage. An {@link Parameter} is put in a stage only
-   * if all its predecessors are already added to previous stages.
+   * Create {@link List} of {@link List} of {@link Parameter} where each innermost {@link List} is called a stage. An
+   * {@link Parameter} is put in a stage only if all its predecessors are already added to previous stages.
    *
    * @param params
    *          the {@link List} of {@link Parameter} to organize into stages.
@@ -440,7 +446,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
         boolean hasUnstagedPredecessor = false;
         for (final ConfigInputPort port : param.getConfigInputPorts()) {
           final Dependency incomingDependency = port.getIncomingDependency();
-          hasUnstagedPredecessor |= (incomingDependency.getSetter() instanceof Parameter) && !processedParams.contains(incomingDependency.getSetter());
+          hasUnstagedPredecessor |= (incomingDependency.getSetter() instanceof Parameter)
+              && !processedParams.contains(incomingDependency.getSetter());
         }
         if (hasUnstagedPredecessor) {
           iter.remove();
@@ -460,7 +467,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see
+   * org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
    */
   @Override
   public void execute(final ICustomContext context) {
@@ -478,8 +486,11 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     if (dcd.cyclesDetected()) {
       final IStatus warning = new Status(IStatus.ERROR, "org.ietr.preesm.experiment", 1,
-          "This graph contains cyclic parameterization dependencies.\n" + "Remove these cycles before layouting the graph.", null);
-      ErrorDialog.openError(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Layout error", null, warning);
+          "This graph contains cyclic parameterization dependencies.\n"
+              + "Remove these cycles before layouting the graph.",
+          null);
+      ErrorDialog.openError(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Layout error", null,
+          warning);
       return;
 
     }
@@ -533,21 +544,24 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   }
 
   private void emptyEditorSelcetion(final Diagram diagram) {
-    final PiMMDiagramEditor activeEditor = (PiMMDiagramEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+    final PiMMDiagramEditor activeEditor = (PiMMDiagramEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+        .getActivePage().getActiveEditor();
     activeEditor.selectPictogramElements(new PictogramElement[] { diagram });
   }
 
   /**
-   * Given a list of vertical gaps (i.e. a {@link List} of {@link Range}) and a y-coordinate, this method finds the {@link Range} that is closest to the given
-   * coordinate.
+   * Given a list of vertical gaps (i.e. a {@link List} of {@link Range}) and a y-coordinate, this method finds the
+   * {@link Range} that is closest to the given coordinate.
    *
    * @param gaps
    *          the {@link List} of {@link Range}
    * @param optimY
    *          the searched y-coordinate
    * @param closestGap
-   *          {@link Range} used as an output {@link Parameter}. Its attributes will be set to the start and end values of the closest gap found in the list.
-   * @return Whether the given y Coordinate is closest to the top ( <code>true</code>) or bottom (<code>false</code>) of the found closest Gap.
+   *          {@link Range} used as an output {@link Parameter}. Its attributes will be set to the start and end values
+   *          of the closest gap found in the list.
+   * @return Whether the given y Coordinate is closest to the top ( <code>true</code>) or bottom (<code>false</code>) of
+   *         the found closest Gap.
    */
   protected boolean findClosestGap(final List<Range> gaps, final int optimY, final Range closestGap) {
     boolean isTop = false; // closest to the top or the bottom of the
@@ -607,8 +621,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   }
 
   /**
-   * Find {@link Parameter} of a graph that do no depend on other {@link Parameter}. {@link Dependency} to Configuration {@link AbstractActor} are not
-   * considered when searching for root {@link Parameter}.
+   * Find {@link Parameter} of a graph that do no depend on other {@link Parameter}. {@link Dependency} to Configuration
+   * {@link AbstractActor} are not considered when searching for root {@link Parameter}.
    *
    * @param params
    *          the {@link List} of {@link Parameter} within which roots are searched.
@@ -696,7 +710,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
    *          the list of stages, as create by the {@link AutoLayoutFeature#createParameterStages(List, List)}) method.
    * @param param
    *          the {@link Parameter} whose stage index is searched.
-   * @return the index of the {@link Parameter} stage, or <code>-1</code> if the {@link Parameter} was not found in the given {@link List}.
+   * @return the index of the {@link Parameter} stage, or <code>-1</code> if the {@link Parameter} was not found in the
+   *         given {@link List}.
    */
   protected int getParameterStage(final List<List<Parameter>> stagedParameters, final Parameter param) {
     int setterStage = -1;
@@ -709,9 +724,9 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   }
 
   /**
-   * Sort the {@link Parameter} in the vertical order in which they will be layouted. Each {@link Parameter} will have its own vertical column during the layout
-   * process (but will share a stage with other parameters). This method makes sure that the vertical order puts as close as possible to each other parameters
-   * with dependencies.
+   * Sort the {@link Parameter} in the vertical order in which they will be layouted. Each {@link Parameter} will have
+   * its own vertical column during the layout process (but will share a stage with other parameters). This method makes
+   * sure that the vertical order puts as close as possible to each other parameters with dependencies.
    *
    * @param stagedParameters
    *          the {@link List} of stage produced by {@link #createParameterStages(List, List)}.
@@ -785,9 +800,11 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
    * @param stagedParameters
    *          stage of {@link Parameter}, as created by {@link #createParameterStages(List, List)}.
    * @param paramVertOrder
-   *          {@link List} of {@link Parameter} in their vertical order, as sorted by {@link #getParameterVerticalOrder(List)}.
+   *          {@link List} of {@link Parameter} in their vertical order, as sorted by
+   *          {@link #getParameterVerticalOrder(List)}.
    */
-  protected void layoutDependencies(final Diagram diagram, final List<List<Parameter>> stagedParameters, final List<Parameter> paramVertOrder) {
+  protected void layoutDependencies(final Diagram diagram, final List<List<Parameter>> stagedParameters,
+      final List<Parameter> paramVertOrder) {
 
     // Variable used for the straight horizontal dependencies used to
     // distributes values to actors
@@ -807,7 +824,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
       for (final Dependency dependency : param.getOutgoingDependencies()) {
         processedDependencies.add(dependency);
-        currentYUsed = processDependency(diagram, stagedParameters, currentY, currentX, currentYUsed, param, dependency);
+        currentYUsed = processDependency(diagram, stagedParameters, currentY, currentX, currentYUsed, param,
+            dependency);
       }
     }
     // Check if dependencies were not layouted
@@ -836,14 +854,18 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       final int paramStage = getParameterStage(stagedParameters, param);
 
       // Add last 2 bendpoints
-      ffc.getBendpoints().add(Graphiti.getCreateService().createPoint(paramXPosition - AutoLayoutFeature.X_SPACE_PARAM, currentY));
-      ffc.getBendpoints().add(Graphiti.getCreateService().createPoint(paramXPosition - AutoLayoutFeature.X_SPACE_PARAM,
-          this.yParamInitPos - ((stagedParameters.size() - 1 - paramStage) * AutoLayoutFeature.Y_SPACE_PARAM) - (AddParameterFeature.PARAM_HEIGHT / 2)));
+      ffc.getBendpoints()
+          .add(Graphiti.getCreateService().createPoint(paramXPosition - AutoLayoutFeature.X_SPACE_PARAM, currentY));
+      ffc.getBendpoints()
+          .add(Graphiti.getCreateService().createPoint(paramXPosition - AutoLayoutFeature.X_SPACE_PARAM,
+              this.yParamInitPos - ((stagedParameters.size() - 1 - paramStage) * AutoLayoutFeature.Y_SPACE_PARAM)
+                  - (AddParameterFeature.PARAM_HEIGHT / 2)));
     }
   }
 
-  private boolean processDependency(final Diagram diagram, final List<List<Parameter>> stagedParameters, final int currentY, final int currentX,
-      final boolean currentYUsed, final Parameter param, final Dependency dependency) {
+  private boolean processDependency(final Diagram diagram, final List<List<Parameter>> stagedParameters,
+      final int currentY, final int currentX, final boolean currentYUsed, final Parameter param,
+      final Dependency dependency) {
     // Get the polyline
     final FreeFormConnection ffc = DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, dependency);
 
@@ -876,19 +898,21 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     return newYUsed;
   }
 
-  private void layoutDependencyToParamter(final List<List<Parameter>> stagedParameters, final Parameter param, final FreeFormConnection ffc,
-      final EObject getter) {
+  private void layoutDependencyToParamter(final List<List<Parameter>> stagedParameters, final Parameter param,
+      final FreeFormConnection ffc, final EObject getter) {
     // Get stage
     final int getterStage = getParameterStage(stagedParameters, (Parameter) getter);
     // layout only if getter is more than one stage away from
     // setter
     final int xPosition = this.paramXPositions.get(param);
-    final int yPosition = this.yParamInitPos - ((stagedParameters.size() - 1 - (getterStage - 1)) * AutoLayoutFeature.Y_SPACE_PARAM);
+    final int yPosition = this.yParamInitPos
+        - ((stagedParameters.size() - 1 - (getterStage - 1)) * AutoLayoutFeature.Y_SPACE_PARAM);
     final Point bPoint = Graphiti.getGaCreateService().createPoint(xPosition, yPosition);
     ffc.getBendpoints().add(bPoint);
   }
 
-  private void layoutDependencyToDelay(final Diagram diagram, final int currentY, final int currentX, final FreeFormConnection ffc, final EObject getter) {
+  private void layoutDependencyToDelay(final Diagram diagram, final int currentY, final int currentX,
+      final FreeFormConnection ffc, final EObject getter) {
     // Get the gap end of the delay
     // (or the gap just before if the delay is a feedback
     // delay
@@ -917,7 +941,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     // Add a bendpoint next to the delay
     int yPos = delayGA.getY();
-    yPos += ((delayGA.getX() < xPos) && ((delayGA.getX() + delayGA.getWidth()) > xPos)) ? -AutoLayoutFeature.FIFO_SPACE : 3 * AutoLayoutFeature.FIFO_SPACE;
+    yPos += ((delayGA.getX() < xPos) && ((delayGA.getX() + delayGA.getWidth()) > xPos)) ? -AutoLayoutFeature.FIFO_SPACE
+        : 3 * AutoLayoutFeature.FIFO_SPACE;
     ffc.getBendpoints().add(Graphiti.getGaCreateService().createPoint(xPos, yPos));
   }
 
@@ -929,10 +954,12 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     // Move it
     lastBp.setX(lastBp.getX() - currentX);
     // Add a new bendpoint on top of it
-    ffc.getBendpoints().add(ffc.getBendpoints().size() - 1, Graphiti.getGaCreateService().createPoint(lastBp.getX(), currentY));
+    ffc.getBendpoints().add(ffc.getBendpoints().size() - 1,
+        Graphiti.getGaCreateService().createPoint(lastBp.getX(), currentY));
   }
 
-  private void layoutDependencyToInterface(final Diagram diagram, final int currentY, final int currentX, final FreeFormConnection ffc, final EObject getter) {
+  private void layoutDependencyToInterface(final Diagram diagram, final int currentY, final int currentX,
+      final FreeFormConnection ffc, final EObject getter) {
     // Get position of target
     final PictogramElement getterPE = DiagramPiGraphLinkHelper.getActorPE(diagram, (AbstractActor) getter);
 
@@ -945,14 +972,16 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     if (index == 0) {
       // Add a new bendpoint on top of it
-      ffc.getBendpoints().add(ffc.getBendpoints().size(), Graphiti.getGaCreateService().createPoint(actorGA.getX() + (actorGA.getWidth() / 2), currentY));
+      ffc.getBendpoints().add(ffc.getBendpoints().size(),
+          Graphiti.getGaCreateService().createPoint(actorGA.getX() + (actorGA.getWidth() / 2), currentY));
     } else {
       int xPos = actorGA.getX();
       xPos -= currentX;
       // Add a new bendpoint on top of it
       ffc.getBendpoints().add(ffc.getBendpoints().size(), Graphiti.getGaCreateService().createPoint(xPos, currentY));
       // Add a new bendpoint next to it
-      ffc.getBendpoints().add(ffc.getBendpoints().size(), Graphiti.getGaCreateService().createPoint(xPos, actorGA.getY() - AutoLayoutFeature.BENDPOINT_SPACE));
+      ffc.getBendpoints().add(ffc.getBendpoints().size(),
+          Graphiti.getGaCreateService().createPoint(xPos, actorGA.getY() - AutoLayoutFeature.BENDPOINT_SPACE));
     }
   }
 
@@ -970,8 +999,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
    * @param stageWidth
    *          the horizontal width of each stage of {@link AbstractActor}
    */
-  protected void layoutFeedbackFifos(final Diagram diagram, final List<Fifo> feedbackFifos, final List<List<AbstractActor>> stagedActors,
-      final List<List<Range>> stagesGaps, final List<Range> stageWidth) {
+  protected void layoutFeedbackFifos(final Diagram diagram, final List<Fifo> feedbackFifos,
+      final List<List<AbstractActor>> stagedActors, final List<List<Range>> stagesGaps, final List<Range> stageWidth) {
     // Sort FIFOs according to the number of stages through which they're
     // going
     final List<Fifo> sortedFifos = new ArrayList<>(feedbackFifos);
@@ -1006,15 +1035,18 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
         final boolean isTop = findClosestGap(stagesGaps.get(stageIdx), penultimate.getY(), closestGap);
 
         // Make the Fifo go through this gap
-        int keptY = (isTop) ? closestGap.start + AutoLayoutFeature.FIFO_SPACE : closestGap.end - AutoLayoutFeature.FIFO_SPACE;
+        int keptY = (isTop) ? closestGap.start + AutoLayoutFeature.FIFO_SPACE
+            : closestGap.end - AutoLayoutFeature.FIFO_SPACE;
         keptY = (((closestGap.start + AutoLayoutFeature.FIFO_SPACE) <= penultimate.getY())
-            && ((closestGap.end == -1) || ((closestGap.end - AutoLayoutFeature.FIFO_SPACE) >= penultimate.getY()))) ? penultimate.getY() : keptY;
+            && ((closestGap.end == -1) || ((closestGap.end - AutoLayoutFeature.FIFO_SPACE) >= penultimate.getY())))
+                ? penultimate.getY()
+                : keptY;
         if (keptY != penultimate.getY()) {
-          ffc.getBendpoints().add(ffc.getBendpoints().size() - 1,
-              Graphiti.getGaCreateService().createPoint(stageWidth.get(stageIdx).end + AutoLayoutFeature.BENDPOINT_SPACE, keptY));
+          ffc.getBendpoints().add(ffc.getBendpoints().size() - 1, Graphiti.getGaCreateService()
+              .createPoint(stageWidth.get(stageIdx).end + AutoLayoutFeature.BENDPOINT_SPACE, keptY));
         }
-        ffc.getBendpoints().add(ffc.getBendpoints().size() - 1,
-            Graphiti.getGaCreateService().createPoint(stageWidth.get(stageIdx).start - AutoLayoutFeature.BENDPOINT_SPACE, keptY));
+        ffc.getBendpoints().add(ffc.getBendpoints().size() - 1, Graphiti.getGaCreateService()
+            .createPoint(stageWidth.get(stageIdx).start - AutoLayoutFeature.BENDPOINT_SPACE, keptY));
 
         // Update Gaps
         updateGaps(stagesGaps.get(stageIdx), keptY, closestGap);
@@ -1058,8 +1090,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       stageSrc.forEach(a -> a.getDataOutputPorts().forEach(p -> outgoingFifos.add(p.getOutgoingFifo())));
 
       // Ignoring fifos going to delay actor
-      outgoingFifos.removeIf(f -> (f != null)
-          && ((f.getTargetPort().getContainingActor() instanceof DelayActor) || (f.getSourcePort().getContainingActor() instanceof DelayActor)));
+      outgoingFifos.removeIf(f -> (f != null) && ((f.getTargetPort().getContainingActor() instanceof DelayActor)
+          || (f.getSourcePort().getContainingActor() instanceof DelayActor)));
 
       // Remove feedback fifos
       outgoingFifos.removeAll(this.feedbackFifos);
@@ -1121,13 +1153,15 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
         final AddDelayFeature ad = new AddDelayFeature(getFeatureProvider());
         // Add the delaySize / 2 to compute distance of the center of
         // the delay to the segments of the ffc
-        ad.connectDelayToFifo(ffc, fifo, pe, cba, posX + (AddDelayFeature.DELAY_SIZE / 2), posY + (AddDelayFeature.DELAY_SIZE / 2));
+        ad.connectDelayToFifo(ffc, fifo, pe, cba, posX + (AddDelayFeature.DELAY_SIZE / 2),
+            posY + (AddDelayFeature.DELAY_SIZE / 2));
 
       }
     }
   }
 
-  private void layoutFifoToDelay(final Diagram diagram, final int currentY, final int currentX, final FreeFormConnection ffc, final Delay delay) {
+  private void layoutFifoToDelay(final Diagram diagram, final int currentY, final int currentX,
+      final FreeFormConnection ffc, final Delay delay) {
     // Get the gap end of the delay
     // (or the gap just before if the delay is a feedback
     // delay
@@ -1156,7 +1190,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     // Add a bendpoint next to the delay
     int yPos = delayGA.getY();
-    yPos += ((delayGA.getX() < xPos) && ((delayGA.getX() + delayGA.getWidth()) > xPos)) ? -AutoLayoutFeature.FIFO_SPACE : 3 * AutoLayoutFeature.FIFO_SPACE;
+    yPos += ((delayGA.getX() < xPos) && ((delayGA.getX() + delayGA.getWidth()) > xPos)) ? -AutoLayoutFeature.FIFO_SPACE
+        : 3 * AutoLayoutFeature.FIFO_SPACE;
     ffc.getBendpoints().add(Graphiti.getGaCreateService().createPoint(xPos, yPos));
   }
 
@@ -1172,7 +1207,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
    * @param gaps
    *          Vertical gaps for this stage of {@link AbstractActor} as a {@link List} of {@link Range} of y-coordinates.
    */
-  protected void layoutInterStageFifos(final Diagram diagram, final List<Fifo> interStageFifos, final Range width, final List<Range> gaps) {
+  protected void layoutInterStageFifos(final Diagram diagram, final List<Fifo> interStageFifos, final Range width,
+      final List<Range> gaps) {
 
     // Find the FreeFormConnection of each FIFO
     // LinkedHashMap to preserve order
@@ -1213,8 +1249,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       if (matchedRange != null) {
         // Create bendpoint
         iter.remove();
-        ffc.getBendpoints().add(ffc.getBendpoints().size() - 1,
-            Graphiti.getGaCreateService().createPoint(width.end + AutoLayoutFeature.BENDPOINT_SPACE, penultimate.getY()));
+        ffc.getBendpoints().add(ffc.getBendpoints().size() - 1, Graphiti.getGaCreateService()
+            .createPoint(width.end + AutoLayoutFeature.BENDPOINT_SPACE, penultimate.getY()));
         // Update ranges of gaps
         updateGaps(gaps, penultimate.getY(), matchedRange);
       }
@@ -1231,17 +1267,19 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       // Find the optimal place of added bendpoints (not considering
       // actors)
       final int optimX = width.start - AutoLayoutFeature.BENDPOINT_SPACE;
-      final int optimY = Math.round(((float) (optimX - penultimate.getX()) / (float) (last.getX() - penultimate.getX())) * (last.getY() - penultimate.getY()))
-          + penultimate.getY();
+      final int optimY = Math.round(((float) (optimX - penultimate.getX()) / (float) (last.getX() - penultimate.getX()))
+          * (last.getY() - penultimate.getY())) + penultimate.getY();
 
       // Find the closest gap
       final Range closestGap = new Range(-1, -1);
       final boolean isTop = findClosestGap(gaps, optimY, closestGap);
 
       // Make the Fifo go through this gap
-      final int keptY = (isTop) ? closestGap.start + AutoLayoutFeature.FIFO_SPACE : closestGap.end - AutoLayoutFeature.FIFO_SPACE;
+      final int keptY = (isTop) ? closestGap.start + AutoLayoutFeature.FIFO_SPACE
+          : closestGap.end - AutoLayoutFeature.FIFO_SPACE;
       ffc.getBendpoints().add(ffc.getBendpoints().size() - 1, Graphiti.getGaCreateService().createPoint(optimX, keptY));
-      ffc.getBendpoints().add(ffc.getBendpoints().size() - 1, Graphiti.getGaCreateService().createPoint(width.end + AutoLayoutFeature.BENDPOINT_SPACE, keptY));
+      ffc.getBendpoints().add(ffc.getBendpoints().size() - 1,
+          Graphiti.getGaCreateService().createPoint(width.end + AutoLayoutFeature.BENDPOINT_SPACE, keptY));
 
       // Update Gaps
       updateGaps(gaps, keptY, closestGap);
@@ -1336,7 +1374,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
         moveContext.setY(currentY);
         moveFeature.moveShape(moveContext);
 
-        stageGaps.add(new Range(currentY + actorGA.getHeight(), currentY + actorGA.getHeight() + AutoLayoutFeature.Y_SPACE));
+        stageGaps
+            .add(new Range(currentY + actorGA.getHeight(), currentY + actorGA.getHeight() + AutoLayoutFeature.Y_SPACE));
         currentY += actorGA.getHeight() + AutoLayoutFeature.Y_SPACE;
         maxX = (maxX > actorGA.getWidth()) ? maxX : actorGA.getWidth();
 
@@ -1350,7 +1389,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   }
 
   /**
-   * Create the stages of {@link AbstractActor}. An actor can be put in a stage if all its predecessors have been put in previous stages.
+   * Create the stages of {@link AbstractActor}. An actor can be put in a stage if all its predecessors have been put in
+   * previous stages.
    *
    * @param graph
    *          the {@link PiGraph} whose {@link AbstractActor} are sorted into stages.
@@ -1390,7 +1430,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   }
 
   /**
-   * Layout the stages of {@link Parameter}. Aparameter can be put in a stage if all its predecessors have been put in previous stages.
+   * Layout the stages of {@link Parameter}. Aparameter can be put in a stage if all its predecessors have been put in
+   * previous stages.
    *
    * @param diagram
    *          the {@link PiGraph} whose {@link Parameter} are layouted.
@@ -1398,7 +1439,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
    *          Stages of {@link Parameter} produced by the {@link #createParameterStages(List, List)} method.
    * @return the {@link Parameter} in their {@link #getParameterVerticalOrder(List)}.
    */
-  protected List<Parameter> stageByStageParameterLayout(final Diagram diagram, final List<List<Parameter>> stagedParameters) {
+  protected List<Parameter> stageByStageParameterLayout(final Diagram diagram,
+      final List<List<Parameter>> stagedParameters) {
     this.paramXPositions = new LinkedHashMap<>();
 
     // 1. Sort the parameters so that each parameter has its own vertical
@@ -1408,12 +1450,14 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     // 2. Move the parameters
     // Vert position of first param is aligned with the first stage of
     // actors.
-    int xPos = ((this.stagedActors.size() > 1) && (this.stagedActors.get(0).get(0) instanceof DataInputInterface)) ? this.stageWidth.get(1).start
+    int xPos = ((this.stagedActors.size() > 1) && (this.stagedActors.get(0).get(0) instanceof DataInputInterface))
+        ? this.stageWidth.get(1).start
         : AutoLayoutFeature.X_INIT;
 
     // On top of actors, with enough space to layout all dependencies
     // plus some space to leave some air
-    this.yParamInitPos = AutoLayoutFeature.Y_INIT - (paramVertOrder.size() * AutoLayoutFeature.DEPENDENCY_SPACE) - AutoLayoutFeature.Y_SPACE;
+    this.yParamInitPos = AutoLayoutFeature.Y_INIT - (paramVertOrder.size() * AutoLayoutFeature.DEPENDENCY_SPACE)
+        - AutoLayoutFeature.Y_SPACE;
     for (final Parameter param : paramVertOrder) {
       // Get the PE
       final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, param);
@@ -1443,7 +1487,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       // Move the parameter (Do not use the MoveShapeFeature as it would
       // also mess up the dependencies
       paramGA.setX(xPos);
-      paramGA.setY(this.yParamInitPos - ((stagedParameters.size() - 1 - paramStage) * AutoLayoutFeature.Y_SPACE_PARAM) - AddParameterFeature.PARAM_HEIGHT);
+      paramGA.setY(this.yParamInitPos - ((stagedParameters.size() - 1 - paramStage) * AutoLayoutFeature.Y_SPACE_PARAM)
+          - AddParameterFeature.PARAM_HEIGHT);
       this.paramXPositions.put(param, xPos + (paramGA.getWidth() / 2));
       xPos += paramGA.getWidth() + AutoLayoutFeature.X_SPACE_PARAM;
     }

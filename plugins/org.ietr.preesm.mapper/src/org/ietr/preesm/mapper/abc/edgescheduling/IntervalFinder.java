@@ -48,7 +48,8 @@ import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 // TODO: Auto-generated Javadoc
 /**
- * During edge scheduling, one needs to find intervals to fit the transfers. This class deals with intervals in the transfer scheduling
+ * During edge scheduling, one needs to find intervals to fit the transfers. This class deals with intervals in the
+ * transfer scheduling
  *
  * @author mpelcat
  */
@@ -111,7 +112,8 @@ public class IntervalFinder {
    *          the max vertex
    * @return the interval
    */
-  public Interval findLargestFreeInterval(final ComponentInstance component, final MapperDAGVertex minVertex, final MapperDAGVertex maxVertex) {
+  public Interval findLargestFreeInterval(final ComponentInstance component, final MapperDAGVertex minVertex,
+      final MapperDAGVertex maxVertex) {
 
     return findInterval(component, minVertex, maxVertex, FindType.largestFreeInterval, 0);
 
@@ -128,7 +130,8 @@ public class IntervalFinder {
    *          the max vertex
    * @return the interval
    */
-  public Interval findEarliestNonNullInterval(final ComponentInstance component, final MapperDAGVertex minVertex, final MapperDAGVertex maxVertex) {
+  public Interval findEarliestNonNullInterval(final ComponentInstance component, final MapperDAGVertex minVertex,
+      final MapperDAGVertex maxVertex) {
 
     return findInterval(component, minVertex, maxVertex, FindType.earliestBigEnoughInterval, 0);
 
@@ -147,8 +150,8 @@ public class IntervalFinder {
    *          the size
    * @return the interval
    */
-  public Interval findEarliestBigEnoughInterval(final ComponentInstance component, final MapperDAGVertex minVertex, final MapperDAGVertex maxVertex,
-      final long size) {
+  public Interval findEarliestBigEnoughInterval(final ComponentInstance component, final MapperDAGVertex minVertex,
+      final MapperDAGVertex maxVertex, final long size) {
 
     return findInterval(component, minVertex, maxVertex, FindType.earliestBigEnoughInterval, size);
 
@@ -169,8 +172,8 @@ public class IntervalFinder {
    *          the data
    * @return the interval
    */
-  public Interval findInterval(final ComponentInstance component, final MapperDAGVertex minVertex, final MapperDAGVertex maxVertex, final FindType type,
-      final long data) {
+  public Interval findInterval(final ComponentInstance component, final MapperDAGVertex minVertex,
+      final MapperDAGVertex maxVertex, final FindType type, final long data) {
 
     final List<MapperDAGVertex> schedule = this.orderManager.getVertexList(component);
 

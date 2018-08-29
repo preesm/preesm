@@ -70,7 +70,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
  */
 public class BlockImpl extends EObjectImpl implements Block {
   /**
-   * The cached value of the '{@link #getCodeElts() <em>Code Elts</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getCodeElts() <em>Code Elts</em>}' containment reference list. <!-- begin-user-doc
+   * --> <!-- end-user-doc -->
    * 
    * @see #getCodeElts()
    * @generated
@@ -79,7 +80,8 @@ public class BlockImpl extends EObjectImpl implements Block {
   protected EList<CodeElt> codeElts;
 
   /**
-   * The cached value of the '{@link #getDeclarations() <em>Declarations</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getDeclarations() <em>Declarations</em>}' reference list. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
    * 
    * @see #getDeclarations()
    * @generated
@@ -88,7 +90,8 @@ public class BlockImpl extends EObjectImpl implements Block {
   protected EList<Variable> declarations;
 
   /**
-   * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
    * 
    * @see #getName()
    * @generated
@@ -106,7 +109,8 @@ public class BlockImpl extends EObjectImpl implements Block {
   protected String name = BlockImpl.NAME_EDEFAULT;
 
   /**
-   * The cached value of the '{@link #getDefinitions() <em>Definitions</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getDefinitions() <em>Definitions</em>}' containment reference list. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
    * 
    * @see #getDefinitions()
    * @generated
@@ -157,8 +161,8 @@ public class BlockImpl extends EObjectImpl implements Block {
   @Override
   public EList<Variable> getDeclarations() {
     if (this.declarations == null) {
-      this.declarations = new EObjectWithInverseResolvingEList.ManyInverse<>(Variable.class, this, CodegenPackage.BLOCK__DECLARATIONS,
-          CodegenPackage.VARIABLE__USERS);
+      this.declarations = new EObjectWithInverseResolvingEList.ManyInverse<>(Variable.class, this,
+          CodegenPackage.BLOCK__DECLARATIONS, CodegenPackage.VARIABLE__USERS);
     }
     return this.declarations;
   }
@@ -199,8 +203,8 @@ public class BlockImpl extends EObjectImpl implements Block {
   @Override
   public EList<Variable> getDefinitions() {
     if (this.definitions == null) {
-      this.definitions = new EObjectContainmentWithInverseEList<>(Variable.class, this, CodegenPackage.BLOCK__DEFINITIONS,
-          CodegenPackage.VARIABLE__CREATOR);
+      this.definitions = new EObjectContainmentWithInverseEList<>(Variable.class, this,
+          CodegenPackage.BLOCK__DEFINITIONS, CodegenPackage.VARIABLE__CREATOR);
     }
     return this.definitions;
   }
@@ -219,7 +223,8 @@ public class BlockImpl extends EObjectImpl implements Block {
    */
   @SuppressWarnings("unchecked")
   @Override
-  public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+  public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID,
+      final NotificationChain msgs) {
     switch (featureID) {
       case CodegenPackage.BLOCK__DECLARATIONS:
         return ((InternalEList<InternalEObject>) (InternalEList<?>) getDeclarations()).basicAdd(otherEnd, msgs);
@@ -242,7 +247,8 @@ public class BlockImpl extends EObjectImpl implements Block {
    * @generated
    */
   @Override
-  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID,
+      final NotificationChain msgs) {
     switch (featureID) {
       case CodegenPackage.BLOCK__CODE_ELTS:
         return ((InternalEList<?>) getCodeElts()).basicRemove(otherEnd, msgs);

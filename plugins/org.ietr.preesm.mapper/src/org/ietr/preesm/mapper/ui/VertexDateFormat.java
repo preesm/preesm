@@ -53,7 +53,8 @@ public class VertexDateFormat extends RelativeDateFormat {
   /*
    * (non-Javadoc)
    *
-   * @see org.jfree.chart.util.RelativeDateFormat#format(java.util.Date, java.lang.StringBuffer, java.text.FieldPosition)
+   * @see org.jfree.chart.util.RelativeDateFormat#format(java.util.Date, java.lang.StringBuffer,
+   * java.text.FieldPosition)
    */
   @Override
   public StringBuffer format(final Date date, final StringBuffer toAppendTo, final FieldPosition fieldPosition) {

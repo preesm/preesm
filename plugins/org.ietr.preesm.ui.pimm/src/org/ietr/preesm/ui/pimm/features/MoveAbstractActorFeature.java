@@ -100,8 +100,8 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
   }
 
   /**
-   * Move all bendpoints. Move bendpoints within a container shape. This code is a copy from the protected function calling private methods in
-   * {@link DefaultMoveShapeFeature}.
+   * Move all bendpoints. Move bendpoints within a container shape. This code is a copy from the protected function
+   * calling private methods in {@link DefaultMoveShapeFeature}.
    *
    * @param context
    *          the context
@@ -159,7 +159,8 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
   }
 
   /**
-   * Move a {@link Delay} and all the bendpoints of the associated {@link Fifo FIFOs} accorting to the given {@link IMoveShapeContext}.
+   * Move a {@link Delay} and all the bendpoints of the associated {@link Fifo FIFOs} accorting to the given
+   * {@link IMoveShapeContext}.
    *
    * @param context
    *          the {@link IMoveShapeContext} containing the deltaX and deltaY of the displacement
@@ -172,7 +173,8 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
     final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(getDiagram(), del);
 
     // Check if the delay is selected in the graphical interface
-    final PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer().getSelectedPictogramElements();
+    final PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer()
+        .getSelectedPictogramElements();
     final List<PictogramElement> selectedPEs = new ArrayList<>(Arrays.asList(selectedPictogramElements));
 
     for (final PictogramElement pe : pes) {
@@ -215,7 +217,8 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
   }
 
   /**
-   * Find FIFOs with a delay and both sides connected to selected actors. Put the {@link Delay} in {@link #implicitlyMovedDelay}.
+   * Find FIFOs with a delay and both sides connected to selected actors. Put the {@link Delay} in
+   * {@link #implicitlyMovedDelay}.
    *
    * @param context
    *          the context
@@ -243,7 +246,8 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
         }
       }
 
-      final PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer().getSelectedPictogramElements();
+      final PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer()
+          .getSelectedPictogramElements();
       if (selectedPictogramElements != null) {
         for (final PictogramElement selectedPictogramElement : selectedPictogramElements) {
           final PictogramElement selPe = selectedPictogramElement;
@@ -263,7 +267,8 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
                       // Add all the connection to the
                       // double connections lists
                       final Fifo fifo = (Fifo) del.getContainingFifo();
-                      final List<PictogramElement> fifoPEs = Graphiti.getLinkService().getPictogramElements(getDiagram(), fifo);
+                      final List<PictogramElement> fifoPEs = Graphiti.getLinkService()
+                          .getPictogramElements(getDiagram(), fifo);
                       for (final PictogramElement fifoPE : fifoPEs) {
                         if (fifoPE instanceof FreeFormConnection) {
                           this.outDoubleConnections.add((FreeFormConnection) fifoPE);
@@ -292,7 +297,8 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
                       // double connections lists
                       final Delay del = ((Fifo) bo).getDelay();
                       final Fifo fifo = (Fifo) del.getContainingFifo();
-                      final List<PictogramElement> fifoPEs = Graphiti.getLinkService().getPictogramElements(getDiagram(), fifo);
+                      final List<PictogramElement> fifoPEs = Graphiti.getLinkService()
+                          .getPictogramElements(getDiagram(), fifo);
                       for (final PictogramElement fifoPE : fifoPEs) {
                         if (fifoPE instanceof FreeFormConnection) {
                           this.outDoubleConnections.add((FreeFormConnection) fifoPE);
@@ -320,7 +326,8 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
    * @param deltaY
    *          the delta Y
    */
-  private void moveAllBendpointsOnFFConnection(final FreeFormConnection connection, final int deltaX, final int deltaY) {
+  private void moveAllBendpointsOnFFConnection(final FreeFormConnection connection, final int deltaX,
+      final int deltaY) {
     final List<Point> points = connection.getBendpoints();
     for (int i = 0; i < points.size(); i++) {
       final Point point = points.get(i);
@@ -399,7 +406,8 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
     if ((deltaX != 0) || (deltaY != 0)) {
       final List<Anchor> anchors = getAnchors(shapeToMove);
 
-      final PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer().getSelectedPictogramElements();
+      final PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer()
+          .getSelectedPictogramElements();
       if (selectedPictogramElements != null) {
         for (final PictogramElement selectedPictogramElement : selectedPictogramElements) {
           final PictogramElement selPe = selectedPictogramElement;
@@ -465,7 +473,9 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature#postMoveShape(org.eclipse.graphiti.features.context.IMoveShapeContext)
+   * @see
+   * org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature#postMoveShape(org.eclipse.graphiti.features.context.
+   * IMoveShapeContext)
    */
   @SuppressWarnings("unchecked")
   @Override
@@ -514,7 +524,8 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
         // If the fifo has no delay, it remove a bendpoint if there are
         // at least two
         // if the fifo has a delay, remove a bendpoint (if any).
-        final int nbBendpoints = (((fifoOrDependency != null) && ((fifoOrDependency instanceof Fifo) && (((Fifo) fifoOrDependency).getDelay() != null)))
+        final int nbBendpoints = (((fifoOrDependency != null)
+            && ((fifoOrDependency instanceof Fifo) && (((Fifo) fifoOrDependency).getDelay() != null)))
             || (fifoOrDependency instanceof Dependency)) ? -1 : 0;
 
         // Check if the last or first Bendpoint exists.
@@ -547,7 +558,8 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
           final ILocation srcLoc = peLayoutService.getLocationRelativeToDiagram(connection.getStart());
           Point pSrc = null;
           if (!bendpointExists) {
-            pSrc = createService.createPoint(srcLoc.getX() + MoveAbstractActorFeature.BENDPOINT_SPACE, srcLoc.getY() + midHeight);
+            pSrc = createService.createPoint(srcLoc.getX() + MoveAbstractActorFeature.BENDPOINT_SPACE,
+                srcLoc.getY() + midHeight);
           } else {
             pSrc = createService.createPoint(bendpointX + context.getDeltaX(), bendpointY + context.getDeltaY());
           }
@@ -557,7 +569,8 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
           final ILocation trgtLoc = peLayoutService.getLocationRelativeToDiagram(connection.getEnd());
           Point pTrgt = null;
           if (!bendpointExists) {
-            pTrgt = createService.createPoint(trgtLoc.getX() - MoveAbstractActorFeature.BENDPOINT_SPACE, trgtLoc.getY() + midHeight);
+            pTrgt = createService.createPoint(trgtLoc.getX() - MoveAbstractActorFeature.BENDPOINT_SPACE,
+                trgtLoc.getY() + midHeight);
           } else {
             pTrgt = createService.createPoint(bendpointX + context.getDeltaX(), bendpointY + context.getDeltaY());
           }

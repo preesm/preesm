@@ -59,12 +59,12 @@ public class StatEditorTransform extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
-   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
+   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     final IAbc abc = (IAbc) inputs.get("ABC");
     final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
@@ -76,8 +76,8 @@ public class StatEditorTransform extends AbstractTaskImplementation {
       // Run statistic editor
       PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
     } catch (final IllegalStateException e) {
-      WorkflowLogger.getLogger().log(Level.WARNING,
-          "Gantt display is impossible in this context." + " Ignore this warning if you are running the command line version of Preesm.");
+      WorkflowLogger.getLogger().log(Level.WARNING, "Gantt display is impossible in this context."
+          + " Ignore this warning if you are running the command line version of Preesm.");
     }
 
     return new LinkedHashMap<>();

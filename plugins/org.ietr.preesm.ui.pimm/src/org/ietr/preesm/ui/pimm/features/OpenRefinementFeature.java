@@ -58,7 +58,8 @@ import org.ietr.preesm.experiment.model.pimm.Actor;
  * Custom feature in charge of opening an editor for the refinement of an actor.
  *
  * <p>
- * If the refinement is a Pi file, the associated diagram will be opened. Otherwise, the workbench default editor will be opened.
+ * If the refinement is a Pi file, the associated diagram will be opened. Otherwise, the workbench default editor will
+ * be opened.
  * </p>
  *
  * @author kdesnos
@@ -79,7 +80,8 @@ public class OpenRefinementFeature extends AbstractCustomFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.
+   * ICustomContext)
    */
   @Override
   public boolean canExecute(final ICustomContext context) {
@@ -100,7 +102,8 @@ public class OpenRefinementFeature extends AbstractCustomFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see
+   * org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
    */
   @Override
   public void execute(final ICustomContext context) {
@@ -125,7 +128,8 @@ public class OpenRefinementFeature extends AbstractCustomFeature {
 
             // Check if the diaram file exists
             if (diagResource == null) {
-              MessageDialog.openError(dw.getShell(), "Problem opening editor", "No diagram file for " + refinementPath.lastSegment());
+              MessageDialog.openError(dw.getShell(), "Problem opening editor",
+                  "No diagram file for " + refinementPath.lastSegment());
             } else {
               refResource = diagResource;
             }

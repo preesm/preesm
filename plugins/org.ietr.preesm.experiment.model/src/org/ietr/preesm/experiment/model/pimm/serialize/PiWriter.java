@@ -103,8 +103,8 @@ public class PiWriter {
   private final URI documentURI;
 
   /**
-   * This LinkedHashMap associates a List to each <b>element</b> (graph, node, edge, port) of a Pi description. For each <b>element</b>, a list of {@link Key} s
-   * is associated. A {@link Key} can be seen as an attribute of this element.
+   * This LinkedHashMap associates a List to each <b>element</b> (graph, node, edge, port) of a Pi description. For each
+   * <b>element</b>, a list of {@link Key} s is associated. A {@link Key} can be seen as an attribute of this element.
    */
   protected Map<String, List<Key>> elementKeys;
 
@@ -269,7 +269,8 @@ public class PiWriter {
   }
 
   /**
-   * Create and add a node {@link Element} to the given parent {@link Element} for the given {@link AbstractActor} and write its informations.
+   * Create and add a node {@link Element} to the given parent {@link Element} for the given {@link AbstractActor} and
+   * write its informations.
    *
    * @param graphElt
    *          The parent element of the node element (i.e. the graph of the document)
@@ -326,8 +327,8 @@ public class PiWriter {
   }
 
   /**
-   * Add a data child {@link Element} to the parent {@link Element} whit the given key name and the given content. If the {@link Key} does not exist yet, it
-   * will be created automatically.
+   * Add a data child {@link Element} to the parent {@link Element} whit the given key name and the given content. If
+   * the {@link Key} does not exist yet, it will be created automatically.
    *
    * @param parentElt
    *          The element to which the data is added
@@ -387,7 +388,8 @@ public class PiWriter {
   }
 
   /**
-   * Create and add a node {@link Element} to the given parent {@link Element} for the given {@link Dependency} and write its informations.
+   * Create and add a node {@link Element} to the given parent {@link Element} for the given {@link Dependency} and
+   * write its informations.
    *
    * @param graphElt
    *          The parent element of the node element (i.e. the graph of the document)
@@ -420,7 +422,8 @@ public class PiWriter {
     }
 
     if (source == null) {
-      throw new RuntimeException("Setter of the dependency has a type not supported by the writer: " + setter.getClass());
+      throw new RuntimeException(
+          "Setter of the dependency has a type not supported by the writer: " + setter.getClass());
     }
     dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_SOURCE, source.getName());
     if (setter instanceof ConfigOutputPort) {
@@ -444,7 +447,8 @@ public class PiWriter {
   }
 
   /**
-   * Create and add a node {@link Element} to the given parent {@link Element} for the given fifo and write its informations.
+   * Create and add a node {@link Element} to the given parent {@link Element} for the given fifo and write its
+   * informations.
    *
    * @param graphElt
    *          The parent element of the node element (i.e. the graph of the document)
@@ -558,7 +562,8 @@ public class PiWriter {
   }
 
   /**
-   * Create and add a node {@link Element} to the given parent {@link Element} for the given parameter and write its informations.
+   * Create and add a node {@link Element} to the given parent {@link Element} for the given parameter and write its
+   * informations.
    *
    * @param graphElt
    *          The parent element of the node element (i.e. the graph of the document)
@@ -626,7 +631,8 @@ public class PiWriter {
       switch (port.getKind()) {
         case DATA_INPUT:
         case DATA_OUTPUT:
-          portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION, ((DataPort) port).getPortRateExpression().getExpressionString());
+          portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION,
+              ((DataPort) port).getPortRateExpression().getExpressionString());
           break;
         case CFG_INPUT:
         case CFG_OUTPUT:
@@ -673,7 +679,8 @@ public class PiWriter {
   }
 
   /**
-   * Returns an IPath without the project name (project relative IPath) if the file pointed by path is contained by the same project as the file we write.
+   * Returns an IPath without the project name (project relative IPath) if the file pointed by path is contained by the
+   * same project as the file we write.
    *
    * @param path
    *          the IPath to make project relative
@@ -704,7 +711,8 @@ public class PiWriter {
    * @param functionName
    *          the function name
    */
-  private void writeFunctionPrototype(final Element vertexElt, final FunctionPrototype prototype, final String functionName) {
+  private void writeFunctionPrototype(final Element vertexElt, final FunctionPrototype prototype,
+      final String functionName) {
     final Element protoElt = appendChild(vertexElt, functionName);
     protoElt.setAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME, prototype.getName());
     for (final FunctionParameter p : prototype.getParameters()) {
@@ -729,8 +737,8 @@ public class PiWriter {
   }
 
   /**
-   * Write information of the {@link Actor} in the given {@link Element}. The {@link AbstractActor} serialized by this method is either: {@link BroadcastActor},
-   * {@link JoinActor}, {@link ForkActor}, and {@link RoundBufferActor}.
+   * Write information of the {@link Actor} in the given {@link Element}. The {@link AbstractActor} serialized by this
+   * method is either: {@link BroadcastActor}, {@link JoinActor}, {@link ForkActor}, and {@link RoundBufferActor}.
    *
    * @param vertexElt
    *          The {@link Element} to write

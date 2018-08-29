@@ -37,8 +37,9 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
 
 // TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> An {@link CoreBlock} is a {@link Block} containing all information needed to generate the source code associated to a core. It is the
- * result of a mapping/scheduling process performed during an execution of a workflow of Preesm. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An {@link CoreBlock} is a {@link Block} containing all information needed to generate the
+ * source code associated to a core. It is the result of a mapping/scheduling process performed during an execution of a
+ * workflow of Preesm. <!-- end-user-doc -->
  *
  * <p>
  * The following features are supported:
@@ -59,7 +60,8 @@ public interface CoreBlock extends Block {
   /**
    * Returns the value of the '<em><b>Loop Block</b></em>' reference. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Loop Block</em>' reference isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Loop Block</em>' reference isn't clear, there really should be more of a description
+   * here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -72,8 +74,8 @@ public interface CoreBlock extends Block {
   LoopBlock getLoopBlock();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getLoopBlock <em>Loop Block</em>}' reference. <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getLoopBlock <em>Loop
+   * Block</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @param value
    *          the new value of the '<em>Loop Block</em>' reference.
@@ -85,7 +87,8 @@ public interface CoreBlock extends Block {
   /**
    * Returns the value of the '<em><b>Init Block</b></em>' reference. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Init Block</em>' reference isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Init Block</em>' reference isn't clear, there really should be more of a description
+   * here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -98,8 +101,8 @@ public interface CoreBlock extends Block {
   CallBlock getInitBlock();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getInitBlock <em>Init Block</em>}' reference. <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getInitBlock <em>Init
+   * Block</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @param value
    *          the new value of the '<em>Init Block</em>' reference.
@@ -111,7 +114,8 @@ public interface CoreBlock extends Block {
   /**
    * Returns the value of the '<em><b>Core Type</b></em>' attribute. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Core Type</em>' attribute isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Core Type</em>' attribute isn't clear, there really should be more of a description
+   * here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -124,8 +128,8 @@ public interface CoreBlock extends Block {
   String getCoreType();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getCoreType <em>Core Type</em>}' attribute. <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getCoreType <em>Core
+   * Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @param value
    *          the new value of the '<em>Core Type</em>' attribute.
@@ -137,7 +141,8 @@ public interface CoreBlock extends Block {
   /**
    * Returns the value of the '<em><b>Core ID</b></em>' attribute. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Core ID</em>' attribute isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Core ID</em>' attribute isn't clear, there really should be more of a description
+   * here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -150,8 +155,8 @@ public interface CoreBlock extends Block {
   int getCoreID();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getCoreID <em>Core ID</em>}' attribute. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getCoreID <em>Core ID</em>}'
+   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @param value
    *          the new value of the '<em>Core ID</em>' attribute.

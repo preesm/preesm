@@ -137,7 +137,8 @@ public abstract class SDFLiveness {
           repete = false;
           for (final SDFEdge e : graph.edgeSet()) {
             // test the distance
-            final double newDistance = vertexDistance.get(e.getSource().getName()) + edgeValue.get(e.getPropertyBean().getValue("edgeName"));
+            final double newDistance = vertexDistance.get(e.getSource().getName())
+                + edgeValue.get(e.getPropertyBean().getValue("edgeName"));
             if (vertexDistance.get(e.getTarget().getName()) > newDistance) {
               // update the distance
               vertexDistance.put(e.getTarget().getName(), newDistance);
@@ -153,8 +154,8 @@ public abstract class SDFLiveness {
         if (count == (graph.vertexSet().size() - 1)) {
           // relax all the edges
           for (final SDFEdge e : graph.edgeSet()) {
-            if (vertexDistance
-                .get(e.getTarget().getName()) > (vertexDistance.get(e.getSource().getName()) + edgeValue.get(e.getPropertyBean().getValue("edgeName")))) {
+            if (vertexDistance.get(e.getTarget().getName()) > (vertexDistance.get(e.getSource().getName())
+                + edgeValue.get(e.getPropertyBean().getValue("edgeName")))) {
               // negative circuit detected if a part of the graph is not live the global graph is not too
               System.err.println("Negativ cycle detected !!");
               // System.err.println("This graph has no Periodic Schedule !");

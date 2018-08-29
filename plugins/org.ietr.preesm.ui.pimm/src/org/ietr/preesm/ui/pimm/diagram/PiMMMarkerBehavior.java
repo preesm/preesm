@@ -64,8 +64,8 @@ import org.ietr.preesm.pimm.algorithm.checker.PiMMAlgorithmChecker;
 import org.ietr.preesm.ui.PreesmUIPlugin;
 
 /**
- * Class inheriting from the {@link DefaultMarkerBehavior}. This class was created to define a custom {@link DefaultMarkerBehavior} that does not reset problems
- * related to graphs on startup of the editor.
+ * Class inheriting from the {@link DefaultMarkerBehavior}. This class was created to define a custom
+ * {@link DefaultMarkerBehavior} that does not reset problems related to graphs on startup of the editor.
  *
  * @author kdesnos
  *
@@ -78,7 +78,8 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
   protected Map<Resource, Diagnostic> resourceToDiagnosticMap = new LinkedHashMap<>();
 
   /**
-   * The marker helper instance is responsible for creating workspace resource markers presented in Eclipse's Problems View.
+   * The marker helper instance is responsible for creating workspace resource markers presented in Eclipse's Problems
+   * View.
    */
   private final MarkerHelper markerHelper = new PiMMMarkerHelper();
 
@@ -155,8 +156,8 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
             final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, msgs.getValue());
             final PictogramElement pictogramElement = pes.get(0);
             final String uriFragment = pictogramElement.eResource().getURIFragment(pictogramElement);
-            final BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.WARNING, PreesmUIPlugin.PLUGIN_ID, 0, msg,
-                new Object[] { pictogramElement, uriFragment });
+            final BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.WARNING,
+                PreesmUIPlugin.PLUGIN_ID, 0, msg, new Object[] { pictogramElement, uriFragment });
 
             result.add(d);
           }
@@ -167,8 +168,8 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
             final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, msgs.getValue());
             final PictogramElement pictogramElement = pes.get(0);
             final String uriFragment = pictogramElement.eResource().getURIFragment(pictogramElement);
-            final BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.ERROR, PreesmUIPlugin.PLUGIN_ID, 0, msg,
-                new Object[] { pictogramElement, uriFragment });
+            final BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.ERROR,
+                PreesmUIPlugin.PLUGIN_ID, 0, msg, new Object[] { pictogramElement, uriFragment });
 
             result.add(d);
           }
@@ -195,8 +196,9 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
   }
 
   /**
-   * Updates the problems indication markers in the editor. The default implementation used an EMF {@link BasicDiagnostic} to do the checks and
-   * {@link EditUIMarkerHelper} to check and set markers for {@link EObject}s.
+   * Updates the problems indication markers in the editor. The default implementation used an EMF
+   * {@link BasicDiagnostic} to do the checks and {@link EditUIMarkerHelper} to check and set markers for
+   * {@link EObject}s.
    *
    * <p>
    * Method copied from {@link DefaultMarkerBehavior} (because it is a private method)
@@ -210,7 +212,8 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
     final TransactionalEditingDomain editingDomain = this.diagramBehavior.getEditingDomain();
     if (this.updateProblemIndication && (editingDomain != null)) {
       final ResourceSet resourceSet = editingDomain.getResourceSet();
-      final BasicDiagnostic diagnostic = new BasicDiagnostic(Diagnostic.OK, PreesmUIPlugin.PLUGIN_ID, 0, null, new Object[] { resourceSet });
+      final BasicDiagnostic diagnostic = new BasicDiagnostic(Diagnostic.OK, PreesmUIPlugin.PLUGIN_ID, 0, null,
+          new Object[] { resourceSet });
       for (final Diagnostic childDiagnostic : this.resourceToDiagnosticMap.values()) {
         if (childDiagnostic.getSeverity() != Diagnostic.OK) {
           diagnostic.add(childDiagnostic);

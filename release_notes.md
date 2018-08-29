@@ -24,6 +24,8 @@ PREESM Changelog
   * Set delay persistence to have the same default behavior as Preesm;
   * Fix indentation;
 * Minor refactoring;
+* Update coding policies to 1.3.0;
+  * also fix code;
 
 ### Bug fix
 * Fix issue #62

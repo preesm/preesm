@@ -166,7 +166,8 @@ public class AddConfigInputInterfaceFeature extends AbstractAddFeature {
   public boolean canAdd(final IAddContext context) {
     // Check that the user wants to add an ConfigInputInterface to the
     // Diagram
-    return (context.getNewObject() instanceof Parameter) && ((Parameter) context.getNewObject()).isConfigurationInterface()
+    return (context.getNewObject() instanceof Parameter)
+        && ((Parameter) context.getNewObject()).isConfigurationInterface()
         && (context.getTargetContainer() instanceof Diagram);
   }
 

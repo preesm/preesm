@@ -39,8 +39,9 @@ import org.eclipse.emf.common.util.EList;
 
 // TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> A {@link Communication} is a {@link Call} used to represent the transmission of data between processing elements. Each
- * {@link Communication} {@link Call} has a {@link Direction} and a {@link Delimiter}.<!-- end-user-doc -->
+ * <!-- begin-user-doc --> A {@link Communication} is a {@link Call} used to represent the transmission of data between
+ * processing elements. Each {@link Communication} {@link Call} has a {@link Direction} and a {@link Delimiter}.<!--
+ * end-user-doc -->
  *
  * <p>
  * The following features are supported:
@@ -69,7 +70,8 @@ public interface Communication extends Call {
    * Returns the value of the '<em><b>Direction</b></em>' attribute. The literals are from the enumeration
    * {@link org.ietr.preesm.codegen.xtend.model.codegen.Direction}. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Direction</em>' attribute isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Direction</em>' attribute isn't clear, there really should be more of a description
+   * here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -83,8 +85,8 @@ public interface Communication extends Call {
   Direction getDirection();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getDirection <em>Direction</em>}' attribute. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getDirection
+   * <em>Direction</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @param value
    *          the new value of the '<em>Direction</em>' attribute.
@@ -98,7 +100,8 @@ public interface Communication extends Call {
    * Returns the value of the '<em><b>Delimiter</b></em>' attribute. The literals are from the enumeration
    * {@link org.ietr.preesm.codegen.xtend.model.codegen.Delimiter}. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Delimiter</em>' attribute isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Delimiter</em>' attribute isn't clear, there really should be more of a description
+   * here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -112,8 +115,8 @@ public interface Communication extends Call {
   Delimiter getDelimiter();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getDelimiter <em>Delimiter</em>}' attribute. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getDelimiter
+   * <em>Delimiter</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @param value
    *          the new value of the '<em>Delimiter</em>' attribute.
@@ -124,9 +127,10 @@ public interface Communication extends Call {
   void setDelimiter(Delimiter value);
 
   /**
-   * Returns the value of the '<em><b>Data</b></em>' reference. <!-- begin-user-doc --> {@link Buffer} that is sent or received by the current
-   * {@link Communication}. Calling this method is equivalent to calling <code>thisCommunication.getParameters().iterator().next()</code> since the only
-   * "Parameter" of a communication is the buffer it transfers. <!-- end-user-doc -->
+   * Returns the value of the '<em><b>Data</b></em>' reference. <!-- begin-user-doc --> {@link Buffer} that is sent or
+   * received by the current {@link Communication}. Calling this method is equivalent to calling
+   * <code>thisCommunication.getParameters().iterator().next()</code> since the only "Parameter" of a communication is
+   * the buffer it transfers. <!-- end-user-doc -->
    * 
    * @return the value of the '<em>Data</em>' reference.
    * @see #setData(Buffer)
@@ -137,9 +141,9 @@ public interface Communication extends Call {
   Buffer getData();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getData <em>Data</em>}' reference. <!-- begin-user-doc -->Set the
-   * {@link #getData()} associated to the current {@link Communication}. Calling this method will also modify the {@link Communication#getParameters()
-   * parameters}.<!-- end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getData <em>Data</em>}'
+   * reference. <!-- begin-user-doc -->Set the {@link #getData()} associated to the current {@link Communication}.
+   * Calling this method will also modify the {@link Communication#getParameters() parameters}.<!-- end-user-doc -->
    * 
    * @param value
    *          the new value of the '<em>Data</em>' reference.
@@ -151,7 +155,8 @@ public interface Communication extends Call {
   /**
    * Returns the value of the '<em><b>Send Start</b></em>' reference. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Send Start</em>' reference isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Send Start</em>' reference isn't clear, there really should be more of a description
+   * here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -164,8 +169,8 @@ public interface Communication extends Call {
   Communication getSendStart();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getSendStart <em>Send Start</em>}' reference. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getSendStart <em>Send
+   * Start</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @param value
    *          the new value of the '<em>Send Start</em>' reference.
@@ -177,7 +182,8 @@ public interface Communication extends Call {
   /**
    * Returns the value of the '<em><b>Send End</b></em>' reference. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Send End</em>' reference isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Send End</em>' reference isn't clear, there really should be more of a description
+   * here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -190,8 +196,8 @@ public interface Communication extends Call {
   Communication getSendEnd();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getSendEnd <em>Send End</em>}' reference. <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getSendEnd <em>Send
+   * End</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @param value
    *          the new value of the '<em>Send End</em>' reference.
@@ -203,7 +209,8 @@ public interface Communication extends Call {
   /**
    * Returns the value of the '<em><b>Receive Start</b></em>' reference. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Receive Start</em>' reference isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Receive Start</em>' reference isn't clear, there really should be more of a description
+   * here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -216,8 +223,8 @@ public interface Communication extends Call {
   Communication getReceiveStart();
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveStart <em>Receive Start</em>}' reference. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveStart
+   * <em>Receive Start</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @param value
    *          the new value of the '<em>Receive Start</em>' reference.
@@ -229,7 +236,8 @@ public interface Communication extends Call {
   /**
    * Returns the value of the '<em><b>Receive End</b></em>' reference. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Receive End</em>' reference isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Receive End</em>' reference isn't clear, there really should be more of a description
+   * here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -242,8 +250,8 @@ public interface Communication extends Call {
   Communication getReceiveEnd();
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveEnd <em>Receive End</em>}' reference. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveEnd <em>Receive
+   * End</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @param value
    *          the new value of the '<em>Receive End</em>' reference.
@@ -268,8 +276,8 @@ public interface Communication extends Call {
   int getId();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getId <em>Id</em>}' attribute. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getId <em>Id</em>}'
+   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @param value
    *          the new value of the '<em>Id</em>' attribute.
@@ -282,7 +290,8 @@ public interface Communication extends Call {
    * Returns the value of the '<em><b>Nodes</b></em>' containment reference list. The list contents are of type
    * {@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode}. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Nodes</em>' containment reference list isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Nodes</em>' containment reference list isn't clear, there really should be more of a
+   * description here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -296,7 +305,8 @@ public interface Communication extends Call {
   /**
    * Returns the value of the '<em><b>Receive Release</b></em>' reference. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Receive Release</em>' reference isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Receive Release</em>' reference isn't clear, there really should be more of a
+   * description here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -309,8 +319,8 @@ public interface Communication extends Call {
   Communication getReceiveRelease();
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveRelease <em>Receive Release</em>}' reference. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveRelease
+   * <em>Receive Release</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @param value
    *          the new value of the '<em>Receive Release</em>' reference.
@@ -322,7 +332,8 @@ public interface Communication extends Call {
   /**
    * Returns the value of the '<em><b>Send Reserve</b></em>' reference. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Send Reserve</em>' reference isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Send Reserve</em>' reference isn't clear, there really should be more of a description
+   * here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -335,8 +346,8 @@ public interface Communication extends Call {
   Communication getSendReserve();
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getSendReserve <em>Send Reserve</em>}' reference. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getSendReserve <em>Send
+   * Reserve</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @param value
    *          the new value of the '<em>Send Reserve</em>' reference.
@@ -346,9 +357,11 @@ public interface Communication extends Call {
   void setSendReserve(Communication value);
 
   /**
-   * Returns the value of the '<em><b>Redundant</b></em>' attribute. The default value is <code>"false"</code>. <!-- begin-user-doc -->
+   * Returns the value of the '<em><b>Redundant</b></em>' attribute. The default value is <code>"false"</code>. <!--
+   * begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Redundant</em>' attribute isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Redundant</em>' attribute isn't clear, there really should be more of a description
+   * here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -361,8 +374,8 @@ public interface Communication extends Call {
   boolean isRedundant();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#isRedundant <em>Redundant</em>}' attribute. <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#isRedundant
+   * <em>Redundant</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @param value
    *          the new value of the '<em>Redundant</em>' attribute.
@@ -372,8 +385,8 @@ public interface Communication extends Call {
   void setRedundant(boolean value);
 
   /**
-   * <!-- begin-user-doc --> This method browse the {@link #eContainer()} recursively of the {@link Communication} until it finds a {@link CoreBlock}. <!--
-   * end-user-doc -->
+   * <!-- begin-user-doc --> This method browse the {@link #eContainer()} recursively of the {@link Communication} until
+   * it finds a {@link CoreBlock}. <!-- end-user-doc -->
    * 
    * @model kind="operation" required="true"
    * @generated

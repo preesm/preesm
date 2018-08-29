@@ -91,7 +91,8 @@ public class RenameAbstractVertexFeature extends AbstractCustomFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.
+   * ICustomContext)
    */
   @Override
   public boolean canExecute(final ICustomContext context) {
@@ -111,7 +112,8 @@ public class RenameAbstractVertexFeature extends AbstractCustomFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see
+   * org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
    */
   @Override
   public void execute(final ICustomContext context) {
@@ -133,7 +135,8 @@ public class RenameAbstractVertexFeature extends AbstractCustomFeature {
         final String question = "Enter new " + className + " name";
         String newVertexName = vertex.getName();
 
-        newVertexName = PiMMUtil.askString("Rename " + className, question, newVertexName, new VertexNameValidator(graph, vertex));
+        newVertexName = PiMMUtil.askString("Rename " + className, question, newVertexName,
+            new VertexNameValidator(graph, vertex));
 
         if ((newVertexName != null) && !newVertexName.equals(currentName)) {
           this.hasDoneChanges = true;

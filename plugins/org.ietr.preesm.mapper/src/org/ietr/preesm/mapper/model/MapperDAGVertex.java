@@ -140,14 +140,16 @@ public class MapperDAGVertex extends DAGVertex {
     if (this instanceof OverheadVertex) {
       result = new OverheadVertex(getId(), (MapperDAG) getBase());
     } else if (this instanceof SendVertex) {
-      result = new SendVertex(getId(), (MapperDAG) getBase(), ((SendVertex) this).getSource(), ((SendVertex) this).getTarget(),
-          ((SendVertex) this).getRouteStepIndex(), ((SendVertex) this).getNodeIndex());
+      result = new SendVertex(getId(), (MapperDAG) getBase(), ((SendVertex) this).getSource(),
+          ((SendVertex) this).getTarget(), ((SendVertex) this).getRouteStepIndex(), ((SendVertex) this).getNodeIndex());
     } else if (this instanceof ReceiveVertex) {
-      result = new ReceiveVertex(getId(), (MapperDAG) getBase(), ((ReceiveVertex) this).getSource(), ((ReceiveVertex) this).getTarget(),
-          ((ReceiveVertex) this).getRouteStepIndex(), ((ReceiveVertex) this).getNodeIndex());
+      result = new ReceiveVertex(getId(), (MapperDAG) getBase(), ((ReceiveVertex) this).getSource(),
+          ((ReceiveVertex) this).getTarget(), ((ReceiveVertex) this).getRouteStepIndex(),
+          ((ReceiveVertex) this).getNodeIndex());
     } else if (this instanceof TransferVertex) {
       final TransferVertex t = (TransferVertex) this;
-      result = new TransferVertex(getId(), (MapperDAG) getBase(), t.getSource(), t.getTarget(), t.getRouteStepIndex(), t.getNodeIndex());
+      result = new TransferVertex(getId(), (MapperDAG) getBase(), t.getSource(), t.getTarget(), t.getRouteStepIndex(),
+          t.getNodeIndex());
     } else {
       result = new MapperDAGVertex(getId(), getName(), (MapperDAG) getBase());
     }
@@ -227,7 +229,8 @@ public class MapperDAGVertex extends DAGVertex {
   }
 
   /**
-   * Getting all predecessors, ignoring or not the precedence edges. Predecessors are given as keys for a map containing corresponding edges.
+   * Getting all predecessors, ignoring or not the precedence edges. Predecessors are given as keys for a map containing
+   * corresponding edges.
    *
    * @param ignorePrecedence
    *          the ignore precedence
@@ -255,7 +258,8 @@ public class MapperDAGVertex extends DAGVertex {
   }
 
   /**
-   * Getting all successors, ignoring or not the precedence edges Successors are given as keys for a map containing corresponding edges.
+   * Getting all successors, ignoring or not the precedence edges Successors are given as keys for a map containing
+   * corresponding edges.
    *
    * @param ignorePrecedence
    *          the ignore precedence

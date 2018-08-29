@@ -90,7 +90,8 @@ public class GanttComponent {
         }
         // Checking for multiple concurrent insertions
         if (t.equals(task)) {
-          final String message = "Gantt: Trying to add to the Gantt chart several identical tasks: " + t + " and " + task;
+          final String message = "Gantt: Trying to add to the Gantt chart several identical tasks: " + t + " and "
+              + task;
           WorkflowLogger.getLogger().log(Level.SEVERE, message);
           return false;
         }

@@ -99,7 +99,8 @@ public class PiMMUtil {
    *          an input validator, or <code>null</code> if none
    * @return the string, or <code>null</code> if user cancels
    */
-  public static String askString(final String dialogTitle, final String dialogMessage, final String initialValue, final IInputValidator validator) {
+  public static String askString(final String dialogTitle, final String dialogMessage, final String initialValue,
+      final IInputValidator validator) {
     String ret = null;
     final Shell shell = PiMMUtil.getShell();
     final InputDialog inputDialog = new InputDialog(shell, dialogTitle, dialogMessage, initialValue, validator);
@@ -122,7 +123,8 @@ public class PiMMUtil {
    * @return the string, or <code>null</code> if user cancels
    */
   @Deprecated
-  public static IPath askRefinement(final String dialogTitle, final String dialogMessage, final IInputValidator validator) {
+  public static IPath askRefinement(final String dialogTitle, final String dialogMessage,
+      final IInputValidator validator) {
     final Shell shell = PiMMUtil.getShell();
 
     // For now, authorized refinements are other PiGraphs (.pi files) and
@@ -133,8 +135,8 @@ public class PiMMUtil {
     fileExtensions.add("h");
     final FileContentProvider contentProvider = new FileContentProvider(fileExtensions);
 
-    final ElementTreeSelectionDialog inputDialog = new ElementTreeSelectionDialog(shell, WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(),
-        contentProvider);
+    final ElementTreeSelectionDialog inputDialog = new ElementTreeSelectionDialog(shell,
+        WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(), contentProvider);
     inputDialog.setAllowMultiple(false);
     inputDialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
     inputDialog.setMessage(dialogMessage);
@@ -165,13 +167,14 @@ public class PiMMUtil {
    * @deprecated use {@link FileUtils#browseFiles(Shell, String, java.util.Collection)}
    */
   @Deprecated
-  public static IPath askFile(final String dialogTitle, final String dialogMessage, final IInputValidator validator, final Set<String> fileExtensions) {
+  public static IPath askFile(final String dialogTitle, final String dialogMessage, final IInputValidator validator,
+      final Set<String> fileExtensions) {
     final Shell shell = PiMMUtil.getShell();
 
     final FileContentProvider contentProvider = new FileContentProvider(fileExtensions);
 
-    final ElementTreeSelectionDialog inputDialog = new ElementTreeSelectionDialog(shell, WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(),
-        contentProvider);
+    final ElementTreeSelectionDialog inputDialog = new ElementTreeSelectionDialog(shell,
+        WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(), contentProvider);
     inputDialog.setAllowMultiple(false);
     inputDialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
     inputDialog.setMessage(dialogMessage);
@@ -224,8 +227,9 @@ public class PiMMUtil {
    *          the show only valid prototypes
    * @return the function prototype
    */
-  public static FunctionPrototype selectFunction(final FunctionPrototype[] prototypes, final FunctionPrototype[] allProtoArray, final String title,
-      final String message, final boolean showOnlyValidPrototypes) {
+  public static FunctionPrototype selectFunction(final FunctionPrototype[] prototypes,
+      final FunctionPrototype[] allProtoArray, final String title, final String message,
+      final boolean showOnlyValidPrototypes) {
     final ElementListSelectionDialog dialog = new ElementListSelectionDialog(PiMMUtil.getShell(), new LabelProvider() {
 
       @Override
@@ -308,7 +312,8 @@ public class PiMMUtil {
    * @param message
    *          the message to put in the tooltip
    */
-  public static void setToolTip(final IFeatureProvider fp, final GraphicsAlgorithm ga, final IDiagramBehavior iDiagramEditor, final String message) {
+  public static void setToolTip(final IFeatureProvider fp, final GraphicsAlgorithm ga,
+      final IDiagramBehavior iDiagramEditor, final String message) {
     final IToolBehaviorProvider behaviorProvider = fp.getDiagramTypeProvider().getCurrentToolBehaviorProvider();
     ((PiMMToolBehaviorProvider) behaviorProvider).setToolTip(ga, message);
 

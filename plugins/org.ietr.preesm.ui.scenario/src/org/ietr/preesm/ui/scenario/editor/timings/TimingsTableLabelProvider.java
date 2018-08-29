@@ -99,7 +99,8 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
    * @param propertyListener
    *          the property listener
    */
-  public TimingsTableLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer, final IPropertyListener propertyListener) {
+  public TimingsTableLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer,
+      final IPropertyListener propertyListener) {
     super();
     this.scenario = scenario;
     this.tableViewer = tableViewer;
@@ -358,9 +359,11 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     if ((vertexName != null) && (this.currentOpDefId != null)) {
       final String title = Messages.getString("Timings.dialog.title");
       final String message = Messages.getString("Timings.dialog.message") + vertexName;
-      final String init = this.scenario.getTimingManager().getTimingOrDefault(vertexName, this.currentOpDefId).getStringValue();
+      final String init = this.scenario.getTimingManager().getTimingOrDefault(vertexName, this.currentOpDefId)
+          .getStringValue();
 
-      final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message, init, validator);
+      final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title,
+          message, init, validator);
       if (dialog.open() == Window.OK) {
         final String value = dialog.getValue();
 

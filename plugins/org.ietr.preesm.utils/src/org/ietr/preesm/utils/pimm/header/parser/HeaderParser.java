@@ -67,35 +67,38 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 public class HeaderParser {
 
   /**
-   * This Regular expression is used to identify and separate the different elements composing a function prototype parameter. It should be noted that before
-   * being processed by this regular expression, all consecutive whitespace were reduced to a single one. <br>
+   * This Regular expression is used to identify and separate the different elements composing a function prototype
+   * parameter. It should be noted that before being processed by this regular expression, all consecutive whitespace
+   * were reduced to a single one. <br>
    * <br>
    * Explanation:
    * <ul>
-   * <li><code>(IN|OUT)?</code>: <b>Group 1 - Direction</b> Check if either character string <code>IN</code> xor <code>OUT</code> are present, or not, at the
-   * beginning of the parameter declaration.</li>
+   * <li><code>(IN|OUT)?</code>: <b>Group 1 - Direction</b> Check if either character string <code>IN</code> xor
+   * <code>OUT</code> are present, or not, at the beginning of the parameter declaration.</li>
    * <li><code>\\s?</code>: Match 0 or 1 whitespace.</li>
-   * <li><code>([^\\*]+)</code>: <b>Group 2 - Type</b> Match as many characters different from '*' as possible (1 to infinite). For the pattern to match, the
-   * remaining of the regular expression must still be matchable. Which means that the "as many as possible" clause holds as long as the remaining patterns are
-   * also matched.</li>
+   * <li><code>([^\\*]+)</code>: <b>Group 2 - Type</b> Match as many characters different from '*' as possible (1 to
+   * infinite). For the pattern to match, the remaining of the regular expression must still be matchable. Which means
+   * that the "as many as possible" clause holds as long as the remaining patterns are also matched.</li>
    * <li><code>\\s?</code>: Match 0 or 1 whitespace.</li>
-   * <li><code>(\\*+(?:\\s?const)?)?</code>: <b>Group 3 - Pointers</b> Match, if possible, a string '*' of length 1 to infinite. Also match optional
-   * <code> const</code> option for pointer.</li>
+   * <li><code>(\\*+(?:\\s?const)?)?</code>: <b>Group 3 - Pointers</b> Match, if possible, a string '*' of length 1 to
+   * infinite. Also match optional <code> const</code> option for pointer.</li>
    * <li><code>\\s</code>: Match exactly 1 whitespace.</li>
-   * <li><code>([\\S&&[^\\[\\]]]+)</code>: <b>Group 4 - Name</b></li> Match a string of non-whitespace characters (except '[' or ']') of length 1 to infinite.
-   * <li><code>(\\[(\\d|\\]\\[)*\\])?</code>: <b>Group 5 - Array?</b></li> Match, if possible, a string of opening and closing square brackets '[]', possibly
-   * containing digits.
+   * <li><code>([\\S&&[^\\[\\]]]+)</code>: <b>Group 4 - Name</b></li> Match a string of non-whitespace characters
+   * (except '[' or ']') of length 1 to infinite.
+   * <li><code>(\\[(\\d|\\]\\[)*\\])?</code>: <b>Group 5 - Array?</b></li> Match, if possible, a string of opening and
+   * closing square brackets '[]', possibly containing digits.
    * </ul>
    */
-  private static final String PARAM_BREAK_DOWN_REGEX = "(IN|OUT)?\\s?([^\\*]+)\\s?(\\*+(?:\\s?const)?)?\\s([\\S&&[^\\[\\]]]+)(\\[(\\d|\\]\\[)*\\])?\\s?";
+  private static final String PARAM_BREAK_DOWN_REGEX = "(IN|OUT)?\\s?([^\\*]+)\\s?(\\*+(?:\\s?const)?)?"
+      + "\\s([\\S&&[^\\[\\]]]+)(\\[(\\d|\\]\\[)*\\])?\\s?";
 
   /**
    * This method parse a C header file and extract a set of function prototypes from it.
    *
    * @param file
    *          the {@link IFile} corresponding to the C Header file to parse.
-   * @return The {@link Set} of {@link FunctionPrototype} found in the parsed C header file. Returns <code>null</code> if no valid function prototype could be
-   *         found.
+   * @return The {@link Set} of {@link FunctionPrototype} found in the parsed C header file. Returns <code>null</code>
+   *         if no valid function prototype could be found.
    */
   public static List<FunctionPrototype> parseHeader(final IFile file) {
     // Read the file
@@ -121,12 +124,13 @@ public class HeaderParser {
   }
 
   /**
-   * Given a {@link List} of C function prototypes represented as {@link String}, this function create the {@link List} of corresponding
-   * {@link FunctionPrototype}.
+   * Given a {@link List} of C function prototypes represented as {@link String}, this function create the {@link List}
+   * of corresponding {@link FunctionPrototype}.
    *
    * @param prototypes
    *          {@link List} of C function prototypes, as produced by the {@link #extractPrototypeStrings(String)} method.
-   * @return a {@link List} of {@link FunctionPrototype}, or <code>null</code> if something went wrong during the parsing.
+   * @return a {@link List} of {@link FunctionPrototype}, or <code>null</code> if something went wrong during the
+   *         parsing.
    */
   protected static List<FunctionPrototype> createFunctionPrototypes(final List<String> prototypes) {
     List<FunctionPrototype> result;
@@ -216,7 +220,8 @@ public class HeaderParser {
    * <li>Filter comments after //</li>
    * <li>Filter all pre-processing commands</li>
    * <li>Replace new lines and multiple spaces with a single space</li>
-   * <li>Make sure there always is a space before and after each group of * this will ease type identification during prototype identification.</li>
+   * <li>Make sure there always is a space before and after each group of * this will ease type identification during
+   * prototype identification.</li>
    * </ul>
    *
    * @param fileContent
@@ -283,7 +288,8 @@ public class HeaderParser {
   }
 
   /**
-   * Filters the prototypes obtained from the parsed file to keep only the ones corresponding to the actor possible initialization.
+   * Filters the prototypes obtained from the parsed file to keep only the ones corresponding to the actor possible
+   * initialization.
    *
    * @param actor
    *          the AbstractActor which ports we use to filter prototypes
@@ -291,7 +297,8 @@ public class HeaderParser {
    *          the prototypes
    * @return the set of FunctionPrototypes corresponding to actor initialization
    */
-  public static List<FunctionPrototype> filterInitPrototypesFor(final AbstractActor actor, final List<FunctionPrototype> prototypes) {
+  public static List<FunctionPrototype> filterInitPrototypesFor(final AbstractActor actor,
+      final List<FunctionPrototype> prototypes) {
     final List<FunctionPrototype> result = new ArrayList<>();
 
     // For each function prototype proto
@@ -325,7 +332,8 @@ public class HeaderParser {
   }
 
   /**
-   * Filters the prototypes obtained from the parsed file to keep only the ones corresponding to the actor signature (ports).
+   * Filters the prototypes obtained from the parsed file to keep only the ones corresponding to the actor signature
+   * (ports).
    *
    * @param actor
    *          the AbstractActor which ports we use to filter prototypes
@@ -333,7 +341,8 @@ public class HeaderParser {
    *          the prototypes
    * @return the set of FunctionPrototypes corresponding to actor
    */
-  public static List<FunctionPrototype> filterLoopPrototypesFor(final AbstractActor actor, final List<FunctionPrototype> prototypes) {
+  public static List<FunctionPrototype> filterLoopPrototypesFor(final AbstractActor actor,
+      final List<FunctionPrototype> prototypes) {
     final List<FunctionPrototype> result = new ArrayList<>();
 
     // For each function prototype proto
@@ -341,8 +350,8 @@ public class HeaderParser {
       // proto matches the signature of actor if:
       // -it does not have more parameters than the actors ports
       final ArrayList<FunctionParameter> params = new ArrayList<>(proto.getParameters());
-      boolean matches = params.size() <= (actor.getDataInputPorts().size() + actor.getDataOutputPorts().size() + actor.getConfigInputPorts().size()
-          + actor.getConfigOutputPorts().size());
+      boolean matches = params.size() <= (actor.getDataInputPorts().size() + actor.getDataOutputPorts().size()
+          + actor.getConfigInputPorts().size() + actor.getConfigOutputPorts().size());
 
       // Check that all proto parameters can be matched with a port
       final List<Port> allPorts = new ArrayList<>();
@@ -416,7 +425,8 @@ public class HeaderParser {
   }
 
   /**
-   * Filters the prototypes obtained from the parsed file to keep only the ones corresponding to possible initializations.
+   * Filters the prototypes obtained from the parsed file to keep only the ones corresponding to possible
+   * initializations.
    *
    * @param prototypes
    *          the prototypes
@@ -456,7 +466,8 @@ public class HeaderParser {
    *          the params
    * @return the corresponding function parameter
    */
-  private static FunctionParameter getCorrespondingFunctionParameter(final Port p, final List<FunctionParameter> params) {
+  private static FunctionParameter getCorrespondingFunctionParameter(final Port p,
+      final List<FunctionParameter> params) {
     for (final FunctionParameter param : params) {
       if (p.getName().equals(param.getName())) {
         return param;

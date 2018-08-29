@@ -91,8 +91,9 @@ public class MyGanttRenderer extends GanttRenderer {
    *          the column index (zero-based).
    */
   @Override
-  protected void drawTasks(final Graphics2D g2, final CategoryItemRendererState state, final Rectangle2D dataArea, final CategoryPlot plot,
-      final CategoryAxis domainAxis, final ValueAxis rangeAxis, final GanttCategoryDataset dataset, final int row, final int column) {
+  protected void drawTasks(final Graphics2D g2, final CategoryItemRendererState state, final Rectangle2D dataArea,
+      final CategoryPlot plot, final CategoryAxis domainAxis, final ValueAxis rangeAxis,
+      final GanttCategoryDataset dataset, final int row, final int column) {
 
     final int count = dataset.getSubIntervalCount(row, column);
     if (count == 0) {
@@ -134,9 +135,11 @@ public class MyGanttRenderer extends GanttRenderer {
 
       /* Paint seriesPaint = */getItemPaint(row, column);
 
-      if ((((TaskSeriesCollection) dataset).getSeriesCount() > 0) && (((TaskSeriesCollection) dataset).getSeries(0).getItemCount() > column)
+      if ((((TaskSeriesCollection) dataset).getSeriesCount() > 0)
+          && (((TaskSeriesCollection) dataset).getSeries(0).getItemCount() > column)
           && (((TaskSeriesCollection) dataset).getSeries(0).get(column).getSubtaskCount() > subinterval)) {
-        g2.setPaint(getRandomBrightColor(((TaskSeriesCollection) dataset).getSeries(0).get(column).getSubtask(subinterval).getDescription()));
+        g2.setPaint(getRandomBrightColor(
+            ((TaskSeriesCollection) dataset).getSeries(0).get(column).getSubtask(subinterval).getDescription()));
 
       }
       g2.fill(bar);
@@ -188,7 +191,8 @@ public class MyGanttRenderer extends GanttRenderer {
           if (getItemURLGenerator(row, column) != null) {
             url = getItemURLGenerator(row, column).generateURL(dataset, row, column);
           }
-          final CategoryItemEntity entity = new CategoryItemEntity(bar, tip, url, dataset, dataset.getRowKey(row), dataset.getColumnKey(column));
+          final CategoryItemEntity entity = new CategoryItemEntity(bar, tip, url, dataset, dataset.getRowKey(row),
+              dataset.getColumnKey(column));
           entities.add(entity);
         }
       }

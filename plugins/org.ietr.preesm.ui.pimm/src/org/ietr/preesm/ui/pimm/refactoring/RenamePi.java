@@ -47,8 +47,8 @@ import org.eclipse.ltk.core.refactoring.participants.RenameParticipant;
 
 // TODO: Auto-generated Javadoc
 /**
- * The purpose of this class is to handle the rename refactoring of a file with the ".pi" extension. In the rename operation, it is assumed that the
- * corresponding file with the ".diagram" extension is renamed similarly.
+ * The purpose of this class is to handle the rename refactoring of a file with the ".pi" extension. In the rename
+ * operation, it is assumed that the corresponding file with the ".diagram" extension is renamed similarly.
  *
  * @author kdesnos
  *
@@ -98,11 +98,12 @@ public class RenamePi extends RenameParticipant {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant#checkConditions(org.eclipse.core.runtime.IProgressMonitor,
-   * org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext)
+   * @see org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant#checkConditions(org.eclipse.core.runtime.
+   * IProgressMonitor, org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext)
    */
   @Override
-  public RefactoringStatus checkConditions(final IProgressMonitor pm, final CheckConditionsContext context) throws OperationCanceledException {
+  public RefactoringStatus checkConditions(final IProgressMonitor pm, final CheckConditionsContext context)
+      throws OperationCanceledException {
     // Nothing to do here
     return null;
   }
@@ -110,7 +111,8 @@ public class RenamePi extends RenameParticipant {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant#createPreChange(org.eclipse.core.runtime.IProgressMonitor)
+   * @see org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant#createPreChange(org.eclipse.core.runtime.
+   * IProgressMonitor)
    */
   @Override
   public Change createPreChange(final IProgressMonitor pm) throws CoreException, OperationCanceledException {
@@ -119,7 +121,8 @@ public class RenamePi extends RenameParticipant {
     final IFile refactored = (IFile) getProcessor().getElements()[0];
 
     // Create the change
-    final Change change = RefactoringHelper.createChange("(<data key=\"name\">)(" + this.oldName + ")(</data>)", 2, this.newName, refactored);
+    final Change change = RefactoringHelper.createChange("(<data key=\"name\">)(" + this.oldName + ")(</data>)", 2,
+        this.newName, refactored);
 
     return change;
   }
@@ -127,7 +130,8 @@ public class RenamePi extends RenameParticipant {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant#createChange(org.eclipse.core.runtime.IProgressMonitor)
+   * @see org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant#createChange(org.eclipse.core.runtime.
+   * IProgressMonitor)
    */
   @Override
   public Change createChange(final IProgressMonitor pm) throws CoreException, OperationCanceledException {

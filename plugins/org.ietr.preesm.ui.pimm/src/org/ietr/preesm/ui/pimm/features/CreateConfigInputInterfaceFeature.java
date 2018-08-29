@@ -102,7 +102,8 @@ public class CreateConfigInputInterfaceFeature extends AbstractCreateFeature {
     String newCfgInIfName = "iCfgName";
 
     // TODO create a parameter name validator
-    newCfgInIfName = PiMMUtil.askString("Create Config. Input Interface", question, newCfgInIfName, new VertexNameValidator(graph, null));
+    newCfgInIfName = PiMMUtil.askString("Create Config. Input Interface", question, newCfgInIfName,
+        new VertexNameValidator(graph, null));
     if ((newCfgInIfName == null) || (newCfgInIfName.trim().length() == 0)) {
       this.hasDoneChanges = false; // If this is not done, the graph is
       // considered modified.

@@ -76,7 +76,8 @@ public class ErrorWithExceptionDialog {
       childStatuses.add(new Status(IStatus.ERROR, PreesmUIPlugin.PLUGIN_ID, line));
     }
 
-    final MultiStatus ms = new MultiStatus(PreesmUIPlugin.PLUGIN_ID, IStatus.ERROR, childStatuses.toArray(new Status[] {}), // convert to array of statuses
+    final MultiStatus ms = new MultiStatus(PreesmUIPlugin.PLUGIN_ID, IStatus.ERROR,
+        childStatuses.toArray(new Status[] {}), // convert to array of statuses
         t.getLocalizedMessage(), t);
 
     ErrorDialog.openError(null, "Title", msg, ms);

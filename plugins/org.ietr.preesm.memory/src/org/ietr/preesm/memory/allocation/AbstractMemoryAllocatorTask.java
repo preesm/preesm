@@ -43,7 +43,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.WorkflowException;
+import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.memory.allocation.OrderedAllocator.Order;
@@ -90,7 +92,8 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
   public static final String PARAM_XFIT_ORDER = "Best/First Fit order";
 
   /** The Constant VALUE_XFIT_ORDER_DEFAULT. */
-  public static final String VALUE_XFIT_ORDER_DEFAULT = "{?,?,...} C {ApproxStableSet, ExactStableSet, LargestFirst, Shuffle, Scheduling}";
+  public static final String VALUE_XFIT_ORDER_DEFAULT = "{?,?,...} C "
+      + "{ApproxStableSet, ExactStableSet, LargestFirst, Shuffle, Scheduling}";
 
   /** The Constant VALUE_XFIT_ORDER_APPROX_STABLE_SET. */
   public static final String VALUE_XFIT_ORDER_APPROX_STABLE_SET = "ApproxStableSet";
@@ -145,8 +148,10 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
   public static final String VALUE_DISTRIBUTION_MIXED_MERGED = "MixedMerged";
 
   /** The Constant VALUE_DISTRIBUTION_DEFAULT. */
-  public static final String VALUE_DISTRIBUTION_DEFAULT = "? C {" + AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY + ", "
-      + AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED + ", " + AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY + ", "
+  public static final String VALUE_DISTRIBUTION_DEFAULT = "? C {"
+      + AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY + ", "
+      + AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED + ", "
+      + AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY + ", "
       + AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED + "}";
 
   /** The logger. */
@@ -188,12 +193,12 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
   protected List<MemoryAllocator> allocators;
 
   /**
-   * This method retrieves the value of task parameters from the workflow and stores them in local protected attributes. Some parameter {@link String} are also
-   * interpreted by this method (eg. {@link #verbose}, {@link #allocators}).
+   * This method retrieves the value of task parameters from the workflow and stores them in local protected attributes.
+   * Some parameter {@link String} are also interpreted by this method (eg. {@link #verbose}, {@link #allocators}).
    *
    * @param parameters
-   *          the parameter {@link Map} given to the
-   *          {@link #execute(Map, Map, org.eclipse.core.runtime.IProgressMonitor, String, org.ietr.dftools.workflow.elements.Workflow) execute()} method.
+   *          the parameter {@link Map} given to the {@link #execute(Map, Map, IProgressMonitor, Workflow) execute()}
+   *          method.
    */
   protected void init(final Map<String, String> parameters) {
     // Retrieve parameters from workflow
@@ -254,8 +259,8 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
   }
 
   /**
-   * Based on allocators specified in the task parameters, and stored in the {@link #allocators} attribute, this method instantiate the {@link MemoryAllocator}
-   * that are to be executed on the given {@link MemoryExclusionGraph MEG}.
+   * Based on allocators specified in the task parameters, and stored in the {@link #allocators} attribute, this method
+   * instantiate the {@link MemoryAllocator} that are to be executed on the given {@link MemoryExclusionGraph MEG}.
    *
    * @param memEx
    *          the {@link MemoryExclusionGraph MEG} to allocate.
@@ -323,16 +328,17 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
     // Check the correct allocation
     try {
       if (!allocator.checkAllocation().isEmpty()) {
-        throw new WorkflowException("The obtained allocation was not valid because mutually" + " exclusive memory objects have overlapping address ranges."
-            + " The allocator is not working.\n" + allocator.checkAllocation());
+        throw new WorkflowException("The obtained allocation was not valid because mutually"
+            + " exclusive memory objects have overlapping address ranges." + " The allocator is not working.\n"
+            + allocator.checkAllocation());
       }
     } catch (final RuntimeException e) {
       throw new WorkflowException(e.getMessage());
     }
 
     if (!allocator.checkAlignment().isEmpty()) {
-      throw new WorkflowException("The obtained allocation was not valid because there were" + " unaligned memory objects. The allocator is not working.\n"
-          + allocator.checkAlignment());
+      throw new WorkflowException("The obtained allocation was not valid because there were"
+          + " unaligned memory objects. The allocator is not working.\n" + allocator.checkAlignment());
     }
 
     String log = computeLog(allocator, tStart, sAllocator, tFinish);
@@ -353,7 +359,8 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
     this.logger.log(Level.INFO, log);
   }
 
-  private String computeLog(final MemoryAllocator allocator, final long tStart, final String sAllocator, final long tFinish) {
+  private String computeLog(final MemoryAllocator allocator, final long tStart, final String sAllocator,
+      final long tFinish) {
     String unit = "bytes";
     float size = allocator.getMemorySize();
     if (size > 1024) {
@@ -386,7 +393,8 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
     parameters.put(AbstractMemoryAllocatorTask.PARAM_XFIT_ORDER, AbstractMemoryAllocatorTask.VALUE_XFIT_ORDER_DEFAULT);
     parameters.put(AbstractMemoryAllocatorTask.PARAM_NB_SHUFFLE, AbstractMemoryAllocatorTask.VALUE_NB_SHUFFLE_DEFAULT);
     parameters.put(AbstractMemoryAllocatorTask.PARAM_ALIGNMENT, AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
-    parameters.put(AbstractMemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY, AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
+    parameters.put(AbstractMemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY,
+        AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
     return parameters;
   }
 }

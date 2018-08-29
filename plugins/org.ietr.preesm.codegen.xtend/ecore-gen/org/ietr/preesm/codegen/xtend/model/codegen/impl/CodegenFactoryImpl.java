@@ -87,7 +87,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
    */
   public static CodegenFactory init() {
     try {
-      final CodegenFactory theCodegenFactory = (CodegenFactory) EPackage.Registry.INSTANCE.getEFactory(CodegenPackage.eNS_URI);
+      final CodegenFactory theCodegenFactory = (CodegenFactory) EPackage.Registry.INSTANCE
+          .getEFactory(CodegenPackage.eNS_URI);
       if (theCodegenFactory != null) {
         return theCodegenFactory;
       }
@@ -485,7 +486,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
   public Direction createDirectionFromString(final EDataType eDataType, final String initialValue) {
     final Direction result = Direction.get(initialValue);
     if (result == null) {
-      throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+      throw new IllegalArgumentException(
+          "The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
     }
     return result;
   }
@@ -517,7 +519,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
   public Delimiter createDelimiterFromString(final EDataType eDataType, final String initialValue) {
     final Delimiter result = Delimiter.get(initialValue);
     if (result == null) {
-      throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+      throw new IllegalArgumentException(
+          "The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
     }
     return result;
   }
@@ -549,7 +552,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
   public SpecialType createSpecialTypeFromString(final EDataType eDataType, final String initialValue) {
     final SpecialType result = SpecialType.get(initialValue);
     if (result == null) {
-      throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+      throw new IllegalArgumentException(
+          "The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
     }
     return result;
   }
@@ -581,7 +585,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
   public FifoOperation createFifoOperationFromString(final EDataType eDataType, final String initialValue) {
     final FifoOperation result = FifoOperation.get(initialValue);
     if (result == null) {
-      throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+      throw new IllegalArgumentException(
+          "The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
     }
     return result;
   }
@@ -613,7 +618,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
   public PortDirection createPortDirectionFromString(final EDataType eDataType, final String initialValue) {
     final PortDirection result = PortDirection.get(initialValue);
     if (result == null) {
-      throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+      throw new IllegalArgumentException(
+          "The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
     }
     return result;
   }

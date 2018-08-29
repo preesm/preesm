@@ -104,21 +104,28 @@ public class PiMMAlgorithmChecker {
       this.errors = !fifoChecker.getFifoWithOneZeroRate().isEmpty();
       this.warnings = !fifoChecker.getFifoWithVoidType().isEmpty() || !fifoChecker.getFifoWithZeroRates().isEmpty();
       for (final Fifo f : fifoChecker.getFifoWithOneZeroRate()) {
-        final String srcVertexPath = ((AbstractVertex) f.getSourcePort().eContainer()).getName() + "." + f.getSourcePort().getName();
-        final String tgtVertexPath = ((AbstractVertex) f.getTargetPort().eContainer()).getName() + "." + f.getTargetPort().getName();
-        this.errorMsgs.put("Fifo between actors " + srcVertexPath + " and " + tgtVertexPath + " has invalid rates (one equals 0 but not the other)", f);
+        final String srcVertexPath = ((AbstractVertex) f.getSourcePort().eContainer()).getName() + "."
+            + f.getSourcePort().getName();
+        final String tgtVertexPath = ((AbstractVertex) f.getTargetPort().eContainer()).getName() + "."
+            + f.getTargetPort().getName();
+        this.errorMsgs.put("Fifo between actors " + srcVertexPath + " and " + tgtVertexPath
+            + " has invalid rates (one equals 0 but not the other)", f);
       }
       for (final Fifo f : fifoChecker.getFifoWithVoidType()) {
-        final String srcVertexPath = ((AbstractVertex) f.getSourcePort().eContainer()).getName() + "." + f.getSourcePort().getName();
-        final String tgtVertexPath = ((AbstractVertex) f.getTargetPort().eContainer()).getName() + "." + f.getTargetPort().getName();
-        this.warningMsgs.put("Fifo between actors " + srcVertexPath + " and " + tgtVertexPath + " has type \"void\" (this is not supported by code generation)",
-            f);
+        final String srcVertexPath = ((AbstractVertex) f.getSourcePort().eContainer()).getName() + "."
+            + f.getSourcePort().getName();
+        final String tgtVertexPath = ((AbstractVertex) f.getTargetPort().eContainer()).getName() + "."
+            + f.getTargetPort().getName();
+        this.warningMsgs.put("Fifo between actors " + srcVertexPath + " and " + tgtVertexPath
+            + " has type \"void\" (this is not supported by code generation)", f);
       }
       for (final Fifo f : fifoChecker.getFifoWithZeroRates()) {
-        final String srcVertexPath = ((AbstractVertex) f.getSourcePort().eContainer()).getName() + "." + f.getSourcePort().getName();
-        final String tgtVertexPath = ((AbstractVertex) f.getTargetPort().eContainer()).getName() + "." + f.getTargetPort().getName();
-        this.warningMsgs.put("Fifo between actors " + srcVertexPath + " and " + tgtVertexPath + " has rates equal to 0 (you may have forgotten to set them)",
-            f);
+        final String srcVertexPath = ((AbstractVertex) f.getSourcePort().eContainer()).getName() + "."
+            + f.getSourcePort().getName();
+        final String tgtVertexPath = ((AbstractVertex) f.getTargetPort().eContainer()).getName() + "."
+            + f.getTargetPort().getName();
+        this.warningMsgs.put("Fifo between actors " + srcVertexPath + " and " + tgtVertexPath
+            + " has rates equal to 0 (you may have forgotten to set them)", f);
       }
     }
   }
@@ -137,11 +144,12 @@ public class PiMMAlgorithmChecker {
         this.errorMsgs.put("Actor " + a.getVertexPath() + " does not have a refinement", a);
       }
       for (final Actor a : refinementChecker.getActorsWithInvalidExtensionRefinement()) {
-        this.errorMsgs
-            .put("Refinement " + a.getRefinement().getFilePath() + " of Actor " + a.getVertexPath() + " does not have a valid extension (.h, .idl, or .pi)", a);
+        this.errorMsgs.put("Refinement " + a.getRefinement().getFilePath() + " of Actor " + a.getVertexPath()
+            + " does not have a valid extension (.h, .idl, or .pi)", a);
       }
       for (final Actor a : refinementChecker.getActorsWithNonExistingRefinement()) {
-        this.errorMsgs.put("Refinement  " + a.getRefinement().getFilePath() + " of Actor " + a.getVertexPath() + " does not reference an existing file", a);
+        this.errorMsgs.put("Refinement  " + a.getRefinement().getFilePath() + " of Actor " + a.getVertexPath()
+            + " does not reference an existing file", a);
       }
     }
   }

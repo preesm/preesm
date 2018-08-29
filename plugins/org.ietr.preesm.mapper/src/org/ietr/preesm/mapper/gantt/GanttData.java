@@ -123,7 +123,8 @@ public class GanttData {
           return false;
         }
       } else {
-        final String message = "Gantt: task can not be displayed in Gantt because it has no component: " + currentVertex;
+        final String message = "Gantt: task can not be displayed in Gantt because it has no component: "
+            + currentVertex;
         WorkflowLogger.getLogger().log(Level.SEVERE, message);
       }
     }

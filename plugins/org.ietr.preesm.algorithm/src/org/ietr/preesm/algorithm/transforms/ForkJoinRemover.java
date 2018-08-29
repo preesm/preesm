@@ -132,12 +132,14 @@ public class ForkJoinRemover {
       if (vertKind.equals("fork") || vertKind.equals("join")) {
 
         if (vertKind.equals("fork") && (vert.getBase().incomingEdgesOf(vert).size() > 1)) {
-          WorkflowLogger.getLogger().log(Level.SEVERE, "Skipped Fork vertex with multiple inputs (" + vert.getId() + ")");
+          WorkflowLogger.getLogger().log(Level.SEVERE,
+              "Skipped Fork vertex with multiple inputs (" + vert.getId() + ")");
           continue;
         }
 
         if ((vert.getBase().outgoingEdgesOf(vert).size() > 1) && (vert.getBase().incomingEdgesOf(vert).size() > 1)) {
-          WorkflowLogger.getLogger().log(Level.SEVERE, "Skipped Fork/Join vertex with both multiple inputs and outputs (" + vert.getId() + ")");
+          WorkflowLogger.getLogger().log(Level.SEVERE,
+              "Skipped Fork/Join vertex with both multiple inputs and outputs (" + vert.getId() + ")");
           continue;
         }
 
@@ -281,9 +283,11 @@ public class ForkJoinRemover {
     if (nonTaskVertices.size() != ((nbEdgeBefore + nbEdgeAdded) - hsdf.edgeSet().size())) {
       WorkflowLogger.getLogger().log(Level.SEVERE, "Expecting " + nonTaskVertices.size() + " edges removed but got "
           + ((nbEdgeBefore + nbEdgeAdded) - hsdf.edgeSet().size()) + " edges removed instead");
-      WorkflowLogger.getLogger().log(Level.SEVERE, "Consider deactivating Implode/Explode suprression in HSDF workflow element parameters");
+      WorkflowLogger.getLogger().log(Level.SEVERE,
+          "Consider deactivating Implode/Explode suprression in HSDF workflow element parameters");
     } else {
-      WorkflowLogger.getLogger().log(Level.INFO, "" + nonTaskVertices.size() + " implode/explode vertices removed (and as many edges)");
+      WorkflowLogger.getLogger().log(Level.INFO,
+          "" + nonTaskVertices.size() + " implode/explode vertices removed (and as many edges)");
     }
   }
 
@@ -313,7 +317,8 @@ public class ForkJoinRemover {
     // vertices
 
     for (final DAGVertex vert : vertices) {
-      final boolean isTask = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.TASK);
+      final boolean isTask = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
+          .equals(VertexType.TASK);
       String vertKind = "";
 
       // Only task vertices have a kind
@@ -338,8 +343,10 @@ public class ForkJoinRemover {
             // Check that the edge is linked to a task (we do
             // not
             // consider edges linked to send/receive)
-            if (incomingEdge.getSource().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.TASK)
-                && outgoingEdge.getTarget().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.TASK)) {
+            if (incomingEdge.getSource().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
+                .equals(VertexType.TASK)
+                && outgoingEdge.getTarget().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
+                    .equals(VertexType.TASK)) {
 
               // Select the edges whose properties must be
               // copied to the new edge

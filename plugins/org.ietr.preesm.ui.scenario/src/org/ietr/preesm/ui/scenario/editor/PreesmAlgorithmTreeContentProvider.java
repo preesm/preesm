@@ -58,7 +58,8 @@ import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 
 // TODO: Auto-generated Javadoc
 /**
- * This class provides the elements displayed in {@link SDFTreeSection}. Each element is a vertex. This tree is used in scenario editor to edit the constraints
+ * This class provides the elements displayed in {@link SDFTreeSection}. Each element is a vertex. This tree is used in
+ * scenario editor to edit the constraints
  *
  * @author mpelcat
  */
@@ -237,7 +238,8 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
+   * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object,
+   * java.lang.Object)
    */
   @Override
   public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
@@ -269,7 +271,8 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
    */
   public Set<HierarchicalSDFVertex> filterIBSDFChildren(final Set<SDFAbstractVertex> children) {
 
-    final ConcurrentSkipListSet<HierarchicalSDFVertex> appropriateChildren = new ConcurrentSkipListSet<>(new PathComparator());
+    final ConcurrentSkipListSet<
+        HierarchicalSDFVertex> appropriateChildren = new ConcurrentSkipListSet<>(new PathComparator());
 
     for (final SDFAbstractVertex v : children) {
       if (v.getKind().equalsIgnoreCase("vertex")) {

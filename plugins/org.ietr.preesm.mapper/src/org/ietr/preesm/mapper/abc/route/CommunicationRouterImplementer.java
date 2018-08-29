@@ -112,8 +112,9 @@ public abstract class CommunicationRouterImplementer {
    *          the already created vertices
    * @return the transaction
    */
-  public abstract Transaction addVertices(AbstractRouteStep routeStep, MapperDAGEdge edge, TransactionManager transactions, int type, int routeStepIndex,
-      Transaction lastTransaction, List<Object> alreadyCreatedVertices);
+  public abstract Transaction addVertices(AbstractRouteStep routeStep, MapperDAGEdge edge,
+      TransactionManager transactions, int type, int routeStepIndex, Transaction lastTransaction,
+      List<Object> alreadyCreatedVertices);
 
   /**
    * Removes the vertices.

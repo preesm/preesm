@@ -40,7 +40,8 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 // TODO: Auto-generated Javadoc
 /**
- * Class used as a scenario editor tree content to distinguish two vertices with the same name but different paths (stored in "info" property).
+ * Class used as a scenario editor tree content to distinguish two vertices with the same name but different paths
+ * (stored in "info" property).
  *
  * @author mpelcat
  */

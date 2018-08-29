@@ -190,7 +190,8 @@ public class RouteCalculator {
    * @param alreadyVisitedNodes
    *          the already visited nodes
    */
-  private void exploreRoute(final ComponentInstance source, final ComponentInstance node, final List<ComponentInstance> alreadyVisitedNodes) {
+  private void exploreRoute(final ComponentInstance source, final ComponentInstance node,
+      final List<ComponentInstance> alreadyVisitedNodes) {
 
     // Iterating on outgoing and undirected edges
     final Set<Link> outgoingAndUndirected = new LinkedHashSet<>();
@@ -251,7 +252,8 @@ public class RouteCalculator {
                 // routes become available
                 if (table.getBestRoute(src, tgt) == null) {
                   table.addRoute(src, tgt, compoundRoute);
-                } else if (table.getBestRoute(src, tgt).evaluateTransferCost(averageDataSize) > compoundRoute.evaluateTransferCost(averageDataSize)) {
+                } else if (table.getBestRoute(src, tgt).evaluateTransferCost(averageDataSize) > compoundRoute
+                    .evaluateTransferCost(averageDataSize)) {
                   table.removeRoutes(src, tgt);
                   table.addRoute(src, tgt, compoundRoute);
                 }

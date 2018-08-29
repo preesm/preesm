@@ -41,8 +41,8 @@ import org.eclipse.graphiti.ui.editor.DiagramBehavior;
 import org.eclipse.graphiti.ui.editor.IDiagramContainerUI;
 
 /**
- * Class inheriting from the {@link DiagramBehavior}. This class was created to define a custom {@link DefaultMarkerBehavior} that does not reset problems
- * related to graphs on startup of the editor.
+ * Class inheriting from the {@link DiagramBehavior}. This class was created to define a custom
+ * {@link DefaultMarkerBehavior} that does not reset problems related to graphs on startup of the editor.
  *
  * @author kdesnos
  *

@@ -49,8 +49,9 @@ import org.jgrapht.graph.SimpleGraph;
 
 // TODO: Auto-generated Javadoc
 /**
- * This Solver is an heuristic non-exact solver for the Maximum-Weight-Clique problem. It is design to provide a clique which is not always the maximum-weight
- * clique but whose weight is high. The main advantage of this algorithm over exact algorithms is that it runs significantly faster.
+ * This Solver is an heuristic non-exact solver for the Maximum-Weight-Clique problem. It is design to provide a clique
+ * which is not always the maximum-weight clique but whose weight is high. The main advantage of this algorithm over
+ * exact algorithms is that it runs significantly faster.
  *
  * @author kdesnos
  *
@@ -60,11 +61,13 @@ import org.jgrapht.graph.SimpleGraph;
  * @param <E>
  *          The edges class
  */
-public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>, E extends DefaultEdge> extends AbstractMaximumWeightCliqueSolver<V, E> {
+public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>, E extends DefaultEdge>
+    extends AbstractMaximumWeightCliqueSolver<V, E> {
 
   /**
-   * This subclass is used to store values associated to a vertex (in a map). The first is the weight of a vertex neighborhood, and the second is the density
-   * gain of a vertex removal. The last one is a list of vertex that were merged with this vertex.
+   * This subclass is used to store values associated to a vertex (in a map). The first is the weight of a vertex
+   * neighborhood, and the second is the density gain of a vertex removal. The last one is a list of vertex that were
+   * merged with this vertex.
    *
    * @author kdesnos
    *
@@ -169,10 +172,14 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
         if (other.getClass() == this.getClass()) {
           @SuppressWarnings("unchecked")
           final VerticesPair otherPair = (VerticesPair) other;
-          return ((((this.first == otherPair.first) || ((this.first != null) && (otherPair.first != null) && this.first.equals(otherPair.first)))
-              && ((this.second == otherPair.second) || ((this.second != null) && (otherPair.second != null) && this.second.equals(otherPair.second))))
-              || (((this.first == otherPair.second) || ((this.first != null) && (otherPair.second != null) && this.first.equals(otherPair.second)))
-                  && ((this.second == otherPair.first) || ((this.second != null) && (otherPair.first != null) && this.second.equals(otherPair.first)))));
+          return ((((this.first == otherPair.first)
+              || ((this.first != null) && (otherPair.first != null) && this.first.equals(otherPair.first)))
+              && ((this.second == otherPair.second)
+                  || ((this.second != null) && (otherPair.second != null) && this.second.equals(otherPair.second))))
+              || (((this.first == otherPair.second)
+                  || ((this.first != null) && (otherPair.second != null) && this.first.equals(otherPair.second)))
+                  && ((this.second == otherPair.first)
+                      || ((this.second != null) && (otherPair.first != null) && this.second.equals(otherPair.first)))));
         }
       }
 
@@ -254,7 +261,8 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.memory.bounds.AbstractMaximumWeightCliqueSolver#adjacentVerticesOf(org.ietr.preesm.memory.exclusiongraph.IWeightedVertex)
+   * @see org.ietr.preesm.memory.bounds.AbstractMaximumWeightCliqueSolver#adjacentVerticesOf(org.ietr.preesm.memory.
+   * exclusiongraph.IWeightedVertex)
    */
   @Override
   public Set<V> adjacentVerticesOf(final V vertex) {
@@ -292,7 +300,8 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
    * This method merge two "Similar" nodes A and B of the graph if:<br>
    * - Node A and node B are linked by an edge.<br>
    * - Node A and B have ALL their neighbors in common.<br>
-   * The node resulting from the merge keep the name of one of the two nodes, and its weight is equal to the sum of the merged nodes weight.<br>
+   * The node resulting from the merge keep the name of one of the two nodes, and its weight is equal to the sum of the
+   * merged nodes weight.<br>
    * <br>
    * This method also clears the adjacentverticesBackup lists.
    *
@@ -316,7 +325,8 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
    * This method merge two "Similar" nodes A and B of the graph if:<br>
    * - Node A and node B are linked by an edge.<br>
    * - Node A and B have ALL their neighbors in common.<br>
-   * The node resulting from the merge keep the name of one of the two nodes, and its weight is equal to the sum of the merged nodes weight.
+   * The node resulting from the merge keep the name of one of the two nodes, and its weight is equal to the sum of the
+   * merged nodes weight.
    *
    * @param vertices
    *          The list of vertices of the graph where similar vertices are to merge.
@@ -416,13 +426,17 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
       // 3 - Search for the vertex to remove
       for (final Entry<V, VertexCost> entry : costsList.entrySet()) {
 
-        final boolean equalGain = (entry.getValue().getNbEdges().intValue() == selectedEntry.getValue().getNbEdges().intValue());
+        final boolean equalGain = (entry.getValue().getNbEdges().intValue() == selectedEntry.getValue().getNbEdges()
+            .intValue());
         // The less edges the vertex has, the greater the density gain
         // will be
         final boolean largerGain = (entry.getValue().getNbEdges() < selectedEntry.getValue().getNbEdges());
-        final boolean smallerWeight = (entry.getValue().getNeighborsWeight().intValue() < selectedEntry.getValue().getNeighborsWeight().intValue());
-        final boolean equalWeight = (entry.getValue().getNeighborsWeight().intValue() == selectedEntry.getValue().getNeighborsWeight().intValue());
-        final boolean smallerVertexWeight = (entry.getKey().getWeight().intValue() < selectedEntry.getKey().getWeight().intValue());
+        final boolean smallerWeight = (entry.getValue().getNeighborsWeight().intValue() < selectedEntry.getValue()
+            .getNeighborsWeight().intValue());
+        final boolean equalWeight = (entry.getValue().getNeighborsWeight().intValue() == selectedEntry.getValue()
+            .getNeighborsWeight().intValue());
+        final boolean smallerVertexWeight = (entry.getKey().getWeight().intValue() < selectedEntry.getKey().getWeight()
+            .intValue());
 
         // Explanation :
         // The vertex with the lowest neighborhood weight is selected.

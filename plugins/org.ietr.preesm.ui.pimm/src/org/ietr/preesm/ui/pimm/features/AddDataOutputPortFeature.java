@@ -115,7 +115,8 @@ public class AddDataOutputPortFeature extends AbstractAddActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#addPortGA(org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm)
+   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#addPortGA(org.eclipse.graphiti.mm.algorithms.
+   * GraphicsAlgorithm)
    */
   @Override
   public GraphicsAlgorithm addPortGA(final GraphicsAlgorithm containerShape) {
@@ -126,14 +127,16 @@ public class AddDataOutputPortFeature extends AbstractAddActorPortFeature {
     rectangle.setForeground(manageColor(AddDataOutputPortFeature.DATA_OUTPUT_PORT_FOREGROUND));
     rectangle.setBackground(manageColor(AddDataOutputPortFeature.DATA_OUTPUT_PORT_BACKGROUND));
     rectangle.setLineWidth(1);
-    gaService.setSize(rectangle, AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE, AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE);
+    gaService.setSize(rectangle, AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE,
+        AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE);
     return rectangle;
   }
 
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#addPortLabel(org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm, java.lang.String)
+   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#addPortLabel(org.eclipse.graphiti.mm.algorithms.
+   * GraphicsAlgorithm, java.lang.String)
    */
   @Override
   public GraphicsAlgorithm addPortLabel(final GraphicsAlgorithm containerShape, final String portName) {
@@ -157,7 +160,8 @@ public class AddDataOutputPortFeature extends AbstractAddActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getNewPort(java.lang.String, org.ietr.preesm.experiment.model.pimm.ExecutableActor)
+   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getNewPort(java.lang.String,
+   * org.ietr.preesm.experiment.model.pimm.ExecutableActor)
    */
   @Override
   public Port getNewPort(final String portName, final ExecutableActor actor) {

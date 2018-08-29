@@ -99,7 +99,8 @@ public class FastPopulation {
    * @param scenario
    *          the scenario
    */
-  public FastPopulation(final int populationNum, final AbcParameters abcParams, final Design archi, final PreesmScenario scenario) {
+  public FastPopulation(final int populationNum, final AbcParameters abcParams, final Design archi,
+      final PreesmScenario scenario) {
     super();
     this.populationNum = populationNum;
     this.abcParams = abcParams;
@@ -120,7 +121,8 @@ public class FastPopulation {
    * @param archi
    *          the archi
    */
-  public FastPopulation(final int populationNum, final List<MapperDAG> population, final AbcParameters abcParams, final Design archi) {
+  public FastPopulation(final int populationNum, final List<MapperDAG> population, final AbcParameters abcParams,
+      final Design archi) {
     super();
     this.populationNum = populationNum;
     this.population = population;
@@ -198,7 +200,8 @@ public class FastPopulation {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public void constructPopulation(final MapperDAG dag, final PreesmScenario scenario, final FastAlgoParameters fastParams) throws WorkflowException {
+  public void constructPopulation(final MapperDAG dag, final PreesmScenario scenario,
+      final FastAlgoParameters fastParams) throws WorkflowException {
 
     // create the population
     final List<MapperDAG> temp = new ArrayList<>();
@@ -210,7 +213,8 @@ public class FastPopulation {
       tempdag = dag.clone();
 
       // perform the initialization
-      final IAbc simu = new InfiniteHomogeneousAbc(new AbcParameters(AbcType.InfiniteHomogeneous, EdgeSchedType.Simple, false), tempdag, getArchi(), scenario);
+      final IAbc simu = new InfiniteHomogeneousAbc(
+          new AbcParameters(AbcType.InfiniteHomogeneous, EdgeSchedType.Simple, false), tempdag, getArchi(), scenario);
       final InitialLists initialLists = new InitialLists();
       initialLists.constructInitialLists(tempdag, simu);
 
@@ -219,7 +223,9 @@ public class FastPopulation {
 
       // perform the fast algo
       final FastAlgorithm algorithm = new FastAlgorithm(initialLists, scenario);
-      tempdag = algorithm.map("population", this.abcParams, fastParams, tempdag, this.archi, false, true, false, null, taskSched).clone();
+      tempdag = algorithm
+          .map("population", this.abcParams, fastParams, tempdag, this.archi, false, true, false, null, taskSched)
+          .clone();
       temp.add(tempdag.clone());
 
     }

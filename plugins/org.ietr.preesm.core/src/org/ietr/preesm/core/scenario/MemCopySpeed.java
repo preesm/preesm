@@ -38,7 +38,8 @@ package org.ietr.preesm.core.scenario;
 
 // TODO: Auto-generated Javadoc
 /**
- * Representing the speed of a memcopy for a given operator type. This speed is composed of 2 elements: setupTime and timePerUnit
+ * Representing the speed of a memcopy for a given operator type. This speed is composed of 2 elements: setupTime and
+ * timePerUnit
  *
  * @author mpelcat
  */

@@ -39,7 +39,8 @@ import org.eclipse.emf.ecore.EFactory;
 
 // TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> The <b>Factory</b> for the model. It provides a create method for each non-abstract class of the model. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> The <b>Factory</b> for the model. It provides a create method for each non-abstract class of
+ * the model. <!-- end-user-doc -->
  * 
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage
  * @generated

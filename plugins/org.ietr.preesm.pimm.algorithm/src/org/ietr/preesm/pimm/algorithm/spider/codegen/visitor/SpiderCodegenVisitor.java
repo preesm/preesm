@@ -92,14 +92,16 @@ import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderTypeConverter.P
 
 // TODO: Find a cleaner way to setParentEdge in Interfaces
 /*
- * Ugly workaround for setParentEdge in Interfaces. Must suppose that fifos are always obtained in the same order => Modify the C++ headers?
- * A better way would be a possibility to get edges from one building method to the other (since the parentEdge is in the outer graph),
+ * Ugly workaround for setParentEdge in Interfaces. Must suppose that fifos are always obtained in the same
+ * order => Modify the C++ headers?
+ * A better way would be a possibility to get edges from one building method to the other (since the parentEdge
+ * is in the outer graph),
  * maybe a map from edgeNames to edges with a method getOutputEdgeByName in BaseVertex
  */
 
 /**
- * PiMM models visitor generating C++ code for COMPA Runtime currentGraph: The most outer graph of the PiMM model currentMethod: The StringBuilder used to write
- * the C++ code
+ * PiMM models visitor generating C++ code for COMPA Runtime currentGraph: The most outer graph of the PiMM model
+ * currentMethod: The StringBuilder used to write the C++ code
  */
 public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
   private final SpiderPreProcessVisitor preprocessor;
@@ -149,8 +151,9 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
 
   /**
    */
-  public SpiderCodegenVisitor(final SpiderCodegen callerSpiderCodegen, final StringBuilder topMethod, final SpiderPreProcessVisitor prepocessor,
-      final Map<AbstractActor, Map<String, String>> timings, final Map<AbstractActor, Set<String>> constraints, final Map<String, DataType> dataTypes) {
+  public SpiderCodegenVisitor(final SpiderCodegen callerSpiderCodegen, final StringBuilder topMethod,
+      final SpiderPreProcessVisitor prepocessor, final Map<AbstractActor, Map<String, String>> timings,
+      final Map<AbstractActor, Set<String>> constraints, final Map<String, DataType> dataTypes) {
     this.callerSpiderCodegen = callerSpiderCodegen;
     this.currentMethod = topMethod;
     this.preprocessor = prepocessor;
@@ -325,9 +328,10 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     }
 
     // Create a graph and a top vertex
-    append("\tPiSDFGraph* graph = Spider::createGraph(\n" + "\t\t/*Edges*/    " + pg.getFifos().size() + ",\n" + "\t\t/*Params*/   " + pg.getParameters().size()
-        + ",\n" + "\t\t/*InputIf*/  " + nInIf + ",\n" + "\t\t/*OutputIf*/ " + nOutif + ",\n" + "\t\t/*Config*/   " + nConfig + ",\n" + "\t\t/*Body*/     "
-        + nBody + ");\n");
+    append("\tPiSDFGraph* graph = Spider::createGraph(\n" + "\t\t/*Edges*/    " + pg.getFifos().size() + ",\n"
+        + "\t\t/*Params*/   " + pg.getParameters().size() + ",\n" + "\t\t/*InputIf*/  " + nInIf + ",\n"
+        + "\t\t/*OutputIf*/ " + nOutif + ",\n" + "\t\t/*Config*/   " + nConfig + ",\n" + "\t\t/*Body*/     " + nBody
+        + ");\n");
 
     // Generating parameters
     append("\n\t/* Parameters */\n");
@@ -487,7 +491,8 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
           }
         }
       } else {
-        WorkflowLogger.getLogger().log(Level.WARNING, "Actor " + aa.getName() + " does not have a valid operator to execute on");
+        WorkflowLogger.getLogger().log(Level.WARNING,
+            "Actor " + aa.getName() + " does not have a valid operator to execute on");
       }
     }
 
@@ -605,11 +610,11 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
       }
     }
 
-    append("\t\t/*Src*/ " + SpiderNameGenerator.getVertexName(srcActor) + ", /*SrcPrt*/ " + this.portMap.get(srcPort) + ", /*Prod*/ \"(" + srcProd + ")*"
-        + typeSize + "\",\n");
+    append("\t\t/*Src*/ " + SpiderNameGenerator.getVertexName(srcActor) + ", /*SrcPrt*/ " + this.portMap.get(srcPort)
+        + ", /*Prod*/ \"(" + srcProd + ")*" + typeSize + "\",\n");
 
-    append("\t\t/*Snk*/ " + SpiderNameGenerator.getVertexName(snkActor) + ", /*SnkPrt*/ " + this.portMap.get(snkPort) + ", /*Cons*/ \"(" + snkProd + ")*"
-        + typeSize + "\",\n");
+    append("\t\t/*Snk*/ " + SpiderNameGenerator.getVertexName(snkActor) + ", /*SnkPrt*/ " + this.portMap.get(snkPort)
+        + ", /*Cons*/ \"(" + snkProd + ")*" + typeSize + "\",\n");
 
     if (f.getDelay() != null) {
       // append("\t\t/*Delay*/ \"(" + delay + ")*sizeof(" + f.getType() + ")\",0);\n\n");
@@ -628,13 +633,15 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     final String paramName = SpiderNameGenerator.getParameterName(p);
 
     if (!p.isLocallyStatic()) {
-      if ((p.getConfigInputPorts().size() == 1) && !(p.getConfigInputPorts().get(0).getIncomingDependency().getSetter() instanceof Parameter)) {
+      if ((p.getConfigInputPorts().size() == 1)
+          && !(p.getConfigInputPorts().get(0).getIncomingDependency().getSetter() instanceof Parameter)) {
         /* DYNAMIC */
-        append("\tPiSDFParam *" + paramName + " = Spider::addDynamicParam(graph, " + "\"" + p.getName() + "\"" + ");\n");
+        append(
+            "\tPiSDFParam *" + paramName + " = Spider::addDynamicParam(graph, " + "\"" + p.getName() + "\"" + ");\n");
       } else {
         /* DYNAMIC DEPENDANT */
-        append("\tPiSDFParam *" + paramName + " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName() + "\", \""
-            + p.getValueExpression().getExpressionString() + "\");\n");
+        append("\tPiSDFParam *" + paramName + " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName()
+            + "\", \"" + p.getValueExpression().getExpressionString() + "\");\n");
       }
     } else if (p.isConfigurationInterface() && (((ConfigInputInterface) p).getGraphPort() instanceof ConfigInputPort)) {
       /* HERITED */
@@ -642,7 +649,8 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
           + this.portMap.get(((ConfigInputInterface) p).getGraphPort()) + ");\n");
     } else if (p.getConfigInputPorts().isEmpty()) {
       /* STATIC */
-      append("\tPiSDFParam *" + paramName + " = Spider::addStaticParam(graph, " + "\"" + p.getName() + "\", " + p.getName() + ");\n");
+      append("\tPiSDFParam *" + paramName + " = Spider::addStaticParam(graph, " + "\"" + p.getName() + "\", "
+          + p.getName() + ");\n");
     } else {
       /* STATIC DEPENDANT */
       append("\tPiSDFParam *" + paramName + " = Spider::addStaticDependentParam(graph, " + "\"" + p.getName() + "\", \""

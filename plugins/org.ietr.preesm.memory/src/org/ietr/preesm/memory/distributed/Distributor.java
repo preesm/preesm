@@ -61,7 +61,8 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.ietr.preesm.memory.script.Range;
 
 /**
- * This class contains all the code responsible for splitting a {@link MemoryExclusionGraph} into several graphs, each corresponding to a specific memory bank.
+ * This class contains all the code responsible for splitting a {@link MemoryExclusionGraph} into several graphs, each
+ * corresponding to a specific memory bank.
  */
 public class Distributor {
 
@@ -78,24 +79,26 @@ public class Distributor {
   protected static Logger logger = WorkflowLogger.getLogger();
 
   /**
-   * This method analyzes a {@link MemoryExclusionGraph} and divides it into several {@link MemoryExclusionGraph}, each corresponding to a memory bank.<br>
+   * This method analyzes a {@link MemoryExclusionGraph} and divides it into several {@link MemoryExclusionGraph}, each
+   * corresponding to a memory bank.<br>
    * <br>
-   * Decisions of this methods are based on the {@link DAGEdge} associated to each {@link MemoryExclusionVertex} of the processed {@link MemoryExclusionGraph}.
-   * Number of created {@link MemoryExclusionGraph} also depends on the selected distribution policy (see {@link AbstractMemoryAllocatorTask} parameters.). It
-   * should be noted that each {@link MemoryExclusionVertex} of the processed {@link MemoryExclusionGraph} will be put in one or more output
+   * Decisions of this methods are based on the {@link DAGEdge} associated to each {@link MemoryExclusionVertex} of the
+   * processed {@link MemoryExclusionGraph}. Number of created {@link MemoryExclusionGraph} also depends on the selected
+   * distribution policy (see {@link AbstractMemoryAllocatorTask} parameters.). It should be noted that each
+   * {@link MemoryExclusionVertex} of the processed {@link MemoryExclusionGraph} will be put in one or more output
    * {@link MemoryExclusionGraph}.
    *
    * @param valuePolicy
-   *          {@link String} containing the selected policy for the distribution of {@link MemoryExclusionVertex} in separate memory banks. (see
-   *          {@link AbstractMemoryAllocatorTask} parameters.)
+   *          {@link String} containing the selected policy for the distribution of {@link MemoryExclusionVertex} in
+   *          separate memory banks. (see {@link AbstractMemoryAllocatorTask} parameters.)
    * @param memEx
    *          The processed {@link MemoryExclusionGraph}
    *
    * @param alignment
-   *          This property is used to represent the alignment of buffers in memory. The same value, or a multiple should always be used in the memory
-   *          allocation.
-   * @return A {@link Map} of {@link String} and {@link MemoryExclusionGraph}. Each {@link String} identifies a memory banks in which the associated
-   *         {@link MemoryExclusionGraph} should be allocated.
+   *          This property is used to represent the alignment of buffers in memory. The same value, or a multiple
+   *          should always be used in the memory allocation.
+   * @return A {@link Map} of {@link String} and {@link MemoryExclusionGraph}. Each {@link String} identifies a memory
+   *         banks in which the associated {@link MemoryExclusionGraph} should be allocated.
    *
    * @throws RuntimeException
    *           Currently thrown
@@ -104,7 +107,8 @@ public class Distributor {
    *           <li>if an unknown distribution policy is selected.</li>
    *           </ul>
    */
-  public static Map<String, MemoryExclusionGraph> distributeMeg(final String valuePolicy, final MemoryExclusionGraph memEx, final int alignment) {
+  public static Map<String, MemoryExclusionGraph> distributeMeg(final String valuePolicy,
+      final MemoryExclusionGraph memEx, final int alignment) {
     final Map<String, MemoryExclusionGraph> memExes = new LinkedHashMap<>();
 
     // Generate output
@@ -129,24 +133,25 @@ public class Distributor {
         memExesVerticesSet = Distributor.distributeMegSharedOnly(memEx);
         break;
       default:
-        throw new MemoryAllocationException(
-            "Unexpected distribution policy: " + valuePolicy + ".\n Allowed values are " + AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
+        throw new MemoryAllocationException("Unexpected distribution policy: " + valuePolicy + ".\n Allowed values are "
+            + AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
     }
 
     // Update the memExexVerticesSet to include hosted mObjects
     // (splitMergedBuffers ensured that all mObjects hosted by another do
     // fall in the same memory bank)
     @SuppressWarnings("unchecked")
-    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) memEx.getPropertyBean()
-        .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex,
+        Set<MemoryExclusionVertex>>) memEx.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
     if (hosts != null) {
       for (final Entry<String, Set<MemoryExclusionVertex>> entry : memExesVerticesSet.entrySet()) {
         // Filter: Get hosts falling in this bank
         // Values: Get the hosted sets of these hosts
         // Flatten: create an iterable of these hosted sets
         // addAll: Add these memory objects to the entry sets of mObject
-        entry.getValue().addAll(hosts.entrySet().stream().filter(mapEntry -> entry.getValue().contains(mapEntry.getKey())).map(Entry::getValue)
-            .flatMap(Collection::stream).collect(Collectors.toList()));
+        entry.getValue()
+            .addAll(hosts.entrySet().stream().filter(mapEntry -> entry.getValue().contains(mapEntry.getKey()))
+                .map(Entry::getValue).flatMap(Collection::stream).collect(Collectors.toList()));
       }
     }
 
@@ -171,28 +176,32 @@ public class Distributor {
   }
 
   /**
-   * Finds the {@link MemoryExclusionVertex} in the given {@link MemoryExclusionGraph} that result from a merge operation of the memory scripts, and split them
-   * into several memory objects according to the DistributedOnly distribution policy (see {@link AbstractMemoryAllocatorTask} parameters).<br>
+   * Finds the {@link MemoryExclusionVertex} in the given {@link MemoryExclusionGraph} that result from a merge
+   * operation of the memory scripts, and split them into several memory objects according to the DistributedOnly
+   * distribution policy (see {@link AbstractMemoryAllocatorTask} parameters).<br>
    * <b>This method modifies the {@link MemoryExclusionGraph} passed as a parameter.</b>
    *
    * @param meg
-   *          {@link MemoryExclusionGraph} whose {@link MemoryExclusionVertex} are processed. This graph will be modified by the method.
+   *          {@link MemoryExclusionGraph} whose {@link MemoryExclusionVertex} are processed. This graph will be
+   *          modified by the method.
    *
    * @param alignment
-   *          This property is used to represent the alignment of buffers in memory. The same value, or a multiple should always be used in the memory
-   *          allocation.
+   *          This property is used to represent the alignment of buffers in memory. The same value, or a multiple
+   *          should always be used in the memory allocation.
    *
    * @param memory
-   *          Contains the name of the component to which the given {@link MemoryExclusionGraph} is associated. Only merged {@link MemoryExclusionVertex}
-   *          accessed by this core will be kept in the {@link MemoryExclusionGraph} when the split is applied. (others will be removed).
+   *          Contains the name of the component to which the given {@link MemoryExclusionGraph} is associated. Only
+   *          merged {@link MemoryExclusionVertex} accessed by this core will be kept in the
+   *          {@link MemoryExclusionGraph} when the split is applied. (others will be removed).
    *
    */
-  private static void splitMergedBuffersDistributedOnly(final MemoryExclusionGraph meg, final int alignment, final String memory) {
+  private static void splitMergedBuffersDistributedOnly(final MemoryExclusionGraph meg, final int alignment,
+      final String memory) {
     // Get the map of host Mobjects
     // (A copy of the map is used because the original map will be modified during iterations)
     @SuppressWarnings("unchecked")
-    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) meg.getPropertyBean()
-        .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex,
+        Set<MemoryExclusionVertex>>) meg.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
 
     // Exit method if no host Mobjects can be found in this MEG
     if ((hosts == null) || hosts.isEmpty()) {
@@ -227,8 +236,9 @@ public class Distributor {
 
         // Fill the mObjectsToRemove list
         // with all mObjects that are not in the current memory
-        final List<MemoryExclusionVertex> mObjInOtherMem = mobjByBank.entrySet().stream().filter(mapEntry -> mapEntry.getKey() != memory).map(Entry::getValue)
-            .flatMap(Collection::stream).collect(Collectors.toList());
+        final List<MemoryExclusionVertex> mObjInOtherMem = mobjByBank.entrySet().stream()
+            .filter(mapEntry -> mapEntry.getKey() != memory).map(Entry::getValue).flatMap(Collection::stream)
+            .collect(Collectors.toList());
         // remove mobj that are duplicated in the current memory from this list
         mObjInOtherMem.removeAll(mobjByBank.get(memory));
 
@@ -240,8 +250,8 @@ public class Distributor {
         // result of a call to distributeMegDistributedOnly method
         final String firstObj = mobjByBank.keySet().iterator().next();
         if (firstObj != memory) {
-          throw new MemoryAllocationException("Merged memory objects " + mobjByBank.values() + " should not be allocated in memory bank " + firstObj
-              + " but in memory " + memory + " instead.");
+          throw new MemoryAllocationException("Merged memory objects " + mobjByBank.values()
+              + " should not be allocated in memory bank " + firstObj + " but in memory " + memory + " instead.");
         }
       }
     }
@@ -251,24 +261,26 @@ public class Distributor {
   }
 
   /**
-   * Finds the {@link MemoryExclusionVertex} in the given {@link MemoryExclusionGraph} that result from a merge operation of the memory scripts, and split them
-   * into several memory objects according to the Mixed distribution policy (see {@link AbstractMemoryAllocatorTask} parameters).<br>
+   * Finds the {@link MemoryExclusionVertex} in the given {@link MemoryExclusionGraph} that result from a merge
+   * operation of the memory scripts, and split them into several memory objects according to the Mixed distribution
+   * policy (see {@link AbstractMemoryAllocatorTask} parameters).<br>
    * <b>This method modifies the {@link MemoryExclusionGraph} passed as a parameter.</b>
    *
    * @param meg
-   *          {@link MemoryExclusionGraph} whose {@link MemoryExclusionVertex} are processed. This graph will be modified by the method.
+   *          {@link MemoryExclusionGraph} whose {@link MemoryExclusionVertex} are processed. This graph will be
+   *          modified by the method.
    *
    * @param alignment
-   *          This property is used to represent the alignment of buffers in memory. The same value, or a multiple should always be used in the memory
-   *          allocation.
+   *          This property is used to represent the alignment of buffers in memory. The same value, or a multiple
+   *          should always be used in the memory allocation.
    *
    */
   private static void splitMergedBuffersMixed(final MemoryExclusionGraph meg, final int alignment) {
     // Get the map of host Mobjects
     // (A copy of the map is used because the original map will be modified during iterations)
     @SuppressWarnings("unchecked")
-    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) meg.getPropertyBean()
-        .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex,
+        Set<MemoryExclusionVertex>>) meg.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
 
     // Exit method if no host Mobjects can be found in this MEG
     if ((hosts == null) || hosts.isEmpty()) {
@@ -303,26 +315,31 @@ public class Distributor {
    * Split the host {@link MemoryExclusionVertex} from the {@link MemoryExclusionGraph}.
    *
    * @param mobjByBank
-   *          {@link Map} of {@link String} and {@link Set} of {@link MemoryExclusionVertex}. Each memory bank (the {@link String}) is associated to the
-   *          {@link Set} of {@link MemoryExclusionVertex} that is to be allocated in this bank.
+   *          {@link Map} of {@link String} and {@link Set} of {@link MemoryExclusionVertex}. Each memory bank (the
+   *          {@link String}) is associated to the {@link Set} of {@link MemoryExclusionVertex} that is to be allocated
+   *          in this bank.
    * @param banks
-   *          {@link Set} of {@link String} representing the bank to process. This must be a sub-set of the keys of the mobjByBank param.
+   *          {@link Set} of {@link String} representing the bank to process. This must be a sub-set of the keys of the
+   *          mobjByBank param.
    * @param hosts
    *          {@link MemoryExclusionVertex#HOST_MEMORY_OBJECT_PROPERTY} from the given {@link MemoryExclusionGraph}.
    * @param entry
-   *          {@link Entry} copied from an immutable copy of the {@link MemoryExclusionVertex#HOST_MEMORY_OBJECT_PROPERTY} of the given
-   *          {@link MemoryExclusionGraph}. This {@link Entry} is the only one to be processed when calling this method. (i.e. the only one that is split.)
+   *          {@link Entry} copied from an immutable copy of the
+   *          {@link MemoryExclusionVertex#HOST_MEMORY_OBJECT_PROPERTY} of the given {@link MemoryExclusionGraph}. This
+   *          {@link Entry} is the only one to be processed when calling this method. (i.e. the only one that is split.)
    * @param meg
-   *          {@link MemoryExclusionGraph} whose {@link MemoryExclusionVertex} are processed. This graph will be modified by the method.
+   *          {@link MemoryExclusionGraph} whose {@link MemoryExclusionVertex} are processed. This graph will be
+   *          modified by the method.
    * @param alignment
-   *          This property is used to represent the alignment of buffers in memory. The same value, or a multiple should always be used in the memory
-   *          allocation.
+   *          This property is used to represent the alignment of buffers in memory. The same value, or a multiple
+   *          should always be used in the memory allocation.
    */
-  private static void splitMergedBuffers(final Map<String, Set<MemoryExclusionVertex>> mobjByBank, final Set<String> banks,
-      final Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry, final MemoryExclusionGraph meg, final int alignment) {
+  private static void splitMergedBuffers(final Map<String, Set<MemoryExclusionVertex>> mobjByBank,
+      final Set<String> banks, final Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry,
+      final MemoryExclusionGraph meg, final int alignment) {
     @SuppressWarnings("unchecked")
-    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) meg.getPropertyBean()
-        .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex,
+        Set<MemoryExclusionVertex>>) meg.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
 
     final LinkedHashMap<MemoryExclusionVertex, String> bankByMobj = new LinkedHashMap<>();
 
@@ -348,15 +365,16 @@ public class Distributor {
     // non-contiguous ranges formed by the memory objects falling
     // into this memory bank.
     final LinkedHashSet<MemoryExclusionVertex> newHostsMObjs = new LinkedHashSet<>();
-    for (final Entry<String, Set<MemoryExclusionVertex>> bankEntry : mobjByBank.entrySet().stream().filter(mapEntry -> banks.contains(mapEntry.getKey()))
-        .collect(Collectors.toList())) {
+    for (final Entry<String, Set<MemoryExclusionVertex>> bankEntry : mobjByBank.entrySet().stream()
+        .filter(mapEntry -> banks.contains(mapEntry.getKey())).collect(Collectors.toList())) {
       // Iterate over Mobjects to build the range(s) of this memory
       // bank (all ranges are relative to the host mObj)
       final List<Range> rangesInBank = new ArrayList<>();
       for (final MemoryExclusionVertex mobj : bankEntry.getValue()) {
         @SuppressWarnings("unchecked")
-        final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> rangesInHost = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) mobj
-            .getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+        final List<Pair<MemoryExclusionVertex,
+            Pair<Range, Range>>> rangesInHost = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) mobj
+                .getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
         // Process non-divided buffers
         if (rangesInHost.size() == 1) {
           // add the range covered by this buffer to the
@@ -371,7 +389,8 @@ public class Distributor {
           @SuppressWarnings("unchecked")
           final List<MemoryExclusionVertex> dividedPartsHosts = (List<MemoryExclusionVertex>) mobj.getPropertyBean()
               .getValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS);
-          final List<String> partsHostsSet = dividedPartsHosts.stream().map(bankByMobj::get).collect(Collectors.toList());
+          final List<
+              String> partsHostsSet = dividedPartsHosts.stream().map(bankByMobj::get).collect(Collectors.toList());
           if ((partsHostsSet.size() == 1) && partsHostsSet.get(0).equals(bankEntry.getKey())) {
             // All hosts were allocated in the same bank
             // And this bank is the current bankEntry
@@ -400,8 +419,9 @@ public class Distributor {
         final List<MemoryExclusionVertex> mObjInCurrentRange = new ArrayList<>();
         for (final MemoryExclusionVertex mObj : mObjInCurrentBank) {
           @SuppressWarnings("unchecked")
-          final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> ranges = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) mObj.getPropertyBean()
-              .getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+          final List<Pair<MemoryExclusionVertex,
+              Pair<Range, Range>>> ranges = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) mObj
+                  .getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
           if (ranges.size() == 1) {
             // Buffer is undivided, check if it intersect with
             // the current range in bank
@@ -441,8 +461,9 @@ public class Distributor {
         // (pay attention to alignment)
         // Get aligned min index range
         @SuppressWarnings("unchecked")
-        final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> newHostOldRange = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) newHostMobj
-            .getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+        final List<Pair<MemoryExclusionVertex,
+            Pair<Range, Range>>> newHostOldRange = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) newHostMobj
+                .getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
         int minIndex = currentRange.getStart();
         if (alignment > 0) {
           // Make sure that index aligned in the buffer are in
@@ -498,8 +519,9 @@ public class Distributor {
             // update the real token range property by translating
             // ranges to the current range referential
             @SuppressWarnings("unchecked")
-            final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> mObjRanges = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) mObj
-                .getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+            final List<Pair<MemoryExclusionVertex,
+                Pair<Range, Range>>> mObjRanges = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) mObj
+                    .getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
             final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> mObjNewRanges = new ArrayList<>();
             for (final Pair<MemoryExclusionVertex, Pair<Range, Range>> mObjRangePair : mObjRanges) {
               // Check if the current mObjRangePair overlaps with
@@ -512,8 +534,8 @@ public class Distributor {
               if (Range.hasOverlap(mObjRangePair.getValue().getValue(), currentRange)) {
                 // case for Undivided buffer and divided
                 // range falling into the current range
-                mObjNewRanges.add(new Pair<>(newHostMobj, new Pair<>(mObjRangePair.getValue().getKey(),
-                    mObjRangePair.getValue().getValue().translate(-minIndex - newHostActualRealTokenRange.getStart()))));
+                mObjNewRanges.add(new Pair<>(newHostMobj, new Pair<>(mObjRangePair.getValue().getKey(), mObjRangePair
+                    .getValue().getValue().translate(-minIndex - newHostActualRealTokenRange.getStart()))));
               } else {
                 // Case for divided range not falling into
                 // the current range
@@ -541,8 +563,10 @@ public class Distributor {
     if ((Distributor.logger != null) && !mObjsToUndivide.isEmpty()) {
       Distributor.logger.log(Level.WARNING,
           "The following divided memory object {0} are unified again during the memory distribution process.\n"
-              + "This unification was applied because divided memory objects cannot be merged in several distinct memories.\n"
-              + "Deactivating memory script causing this division may lead to lower memory footprints in this distributed memory context.",
+              + "This unification was applied because divided memory objects cannot be merged in several "
+              + "distinct memories.\n"
+              + "Deactivating memory script causing this division may lead to lower memory footprints in this "
+              + "distributed memory context.",
           mObjsToUndivide);
     }
 
@@ -551,7 +575,8 @@ public class Distributor {
 
       // Remove the Mobject from the MEG HOST_MEM_OBJ property
       // Already done when host are removed from HOST_MEM_OBJ in previous loop
-      // val hostMemObjProp = meg.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex,
+      // val hostMemObjProp = meg.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as
+      // Map<MemoryExclusionVertex,
       // Set<MemoryExclusionVertex>>
       // hostMemObjProp.forEach[hostMObj, hostedMobjs|hostedMobjs.remove(mObj)]
       // Add the mobj back to the Meg
@@ -563,8 +588,8 @@ public class Distributor {
   }
 
   /**
-   * Restore exclusions in the {@link MemoryExclusionGraph MEG} for the given {@link MemoryExclusionVertex}, (and its hosted {@link MemoryExclusionVertex}, if
-   * any).
+   * Restore exclusions in the {@link MemoryExclusionGraph MEG} for the given {@link MemoryExclusionVertex}, (and its
+   * hosted {@link MemoryExclusionVertex}, if any).
    * <p>
    * <b>Method called by {@link #splitMergedBuffers(String, MemoryExclusionGraph, int)} only.</b>
    *
@@ -576,8 +601,8 @@ public class Distributor {
   private static void restoreExclusions(final MemoryExclusionGraph meg, final MemoryExclusionVertex mObj) {
     // Get the hosts property of the MEG
     @SuppressWarnings("unchecked")
-    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) meg.getPropertyBean()
-        .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex,
+        Set<MemoryExclusionVertex>>) meg.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
 
     // iteration over the host and its hosted vertices, if any
     Set<MemoryExclusionVertex> mObjAndHostedMObjs = hosts.get(mObj);
@@ -624,14 +649,16 @@ public class Distributor {
   }
 
   /**
-   * Method used to separate the {@link MemoryExclusionVertex} of a {@link MemoryExclusionGraph} into {@link LinkedHashSet subsets} according to the SHARED_ONLY
-   * policy (see {@link AbstractMemoryAllocatorTask} parameters). <br>
+   * Method used to separate the {@link MemoryExclusionVertex} of a {@link MemoryExclusionGraph} into
+   * {@link LinkedHashSet subsets} according to the SHARED_ONLY policy (see {@link AbstractMemoryAllocatorTask}
+   * parameters). <br>
    * <br>
    * With this policy, all {@link MemoryExclusionVertex} are put in a single Shared memory.
    *
    * @param memEx
    *          The processed {@link MemoryExclusionGraph}.
-   * @return {@link Map} containing the name of the memory banks and the associated {@link LinkedHashSet subsets} of {@link MemoryExclusionVertex}.
+   * @return {@link Map} containing the name of the memory banks and the associated {@link LinkedHashSet subsets} of
+   *         {@link MemoryExclusionVertex}.
    */
   private static Map<String, Set<MemoryExclusionVertex>> distributeMegSharedOnly(final MemoryExclusionGraph memEx) {
     final LinkedHashMap<String, Set<MemoryExclusionVertex>> memExesVerticesSet = new LinkedHashMap<>();
@@ -640,21 +667,24 @@ public class Distributor {
   }
 
   /**
-   * Method used to separate the {@link MemoryExclusionVertex} of a {@link MemoryExclusionGraph} into {@link LinkedHashSet subsets} according to the
-   * DISTRIBUTED_ONLY policy (see {@link AbstractMemoryAllocatorTask} parameters). <br>
+   * Method used to separate the {@link MemoryExclusionVertex} of a {@link MemoryExclusionGraph} into
+   * {@link LinkedHashSet subsets} according to the DISTRIBUTED_ONLY policy (see {@link AbstractMemoryAllocatorTask}
+   * parameters). <br>
    * <br>
-   * With this policy, each {@link MemoryExclusionVertex} is put in as many memory banks as the number of processing elements accessing it during an iteration
-   * of the original dataflow graph.
+   * With this policy, each {@link MemoryExclusionVertex} is put in as many memory banks as the number of processing
+   * elements accessing it during an iteration of the original dataflow graph.
    *
    * @param memEx
    *          The processed {@link MemoryExclusionGraph}.
-   * @return {@link Map} containing the name of the memory banks and the associated {@link LinkedHashSet subsets} of {@link MemoryExclusionVertex}.
+   * @return {@link Map} containing the name of the memory banks and the associated {@link LinkedHashSet subsets} of
+   *         {@link MemoryExclusionVertex}.
    */
-  private static Map<String, Set<MemoryExclusionVertex>> distributeMegDistributedOnly(final MemoryExclusionGraph memEx) {
+  private static Map<String, Set<MemoryExclusionVertex>>
+      distributeMegDistributedOnly(final MemoryExclusionGraph memEx) {
     final LinkedHashMap<String, Set<MemoryExclusionVertex>> memExesVerticesSet = new LinkedHashMap<>();
     @SuppressWarnings("unchecked")
-    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) memEx.getPropertyBean()
-        .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex,
+        Set<MemoryExclusionVertex>>) memEx.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
     for (final MemoryExclusionVertex memExVertex : memEx.vertexSet()) {
       Set<MemoryExclusionVertex> hostedMObjs = null;
       if (hosts != null) {
@@ -694,19 +724,20 @@ public class Distributor {
   }
 
   /**
-   * The purpose of this method is to find the bank associated to a given {@link MemoryExclusionVertex} according to the DISTRIBUTED_ONLY distribution policy.
-   * The mObj is put in the {@link Map} passed as a parameter where keys are the names of the memory banks and values are the {@link Set} of associated
-   * {@link MemoryExclusionVertex}.
+   * The purpose of this method is to find the bank associated to a given {@link MemoryExclusionVertex} according to the
+   * DISTRIBUTED_ONLY distribution policy. The mObj is put in the {@link Map} passed as a parameter where keys are the
+   * names of the memory banks and values are the {@link Set} of associated {@link MemoryExclusionVertex}.
    *
    * @param mObj
    *          The {@link MemoryExclusionVertex} whose memory banks are identified.
    * @param mObjByBank
    *          The {@link Map} in which results of this method are put.
    * @param memEx
-   *          The {@link MemoryExclusionGraph} whose vertices are allocated. (only used to retrieved the corresponding {@link DirectedAcyclicGraph}).
+   *          The {@link MemoryExclusionGraph} whose vertices are allocated. (only used to retrieved the corresponding
+   *          {@link DirectedAcyclicGraph}).
    */
-  private static void findMObjBankDistributedOnly(final MemoryExclusionVertex mObj, final Map<String, Set<MemoryExclusionVertex>> mObjByBank,
-      final MemoryExclusionGraph memEx) {
+  private static void findMObjBankDistributedOnly(final MemoryExclusionVertex mObj,
+      final Map<String, Set<MemoryExclusionVertex>> mObjByBank, final MemoryExclusionGraph memEx) {
     // Process the given mObj
     for (int i = 0; i < 2; i++) {
       // Retrieve the component on which the DAG Vertex is mapped
@@ -720,7 +751,8 @@ public class Distributor {
         }
       } else {
         // retrieve
-        final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) memEx.getPropertyBean().getValue(MemoryExclusionGraph.SOURCE_DAG);
+        final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) memEx.getPropertyBean()
+            .getValue(MemoryExclusionGraph.SOURCE_DAG);
         if (i == 0) {
           dagVertex = dag.getVertex(mObj.getSource().substring(("FIFO_Head_").length()));
         } else {
@@ -728,7 +760,8 @@ public class Distributor {
         }
       }
 
-      final ComponentInstance component = (ComponentInstance) dagVertex.getPropertyBean().getValue(Distributor.OPERATOR);
+      final ComponentInstance component = (ComponentInstance) dagVertex.getPropertyBean()
+          .getValue(Distributor.OPERATOR);
 
       Set<MemoryExclusionVertex> verticesSet = mObjByBank.get(component.getInstanceName());
       if (verticesSet == null) {
@@ -744,18 +777,21 @@ public class Distributor {
   }
 
   /**
-   * Method used to separate the {@link MemoryExclusionVertex} of a {@link MemoryExclusionGraph} into {@link LinkedHashSet subsets} according to the MIXED
-   * policy (see {@link AbstractMemoryAllocatorTask} parameters). <br>
+   * Method used to separate the {@link MemoryExclusionVertex} of a {@link MemoryExclusionGraph} into
+   * {@link LinkedHashSet subsets} according to the MIXED policy (see {@link AbstractMemoryAllocatorTask} parameters).
+   * <br>
    * <br>
    * With this policy, each {@link MemoryExclusionVertex} is put
    * <ul>
-   * <li>in the memory banks of a processing elements if it is the only PE accessing it during an iteration of the original dataflow graph.</li>
+   * <li>in the memory banks of a processing elements if it is the only PE accessing it during an iteration of the
+   * original dataflow graph.</li>
    * <li>in shared memory otherwise (i.e. if multiple PE access this memory object during a graph iteration).</li>
    * </ul>
    *
    * @param memEx
    *          The processed {@link MemoryExclusionGraph}.
-   * @return {@link Map} containing the name of the memory banks and the associated {@link LinkedHashSet subsets} of {@link MemoryExclusionVertex}.
+   * @return {@link Map} containing the name of the memory banks and the associated {@link LinkedHashSet subsets} of
+   *         {@link MemoryExclusionVertex}.
    */
   private static Map<String, Set<MemoryExclusionVertex>> distributeMegMixed(final MemoryExclusionGraph memEx) {
     final LinkedHashMap<String, Set<MemoryExclusionVertex>> memExesVerticesSet = new LinkedHashMap<>();
@@ -766,25 +802,29 @@ public class Distributor {
   }
 
   /**
-   * Method used to separate the {@link MemoryExclusionVertex} of a {@link MemoryExclusionGraph} into {@link LinkedHashSet subsets} according to the
-   * MIXED_MERGED policy (see {@link AbstractMemoryAllocatorTask} parameters). <br>
+   * Method used to separate the {@link MemoryExclusionVertex} of a {@link MemoryExclusionGraph} into
+   * {@link LinkedHashSet subsets} according to the MIXED_MERGED policy (see {@link AbstractMemoryAllocatorTask}
+   * parameters). <br>
    * <br>
    * With this policy, each {@link MemoryExclusionVertex} is put
    * <ul>
-   * <li>in the memory banks of a processing elements if it is the only PE accessing it during an iteration of the original dataflow graph.</li>
-   * <li>in shared memory if it is a merged buffer, unless all mObjects of the merged buffer fall in the same memory bank.</li>
+   * <li>in the memory banks of a processing elements if it is the only PE accessing it during an iteration of the
+   * original dataflow graph.</li>
+   * <li>in shared memory if it is a merged buffer, unless all mObjects of the merged buffer fall in the same memory
+   * bank.</li>
    * <li>in shared memory otherwise (i.e. if multiple PE access this memory object during a graph iteration).</li>
    * </ul>
    *
    * @param memEx
    *          The processed {@link MemoryExclusionGraph}.
-   * @return {@link Map} containing the name of the memory banks and the associated {@link LinkedHashSet subsets} of {@link MemoryExclusionVertex}.
+   * @return {@link Map} containing the name of the memory banks and the associated {@link LinkedHashSet subsets} of
+   *         {@link MemoryExclusionVertex}.
    */
   private static Map<String, Set<MemoryExclusionVertex>> distributeMegMixedMerged(final MemoryExclusionGraph memEx) {
     final LinkedHashMap<String, Set<MemoryExclusionVertex>> memExesVerticesSet = new LinkedHashMap<>();
     @SuppressWarnings("unchecked")
-    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) memEx.getPropertyBean()
-        .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+    final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex,
+        Set<MemoryExclusionVertex>>) memEx.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
     for (final MemoryExclusionVertex memExVertex : memEx.vertexSet()) {
       if (((hosts != null) && !hosts.containsKey(memExVertex)) || (hosts == null)) {
         Distributor.findMObjBankMixed(memExVertex, memExesVerticesSet);
@@ -819,16 +859,17 @@ public class Distributor {
   }
 
   /**
-   * The purpose of this method is to find the bank associated to a given {@link MemoryExclusionVertex} according to the MIXED distribution policy. The mObj is
-   * put in the {@link Map} passed as a parameter where keys are the names of the memory banks and values are the {@link Set} of associated
-   * {@link MemoryExclusionVertex}.
+   * The purpose of this method is to find the bank associated to a given {@link MemoryExclusionVertex} according to the
+   * MIXED distribution policy. The mObj is put in the {@link Map} passed as a parameter where keys are the names of the
+   * memory banks and values are the {@link Set} of associated {@link MemoryExclusionVertex}.
    *
    * @param mObj
    *          The {@link MemoryExclusionVertex} whose memory banks are identified.
    * @param mObjByBank
    *          The {@link Map} in which results of this method are put.
    */
-  private static void findMObjBankMixed(final MemoryExclusionVertex mObj, final Map<String, Set<MemoryExclusionVertex>> mObjByBank) {
+  private static void findMObjBankMixed(final MemoryExclusionVertex mObj,
+      final Map<String, Set<MemoryExclusionVertex>> mObjByBank) {
     String memory = Distributor.SHARED;
 
     // If dag edge source and target are mapped to the same
@@ -838,7 +879,8 @@ public class Distributor {
       if (mObj.getEdge().getSource().getPropertyBean().getValue(Distributor.OPERATOR)
           .equals(mObj.getEdge().getTarget().getPropertyBean().getValue(Distributor.OPERATOR))) {
         final DAGVertex dagVertex = mObj.getEdge().getSource();
-        final ComponentInstance component = (ComponentInstance) dagVertex.getPropertyBean().getValue(Distributor.OPERATOR);
+        final ComponentInstance component = (ComponentInstance) dagVertex.getPropertyBean()
+            .getValue(Distributor.OPERATOR);
         memory = component.getInstanceName();
       } // Else => Shared memory
     } else {
@@ -852,7 +894,8 @@ public class Distributor {
       if (mObj.getSource().equals(mObj.getSink())) {
         // This is a wMem mObj
         // The mObj is allocated in the MEG of the core executing the corresponding actor.
-        final ComponentInstance component = (ComponentInstance) mObj.getVertex().getPropertyBean().getValue(Distributor.OPERATOR);
+        final ComponentInstance component = (ComponentInstance) mObj.getVertex().getPropertyBean()
+            .getValue(Distributor.OPERATOR);
         memory = component.getInstanceName();
       } else {
         // For now fifos are allocated in shared memory

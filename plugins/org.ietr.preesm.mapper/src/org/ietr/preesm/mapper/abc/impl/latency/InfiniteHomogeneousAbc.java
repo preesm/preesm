@@ -55,8 +55,8 @@ import org.ietr.preesm.mapper.tools.TLevelIterator;
 
 // TODO: Auto-generated Javadoc
 /**
- * Simulates an architecture having as many cores as necessary to execute one operation on one core. All core have the main operator definition. These cores are
- * all interconnected with media corresponding to the main medium definition.
+ * Simulates an architecture having as many cores as necessary to execute one operation on one core. All core have the
+ * main operator definition. These cores are all interconnected with media corresponding to the main medium definition.
  *
  * @author mpelcat
  */
@@ -76,7 +76,8 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public InfiniteHomogeneousAbc(final AbcParameters params, final MapperDAG dag, final Design archi, final PreesmScenario scenario) throws WorkflowException {
+  public InfiniteHomogeneousAbc(final AbcParameters params, final MapperDAG dag, final Design archi,
+      final PreesmScenario scenario) throws WorkflowException {
     this(params, dag, archi, TaskSchedType.Simple, scenario);
   }
 
@@ -96,19 +97,22 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public InfiniteHomogeneousAbc(final AbcParameters params, final MapperDAG dag, final Design archi, final TaskSchedType taskSchedType,
-      final PreesmScenario scenario) throws WorkflowException {
+  public InfiniteHomogeneousAbc(final AbcParameters params, final MapperDAG dag, final Design archi,
+      final TaskSchedType taskSchedType, final PreesmScenario scenario) throws WorkflowException {
     super(params, dag, archi, AbcType.InfiniteHomogeneous, scenario);
     getType().setTaskSchedType(taskSchedType);
 
-    final ComponentInstance mainComNode = DesignTools.getComponentInstance(archi, scenario.getSimulationManager().getMainComNodeName());
+    final ComponentInstance mainComNode = DesignTools.getComponentInstance(archi,
+        scenario.getSimulationManager().getMainComNodeName());
 
-    final ComponentInstance mainOperator = DesignTools.getComponentInstance(archi, scenario.getSimulationManager().getMainOperatorName());
+    final ComponentInstance mainOperator = DesignTools.getComponentInstance(archi,
+        scenario.getSimulationManager().getMainOperatorName());
 
     if (mainComNode != null) {
       WorkflowLogger.getLogger().info("Infinite homogeneous simulation");
     } else {
-      WorkflowLogger.getLogger().severe("Current architecture has no main communication node. Please set a main communication node.");
+      WorkflowLogger.getLogger()
+          .severe("Current architecture has no main communication node. Please set a main communication node.");
     }
 
     if (mainOperator == null) {
@@ -135,7 +139,8 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#fireNewMappedVertex(org.ietr.preesm.mapper. model.MapperDAGVertex, boolean)
+   * @see org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#fireNewMappedVertex(org.ietr.preesm.mapper.
+   * model.MapperDAGVertex, boolean)
    */
   @Override
   protected void fireNewMappedVertex(final MapperDAGVertex vertex, final boolean updateRank) {
@@ -176,7 +181,8 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#fireNewUnmappedVertex(org.ietr.preesm.mapper .model.MapperDAGVertex)
+   * @see org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#fireNewUnmappedVertex(org.ietr.preesm.mapper
+   * .model.MapperDAGVertex)
    */
   @Override
   protected void fireNewUnmappedVertex(final MapperDAGVertex vertex) {
@@ -194,7 +200,8 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
   }
 
   /**
-   * Asks the time keeper to update timings. Crucial and costly operation. Depending on the king of timings we want, calls the necessary updates.
+   * Asks the time keeper to update timings. Crucial and costly operation. Depending on the king of timings we want,
+   * calls the necessary updates.
    */
   @Override
   public final void updateTimings() {
@@ -212,8 +219,8 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
     final long edgesize = edge.getInit().getDataSize();
 
     /**
-     * In a Infinite Homogeneous Architecture, each communication is supposed to be done on the main medium. The communication cost is simply calculated from
-     * the main medium speed.
+     * In a Infinite Homogeneous Architecture, each communication is supposed to be done on the main medium. The
+     * communication cost is simply calculated from the main medium speed.
      */
     final String mainComName = this.scenario.getSimulationManager().getMainComNodeName();
     final ComponentInstance mainCom = DesignTools.getComponentInstance(this.archi, mainComName);

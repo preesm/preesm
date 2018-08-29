@@ -105,7 +105,8 @@ public class MemoryBoundsEstimatorEngine {
       if (valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_DEFAULT)) {
         this.logger.log(Level.INFO, "No solver specified. Heuristic solver used by default.");
       } else {
-        if (valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_HEURISTIC) || valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_OSTERGARD)
+        if (valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_HEURISTIC)
+            || valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_OSTERGARD)
             || valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_YAMAGUCHI)) {
           this.logger.log(Level.INFO, valueSolver + " solver used.");
         } else {

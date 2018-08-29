@@ -57,13 +57,15 @@ public class ActorPath {
    */
   public static final AbstractActor lookup(final PiGraph graph, final String actorPath) {
 
-    final String safePath = actorPath.replaceAll("/+", "/").replaceAll("^/*" + graph.getName(), "").replaceAll("^/", "").replaceAll("/$", "");
+    final String safePath = actorPath.replaceAll("/+", "/").replaceAll("^/*" + graph.getName(), "").replaceAll("^/", "")
+        .replaceAll("/$", "");
     if (safePath.isEmpty()) {
       return graph;
     }
     final List<String> pathFragments = new ArrayList<>(Arrays.asList(safePath.split("/")));
     final String firstFragment = pathFragments.remove(0);
-    final AbstractActor current = graph.getActors().stream().filter(a -> firstFragment.equals(a.getName())).findFirst().orElse(null);
+    final AbstractActor current = graph.getActors().stream().filter(a -> firstFragment.equals(a.getName())).findFirst()
+        .orElse(null);
     if (pathFragments.isEmpty()) {
       return current;
     } else {

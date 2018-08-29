@@ -37,8 +37,9 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
 
 // TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> A {@link FunctionCall} represents a {@link Call} to a native function. A {@link FunctionCall} is characterized by its
- * {@link #getName() name} and the {@link #getParameters() parameters} it involves. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A {@link FunctionCall} represents a {@link Call} to a native function. A {@link FunctionCall}
+ * is characterized by its {@link #getName() name} and the {@link #getParameters() parameters} it involves. <!--
+ * end-user-doc -->
  *
  * <p>
  * The following features are supported:
@@ -56,7 +57,8 @@ public interface FunctionCall extends Call {
   /**
    * Returns the value of the '<em><b>Actor Name</b></em>' attribute. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Actor Name</em>' attribute isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Actor Name</em>' attribute isn't clear, there really should be more of a description
+   * here...
    * </p>
    * <!-- end-user-doc -->
    * 
@@ -69,8 +71,8 @@ public interface FunctionCall extends Call {
   String getActorName();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall#getActorName <em>Actor Name</em>}' attribute. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall#getActorName <em>Actor
+   * Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @param value
    *          the new value of the '<em>Actor Name</em>' attribute.

@@ -103,8 +103,8 @@ public class TagDAG {
    * @throws InvalidExpressionException
    *           the invalid expression exception
    */
-  public void tag(final MapperDAG dag, final Design architecture, final PreesmScenario scenario, final IAbc simu, final EdgeSchedType edgeSchedType)
-      throws InvalidExpressionException {
+  public void tag(final MapperDAG dag, final Design architecture, final PreesmScenario scenario, final IAbc simu,
+      final EdgeSchedType edgeSchedType) throws InvalidExpressionException {
 
     final PropertyBean bean = dag.getPropertyBean();
     bean.setValue(ImplementationPropertyNames.Graph_AbcReferenceType, simu.getType());
@@ -131,8 +131,8 @@ public class TagDAG {
     final OrderManager orderMgr = new OrderManager(architecture);
     orderMgr.reconstructTotalOrderFromDAG(dag);
 
-    final CommunicationRouter comRouter = new CommunicationRouter(architecture, scenario, dag, AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr),
-        orderMgr);
+    final CommunicationRouter comRouter = new CommunicationRouter(architecture, scenario, dag,
+        AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr), orderMgr);
     comRouter.routeAll(dag, CommunicationRouter.sendReceiveType);
     orderMgr.tagDAG(dag);
   }
@@ -169,7 +169,8 @@ public class TagDAG {
         bean.setValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.SEND);
 
         // Setting the operator on which vertex is executed
-        bean.setValue(ImplementationPropertyNames.Vertex_Operator, ((SendVertex) currentVertex).getRouteStep().getSender());
+        bean.setValue(ImplementationPropertyNames.Vertex_Operator,
+            ((SendVertex) currentVertex).getRouteStep().getSender());
 
         // Setting the medium transmitting the current data
         final AbstractRouteStep sendRs = ((SendVertex) currentVertex).getRouteStep();
@@ -183,7 +184,8 @@ public class TagDAG {
 
         // Setting the address of the operator on which vertex is
         // executed
-        final String baseAddress = DesignTools.getParameter(((SendVertex) currentVertex).getRouteStep().getSender(), DesignTools.OPERATOR_BASE_ADDRESS);
+        final String baseAddress = DesignTools.getParameter(((SendVertex) currentVertex).getRouteStep().getSender(),
+            DesignTools.OPERATOR_BASE_ADDRESS);
 
         if (baseAddress != null) {
           bean.setValue(ImplementationPropertyNames.SendReceive_Operator_address, baseAddress);
@@ -197,7 +199,8 @@ public class TagDAG {
         bean.setValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.RECEIVE);
 
         // Setting the operator on which vertex is executed
-        bean.setValue(ImplementationPropertyNames.Vertex_Operator, ((ReceiveVertex) currentVertex).getRouteStep().getReceiver());
+        bean.setValue(ImplementationPropertyNames.Vertex_Operator,
+            ((ReceiveVertex) currentVertex).getRouteStep().getReceiver());
 
         // Setting the medium transmitting the current data
         final AbstractRouteStep rcvRs = ((ReceiveVertex) currentVertex).getRouteStep();
@@ -211,7 +214,8 @@ public class TagDAG {
 
         // Setting the address of the operator on which vertex is
         // executed
-        final String baseAddress = DesignTools.getParameter(((ReceiveVertex) currentVertex).getRouteStep().getReceiver(), "BaseAddress");
+        final String baseAddress = DesignTools
+            .getParameter(((ReceiveVertex) currentVertex).getRouteStep().getReceiver(), "BaseAddress");
 
         if (baseAddress != null) {
           bean.setValue(ImplementationPropertyNames.SendReceive_Operator_address, baseAddress);
@@ -271,7 +275,8 @@ public class TagDAG {
   }
 
   /**
-   * Aggregate is imported from the SDF edge. An aggregate in SDF is a set of sdf edges that were merged into one DAG edge.
+   * Aggregate is imported from the SDF edge. An aggregate in SDF is a set of sdf edges that were merged into one DAG
+   * edge.
    *
    * @param edge
    *          the edge
@@ -281,7 +286,8 @@ public class TagDAG {
    *           the invalid expression exception
    */
   @SuppressWarnings("unchecked")
-  public void addAggregateFromSDF(final MapperDAGEdge edge, final PreesmScenario scenario) throws InvalidExpressionException {
+  public void addAggregateFromSDF(final MapperDAGEdge edge, final PreesmScenario scenario)
+      throws InvalidExpressionException {
 
     final BufferAggregate agg = new BufferAggregate();
 
@@ -289,8 +295,8 @@ public class TagDAG {
     for (final AbstractEdge<SDFGraph, SDFAbstractVertex> aggMember : edge.getAggregate()) {
       final SDFEdge sdfAggMember = (SDFEdge) aggMember;
       final DataType dataType = scenario.getSimulationManager().getDataType(sdfAggMember.getDataType().toString());
-      final BufferProperties props = new BufferProperties(dataType, sdfAggMember.getSourceInterface().getName(), sdfAggMember.getTargetInterface().getName(),
-          sdfAggMember.getProd().intValue());
+      final BufferProperties props = new BufferProperties(dataType, sdfAggMember.getSourceInterface().getName(),
+          sdfAggMember.getTargetInterface().getName(), sdfAggMember.getProd().intValue());
 
       agg.add(props);
     }
@@ -299,7 +305,8 @@ public class TagDAG {
   }
 
   /**
-   * Aggregate is imported from the SDF edge. An aggregate in SDF is a set of sdf edges that were merged into one DAG edge.
+   * Aggregate is imported from the SDF edge. An aggregate in SDF is a set of sdf edges that were merged into one DAG
+   * edge.
    *
    * @param edge
    *          the edge
@@ -315,9 +322,11 @@ public class TagDAG {
       final String value = (String) dagEdge.getPropertyBean().getValue(SDFEdge.DATA_TYPE);
       final DataType dataType = scenario.getSimulationManager().getDataType(value);
       // final int dataSize = (Integer) dagEdge.getPropertyBean().getValue(SDFEdge.DATA_SIZE);
-      // final BufferProperties props = new BufferProperties(dataType, dagEdge.getSourceLabel(), dagEdge.getTargetLabel(),
+      // final BufferProperties props = new BufferProperties(dataType, dagEdge.getSourceLabel(),
+      // dagEdge.getTargetLabel(),
       // dagEdge.getWeight().intValue() / dataSize);
-      final BufferProperties props = new BufferProperties(dataType, dagEdge.getSourceLabel(), dagEdge.getTargetLabel(), dagEdge.getWeight().intValue());
+      final BufferProperties props = new BufferProperties(dataType, dagEdge.getSourceLabel(), dagEdge.getTargetLabel(),
+          dagEdge.getWeight().intValue());
       agg.add(props);
     }
     edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);

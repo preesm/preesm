@@ -57,7 +57,8 @@ public class TopologyBasedBRV extends PiBRV {
         final double[][] topologyMatrix = getTopologyMatrix(listFifo, subgraph);
         final long rank = LinearAlgebra.rank(topologyMatrix);
         if (rank != (subgraph.size() - 1)) {
-          throw new PiMMHelperException("Graph not consitent. rank: " + Long.toString(rank) + ", expected: " + Long.toString(subgraph.size() - 1));
+          throw new PiMMHelperException("Graph not consitent. rank: " + Long.toString(rank) + ", expected: "
+              + Long.toString(subgraph.size() - 1));
         }
         // Compute BRV
         final ArrayList<Rational> vrb = TopologyBasedBRV.computeRationnalNullSpace(topologyMatrix);
@@ -78,7 +79,8 @@ public class TopologyBasedBRV extends PiBRV {
     return true;
   }
 
-  private double[][] getTopologyMatrix(final List<Fifo> listFifo, final List<AbstractActor> subgraph) throws PiMMHelperException {
+  private double[][] getTopologyMatrix(final List<Fifo> listFifo, final List<AbstractActor> subgraph)
+      throws PiMMHelperException {
     final double[][] topologyMatrix = new double[listFifo.size()][subgraph.size()];
     for (final Fifo fifo : listFifo) {
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
@@ -94,8 +96,9 @@ public class TopologyBasedBRV extends PiBRV {
       final int sourceIndex = subgraph.indexOf(sourceActor);
       final int targetIndex = subgraph.indexOf(targetActor);
       if ((sourceIndex < 0) || (targetIndex < 0)) {
-        throw new PiMMHelperException("Bad index error:\nSource actor index [" + sourceActor.getName() + "]: " + Integer.toString(sourceIndex)
-            + "\nTarget actor index [" + targetActor.getName() + "]: " + Integer.toString(targetIndex));
+        throw new PiMMHelperException(
+            "Bad index error:\nSource actor index [" + sourceActor.getName() + "]: " + Integer.toString(sourceIndex)
+                + "\nTarget actor index [" + targetActor.getName() + "]: " + Integer.toString(targetIndex));
       }
       topologyMatrix[listFifo.indexOf(fifo)][sourceIndex] = prod;
       topologyMatrix[listFifo.indexOf(fifo)][targetIndex] = -cons;

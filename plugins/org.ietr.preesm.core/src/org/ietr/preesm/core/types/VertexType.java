@@ -77,13 +77,15 @@ public class VertexType {
    */
   public static boolean isIntermediateReceive(final SDFAbstractVertex vertex) {
 
-    final VertexType vType = (VertexType) vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType);
+    final VertexType vType = (VertexType) vertex.getPropertyBean()
+        .getValue(ImplementationPropertyNames.Vertex_vertexType);
 
     // If the communication operation is an intermediate step of a route
     if (vType.isReceive()) {
       for (final SDFEdge outEdge : ((SDFGraph) vertex.getBase()).outgoingEdgesOf(vertex)) {
 
-        final VertexType nextVType = (VertexType) outEdge.getTarget().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType);
+        final VertexType nextVType = (VertexType) outEdge.getTarget().getPropertyBean()
+            .getValue(ImplementationPropertyNames.Vertex_vertexType);
 
         if (nextVType.isSend()) {
           return true;
@@ -103,12 +105,14 @@ public class VertexType {
    */
   public static boolean isIntermediateSend(final SDFAbstractVertex vertex) {
 
-    final VertexType vType = (VertexType) vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType);
+    final VertexType vType = (VertexType) vertex.getPropertyBean()
+        .getValue(ImplementationPropertyNames.Vertex_vertexType);
 
     // If the communication operation is an intermediate step of a route
     if (vType.isSend()) {
       final SDFEdge inEdge = (SDFEdge) (((SDFGraph) vertex.getBase()).incomingEdgesOf(vertex).toArray()[0]);
-      final VertexType prevVType = (VertexType) inEdge.getSource().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType);
+      final VertexType prevVType = (VertexType) inEdge.getSource().getPropertyBean()
+          .getValue(ImplementationPropertyNames.Vertex_vertexType);
 
       if (prevVType.isReceive()) {
         return true;

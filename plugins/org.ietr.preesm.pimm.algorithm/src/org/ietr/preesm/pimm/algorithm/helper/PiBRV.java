@@ -93,7 +93,8 @@ public abstract class PiBRV {
    */
   public abstract boolean execute() throws PiMMHelperException;
 
-  protected void updateRVWithInterfaces(final PiGraph graph, final List<AbstractActor> subgraph) throws PiMMHelperException {
+  protected void updateRVWithInterfaces(final PiGraph graph, final List<AbstractActor> subgraph)
+      throws PiMMHelperException {
     // Update RV values based on the interface
     long scaleFactor = 1;
 
@@ -108,7 +109,8 @@ public abstract class PiBRV {
       final long newRV = this.graphBRV.get(actor) * scaleFactor;
       this.graphBRV.put(actor, newRV);
       if ((actor instanceof DelayActor) && (newRV != 1)) {
-        throw new PiMMHelperException("Inconsistent graph. DelayActor [" + actor.getName() + "] with a repetition vector of " + Long.toString(newRV));
+        throw new PiMMHelperException("Inconsistent graph. DelayActor [" + actor.getName()
+            + "] with a repetition vector of " + Long.toString(newRV));
       }
     }
   }
@@ -124,7 +126,8 @@ public abstract class PiBRV {
    *          the current scaleFactor
    * @return new value of scale factor
    */
-  private long getOutputInterfacesScaleFactor(final PiGraph graph, final List<AbstractActor> subgraph, long scaleFactor) {
+  private long getOutputInterfacesScaleFactor(final PiGraph graph, final List<AbstractActor> subgraph,
+      long scaleFactor) {
     for (final DataOutputInterface out : graph.getDataOutputInterfaces()) {
       final DataInputPort dataInputPort = (DataInputPort) out.getDataPort();
       final Fifo fifo = dataInputPort.getIncomingFifo();
@@ -158,7 +161,8 @@ public abstract class PiBRV {
    *          the current scaleFactor
    * @return new value of scale factor
    */
-  private long getInputInterfacesScaleFactor(final PiGraph graph, final List<AbstractActor> subgraph, long scaleFactor) {
+  private long getInputInterfacesScaleFactor(final PiGraph graph, final List<AbstractActor> subgraph,
+      long scaleFactor) {
     for (final DataInputInterface in : graph.getDataInputInterfaces()) {
       final DataOutputPort dataOutputPort = (DataOutputPort) in.getDataPort();
       final Fifo fifo = dataOutputPort.getOutgoingFifo();

@@ -72,7 +72,8 @@ public class SpiderTest {
         final String workflowFilePathStr = "/Workflows/" + workflow;
         final String scenarioFilePathStr = "/Scenarios/" + scenario;
         final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertFalse("Workflow [" + workflow + "] with scenario [" + scenario + "] successed when it should fail", success);
+        Assert.assertFalse("Workflow [" + workflow + "] with scenario [" + scenario + "] successed when it should fail",
+            success);
       }
     }
   }
