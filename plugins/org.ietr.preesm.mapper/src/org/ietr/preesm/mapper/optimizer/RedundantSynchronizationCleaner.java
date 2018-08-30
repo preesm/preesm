@@ -34,6 +34,8 @@
  */
 package org.ietr.preesm.mapper.optimizer;
 
+import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -52,6 +54,8 @@ import org.ietr.preesm.mapper.AbstractMappingFromDAG;
 import org.ietr.preesm.mapper.model.special.ReceiveVertex;
 import org.ietr.preesm.mapper.model.special.SendVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
+import org.jgrapht.io.DOTExporter;
+import org.jgrapht.io.StringComponentNameProvider;
 
 /**
  * The purpose of this class is to remove redundant synchronization created during the scheduling of an application.
@@ -87,6 +91,144 @@ public class RedundantSynchronizationCleaner {
   public static void cleanRedundantSynchronization(final DirectedAcyclicGraph dag) {
     // Get the groups of synchronization.
     final ConsecutiveTransfers syncGroups = RedundantSynchronizationCleaner.createSyncGroupsPerComponents(dag);
+
+    final Set<TransferVertex> toBeRemoved = RedundantSynchronizationCleaner.method2(dag, syncGroups);
+    toBeRemoved.forEach(transferVertex -> transferVertex.setPropertyValue("Redundant", Boolean.valueOf(true)));
+    WorkflowLogger.getLogger().log(Level.INFO, "removing " + toBeRemoved.size() + " syncs");
+  }
+
+  /**
+   *
+   */
+  static class RSCGraph extends org.jgrapht.graph.DirectedMultigraph<List<TransferVertex>, String> {
+
+    public RSCGraph() {
+      super(String.class);
+    }
+
+    public RSCGraph clone() {
+      return (RSCGraph) super.clone();
+    }
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 8454469261232923042L;
+
+  }
+
+  private static Set<TransferVertex> method2(final DirectedAcyclicGraph dag, final ConsecutiveTransfers syncGroups) {
+    final Set<TransferVertex> res = new LinkedHashSet<>();
+
+    final RSCGraph graph = new RSCGraph();
+    // 1- add vertices (one per group, regardless the component)
+    for (final ComponentInstance component : syncGroups.getComponents()) {
+      for (final List<TransferVertex> group : syncGroups.get(component)) {
+        graph.addVertex(group);
+      }
+    }
+    // 2- add synchronization between all elements of the same component, wrt order:
+    // there is a sync from one element to all its successors
+    for (final ComponentInstance component : syncGroups.getComponents()) {
+      final List<List<TransferVertex>> list = syncGroups.get(component);
+      final int size = list.size();
+      for (int i = 0; i < (size - 1); i++) {
+        for (int j = i + 1; j < size; j++) {
+          graph.addEdge(list.get(i), list.get(j), "seq" + component.getInstanceName() + "_" + i + "_" + j);
+        }
+      }
+    }
+    final List<String> seqSyncEdges = new ArrayList<>(graph.edgeSet());
+
+    // 3- add syncs between all elements that actually share sync in the DAG
+    for (final ComponentInstance component : syncGroups.getComponents()) {
+      for (final List<TransferVertex> sourceGroup : syncGroups.get(component)) {
+        for (final TransferVertex vertex : sourceGroup) {
+          if (vertex instanceof SendVertex) {
+            final DAGVertex receiver = vertex.outgoingEdges().iterator().next().getTarget();
+            final List<TransferVertex> targetGroup = syncGroups.lookupSyncGroup(receiver);
+            final String comName = "com_" + getName(vertex, syncGroups) + "_" + getName(receiver, syncGroups);
+            System.out.println("adding " + comName);
+            final boolean addEdge = graph.addEdge(sourceGroup, targetGroup, comName);
+            System.out.println("   -> " + addEdge);
+          }
+        }
+      }
+    }
+    final String print = RedundantSynchronizationCleaner.print(graph, syncGroups);
+    System.out.println(print);
+
+    // final RSCGraph reducedGraph = (RSCGraph) graph.clone();
+    // TransitiveReduction.INSTANCE.reduce(graph);
+    //
+    // final String print2 = RedundantSynchronizationCleaner.print(graph, syncGroups);
+    // System.out.println(print2);
+    //
+    // graph.removeAllEdges(reducedGraph.edgeSet());
+    // graph.removeAllEdges(seqSyncEdges);
+    // final String print3 = RedundantSynchronizationCleaner.print(graph, syncGroups);
+    // System.out.println(print3);
+
+    return res;
+  }
+
+  private static final String getName(List<TransferVertex> group, final ConsecutiveTransfers syncGroups) {
+    final TransferVertex firstVertex = group.get(0);
+    final ComponentInstance findComponent = findComponent(firstVertex);
+    final String instanceName = findComponent.getInstanceName();
+    final int indexOf = syncGroups.get(findComponent).indexOf(group);
+    return instanceName + "_" + indexOf;
+  }
+
+  private static final String getName(DAGVertex v, final ConsecutiveTransfers syncGroups) {
+    final List<TransferVertex> lookupSyncGroup = syncGroups.lookupSyncGroup(v);
+    return getName(lookupSyncGroup, syncGroups);
+  }
+
+  /**
+   *
+   */
+  private static class EdgeNameProvider extends StringComponentNameProvider<String> {
+    @Override
+    public String getName(String component) {
+      return component;
+    }
+  }
+
+  /**
+   *
+   */
+  private static class VertexNameProvider extends StringComponentNameProvider<List<TransferVertex>> {
+    private ConsecutiveTransfers syncGroups;
+
+    public VertexNameProvider(ConsecutiveTransfers syncGroups) {
+      this.syncGroups = syncGroups;
+    }
+
+    @Override
+    public String getName(List<TransferVertex> group) {
+      return RedundantSynchronizationCleaner.getName(group, syncGroups);
+    }
+  }
+
+  private static String print(final RSCGraph graph, ConsecutiveTransfers syncGroups) {
+    final StringWriter stringWriter = new StringWriter();
+
+    final DOTExporter<List<TransferVertex>, String> exporter = new DOTExporter<>(new VertexNameProvider(syncGroups),
+        new VertexNameProvider(syncGroups), new EdgeNameProvider());
+    exporter.exportGraph(graph, stringWriter);
+    return stringWriter.toString();
+  }
+
+  /**
+   * Analyzes the communications in the {@link DirectedAcyclicGraph} and remove redundant synchronizations.
+   *
+   * @param dag
+   *          The {@link DirectedAcyclicGraph} whose synchronizations are optimized. The DAG is modified during call to
+   *          the function.
+   * @return
+   */
+  public static Set<TransferVertex> method1(final DirectedAcyclicGraph dag, ConsecutiveTransfers syncGroups) {
 
     // Get the list of components
     final Set<ComponentInstance> components = syncGroups.getComponents();
@@ -127,7 +269,7 @@ public class RedundantSynchronizationCleaner {
         // Register the current syncIndexes to the receiver of this com.
         // there is only one outgoing edge for each sender vertex. Use it to retrieve the corresponding receivet
         final ReceiveVertex receiver = (ReceiveVertex) currentVertex.outgoingEdges().iterator().next().getTarget();
-        registeredSenderSyncIndex.put(receiver, lastSyncedPerComp.get(component).clone());
+        registeredSenderSyncIndex.put(receiver, new SyncIndex(lastSyncedPerComp.get(component)));
       }
 
       // When the end of a sync group is reached
@@ -136,7 +278,7 @@ public class RedundantSynchronizationCleaner {
           && groupForCurrentVertex.get(groupForCurrentVertex.size() - 1).equals(currentVertex)) {
 
         // Remove redundant sync from the group
-        final SyncIndex coveredIdx = lastSyncedPerComp.get(component).clone();
+        final SyncIndex coveredIdx = new SyncIndex(lastSyncedPerComp.get(component));
         for (final TransferVertex syncVertex : groupForCurrentVertex) {
           if (syncVertex instanceof ReceiveVertex) {
             // Is the receive vertex already covered (either by the currentSyncIndex of the core, OR by another receive
@@ -157,7 +299,7 @@ public class RedundantSynchronizationCleaner {
         // Update the syncIndex of the component
         final List<TransferVertex> syncGroup = groupForCurrentVertex;
         // Sanity check: self-index cannot be greater than current group index
-        if (coveredIdx.syncIndexPerComponent.get(component) > syncGroups.get(component).indexOf(syncGroup)) {
+        if (coveredIdx.getSyncIndexOfComponent(component) > syncGroups.get(component).indexOf(syncGroup)) {
           throw new WorkflowException("Problem in communication order. There seems to be a deadlock.");
         }
 
@@ -165,12 +307,7 @@ public class RedundantSynchronizationCleaner {
         lastSyncedPerComp.put(component, coveredIdx);
       }
     }
-
-    // Do the removal
-    // - removing from the dag would sum up to "dag.removeAllVertices(toBeRemoved);"
-    // - however we actually keep them and mark them redundant.
-    toBeRemoved.forEach(transferVertex -> transferVertex.setPropertyValue("Redundant", Boolean.valueOf(true)));
-    WorkflowLogger.getLogger().log(Level.INFO, "removing " + toBeRemoved.size() + " syncs");
+    return toBeRemoved;
   }
 
   /**
