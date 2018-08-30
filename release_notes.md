@@ -27,6 +27,7 @@ PREESM Changelog
 * Update coding policies to 1.3.0;
   * also fix code;
 * Improve scenario editor;
+* Update external dependencies to [3.3.0,4.0.0);
 
 ### Bug fix
 * Fix issue #62
