@@ -109,9 +109,9 @@ public class RedundantSynchronizationCleaner {
         redundantPaths);
     final Set<DAGVertex> duplicateSyncVertices = RedundantSynchronizationCleaner.duplicateSyncVertices(initFrom);
 
-    toBeRemoved.addAll(duplicateSyncVertices);
-    // toBeRemoved.addAll(redundantSyncVertices);
-    dag.removeAllVertices(redundantSyncVertices);
+    // toBeRemoved.addAll(duplicateSyncVertices);
+    toBeRemoved.addAll(redundantSyncVertices);
+    // dag.removeAllVertices(redundantSyncVertices);
     // dag.removeAllVertices(duplicateSyncVertices);
     return toBeRemoved;
   }
