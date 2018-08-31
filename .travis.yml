@@ -29,5 +29,5 @@ addons:
     branches: .*
 
 script: 
-  - ./releng/build_and_test.sh --fast
+  - travis_retry ./releng/build_and_test.sh --fast
 
