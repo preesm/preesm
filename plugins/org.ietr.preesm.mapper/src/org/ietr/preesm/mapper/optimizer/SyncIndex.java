@@ -35,7 +35,7 @@ class SyncIndex {
   }
 
   public int getSyncIndexOfComponent(final ComponentInstance component) {
-    return syncIndexPerComponent.getOrDefault(component, Integer.MIN_VALUE);
+    return this.syncIndexPerComponent.getOrDefault(component, Integer.MIN_VALUE);
   }
 
   public void increment(final ComponentInstance component) {

@@ -17,7 +17,7 @@ import org.ietr.preesm.mapper.model.special.TransferVertex;
  */
 public class MapofListofListofTransfers extends LinkedHashMap<ComponentInstance, List<List<TransferVertex>>> {
 
-  private Map<TransferVertex, List<TransferVertex>> lookupSyncGroup = new LinkedHashMap<>();
+  private final Map<TransferVertex, List<TransferVertex>> lookupSyncGroup = new LinkedHashMap<>();
 
   public MapofListofListofTransfers() {
     super();
@@ -43,18 +43,18 @@ public class MapofListofListofTransfers extends LinkedHashMap<ComponentInstance,
   }
 
   public Set<ComponentInstance> getComponents() {
-    return this.keySet();
+    return keySet();
   }
 
   /**
    *
    */
-  public List<TransferVertex> lookupSyncGroup(DAGVertex vertex) {
+  public List<TransferVertex> lookupSyncGroup(final DAGVertex vertex) {
     final ComponentInstance cc = (ComponentInstance) vertex.getPropertyBean().getValue("Operator");
-    final List<List<TransferVertex>> groups = this.getOrPutDefault(cc);
-    for (List<TransferVertex> group : groups) {
+    final List<List<TransferVertex>> groups = getOrPutDefault(cc);
+    for (final List<TransferVertex> group : groups) {
       if (group.contains(vertex)) {
-        if (lookupSyncGroup.get(vertex) != group) {
+        if (this.lookupSyncGroup.get(vertex) != group) {
           throw new RuntimeException();
         }
         return group;
@@ -69,7 +69,7 @@ public class MapofListofListofTransfers extends LinkedHashMap<ComponentInstance,
     final ArrayList<TransferVertex> newGroup = new ArrayList<>();
     newGroup.add(currentVertex);
     getOrPutDefault(component).add(newGroup);
-    lookupSyncGroup.put(currentVertex, newGroup);
+    this.lookupSyncGroup.put(currentVertex, newGroup);
   }
 
   public List<TransferVertex> getLastGroup(final ComponentInstance component) {
@@ -83,13 +83,13 @@ public class MapofListofListofTransfers extends LinkedHashMap<ComponentInstance,
   public void addInGroup(final ComponentInstance component, final TransferVertex currentVertex) {
     final List<TransferVertex> lastGroup = getLastGroup(component);
     lastGroup.add(currentVertex);
-    lookupSyncGroup.put(currentVertex, lastGroup);
+    this.lookupSyncGroup.put(currentVertex, lastGroup);
   }
 
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder();
-    for (final Entry<ComponentInstance, List<List<TransferVertex>>> e : this.entrySet()) {
+    for (final Entry<ComponentInstance, List<List<TransferVertex>>> e : entrySet()) {
       final ComponentInstance componentInstance = e.getKey();
       sb.append("  - " + componentInstance.getInstanceName() + ": ");
       for (final List<TransferVertex> set : e.getValue()) {
@@ -97,7 +97,7 @@ public class MapofListofListofTransfers extends LinkedHashMap<ComponentInstance,
           sb.append("-");
         }
         sb.append(set.size() + "[");
-        for (TransferVertex tv : set) {
+        for (final TransferVertex tv : set) {
           if (tv.getSource().getEffectiveComponent() == componentInstance) {
             sb.append("S");
           } else if (tv.getTarget().getEffectiveComponent() == componentInstance) {

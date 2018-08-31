@@ -14,12 +14,12 @@ public class ConsecutiveTransfersMap extends LinkedHashMap<ComponentInstance, Co
 
   private static final long serialVersionUID = -8987927834037340036L;
 
-  final ComponentInstance findComponent(final DAGVertex vertex) {
+  static final ComponentInstance findComponent(final DAGVertex vertex) {
     return (ComponentInstance) vertex.getPropertyBean().getValue("Operator");
   }
 
   final ConsecutiveTransfersGroup findGroup(final DAGVertex vertex) {
-    final ComponentInstance findComponent = findComponent(vertex);
+    final ComponentInstance findComponent = ConsecutiveTransfersMap.findComponent(vertex);
     final ConsecutiveTransfersList consecutiveTransfersList = get(findComponent);
     for (final ConsecutiveTransfersGroup group : consecutiveTransfersList) {
       if (group.contains(vertex)) {
@@ -38,10 +38,11 @@ public class ConsecutiveTransfersMap extends LinkedHashMap<ComponentInstance, Co
    */
   public static final ConsecutiveTransfersMap initFrom(final DirectedAcyclicGraph dag) {
     final ConsecutiveTransfersMap res = new ConsecutiveTransfersMap();
+
     final TopologicalDAGIterator topologicalDAGIterator = new TopologicalDAGIterator(dag);
     while (topologicalDAGIterator.hasNext()) {
       final DAGVertex currentVertex = topologicalDAGIterator.next();
-      final ComponentInstance findComponent = res.findComponent(currentVertex);
+      final ComponentInstance findComponent = ConsecutiveTransfersMap.findComponent(currentVertex);
 
       final ConsecutiveTransfersList transferList = res.getOrDefault(findComponent,
           new ConsecutiveTransfersList(res, findComponent));

@@ -107,7 +107,7 @@ public class RedundantSynchronizationCleaner {
 
     final Set<DAGVertex> redundantSyncVertices = RedundantSynchronizationCleaner.redundantSyncVertices(initFrom,
         redundantPaths);
-    final Set<DAGVertex> duplicateSyncVertices = RedundantSynchronizationCleaner.duplicateSyncVertices(initFrom);
+    RedundantSynchronizationCleaner.duplicateSyncVertices(initFrom);
 
     // toBeRemoved.addAll(duplicateSyncVertices);
     toBeRemoved.addAll(redundantSyncVertices);
@@ -128,7 +128,7 @@ public class RedundantSynchronizationCleaner {
         for (final TransferVertex sourceVertex : sourceGroup) {
 
           final DAGVertex target = sourceVertex.outgoingEdges().iterator().next().getTarget();
-          final ComponentInstance findComponent = groupMap.findComponent(target);
+          final ComponentInstance findComponent = ConsecutiveTransfersMap.findComponent(target);
           if (targets.contains(findComponent)) {
             res.add(sourceVertex);
             res.add(target);
@@ -154,7 +154,7 @@ public class RedundantSynchronizationCleaner {
 
       for (final TransferVertex sourceVertex : edgeSource) {
         final DAGVertex target = sourceVertex.outgoingEdges().iterator().next().getTarget();
-        final ComponentInstance findComponent = initFrom.findComponent(target);
+        final ComponentInstance findComponent = ConsecutiveTransfersMap.findComponent(target);
         if (findComponent == targetComponent) {
           toBeRemoved.add(sourceVertex);
           toBeRemoved.add(target);
@@ -163,7 +163,7 @@ public class RedundantSynchronizationCleaner {
 
       for (final TransferVertex targetVertex : edgeTarget) {
         final DAGVertex source = targetVertex.incomingEdges().iterator().next().getSource();
-        final ComponentInstance findComponent = initFrom.findComponent(source);
+        final ComponentInstance findComponent = ConsecutiveTransfersMap.findComponent(source);
         if (findComponent == sourceComponent) {
           toBeRemoved.add(targetVertex);
           toBeRemoved.add(source);
