@@ -107,12 +107,10 @@ public class RedundantSynchronizationCleaner {
 
     final Set<DAGVertex> redundantSyncVertices = RedundantSynchronizationCleaner.redundantSyncVertices(initFrom,
         redundantPaths);
-    RedundantSynchronizationCleaner.duplicateSyncVertices(initFrom);
+    Set<DAGVertex> duplicateSyncVertices = RedundantSynchronizationCleaner.duplicateSyncVertices(initFrom);
 
-    // toBeRemoved.addAll(duplicateSyncVertices);
+    toBeRemoved.addAll(duplicateSyncVertices);
     toBeRemoved.addAll(redundantSyncVertices);
-    // dag.removeAllVertices(redundantSyncVertices);
-    // dag.removeAllVertices(duplicateSyncVertices);
     return toBeRemoved;
   }
 
@@ -123,9 +121,8 @@ public class RedundantSynchronizationCleaner {
       for (final ConsecutiveTransfersGroup sourceGroup : groupList) {
         final Set<ComponentInstance> targets = new LinkedHashSet<>();
 
-        // for (int i = sourceGroup.size() - 1; i >= 0; i--) {
-        // TransferVertex sourceVertex = sourceGroup.get(i);
-        for (final TransferVertex sourceVertex : sourceGroup) {
+        for (int i = sourceGroup.size() - 1; i >= 0; i--) {
+          TransferVertex sourceVertex = sourceGroup.get(i);
 
           final DAGVertex target = sourceVertex.outgoingEdges().iterator().next().getTarget();
           final ComponentInstance findComponent = ConsecutiveTransfersMap.findComponent(target);

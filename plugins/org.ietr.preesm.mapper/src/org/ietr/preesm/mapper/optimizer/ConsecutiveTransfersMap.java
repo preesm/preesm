@@ -39,6 +39,17 @@ public class ConsecutiveTransfersMap extends LinkedHashMap<ComponentInstance, Co
   public static final ConsecutiveTransfersMap initFrom(final DirectedAcyclicGraph dag) {
     final ConsecutiveTransfersMap res = new ConsecutiveTransfersMap();
 
+    final TopologicalDAGIterator tdi = new TopologicalDAGIterator(dag);
+    System.out.println("@@@@@@@@@@@@@@@@@@@@@@");
+    System.out.println("@@ Topological order: ");
+    System.out.println("@@");
+    while (tdi.hasNext()) {
+      final DAGVertex currentVertex = tdi.next();
+      final ComponentInstance findComponent = ConsecutiveTransfersMap.findComponent(currentVertex);
+      System.out.println(currentVertex.getClass().getSimpleName() + " - " + findComponent.getInstanceName());
+    }
+    System.out.println("@@@@@@@@@@@@@@@@@@@@");
+
     final TopologicalDAGIterator topologicalDAGIterator = new TopologicalDAGIterator(dag);
     while (topologicalDAGIterator.hasNext()) {
       final DAGVertex currentVertex = topologicalDAGIterator.next();
