@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import org.ietr.dftools.algorithm.iterators.DAGIterator;
+import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
@@ -86,7 +86,7 @@ public class CommunicationOrderChecker {
    */
   public static void checkCommunicationOrder(final DirectedAcyclicGraph dag) {
     // Check communication ordering
-    final DAGIterator iterDAGVertices = new DAGIterator(dag); // Iterator on DAG vertices
+    final TopologicalDAGIterator iterDAGVertices = new TopologicalDAGIterator(dag); // Iterator on DAG vertices
 
     // Create an array list of the Send/Receive DAGVertices, in scheduling order.
     final SortedMap<Integer, DAGVertex> sendVerticesMap = new TreeMap<>();

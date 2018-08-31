@@ -46,7 +46,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.ietr.dftools.algorithm.iterators.DAGIterator;
+import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
 import org.ietr.dftools.algorithm.model.AbstractEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
@@ -127,7 +127,7 @@ public class MemExBroadcastMerger {
     { // Be careful, DAGiterator does not seem to work well if dag is
       // modified throughout the iteration.
       // That's why we use first copy the ordered dag vertex set.
-      final DAGIterator iterDAGVertices = new DAGIterator(this.dag);
+      final TopologicalDAGIterator iterDAGVertices = new TopologicalDAGIterator(this.dag);
       while (iterDAGVertices.hasNext()) {
         dagVertices.add(iterDAGVertices.next());
       }

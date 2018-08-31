@@ -14,6 +14,7 @@ PREESM Changelog
 * Add sample JSon I/O for schedule/timing;
 
 ### Changes
+* Replace deprecated DAGIterator with TopologicalDAGIterator;
 * Enable XCore codegen plugin back in Maven (https://github.com/eclipse/xtext/issues/1233);
 * Properly display errors in a dialog when generating diagram from .pi file fails;
 * Update MapperDAG to keep a reference to the PiSDF; Refactor constructor accordingly;

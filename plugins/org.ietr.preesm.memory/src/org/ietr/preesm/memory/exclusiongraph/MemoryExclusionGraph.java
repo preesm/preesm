@@ -52,7 +52,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import org.eclipse.xtext.xbase.lib.Pair;
-import org.ietr.dftools.algorithm.iterators.DAGIterator;
+import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
 import org.ietr.dftools.algorithm.model.CloneableProperty;
 import org.ietr.dftools.algorithm.model.PropertyBean;
 import org.ietr.dftools.algorithm.model.PropertyFactory;
@@ -396,7 +396,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     /*
      * Declarations & initializations
      */
-    final DAGIterator iterDAGVertices = new DAGIterator(dag); // Iterator on DAG
+    final TopologicalDAGIterator iterDAGVertices = new TopologicalDAGIterator(dag); // Iterator on DAG
     // vertices
     // Be careful, DAGiterator does not seem to work well if dag is
     // modified throughout the iteration.
@@ -1486,7 +1486,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     // Create an TreeMap of the DAGVertices, in scheduling order.
     final TreeMap<Integer, DAGVertex> verticesMap = new TreeMap<>();
 
-    final DAGIterator iterDAGVertices = new DAGIterator(scheduledDAG); // Iterator
+    final TopologicalDAGIterator iterDAGVertices = new TopologicalDAGIterator(scheduledDAG); // Iterator
     // on
     // DAG
     // vertices
@@ -1708,7 +1708,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     // Same a verticesPredecessors but only store predecessors that results
     // from scheduling info
     final Map<String, Set<MemoryExclusionVertex>> newVerticesPredecessors = new LinkedHashMap<>();
-    final DAGIterator iterDAGVertices = new DAGIterator(dag); // Iterator on DAG vertices
+    final TopologicalDAGIterator iterDAGVertices = new TopologicalDAGIterator(dag); // Iterator on DAG vertices
 
     // Create an array list of the DAGVertices, in scheduling order.
     // As the DAG are scanned following the precedence order, the
