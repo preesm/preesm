@@ -66,7 +66,7 @@ import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.xtext.xbase.lib.Pair;
-import org.ietr.dftools.algorithm.iterators.DAGIterator;
+import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
 import org.ietr.dftools.algorithm.model.AbstractEdge;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
@@ -562,7 +562,7 @@ public class CodegenModelGenerator {
     // 1 - Create a dagVertexList in SCHEDULING Order !
     final List<DAGVertex> vertexInSchedulingOrder = new ArrayList<>();
     {
-      final DAGIterator iter = new DAGIterator(this.algo);
+      final TopologicalDAGIterator iter = new TopologicalDAGIterator(this.algo);
       // Fill a Map with Scheduling order and DAGvertices
       final TreeMap<Integer, DAGVertex> orderedDAGVertexMap = new TreeMap<>();
 

@@ -45,8 +45,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.ietr.dftools.algorithm.iterators.DAGIterator;
 import org.ietr.dftools.algorithm.iterators.SDFIterator;
+import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
@@ -300,7 +300,7 @@ public class ForkJoinRemover {
   public static void supprImplodeExplode(final DirectedAcyclicGraph dag) {
     // Remove Fork/join vertices
 
-    final DAGIterator iterDAG = new DAGIterator(dag); // Iterator on DAG
+    final TopologicalDAGIterator iterDAG = new TopologicalDAGIterator(dag); // Iterator on DAG
     // vertices
     // Be careful, DAGiterator does not seem to work well if dag is
     // modified throughout the iteration.
