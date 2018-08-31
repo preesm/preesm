@@ -28,6 +28,8 @@ PREESM Changelog
   * also fix code;
 * Improve scenario editor;
 * Update external dependencies to [3.3.0,4.0.0);
+* Update external Graphiti to [1.10.0,1.0.0);
+* Update external DFTools to [1.9.0,2.0.0);
 
 ### Bug fix
 * Fix issue #62
