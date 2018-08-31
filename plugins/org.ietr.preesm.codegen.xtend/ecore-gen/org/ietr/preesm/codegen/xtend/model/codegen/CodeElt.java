@@ -35,8 +35,6 @@
  *******************************************************************************/
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
-import org.eclipse.emf.ecore.EObject;
-
 /**
  * <!-- begin-user-doc --> A {@link CodeElt} is either a {@link Block} of code a {@link Call} to a function or another
  * primitive.<br>
@@ -49,5 +47,5 @@ import org.eclipse.emf.ecore.EObject;
  * @model interface="true" abstract="true"
  * @generated
  */
-public interface CodeElt extends EObject {
+public interface CodeElt extends Commentable {
 } // CodeElt

@@ -138,7 +138,7 @@ public enum Delimiter implements Enumerator {
   /**
    * Returns the '<em><b>Delimiter</b></em>' literal with the specified name. <!-- begin-user-doc --> <!-- end-user-doc
    * -->
-   * 
+   *
    * @param name
    *          the name.
    * @return the matching enumerator or <code>null</code>.

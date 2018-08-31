@@ -255,7 +255,7 @@ public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator 
       return super.toString();
     }
 
-    final StringBuffer result = new StringBuffer(super.toString());
+    final StringBuilder result = new StringBuilder(super.toString());
     result.append(" (iterSize: ");
     result.append(this.iterSize);
     result.append(')');

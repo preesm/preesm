@@ -594,7 +594,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
   @Override
   public EList<CommunicationNode> getNodes() {
     if (this.nodes == null) {
-      this.nodes = new EObjectContainmentEList<>(CommunicationNode.class, this, CodegenPackage.COMMUNICATION__NODES);
+      this.nodes = new EObjectContainmentEList<>(CommunicationNode.class, this,
+          CodegenPackage.COMMUNICATION__NODES);
     }
     return this.nodes;
   }
@@ -980,7 +981,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
       return super.toString();
     }
 
-    final StringBuffer result = new StringBuffer(super.toString());
+    final StringBuilder result = new StringBuilder(super.toString());
     result.append(" (direction: ");
     result.append(this.direction);
     result.append(", delimiter: ");

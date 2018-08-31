@@ -93,7 +93,7 @@ public interface Call extends CodeElt {
   /**
    * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getName <em>Name</em>}' attribute.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Name</em>' attribute.
    * @see #getName()

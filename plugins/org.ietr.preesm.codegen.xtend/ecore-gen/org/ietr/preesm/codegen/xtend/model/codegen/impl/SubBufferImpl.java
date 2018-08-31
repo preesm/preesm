@@ -83,7 +83,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
   /**
    * The cached value of the '{@link #getOffset() <em>Offset</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
    * -->
-   * 
+   *
    * @see #getOffset()
    * @generated
    * @ordered
@@ -384,7 +384,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
       return super.toString();
     }
 
-    final StringBuffer result = new StringBuffer(super.toString());
+    final StringBuilder result = new StringBuilder(super.toString());
     result.append(" (offset: ");
     result.append(this.offset);
     result.append(')');

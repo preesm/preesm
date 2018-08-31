@@ -120,7 +120,7 @@ public interface Variable extends Commentable {
    * {@link Variable}.
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Creator</em>' container reference.
    * @see #setCreator(Block)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getVariable_Creator()

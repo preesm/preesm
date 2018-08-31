@@ -335,7 +335,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
       return super.toString();
     }
 
-    final StringBuffer result = new StringBuffer(super.toString());
+    final StringBuilder result = new StringBuilder(super.toString());
     result.append(" (nbIter: ");
     result.append(this.nbIter);
     result.append(')');

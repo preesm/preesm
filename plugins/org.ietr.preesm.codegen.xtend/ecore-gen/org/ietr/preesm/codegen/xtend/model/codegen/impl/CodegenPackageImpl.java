@@ -257,7 +257,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   private EClass papifyActionEClass = null;
@@ -311,7 +311,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
    * Note: the correct way to create the package is via the static factory method {@link #init init()}, which also
    * performs initialization of the package, or returns the registered package, if one already exists. <!--
    * begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see org.eclipse.emf.ecore.EPackage.Registry
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#eNS_URI
    * @see #init()
@@ -347,10 +347,10 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
     }
 
     // Obtain or create and register package
-    final CodegenPackageImpl theCodegenPackage = (CodegenPackageImpl) (EPackage.Registry.INSTANCE
-        .get(CodegenPackage.eNS_URI) instanceof CodegenPackageImpl
-            ? EPackage.Registry.INSTANCE.get(CodegenPackage.eNS_URI)
-            : new CodegenPackageImpl());
+    final Object registeredCodegenPackage = EPackage.Registry.INSTANCE.get(CodegenPackage.eNS_URI);
+    final CodegenPackageImpl theCodegenPackage = registeredCodegenPackage instanceof CodegenPackageImpl
+        ? (CodegenPackageImpl) registeredCodegenPackage
+        : new CodegenPackageImpl();
 
     CodegenPackageImpl.isInited = true;
 
@@ -1250,7 +1250,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -1483,7 +1483,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
   /**
    * Complete the initialization of the package and its meta-model. This method is guarded to have no affect on any
    * invocation but its first. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   public void initializePackageContents() {
@@ -1503,6 +1503,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
     // Add supertypes to classes
     this.blockEClass.getESuperTypes().add(getCodeElt());
+    this.codeEltEClass.getESuperTypes().add(getCommentable());
     this.callEClass.getESuperTypes().add(getCodeElt());
     this.variableEClass.getESuperTypes().add(getCommentable());
     this.bufferEClass.getESuperTypes().add(getVariable());
@@ -1517,6 +1518,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
     this.callBlockEClass.getESuperTypes().add(getBlock());
     this.specialCallEClass.getESuperTypes().add(getCall());
     this.fifoCallEClass.getESuperTypes().add(getCall());
+    this.communicationNodeEClass.getESuperTypes().add(getCommentable());
     this.sharedMemoryCommunicationEClass.getESuperTypes().add(getCommunication());
     this.constantStringEClass.getESuperTypes().add(getVariable());
     this.nullBufferEClass.getESuperTypes().add(getSubBuffer());

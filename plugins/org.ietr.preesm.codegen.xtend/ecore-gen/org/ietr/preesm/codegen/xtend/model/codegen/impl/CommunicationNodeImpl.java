@@ -39,7 +39,6 @@ package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode;
 
@@ -57,11 +56,11 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode;
  *
  * @generated
  */
-public class CommunicationNodeImpl extends EObjectImpl implements CommunicationNode {
+public class CommunicationNodeImpl extends CommentableImpl implements CommunicationNode {
   /**
    * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
    * -->
-   * 
+   *
    * @see #getName()
    * @generated
    * @ordered
@@ -80,7 +79,7 @@ public class CommunicationNodeImpl extends EObjectImpl implements CommunicationN
   /**
    * The default value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
    * -->
-   * 
+   *
    * @see #getType()
    * @generated
    * @ordered
@@ -270,7 +269,7 @@ public class CommunicationNodeImpl extends EObjectImpl implements CommunicationN
       return super.toString();
     }
 
-    final StringBuffer result = new StringBuffer(super.toString());
+    final StringBuilder result = new StringBuilder(super.toString());
     result.append(" (name: ");
     result.append(this.name);
     result.append(", type: ");

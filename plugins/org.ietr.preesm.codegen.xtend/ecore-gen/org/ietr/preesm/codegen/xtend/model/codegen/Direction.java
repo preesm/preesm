@@ -46,7 +46,7 @@ import org.eclipse.emf.common.util.Enumerator;
  * <!-- begin-user-doc --> The {@link Direction} is used within {@link Communication} {@link Call calls} to determine
  * whether the current {@link Communication} {@link #SEND sends} or {@link #RECEIVE receives} a data. <!-- end-user-doc
  * -->
- * 
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getDirection()
  * @model
  * @generated
@@ -136,7 +136,7 @@ public enum Direction implements Enumerator {
   /**
    * Returns the '<em><b>Direction</b></em>' literal with the specified name. <!-- begin-user-doc --> <!-- end-user-doc
    * -->
-   * 
+   *
    * @param name
    *          the name.
    * @return the matching enumerator or <code>null</code>.
