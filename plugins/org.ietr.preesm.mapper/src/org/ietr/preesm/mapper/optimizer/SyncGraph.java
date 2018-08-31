@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
+import org.ietr.preesm.mapper.PreesmMapperException;
 import org.ietr.preesm.mapper.model.special.SendVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 import org.jgrapht.alg.TransitiveReduction;
@@ -53,32 +54,16 @@ public class SyncGraph extends org.jgrapht.graph.DirectedAcyclicGraph<Consecutiv
             final DAGVertex receiver = vertex.outgoingEdges().iterator().next().getTarget();
             final ConsecutiveTransfersGroup targetGroup = groupMap.findGroup(receiver);
             final String comName = "com_" + SyncGraph.getName(sourceGroup) + "_" + SyncGraph.getName(targetGroup);
-            System.out.println("adding " + comName);
-            final boolean addEdge = graph.addEdge(sourceGroup, targetGroup, comName);
-            System.out.println(" -> " + addEdge);
+            graph.addEdge(sourceGroup, targetGroup, comName);
           }
         }
       }
     }
 
-    // TODO compute transitive reduction + remove seq edges
     final SyncGraph reducedGraph = (SyncGraph) graph.clone();
-    System.out.println("##################");
-    System.out.println("## initial graph");
-    System.out.println("##################");
-    System.out.println(graph.toDotty());
     TransitiveReduction.INSTANCE.reduce(reducedGraph);
-    System.out.println("##################");
-    System.out.println("## transitive reduction");
-    System.out.println("##################");
-    System.out.println(reducedGraph.toDotty());
-    //
     graph.removeAllEdges(reducedGraph.edgeSet());
     graph.removeAllEdges(seqSyncEdges);
-    System.out.println("##################");
-    System.out.println("## Syncs to remove");
-    System.out.println("##################");
-    System.out.println(graph.toDotty());
 
     return graph;
   }
@@ -126,8 +111,7 @@ public class SyncGraph extends org.jgrapht.graph.DirectedAcyclicGraph<Consecutiv
     try {
       writer.close();
     } catch (final IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new PreesmMapperException("Could not close string writer", e);
     }
     return writer.toString();
   }
