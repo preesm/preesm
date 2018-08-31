@@ -1327,8 +1327,13 @@ public class CodegenModelGenerator {
 
     // No semaphore here, semaphore are only for SS->RE and RE->SR
 
+    final Integer gid = (Integer) dagVertex.getPropertyBean().getValue("SYNC_GROUP");
+    if (gid != null) {
+      newComm.setComment("SyncComGroup = " + gid);
+      // newCommZoneComplement.setComment("SyncComGroup = " + gid);
+    }
     // Check if this is a redundant communication
-    Boolean b = (Boolean) dagVertex.getPropertyBean().getValue("Redundant");
+    final Boolean b = (Boolean) dagVertex.getPropertyBean().getValue("Redundant");
     if (b != null && b.equals(Boolean.valueOf(true))) {
       // Mark communication are redundant.
       newComm.setRedundant(true);
