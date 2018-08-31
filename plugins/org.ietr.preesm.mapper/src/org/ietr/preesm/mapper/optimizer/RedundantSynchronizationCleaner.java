@@ -40,9 +40,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
-import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
@@ -54,6 +54,8 @@ import org.ietr.preesm.mapper.AbstractMappingFromDAG;
 import org.ietr.preesm.mapper.model.special.ReceiveVertex;
 import org.ietr.preesm.mapper.model.special.SendVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
+import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
+import org.jgrapht.alg.TransitiveReduction;
 import org.jgrapht.io.DOTExporter;
 import org.jgrapht.io.StringComponentNameProvider;
 
@@ -77,7 +79,7 @@ public class RedundantSynchronizationCleaner {
   private RedundantSynchronizationCleaner() {
   }
 
-  private static final ComponentInstance findComponent(DAGVertex vertex) {
+  private static final ComponentInstance findComponent(final DAGVertex vertex) {
     return (ComponentInstance) vertex.getPropertyBean().getValue("Operator");
   }
 
@@ -89,12 +91,86 @@ public class RedundantSynchronizationCleaner {
    *          the function.
    */
   public static void cleanRedundantSynchronization(final DirectedAcyclicGraph dag) {
-    // Get the groups of synchronization.
-    final ConsecutiveTransfers syncGroups = RedundantSynchronizationCleaner.createSyncGroupsPerComponents(dag);
 
-    final Set<TransferVertex> toBeRemoved = RedundantSynchronizationCleaner.method2(dag, syncGroups);
+    // final Set<TransferVertex> toBeRemoved = RedundantSynchronizationCleaner.karoldMethod(dag);
+    final Set<DAGVertex> toBeRemoved = RedundantSynchronizationCleaner.proMethod(dag);
     toBeRemoved.forEach(transferVertex -> transferVertex.setPropertyValue("Redundant", Boolean.valueOf(true)));
     WorkflowLogger.getLogger().log(Level.INFO, "removing " + toBeRemoved.size() + " syncs");
+  }
+
+  private static Set<DAGVertex> proMethod(final DirectedAcyclicGraph dag) {
+    final Set<DAGVertex> toBeRemoved = new LinkedHashSet<>();
+
+    final ConsecutiveTransfersMap initFrom = ConsecutiveTransfersMap.initFrom(dag);
+    System.out.println(initFrom);
+    final SyncGraph redundantPaths = SyncGraph.buildUnecessaryEdges(initFrom);
+
+    final Set<DAGVertex> redundantSyncVertices = RedundantSynchronizationCleaner.redundantSyncVertices(initFrom,
+        redundantPaths);
+    final Set<DAGVertex> duplicateSyncVertices = RedundantSynchronizationCleaner.duplicateSyncVertices(initFrom);
+
+    toBeRemoved.addAll(duplicateSyncVertices);
+    // toBeRemoved.addAll(redundantSyncVertices);
+    dag.removeAllVertices(redundantSyncVertices);
+    // dag.removeAllVertices(duplicateSyncVertices);
+    return toBeRemoved;
+  }
+
+  private static Set<DAGVertex> duplicateSyncVertices(final ConsecutiveTransfersMap groupMap) {
+    final Set<DAGVertex> res = new LinkedHashSet<>();
+    for (final Entry<ComponentInstance, ConsecutiveTransfersList> e : groupMap.entrySet()) {
+      final ConsecutiveTransfersList groupList = e.getValue();
+      for (final ConsecutiveTransfersGroup sourceGroup : groupList) {
+        final Set<ComponentInstance> targets = new LinkedHashSet<>();
+
+        // for (int i = sourceGroup.size() - 1; i >= 0; i--) {
+        // TransferVertex sourceVertex = sourceGroup.get(i);
+        for (final TransferVertex sourceVertex : sourceGroup) {
+
+          final DAGVertex target = sourceVertex.outgoingEdges().iterator().next().getTarget();
+          final ComponentInstance findComponent = groupMap.findComponent(target);
+          if (targets.contains(findComponent)) {
+            res.add(sourceVertex);
+            res.add(target);
+          } else {
+            targets.add(findComponent);
+          }
+        }
+      }
+    }
+    return res;
+  }
+
+  private static Set<DAGVertex> redundantSyncVertices(final ConsecutiveTransfersMap initFrom,
+      final SyncGraph redundantPaths) {
+    final Set<DAGVertex> toBeRemoved = new LinkedHashSet<>();
+    final Set<String> edgeSet = redundantPaths.edgeSet();
+    for (final String edge : edgeSet) {
+      final ConsecutiveTransfersGroup edgeSource = redundantPaths.getEdgeSource(edge);
+      final ConsecutiveTransfersGroup edgeTarget = redundantPaths.getEdgeTarget(edge);
+
+      final ComponentInstance sourceComponent = edgeSource.getComponent();
+      final ComponentInstance targetComponent = edgeTarget.getComponent();
+
+      for (final TransferVertex sourceVertex : edgeSource) {
+        final DAGVertex target = sourceVertex.outgoingEdges().iterator().next().getTarget();
+        final ComponentInstance findComponent = initFrom.findComponent(target);
+        if (findComponent == targetComponent) {
+          toBeRemoved.add(sourceVertex);
+          toBeRemoved.add(target);
+        }
+      }
+
+      for (final TransferVertex targetVertex : edgeTarget) {
+        final DAGVertex source = targetVertex.incomingEdges().iterator().next().getSource();
+        final ComponentInstance findComponent = initFrom.findComponent(source);
+        if (findComponent == sourceComponent) {
+          toBeRemoved.add(targetVertex);
+          toBeRemoved.add(source);
+        }
+      }
+    }
+    return toBeRemoved;
   }
 
   /**
@@ -106,6 +182,7 @@ public class RedundantSynchronizationCleaner {
       super(String.class);
     }
 
+    @Override
     public RSCGraph clone() {
       return (RSCGraph) super.clone();
     }
@@ -117,7 +194,10 @@ public class RedundantSynchronizationCleaner {
 
   }
 
-  private static Set<TransferVertex> method2(final DirectedAcyclicGraph dag, final ConsecutiveTransfers syncGroups) {
+  /**
+   *
+   */
+  static Set<TransferVertex> method2(final DirectedAcyclicGraph dag, final MapofListofListofTransfers syncGroups) {
     final Set<TransferVertex> res = new LinkedHashSet<>();
 
     final RSCGraph graph = new RSCGraph();
@@ -147,7 +227,8 @@ public class RedundantSynchronizationCleaner {
           if (vertex instanceof SendVertex) {
             final DAGVertex receiver = vertex.outgoingEdges().iterator().next().getTarget();
             final List<TransferVertex> targetGroup = syncGroups.lookupSyncGroup(receiver);
-            final String comName = "com_" + getName(vertex, syncGroups) + "_" + getName(receiver, syncGroups);
+            final String comName = "com_" + RedundantSynchronizationCleaner.getName(vertex, syncGroups) + "_"
+                + RedundantSynchronizationCleaner.getName(receiver, syncGroups);
             System.out.println("adding " + comName);
             final boolean addEdge = graph.addEdge(sourceGroup, targetGroup, comName);
             System.out.println("   -> " + addEdge);
@@ -158,31 +239,31 @@ public class RedundantSynchronizationCleaner {
     final String print = RedundantSynchronizationCleaner.print(graph, syncGroups);
     System.out.println(print);
 
-    // final RSCGraph reducedGraph = (RSCGraph) graph.clone();
-    // TransitiveReduction.INSTANCE.reduce(graph);
+    final RSCGraph reducedGraph = graph.clone();
+    TransitiveReduction.INSTANCE.reduce(graph);
     //
-    // final String print2 = RedundantSynchronizationCleaner.print(graph, syncGroups);
-    // System.out.println(print2);
+    final String print2 = RedundantSynchronizationCleaner.print(graph, syncGroups);
+    System.out.println(print2);
     //
-    // graph.removeAllEdges(reducedGraph.edgeSet());
-    // graph.removeAllEdges(seqSyncEdges);
-    // final String print3 = RedundantSynchronizationCleaner.print(graph, syncGroups);
-    // System.out.println(print3);
+    graph.removeAllEdges(reducedGraph.edgeSet());
+    graph.removeAllEdges(seqSyncEdges);
+    final String print3 = RedundantSynchronizationCleaner.print(graph, syncGroups);
+    System.out.println(print3);
 
     return res;
   }
 
-  private static final String getName(List<TransferVertex> group, final ConsecutiveTransfers syncGroups) {
+  private static final String getName(final List<TransferVertex> group, final MapofListofListofTransfers syncGroups) {
     final TransferVertex firstVertex = group.get(0);
-    final ComponentInstance findComponent = findComponent(firstVertex);
+    final ComponentInstance findComponent = RedundantSynchronizationCleaner.findComponent(firstVertex);
     final String instanceName = findComponent.getInstanceName();
     final int indexOf = syncGroups.get(findComponent).indexOf(group);
     return instanceName + "_" + indexOf;
   }
 
-  private static final String getName(DAGVertex v, final ConsecutiveTransfers syncGroups) {
+  private static final String getName(final DAGVertex v, final MapofListofListofTransfers syncGroups) {
     final List<TransferVertex> lookupSyncGroup = syncGroups.lookupSyncGroup(v);
-    return getName(lookupSyncGroup, syncGroups);
+    return RedundantSynchronizationCleaner.getName(lookupSyncGroup, syncGroups);
   }
 
   /**
@@ -190,7 +271,7 @@ public class RedundantSynchronizationCleaner {
    */
   private static class EdgeNameProvider extends StringComponentNameProvider<String> {
     @Override
-    public String getName(String component) {
+    public String getName(final String component) {
       return component;
     }
   }
@@ -199,19 +280,19 @@ public class RedundantSynchronizationCleaner {
    *
    */
   private static class VertexNameProvider extends StringComponentNameProvider<List<TransferVertex>> {
-    private ConsecutiveTransfers syncGroups;
+    private final MapofListofListofTransfers syncGroups;
 
-    public VertexNameProvider(ConsecutiveTransfers syncGroups) {
+    public VertexNameProvider(final MapofListofListofTransfers syncGroups) {
       this.syncGroups = syncGroups;
     }
 
     @Override
-    public String getName(List<TransferVertex> group) {
-      return RedundantSynchronizationCleaner.getName(group, syncGroups);
+    public String getName(final List<TransferVertex> group) {
+      return RedundantSynchronizationCleaner.getName(group, this.syncGroups);
     }
   }
 
-  private static String print(final RSCGraph graph, ConsecutiveTransfers syncGroups) {
+  private static String print(final RSCGraph graph, final MapofListofListofTransfers syncGroups) {
     final StringWriter stringWriter = new StringWriter();
 
     final DOTExporter<List<TransferVertex>, String> exporter = new DOTExporter<>(new VertexNameProvider(syncGroups),
@@ -228,7 +309,9 @@ public class RedundantSynchronizationCleaner {
    *          the function.
    * @return
    */
-  public static Set<TransferVertex> method1(final DirectedAcyclicGraph dag, ConsecutiveTransfers syncGroups) {
+  public static Set<TransferVertex> karoldMethod(final DirectedAcyclicGraph dag) {
+    // Get the groups of synchronization.
+    final MapofListofListofTransfers syncGroups = RedundantSynchronizationCleaner.createSyncGroupsPerComponents(dag);
 
     // Get the list of components
     final Set<ComponentInstance> components = syncGroups.getComponents();
@@ -252,7 +335,7 @@ public class RedundantSynchronizationCleaner {
     while (iterDAGVertices.hasNext()) {
       final DAGVertex currentVertex = iterDAGVertices.next();
       // Get component
-      final ComponentInstance component = findComponent(currentVertex);
+      final ComponentInstance component = RedundantSynchronizationCleaner.findComponent(currentVertex);
 
       final List<TransferVertex> groupForCurrentVertex = syncGroups.lookupSyncGroup(currentVertex);
       // When the beginning of a sync group is reached
@@ -319,12 +402,12 @@ public class RedundantSynchronizationCleaner {
    *          the scheduled {@link DirectedAcyclicGraph} from which communication are extracted
    * @return the described {@link Map}
    */
-  private static ConsecutiveTransfers createSyncGroupsPerComponents(final DirectedAcyclicGraph dag) {
+  private static MapofListofListofTransfers createSyncGroupsPerComponents(final DirectedAcyclicGraph dag) {
     // This Map associates to each component of the architecture a List of all its communications.
     // Communications are stored as a List of list where each set represents a group of consecutive receive
     // communication primitive that is not
     // "interrupted" by any other computation.
-    final ConsecutiveTransfers syncGroups = new ConsecutiveTransfers();
+    final MapofListofListofTransfers syncGroups = new MapofListofListofTransfers();
 
     // Fill the syncGroups
     final TopologicalDAGIterator iterDAGVertices = new TopologicalDAGIterator(dag); // Iterator on DAG vertices
@@ -334,7 +417,7 @@ public class RedundantSynchronizationCleaner {
     while (iterDAGVertices.hasNext()) {
       final DAGVertex currentVertex = iterDAGVertices.next();
       // Get component
-      final ComponentInstance component = findComponent(currentVertex);
+      final ComponentInstance component = RedundantSynchronizationCleaner.findComponent(currentVertex);
 
       // Get vertex type
       final boolean isCommunication = currentVertex instanceof TransferVertex;
@@ -358,7 +441,7 @@ public class RedundantSynchronizationCleaner {
       // Save last vertex (replace previously saved type)
       lastVertexScheduledIsSyncPerComponent.put(component, isSynchronization);
     }
-    debugList(syncGroups);
+    RedundantSynchronizationCleaner.debugList(syncGroups);
     return syncGroups;
   }
 
@@ -368,7 +451,7 @@ public class RedundantSynchronizationCleaner {
    * @param comGroups
    *          see previous function
    */
-  private static void debugList(final ConsecutiveTransfers comGroups) {
+  private static void debugList(final MapofListofListofTransfers comGroups) {
     WorkflowLogger.getLogger().log(Level.INFO, "Synchronization Consecutive Lists : \n" + comGroups.toString());
   }
 

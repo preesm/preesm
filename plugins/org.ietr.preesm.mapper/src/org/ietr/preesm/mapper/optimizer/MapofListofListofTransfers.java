@@ -15,11 +15,11 @@ import org.ietr.preesm.mapper.model.special.TransferVertex;
  * @author anmorvan
  *
  */
-public class ConsecutiveTransfers extends LinkedHashMap<ComponentInstance, List<List<TransferVertex>>> {
+public class MapofListofListofTransfers extends LinkedHashMap<ComponentInstance, List<List<TransferVertex>>> {
 
   private Map<TransferVertex, List<TransferVertex>> lookupSyncGroup = new LinkedHashMap<>();
 
-  public ConsecutiveTransfers() {
+  public MapofListofListofTransfers() {
     super();
   }
 
