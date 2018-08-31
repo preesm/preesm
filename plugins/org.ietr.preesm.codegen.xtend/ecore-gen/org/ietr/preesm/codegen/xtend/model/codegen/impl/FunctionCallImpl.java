@@ -209,7 +209,7 @@ public class FunctionCallImpl extends CallImpl implements FunctionCall {
       return super.toString();
     }
 
-    final StringBuffer result = new StringBuffer(super.toString());
+    final StringBuilder result = new StringBuilder(super.toString());
     result.append(" (actorName: ");
     result.append(this.actorName);
     result.append(')');

@@ -223,9 +223,9 @@ public interface Communication extends Call {
   Communication getReceiveStart();
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveStart
-   * <em>Receive Start</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveStart <em>Receive
+   * Start</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
    * @param value
    *          the new value of the '<em>Receive Start</em>' reference.
    * @see #getReceiveStart()
@@ -250,9 +250,9 @@ public interface Communication extends Call {
   Communication getReceiveEnd();
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveEnd <em>Receive
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveEnd <em>Receive
    * End</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Receive End</em>' reference.
    * @see #getReceiveEnd()
@@ -319,9 +319,9 @@ public interface Communication extends Call {
   Communication getReceiveRelease();
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveRelease
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveRelease
    * <em>Receive Release</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Receive Release</em>' reference.
    * @see #getReceiveRelease()
@@ -346,9 +346,9 @@ public interface Communication extends Call {
   Communication getSendReserve();
 
   /**
-   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getSendReserve <em>Send
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getSendReserve <em>Send
    * Reserve</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @param value
    *          the new value of the '<em>Send Reserve</em>' reference.
    * @see #getSendReserve()
@@ -364,7 +364,7 @@ public interface Communication extends Call {
    * here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Redundant</em>' attribute.
    * @see #setRedundant(boolean)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCommunication_Redundant()

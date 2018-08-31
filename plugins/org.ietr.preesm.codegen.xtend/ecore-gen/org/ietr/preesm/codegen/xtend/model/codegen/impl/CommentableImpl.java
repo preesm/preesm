@@ -211,7 +211,7 @@ public abstract class CommentableImpl extends EObjectImpl implements Commentable
       return super.toString();
     }
 
-    final StringBuffer result = new StringBuffer(super.toString());
+    final StringBuilder result = new StringBuilder(super.toString());
     result.append(" (comment: ");
     result.append(this.comment);
     result.append(')');

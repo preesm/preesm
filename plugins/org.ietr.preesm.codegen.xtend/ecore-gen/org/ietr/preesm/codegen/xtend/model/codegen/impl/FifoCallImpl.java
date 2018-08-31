@@ -500,7 +500,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
       return super.toString();
     }
 
-    final StringBuffer result = new StringBuffer(super.toString());
+    final StringBuilder result = new StringBuilder(super.toString());
     result.append(" (operation: ");
     result.append(this.operation);
     result.append(')');

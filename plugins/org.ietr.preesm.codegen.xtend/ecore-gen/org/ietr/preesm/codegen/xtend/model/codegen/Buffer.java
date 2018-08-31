@@ -96,7 +96,7 @@ public interface Buffer extends Variable {
    * here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Childrens</em>' reference list.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBuffer_Childrens()
    * @see org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getContainer
@@ -166,7 +166,7 @@ public interface Buffer extends Variable {
    * or if it may be accessed from several {@link CoreBlock} (<code>false</code>).
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Local</em>' attribute.
    * @see #setLocal(boolean)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBuffer_Local()

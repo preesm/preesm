@@ -35,8 +35,6 @@
  *******************************************************************************/
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
-import org.eclipse.emf.ecore.EObject;
-
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> A representation of the model object ' <em><b>Communication Node</b></em>'. <!-- end-user-doc
@@ -54,7 +52,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model
  * @generated
  */
-public interface CommunicationNode extends EObject {
+public interface CommunicationNode extends Commentable {
   /**
    * Returns the value of the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc -->
    * <p>

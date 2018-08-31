@@ -43,7 +43,6 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
@@ -68,7 +67,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
  *
  * @generated
  */
-public class BlockImpl extends EObjectImpl implements Block {
+public class BlockImpl extends CommentableImpl implements Block {
   /**
    * The cached value of the '{@link #getCodeElts() <em>Code Elts</em>}' containment reference list. <!-- begin-user-doc
    * --> <!-- end-user-doc -->
@@ -92,7 +91,7 @@ public class BlockImpl extends EObjectImpl implements Block {
   /**
    * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
    * -->
-   * 
+   *
    * @see #getName()
    * @generated
    * @ordered
@@ -111,7 +110,7 @@ public class BlockImpl extends EObjectImpl implements Block {
   /**
    * The cached value of the '{@link #getDefinitions() <em>Definitions</em>}' containment reference list. <!--
    * begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getDefinitions()
    * @generated
    * @ordered
@@ -366,7 +365,7 @@ public class BlockImpl extends EObjectImpl implements Block {
       return super.toString();
     }
 
-    final StringBuffer result = new StringBuffer(super.toString());
+    final StringBuilder result = new StringBuilder(super.toString());
     result.append(" (name: ");
     result.append(this.name);
     result.append(')');

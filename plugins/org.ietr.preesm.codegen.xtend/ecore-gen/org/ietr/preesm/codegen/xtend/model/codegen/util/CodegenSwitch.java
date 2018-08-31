@@ -125,6 +125,9 @@ public class CodegenSwitch<T> extends Switch<T> {
           result = caseCodeElt(block);
         }
         if (result == null) {
+          result = caseCommentable(block);
+        }
+        if (result == null) {
           result = defaultCase(theEObject);
         }
         return result;
@@ -132,6 +135,9 @@ public class CodegenSwitch<T> extends Switch<T> {
       case CodegenPackage.CODE_ELT: {
         final CodeElt codeElt = (CodeElt) theEObject;
         T result = caseCodeElt(codeElt);
+        if (result == null) {
+          result = caseCommentable(codeElt);
+        }
         if (result == null) {
           result = defaultCase(theEObject);
         }
@@ -142,6 +148,9 @@ public class CodegenSwitch<T> extends Switch<T> {
         T result = caseCall(call);
         if (result == null) {
           result = caseCodeElt(call);
+        }
+        if (result == null) {
+          result = caseCommentable(call);
         }
         if (result == null) {
           result = defaultCase(theEObject);
@@ -214,6 +223,9 @@ public class CodegenSwitch<T> extends Switch<T> {
           result = caseCodeElt(functionCall);
         }
         if (result == null) {
+          result = caseCommentable(functionCall);
+        }
+        if (result == null) {
           result = defaultCase(theEObject);
         }
         return result;
@@ -226,6 +238,9 @@ public class CodegenSwitch<T> extends Switch<T> {
         }
         if (result == null) {
           result = caseCodeElt(communication);
+        }
+        if (result == null) {
+          result = caseCommentable(communication);
         }
         if (result == null) {
           result = defaultCase(theEObject);
@@ -242,6 +257,9 @@ public class CodegenSwitch<T> extends Switch<T> {
           result = caseCodeElt(coreBlock);
         }
         if (result == null) {
+          result = caseCommentable(coreBlock);
+        }
+        if (result == null) {
           result = defaultCase(theEObject);
         }
         return result;
@@ -254,6 +272,9 @@ public class CodegenSwitch<T> extends Switch<T> {
         }
         if (result == null) {
           result = caseCodeElt(actorBlock);
+        }
+        if (result == null) {
+          result = caseCommentable(actorBlock);
         }
         if (result == null) {
           result = defaultCase(theEObject);
@@ -270,6 +291,9 @@ public class CodegenSwitch<T> extends Switch<T> {
           result = caseCodeElt(loopBlock);
         }
         if (result == null) {
+          result = caseCommentable(loopBlock);
+        }
+        if (result == null) {
           result = defaultCase(theEObject);
         }
         return result;
@@ -282,6 +306,9 @@ public class CodegenSwitch<T> extends Switch<T> {
         }
         if (result == null) {
           result = caseCodeElt(actorCall);
+        }
+        if (result == null) {
+          result = caseCommentable(actorCall);
         }
         if (result == null) {
           result = defaultCase(theEObject);
@@ -298,6 +325,9 @@ public class CodegenSwitch<T> extends Switch<T> {
           result = caseCodeElt(callBlock);
         }
         if (result == null) {
+          result = caseCommentable(callBlock);
+        }
+        if (result == null) {
           result = defaultCase(theEObject);
         }
         return result;
@@ -312,6 +342,9 @@ public class CodegenSwitch<T> extends Switch<T> {
           result = caseCodeElt(specialCall);
         }
         if (result == null) {
+          result = caseCommentable(specialCall);
+        }
+        if (result == null) {
           result = defaultCase(theEObject);
         }
         return result;
@@ -324,6 +357,9 @@ public class CodegenSwitch<T> extends Switch<T> {
         }
         if (result == null) {
           result = caseCodeElt(fifoCall);
+        }
+        if (result == null) {
+          result = caseCommentable(fifoCall);
         }
         if (result == null) {
           result = defaultCase(theEObject);
@@ -342,6 +378,9 @@ public class CodegenSwitch<T> extends Switch<T> {
         final CommunicationNode communicationNode = (CommunicationNode) theEObject;
         T result = caseCommunicationNode(communicationNode);
         if (result == null) {
+          result = caseCommentable(communicationNode);
+        }
+        if (result == null) {
           result = defaultCase(theEObject);
         }
         return result;
@@ -357,6 +396,9 @@ public class CodegenSwitch<T> extends Switch<T> {
         }
         if (result == null) {
           result = caseCodeElt(sharedMemoryCommunication);
+        }
+        if (result == null) {
+          result = caseCommentable(sharedMemoryCommunication);
         }
         if (result == null) {
           result = defaultCase(theEObject);
@@ -408,6 +450,9 @@ public class CodegenSwitch<T> extends Switch<T> {
         }
         if (result == null) {
           result = caseCodeElt(finiteLoopBlock);
+        }
+        if (result == null) {
+          result = caseCommentable(finiteLoopBlock);
         }
         if (result == null) {
           result = defaultCase(theEObject);
@@ -723,7 +768,7 @@ public class CodegenSwitch<T> extends Switch<T> {
    * Returns the result of interpreting the object as an instance of '<em>Shared Memory Communication</em>'. <!--
    * begin-user-doc --> This implementation returns null; returning a non-null result will terminate the switch. <!--
    * end-user-doc -->
-   * 
+   *
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Shared Memory Communication</em>'.
@@ -807,7 +852,7 @@ public class CodegenSwitch<T> extends Switch<T> {
   /**
    * Returns the result of interpreting the object as an instance of '<em>Papify Action</em>'. <!-- begin-user-doc -->
    * This implementation returns null; returning a non-null result will terminate the switch. <!-- end-user-doc -->
-   *
+   * 
    * @param object
    *          the target of the switch.
    * @return the result of interpreting the object as an instance of '<em>Papify Action</em>'.

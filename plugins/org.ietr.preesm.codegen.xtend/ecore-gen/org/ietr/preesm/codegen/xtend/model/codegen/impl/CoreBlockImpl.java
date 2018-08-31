@@ -416,7 +416,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
       return super.toString();
     }
 
-    final StringBuffer result = new StringBuffer(super.toString());
+    final StringBuilder result = new StringBuilder(super.toString());
     result.append(" (coreType: ");
     result.append(this.coreType);
     result.append(", coreID: ");

@@ -58,7 +58,7 @@ public class ConstantImpl extends VariableImpl implements Constant {
   /**
    * The default value of the '{@link #getValue() <em>Value</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
    * -->
-   * 
+   *
    * @see #getValue()
    * @generated
    * @ordered
@@ -67,7 +67,7 @@ public class ConstantImpl extends VariableImpl implements Constant {
   /**
    * The cached value of the '{@link #getValue() <em>Value</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
    * -->
-   * 
+   *
    * @see #getValue()
    * @generated
    * @ordered
@@ -207,7 +207,7 @@ public class ConstantImpl extends VariableImpl implements Constant {
       return super.toString();
     }
 
-    final StringBuffer result = new StringBuffer(super.toString());
+    final StringBuilder result = new StringBuilder(super.toString());
     result.append(" (value: ");
     result.append(this.value);
     result.append(')');

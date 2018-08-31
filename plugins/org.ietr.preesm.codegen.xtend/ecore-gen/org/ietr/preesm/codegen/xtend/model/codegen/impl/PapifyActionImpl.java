@@ -47,7 +47,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.PapifyAction;
 public class PapifyActionImpl extends VariableImpl implements PapifyAction {
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   protected PapifyActionImpl() {
@@ -56,7 +56,7 @@ public class PapifyActionImpl extends VariableImpl implements PapifyAction {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override

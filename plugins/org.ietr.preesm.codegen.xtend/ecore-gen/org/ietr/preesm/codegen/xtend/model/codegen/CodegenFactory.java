@@ -215,7 +215,7 @@ public interface CodegenFactory extends EFactory {
 
   /**
    * Returns a new object of class '<em>Papify Action</em>'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @return a new object of class '<em>Papify Action</em>'.
    * @generated
    */

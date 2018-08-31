@@ -68,7 +68,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
   /**
    * The default value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
    * -->
-   * 
+   *
    * @see #getType()
    * @generated
    * @ordered
@@ -160,7 +160,8 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
   @Override
   public EList<Buffer> getInputBuffers() {
     if (this.inputBuffers == null) {
-      this.inputBuffers = new EObjectResolvingEList<>(Buffer.class, this, CodegenPackage.SPECIAL_CALL__INPUT_BUFFERS);
+      this.inputBuffers = new EObjectResolvingEList<>(Buffer.class, this,
+          CodegenPackage.SPECIAL_CALL__INPUT_BUFFERS);
     }
     return this.inputBuffers;
   }
@@ -361,7 +362,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
       return super.toString();
     }
 
-    final StringBuffer result = new StringBuffer(super.toString());
+    final StringBuilder result = new StringBuilder(super.toString());
     result.append(" (type: ");
     result.append(this.type);
     result.append(')');

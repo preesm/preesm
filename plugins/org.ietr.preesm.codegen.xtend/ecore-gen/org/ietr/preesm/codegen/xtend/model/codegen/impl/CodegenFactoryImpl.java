@@ -464,7 +464,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
