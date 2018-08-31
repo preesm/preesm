@@ -41,13 +41,13 @@ package org.ietr.preesm.mapper.algo.dynamic;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.abc.order.VertexOrderList;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
 
 // TODO: Auto-generated Javadoc
 /**

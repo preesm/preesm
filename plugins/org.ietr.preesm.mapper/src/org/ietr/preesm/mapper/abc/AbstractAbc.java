@@ -46,6 +46,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
+import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGInitVertex;
@@ -72,7 +73,6 @@ import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.tools.CustomTopologicalIterator;
-import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
 
 // TODO: Auto-generated Javadoc
 /**

@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
@@ -74,7 +75,6 @@ import org.ietr.preesm.mapper.model.MapperVertexFactory;
 import org.ietr.preesm.mapper.model.property.EdgeInit;
 import org.ietr.preesm.mapper.model.property.VertexInit;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
-import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
 
 // TODO: Auto-generated Javadoc
 /**

@@ -42,12 +42,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
 
 /**
  * GanttData carries information that can be displayed in a Gantt chart.

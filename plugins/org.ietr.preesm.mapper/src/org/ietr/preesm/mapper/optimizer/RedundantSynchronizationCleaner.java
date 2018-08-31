@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
@@ -51,7 +52,6 @@ import org.ietr.preesm.mapper.AbstractMappingFromDAG;
 import org.ietr.preesm.mapper.model.special.ReceiveVertex;
 import org.ietr.preesm.mapper.model.special.SendVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
-import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
 
 /**
  * The purpose of this class is to remove redundant synchronization created during the scheduling of an application.
