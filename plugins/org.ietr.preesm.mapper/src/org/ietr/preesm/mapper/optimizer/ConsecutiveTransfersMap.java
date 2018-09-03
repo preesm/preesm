@@ -2,10 +2,10 @@ package org.ietr.preesm.mapper.optimizer;
 
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
-import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
+import org.ietr.preesm.mapper.ScheduledDAGIterator;
 
 /**
  *
@@ -39,20 +39,9 @@ public class ConsecutiveTransfersMap extends LinkedHashMap<ComponentInstance, Co
   public static final ConsecutiveTransfersMap initFrom(final DirectedAcyclicGraph dag) {
     final ConsecutiveTransfersMap res = new ConsecutiveTransfersMap();
 
-    final TopologicalDAGIterator tdi = new TopologicalDAGIterator(dag);
-    System.out.println("@@@@@@@@@@@@@@@@@@@@@@");
-    System.out.println("@@ Topological order: ");
-    System.out.println("@@");
-    while (tdi.hasNext()) {
-      final DAGVertex currentVertex = tdi.next();
-      final ComponentInstance findComponent = ConsecutiveTransfersMap.findComponent(currentVertex);
-      System.out.println(currentVertex.getClass().getSimpleName() + " - " + findComponent.getInstanceName());
-    }
-    System.out.println("@@@@@@@@@@@@@@@@@@@@");
-
-    final TopologicalDAGIterator topologicalDAGIterator = new TopologicalDAGIterator(dag);
-    while (topologicalDAGIterator.hasNext()) {
-      final DAGVertex currentVertex = topologicalDAGIterator.next();
+    final ScheduledDAGIterator dagIterator = new ScheduledDAGIterator(dag);
+    while (dagIterator.hasNext()) {
+      final DAGVertex currentVertex = dagIterator.next();
       final ComponentInstance findComponent = ConsecutiveTransfersMap.findComponent(currentVertex);
 
       final ConsecutiveTransfersList transferList = res.getOrDefault(findComponent,
