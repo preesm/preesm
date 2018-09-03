@@ -1454,7 +1454,7 @@ public class CodegenModelGenerator {
       fifoInitCall.setBodyBuffer(fifoCall.getBodyBuffer());
       final PersistenceLevel level = (PersistenceLevel) dagInitVertex.getPropertyBean()
           .getValue(DAGInitVertex.PERSISTENCE_LEVEL);
-      if (level != null && level.equals(PersistenceLevel.PERMANENT)) {
+      if (level == null || PersistenceLevel.PERMANENT.equals(level)) {
         operatorBlock.getInitBlock().getCodeElts().add(fifoInitCall);
       } else {
         operatorBlock.getLoopBlock().getCodeElts().add(fifoInitCall);

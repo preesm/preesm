@@ -34,6 +34,7 @@ PREESM Changelog
 * All objects in the codegen model are now able to hold comments;
 * Fix Hierarchical code generator: properly call IBSDF Flattener with -1 to flatten everything;
 * Add ScheduledDAGIterator that iterates over a scheduled DAG vertices in the scheduled order;
+* Fix old workflow: if persistent property is not set on delays, use permanent behavior by default;
 
 ### Bug fix
 * Fix issue #62
