@@ -6,7 +6,7 @@
  * Daniel Madroñal <daniel.madronal@upm.es> (2018)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2016 - 2017)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2018)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2013)
  *
  * This software is a computer program whose purpose is to help prototyping
