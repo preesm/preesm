@@ -66,7 +66,6 @@ import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.xtext.xbase.lib.Pair;
-import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
 import org.ietr.dftools.algorithm.model.AbstractEdge;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
@@ -131,6 +130,7 @@ import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
 import org.ietr.preesm.experiment.model.pimm.PersistenceLevel;
+import org.ietr.preesm.mapper.ScheduledDAGIterator;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.ietr.preesm.memory.allocation.MemoryAllocator;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
@@ -559,24 +559,9 @@ public class CodegenModelGenerator {
     // 0 - Create the Buffers of the MemEx
     generateBuffers();
 
-    // 1 - Create a dagVertexList in SCHEDULING Order !
-    final List<DAGVertex> vertexInSchedulingOrder = new ArrayList<>();
-    {
-      final TopologicalDAGIterator iter = new TopologicalDAGIterator(this.algo);
-      // Fill a Map with Scheduling order and DAGvertices
-      final TreeMap<Integer, DAGVertex> orderedDAGVertexMap = new TreeMap<>();
-
-      while (iter.hasNext()) {
-        final DAGVertex vertex = iter.next();
-        final Integer order = vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder,
-            Integer.class);
-        orderedDAGVertexMap.put(order, vertex);
-      }
-      vertexInSchedulingOrder.addAll(orderedDAGVertexMap.values());
-    }
-
-    // 1 - Iterate on the actors of the DAG in their scheduling order !
-    for (final DAGVertex vert : vertexInSchedulingOrder) {
+    // 1 - iterate over dag vertices in SCHEDULING Order !
+    final ScheduledDAGIterator scheduledDAGIterator = new ScheduledDAGIterator(algo);
+    scheduledDAGIterator.forEachRemaining(vert -> {
 
       // 1.0 - Identify the core used.
       ComponentInstance operator = null;
@@ -636,7 +621,7 @@ public class CodegenModelGenerator {
             throw new CodegenException("Vertex " + vert + " has an unknown type: " + vert.getKind());
         }
       }
-    }
+    });
 
     // 2 - Set codeBlockI ID
     // This objective is to give a unique ID to each coreBlock.
