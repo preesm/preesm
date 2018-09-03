@@ -61,8 +61,9 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
  */
 public class SubBufferImpl extends BufferImpl implements SubBuffer {
   /**
-   * The cached value of the '{@link #getContainer() <em>Container</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * The cached value of the '{@link #getContainer() <em>Container</em>}' reference. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   * 
    * @see #getContainer()
    * @generated
    * @ordered
@@ -70,8 +71,9 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
   protected Buffer container;
 
   /**
-   * The default value of the '{@link #getOffset() <em>Offset</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * The default value of the '{@link #getOffset() <em>Offset</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   * 
    * @see #getOffset()
    * @generated
    * @ordered
@@ -79,7 +81,8 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
   protected static final int OFFSET_EDEFAULT = 0;
 
   /**
-   * The cached value of the '{@link #getOffset() <em>Offset</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getOffset() <em>Offset</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
    *
    * @see #getOffset()
    * @generated
@@ -120,7 +123,8 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
       this.container = (Buffer) eResolveProxy(oldContainer);
       if (this.container != oldContainer) {
         if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.SUB_BUFFER__CONTAINER, oldContainer, this.container));
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.SUB_BUFFER__CONTAINER, oldContainer,
+              this.container));
         }
       }
     }
@@ -151,7 +155,8 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
     final Buffer oldContainer = this.container;
     this.container = newContainer;
     if (eNotificationRequired()) {
-      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, CodegenPackage.SUB_BUFFER__CONTAINER, oldContainer, newContainer);
+      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+          CodegenPackage.SUB_BUFFER__CONTAINER, oldContainer, newContainer);
       if (msgs == null) {
         msgs = notification;
       } else {
@@ -172,7 +177,8 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
     if (newContainer != this.container) {
       NotificationChain msgs = null;
       if (this.container != null) {
-        msgs = ((InternalEObject) this.container).eInverseRemove(this, CodegenPackage.BUFFER__CHILDRENS, Buffer.class, msgs);
+        msgs = ((InternalEObject) this.container).eInverseRemove(this, CodegenPackage.BUFFER__CHILDRENS, Buffer.class,
+            msgs);
       }
       if (newContainer != null) {
         msgs = ((InternalEObject) newContainer).eInverseAdd(this, CodegenPackage.BUFFER__CHILDRENS, Buffer.class, msgs);
@@ -182,7 +188,8 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
         msgs.dispatch();
       }
     } else if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.SUB_BUFFER__CONTAINER, newContainer, newContainer));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.SUB_BUFFER__CONTAINER, newContainer,
+          newContainer));
     }
     if (getCreator() != null) {
       newContainer.getUsers().add(getCreator());
@@ -192,7 +199,8 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.VariableImpl#setCreator(org.ietr.preesm.codegen.xtend.model.codegen.Block)
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.VariableImpl#setCreator(org.ietr.preesm.codegen.xtend.model.
+   * codegen.Block)
    */
   @Override
   public void setCreator(final Block newCreator) {
@@ -247,7 +255,8 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
     switch (featureID) {
       case CodegenPackage.SUB_BUFFER__CONTAINER:
         if (this.container != null) {
-          msgs = ((InternalEObject) this.container).eInverseRemove(this, CodegenPackage.BUFFER__CHILDRENS, Buffer.class, msgs);
+          msgs = ((InternalEObject) this.container).eInverseRemove(this, CodegenPackage.BUFFER__CHILDRENS, Buffer.class,
+              msgs);
         }
         return basicSetContainer((Buffer) otherEnd, msgs);
     }
@@ -267,7 +276,8 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
    * @generated
    */
   @Override
-  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID,
+      final NotificationChain msgs) {
     switch (featureID) {
       case CodegenPackage.SUB_BUFFER__CONTAINER:
         return basicSetContainer(null, msgs);
@@ -374,7 +384,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
       return super.toString();
     }
 
-    final StringBuffer result = new StringBuffer(super.toString());
+    final StringBuilder result = new StringBuilder(super.toString());
     result.append(" (offset: ");
     result.append(this.offset);
     result.append(')');

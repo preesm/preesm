@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2009)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2015)
@@ -70,8 +70,8 @@ public class PromelaExporterEngine {
    * @param synchronousActor
    *          the synchronous actor
    */
-  public void printSDFGraphToPromelaFile(final SDFGraph sdf, final PreesmScenario scenario, IPath path, final boolean fifoShared,
-      final boolean synchronousActor) {
+  public void printSDFGraphToPromelaFile(final SDFGraph sdf, final PreesmScenario scenario, IPath path,
+      final boolean fifoShared, final boolean synchronousActor) {
     /// Create the exporter
     final PromelaPrinter exporter = new PromelaPrinter(sdf, scenario);
     exporter.setFifoSharedAlloc(fifoShared);

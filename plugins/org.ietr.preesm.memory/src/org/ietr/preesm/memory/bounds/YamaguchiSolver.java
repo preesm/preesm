@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -61,7 +61,8 @@ import org.jgrapht.graph.SimpleGraph;
  * @param <E>
  *          The edges class
  */
-public class YamaguchiSolver<V extends IWeightedVertex<Integer> & Comparable<V>, E extends DefaultEdge> extends AbstractMaximumWeightCliqueSolver<V, E> {
+public class YamaguchiSolver<V extends IWeightedVertex<Integer> & Comparable<V>, E extends DefaultEdge>
+    extends AbstractMaximumWeightCliqueSolver<V, E> {
 
   /** The graph vertices. */
   private Map<Integer, V> graphVertices;
@@ -80,7 +81,8 @@ public class YamaguchiSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.memory.bounds.AbstractMaximumWeightCliqueSolver#adjacentVerticesOf(org.ietr.preesm.memory.exclusiongraph.IWeightedVertex)
+   * @see org.ietr.preesm.memory.bounds.AbstractMaximumWeightCliqueSolver#adjacentVerticesOf(org.ietr.preesm.memory.
+   * exclusiongraph.IWeightedVertex)
    */
   @Override
   public Set<V> adjacentVerticesOf(final V vertex) {
@@ -107,8 +109,9 @@ public class YamaguchiSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
   }
 
   /**
-   * This method corresponds to the algorithm 2 in <a href = "http://www.ieice.org/proceedings/ITC-CSCC2008/pdf/p317_F3-1.pdf"> this paper </a>. This method
-   * will return the vertices of the maximum-weight clique for the subgraph passed as a parameter.
+   * This method corresponds to the algorithm 2 in
+   * <a href = "http://www.ieice.org/proceedings/ITC-CSCC2008/pdf/p317_F3-1.pdf"> this paper </a>. This method will
+   * return the vertices of the maximum-weight clique for the subgraph passed as a parameter.
    *
    * @param subgraphVertices
    *          The vertices of the subgraph to search

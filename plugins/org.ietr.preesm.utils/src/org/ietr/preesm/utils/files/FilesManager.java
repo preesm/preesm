@@ -60,8 +60,8 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.Assert;
 
 /**
- * Utility class to manipulate files. It brings everything needed to extract files from a jar plugin to the filesystem, check if 2 files are identical,
- * read/write files, etc.
+ * Utility class to manipulate files. It brings everything needed to extract files from a jar plugin to the filesystem,
+ * check if 2 files are identical, read/write files, etc.
  *
  * Code adapted from ORCC (net.sf.orcc.util, https://github.com/orcc/orcc)
  *
@@ -93,10 +93,10 @@ public class FilesManager {
    * </p>
    *
    * <p>
-   * It is important to understand that the resource (file or folder) at the given path will be copied <b>into</b> the target folder. For example,
-   * <code>extract("/path/to/file.txt", "/home/johndoe")</code> will copy <em>file.txt</em> into <em>/home/johndoe</em>, and
-   * <code>extract("/path/to/MyFolder", "/home/johndoe")</code> will create <em>MyFolder</em> directory in <em>/home/johndoe</em> and copy all files from the
-   * source folder into it.
+   * It is important to understand that the resource (file or folder) at the given path will be copied <b>into</b> the
+   * target folder. For example, <code>extract("/path/to/file.txt", "/home/johndoe")</code> will copy <em>file.txt</em>
+   * into <em>/home/johndoe</em>, and <code>extract("/path/to/MyFolder", "/home/johndoe")</code> will create
+   * <em>MyFolder</em> directory in <em>/home/johndoe</em> and copy all files from the source folder into it.
    * </p>
    *
    * @param path
@@ -105,11 +105,13 @@ public class FilesManager {
    *          The directory where to copy the source element
    * @param bundleFilter
    *          A filter to indicate in which bundle to look for
-   * @return A Result object counting exactly how many files have been really written, and how many haven't because they were already up-to-date
+   * @return A Result object counting exactly how many files have been really written, and how many haven't because they
+   *         were already up-to-date
    * @throws FileNotFoundException
    *           If not resource have been found at the given path
    */
-  public static final Result extract(final String path, final String targetFolder, final String bundleFilter) throws IOException, URISyntaxException {
+  public static final Result extract(final String path, final String targetFolder, final String bundleFilter)
+      throws IOException, URISyntaxException {
     final File targetF = new File(FilesManager.sanitize(targetFolder));
     final URL url = FilesManager.getUrl(path, bundleFilter);
     if (url == null) {
@@ -203,7 +205,8 @@ public class FilesManager {
     if (entry.isDirectory()) {
       return FilesManager.jarDirectoryExtract(jar, entry, new File(targetFolder, fileName));
     } else {
-      final List<JarEntry> entries = Collections.list(jar.entries()).stream().filter(je -> je.getName().startsWith(updatedPath)).collect(Collectors.toList());
+      final List<JarEntry> entries = Collections.list(jar.entries()).stream()
+          .filter(je -> je.getName().startsWith(updatedPath)).collect(Collectors.toList());
       if (entries.size() > 1) {
         return FilesManager.jarDirectoryExtract(jar, entry, new File(targetFolder, fileName));
       } else {
@@ -215,9 +218,11 @@ public class FilesManager {
   /**
    * Extract all files in the given <em>entry</em> from the given <em>jar</em> into the <em>target folder</em>.
    */
-  private static final Result jarDirectoryExtract(final JarFile jar, final JarEntry entry, final File targetFolder) throws IOException {
+  private static final Result jarDirectoryExtract(final JarFile jar, final JarEntry entry, final File targetFolder)
+      throws IOException {
     final String prefix = entry.getName();
-    final List<JarEntry> entries = Collections.list(jar.entries()).stream().filter(je -> je.getName().startsWith(prefix)).collect(Collectors.toList());
+    final List<JarEntry> entries = Collections.list(jar.entries()).stream()
+        .filter(je -> je.getName().startsWith(prefix)).collect(Collectors.toList());
     final Result result = Result.newInstance();
     for (final JarEntry e : entries) {
       result.merge(FilesManager.jarFileExtract(jar, e, new File(targetFolder, e.getName().substring(prefix.length()))));
@@ -228,7 +233,8 @@ public class FilesManager {
   /**
    * Extract the file <em>entry</em> from the given <em>jar</em> into the <em>target file</em>.
    */
-  private static final Result jarFileExtract(final JarFile jar, final JarEntry entry, final File targetFile) throws IOException {
+  private static final Result jarFileExtract(final JarFile jar, final JarEntry entry, final File targetFile)
+      throws IOException {
     targetFile.getParentFile().mkdirs();
     if (entry.isDirectory()) {
       targetFile.mkdir();
@@ -242,8 +248,8 @@ public class FilesManager {
   }
 
   /**
-   * Copy the content represented by the given <em>inputStream</em> into the <em>target file</em>. No checking is performed for equality between input stream
-   * and target file. Data are always written.
+   * Copy the content represented by the given <em>inputStream</em> into the <em>target file</em>. No checking is
+   * performed for equality between input stream and target file. Data are always written.
    *
    * @return A Result object with information about extraction status
    */
@@ -269,8 +275,8 @@ public class FilesManager {
   }
 
   /**
-   * Search on the file system for a file or folder corresponding to the given path. If not found, search on the current classpath. If this method returns an
-   * URL, it always represents an existing file.
+   * Search on the file system for a file or folder corresponding to the given path. If not found, search on the current
+   * classpath. If this method returns an URL, it always represents an existing file.
    *
    * @param path
    *          A path
@@ -335,8 +341,8 @@ public class FilesManager {
   }
 
   /**
-   * Write <em>content</em> to the given <em>targetFolder</em> in a new file called <em>fileName</em>. This method will write the content to the target file
-   * only if it is empty or if its content is different than that given.
+   * Write <em>content</em> to the given <em>targetFolder</em> in a new file called <em>fileName</em>. This method will
+   * write the content to the target file only if it is empty or if its content is different than that given.
    *
    * @param content
    *          The text content to write
@@ -345,13 +351,14 @@ public class FilesManager {
    * @param fileName
    *          The name of the new file
    */
-  static Result writeFile(final CharSequence content, final String targetFolder, final String fileName) throws IOException {
+  static Result writeFile(final CharSequence content, final String targetFolder, final String fileName)
+      throws IOException {
     return FilesManager.writeFile(content, new File(FilesManager.sanitize(targetFolder), fileName));
   }
 
   /**
-   * Write <em>content</em> to the given file <em>path</em>. This method will write the content to the target file only if it is empty or if its content is
-   * different than that given.
+   * Write <em>content</em> to the given file <em>path</em>. This method will write the content to the target file only
+   * if it is empty or if its content is different than that given.
    *
    * @param content
    *          The text content to write

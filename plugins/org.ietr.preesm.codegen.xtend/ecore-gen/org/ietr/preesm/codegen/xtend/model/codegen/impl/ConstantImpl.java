@@ -56,7 +56,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Constant;
  */
 public class ConstantImpl extends VariableImpl implements Constant {
   /**
-   * The default value of the '{@link #getValue() <em>Value</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The default value of the '{@link #getValue() <em>Value</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
    *
    * @see #getValue()
    * @generated
@@ -64,7 +65,8 @@ public class ConstantImpl extends VariableImpl implements Constant {
    */
   protected static final long VALUE_EDEFAULT = 0L;
   /**
-   * The cached value of the '{@link #getValue() <em>Value</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The cached value of the '{@link #getValue() <em>Value</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
    *
    * @see #getValue()
    * @generated
@@ -205,7 +207,7 @@ public class ConstantImpl extends VariableImpl implements Constant {
       return super.toString();
     }
 
-    final StringBuffer result = new StringBuffer(super.toString());
+    final StringBuilder result = new StringBuilder(super.toString());
     result.append(" (value: ");
     result.append(this.value);
     result.append(')');

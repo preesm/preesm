@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
@@ -43,7 +43,8 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 // TODO: Auto-generated Javadoc
 /**
- * A precedence edge is automatically generated and expresses the sequential execution of successive vertices in a single component.
+ * A precedence edge is automatically generated and expresses the sequential execution of successive vertices in a
+ * single component.
  *
  * @author mpelcat
  */

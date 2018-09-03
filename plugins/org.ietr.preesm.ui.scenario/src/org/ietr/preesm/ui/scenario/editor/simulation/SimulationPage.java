@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2012)
  *
@@ -90,9 +90,10 @@ import org.ietr.preesm.ui.scenario.editor.Messages;
 public class SimulationPage extends FormPage implements IPropertyListener {
 
   /**
-   * The listener interface for receiving comboBox events. The class that is interested in processing a comboBox event implements this interface, and the object
-   * created with that class is registered with a component using the component's <code>addComboBoxListener</code> method. When the comboBox event occurs, that
-   * object's appropriate method is invoked.
+   * The listener interface for receiving comboBox events. The class that is interested in processing a comboBox event
+   * implements this interface, and the object created with that class is registered with a component using the
+   * component's <code>addComboBoxListener</code> method. When the comboBox event occurs, that object's appropriate
+   * method is invoked.
    *
    * @see ComboBoxEvent
    */
@@ -177,13 +178,14 @@ public class SimulationPage extends FormPage implements IPropertyListener {
   @Override
   protected void createFormContent(final IManagedForm managedForm) {
     /*
-     * FormToolkit toolkit = managedForm.getToolkit(); ScrolledForm form = managedForm.getForm(); form.setBackground(new Color(null, 100,100,10));
-     * form.setExpandHorizontal(true); form.setExpandVertical(true); form.setText("Column Object");
+     * FormToolkit toolkit = managedForm.getToolkit(); ScrolledForm form = managedForm.getForm(); form.setBackground(new
+     * Color(null, 100,100,10)); form.setExpandHorizontal(true); form.setExpandVertical(true);
+     * form.setText("Column Object");
      *
      * Composite composite = form.getBody();
      *
-     * composite.computeSize(1000, 1000); FormLayout fl = new FormLayout(); fl. composite.setLayout(fl); form.setBounds(0, 0, 1000, 1000); Rectangle r =
-     * form.getClientArea(); form.reflow(true);
+     * composite.computeSize(1000, 1000); FormLayout fl = new FormLayout(); fl. composite.setLayout(fl);
+     * form.setBounds(0, 0, 1000, 1000); Rectangle r = form.getClientArea(); form.reflow(true);
      */
 
     final ScrolledForm form = managedForm.getForm();
@@ -194,11 +196,13 @@ public class SimulationPage extends FormPage implements IPropertyListener {
     form.getBody().setLayout(layout);
 
     // Main operator chooser section
-    createComboBoxSection(managedForm, Messages.getString("Simulation.mainOperator.title"), Messages.getString("Simulation.mainOperator.description"),
+    createComboBoxSection(managedForm, Messages.getString("Simulation.mainOperator.title"),
+        Messages.getString("Simulation.mainOperator.description"),
         Messages.getString("Simulation.mainOperatorSelectionTooltip"), "operator");
 
     // Main medium chooser section
-    createComboBoxSection(managedForm, Messages.getString("Simulation.mainMedium.title"), Messages.getString("Simulation.mainMedium.description"),
+    createComboBoxSection(managedForm, Messages.getString("Simulation.mainMedium.title"),
+        Messages.getString("Simulation.mainMedium.description"),
         Messages.getString("Simulation.mainMediumSelectionTooltip"), "comNode");
 
     // Text modification listener that updates the average data size
@@ -218,8 +222,9 @@ public class SimulationPage extends FormPage implements IPropertyListener {
     };
 
     // Average data size section
-    createIntegerSection(managedForm, Messages.getString("Simulation.DataAverageSize.title"), Messages.getString("Simulation.DataAverageSize.description"),
-        averageDataSizeListener, String.valueOf(this.scenario.getSimulationManager().getAverageDataSize()));
+    createIntegerSection(managedForm, Messages.getString("Simulation.DataAverageSize.title"),
+        Messages.getString("Simulation.DataAverageSize.description"), averageDataSizeListener,
+        String.valueOf(this.scenario.getSimulationManager().getAverageDataSize()));
 
     // Text modification listener that updates the average data size
     final ModifyListener numberOfTopExecutionsListener = new ModifyListener() {
@@ -239,15 +244,18 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 
     if (this.scenario.isPISDFScenario()) {
       // Number of top-level execution section, added only for PiSDF algorithms
-      createIntegerSection(managedForm, Messages.getString("Overview.simulationTitle"), Messages.getString("Overview.simulationDescription"),
-          numberOfTopExecutionsListener, String.valueOf(this.scenario.getSimulationManager().getNumberOfTopExecutions()));
+      createIntegerSection(managedForm, Messages.getString("Overview.simulationTitle"),
+          Messages.getString("Overview.simulationDescription"), numberOfTopExecutionsListener,
+          String.valueOf(this.scenario.getSimulationManager().getNumberOfTopExecutions()));
     }
 
     // Data type section
-    createDataTypesSection(managedForm, Messages.getString("Simulation.DataTypes.title"), Messages.getString("Simulation.DataTypes.description"));
+    createDataTypesSection(managedForm, Messages.getString("Simulation.DataTypes.title"),
+        Messages.getString("Simulation.DataTypes.description"));
 
     // Cores to execute broadcast/fork/join selection
-    createSpecialVertexSection(managedForm, Messages.getString("Simulation.SpecialVertex.title"), Messages.getString("Simulation.SpecialVertex.description"));
+    createSpecialVertexSection(managedForm, Messages.getString("Simulation.SpecialVertex.title"),
+        Messages.getString("Simulation.SpecialVertex.description"));
 
     managedForm.refresh();
     managedForm.reflow(true);
@@ -267,8 +275,8 @@ public class SimulationPage extends FormPage implements IPropertyListener {
    * @param firstValue
    *          the first value
    */
-  private void createIntegerSection(final IManagedForm managedForm, final String title, final String desc, final ModifyListener modifListener,
-      final String firstValue) {
+  private void createIntegerSection(final IManagedForm managedForm, final String title, final String desc,
+      final ModifyListener modifListener, final String firstValue) {
     final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
     final Composite client = createSection(managedForm, title, desc, 2, gridData);
 
@@ -297,12 +305,13 @@ public class SimulationPage extends FormPage implements IPropertyListener {
    *          the grid data
    * @return the composite
    */
-  public Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns, final GridData gridData) {
+  public Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns,
+      final GridData gridData) {
 
     final ScrolledForm form = mform.getForm();
     final FormToolkit toolkit = mform.getToolkit();
-    final Section section = toolkit.createSection(form.getBody(),
-        ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    final Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
+        | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
     section.setText(title);
     section.setDescription(desc);
     toolkit.createCompositeSeparator(section);
@@ -330,7 +339,8 @@ public class SimulationPage extends FormPage implements IPropertyListener {
    * @param type
    *          the type
    */
-  private void createComboBoxSection(final IManagedForm managedForm, final String title, final String desc, final String tooltip, final String type) {
+  private void createComboBoxSection(final IManagedForm managedForm, final String title, final String desc,
+      final String tooltip, final String type) {
     // Creates the section
     final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
     final Composite container = createSection(managedForm, title, desc, 2, gridData);
@@ -354,7 +364,8 @@ public class SimulationPage extends FormPage implements IPropertyListener {
    *          the type
    * @return the combo
    */
-  protected Combo addCoreSelector(final Composite parent, final FormToolkit toolkit, final String tooltip, final String type) {
+  protected Combo addCoreSelector(final Composite parent, final FormToolkit toolkit, final String tooltip,
+      final String type) {
     final Composite combocps = toolkit.createComposite(parent);
     combocps.setLayout(new FillLayout());
     combocps.setVisible(true);
@@ -392,7 +403,8 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
-    final Composite container = createSection(managedForm, title, desc, 1, new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING));
+    final Composite container = createSection(managedForm, title, desc, 1,
+        new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING));
     final FormToolkit toolkit = managedForm.getToolkit();
 
     addDataTypeTable(container, toolkit);
@@ -411,13 +423,16 @@ public class SimulationPage extends FormPage implements IPropertyListener {
     // Buttons to add and remove data types
     final Composite buttonscps = toolkit.createComposite(parent);
     buttonscps.setLayout(new GridLayout(2, true));
-    final Button addButton = toolkit.createButton(buttonscps, Messages.getString("Simulation.DataTypes.addType"), SWT.PUSH);
-    final Button removeButton = toolkit.createButton(buttonscps, Messages.getString("Simulation.DataTypes.removeType"), SWT.PUSH);
+    final Button addButton = toolkit.createButton(buttonscps, Messages.getString("Simulation.DataTypes.addType"),
+        SWT.PUSH);
+    final Button removeButton = toolkit.createButton(buttonscps, Messages.getString("Simulation.DataTypes.removeType"),
+        SWT.PUSH);
 
     final Composite tablecps = toolkit.createComposite(parent);
     tablecps.setVisible(true);
 
-    final TableViewer tableViewer = new TableViewer(tablecps, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
+    final TableViewer tableViewer = new TableViewer(tablecps,
+        SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
 
     final Table table = tableViewer.getTable();
     table.setLayout(new GridLayout());
@@ -485,8 +500,8 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 
         final IInputValidator validator = newText -> null;
 
-        final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), dialogTitle, dialogMessage, init,
-            validator);
+        final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+            dialogTitle, dialogMessage, init, validator);
         if (dialog.open() == Window.OK) {
           final DataType dataType = new DataType(dialog.getValue());
           SimulationPage.this.scenario.getSimulationManager().putDataType(dataType);
@@ -543,7 +558,8 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
-    final Composite container = createSection(managedForm, title, desc, 1, new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING));
+    final Composite container = createSection(managedForm, title, desc, 1,
+        new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING));
     final FormToolkit toolkit = managedForm.getToolkit();
 
     createOperatorTreeSection(container, toolkit, this);
@@ -559,11 +575,13 @@ public class SimulationPage extends FormPage implements IPropertyListener {
    * @param listener
    *          the listener
    */
-  public void createOperatorTreeSection(final Composite container, final FormToolkit toolkit, final IPropertyListener listener) {
+  public void createOperatorTreeSection(final Composite container, final FormToolkit toolkit,
+      final IPropertyListener listener) {
 
     container.setLayout(new GridLayout());
 
-    final OperatorCheckStateListener checkStateListener = new OperatorCheckStateListener((Section) container.getParent(), this.scenario);
+    final OperatorCheckStateListener checkStateListener = new OperatorCheckStateListener(
+        (Section) container.getParent(), this.scenario);
 
     // Creating the tree view
     final CheckboxTreeViewer treeviewer = new CheckboxTreeViewer(toolkit.createTree(container, SWT.CHECK));

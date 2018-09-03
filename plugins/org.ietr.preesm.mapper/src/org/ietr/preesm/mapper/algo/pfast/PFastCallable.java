@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
@@ -118,9 +118,9 @@ class PFastCallable implements Callable<MapperDAG> {
    * @param scenario
    *          the scenario
    */
-  public PFastCallable(final String name, final MapperDAG inputDAG, final Design inputArchi, final Set<String> blockingNodeNames,
-      final boolean isDisplaySolutions, final boolean alreadyMapped, final AbcParameters abcParams, final FastAlgoParameters fastParams,
-      final PreesmScenario scenario) {
+  public PFastCallable(final String name, final MapperDAG inputDAG, final Design inputArchi,
+      final Set<String> blockingNodeNames, final boolean isDisplaySolutions, final boolean alreadyMapped,
+      final AbcParameters abcParams, final FastAlgoParameters fastParams, final PreesmScenario scenario) {
     this.threadName = name;
     this.inputDAG = inputDAG;
     this.inputArchi = inputArchi;
@@ -172,8 +172,9 @@ class PFastCallable implements Callable<MapperDAG> {
 
     // performing the fast algorithm
     final FastAlgorithm algo = new FastAlgorithm(initialLists, this.scenario);
-    final MapperDAG outputDAG = algo.map(this.threadName, this.abcParams, this.fastParams, callableDAG, callableArchi, this.alreadyMapped, true,
-        this.isDisplaySolutions, null, initialLists.getCpnDominant(), callableBlockingNodes, initialLists.getCriticalpath(), taskSched);
+    final MapperDAG outputDAG = algo.map(this.threadName, this.abcParams, this.fastParams, callableDAG, callableArchi,
+        this.alreadyMapped, true, this.isDisplaySolutions, null, initialLists.getCpnDominant(), callableBlockingNodes,
+        initialLists.getCriticalpath(), taskSched);
 
     // Saving best total order for future display
     outputDAG.getPropertyBean().setValue("bestTotalOrder", algo.getBestTotalOrder());

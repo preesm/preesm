@@ -155,9 +155,10 @@ public class AddDependencyFeature extends AbstractAddFeature {
     // Layout the edge
     // Call the move feature of the anchor owner to layout the connection
     /*
-     * MoveAbstractActorFeature moveFeature = new MoveAbstractActorFeature( getFeatureProvider()); ContainerShape cs = (ContainerShape) connection.getStart()
-     * .getReferencedGraphicsAlgorithm().getPictogramElement(); MoveShapeContext moveCtxt = new MoveShapeContext(cs); moveCtxt.setDeltaX(0);
-     * moveCtxt.setDeltaY(0); ILocation csLoc = Graphiti.getPeLayoutService() .getLocationRelativeToDiagram(cs); moveCtxt.setLocation(csLoc.getX(),
+     * MoveAbstractActorFeature moveFeature = new MoveAbstractActorFeature( getFeatureProvider()); ContainerShape cs =
+     * (ContainerShape) connection.getStart() .getReferencedGraphicsAlgorithm().getPictogramElement(); MoveShapeContext
+     * moveCtxt = new MoveShapeContext(cs); moveCtxt.setDeltaX(0); moveCtxt.setDeltaY(0); ILocation csLoc =
+     * Graphiti.getPeLayoutService() .getLocationRelativeToDiagram(cs); moveCtxt.setLocation(csLoc.getX(),
      * csLoc.getY()); moveFeature.moveShape(moveCtxt);
      */
 

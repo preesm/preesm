@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2012)
  *
@@ -78,7 +78,8 @@ public class DataTypesLabelProvider implements ITableLabelProvider {
    * @param propertyListener
    *          the property listener
    */
-  public DataTypesLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer, final IPropertyListener propertyListener) {
+  public DataTypesLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer,
+      final IPropertyListener propertyListener) {
     super();
     this.scenario = scenario;
     this.tableViewer = tableViewer;
@@ -196,7 +197,8 @@ public class DataTypesLabelProvider implements ITableLabelProvider {
 
       final String init = String.valueOf(dataType.getSize());
 
-      final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message, init, validator);
+      final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title,
+          message, init, validator);
       if (dialog.open() == Window.OK) {
         final String value = dialog.getValue();
 

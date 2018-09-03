@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
@@ -101,7 +101,8 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
    * @throws CoreException
    *           the core exception
    */
-  public Set<AbstractActor> getSortedPISDFVertices(final PreesmScenario inputScenario) throws InvalidModelException, CoreException {
+  public Set<AbstractActor> getSortedPISDFVertices(final PreesmScenario inputScenario)
+      throws InvalidModelException, CoreException {
     final PiGraph currentGraph = PiParser.getPiGraph(inputScenario.getAlgorithmURL());
     return filterVertices(currentGraph.getAllActors());
   }
@@ -114,7 +115,8 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
    * @return a set of Actors, with none of them being a hierarchical actor
    */
   private Set<AbstractActor> filterVertices(final EList<AbstractActor> vertices) {
-    return vertices.stream().filter(Actor.class::isInstance).map(Actor.class::cast).filter(a -> !a.isHierarchical()).collect(Collectors.toSet());
+    return vertices.stream().filter(Actor.class::isInstance).map(Actor.class::cast).filter(a -> !a.isHierarchical())
+        .collect(Collectors.toSet());
   }
 
   /**
@@ -153,7 +155,8 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  public Set<SDFAbstractVertex> getSortedIBSDFVertices(final PreesmScenario inputScenario) throws InvalidModelException, FileNotFoundException {
+  public Set<SDFAbstractVertex> getSortedIBSDFVertices(final PreesmScenario inputScenario)
+      throws InvalidModelException, FileNotFoundException {
     Set<SDFAbstractVertex> sortedVertices = null;
     // Opening algorithm from file
     final SDFGraph currentGraph = ScenarioParser.getSDFGraph(inputScenario.getAlgorithmURL());
@@ -188,7 +191,8 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
+   * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object,
+   * java.lang.Object)
    */
   @Override
   public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {

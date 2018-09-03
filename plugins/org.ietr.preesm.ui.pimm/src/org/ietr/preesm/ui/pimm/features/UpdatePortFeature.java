@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2014)
@@ -113,7 +113,8 @@ public class UpdatePortFeature extends AbstractUpdateFeature {
     }
 
     // update needed, if names are different
-    final boolean updateNameNeeded = (((pictogramName == null) && (businessName != null)) || ((pictogramName != null) && !pictogramName.equals(businessName)));
+    final boolean updateNameNeeded = (((pictogramName == null) && (businessName != null))
+        || ((pictogramName != null) && !pictogramName.equals(businessName)));
     if (updateNameNeeded) {
       return Reason.createTrueReason("Name is out of date\nNew name: " + businessName);
     } else {

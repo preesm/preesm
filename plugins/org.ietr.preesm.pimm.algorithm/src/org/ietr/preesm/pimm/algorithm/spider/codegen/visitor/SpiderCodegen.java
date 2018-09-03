@@ -276,7 +276,8 @@ public class SpiderCodegen {
     /* Fct Ix */
     append("typedef enum{\n");
     for (final AbstractActor aa : this.functionMap.keySet()) {
-      append("\t" + SpiderNameGenerator.getFunctionName(aa).toUpperCase() + "_FCT" + " = " + this.functionMap.get(aa) + ",\n");
+      append("\t" + SpiderNameGenerator.getFunctionName(aa).toUpperCase() + "_FCT" + " = " + this.functionMap.get(aa)
+          + ",\n");
     }
     append("} FctIxs;\n\n");
 
@@ -291,7 +292,8 @@ public class SpiderCodegen {
   }
 
   /**
-   * Main method, launching the generation for the whole PiGraph pg, including license, includes, constants and top method generation.
+   * Main method, launching the generation for the whole PiGraph pg, including license, includes, constants and top
+   * method generation.
    *
    * @param pg
    *          the pg
@@ -301,8 +303,8 @@ public class SpiderCodegen {
     this.cppString.setLength(0);
 
     final StringBuilder tmp = new StringBuilder();
-    final SpiderCodegenVisitor codeGenerator = new SpiderCodegenVisitor(this, tmp, this.preprocessor, this.timings, this.constraints,
-        this.scenario.getSimulationManager().getDataTypes());
+    final SpiderCodegenVisitor codeGenerator = new SpiderCodegenVisitor(this, tmp, this.preprocessor, this.timings,
+        this.constraints, this.scenario.getSimulationManager().getDataTypes());
     // Generate C++ code for the whole PiGraph, at the end, tmp will contain
     // the vertex declaration for pg
     codeGenerator.doSwitch(pg);
@@ -376,8 +378,9 @@ public class SpiderCodegen {
     append("\tstd::map<lrtFct, PapifyConfig*> map;\n");
     append("\t// Initializing the map\n");
     for (final AbstractActor actor : papifiedActors) {
-      append("\tmap.insert(std::make_pair(" + pg.getName() + "_fcts[" + SpiderNameGenerator.getFunctionName(actor).toUpperCase() + "_FCT" + "], create"
-          + actor.getName() + "PapifyConfig()));\n");
+      append("\tmap.insert(std::make_pair(" + pg.getName() + "_fcts["
+          + SpiderNameGenerator.getFunctionName(actor).toUpperCase() + "_FCT" + "], create" + actor.getName()
+          + "PapifyConfig()));\n");
     }
     append("\treturn map;\n");
     append("}\n\n");
@@ -472,7 +475,8 @@ public class SpiderCodegen {
   }
 
   /**
-   * Main method, launching the generation for the whole PiGraph pg, including license, includes, constants and top method generation.
+   * Main method, launching the generation for the whole PiGraph pg, including license, includes, constants and top
+   * method generation.
    *
    * @param pg
    *          the pg
@@ -562,11 +566,12 @@ public class SpiderCodegen {
     append("){\n");
 
     // Create a top graph and a top vertex
-    append("\tPiSDFGraph* topGraph = Spider::createGraph(\n" + "\t\t/*Edges*/    0,\n" + "\t\t/*Params*/   0,\n" + "\t\t/*InputIf*/  0,\n"
-        + "\t\t/*OutputIf*/ 0,\n" + "\t\t/*Config*/   0,\n" + "\t\t/*Body*/     1);\n\n");
+    append("\tPiSDFGraph* topGraph = Spider::createGraph(\n" + "\t\t/*Edges*/    0,\n" + "\t\t/*Params*/   0,\n"
+        + "\t\t/*InputIf*/  0,\n" + "\t\t/*OutputIf*/ 0,\n" + "\t\t/*Config*/   0,\n" + "\t\t/*Body*/     1);\n\n");
 
-    append("\tSpider::addHierVertex(\n" + "\t\t/*Graph*/    topGraph,\n" + "\t\t/*Name*/     \"top\",\n" + "\t\t/*Graph*/    " + sgName + "("
-        + params.toString() + "),\n" + "\t\t/*InputIf*/  0,\n" + "\t\t/*OutputIf*/ 0,\n" + "\t\t/*Params*/   0);\n\n");
+    append("\tSpider::addHierVertex(\n" + "\t\t/*Graph*/    topGraph,\n" + "\t\t/*Name*/     \"top\",\n"
+        + "\t\t/*Graph*/    " + sgName + "(" + params.toString() + "),\n" + "\t\t/*InputIf*/  0,\n"
+        + "\t\t/*OutputIf*/ 0,\n" + "\t\t/*Params*/   0);\n\n");
 
     append("\tSpider::setGraph(topGraph);\n");
     append("}\n");
@@ -607,15 +612,16 @@ public class SpiderCodegen {
             if (param.isIsConfigurationParameter()) {
               for (final Port port : a.getConfigInputPorts()) {
                 if (port.getName().equals(param.getName())) {
-                  append("\t\t/* " + String.format("%1$-" + maxParamSize + "s", param.getName()) + " */ (Param) inParams[" + this.portMap.get(port) + "]");
+                  append("\t\t/* " + String.format("%1$-" + maxParamSize + "s", param.getName())
+                      + " */ (Param) inParams[" + this.portMap.get(port) + "]");
                   found = true;
                 }
               }
             } else {
               for (final Port port : a.getDataInputPorts()) {
                 if (port.getName().equals(param.getName())) {
-                  append("\t\t/* " + String.format("%1$-" + maxParamSize + "s", param.getName()) + " */ (" + param.getType() + "*) inputFIFOs["
-                      + this.portMap.get(port) + "]");
+                  append("\t\t/* " + String.format("%1$-" + maxParamSize + "s", param.getName()) + " */ ("
+                      + param.getType() + "*) inputFIFOs[" + this.portMap.get(port) + "]");
                   found = true;
                 }
               }
@@ -625,15 +631,16 @@ public class SpiderCodegen {
             if (param.isIsConfigurationParameter()) {
               for (final Port port : a.getConfigOutputPorts()) {
                 if (port.getName().equals(param.getName())) {
-                  append("\t\t/* " + String.format("%1$-" + maxParamSize + "s", param.getName()) + " */ (Param*) &outParams[" + this.portMap.get(port) + "]");
+                  append("\t\t/* " + String.format("%1$-" + maxParamSize + "s", param.getName())
+                      + " */ (Param*) &outParams[" + this.portMap.get(port) + "]");
                   found = true;
                 }
               }
             } else {
               for (final Port port : a.getDataOutputPorts()) {
                 if (port.getName().equals(param.getName())) {
-                  append("\t\t/* " + String.format("%1$-" + maxParamSize + "s", param.getName()) + " */ (" + param.getType() + "*) outputFIFOs["
-                      + this.portMap.get(port) + "]");
+                  append("\t\t/* " + String.format("%1$-" + maxParamSize + "s", param.getName()) + " */ ("
+                      + param.getType() + "*) outputFIFOs[" + this.portMap.get(port) + "]");
                   found = true;
                 }
               }
@@ -657,14 +664,15 @@ public class SpiderCodegen {
    */
   public String getLicense() {
     return "/**\n" + " * *****************************************************************************\n"
-        + " * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,\n" + " * Karol Desnos, Julien Heulot, Clément Guy, Yaset Oliva Venegas\n"
-        + " *\n" + " * [mpelcat,jnezan,kdesnos,jheulot,cguy,yoliva]@insa-rennes.fr\n" + " *\n"
-        + " * This software is a computer program whose purpose is to prototype\n" + " * parallel applications.\n" + " *\n"
-        + " * This software is governed by the CeCILL-C license under French law and\n"
+        + " * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,\n"
+        + " * Karol Desnos, Julien Heulot, Clément Guy, Yaset Oliva Venegas\n" + " *\n"
+        + " * [mpelcat,jnezan,kdesnos,jheulot,cguy,yoliva]@insa-rennes.fr\n" + " *\n"
+        + " * This software is a computer program whose purpose is to prototype\n" + " * parallel applications.\n"
+        + " *\n" + " * This software is governed by the CeCILL-C license under French law and\n"
         + " * abiding by the rules of distribution of free software.  You can  use,\n"
         + " * modify and/ or redistribute the software under the terms of the CeCILL-C\n"
-        + " * license as circulated by CEA, CNRS and INRIA at the following URL\n" + " * \"http://www.cecill.info\".\n" + " *\n"
-        + " * As a counterpart to the access to the source code and  rights to copy,\n"
+        + " * license as circulated by CEA, CNRS and INRIA at the following URL\n" + " * \"http://www.cecill.info\".\n"
+        + " *\n" + " * As a counterpart to the access to the source code and  rights to copy,\n"
         + " * modify and redistribute granted by the license, users are provided only\n"
         + " * with a limited warranty  and the software's author,  the holder of the\n"
         + " * economic rights,  and the successive licensors  have only  limited\n" + " * liability.\n" + " *\n"
@@ -676,8 +684,10 @@ public class SpiderCodegen {
         + " * professionals having in-depth computer knowledge. Users are therefore\n"
         + " * encouraged to load and test the software's suitability as regards their\n"
         + " * requirements in conditions enabling the security of their systems and/or\n"
-        + " * data to be ensured and,  more generally, to use and operate it in the\n" + " * same conditions as regards security.\n" + " *\n"
-        + " * The fact that you are presently reading this means that you have had\n" + " * knowledge of the CeCILL-C license and that you accept its terms.\n"
+        + " * data to be ensured and,  more generally, to use and operate it in the\n"
+        + " * same conditions as regards security.\n" + " *\n"
+        + " * The fact that you are presently reading this means that you have had\n"
+        + " * knowledge of the CeCILL-C license and that you accept its terms.\n"
         + " * ****************************************************************************\n" + " */\n\n";
   }
 

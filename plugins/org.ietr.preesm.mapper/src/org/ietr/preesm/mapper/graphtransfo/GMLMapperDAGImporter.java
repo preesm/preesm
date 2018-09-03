@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
@@ -71,7 +71,8 @@ public class GMLMapperDAGImporter extends GMLImporter<MapperDAG, MapperDAGVertex
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.importer.GMLImporter#parseEdge(org.w3c.dom.Element, org.ietr.dftools.algorithm.model.AbstractGraph)
+   * @see org.ietr.dftools.algorithm.importer.GMLImporter#parseEdge(org.w3c.dom.Element,
+   * org.ietr.dftools.algorithm.model.AbstractGraph)
    */
   @Override
   public void parseEdge(final Element edgeElt, final MapperDAG parentGraph) {
@@ -90,9 +91,10 @@ public class GMLMapperDAGImporter extends GMLImporter<MapperDAG, MapperDAGVertex
    */
   @Override
   public MapperDAG parseGraph(final Element graphElt) {
-    final MapperDAG graph = new MapperDAG(this.localFactory, null);
+    final MapperDAG graph = new MapperDAG(this.localFactory);
     parseKeys(graphElt, graph);
-    graph.setReferenceSdfGraph((SDFGraph) graph.getPropertyBean().getValue(ImplementationPropertyNames.Graph_SdfReferenceGraph));
+    graph.setReferenceSdfGraph(
+        (SDFGraph) graph.getPropertyBean().getValue(ImplementationPropertyNames.Graph_SdfReferenceGraph));
     final NodeList childList = graphElt.getChildNodes();
     for (int i = 0; i < childList.getLength(); i++) {
       if (childList.item(i).getNodeName().equals("node")) {
@@ -112,7 +114,8 @@ public class GMLMapperDAGImporter extends GMLImporter<MapperDAG, MapperDAGVertex
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.importer.GMLImporter#parsePort(org.w3c.dom.Element, org.ietr.dftools.algorithm.model.AbstractGraph)
+   * @see org.ietr.dftools.algorithm.importer.GMLImporter#parsePort(org.w3c.dom.Element,
+   * org.ietr.dftools.algorithm.model.AbstractGraph)
    */
   @Override
   public MapperDAGVertex parsePort(final Element portElt, final MapperDAG parentGraph) {
@@ -123,7 +126,8 @@ public class GMLMapperDAGImporter extends GMLImporter<MapperDAG, MapperDAGVertex
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.importer.GMLImporter#parseNode(org.w3c.dom.Element, org.ietr.dftools.algorithm.model.AbstractGraph)
+   * @see org.ietr.dftools.algorithm.importer.GMLImporter#parseNode(org.w3c.dom.Element,
+   * org.ietr.dftools.algorithm.model.AbstractGraph)
    */
   @Override
   public MapperDAGVertex parseNode(final Element vertexElt, final MapperDAG parentGraph) {

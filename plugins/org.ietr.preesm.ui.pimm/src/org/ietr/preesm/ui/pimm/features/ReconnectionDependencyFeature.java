@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2014)
  *
@@ -82,7 +82,9 @@ public class ReconnectionDependencyFeature extends DefaultReconnectionFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#canReconnect(org.eclipse.graphiti.features.context.IReconnectionContext)
+   * @see
+   * org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#canReconnect(org.eclipse.graphiti.features.context.
+   * IReconnectionContext)
    */
   @Override
   public boolean canReconnect(final IReconnectionContext context) {
@@ -169,7 +171,9 @@ public class ReconnectionDependencyFeature extends DefaultReconnectionFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#preReconnect(org.eclipse.graphiti.features.context.IReconnectionContext)
+   * @see
+   * org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#preReconnect(org.eclipse.graphiti.features.context.
+   * IReconnectionContext)
    */
   @Override
   public void preReconnect(final IReconnectionContext context) {
@@ -195,7 +199,8 @@ public class ReconnectionDependencyFeature extends DefaultReconnectionFeature {
         // If the getter is an actor
         if (getterObject instanceof ExecutableActor) {
           // Create a ConfigInputPort
-          final AbstractAddActorPortFeature addPortFeature = CreateDependencyFeature.canCreateConfigPort(tgtPE, getFeatureProvider(), "config_input");
+          final AbstractAddActorPortFeature addPortFeature = CreateDependencyFeature.canCreateConfigPort(tgtPE,
+              getFeatureProvider(), "config_input");
           if (addPortFeature != null) {
             final CustomContext targetContext = new CustomContext(new PictogramElement[] { tgtPE });
             addPortFeature.execute(targetContext);
@@ -218,7 +223,9 @@ public class ReconnectionDependencyFeature extends DefaultReconnectionFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#postReconnect(org.eclipse.graphiti.features.context.IReconnectionContext)
+   * @see
+   * org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#postReconnect(org.eclipse.graphiti.features.context.
+   * IReconnectionContext)
    */
   @Override
   public void postReconnect(final IReconnectionContext context) {
@@ -237,7 +244,8 @@ public class ReconnectionDependencyFeature extends DefaultReconnectionFeature {
 
       final Object getterObject = getBusinessObjectForPictogramElement(context.getTargetPictogramElement());
       // If the getter is a Parameter, a FIFO, or an InterfaceActor
-      if ((getterObject instanceof Parameter) || (getterObject instanceof InterfaceActor) || (getterObject instanceof Delay)) {
+      if ((getterObject instanceof Parameter) || (getterObject instanceof InterfaceActor)
+          || (getterObject instanceof Delay)) {
         // Create a ConfigInputPort
         newGetter = PiMMUserFactory.instance.createConfigInputPort();
         ((Configurable) getterObject).getConfigInputPorts().add(newGetter);

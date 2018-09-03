@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
@@ -59,8 +59,8 @@ public class SimulationManager {
   private String mainOperatorName = "";
 
   /**
-   * Average transfer size sizes in base unit (usually byte). This size is used while calculating the routing table. The routes between operators are static and
-   * will be optimized for the given data size.
+   * Average transfer size sizes in base unit (usually byte). This size is used while calculating the routing table. The
+   * routes between operators are static and will be optimized for the given data size.
    */
   private long averageDataSize = Route.averageTransfer;
 

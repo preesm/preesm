@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2014)
@@ -45,8 +45,8 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 // TODO: Auto-generated Javadoc
 /**
  * This implementation of the MemoryAllocator mainly is an implementation example.<br>
- * The allocation performed here simply consists in allocating each edge of the graph into a dedicated memory space (i.e. there will be no re-use). This memory
- * allocation will always give the worst memory allocation possible. <br>
+ * The allocation performed here simply consists in allocating each edge of the graph into a dedicated memory space
+ * (i.e. there will be no re-use). This memory allocation will always give the worst memory allocation possible. <br>
  *
  * @author kdesnos
  *

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
@@ -58,8 +58,9 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 public class DeleteFifoFeature extends DefaultDeleteFeature {
 
   /**
-   * If the {@link Fifo} has a {@link Delay}, it is associated to 2 {@link Connection}. One of the two {@link Connection} might needs to be removed manually in
-   * the {@link #postDelete(IDeleteContext)} method. This {@link Connection} attribute will be used to store this remaining {@link Connection}.
+   * If the {@link Fifo} has a {@link Delay}, it is associated to 2 {@link Connection}. One of the two
+   * {@link Connection} might needs to be removed manually in the {@link #postDelete(IDeleteContext)} method. This
+   * {@link Connection} attribute will be used to store this remaining {@link Connection}.
    */
   protected Connection remainingConnection = null;
 
@@ -76,7 +77,8 @@ public class DeleteFifoFeature extends DefaultDeleteFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.ui.features.DefaultDeleteFeature#preDelete(org.eclipse.graphiti.features.context.IDeleteContext)
+   * @see org.eclipse.graphiti.ui.features.DefaultDeleteFeature#preDelete(org.eclipse.graphiti.features.context.
+   * IDeleteContext)
    */
   @Override
   public void preDelete(final IDeleteContext context) {
@@ -123,7 +125,8 @@ public class DeleteFifoFeature extends DefaultDeleteFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.ui.features.DefaultDeleteFeature#postDelete(org.eclipse.graphiti.features.context.IDeleteContext)
+   * @see org.eclipse.graphiti.ui.features.DefaultDeleteFeature#postDelete(org.eclipse.graphiti.features.context.
+   * IDeleteContext)
    */
   @Override
   public void postDelete(final IDeleteContext context) {

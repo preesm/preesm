@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -50,8 +50,8 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
 // TODO: Auto-generated Javadoc
 /**
- * Workflow element taking the architecture a Scheduled DAG and a its corresponding *updated* MemEx as inputs and generates specific MemExes for each memory of
- * the architecture.
+ * Workflow element taking the architecture a Scheduled DAG and a its corresponding *updated* MemEx as inputs and
+ * generates specific MemExes for each memory of the architecture.
  *
  * @author kdesnos
  *
@@ -76,12 +76,12 @@ public class MapperTask extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
-   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
+   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
 
     // Rem: Logger is used to display messages in the console
     final Logger logger = WorkflowLogger.getLogger();
@@ -109,8 +109,10 @@ public class MapperTask extends AbstractTaskImplementation {
     if (verbose) {
       logger.log(Level.INFO, "Created " + memExes.keySet().size() + " MemExes");
       for (final Entry<String, MemoryExclusionGraph> entry : memExes.entrySet()) {
-        final double density = entry.getValue().edgeSet().size() / ((entry.getValue().vertexSet().size() * (entry.getValue().vertexSet().size() - 1)) / 2.0);
-        logger.log(Level.INFO, "Memex(" + entry.getKey() + "): " + entry.getValue().vertexSet().size() + " vertices, density=" + density);
+        final double density = entry.getValue().edgeSet().size()
+            / ((entry.getValue().vertexSet().size() * (entry.getValue().vertexSet().size() - 1)) / 2.0);
+        logger.log(Level.INFO,
+            "Memex(" + entry.getKey() + "): " + entry.getValue().vertexSet().size() + " vertices, density=" + density);
       }
     }
 
@@ -129,7 +131,8 @@ public class MapperTask extends AbstractTaskImplementation {
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(MapperTask.PARAM_VERBOSE, MapperTask.VALUE_VERBOSE_DEFAULT);
-    parameters.put(AbstractMemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY, AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
+    parameters.put(AbstractMemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY,
+        AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
     return parameters;
   }
 

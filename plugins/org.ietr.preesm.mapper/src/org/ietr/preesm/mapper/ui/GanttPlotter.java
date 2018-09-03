@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Jonathan Piat <jpiat@laas.fr> (2008)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
@@ -143,7 +143,8 @@ public class GanttPlotter extends ApplicationFrame {
   }
 
   /**
-   * Creates a dataset from a MapperDAGVertex. This dataset is used to prepare display of a Gantt chart with one line per populated SLAM component.
+   * Creates a dataset from a MapperDAGVertex. This dataset is used to prepare display of a Gantt chart with one line
+   * per populated SLAM component.
    *
    * @param ganttData
    *          the gantt data

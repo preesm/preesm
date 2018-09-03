@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2012)
@@ -134,7 +134,8 @@ public class TopologicalTaskSched extends AbstractTaskSched {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#insertVertex(org.ietr.preesm.mapper .model.MapperDAGVertex)
+   * @see org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#insertVertex(org.ietr.preesm.mapper
+   * .model.MapperDAGVertex)
    */
   @Override
   public void insertVertex(final MapperDAGVertex vertex) {

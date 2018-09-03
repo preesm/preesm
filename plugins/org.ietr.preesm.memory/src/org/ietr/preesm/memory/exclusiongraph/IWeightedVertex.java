@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
@@ -39,7 +39,8 @@ package org.ietr.preesm.memory.exclusiongraph;
 
 // TODO: Auto-generated Javadoc
 /**
- * This interface must be implemented by weighted Vertex classes. A weighted vertex class is mandatory when solving the Maximum-Weight Clique problem
+ * This interface must be implemented by weighted Vertex classes. A weighted vertex class is mandatory when solving the
+ * Maximum-Weight Clique problem
  *
  * @author kdesnos
  *
@@ -64,16 +65,16 @@ public interface IWeightedVertex<W> {
   public abstract void setWeight(W weight);
 
   /**
-   * Get the unique identifier of the vertex. Each vertex must have a unique identifier. If two vertices have the same identifier, they might be confused in
-   * some function, list, ...
+   * Get the unique identifier of the vertex. Each vertex must have a unique identifier. If two vertices have the same
+   * identifier, they might be confused in some function, list, ...
    *
    * @return the unique identifier of the vertex
    */
   public abstract int getIdentifier();
 
   /**
-   * Set the unique identifier of the vertex. Each vertex must have a unique identifier. If two vertices have the same identifier, they might be confused in
-   * some function, list, ...
+   * Set the unique identifier of the vertex. Each vertex must have a unique identifier. If two vertices have the same
+   * identifier, they might be confused in some function, list, ...
    *
    * @param id
    *          the new identifier of the vertex

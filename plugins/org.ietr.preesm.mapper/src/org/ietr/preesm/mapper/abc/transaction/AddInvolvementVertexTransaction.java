@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
@@ -102,8 +102,9 @@ public class AddInvolvementVertexTransaction extends Transaction {
    * @param orderManager
    *          the order manager
    */
-  public AddInvolvementVertexTransaction(final boolean isSender, final MapperDAGEdge edge, final MapperDAG implementation, final AbstractRouteStep step,
-      final long involvementTime, final OrderManager orderManager) {
+  public AddInvolvementVertexTransaction(final boolean isSender, final MapperDAGEdge edge,
+      final MapperDAG implementation, final AbstractRouteStep step, final long involvementTime,
+      final OrderManager orderManager) {
     super();
     this.isSender = isSender;
     this.edge = edge;

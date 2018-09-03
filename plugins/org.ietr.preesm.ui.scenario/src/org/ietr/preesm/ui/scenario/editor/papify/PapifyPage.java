@@ -137,8 +137,9 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     f.getBody().setLayout(new GridLayout());
 
     // Papify file chooser section
-    createFileSection(managedForm, Messages.getString("Papify.file"), Messages.getString("Papify.fileDescription"), Messages.getString("Papify.fileEdit"),
-        this.scenario.getPapifyConfigManager().getXmlFileURL(), Messages.getString("Papify.fileBrowseTitle"), "xml");
+    createFileSection(managedForm, Messages.getString("Papify.file"), Messages.getString("Papify.fileDescription"),
+        Messages.getString("Papify.fileEdit"), this.scenario.getPapifyConfigManager().getXmlFileURL(),
+        Messages.getString("Papify.fileBrowseTitle"), "xml");
 
     createPapifySection(managedForm, Messages.getString("Papify.title"), Messages.getString("Papify.description"));
 
@@ -176,8 +177,8 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     final ScrolledForm form = mform.getForm();
     final FormToolkit toolkit = mform.getToolkit();
-    final Section section = toolkit.createSection(form.getBody(),
-        ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    final Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
+        | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
     section.setText(title);
     section.setDescription(desc);
     toolkit.createCompositeSeparator(section);
@@ -199,12 +200,13 @@ public class PapifyPage extends FormPage implements IPropertyListener {
    *          the grid data
    * @return the composite
    */
-  public Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns, final GridData gridData) {
+  public Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns,
+      final GridData gridData) {
 
     final ScrolledForm form = mform.getForm();
     final FormToolkit toolkit = mform.getToolkit();
-    final Section section = toolkit.createSection(form.getBody(),
-        ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    final Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
+        | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
     section.setText(title);
     section.setDescription(desc);
     toolkit.createCompositeSeparator(section);
@@ -238,7 +240,8 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
-    final Composite container = createSection(managedForm, title, desc, 1, new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
+    final Composite container = createSection(managedForm, title, desc, 1,
+        new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
 
     this.checkStateListener = new PapifyCheckStateListener(container, this.scenario);
     container.addPaintListener(this.checkStateListener);
@@ -286,8 +289,8 @@ public class PapifyPage extends FormPage implements IPropertyListener {
    * @param fileExtension
    *          the file extension
    */
-  private void createFileSection(final IManagedForm mform, final String title, final String desc, final String fileEdit, final String initValue,
-      final String browseTitle, final String fileExtension) {
+  private void createFileSection(final IManagedForm mform, final String title, final String desc, final String fileEdit,
+      final String initValue, final String browseTitle, final String fileExtension) {
 
     final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
     gridData.heightHint = 140;
@@ -365,7 +368,8 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     this.papiEvents = this.papiParser.parse(file.getLocation().toString());
 
-    if (!text.getText().equals(this.scenario.getPapifyConfigManager().getXmlFileURL()) && (this.papiEvents.getComponents() != null)) {
+    if (!text.getText().equals(this.scenario.getPapifyConfigManager().getXmlFileURL())
+        && (this.papiEvents.getComponents() != null)) {
       this.scenario.setPapifyConfigManager(new PapifyConfigManager());
       this.scenario.getPapifyConfigManager().setExcelFileURL(text.getText());
       this.componentTableViewer.setInput(this.papiEvents);
@@ -438,7 +442,8 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     final Composite tablecps = toolkit.createComposite(parent);
     tablecps.setVisible(true);
 
-    this.componentTableViewer = CheckboxTableViewer.newCheckList(tablecps, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.SINGLE | SWT.FULL_SELECTION);
+    this.componentTableViewer = CheckboxTableViewer.newCheckList(tablecps,
+        SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.SINGLE | SWT.FULL_SELECTION);
 
     final Table table = this.componentTableViewer.getTable();
     table.setLayout(new GridLayout());
@@ -451,7 +456,8 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     this.checkStateListener.setComponentTableViewer(this.componentTableViewer, contentProvider, this);
 
-    final PapifyComponentLabelProvider labelProvider = new PapifyComponentLabelProvider(this.scenario, this.componentTableViewer, this);
+    final PapifyComponentLabelProvider labelProvider = new PapifyComponentLabelProvider(this.scenario,
+        this.componentTableViewer, this);
     this.componentTableViewer.setLabelProvider(labelProvider);
 
     this.componentTableViewer.addCheckStateListener(this.checkStateListener);
@@ -517,7 +523,8 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     final Composite tablecps = toolkit.createComposite(parent);
     tablecps.setVisible(true);
 
-    this.eventTableViewer = CheckboxTableViewer.newCheckList(tablecps, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
+    this.eventTableViewer = CheckboxTableViewer.newCheckList(tablecps,
+        SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
 
     final Table table = this.eventTableViewer.getTable();
     table.setLayout(new GridLayout());
@@ -530,7 +537,8 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     this.checkStateListener.setEventTableViewer(this.eventTableViewer, contentProvider, this);
 
-    final PapifyEventLabelProvider labelProvider = new PapifyEventLabelProvider(this.scenario, this.eventTableViewer, this);
+    final PapifyEventLabelProvider labelProvider = new PapifyEventLabelProvider(this.scenario, this.eventTableViewer,
+        this);
     this.eventTableViewer.setLabelProvider(labelProvider);
 
     this.eventTableViewer.addCheckStateListener(this.checkStateListener);

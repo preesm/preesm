@@ -100,7 +100,8 @@ public class CreateConfigOutputInterfaceFeature extends AbstractCreateFeature {
     final String question = "Enter new Config. Output Interface name";
     String newCfgOutName = "cfgOutIfName";
 
-    newCfgOutName = PiMMUtil.askString("Create Config. Output Interface", question, newCfgOutName, new VertexNameValidator(graph, null));
+    newCfgOutName = PiMMUtil.askString("Create Config. Output Interface", question, newCfgOutName,
+        new VertexNameValidator(graph, null));
     if ((newCfgOutName == null) || (newCfgOutName.trim().length() == 0)) {
       this.hasDoneChanges = false; // If this is not done, the graph is
       // considered modified.

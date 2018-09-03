@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2010 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2010 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2010 - 2011)
  *
@@ -50,7 +50,8 @@ public class ProjectExplorerFilter extends ViewerFilter {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.jface.viewers.ViewerFilter#select(org.eclipse.jface.viewers .Viewer, java.lang.Object, java.lang.Object)
+   * @see org.eclipse.jface.viewers.ViewerFilter#select(org.eclipse.jface.viewers .Viewer, java.lang.Object,
+   * java.lang.Object)
    */
   @Override
   public boolean select(final Viewer viewer, final Object parentElement, final Object element) {

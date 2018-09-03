@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
@@ -57,7 +57,8 @@ public class VertexTiming extends GroupProperty {
   private long cost;
 
   /**
-   * B Level is the time between the vertex start and the total end of execution. Valid only with infinite homogeneous architecture simulator
+   * B Level is the time between the vertex start and the total end of execution. Valid only with infinite homogeneous
+   * architecture simulator
    */
   private long bLevel;
 
@@ -65,8 +66,8 @@ public class VertexTiming extends GroupProperty {
   private long tLevel;
 
   /**
-   * The total order range in the schedule. Each vertex ID is associated to its total order IDs must be consecutive to ensure possibility of synchronous
-   * scheduling!
+   * The total order range in the schedule. Each vertex ID is associated to its total order IDs must be consecutive to
+   * ensure possibility of synchronous scheduling!
    */
   private Map<String, Integer> totalOrders;
 

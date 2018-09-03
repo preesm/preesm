@@ -50,8 +50,8 @@ import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.ietr.preesm.throughput.tools.transformers.SDFTransformer;
 
 /**
- * this class computes the periodic schedule for an SDF graph. It computes the execution period W and the start date of the first execution for each actor. It
- * also define the maximum throughput of a periodic schedule of the graph.
+ * this class computes the periodic schedule for an SDF graph. It computes the execution period W and the start date of
+ * the first execution for each actor. It also define the maximum throughput of a periodic schedule of the graph.
  *
  * TODO add the method that return the start date of an execution t of an actor a
  *
@@ -69,7 +69,7 @@ public class PeriodicScheduler_SDF {
    *
    */
   public static enum Method {
-    Algorithm, LinearProgram_Gurobi, LinearProgram_GLPK, LinearProgram_ojAlgo
+  Algorithm, LinearProgram_Gurobi, LinearProgram_GLPK, LinearProgram_ojAlgo
   }
 
   public static final Method METHOD_DEFAULT_VALUE = Method.LinearProgram_ojAlgo;
@@ -120,7 +120,8 @@ public class PeriodicScheduler_SDF {
           repete = false;
           for (final SDFEdge e : graph.edgeSet()) {
             // test the distance
-            final double newDistance = vertexDistance.get(e.getSource().getName()) + edgeValue.get(e.getPropertyBean().getValue("edgeName"));
+            final double newDistance = vertexDistance.get(e.getSource().getName())
+                + edgeValue.get(e.getPropertyBean().getValue("edgeName"));
             if (vertexDistance.get(e.getTarget().getName()) > newDistance) {
               // update the distance
               vertexDistance.put(e.getTarget().getName(), newDistance);
@@ -136,8 +137,8 @@ public class PeriodicScheduler_SDF {
         if (count == (graph.vertexSet().size() - 1)) {
           // relax all the edges
           for (final SDFEdge e : graph.edgeSet()) {
-            if (vertexDistance
-                .get(e.getTarget().getName()) > (vertexDistance.get(e.getSource().getName()) + edgeValue.get(e.getPropertyBean().getValue("edgeName")))) {
+            if (vertexDistance.get(e.getTarget().getName()) > (vertexDistance.get(e.getSource().getName())
+                + edgeValue.get(e.getPropertyBean().getValue("edgeName")))) {
               // negative circuit detected if a part of the graph is not live the global graph is not too
               System.err.println("Negativ cycle detected !!");
               // System.err.println("This graph has no Periodic Schedule !");
@@ -152,15 +153,16 @@ public class PeriodicScheduler_SDF {
   }
 
   /**
-   * Schedules an SDF graph with a periodic schedule. It computes the execution period W and the start date S0 of the first execution for each actor of the
-   * graph.
+   * Schedules an SDF graph with a periodic schedule. It computes the execution period W and the start date S0 of the
+   * first execution for each actor of the graph.
    *
    * @param graph
    *          SDF graph
    * @param method
    *          for the MCR problem
    * @param selfLoopEdge
-   *          if true the method will add a self loop edge for each actor to add an execution dependency between the instances of each actor
+   *          if true the method will add a self loop edge for each actor to add an execution dependency between the
+   *          instances of each actor
    * @return throughput
    */
 
@@ -185,7 +187,8 @@ public class PeriodicScheduler_SDF {
         for (final SDFAbstractVertex actor : graph.vertexSet()) {
           final int z = ((Double) actor.getPropertyBean().getValue("normalizedRate")).intValue();
           final Double alpha = 1.;
-          final SDFEdge edge = GraphStructureHelper.addEdge(graph, actor.getName(), null, actor.getName(), null, z, z, z, null);
+          final SDFEdge edge = GraphStructureHelper.addEdge(graph, actor.getName(), null, actor.getName(), null, z, z,
+              z, null);
           selfLoopEdgesList.add(edge);
           edge.setPropertyValue("normalizationFactor", alpha);
         }
@@ -247,7 +250,8 @@ public class PeriodicScheduler_SDF {
         selfLoopEdgesList = new ArrayList<>(graph.vertexSet().size());
         for (final SDFAbstractVertex actor : graph.vertexSet()) {
           final SDFEdge edge = GraphStructureHelper.addEdge(graph, actor.getName(), null, actor.getName(), null,
-              (Integer) actor.getPropertyBean().getValue("normalizedRate"), (Integer) actor.getPropertyBean().getValue("normalizedRate"),
+              (Integer) actor.getPropertyBean().getValue("normalizedRate"),
+              (Integer) actor.getPropertyBean().getValue("normalizedRate"),
               (Integer) actor.getPropertyBean().getValue("normalizedRate"), null);
           selfLoopEdgesList.add(edge);
         }
@@ -296,7 +300,8 @@ public class PeriodicScheduler_SDF {
       period = solverMethod.computeNormalizedPeriod(graph);
     } else {
       // use the default method : GLPK
-      System.err.println(method.toString() + " method is not available ! \nTrying to use " + PeriodicScheduler_SDF.METHOD_DEFAULT_VALUE.toString() + " ...");
+      System.err.println(method.toString() + " method is not available ! \nTrying to use "
+          + PeriodicScheduler_SDF.METHOD_DEFAULT_VALUE.toString() + " ...");
       SolverMethod solverMethod = Activator.solverMethodRegistry.get(PeriodicScheduler_SDF.METHOD_DEFAULT_VALUE);
       // if the activator have not been executed yet, then instantiate the solverMethod manually ()
       if (solverMethod == null) {
@@ -311,7 +316,8 @@ public class PeriodicScheduler_SDF {
   }
 
   /**
-   * computes the execution period of each actor and define the maximum throughput of the periodic schedule as MaxTh = min (1/k*Z)
+   * computes the execution period of each actor and define the maximum throughput of the periodic schedule as MaxTh =
+   * min (1/k*Z)
    *
    * @param graph
    *          SDF graph
@@ -327,7 +333,8 @@ public class PeriodicScheduler_SDF {
 
     // define the execution period of each actor of the graph as w=k*z
     for (final SDFAbstractVertex actor : graph.vertexSet()) {
-      final Fraction w = k.multiplyBy(Fraction.getFraction((Double) actor.getPropertyBean().getValue("normalizedRate")));
+      final Fraction w = k
+          .multiplyBy(Fraction.getFraction((Double) actor.getPropertyBean().getValue("normalizedRate")));
       actor.setPropertyValue("executionPeriod", w.doubleValue());
 
       // test if the current execution period is greater than maxW
@@ -386,7 +393,8 @@ public class PeriodicScheduler_SDF {
     final SDFAbstractVertex actor = graph.vertexSet().iterator().next();
     // double w = (double) actor.getPropertyBean().getValue("executionPeriod");
     final double k = ((Fraction) graph.getPropertyBean().getValue("normalizedPeriod")).doubleValue();
-    final double graphPeriod = k * ((Double) actor.getPropertyBean().getValue("normalizedRate")) * actor.getNbRepeatAsInteger();
+    final double graphPeriod = k * ((Double) actor.getPropertyBean().getValue("normalizedRate"))
+        * actor.getNbRepeatAsInteger();
     return graphPeriod;
   }
 
@@ -399,8 +407,9 @@ public class PeriodicScheduler_SDF {
   public void computeActorsStartingTime(final SDFGraph graph) {
     System.out.println("Computing actors first execution start date ...");
     /*
-     * see Ben Abid paper : step 1: add a dummy vertex to the graph step 2: connect the new actor to every actor of the graph with a null value step 3: use the
-     * bellman ford algorithm to compute the starting times as the longest path from the dummy node to all actors
+     * see Ben Abid paper : step 1: add a dummy vertex to the graph step 2: connect the new actor to every actor of the
+     * graph with a null value step 3: use the bellman ford algorithm to compute the starting times as the longest path
+     * from the dummy node to all actors
      */
 
     // set edges value : v = L + k*h (use the normalized version of the graph)
@@ -448,7 +457,8 @@ public class PeriodicScheduler_SDF {
       repete = false;
       for (final SDFEdge e : graph.edgeSet()) {
         // test the distance
-        final double newDistance = vertexDistance.get(e.getSource().getName()) + edgeValue.get(e.getPropertyBean().getValue("edgeName"));
+        final double newDistance = vertexDistance.get(e.getSource().getName())
+            + edgeValue.get(e.getPropertyBean().getValue("edgeName"));
         if (vertexDistance.get(e.getTarget().getName()) < newDistance) {
           // update the distance
           vertexDistance.put(e.getTarget().getName(), newDistance);

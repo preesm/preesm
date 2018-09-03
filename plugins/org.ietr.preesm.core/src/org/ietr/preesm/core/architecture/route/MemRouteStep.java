@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2012)
  *
@@ -75,8 +75,8 @@ public class MemRouteStep extends MessageRouteStep {
    * @param ramNodeIndex
    *          the ram node index
    */
-  public MemRouteStep(final ComponentInstance sender, final List<ComponentInstance> nodes, final ComponentInstance receiver, final Mem mem,
-      final int ramNodeIndex) {
+  public MemRouteStep(final ComponentInstance sender, final List<ComponentInstance> nodes,
+      final ComponentInstance receiver, final Mem mem, final int ramNodeIndex) {
     super(sender, nodes, receiver);
     this.mem = mem;
     this.ramNodeIndex = ramNodeIndex;

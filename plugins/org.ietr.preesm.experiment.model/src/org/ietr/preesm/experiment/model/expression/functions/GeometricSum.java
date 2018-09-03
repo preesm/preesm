@@ -38,10 +38,11 @@ package org.ietr.preesm.experiment.model.expression.functions;
 import org.nfunk.jep.ParseException;
 
 /**
- * Computes a geometric sum. It takes three parameters: the first term a, the ratio r, and the number of iteration (including the first term). Ex:
- * geo_sum(3,1/2,4) = 3 + 3/2 + 3/4 + 3/8
+ * Computes a geometric sum. It takes three parameters: the first term a, the ratio r, and the number of iteration
+ * (including the first term). Ex: geo_sum(3,1/2,4) = 3 + 3/2 + 3/4 + 3/8
  * <p>
- * It uses an iterative implementation (when |r| &lt 1) instead of the direct formula. The point is to avoid floating point approximations.
+ * It uses an iterative implementation (when |r| &lt 1) instead of the direct formula. The point is to avoid floating
+ * point approximations.
  *
  * @author ahonorat
  */

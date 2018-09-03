@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2010 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2010 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2010 - 2012)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -48,14 +48,14 @@ public class CodeSectionType {
    */
   public enum MajorType {
 
-    /** The fifoinit. */
-    FIFOINIT,
-    /** The cominit. */
-    COMINIT,
-    /** The init. */
-    INIT,
-    /** The loop. */
-    LOOP
+  /** The fifoinit. */
+  FIFOINIT,
+  /** The cominit. */
+  COMINIT,
+  /** The init. */
+  INIT,
+  /** The loop. */
+  LOOP
   }
 
   /** Main code block identification. */

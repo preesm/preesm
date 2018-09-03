@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2016)
@@ -87,7 +87,8 @@ public class RoutingTable {
     public boolean equals(final Object obj) {
       if (obj instanceof OperatorCouple) {
         final OperatorCouple doublet = (OperatorCouple) obj;
-        if (doublet.getOp1().getInstanceName().equals(getOp1().getInstanceName()) && doublet.getOp2().getInstanceName().equals(getOp2().getInstanceName())) {
+        if (doublet.getOp1().getInstanceName().equals(getOp1().getInstanceName())
+            && doublet.getOp2().getInstanceName().equals(getOp2().getInstanceName())) {
           return true;
         }
       }

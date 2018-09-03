@@ -3,6 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -64,6 +65,7 @@ import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
+import org.ietr.preesm.experiment.model.PiGraphException;
 import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
@@ -82,6 +84,7 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
@@ -174,8 +177,8 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * Parameters of a top graph must be visited before parameters of a subgraph, since the expression of ConfigurationInputInterface depends on the value of its
-   * connected Parameter.
+   * Parameters of a top graph must be visited before parameters of a subgraph, since the expression of
+   * ConfigurationInputInterface depends on the value of its connected Parameter.
    *
    * @param p
    *          the p
@@ -211,7 +214,9 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigInputInterface(org.ietr.preesm.experiment.model.pimm.ConfigInputInterface)
+   * @see
+   * org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigInputInterface(org.ietr.preesm.experiment.model.
+   * pimm.ConfigInputInterface)
    */
   @Override
   public Boolean caseConfigInputInterface(final ConfigInputInterface cii) {
@@ -229,7 +234,8 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * Set the value of parameters of a PiGraph when possible (i.e., if we have currently only one available value, or if we can compute the value)
+   * Set the value of parameters of a PiGraph when possible (i.e., if we have currently only one available value, or if
+   * we can compute the value)
    *
    * @param graph
    *          the PiGraph in which we want to set the values of parameters
@@ -257,7 +263,9 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#caseAbstractActor(org.ietr.preesm.experiment.model.pimm.AbstractActor)
+   * @see
+   * org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#caseAbstractActor(org.ietr.preesm.experiment.model.pimm.
+   * AbstractActor)
    */
   @Override
   public Boolean caseAbstractActor(final AbstractActor aa) {
@@ -312,6 +320,17 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitActor(org.ietr.preesm.experiment.model.pimm.Actor)
    */
   @Override
+  public Boolean caseDelayActor(final DelayActor a) {
+    // DO NOTHING
+    return true;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitActor(org.ietr.preesm.experiment.model.pimm.Actor)
+   */
+  @Override
   public Boolean caseActor(final Actor a) {
     final SDFVertex v = new SDFVertex();
     this.piVx2SDFVx.put(a, v);
@@ -332,7 +351,13 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     }
     // Handle input parameters as instance arguments
     for (final ConfigInputPort p : a.getConfigInputPorts()) {
-      final ISetter setter = p.getIncomingDependency().getSetter();
+      final Dependency incomingDependency = p.getIncomingDependency();
+      if (incomingDependency == null) {
+        throw new PiGraphException(
+            "Actor config input port '" + a.getVertexPath() + "." + p.getName() + "' is not connected.",
+            new NullPointerException());
+      }
+      final ISetter setter = incomingDependency.getSetter();
       if (setter instanceof Parameter) {
         final Parameter param = (Parameter) setter;
         final Argument arg = new Argument(p.getName());
@@ -376,7 +401,8 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
       if (f.getDelay() != null) {
         // Evaluate the expression wrt. the current values of the
         // parameters
-        delay = new SDFExpressionEdgePropertyType(createValue(Long.toString(ExpressionEvaluator.evaluate(f.getDelay().getSizeExpression()))));
+        delay = new SDFExpressionEdgePropertyType(
+            createValue(Long.toString(ExpressionEvaluator.evaluate(f.getDelay().getSizeExpression()))));
       } else {
         delay = new SDFExpressionEdgePropertyType(new ConstantValue(0));
       }

@@ -117,8 +117,9 @@ public class CodegenPage extends FormPage {
     algoExtensions.add("graphml");
 
     // Algorithm file chooser section
-    createDirectorySection(managedForm, Messages.getString("Codegen.codeDirectory"), Messages.getString("Codegen.codeDirectoryDescription"),
-        Messages.getString("Codegen.codeDirectoryEdit"), this.scenario.getCodegenManager().getCodegenDirectory(),
+    createDirectorySection(managedForm, Messages.getString("Codegen.codeDirectory"),
+        Messages.getString("Codegen.codeDirectoryDescription"), Messages.getString("Codegen.codeDirectoryEdit"),
+        this.scenario.getCodegenManager().getCodegenDirectory(),
         Messages.getString("Codegen.codeDirectoryBrowseTitle"));
 
     managedForm.refresh();
@@ -139,12 +140,13 @@ public class CodegenPage extends FormPage {
    *          the num columns
    * @return the composite
    */
-  private Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns) {
+  private Composite createSection(final IManagedForm mform, final String title, final String desc,
+      final int numColumns) {
 
     final ScrolledForm form = mform.getForm();
     final FormToolkit toolkit = mform.getToolkit();
-    final Section section = toolkit.createSection(form.getBody(),
-        ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    final Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
+        | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
     section.setText(title);
     section.setDescription(desc);
 
@@ -180,8 +182,8 @@ public class CodegenPage extends FormPage {
    * @param browseTitle
    *          title of file browser
    */
-  private void createDirectorySection(final IManagedForm mform, final String title, final String desc, final String fileEdit, final String initValue,
-      final String browseTitle) {
+  private void createDirectorySection(final IManagedForm mform, final String title, final String desc,
+      final String fileEdit, final String initValue, final String browseTitle) {
 
     final Composite client = createSection(mform, title, desc, 2);
 
@@ -220,9 +222,14 @@ public class CodegenPage extends FormPage {
     } else {
       sanitizedPath = codegenDirPath;
     }
-    final String rootSegment = sanitizedPath.substring(0, sanitizedPath.indexOf("/"));
-    final boolean testPathValidInWorkspace = FieldUtils.testPathValidInWorkspace("/" + rootSegment);
-    FieldUtils.colorRedOnCondition(text, !testPathValidInWorkspace);
+    final int indexOf = sanitizedPath.indexOf("/");
+    if (indexOf >= 0) {
+      final String rootSegment = sanitizedPath.substring(0, indexOf);
+      final boolean testPathValidInWorkspace = FieldUtils.testPathValidInWorkspace("/" + rootSegment);
+      FieldUtils.colorRedOnCondition(text, !testPathValidInWorkspace);
+    } else {
+      FieldUtils.colorRedOnCondition(text, true);
+    }
   }
 
 }

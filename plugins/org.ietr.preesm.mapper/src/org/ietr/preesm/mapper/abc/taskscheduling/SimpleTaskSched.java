@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2014)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -55,7 +55,8 @@ public class SimpleTaskSched extends AbstractTaskSched {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#insertVertex(org.ietr.preesm.mapper .model.MapperDAGVertex)
+   * @see org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#insertVertex(org.ietr.preesm.mapper
+   * .model.MapperDAGVertex)
    */
   @Override
   public void insertVertex(final MapperDAGVertex vertex) {

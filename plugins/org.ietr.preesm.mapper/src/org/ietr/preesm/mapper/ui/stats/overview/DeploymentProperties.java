@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
@@ -132,9 +132,11 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
     if (this.columnOrder.equals(Messages.getString("Overview.properties.opColumn"))) {
       comparator = (o1, o2) -> o1.getInstanceName().compareTo(o2.getInstanceName());
     } else if (this.columnOrder.equals(Messages.getString("Overview.properties.loadColumn"))) {
-      comparator = (o1, o2) -> (int) (DeploymentProperties.this.loads.get(o1) - DeploymentProperties.this.loads.get(o2));
+      comparator = (o1,
+          o2) -> (int) (DeploymentProperties.this.loads.get(o1) - DeploymentProperties.this.loads.get(o2));
     } else if (this.columnOrder.equals(Messages.getString("Overview.properties.memColumn"))) {
-      comparator = (o1, o2) -> DeploymentProperties.this.memoryNeeds.get(o1) - DeploymentProperties.this.memoryNeeds.get(o2);
+      comparator = (o1, o2) -> DeploymentProperties.this.memoryNeeds.get(o1)
+          - DeploymentProperties.this.memoryNeeds.get(o2);
     }
 
     Collections.sort(elements, comparator);
@@ -155,7 +157,8 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
+   * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object,
+   * java.lang.Object)
    */
   @Override
   public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {

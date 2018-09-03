@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2015)
@@ -59,16 +59,16 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    */
   public static enum Order {
 
-    /** The shuffle. */
-    SHUFFLE,
-    /** The largest first. */
-    LARGEST_FIRST,
-    /** The stable set. */
-    STABLE_SET,
-    /** The exact stable set. */
-    EXACT_STABLE_SET,
-    /** The scheduling. */
-    SCHEDULING
+  /** The shuffle. */
+  SHUFFLE,
+  /** The largest first. */
+  LARGEST_FIRST,
+  /** The stable set. */
+  STABLE_SET,
+  /** The exact stable set. */
+  EXACT_STABLE_SET,
+  /** The scheduling. */
+  SCHEDULING
   }
 
   /**
@@ -89,12 +89,13 @@ public abstract class OrderedAllocator extends MemoryAllocator {
   }
 
   /**
-   * Ordered list of {@link MemoryExclusionVertex} used to perform the shuffled allocations. These lists are memorized in order to retrieve the one that
-   * corresponds best to the Policy after all "shuffled" allocations were performed
+   * Ordered list of {@link MemoryExclusionVertex} used to perform the shuffled allocations. These lists are memorized
+   * in order to retrieve the one that corresponds best to the Policy after all "shuffled" allocations were performed
    */
   protected ArrayList<ArrayList<MemoryExclusionVertex>> lists;
   /**
-   * For each {@link #allocateInOrder(ArrayList)} resulting from an ordered list in {@link #lists}, this list store the size of the allocated memory.
+   * For each {@link #allocateInOrder(ArrayList)} resulting from an ordered list in {@link #lists}, this list store the
+   * size of the allocated memory.
    */
   public ArrayList<Integer>                             listsSize;
   /**
@@ -163,8 +164,8 @@ public abstract class OrderedAllocator extends MemoryAllocator {
   protected abstract int allocateInOrder(List<MemoryExclusionVertex> vertexList);
 
   /**
-   * Perform the allocation with the vertex ordered according to largest first order. If the policy of the allocator is changed, the resulting allocation will
-   * be lost.
+   * Perform the allocation with the vertex ordered according to largest first order. If the policy of the allocator is
+   * changed, the resulting allocation will be lost.
    */
   public void allocateLargestFirst() {
 
@@ -174,8 +175,8 @@ public abstract class OrderedAllocator extends MemoryAllocator {
   }
 
   /**
-   * Perform the allocation with the vertex ordered according to the scheduling order. If the policy of the allocator is changed, the resulting allocation will
-   * be lost.
+   * Perform the allocation with the vertex ordered according to the scheduling order. If the policy of the allocator is
+   * changed, the resulting allocation will be lost.
    */
   public void allocateSchedulingOrder() {
     // If the exclusion graph is not built, it means that is does not come
@@ -185,9 +186,11 @@ public abstract class OrderedAllocator extends MemoryAllocator {
     }
 
     // Retrieve the memEx vertices in scheduling order
-    final List<MemoryExclusionVertex> memExVerticesInSchedulingOrder = this.inputExclusionGraph.getMemExVerticesInSchedulingOrder();
+    final List<MemoryExclusionVertex> memExVerticesInSchedulingOrder = this.inputExclusionGraph
+        .getMemExVerticesInSchedulingOrder();
     if (memExVerticesInSchedulingOrder == null) {
-      throw new RuntimeException("Cannot allocate MemEx in scheduling order" + " because the MemEx was not updated with a schedule.");
+      throw new RuntimeException(
+          "Cannot allocate MemEx in scheduling order" + " because the MemEx was not updated with a schedule.");
     }
 
     // Remove hosted vertices from the memEx list in scheduling order
@@ -233,8 +236,8 @@ public abstract class OrderedAllocator extends MemoryAllocator {
   }
 
   /**
-   * Perform the BestFit allocation with the vertex ordered according to the exact Stable Set order. If the policy of the allocator is changed, the resulting
-   * allocation will be lost.
+   * Perform the BestFit allocation with the vertex ordered according to the exact Stable Set order. If the policy of
+   * the allocator is changed, the resulting allocation will be lost.
    *
    */
   public void allocateStableSetOrder() {
@@ -242,8 +245,8 @@ public abstract class OrderedAllocator extends MemoryAllocator {
   }
 
   /**
-   * Perform the BestFit allocation with the vertex ordered according to the Stable Set order. If the policy of the allocator is changed, the resulting
-   * allocation will be lost.
+   * Perform the BestFit allocation with the vertex ordered according to the Stable Set order. If the policy of the
+   * allocator is changed, the resulting allocation will be lost.
    *
    * @param exactStableSet
    *          the exact stable set

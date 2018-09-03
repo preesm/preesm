@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2010 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2010 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2010 - 2012)
@@ -92,7 +92,8 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.exporter.GMLExporter#exportNode(org.ietr.dftools.algorithm.model. AbstractVertex, org.w3c.dom.Element)
+   * @see org.ietr.dftools.algorithm.exporter.GMLExporter#exportNode(org.ietr.dftools.algorithm.model. AbstractVertex,
+   * org.w3c.dom.Element)
    */
   @Override
   protected Element exportNode(final DAGVertex vertex, final Element parentELement) {
@@ -139,14 +140,16 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.exporter.GMLExporter#exportEdge(org.ietr.dftools.algorithm.model. AbstractEdge, org.w3c.dom.Element)
+   * @see org.ietr.dftools.algorithm.exporter.GMLExporter#exportEdge(org.ietr.dftools.algorithm.model. AbstractEdge,
+   * org.w3c.dom.Element)
    */
   @Override
   protected Element exportEdge(final DAGEdge edge, final Element parentELement) {
     // TODO: add port number (maps from vertex to int?)
     final String sourcePort = getOutPortName(edge.getSource());
     final String targetPort = getInPortName(edge.getTarget());
-    final Element edgeElt = createEdge(parentELement, edge.getSource().getName(), edge.getTarget().getName(), sourcePort, targetPort);
+    final Element edgeElt = createEdge(parentELement, edge.getSource().getName(), edge.getTarget().getName(),
+        sourcePort, targetPort);
     exportKeys(edge, "edge", edgeElt);
 
     Element data = appendChild(edgeElt, "data");
@@ -213,7 +216,8 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.exporter.GMLExporter#export(org.ietr.dftools.algorithm.model. AbstractGraph, java.lang.String)
+   * @see org.ietr.dftools.algorithm.exporter.GMLExporter#export(org.ietr.dftools.algorithm.model. AbstractGraph,
+   * java.lang.String)
    */
   @Override
   public void export(final AbstractGraph<DAGVertex, DAGEdge> graph, final String path) {
@@ -229,7 +233,8 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.exporter.GMLExporter#exportPort(org.ietr.dftools.algorithm.model. AbstractVertex, org.w3c.dom.Element)
+   * @see org.ietr.dftools.algorithm.exporter.GMLExporter#exportPort(org.ietr.dftools.algorithm.model. AbstractVertex,
+   * org.w3c.dom.Element)
    */
   @Override
   protected Element exportPort(final DAGVertex interfaceVertex, final Element parentELement) {

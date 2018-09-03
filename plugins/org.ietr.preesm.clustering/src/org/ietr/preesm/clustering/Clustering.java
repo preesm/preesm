@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2016 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2016 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2016 - 2017)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -52,8 +52,8 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 public class Clustering extends AbstractTaskImplementation {
 
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
     final Map<String, Object> outputs = new LinkedHashMap<>();
     final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
     final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");

@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2013)
  * Romina Racca <romina.racca@gmail.com> (2013)
@@ -66,7 +67,9 @@ import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.PersistenceLevel;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
+import org.ietr.preesm.ui.pimm.features.SetPersistenceLevelFeature;
 import org.ietr.preesm.ui.pimm.features.SetPortMemoryAnnotationFeature;
 
 // TODO: Auto-generated Javadoc
@@ -76,7 +79,8 @@ import org.ietr.preesm.ui.pimm.features.SetPortMemoryAnnotationFeature;
  * @author Romina Racca
  * @author jheulot
  */
-public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUpdater implements ITabbedPropertyConstants {
+public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUpdater
+    implements ITabbedPropertyConstants {
 
   /** The lbl name. */
   private CLabel lblName;
@@ -94,21 +98,28 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
   private CLabel lblValueObj;
 
   /** The lbl annotation. */
-  private CLabel lblAnnotation;
+  private CLabel memoryLabelAnnotation;
 
   /** The combo annotation. */
-  private CCombo comboAnnotation;
+  private CCombo memoryComboAnnotation;
+
+  private CLabel persistenceLabelLevel;
+  private CCombo persistenceComboLevel;
 
   /** The first column width. */
   private final int FIRST_COLUMN_WIDTH = 200;
 
-  /** A text expression can be as an expression: value numbers, trigonometric functions, expression of condition "if (cond, true value, false value)". */
+  /**
+   * A text expression can be as an expression: value numbers, trigonometric functions, expression of condition "if
+   * (cond, true value, false value)".
+   */
   private Text txtExpression;
 
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.ui.views.properties.tabbed.AbstractPropertySection#createControls(org.eclipse.swt.widgets.Composite,
+   * @see
+   * org.eclipse.ui.views.properties.tabbed.AbstractPropertySection#createControls(org.eclipse.swt.widgets.Composite,
    * org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
    */
   @Override
@@ -165,27 +176,27 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
     this.lblValue.setLayoutData(data);
 
     /**** MEMORY ANNOTATION ****/
-    this.comboAnnotation = factory.createCCombo(composite);
+    this.memoryComboAnnotation = factory.createCCombo(composite);
     for (final PortMemoryAnnotation pma : PortMemoryAnnotation.values()) {
-      this.comboAnnotation.add(pma.toString(), pma.getValue());
+      this.memoryComboAnnotation.add(pma.toString(), pma.getValue());
     }
 
     data = new FormData();
     data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(25, 0);
     data.top = new FormAttachment(this.lblValueObj);
-    this.comboAnnotation.setLayoutData(data);
+    this.memoryComboAnnotation.setLayoutData(data);
 
-    this.lblAnnotation = factory.createCLabel(composite, "Memory Annotation:");
+    this.memoryLabelAnnotation = factory.createCLabel(composite, "Memory Annotation:");
     data = new FormData();
     data.left = new FormAttachment(0, 0);
-    data.right = new FormAttachment(this.comboAnnotation, -ITabbedPropertyConstants.HSPACE);
+    data.right = new FormAttachment(this.memoryComboAnnotation, -ITabbedPropertyConstants.HSPACE);
     data.top = new FormAttachment(this.lblValue);
-    this.lblAnnotation.setLayoutData(data);
+    this.memoryLabelAnnotation.setLayoutData(data);
 
     this.txtExpression.addModifyListener(e -> updateProperties());
 
-    this.comboAnnotation.addSelectionListener(new SelectionListener() {
+    this.memoryComboAnnotation.addSelectionListener(new SelectionListener() {
 
       @Override
       public void widgetSelected(final SelectionEvent e) {
@@ -193,7 +204,8 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
         pes[0] = getSelectedPictogramElement();
 
         final CustomContext context = new CustomContext(pes);
-        final ICustomFeature[] setPotMemoryAnnotationFeature = getDiagramTypeProvider().getFeatureProvider().getCustomFeatures(context);
+        final ICustomFeature[] setPotMemoryAnnotationFeature = getDiagramTypeProvider().getFeatureProvider()
+            .getCustomFeatures(context);
 
         for (final ICustomFeature feature : setPotMemoryAnnotationFeature) {
           if (feature instanceof SetPortMemoryAnnotationFeature) {
@@ -216,8 +228,76 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
             final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
-            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout);
+            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+                .getLayoutFeature(contextLayout);
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+          }
+        }
+
+        refresh();
+      }
+
+      @Override
+      public void widgetDefaultSelected(final SelectionEvent e) {
+      }
+    });
+
+    /**** PERSISTENCE ANNOTATION ****/
+    this.persistenceComboLevel = factory.createCCombo(composite);
+    for (final PersistenceLevel pl : PersistenceLevel.values()) {
+      this.persistenceComboLevel.add(pl.toString(), pl.getValue());
+    }
+
+    data = new FormData();
+    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.right = new FormAttachment(25, 0);
+    data.top = new FormAttachment(this.lblValueObj);
+    this.persistenceComboLevel.setLayoutData(data);
+
+    this.persistenceLabelLevel = factory.createCLabel(composite, "Persistence Level:");
+    data = new FormData();
+    data.left = new FormAttachment(0, 0);
+    data.right = new FormAttachment(this.persistenceComboLevel, -ITabbedPropertyConstants.HSPACE);
+    data.top = new FormAttachment(this.lblValue);
+    this.persistenceLabelLevel.setLayoutData(data);
+
+    this.txtExpression.addModifyListener(e -> updateProperties());
+
+    this.persistenceComboLevel.addSelectionListener(new SelectionListener() {
+
+      @Override
+      public void widgetSelected(final SelectionEvent e) {
+        final PictogramElement[] pes = new PictogramElement[1];
+        pes[0] = getSelectedPictogramElement();
+
+        final CustomContext context = new CustomContext(pes);
+        final ICustomFeature[] setDelayPersistenceFeature = getDiagramTypeProvider().getFeatureProvider()
+            .getCustomFeatures(context);
+
+        for (final ICustomFeature feature : setDelayPersistenceFeature) {
+          if (feature instanceof SetPersistenceLevelFeature) {
+            PersistenceLevel pl = null;
+            switch (((CCombo) e.getSource()).getSelectionIndex()) {
+              case PersistenceLevel.PERMANENT_VALUE:
+                pl = PersistenceLevel.PERMANENT;
+                break;
+              case PersistenceLevel.LOCAL_VALUE:
+                pl = PersistenceLevel.LOCAL;
+                break;
+              case PersistenceLevel.NONE_VALUE:
+                pl = PersistenceLevel.NONE;
+                break;
+              default:
+                break;
+
+            }
+            ((SetPersistenceLevelFeature) feature).setCurrentPL(pl);
+
+            getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
+            // final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
+            // final ILayoutFeature layoutFeature =
+            // getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout);
+            // getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
           }
         }
 
@@ -232,7 +312,8 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
   }
 
   /**
-   * Update the {@link Port}/{@link Delay}/{@link Parameter} {@link Expression} with the value stored in the txtEpression.
+   * Update the {@link Port}/{@link Delay}/{@link Parameter} {@link Expression} with the value stored in the
+   * txtEpression.
    */
   private void updateProperties() {
     final PictogramElement pe = getSelectedPictogramElement();
@@ -259,20 +340,27 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 
         getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators((PictogramElement) (pe.eContainer()));
 
-        this.comboAnnotation.setEnabled(false);
-        this.comboAnnotation.select(((DataPort) bo).getAnnotation().getValue());
-        this.comboAnnotation.setVisible(true);
-        this.comboAnnotation.setEnabled(true);
-        this.lblAnnotation.setEnabled(false);
-        this.lblAnnotation.setVisible(true);
-        this.lblAnnotation.setEnabled(true);
+        this.memoryComboAnnotation.setEnabled(false);
+        this.memoryComboAnnotation.select(((DataPort) bo).getAnnotation().getValue());
+        this.memoryComboAnnotation.setVisible(true);
+        this.memoryComboAnnotation.setEnabled(true);
+        this.memoryLabelAnnotation.setEnabled(false);
+        this.memoryLabelAnnotation.setVisible(true);
+        this.memoryLabelAnnotation.setEnabled(true);
+
+        this.persistenceComboLevel.setEnabled(false);
+        this.persistenceComboLevel.setVisible(false);
+        this.persistenceComboLevel.setEnabled(true);
+        this.persistenceLabelLevel.setEnabled(false);
+        this.persistenceLabelLevel.setVisible(false);
+        this.persistenceLabelLevel.setEnabled(true);
       } else {
-        this.comboAnnotation.setEnabled(false);
-        this.comboAnnotation.setVisible(false);
-        this.comboAnnotation.setEnabled(true);
-        this.lblAnnotation.setEnabled(false);
-        this.lblAnnotation.setVisible(false);
-        this.lblAnnotation.setEnabled(true);
+        this.memoryComboAnnotation.setEnabled(false);
+        this.memoryComboAnnotation.setVisible(false);
+        this.memoryComboAnnotation.setEnabled(true);
+        this.memoryLabelAnnotation.setEnabled(false);
+        this.memoryLabelAnnotation.setVisible(false);
+        this.memoryLabelAnnotation.setEnabled(true);
       }
 
       if (bo instanceof Delay) {
@@ -281,6 +369,14 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
           setNewExpression(delay.getSizeExpression(), this.txtExpression.getText());
           getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
         }
+
+        this.persistenceComboLevel.setEnabled(false);
+        this.persistenceComboLevel.select(delay.getLevel().getValue());
+        this.persistenceComboLevel.setVisible(true);
+        this.persistenceComboLevel.setEnabled(true);
+        this.persistenceLabelLevel.setEnabled(false);
+        this.persistenceLabelLevel.setVisible(true);
+        this.persistenceLabelLevel.setEnabled(true);
       } // end Delay
     }
     refresh();
@@ -301,7 +397,8 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
     this.txtExpression.setEnabled(false);
 
     if (pictogramElement != null) {
-      final Object businessObject = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pictogramElement);
+      final Object businessObject = Graphiti.getLinkService()
+          .getBusinessObjectForLinkedPictogramElement(pictogramElement);
       if (businessObject == null) {
         return;
       }
@@ -312,7 +409,7 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
       } else if (businessObject instanceof DataPort) {
         final DataPort iPort = ((DataPort) businessObject);
 
-        this.comboAnnotation.select(((DataPort) businessObject).getAnnotation().getValue());
+        this.memoryComboAnnotation.select(((DataPort) businessObject).getAnnotation().getValue());
 
         if (iPort.eContainer() instanceof InterfaceActor) {
           elementName = ((InterfaceActor) iPort.eContainer()).getName();
@@ -327,11 +424,11 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
         elementName = iface.getName();
         elementValueExpression = iface.getDataPort().getPortRateExpression();
       } else if (businessObject instanceof Delay) {
-        if (((Delay) businessObject).eContainer() instanceof Fifo) {
-          final Fifo fifo = (Fifo) ((Delay) businessObject).eContainer();
-          elementName = fifo.getId();
-          elementValueExpression = fifo.getDelay().getSizeExpression();
-        }
+        final Fifo fifo = (Fifo) ((Delay) businessObject).getContainingFifo();
+        elementName = fifo.getId();
+        elementValueExpression = fifo.getDelay().getSizeExpression();
+
+        this.persistenceComboLevel.select(((Delay) businessObject).getLevel().getValue());
       } else {
         throw new UnsupportedOperationException();
       }

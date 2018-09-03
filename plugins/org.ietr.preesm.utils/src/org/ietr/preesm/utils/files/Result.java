@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -37,8 +37,8 @@ package org.ietr.preesm.utils.files;
 
 // TODO: Auto-generated Javadoc
 /**
- * Used to store files writing results. It maintains the number of really written files in an operation, and the number of cached files (not written because
- * already up-to-date)
+ * Used to store files writing results. It maintains the number of really written files in an operation, and the number
+ * of cached files (not written because already up-to-date)
  *
  * <p>
  * Code adapted from ORCC (net.sf.orcc.util, https://github.com/orcc/orcc)

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * blaunay <bapt.launay@gmail.com> (2015)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -101,8 +101,8 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
   }
 
   /**
-   * Converts all the data on the edges of the given graph from int to double, which is more convenient to do the normalization (32 bits may not be enough for
-   * some lcm).
+   * Converts all the data on the edges of the given graph from int to double, which is more convenient to do the
+   * normalization (32 bits may not be enough for some lcm).
    *
    * @param g
    *          the g
@@ -127,7 +127,8 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
   }
 
   /**
-   * First step of the normalization of the graph, normalizing all levels of hierarchy from the bottom to the top of the graph.
+   * First step of the normalization of the graph, normalizing all levels of hierarchy from the bottom to the top of the
+   * graph.
    *
    * @param g
    *          the g
@@ -149,10 +150,12 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
 
             // Retrieve the values on the output edges, used to compute M (ppcm (N_t * in_a))
             for (final SDFInterfaceVertex port : vertex.getSinks()) {
-              M = SDFMathD.lcm(M, vertex.getNbRepeatAsInteger() * (double) vertex.getAssociatedEdge(port).getProd().getValue());
+              M = SDFMathD.lcm(M,
+                  vertex.getNbRepeatAsInteger() * (double) vertex.getAssociatedEdge(port).getProd().getValue());
             }
             for (final SDFInterfaceVertex port : vertex.getSources()) {
-              M = SDFMathD.lcm(M, vertex.getNbRepeatAsInteger() * (double) vertex.getAssociatedEdge(port).getCons().getValue());
+              M = SDFMathD.lcm(M,
+                  vertex.getNbRepeatAsInteger() * (double) vertex.getAssociatedEdge(port).getCons().getValue());
             }
           } else {
             // the vertex is a "normal" actor, we compute its z with the in & out rates
@@ -182,19 +185,22 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
           in = (double) edge.getProd().getValue();
           edge.setProd(new SDFDoubleEdgePropertyType(M / edge.getSource().getNbRepeatAsInteger()));
           edge.setCons(new SDFDoubleEdgePropertyType(M));
-          edge.setDelay(new SDFDoubleEdgePropertyType(((double) edge.getProd().getValue() / in) * (double) edge.getDelay().getValue()));
+          edge.setDelay(new SDFDoubleEdgePropertyType(
+              ((double) edge.getProd().getValue() / in) * (double) edge.getDelay().getValue()));
         } else {
           // source port
           if (edge.getSource().getKind().equals("port")) {
             in = (double) edge.getCons().getValue();
             edge.setCons(new SDFDoubleEdgePropertyType(M / edge.getTarget().getNbRepeatAsInteger()));
             edge.setProd(new SDFDoubleEdgePropertyType(M));
-            edge.setDelay(new SDFDoubleEdgePropertyType(((double) edge.getCons().getValue() / in) * (double) edge.getDelay().getValue()));
+            edge.setDelay(new SDFDoubleEdgePropertyType(
+                ((double) edge.getCons().getValue() / in) * (double) edge.getDelay().getValue()));
           } else {
             in = (double) edge.getProd().getValue();
             edge.setProd(new SDFDoubleEdgePropertyType(M / edge.getSource().getNbRepeatAsInteger()));
             edge.setCons(new SDFDoubleEdgePropertyType(M / edge.getTarget().getNbRepeatAsInteger()));
-            edge.setDelay(new SDFDoubleEdgePropertyType(((double) edge.getProd().getValue() / in) * (double) (edge.getDelay().getValue())));
+            edge.setDelay(new SDFDoubleEdgePropertyType(
+                ((double) edge.getProd().getValue() / in) * (double) (edge.getDelay().getValue())));
           }
         }
       }

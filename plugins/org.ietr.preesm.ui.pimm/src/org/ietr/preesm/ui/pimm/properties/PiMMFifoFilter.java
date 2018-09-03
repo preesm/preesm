@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Romina Racca <romina.racca@gmail.com> (2013)
@@ -51,7 +51,8 @@ public class PiMMFifoFilter extends AbstractPropertySectionFilter {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.ui.platform.AbstractPropertySectionFilter#accept(org.eclipse.graphiti.mm.pictograms.PictogramElement)
+   * @see org.eclipse.graphiti.ui.platform.AbstractPropertySectionFilter#accept(org.eclipse.graphiti.mm.pictograms.
+   * PictogramElement)
    */
   @Override
   protected boolean accept(final PictogramElement pictogramElement) {

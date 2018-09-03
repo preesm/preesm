@@ -82,11 +82,13 @@ public abstract class SDFConsistency {
     }
     // Set actors repetition factor
     for (final SDFAbstractVertex actor : graph.vertexSet()) {
-      actor.setNbRepeat((int) ((SDFConsistency.reps.get(actor.getName()).getNumerator() * lcm) / SDFConsistency.reps.get(actor.getName()).getDenominator()));
+      actor.setNbRepeat((int) ((SDFConsistency.reps.get(actor.getName()).getNumerator() * lcm)
+          / SDFConsistency.reps.get(actor.getName()).getDenominator()));
     }
     // edge verification
     for (final SDFEdge e : graph.edgeSet()) {
-      if ((e.getSource().getNbRepeatAsInteger() * e.getProd().intValue()) != (e.getTarget().getNbRepeatAsInteger() * e.getCons().intValue())) {
+      if ((e.getSource().getNbRepeatAsInteger() * e.getProd().intValue()) != (e.getTarget().getNbRepeatAsInteger()
+          * e.getCons().intValue())) {
         timer.stop();
         System.err.println("Graph not consistent !! evaluated in " + timer.toString());
         return false;
@@ -126,7 +128,8 @@ public abstract class SDFConsistency {
       final SDFEdge e = a.getAssociatedEdge(output);
       final Fraction fa = SDFConsistency.reps.get(e.getTarget().getName());
       if (fa.getNumerator() == 0) {
-        final Fraction f = Fraction.getFraction(n.getNumerator() * e.getProd().intValue(), n.getDenominator() * e.getCons().intValue());
+        final Fraction f = Fraction.getFraction(n.getNumerator() * e.getProd().intValue(),
+            n.getDenominator() * e.getCons().intValue());
         SDFConsistency.SetReps(g, e.getTarget(), f.reduce());
       }
     }
@@ -136,7 +139,8 @@ public abstract class SDFConsistency {
       final SDFEdge e = a.getAssociatedEdge(input);
       final Fraction fa = SDFConsistency.reps.get(e.getSource().getName());
       if (fa.getNumerator() == 0) {
-        final Fraction f = Fraction.getFraction(n.getNumerator() * e.getCons().intValue(), n.getDenominator() * e.getProd().intValue());
+        final Fraction f = Fraction.getFraction(n.getNumerator() * e.getCons().intValue(),
+            n.getDenominator() * e.getProd().intValue());
         SDFConsistency.SetReps(g, e.getSource(), f.reduce());
       }
     }

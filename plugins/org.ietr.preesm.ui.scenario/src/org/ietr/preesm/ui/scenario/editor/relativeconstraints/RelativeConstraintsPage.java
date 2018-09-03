@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2015)
@@ -54,6 +54,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -101,7 +102,8 @@ public class RelativeConstraintsPage extends FormPage implements IPropertyListen
    * @param title
    *          the title
    */
-  public RelativeConstraintsPage(final PreesmScenario scenario, final FormEditor editor, final String id, final String title) {
+  public RelativeConstraintsPage(final PreesmScenario scenario, final FormEditor editor, final String id,
+      final String title) {
     super(editor, id, title);
 
     this.scenario = scenario;
@@ -123,15 +125,26 @@ public class RelativeConstraintsPage extends FormPage implements IPropertyListen
     form.setText(Messages.getString("RelativeConstraints.title"));
 
     final GridLayout layout = new GridLayout();
-    form.getBody().setLayout(layout);
+    final Composite body = form.getBody();
+    body.setLayout(layout);
 
-    // Timing file chooser section
-    createFileSection(managedForm, Messages.getString("RelativeConstraints.file"), Messages.getString("RelativeConstraints.fileDescription"),
-        Messages.getString("RelativeConstraints.fileEdit"), this.scenario.getTimingManager().getExcelFileURL(),
-        Messages.getString("RelativeConstraints.fileBrowseTitle"), "xls");
+    if (this.scenario.isProperlySet()) {
+      // Timing file chooser section
+      createFileSection(managedForm, Messages.getString("RelativeConstraints.file"),
+          Messages.getString("RelativeConstraints.fileDescription"), Messages.getString("RelativeConstraints.fileEdit"),
+          this.scenario.getTimingManager().getExcelFileURL(), Messages.getString("RelativeConstraints.fileBrowseTitle"),
+          "xls");
 
-    createRelativeConstraintsSection(managedForm, Messages.getString("RelativeConstraints.title"), Messages.getString("RelativeConstraints.description"));
-
+      createRelativeConstraintsSection(managedForm, Messages.getString("RelativeConstraints.title"),
+          Messages.getString("RelativeConstraints.description"));
+    } else {
+      final FormToolkit toolkit = managedForm.getToolkit();
+      final Label lbl = toolkit.createLabel(body,
+          "Please properly set Algorithm and Architecture paths on the overview tab, then save, close and "
+              + "reopen this file to enable other tabs.");
+      lbl.setEnabled(true);
+      body.setEnabled(false);
+    }
     managedForm.refresh();
     managedForm.reflow(true);
 
@@ -151,7 +164,8 @@ public class RelativeConstraintsPage extends FormPage implements IPropertyListen
 
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
-    final Composite container = createSection(managedForm, title, desc, 1, new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
+    final Composite container = createSection(managedForm, title, desc, 1,
+        new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
     final FormToolkit toolkit = managedForm.getToolkit();
 
     addTable(container, toolkit);
@@ -172,12 +186,13 @@ public class RelativeConstraintsPage extends FormPage implements IPropertyListen
    *          the grid data
    * @return the composite
    */
-  public Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns, final GridData gridData) {
+  public Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns,
+      final GridData gridData) {
 
     final ScrolledForm form = mform.getForm();
     final FormToolkit toolkit = mform.getToolkit();
-    final Section section = toolkit.createSection(form.getBody(),
-        ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    final Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
+        | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
     section.setText(title);
     section.setDescription(desc);
     toolkit.createCompositeSeparator(section);
@@ -210,7 +225,8 @@ public class RelativeConstraintsPage extends FormPage implements IPropertyListen
     final Composite tablecps = toolkit.createComposite(parent);
     tablecps.setVisible(true);
 
-    this.tableViewer = new TableViewer(tablecps, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
+    this.tableViewer = new TableViewer(tablecps,
+        SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
     final Table table = this.tableViewer.getTable();
     table.setLayout(new GridLayout());
     table.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -229,7 +245,8 @@ public class RelativeConstraintsPage extends FormPage implements IPropertyListen
     final TableColumn column2 = new TableColumn(table, SWT.NONE, 1);
     column2.setText(Messages.getString("RelativeConstraints.constraintColumn"));
 
-    this.tableViewer.addDoubleClickListener(e -> labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection()));
+    this.tableViewer
+        .addDoubleClickListener(e -> labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection()));
 
     final Table tref = table;
     final Composite comp = tablecps;
@@ -297,8 +314,8 @@ public class RelativeConstraintsPage extends FormPage implements IPropertyListen
    * @param fileExtension
    *          the file extension
    */
-  private void createFileSection(final IManagedForm mform, final String title, final String desc, final String fileEdit, final String initValue,
-      final String browseTitle, final String fileExtension) {
+  private void createFileSection(final IManagedForm mform, final String title, final String desc, final String fileEdit,
+      final String initValue, final String browseTitle, final String fileExtension) {
 
     final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
     gridData.heightHint = 120;
@@ -344,7 +361,8 @@ public class RelativeConstraintsPage extends FormPage implements IPropertyListen
     text.setLayoutData(gd);
 
     // Add a "Refresh" button to the scenario editor
-    final Button refreshButton = toolkit.createButton(client, Messages.getString("RelativeConstraints.fileRefresh"), SWT.PUSH);
+    final Button refreshButton = toolkit.createButton(client, Messages.getString("RelativeConstraints.fileRefresh"),
+        SWT.PUSH);
     refreshButton.addSelectionListener(new SelectionListener() {
 
       @Override
@@ -369,7 +387,8 @@ public class RelativeConstraintsPage extends FormPage implements IPropertyListen
     final SelectionAdapter browseAdapter = new FileSelectionAdapter(text, browseTitle, fileExtension);
     browseButton.addSelectionListener(browseAdapter);
 
-    final Button exportButton = toolkit.createButton(client, Messages.getString("RelativeConstraints.exportExcel"), SWT.PUSH);
+    final Button exportButton = toolkit.createButton(client, Messages.getString("RelativeConstraints.exportExcel"),
+        SWT.PUSH);
     exportButton.addSelectionListener(new ExcelRelativeConstraintsWriter(this.scenario));
 
   }

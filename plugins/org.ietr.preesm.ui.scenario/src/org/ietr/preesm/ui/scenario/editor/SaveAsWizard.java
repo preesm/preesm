@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
  *
@@ -110,7 +110,8 @@ public class SaveAsWizard extends Wizard implements INewWizard {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
+   * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench,
+   * org.eclipse.jface.viewers.IStructuredSelection)
    */
   @Override
   public void init(final IWorkbench workbench, final IStructuredSelection selection) {

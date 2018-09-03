@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
@@ -115,7 +115,8 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#addPortGA(org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm)
+   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#addPortGA(org.eclipse.graphiti.mm.algorithms.
+   * GraphicsAlgorithm)
    */
   @Override
   public GraphicsAlgorithm addPortGA(final GraphicsAlgorithm containerShape) {
@@ -127,7 +128,8 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
     rectangle.setBackground(manageColor(AddDataInputPortFeature.DATA_INPUT_PORT_BACKGROUND));
     rectangle.setLineWidth(1);
     final int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
-    gaService.setSize(rectangle, AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE, AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE);
+    gaService.setSize(rectangle, AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE,
+        AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE);
     gaService.setLocation(rectangle, 0, 1 + ((portFontHeight - AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE) / 2));
     return rectangle;
   }
@@ -135,7 +137,8 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#addPortLabel(org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm, java.lang.String)
+   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#addPortLabel(org.eclipse.graphiti.mm.algorithms.
+   * GraphicsAlgorithm, java.lang.String)
    */
   @Override
   public GraphicsAlgorithm addPortLabel(final GraphicsAlgorithm containerShape, final String portName) {
@@ -159,7 +162,8 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getNewPort(java.lang.String, org.ietr.preesm.experiment.model.pimm.ExecutableActor)
+   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getNewPort(java.lang.String,
+   * org.ietr.preesm.experiment.model.pimm.ExecutableActor)
    */
   @Override
   public Port getNewPort(final String portName, final ExecutableActor actor) {

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2012)
@@ -117,8 +117,9 @@ public class GMLMapperDAGImporter extends GMLImporter<SDFGraph, SDFAbstractVerte
 
     SDFAbstractVertex vertex;
     /*
-     * LinkedHashMap<String, String> attributes = new LinkedHashMap<String, String>(); for (int i = 0; i < vertexElt.getAttributes().getLength(); i++) {
-     * attributes.put(vertexElt.getAttributes().item(i).getNodeName(), vertexElt.getAttributes().item(i).getNodeValue()); }
+     * LinkedHashMap<String, String> attributes = new LinkedHashMap<String, String>(); for (int i = 0; i <
+     * vertexElt.getAttributes().getLength(); i++) { attributes.put(vertexElt.getAttributes().item(i).getNodeName(),
+     * vertexElt.getAttributes().item(i).getNodeValue()); }
      *
      * attributes.put("kind", SDFVertex.VERTEX);
      */
@@ -142,7 +143,8 @@ public class GMLMapperDAGImporter extends GMLImporter<SDFGraph, SDFAbstractVerte
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.importer.GMLImporter#parsePort(org.w3c.dom.Element, org.ietr.dftools.algorithm.model.AbstractGraph)
+   * @see org.ietr.dftools.algorithm.importer.GMLImporter#parsePort(org.w3c.dom.Element,
+   * org.ietr.dftools.algorithm.model.AbstractGraph)
    */
   @Override
   public SDFAbstractVertex parsePort(final Element portElt, final SDFGraph parentGraph) {

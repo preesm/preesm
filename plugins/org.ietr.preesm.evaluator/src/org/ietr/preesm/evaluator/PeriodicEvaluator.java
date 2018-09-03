@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * blaunay <bapt.launay@gmail.com> (2015)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -51,8 +51,8 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 
 // TODO: Auto-generated Javadoc
 /**
- * Main class used to compute the optimal periodic schedule and its throughput for a given SDF or IBSDF, returns the throughput and the graph normalized (such
- * that for each actor, prod and cons rates are the same).
+ * Main class used to compute the optimal periodic schedule and its throughput for a given SDF or IBSDF, returns the
+ * throughput and the graph normalized (such that for each actor, prod and cons rates are the same).
  *
  * @author blaunay
  */
@@ -61,12 +61,12 @@ public class PeriodicEvaluator extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
-   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
+   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
 
     double period;
     double throughput = 0;
@@ -89,7 +89,8 @@ public class PeriodicEvaluator extends AbstractTaskImplementation {
     // Find out if graph hierarchic (IBSDF) or not
     boolean hierarchical = false;
     for (final SDFAbstractVertex vertex : NormSDF.vertexSet()) {
-      hierarchical = hierarchical || ((vertex.getGraphDescription() != null) && (vertex.getGraphDescription() instanceof SDFGraph));
+      hierarchical = hierarchical
+          || ((vertex.getGraphDescription() != null) && (vertex.getGraphDescription() instanceof SDFGraph));
     }
 
     try {

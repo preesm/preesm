@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Jonathan Piat <jpiat@laas.fr> (2009 - 2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
@@ -195,7 +195,8 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
           this.maxInitIndex = index;
         }
       } catch (final NumberFormatException e) {
-        WorkflowLogger.getLogger().log(Level.SEVERE, "Badly formatted IDL interface, loop, init or init-i accepted : " + arg0.name());
+        WorkflowLogger.getLogger().log(Level.SEVERE,
+            "Badly formatted IDL interface, loop, init or init-i accepted : " + arg0.name());
       }
     } else if (arg0.name().equals("loop")) {
       // loop phase prototype is in the interphase "loop"
@@ -203,7 +204,8 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
       this.finalPrototypes.setLoopPrototype(this.currentPrototype);
       arg0.body.accept(this);
     } else {
-      WorkflowLogger.getLogger().log(Level.WARNING, "Ignored badly formatted IDL interface, loop, init or init-i accepted : " + arg0.name());
+      WorkflowLogger.getLogger().log(Level.WARNING,
+          "Ignored badly formatted IDL interface, loop, init or init-i accepted : " + arg0.name());
     }
   }
 

@@ -66,7 +66,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
  */
 public abstract class VariableImpl extends CommentableImpl implements Variable {
   /**
-   * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
    *
    * @see #getName()
    * @generated
@@ -76,7 +77,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 
   /**
    * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getName()
    * @generated
    * @ordered
@@ -84,7 +85,8 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
   protected String name = VariableImpl.NAME_EDEFAULT;
 
   /**
-   * The default value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * The default value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
    *
    * @see #getType()
    * @generated
@@ -94,7 +96,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 
   /**
    * The cached value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getType()
    * @generated
    * @ordered
@@ -102,8 +104,9 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
   protected String type = VariableImpl.TYPE_EDEFAULT;
 
   /**
-   * The cached value of the '{@link #getUsers() <em>Users</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * The cached value of the '{@link #getUsers() <em>Users</em>}' reference list. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   * 
    * @see #getUsers()
    * @generated
    * @ordered
@@ -222,7 +225,8 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
    */
   @Override
   public void setCreator(final Block newCreator) {
-    if ((newCreator != eInternalContainer()) || ((eContainerFeatureID() != CodegenPackage.VARIABLE__CREATOR) && (newCreator != null))) {
+    if ((newCreator != eInternalContainer())
+        || ((eContainerFeatureID() != CodegenPackage.VARIABLE__CREATOR) && (newCreator != null))) {
       if (EcoreUtil.isAncestor(this, newCreator)) {
         throw new IllegalArgumentException("Recursive containment not allowed for " + toString());
       }
@@ -251,7 +255,8 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
   @Override
   public EList<Block> getUsers() {
     if (this.users == null) {
-      this.users = new EObjectWithInverseResolvingEList.ManyInverse<>(Block.class, this, CodegenPackage.VARIABLE__USERS, CodegenPackage.BLOCK__DECLARATIONS);
+      this.users = new EObjectWithInverseResolvingEList.ManyInverse<>(Block.class, this,
+          CodegenPackage.VARIABLE__USERS, CodegenPackage.BLOCK__DECLARATIONS);
     }
     return this.users;
   }
@@ -296,7 +301,8 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
    * @generated
    */
   @Override
-  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID,
+      final NotificationChain msgs) {
     switch (featureID) {
       case CodegenPackage.VARIABLE__CREATOR:
         return basicSetCreator(null, msgs);
@@ -433,7 +439,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
       return super.toString();
     }
 
-    final StringBuffer result = new StringBuffer(super.toString());
+    final StringBuilder result = new StringBuilder(super.toString());
     result.append(" (name: ");
     result.append(this.name);
     result.append(", type: ");

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
@@ -146,7 +146,8 @@ public class StatEditorInput implements IEditorInput {
   public String getName() {
     if (this.abc instanceof LatencyAbc) {
       this.abc.updateFinalCosts();
-      return "Latency:" + ((LatencyAbc) this.abc).getFinalLatency() + " Cost:" + this.abc.getFinalCost() + " " + WorkflowLogger.getFormattedTime();
+      return "Latency:" + ((LatencyAbc) this.abc).getFinalLatency() + " Cost:" + this.abc.getFinalCost() + " "
+          + WorkflowLogger.getFormattedTime();
     } else {
       return "Stats " + WorkflowLogger.getFormattedTime();
     }

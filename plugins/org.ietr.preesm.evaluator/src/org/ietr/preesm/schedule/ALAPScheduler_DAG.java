@@ -89,7 +89,8 @@ public class ALAPScheduler_DAG {
           this.simulator.produce(sourceActor, -1);
 
           // set the finish date
-          final double startDate = this.simulator.getFinishDate(sourceActor) - this.simulator.getActorDuration(sourceActor);
+          final double startDate = this.simulator.getFinishDate(sourceActor)
+              - this.simulator.getActorDuration(sourceActor);
           this.simulator.setStartDate(sourceActor, startDate);
 
           // add the execution to the list

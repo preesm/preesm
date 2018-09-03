@@ -3,6 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2014)
  *
@@ -97,7 +98,8 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.func.ICreateConnection#canCreate(org.eclipse.graphiti.features.context.ICreateConnectionContext)
+   * @see org.eclipse.graphiti.func.ICreateConnection#canCreate(org.eclipse.graphiti.features.context.
+   * ICreateConnectionContext)
    */
   @Override
   public boolean canCreate(final ICreateConnectionContext context) {
@@ -120,8 +122,8 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
     if ((setter instanceof ConfigOutputPort) && !(targetObj instanceof Parameter)) {
       if (context.getTargetAnchor() != null) {
         // Create tooltip message
-        PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
-            "A dependency set by a config. output port can only target a parameter.");
+        PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(),
+            getDiagramBehavior(), "A dependency set by a config. output port can only target a parameter.");
       }
       return false;
     }
@@ -134,8 +136,8 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
       // Check that no dependency is connected to the ports
       if (((ConfigInputPort) target).getIncomingDependency() != null) {
         // Create tooltip message
-        PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
-            "A config port cannot be connected to several Dependencies");
+        PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(),
+            getDiagramBehavior(), "A config port cannot be connected to several Dependencies");
         return false;
       }
 
@@ -150,9 +152,11 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
     }
 
     // False if target is a config input/output interface
-    if (((targetObj instanceof Parameter) && ((Parameter) targetObj).isConfigurationInterface()) || (targetObj instanceof ConfigOutputInterface)) {
-      PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetPictogramElement().getGraphicsAlgorithm(), getDiagramBehavior(),
-          "Configuration Interfaces cannot be the getter of a dependency.\nCheck the inerface port instead.");
+    if (((targetObj instanceof Parameter) && ((Parameter) targetObj).isConfigurationInterface())
+        || (targetObj instanceof ConfigOutputInterface)) {
+      PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetPictogramElement().getGraphicsAlgorithm(),
+          getDiagramBehavior(),
+          "Configuration Interfaces cannot be the getter of a dependency.\nCheck the interface port instead.");
       return false;
     }
 
@@ -162,7 +166,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
       return true;
     }
 
-    // False if the target is an outputPort
+    // False if the target is a data port
     if ((target != null) && ((target instanceof DataOutputPort) || (target instanceof DataInputPort))) {
       // Create tooltip message
       PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
@@ -178,7 +182,8 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.func.ICreateConnection#canStartConnection(org.eclipse.graphiti.features.context.ICreateConnectionContext)
+   * @see org.eclipse.graphiti.func.ICreateConnection#canStartConnection(org.eclipse.graphiti.features.context.
+   * ICreateConnectionContext)
    */
   @Override
   public boolean canStartConnection(final ICreateConnectionContext context) {
@@ -215,7 +220,8 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.func.ICreateConnection#create(org.eclipse.graphiti.features.context.ICreateConnectionContext)
+   * @see
+   * org.eclipse.graphiti.func.ICreateConnection#create(org.eclipse.graphiti.features.context.ICreateConnectionContext)
    */
   @Override
   public Connection create(final ICreateConnectionContext context) {
@@ -249,7 +255,8 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
         // If the getter is an actor
         if (tgtObj instanceof ExecutableActor) {
           // Create a ConfigInputPort
-          final AbstractAddActorPortFeature addPortFeature = CreateDependencyFeature.canCreateConfigPort(tgtPE, getFeatureProvider(), "config_input");
+          final AbstractAddActorPortFeature addPortFeature = CreateDependencyFeature.canCreateConfigPort(tgtPE,
+              getFeatureProvider(), "config_input");
           if (addPortFeature != null) {
             final CustomContext targetContext = new CustomContext(new PictogramElement[] { tgtPE });
             // If Src is a Parameter (or config inputPort), give it as default port name
@@ -279,8 +286,10 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
     // failed or was aborted)
 
     if (getter instanceof DataPort) {
-      MessageDialog.openWarning(null, "Preesm Error", "Can not connect dependencies to data ports. Try connecting the dependency to the containing actor.\n"
-          + "\nNote: if you are trying to connect the dependency to an interface, drop its end on the interface name.");
+      MessageDialog.openWarning(null, "Preesm Error",
+          "Can not connect dependencies to data ports. Try connecting the dependency to the containing actor.\n"
+              + "\nNote: if you are trying to connect the dependency to an interface, drop its end on the "
+              + "interface name.");
       return null;
     }
 
@@ -344,8 +353,8 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
   }
 
   /**
-   * Creates a {@link Dependency} between the {@link ISetter} and the {@link ConfigInputPort}. Also add the created {@link Dependency} to the {@link PiGraph} of
-   * the current {@link Diagram}.
+   * Creates a {@link Dependency} between the {@link ISetter} and the {@link ConfigInputPort}. Also add the created
+   * {@link Dependency} to the {@link PiGraph} of the current {@link Diagram}.
    *
    * @param setter
    *          the source {@link ISetter} of the {@link Dependency}
@@ -371,7 +380,8 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
   }
 
   /**
-   * Method to check whether it is possible to create a Configuration {@link Port} for the given source/target {@link PictogramElement}.
+   * Method to check whether it is possible to create a Configuration {@link Port} for the given source/target
+   * {@link PictogramElement}.
    *
    * @param pe
    *          the {@link PictogramElement} tested
@@ -379,10 +389,11 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
    *          A {@link IFeatureProvider} for the diagram.
    * @param direction
    *          the direction of the port we want to create ("config_input" or "config_output")
-   * @return an {@link AbstractAddActorPortFeature} if the given {@link PictogramElement} can create a {@link Port} with the given direction. Return
-   *         <code>null</code> else.
+   * @return an {@link AbstractAddActorPortFeature} if the given {@link PictogramElement} can create a {@link Port} with
+   *         the given direction. Return <code>null</code> else.
    */
-  protected static AbstractAddActorPortFeature canCreateConfigPort(final PictogramElement pe, final IFeatureProvider fp, final String direction) {
+  protected static AbstractAddActorPortFeature canCreateConfigPort(final PictogramElement pe, final IFeatureProvider fp,
+      final String direction) {
     boolean canCreatePort = false;
     final PictogramElement peSource = pe;
 

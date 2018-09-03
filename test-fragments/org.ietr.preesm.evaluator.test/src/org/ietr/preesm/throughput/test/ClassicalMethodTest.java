@@ -98,7 +98,8 @@ public class ClassicalMethodTest {
 
     // RV(top-graph) = [A=2, B=3, C=3]
     // RV(sub-graph) = [D=2, E=6, F=4]
-    // after computing the RV of the subgraph the consumption/production rate of the interfaces are multiplied by their RV, then RV of interfaces is set to 1
+    // after computing the RV of the subgraph the consumption/production rate of the interfaces are multiplied by their
+    // RV, then RV of interfaces is set to 1
     // the resulted rates of edges : aE=(6,1); Fc=(3,12)
 
     // create the subgraph

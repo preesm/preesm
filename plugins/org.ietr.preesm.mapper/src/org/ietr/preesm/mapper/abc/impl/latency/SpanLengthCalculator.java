@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2012)
  *
@@ -71,8 +71,8 @@ public class SpanLengthCalculator extends InfiniteHomogeneousAbc {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public SpanLengthCalculator(final AbcParameters params, final MapperDAG dag, final Design archi, final TaskSchedType taskSchedType,
-      final PreesmScenario scenario) throws WorkflowException {
+  public SpanLengthCalculator(final AbcParameters params, final MapperDAG dag, final Design archi,
+      final TaskSchedType taskSchedType, final PreesmScenario scenario) throws WorkflowException {
     super(params, dag, archi, taskSchedType, scenario);
 
     updateTimings();
@@ -85,7 +85,8 @@ public class SpanLengthCalculator extends InfiniteHomogeneousAbc {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc#setEdgeCost(org.ietr.preesm. mapper.model.MapperDAGEdge)
+   * @see org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc#setEdgeCost(org.ietr.preesm.
+   * mapper.model.MapperDAGEdge)
    */
   @Override
   protected void setEdgeCost(final MapperDAGEdge edge) {

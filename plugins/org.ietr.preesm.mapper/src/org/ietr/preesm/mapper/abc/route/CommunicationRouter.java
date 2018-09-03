@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2017)
@@ -111,8 +111,8 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
    * @param orderManager
    *          the order manager
    */
-  public CommunicationRouter(final Design archi, final PreesmScenario scenario, final MapperDAG implementation, final IEdgeSched edgeScheduler,
-      final OrderManager orderManager) {
+  public CommunicationRouter(final Design archi, final PreesmScenario scenario, final MapperDAG implementation,
+      final IEdgeSched edgeScheduler, final OrderManager orderManager) {
     super(implementation, edgeScheduler, orderManager);
     this.calculator = RouteCalculator.getInstance(archi, scenario);
 
@@ -168,7 +168,8 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
             // Adds send and receive vertices and links them
             for (final AbstractRouteStep step : route) {
               final CommunicationRouterImplementer impl = getImplementer(step.getType());
-              lastTransaction = impl.addVertices(step, currentEdge, localTransactionManager, type, routeStepIndex, lastTransaction, null);
+              lastTransaction = impl.addVertices(step, currentEdge, localTransactionManager, type, routeStepIndex,
+                  lastTransaction, null);
               routeStepIndex++;
             }
           }
@@ -245,7 +246,8 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
    * @param createdVertices
    *          the created vertices
    */
-  public void addVertices(final Map<MapperDAGEdge, Route> transferEdges, final int type, final List<Object> createdVertices) {
+  public void addVertices(final Map<MapperDAGEdge, Route> transferEdges, final int type,
+      final List<Object> createdVertices) {
     final TransactionManager localTransactionManager = new TransactionManager(createdVertices);
 
     for (final MapperDAGEdge edge : transferEdges.keySet()) {
@@ -253,7 +255,8 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
       Transaction lastTransaction = null;
       for (final AbstractRouteStep step : transferEdges.get(edge)) {
         final CommunicationRouterImplementer impl = getImplementer(step.getType());
-        lastTransaction = impl.addVertices(step, edge, localTransactionManager, type, routeStepIndex, lastTransaction, createdVertices);
+        lastTransaction = impl.addVertices(step, edge, localTransactionManager, type, routeStepIndex, lastTransaction,
+            createdVertices);
 
         routeStepIndex++;
       }
@@ -294,7 +297,8 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.mapper.abc.route.AbstractCommunicationRouter#getRoute(org.ietr.preesm.mapper. model.MapperDAGEdge)
+   * @see org.ietr.preesm.mapper.abc.route.AbstractCommunicationRouter#getRoute(org.ietr.preesm.mapper.
+   * model.MapperDAGEdge)
    */
   @Override
   public Route getRoute(final MapperDAGEdge edge) {

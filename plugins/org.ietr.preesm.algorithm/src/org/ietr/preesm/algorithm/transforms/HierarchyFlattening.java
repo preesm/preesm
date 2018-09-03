@@ -3,6 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2016 - 2017)
  * Jonathan Piat <jpiat@laas.fr> (2008 - 2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
@@ -43,6 +44,7 @@ package org.ietr.preesm.algorithm.transforms;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.transformations.IbsdfFlattener;
@@ -67,16 +69,18 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
-   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
+   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
     final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
     final String depthS = parameters.get("depth");
+    StopWatch timer = new StopWatch();
+    timer.start();
 
     int depth;
     if (depthS != null) {
@@ -86,16 +90,20 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
     }
 
     if (depth == 0) {
-      outputs.put("SDF", algorithm.clone()); /* we now extract repetition vector into non-flattened hierarchical actors. */
+      outputs.put("SDF",
+          algorithm.clone()); /* we now extract repetition vector into non-flattened hierarchical actors. */
       HierarchyFlattening.LOGGER.log(Level.INFO, "flattening depth = 0: no flattening");
       return outputs;
+    } else if (depth < 0) {
+      depth = Integer.MAX_VALUE;
     }
 
     HierarchyFlattening.LOGGER.setLevel(Level.FINEST);
     VisitorOutput.setLogger(HierarchyFlattening.LOGGER);
     final ConsistencyChecker checkConsistent = new ConsistencyChecker();
     if (checkConsistent.verifyGraph(algorithm)) {
-      HierarchyFlattening.LOGGER.log(Level.FINER, "flattening application " + algorithm.getName() + " at level " + depth);
+      HierarchyFlattening.LOGGER.log(Level.FINER,
+          "flattening application " + algorithm.getName() + " at level " + depth);
 
       final IbsdfFlattener flattener = new IbsdfFlattener(algorithm, depth);
       VisitorOutput.setLogger(HierarchyFlattening.LOGGER);
@@ -127,6 +135,9 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
       outputs.put("SDF", algorithm.clone());
       throw (new WorkflowException("Inconsistent Hierarchy, graph can't be flattened"));
     }
+
+    timer.stop();
+    WorkflowLogger.getLogger().log(Level.INFO, "Flattening: " + timer.toString() + "s.");
 
     return outputs;
   }

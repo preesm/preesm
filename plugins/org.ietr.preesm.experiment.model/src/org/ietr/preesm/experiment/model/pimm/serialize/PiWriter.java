@@ -3,6 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2014)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2013 - 2014)
@@ -63,6 +64,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
@@ -73,6 +75,7 @@ import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.InterfaceKind;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
+import org.ietr.preesm.experiment.model.pimm.NonExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -101,8 +104,8 @@ public class PiWriter {
   private final URI documentURI;
 
   /**
-   * This LinkedHashMap associates a List to each <b>element</b> (graph, node, edge, port) of a Pi description. For each <b>element</b>, a list of {@link Key} s
-   * is associated. A {@link Key} can be seen as an attribute of this element.
+   * This LinkedHashMap associates a List to each <b>element</b> (graph, node, edge, port) of a Pi description. For each
+   * <b>element</b>, a list of {@link Key} s is associated. A {@link Key} can be seen as an attribute of this element.
    */
   protected Map<String, List<Key>> elementKeys;
 
@@ -267,7 +270,8 @@ public class PiWriter {
   }
 
   /**
-   * Create and add a node {@link Element} to the given parent {@link Element} for the given {@link AbstractActor} and write its informations.
+   * Create and add a node {@link Element} to the given parent {@link Element} for the given {@link AbstractActor} and
+   * write its informations.
    *
    * @param graphElt
    *          The parent element of the node element (i.e. the graph of the document)
@@ -291,7 +295,6 @@ public class PiWriter {
     } else if (abstractActor instanceof InterfaceActor) {
       writeInterfaceVertex(vertexElt, (InterfaceActor) abstractActor);
     }
-
     // TODO addProperties() of the vertex
   }
 
@@ -325,8 +328,8 @@ public class PiWriter {
   }
 
   /**
-   * Add a data child {@link Element} to the parent {@link Element} whit the given key name and the given content. If the {@link Key} does not exist yet, it
-   * will be created automatically.
+   * Add a data child {@link Element} to the parent {@link Element} whit the given key name and the given content. If
+   * the {@link Key} does not exist yet, it will be created automatically.
    *
    * @param parentElt
    *          The element to which the data is added
@@ -350,17 +353,44 @@ public class PiWriter {
    * @param delay
    *          the {@link Delay} to serialize
    */
-  protected void writeDelay(final Element fifoElt, final Delay delay) {
-    writeDataElt(fifoElt, PiIdentifiers.DELAY, null);
-    fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, delay.getSizeExpression().getExpressionString());
-    // TODO when delay class will be updated, modify the writer/parser.
-    // Maybe a specific element will be needed to store the Expression
-    // associated to a delay as well as it .h file storing the default value
-    // of tokens.
+  protected void writeDelayVertex(final Element graphElt, final Delay delay) {
+    // Add the node to the document
+    final Element vertexElt = appendChild(graphElt, PiIdentifiers.NODE);
+
+    // Set the unique ID of the node (equal to the vertex name)
+    vertexElt.setAttribute(PiIdentifiers.DELAY_NAME, delay.getId());
+
+    // Set the delay attribute to the node
+    vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.DELAY);
+
+    // Writes the persistence level of the delay
+    vertexElt.setAttribute(PiIdentifiers.DELAY_PERSISTENCE_LEVEL, delay.getLevel().getLiteral());
+
+    // Write setter and getter names if delay has any
+    final DelayActor actor = delay.getActor();
+    final String setterName = delay.hasSetterActor() ? actor.getSetterActor().getName() : "";
+    vertexElt.setAttribute(PiIdentifiers.DELAY_SETTER, setterName);
+    final String getterName = delay.hasGetterActor() ? actor.getGetterActor().getName() : "";
+    vertexElt.setAttribute(PiIdentifiers.DELAY_GETTER, getterName);
+    vertexElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, delay.getSizeExpression().getExpressionString());
+
+    // Checks if the delay has refinement in case of no setter is provided
+    if (!delay.hasSetterActor()) {
+      final Refinement refinement = actor.getRefinement();
+      if ((refinement != null) && (refinement instanceof CHeaderRefinement)) {
+        writeRefinement(vertexElt, refinement);
+      }
+    }
+
+    if (actor != null) {
+      writePorts(vertexElt, actor.getDataInputPorts());
+      writePorts(vertexElt, actor.getDataOutputPorts());
+    }
   }
 
   /**
-   * Create and add a node {@link Element} to the given parent {@link Element} for the given {@link Dependency} and write its informations.
+   * Create and add a node {@link Element} to the given parent {@link Element} for the given {@link Dependency} and
+   * write its informations.
    *
    * @param graphElt
    *          The parent element of the node element (i.e. the graph of the document)
@@ -393,7 +423,8 @@ public class PiWriter {
     }
 
     if (source == null) {
-      throw new RuntimeException("Setter of the dependency has a type not supported by the writer: " + setter.getClass());
+      throw new RuntimeException(
+          "Setter of the dependency has a type not supported by the writer: " + setter.getClass());
     }
     dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_SOURCE, source.getName());
     if (setter instanceof ConfigOutputPort) {
@@ -417,7 +448,8 @@ public class PiWriter {
   }
 
   /**
-   * Create and add a node {@link Element} to the given parent {@link Element} for the given fifo and write its informations.
+   * Create and add a node {@link Element} to the given parent {@link Element} for the given fifo and write its
+   * informations.
    *
    * @param graphElt
    *          The parent element of the node element (i.e. the graph of the document)
@@ -439,7 +471,8 @@ public class PiWriter {
     fifoElt.setAttribute(PiIdentifiers.FIFO_TARGET_PORT, fifo.getTargetPort().getName());
 
     if (fifo.getDelay() != null) {
-      writeDelay(fifoElt, fifo.getDelay());
+      writeDataElt(fifoElt, PiIdentifiers.DELAY, fifo.getDelay().getId());
+      fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, fifo.getDelay().getSizeExpression().getExpressionString());
     }
     // TODO other Fifo properties (if any)
   }
@@ -465,10 +498,22 @@ public class PiWriter {
 
     // Write the vertices of the graph
     for (final AbstractActor actor : graph.getActors()) {
+      // ignore all non executable actors
+      if (actor instanceof NonExecutableActor) {
+        continue;
+      }
       writeAbstractActor(graphElt, actor);
     }
 
-    for (final Fifo fifo : graph.getFifos()) {
+    for (final Delay delay : graph.getDelays()) {
+      writeDelayVertex(graphElt, delay);
+    }
+
+    // For the diagram creation, FIFO with delays need to be written / parse first
+    for (final Fifo fifo : graph.getFifosWithDelay()) {
+      writeFifos(graphElt, fifo);
+    }
+    for (final Fifo fifo : graph.getFifosWithoutDelay()) {
       writeFifos(graphElt, fifo);
     }
 
@@ -518,7 +563,8 @@ public class PiWriter {
   }
 
   /**
-   * Create and add a node {@link Element} to the given parent {@link Element} for the given parameter and write its informations.
+   * Create and add a node {@link Element} to the given parent {@link Element} for the given parameter and write its
+   * informations.
    *
    * @param graphElt
    *          The parent element of the node element (i.e. the graph of the document)
@@ -586,7 +632,8 @@ public class PiWriter {
       switch (port.getKind()) {
         case DATA_INPUT:
         case DATA_OUTPUT:
-          portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION, ((DataPort) port).getPortRateExpression().getExpressionString());
+          portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION,
+              ((DataPort) port).getPortRateExpression().getExpressionString());
           break;
         case CFG_INPUT:
         case CFG_OUTPUT:
@@ -621,7 +668,10 @@ public class PiWriter {
       writeDataElt(vertexElt, PiIdentifiers.REFINEMENT, refinementPath.makeRelative().toPortableString());
       if (refinement instanceof CHeaderRefinement) {
         final CHeaderRefinement hrefinement = (CHeaderRefinement) refinement;
-        writeFunctionPrototype(vertexElt, hrefinement.getLoopPrototype(), PiIdentifiers.REFINEMENT_LOOP);
+        // Special case of the delay that only has an INIT refinement
+        if (hrefinement.getLoopPrototype() != null) {
+          writeFunctionPrototype(vertexElt, hrefinement.getLoopPrototype(), PiIdentifiers.REFINEMENT_LOOP);
+        }
         if (hrefinement.getInitPrototype() != null) {
           writeFunctionPrototype(vertexElt, hrefinement.getInitPrototype(), PiIdentifiers.REFINEMENT_INIT);
         }
@@ -630,7 +680,8 @@ public class PiWriter {
   }
 
   /**
-   * Returns an IPath without the project name (project relative IPath) if the file pointed by path is contained by the same project as the file we write.
+   * Returns an IPath without the project name (project relative IPath) if the file pointed by path is contained by the
+   * same project as the file we write.
    *
    * @param path
    *          the IPath to make project relative
@@ -661,7 +712,8 @@ public class PiWriter {
    * @param functionName
    *          the function name
    */
-  private void writeFunctionPrototype(final Element vertexElt, final FunctionPrototype prototype, final String functionName) {
+  private void writeFunctionPrototype(final Element vertexElt, final FunctionPrototype prototype,
+      final String functionName) {
     final Element protoElt = appendChild(vertexElt, functionName);
     protoElt.setAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME, prototype.getName());
     for (final FunctionParameter p : prototype.getParameters()) {
@@ -686,8 +738,8 @@ public class PiWriter {
   }
 
   /**
-   * Write information of the {@link Actor} in the given {@link Element}. The {@link AbstractActor} serialized by this method is either: {@link BroadcastActor},
-   * {@link JoinActor}, {@link ForkActor}, and {@link RoundBufferActor}.
+   * Write information of the {@link Actor} in the given {@link Element}. The {@link AbstractActor} serialized by this
+   * method is either: {@link BroadcastActor}, {@link JoinActor}, {@link ForkActor}, and {@link RoundBufferActor}.
    *
    * @param vertexElt
    *          The {@link Element} to write

@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -215,8 +216,23 @@ public class PiIdentifiers {
   // DELAY
   public static final String DELAY = "delay";
 
+  /** The Constant DELAY_NAME. */
+  public static final String DELAY_NAME = PiIdentifiers.ID;
+
+  /** The Constant DELAY_PERSISTENCE_LEVEL. */
+  public static final String DELAY_PERSISTENCE_LEVEL = "level";
+
   /** The Constant DELAY_EXPRESSION. */
   public static final String DELAY_EXPRESSION = PiIdentifiers.EXPR;
+
+  /** The Constant DELAY_REFINEMENT_INIT */
+  public static final String DELAY_REFINEMENT = PiIdentifiers.REFINEMENT;
+
+  /** The Constant DELAY_SETTER */
+  public static final String DELAY_SETTER = "setter";
+
+  /** The Constant DELAY_GETTER */
+  public static final String DELAY_GETTER = "getter";
 
   /** The Constant DEPENDENCY. */
   // DEPENDENCIES

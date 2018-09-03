@@ -1,6 +1,46 @@
 PREESM Changelog
 ================
 
+## Release version 2.14.0
+*2018.09.03*
+
+### New Feature
+* Add support for Delay initialization:
+  * Extand semantic of Delay in the PiSDF Model;
+  * Add setter and getter actors for intializing and flushing delays;
+  * Add support in standard passes (use PiMM to SRDAG);
+  * Add graphical support in PiSDF Editor (partial - autolayout can fail when using delay innitialization);
+* Add prototype of SyncOptimizer: remove redundant synchronizations when working with zero-copy memories;
+* Add sample JSon I/O for schedule/timing;
+
+### Changes
+* Replace deprecated DAGIterator with TopologicalDAGIterator;
+* Enable XCore codegen plugin back in Maven (https://github.com/eclipse/xtext/issues/1233);
+* Properly display errors in a dialog when generating diagram from .pi file fails;
+* Update MapperDAG to keep a reference to the PiSDF; Refactor constructor accordingly;
+* Update MathFunctionHelper to have lcm/gcd on longs;
+* Refactor schedulers (and remove obsolete one);
+* Flatten everything when depth level is set to negative values;
+* Fix spider codegen:
+  * Set delay persistence to have the same default behavior as Preesm;
+  * Fix indentation;
+* Minor refactoring;
+* Update coding policies to 1.3.0;
+  * also fix code;
+* Improve scenario editor;
+* Update external dependencies to [3.3.0,4.0.0);
+* Update external Graphiti to [1.10.0,1.0.0);
+* Update external DFTools to [1.9.0,2.0.0);
+* All objects in the codegen model are now able to hold comments;
+* Fix Hierarchical code generator: properly call IBSDF Flattener with -1 to flatten everything;
+* Add ScheduledDAGIterator that iterates over a scheduled DAG vertices in the scheduled order;
+* Fix old workflow: if persistent property is not set on delays, use permanent behavior by default;
+
+### Bug fix
+* Fix issue #62
+* Fix issue #61 - include spider codegen;
+* Fix issue #68
+
 ## Release version 2.13.0
 *2018.07.09*
 

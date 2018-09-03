@@ -75,8 +75,9 @@ import org.ietr.preesm.ui.scenario.editor.PreesmAlgorithmTreeContentProvider;
 
 // TODO: Auto-generated Javadoc
 /**
- * Listener of the check state of both the PAPI component and the PAPI event tables but also of the selection modification of the current core definition. It
- * updates the check Papify configuration depending on the PapifyConf groups in the scenario
+ * Listener of the check state of both the PAPI component and the PAPI event tables but also of the selection
+ * modification of the current core definition. It updates the check Papify configuration depending on the PapifyConf
+ * groups in the scenario
  *
  * @author dmadronal
  */
@@ -124,8 +125,8 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    * @param propertyListener
    *          the property listener
    */
-  public void setComponentTableViewer(final CheckboxTableViewer tableViewer, final PapifyComponentListContentProvider contentProvider,
-      final IPropertyListener propertyListener) {
+  public void setComponentTableViewer(final CheckboxTableViewer tableViewer,
+      final PapifyComponentListContentProvider contentProvider, final IPropertyListener propertyListener) {
     this.componentTableViewer = tableViewer;
     this.componentContentProvider = contentProvider;
     this.propertyListener = propertyListener;
@@ -141,8 +142,8 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    * @param propertyListener
    *          the property listener
    */
-  public void setEventTableViewer(final CheckboxTableViewer tableViewer, final PapifyEventListContentProvider contentProvider,
-      final IPropertyListener propertyListener) {
+  public void setEventTableViewer(final CheckboxTableViewer tableViewer,
+      final PapifyEventListContentProvider contentProvider, final IPropertyListener propertyListener) {
     this.eventTableViewer = tableViewer;
     this.eventContentProvider = contentProvider;
     this.propertyListener = propertyListener;
@@ -249,7 +250,8 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
       final Set<PapiComponent> pcgSet = new LinkedHashSet<>();
 
       if ((this.currentOpId != null) && (papiComponents != null)) {
-        final PapifyConfig pcgSetRead = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroups(this.currentOpId);
+        final PapifyConfig pcgSetRead = this.scenario.getPapifyConfigManager()
+            .getCorePapifyConfigGroups(this.currentOpId);
         if ((pcgSetRead != null) && (pcgSetRead.getPAPIComponent() != null)) {
           pcgSet.add(pcgSetRead.getPAPIComponent());
         }
@@ -267,7 +269,8 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
       Set<PapiEvent> pegSetfinal = new LinkedHashSet<>();
 
       if ((this.currentOpId != null) && (papiEvents != null)) {
-        final PapifyConfig pegSetRead = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroups(this.currentOpId);
+        final PapifyConfig pegSetRead = this.scenario.getPapifyConfigManager()
+            .getCorePapifyConfigGroups(this.currentOpId);
         if ((pegSetRead != null) && !pegSetRead.getPAPIEvents().isEmpty()) {
           pegSetfinal = pegSetRead.getPAPIEvents();
         }
@@ -326,7 +329,8 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
       try {
         final PiGraph graph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
         for (final AbstractActor vertex : graph.getAllActors()) {
-          if (!(vertex instanceof PiGraph) && !(vertex instanceof DataInputInterface) && !(vertex instanceof DataOutputInterface)) {
+          if (!(vertex instanceof PiGraph) && !(vertex instanceof DataInputInterface)
+              && !(vertex instanceof DataOutputInterface)) {
             finalName = vertex.getVertexPath().substring(vertex.getVertexPath().indexOf('/') + 1);
             result.add(finalName);
           }
@@ -362,15 +366,15 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
   }
 
-  public void setTableViewer(final CheckboxTableViewer tableviewer, final PreesmAlgorithmTreeContentProvider contentProvider2,
-      final IPropertyListener listener) {
+  public void setTableViewer(final CheckboxTableViewer tableviewer,
+      final PreesmAlgorithmTreeContentProvider contentProvider2, final IPropertyListener listener) {
     // TODO Auto-generated method stub
 
   }
 
   @Override
-  public void setTreeViewer(final CheckboxTreeViewer treeViewer, final PreesmAlgorithmTreeContentProvider contentProvider,
-      final IPropertyListener propertyListener) {
+  public void setTreeViewer(final CheckboxTreeViewer treeViewer,
+      final PreesmAlgorithmTreeContentProvider contentProvider, final IPropertyListener propertyListener) {
     // TODO Auto-generated method stub
 
   }

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
@@ -190,7 +190,8 @@ public class RouteCalculator {
    * @param alreadyVisitedNodes
    *          the already visited nodes
    */
-  private void exploreRoute(final ComponentInstance source, final ComponentInstance node, final List<ComponentInstance> alreadyVisitedNodes) {
+  private void exploreRoute(final ComponentInstance source, final ComponentInstance node,
+      final List<ComponentInstance> alreadyVisitedNodes) {
 
     // Iterating on outgoing and undirected edges
     final Set<Link> outgoingAndUndirected = new LinkedHashSet<>();
@@ -251,7 +252,8 @@ public class RouteCalculator {
                 // routes become available
                 if (table.getBestRoute(src, tgt) == null) {
                   table.addRoute(src, tgt, compoundRoute);
-                } else if (table.getBestRoute(src, tgt).evaluateTransferCost(averageDataSize) > compoundRoute.evaluateTransferCost(averageDataSize)) {
+                } else if (table.getBestRoute(src, tgt).evaluateTransferCost(averageDataSize) > compoundRoute
+                    .evaluateTransferCost(averageDataSize)) {
                   table.removeRoutes(src, tgt);
                   table.addRoute(src, tgt, compoundRoute);
                 }

@@ -3,6 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2016)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -85,9 +86,8 @@ public class StaticPiMM2SDFLauncher {
     final Map<Parameter, Integer> parametersValues = getParametersValues();
 
     // Visitor creating the SDFGraph
-    StaticPiMM2SDFVisitor visitor;
     final PiGraphExecution execution = new PiGraphExecution(parametersValues);
-    visitor = new StaticPiMM2SDFVisitor(execution);
+    final StaticPiMM2SDFVisitor visitor = new StaticPiMM2SDFVisitor(execution);
     visitor.doSwitch(this.graph);
 
     result = visitor.getResult();
@@ -109,7 +109,8 @@ public class StaticPiMM2SDFLauncher {
     for (final ParameterValue paramValue : parameterValues) {
       switch (paramValue.getType()) {
         case ACTOR_DEPENDENT:
-          throw new StaticPiMM2SDFException("Parameter " + paramValue.getName() + " is depends on a configuration actor. It is thus impossible to use the"
+          throw new StaticPiMM2SDFException("Parameter " + paramValue.getName()
+              + " is depends on a configuration actor. It is thus impossible to use the"
               + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF"
               + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
         case INDEPENDENT:

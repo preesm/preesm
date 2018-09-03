@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
@@ -40,7 +40,8 @@ import java.util.List;
 
 // TODO: Auto-generated Javadoc
 /**
- * Transactions are used because these actions can be created and stored while going through a graph and then executed altogether afterwards in the right order.
+ * Transactions are used because these actions can be created and stored while going through a graph and then executed
+ * altogether afterwards in the right order.
  *
  * @author mpelcat
  */

@@ -73,9 +73,10 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.script.MemoryScriptEngine;
 
 /**
- * This class is used to perform the clusterization (loop IR builder and memory allocation). It is used to set the working memory of each non flattened
- * hierarchical actor. It builds up the loops IR for each clusterized actor. This class automates what is described in Shuvra's paper: "APGAN and RPMC:
- * Complementary Heuristics for Translation DSP Block Diagrams into Efficient Software Implementations" See section 2.1 Clustering of the paper.
+ * This class is used to perform the clusterization (loop IR builder and memory allocation). It is used to set the
+ * working memory of each non flattened hierarchical actor. It builds up the loops IR for each clusterized actor. This
+ * class automates what is described in Shuvra's paper: "APGAN and RPMC: Complementary Heuristics for Translation DSP
+ * Block Diagrams into Efficient Software Implementations" See section 2.1 Clustering of the paper.
  *
  * @author jhascoet
  */
@@ -229,7 +230,8 @@ public class HSDFBuildLoops {
 
   private SDFGraph graph = null;
 
-  private List<SDFAbstractVertex> getClusteringVertexes(final List<SDFAbstractVertex> vertexes) throws WorkflowException {
+  private List<SDFAbstractVertex> getClusteringVertexes(final List<SDFAbstractVertex> vertexes)
+      throws WorkflowException {
     if (vertexes.isEmpty() == true) {
       throw new WorkflowException("getClusteringVertexes failed vertexes is empty");
     }
@@ -299,8 +301,8 @@ public class HSDFBuildLoops {
     return 0;
   }
 
-  private SDFAbstractVertex generatePairedClusteredVertex(final int pgcm, final SDFAbstractVertex left, final SDFAbstractVertex right)
-      throws WorkflowException, SDF4JException {
+  private SDFAbstractVertex generatePairedClusteredVertex(final int pgcm, final SDFAbstractVertex left,
+      final SDFAbstractVertex right) throws WorkflowException, SDF4JException {
 
     // execution order left ---> right
 
@@ -398,7 +400,8 @@ public class HSDFBuildLoops {
 
   private void recursivePrintClustSched(final AbstractClust seq) throws SDF4JException {
     if (seq instanceof ClustVertex) {
-      this.clustSchedString += "(" + Integer.toString(seq.getRepeat()) + "-" + ((ClustVertex) seq).getVertex().getName() + ")";
+      this.clustSchedString += "(" + Integer.toString(seq.getRepeat()) + "-" + ((ClustVertex) seq).getVertex().getName()
+          + ")";
     } else if (seq instanceof ClustSequence) {
       this.clustSchedString += seq.getRepeat() + "(";
       for (final AbstractClust s : ((ClustSequence) seq).getSeq()) {
@@ -419,7 +422,8 @@ public class HSDFBuildLoops {
     this.clustSchedString = "";
   }
 
-  private AbstractClust recursiveGetLoopClust(final AbstractClust seq, final List<AbstractClust> getLoopClusterList) throws SDF4JException {
+  private AbstractClust recursiveGetLoopClust(final AbstractClust seq, final List<AbstractClust> getLoopClusterList)
+      throws SDF4JException {
     if (seq instanceof ClustVertex) {
       if (getLoopClusterList.contains(seq) == false) {
         getLoopClusterList.add(seq);
@@ -455,7 +459,8 @@ public class HSDFBuildLoops {
   private List<AbstractClust> getLoopClusterListV2 = null;
 
   /**
-   * Clustering sequence getters. Initialized the sequence getters to retrieve loop sequence from a top level AbstractClust.
+   * Clustering sequence getters. Initialized the sequence getters to retrieve loop sequence from a top level
+   * AbstractClust.
    */
   public AbstractClust getLoopClustFirstV2(final AbstractClust a) throws SDF4JException {
     this.getLoopClusterListV2 = new ArrayList<>();
@@ -463,7 +468,8 @@ public class HSDFBuildLoops {
     return getLoopClustV2(a);
   }
 
-  private AbstractClust recursiveGetLoopClustV2(final AbstractClust seq, final List<AbstractClust> getLoopClusterList) throws SDF4JException {
+  private AbstractClust recursiveGetLoopClustV2(final AbstractClust seq, final List<AbstractClust> getLoopClusterList)
+      throws SDF4JException {
     if (seq instanceof ClustVertex) {
       if (getLoopClusterList.contains(seq) == false) {
         getLoopClusterList.add(seq);
@@ -498,9 +504,11 @@ public class HSDFBuildLoops {
   }
 
   /**
-   * Generate the clustered IR. It takes as input the hierarchical actor (graph) and returns the sequence of loops to generate.
+   * Generate the clustered IR. It takes as input the hierarchical actor (graph) and returns the sequence of loops to
+   * generate.
    */
-  public AbstractClust generateClustering(final SDFGraph inGraph) throws WorkflowException, SDF4JException, InvalidExpressionException {
+  public AbstractClust generateClustering(final SDFGraph inGraph)
+      throws WorkflowException, SDF4JException, InvalidExpressionException {
 
     // deep clone of graph SDF
     this.graph = inGraph.clone();
@@ -541,7 +549,8 @@ public class HSDFBuildLoops {
       }
 
       // clusterized at graph level the choosen actors (graph transfo)
-      final SDFAbstractVertex clusteredVertex = generatePairedClusteredVertex(pgcm, current.get(0)/* left */, current.get(1)/* right */);
+      final SDFAbstractVertex clusteredVertex = generatePairedClusteredVertex(pgcm, current.get(0)/* left */,
+          current.get(1)/* right */);
       vertexesCpy.removeAll(current);
       vertexesCpy.add(clusteredVertex);
 
@@ -620,10 +629,11 @@ public class HSDFBuildLoops {
 
       // graph.addEdge(source, sourcePort, target, targetPort)
       /*
-       * for(SDFEdge e : getInEdges(clusteredVertex)){ graph.addEdge(e.getSource(), e.getTarget()); } for(SDFEdge e : getOutEdges(clusteredVertex)){
-       * graph.addEdge(e.getSource(), e.getTarget()); }
+       * for(SDFEdge e : getInEdges(clusteredVertex)){ graph.addEdge(e.getSource(), e.getTarget()); } for(SDFEdge e :
+       * getOutEdges(clusteredVertex)){ graph.addEdge(e.getSource(), e.getTarget()); }
        */
-      // p("clusteredVertex " + clusteredVertex.getName() + " left " + current.get(0).getName() + " right " + current.get(1).getName());
+      // p("clusteredVertex " + clusteredVertex.getName() + " left " + current.get(0).getName() + " right " +
+      // current.get(1).getName());
       lastClusteredVertex = clusteredVertex;
     }
     p("HSDF LoopBuider Hierarchical actor: " + inGraph.getName());
@@ -642,8 +652,8 @@ public class HSDFBuildLoops {
         // p("getHierarchicalActor " + v.getName());
       }
       /*
-       * if( v instanceof SDFInterfaceVertex){ p("SDF Interface Vertex " + v.getName()); }else if( v instanceof SDFVertex){ p("SDF Vertex " + v.getName());
-       * }else{ p("SDF Abs Vertex " + v.getName()); }
+       * if( v instanceof SDFInterfaceVertex){ p("SDF Interface Vertex " + v.getName()); }else if( v instanceof
+       * SDFVertex){ p("SDF Vertex " + v.getName()); }else{ p("SDF Abs Vertex " + v.getName()); }
        */
     }
     return l;
@@ -709,7 +719,8 @@ public class HSDFBuildLoops {
       edge.addAll(getInEdges(v));
       edge.addAll(getOutEdges(v));
       for (final SDFEdge e : edge) {
-        if ((allocEdge.contains(e)/* already visited */ == false) && (edgeUpperGraph.contains(e) /* allocation by Karol */ == false)) {
+        if ((allocEdge.contains(e)/* already visited */ == false)
+            && (edgeUpperGraph.contains(e) /* allocation by Karol */ == false)) {
           int mem = 0;
           if (v instanceof SDFVertex) {
             // p("Allocating Vertex" + v.getName());
@@ -733,12 +744,14 @@ public class HSDFBuildLoops {
             // p("Allocating Special Vertex: " + v.getName());
             mem += e.getCons().intValue() * v.getNbRepeatAsInteger();
           } else {
-            throw new WorkflowException("Internal Memory allocation failed for actor " + v.getName() + " unsupported special actor");
+            throw new WorkflowException(
+                "Internal Memory allocation failed for actor " + v.getName() + " unsupported special actor");
           }
 
           final DataType d = this.dataTypes.get(e.getDataType().toString());
           final int sizeType = d.getSize();
-          // p("Buffer allocated edge " + e.getSourceLabel() + " to " + e.getTargetLabel() + " type " + e.getDataType() + " size " + sizeType);
+          // p("Buffer allocated edge " + e.getSourceLabel() + " to " + e.getTargetLabel() + " type " + e.getDataType()
+          // + " size " + sizeType);
 
           bufSize += mem * sizeType;
           // nbWorkingBufferAllocated++;
@@ -751,9 +764,9 @@ public class HSDFBuildLoops {
   }
 
   /**
-   * This method is used in the hierarchical flattener workflow to set the internal_working memory of each actors inside the hierarchical actors (graphs) The
-   * input memory and output memories of the hierarchical actor are set by the MEG. Only the internal memory is allocated here (see "working_memory" in the
-   * propertyBean of the hierarchical actor).
+   * This method is used in the hierarchical flattener workflow to set the internal_working memory of each actors inside
+   * the hierarchical actors (graphs) The input memory and output memories of the hierarchical actor are set by the MEG.
+   * Only the internal memory is allocated here (see "working_memory" in the propertyBean of the hierarchical actor).
    */
   public SDFGraph execute(final SDFGraph inputGraph) throws WorkflowException {
     // p("Executing");
@@ -763,8 +776,8 @@ public class HSDFBuildLoops {
 
     /* run through all hierarchical actors of graph inputGraph */
     /*
-     * for(SDFAbstractVertex v : hierarchicalActorslist) { SDFGraph graph = (SDFGraph) v.getGraphDescription(); List <SDFAbstractVertex> sortedVertex =
-     * sortVertex(graph.vertexSet(), v); list.add(sortedVertex); }
+     * for(SDFAbstractVertex v : hierarchicalActorslist) { SDFGraph graph = (SDFGraph) v.getGraphDescription(); List
+     * <SDFAbstractVertex> sortedVertex = sortVertex(graph.vertexSet(), v); list.add(sortedVertex); }
      */
 
     /* allocate internal working buffer for the hierarchical actor */
@@ -795,7 +808,8 @@ public class HSDFBuildLoops {
 
       final AbstractClust clust = generateClustering(resultGraph);
       if (clust == null) {
-        throw (new WorkflowException("HSDF Build Loops generate clustering: Failed to cluster the hierarchical actor " + resultGraph.getName()));
+        throw (new WorkflowException(
+            "HSDF Build Loops generate clustering: Failed to cluster the hierarchical actor " + resultGraph.getName()));
       }
       g.getGraphDescription().getPropertyBean().setValue(MapperDAG.CLUSTERED_VERTEX, clust);
 
@@ -803,7 +817,8 @@ public class HSDFBuildLoops {
       final int bufSize = getNaiveWorkingMemAlloc(resultGraph);
 
       g.getPropertyBean().setValue("working_memory", new Integer(bufSize));
-      // p("Internal working memory computation " + g.getName() + " number of allocation " + nbWorkingBufferAllocated + " byte allocated " + bufSize);
+      // p("Internal working memory computation " + g.getName() + " number of allocation " + nbWorkingBufferAllocated +
+      // " byte allocated " + bufSize);
       p("Internal Working Memory Graph " + g.getName() + " has allocated " + bufSize + " bytes");
     }
     return inputGraph;

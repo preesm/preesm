@@ -53,8 +53,8 @@ import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 public class LatencyExplorationTask extends AbstractTaskImplementation {
 
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
 
     // get the input graph, the scenario for actors duration, and the total number of cores
     final SDFGraph inputGraph = GraphStructureHelper.cloneIBSDF((SDFGraph) inputs.get("SDF"));

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
@@ -81,12 +81,12 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
-   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
+   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
 
     // Rem: Logger is used to display messages in the console
     final Logger logger = WorkflowLogger.getLogger();
@@ -131,7 +131,8 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
     }
     final double density = memEx.edgeSet().size() / ((memEx.vertexSet().size() * (memEx.vertexSet().size() - 1)) / 2.0);
     if (verbose) {
-      logger.log(Level.INFO, "Memory exclusion graph built with " + memEx.vertexSet().size() + " vertices and density = " + density);
+      logger.log(Level.INFO,
+          "Memory exclusion graph built with " + memEx.vertexSet().size() + " vertices and density = " + density);
     }
 
     // Generate output
@@ -149,7 +150,8 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(MemoryExclusionGraphBuilder.PARAM_VERBOSE, MemoryExclusionGraphBuilder.VALUE_TRUE_FALSE_DEFAULT);
-    parameters.put(MemoryExclusionGraphBuilder.PARAM_SUPPR_FORK_JOIN, MemoryExclusionGraphBuilder.VALUE_TRUE_FALSE_DEFAULT);
+    parameters.put(MemoryExclusionGraphBuilder.PARAM_SUPPR_FORK_JOIN,
+        MemoryExclusionGraphBuilder.VALUE_TRUE_FALSE_DEFAULT);
     return parameters;
   }
 

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -332,7 +332,8 @@ public class BeanShellInterpreterTest {
     inputs.add(new Buffer(null, new DAGVertex("v1", null, null), "inputBuffer", bufferToSplitSize, 1, true));
     final List<Buffer> outputs = new ArrayList<>(numberOfForks);
     for (int i = 0; i < numberOfForks; i++) {
-      outputs.add(new Buffer(null, new DAGVertex("v1", null, null), "outputBuffer" + i, bufferToSplitSize / numberOfForks, 1, true));
+      outputs.add(new Buffer(null, new DAGVertex("v1", null, null), "outputBuffer" + i,
+          bufferToSplitSize / numberOfForks, 1, true));
     }
     final List<Match> resList = new ArrayList<>();
 
@@ -393,7 +394,8 @@ public class BeanShellInterpreterTest {
 
     final List<Buffer> inputs = new ArrayList<>(1);
     for (int i = 0; i < numberOfForks; i++) {
-      inputs.add(new Buffer(null, new DAGVertex("v1", null, null), "inputBuffer" + i, bufferToSplitSize / numberOfForks, 1, true));
+      inputs.add(new Buffer(null, new DAGVertex("v1", null, null), "inputBuffer" + i, bufferToSplitSize / numberOfForks,
+          1, true));
     }
     final List<Buffer> outputs = new ArrayList<>(1);
     outputs.add(new Buffer(null, new DAGVertex("v1", null, null), "outputBuffer", bufferToSplitSize, 1, true));
@@ -514,7 +516,8 @@ public class BeanShellInterpreterTest {
     inputs.add(new Buffer(null, new DAGVertex("v1", null, null), "inputBuffer", inputBuffersSize, 1, true));
     final List<Buffer> outputs = new ArrayList<>(nbOutputBuffers);
     for (int i = 0; i < nbOutputBuffers; i++) {
-      outputs.add(new Buffer(null, new DAGVertex("v1", null, null), "outputBuffer" + i, bufferToBroadcastSize, 1, true));
+      outputs
+          .add(new Buffer(null, new DAGVertex("v1", null, null), "outputBuffer" + i, bufferToBroadcastSize, 1, true));
     }
     final List<Match> resList = new ArrayList<>();
 

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
  *
@@ -65,7 +65,8 @@ public class SDF3ExporterEngine {
    * @param path
    *          the path
    */
-  public void printSDFGraphToSDF3File(final SDFGraph sdf, final PreesmScenario scenario, final Design architecture, IPath path) {
+  public void printSDFGraphToSDF3File(final SDFGraph sdf, final PreesmScenario scenario, final Design architecture,
+      IPath path) {
     // Create the exporter
     final Sdf3Printer exporter = new Sdf3Printer(sdf, scenario, architecture);
 

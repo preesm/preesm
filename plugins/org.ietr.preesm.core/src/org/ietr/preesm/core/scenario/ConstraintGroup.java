@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
@@ -79,7 +79,8 @@ public class ConstraintGroup {
   }
 
   /**
-   * When a vertex is added to the constraints, its hierarchical path is added in its properties in order to separate distinct vertices with same name.
+   * When a vertex is added to the constraints, its hierarchical path is added in its properties in order to separate
+   * distinct vertices with same name.
    *
    * @param vertexId
    *          the vertex id

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
@@ -47,7 +47,8 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 // TODO: Auto-generated Javadoc
 /**
  * In this class, an adapted version of the placement algorithm presented in
- * <a href= "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.47.3832&rep=rep1&type=pdf" >this paper</a> is implemented.
+ * <a href= "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.47.3832&rep=rep1&type=pdf" >this paper</a> is
+ * implemented.
  *
  * @author kdesnos
  *
@@ -245,8 +246,10 @@ public class DeGreefAllocator extends MemoryAllocator {
     public boolean equals(final Object other) {
       if (other instanceof IntegerAndVertex) {
         final IntegerAndVertex otherPair = (IntegerAndVertex) other;
-        return (((this.first == otherPair.first) || ((this.first != null) && (otherPair.first != null) && this.first.equals(otherPair.first)))
-            && ((this.second == otherPair.second) || ((this.second != null) && (otherPair.second != null) && this.second.equals(otherPair.second))));
+        return (((this.first == otherPair.first)
+            || ((this.first != null) && (otherPair.first != null) && this.first.equals(otherPair.first)))
+            && ((this.second == otherPair.second)
+                || ((this.second != null) && (otherPair.second != null) && this.second.equals(otherPair.second))));
       }
 
       return false;

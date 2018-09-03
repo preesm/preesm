@@ -89,7 +89,8 @@ public class CsvTimingParser {
    *           the invalid model exception
    */
   public void parse(final String url, final Set<String> opDefIds) throws InvalidModelException {
-    WorkflowLogger.getLogger().log(Level.INFO, "Importing timings from a csv sheet. Non precised timings are kept unmodified.");
+    WorkflowLogger.getLogger().log(Level.INFO,
+        "Importing timings from a csv sheet. Non precised timings are kept unmodified.");
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
@@ -108,7 +109,8 @@ public class CsvTimingParser {
       if (line != null) {
         final String[] opNames = line.split(";");
         if ((opNames.length <= 1) || !opNames[0].equals("Actors")) {
-          WorkflowLogger.getLogger().log(Level.WARNING, "Timing csv file must have an header line starting with \"Actors\"\nNothing done");
+          WorkflowLogger.getLogger().log(Level.WARNING,
+              "Timing csv file must have an header line starting with \"Actors\"\nNothing done");
           return;
         }
 
@@ -147,7 +149,8 @@ public class CsvTimingParser {
    * @throws CoreException
    *           the core exception
    */
-  private void parseTimings(final Map<String, Map<String, String>> timings, final Set<String> opDefIds) throws InvalidModelException, CoreException {
+  private void parseTimings(final Map<String, Map<String, String>> timings, final Set<String> opDefIds)
+      throws InvalidModelException, CoreException {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
     if (this.scenario.isIBSDFScenario()) {
@@ -169,10 +172,12 @@ public class CsvTimingParser {
    * @param opDefIds
    *          the op def ids
    */
-  private void parseTimingsForPISDFGraph(final Map<String, Map<String, String>> timings, final PiGraph currentGraph, final Set<String> opDefIds) {
+  private void parseTimingsForPISDFGraph(final Map<String, Map<String, String>> timings, final PiGraph currentGraph,
+      final Set<String> opDefIds) {
 
     // parse timings of non hierarchical actors of currentGraph
-    currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical()).forEach(a -> parseTimingForVertex(timings, a.getName(), opDefIds));
+    currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
+        .forEach(a -> parseTimingForVertex(timings, a.getName(), opDefIds));
     // parse timings of all direct subgraphs
     currentGraph.getChildrenGraphs().stream().forEach(g -> parseTimingsForPISDFGraph(timings, g, opDefIds));
   }
@@ -187,7 +192,8 @@ public class CsvTimingParser {
    * @param opDefIds
    *          the op def ids
    */
-  private void parseTimingForVertex(final Map<String, Map<String, String>> timings, final String vertexName, final Set<String> opDefIds) {
+  private void parseTimingForVertex(final Map<String, Map<String, String>> timings, final String vertexName,
+      final Set<String> opDefIds) {
     // For each kind of processing elements, we look for a timing for given vertex
     for (final String opDefId : opDefIds) {
       if (!opDefId.isEmpty() && !vertexName.isEmpty()) {
@@ -201,7 +207,8 @@ public class CsvTimingParser {
           WorkflowLogger.getLogger().log(Level.INFO, "Importing timing: {0}", timing.toString());
 
         } catch (final Exception e) {
-          WorkflowLogger.getLogger().log(Level.INFO, "Cannot retreive timing for ({0}, {1})", new Object[] { vertexName, opDefId });
+          WorkflowLogger.getLogger().log(Level.INFO, "Cannot retreive timing for ({0}, {1})",
+              new Object[] { vertexName, opDefId });
         }
       }
     }

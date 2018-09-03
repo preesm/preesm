@@ -66,9 +66,9 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
    *         The supported methods
    */
   public static enum LatencyMethod {
-    FAST, // Hierarchical method
-    FLAT_LP, // Based on Flattening the hierarchy
-    FLAT_SE, // Based on Flattening the hierarchy
+  FAST, // Hierarchical method
+  FLAT_LP, // Based on Flattening the hierarchy
+  FLAT_SE, // Based on Flattening the hierarchy
   }
 
   // Plug-in parameters
@@ -77,8 +77,8 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
   public Stopwatch           timer;
 
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
 
     // get the input graph, the scenario for actors duration, and the total number of cores
     final SDFGraph inputGraph = GraphStructureHelper.cloneIBSDF((SDFGraph) inputs.get("SDF"));
@@ -132,13 +132,14 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
             break;
 
           default:
-            WorkflowLogger.getLogger().log(Level.WARNING, "The suported methods are: \"flat\" = classical method, \"fast\" = hierarchical method !");
+            WorkflowLogger.getLogger().log(Level.WARNING,
+                "The suported methods are: \"flat\" = classical method, \"fast\" = hierarchical method !");
             break;
         }
 
         // print a message with the latency value
-        WorkflowLogger.getLogger().log(Level.INFO,
-            "The minimum Latency value of a multicore execution = " + latency + " Cycle, Computed in : " + this.timer.toString());
+        WorkflowLogger.getLogger().log(Level.INFO, "The minimum Latency value of a multicore execution = " + latency
+            + " Cycle, Computed in : " + this.timer.toString());
 
       } else {
         // single core execution
@@ -147,8 +148,8 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
         this.timer = evaluator.timer;
 
         // print a message with the latency value
-        WorkflowLogger.getLogger().log(Level.INFO,
-            "The minimum Latency value of a singlecore execution = " + latency + " Cycle, Computed in : " + this.timer.toString());
+        WorkflowLogger.getLogger().log(Level.INFO, "The minimum Latency value of a singlecore execution = " + latency
+            + " Cycle, Computed in : " + this.timer.toString());
       }
 
     } else {

@@ -117,17 +117,18 @@ public class OverviewPage extends FormPage {
     algoExtensions.add("graphml");
 
     // Algorithm file chooser section
-    createFileSection(managedForm, Messages.getString("Overview.algorithmFile"), Messages.getString("Overview.algorithmDescription"),
-        Messages.getString("Overview.algorithmFileEdit"), this.scenario.getAlgorithmURL(), Messages.getString("Overview.algorithmBrowseTitle"), algoExtensions);
+    createFileSection(managedForm, Messages.getString("Overview.algorithmFile"),
+        Messages.getString("Overview.algorithmDescription"), Messages.getString("Overview.algorithmFileEdit"),
+        this.scenario.getAlgorithmURL(), Messages.getString("Overview.algorithmBrowseTitle"), algoExtensions);
 
     final Set<String> archiExtensions = new LinkedHashSet<>();
     archiExtensions.add("slam");
     archiExtensions.add("design");
 
     // Architecture file chooser section
-    createFileSection(managedForm, Messages.getString("Overview.architectureFile"), Messages.getString("Overview.architectureDescription"),
-        Messages.getString("Overview.architectureFileEdit"), this.scenario.getArchitectureURL(), Messages.getString("Overview.architectureBrowseTitle"),
-        archiExtensions);
+    createFileSection(managedForm, Messages.getString("Overview.architectureFile"),
+        Messages.getString("Overview.architectureDescription"), Messages.getString("Overview.architectureFileEdit"),
+        this.scenario.getArchitectureURL(), Messages.getString("Overview.architectureBrowseTitle"), archiExtensions);
 
   }
 
@@ -144,12 +145,13 @@ public class OverviewPage extends FormPage {
    *          the num columns
    * @return the composite
    */
-  private Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns) {
+  private Composite createSection(final IManagedForm mform, final String title, final String desc,
+      final int numColumns) {
 
     final ScrolledForm form = mform.getForm();
     final FormToolkit toolkit = mform.getToolkit();
-    final Section section = toolkit.createSection(form.getBody(),
-        ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    final Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
+        | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
     section.setText(title);
     section.setDescription(desc);
 
@@ -187,8 +189,8 @@ public class OverviewPage extends FormPage {
    * @param fileExtensions
    *          the file extensions
    */
-  private void createFileSection(final IManagedForm mform, final String title, final String desc, final String fileEdit, final String initValue,
-      final String browseTitle, final Set<String> fileExtensions) {
+  private void createFileSection(final IManagedForm mform, final String title, final String desc, final String fileEdit,
+      final String initValue, final String browseTitle, final Set<String> fileExtensions) {
 
     final Composite client = createSection(mform, title, desc, 2);
 

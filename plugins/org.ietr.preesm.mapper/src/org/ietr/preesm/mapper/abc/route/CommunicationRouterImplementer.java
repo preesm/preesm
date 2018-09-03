@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2012)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -112,8 +112,9 @@ public abstract class CommunicationRouterImplementer {
    *          the already created vertices
    * @return the transaction
    */
-  public abstract Transaction addVertices(AbstractRouteStep routeStep, MapperDAGEdge edge, TransactionManager transactions, int type, int routeStepIndex,
-      Transaction lastTransaction, List<Object> alreadyCreatedVertices);
+  public abstract Transaction addVertices(AbstractRouteStep routeStep, MapperDAGEdge edge,
+      TransactionManager transactions, int type, int routeStepIndex, Transaction lastTransaction,
+      List<Object> alreadyCreatedVertices);
 
   /**
    * Removes the vertices.

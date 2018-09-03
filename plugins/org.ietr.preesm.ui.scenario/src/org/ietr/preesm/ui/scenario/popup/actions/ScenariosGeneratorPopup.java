@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2015)
@@ -48,7 +48,8 @@ import org.ietr.preesm.ui.PreesmUIPlugin;
 import org.ietr.preesm.ui.wizards.PreesmProjectNature;
 
 /**
- * Class for pop-up menu on IProjects, allowing to generate PreesmScenarios from the content of the Algo and Archi folders.
+ * Class for pop-up menu on IProjects, allowing to generate PreesmScenarios from the content of the Algo and Archi
+ * folders.
  *
  * @author cguy
  */

@@ -115,7 +115,8 @@ public class TestPlugin {
             + scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86"));
 
         if (actor.getGraphDescription() != null) {
-          // System.out.println("Hierarchical duration = " + scenario.getTimingManager().generateVertexTimingFromHierarchy(actor, "x86"));
+          // System.out.println("Hierarchical duration = " +
+          // scenario.getTimingManager().generateVertexTimingFromHierarchy(actor, "x86"));
         }
 
       } catch (final InvalidExpressionException e) {
@@ -125,25 +126,29 @@ public class TestPlugin {
       System.out.println("\t interfaces : ");
       for (final IInterface inter : actor.getInterfaces()) {
         final SDFInterfaceVertex input = (SDFInterfaceVertex) inter;
-        System.out.println("\t\t input port name " + input.getName() + " : " + actor.getAssociatedEdge(input).toString());
+        System.out
+            .println("\t\t input port name " + input.getName() + " : " + actor.getAssociatedEdge(input).toString());
       }
 
       System.out.println("\t inputs : ");
       for (final SDFInterfaceVertex input : actor.getSources()) {
-        System.out.println("\t\t input port name " + input.getName() + " : " + actor.getAssociatedEdge(input).toString());
+        System.out
+            .println("\t\t input port name " + input.getName() + " : " + actor.getAssociatedEdge(input).toString());
       }
 
       System.out.println("\t outputs : ");
       for (final SDFInterfaceVertex output : actor.getSinks()) {
-        System.out.println("\t\t output port name " + output.getName() + " : " + actor.getAssociatedEdge(output).toString());
+        System.out
+            .println("\t\t output port name " + output.getName() + " : " + actor.getAssociatedEdge(output).toString());
       }
     }
 
     System.out.println("\n=> Liste des edges :");
     for (final SDFEdge edge : graph.edgeSet()) {
       System.out.println("name: " + edge.toString());
-      System.out.println("e(" + edge.getSource().getName() + "," + edge.getTarget().getName() + "), p(" + edge.getSourceInterface().getName() + ","
-          + edge.getTargetInterface().getName() + "), prod=" + edge.getProd() + " cons= " + edge.getCons() + " M0= " + edge.getDelay());
+      System.out.println("e(" + edge.getSource().getName() + "," + edge.getTarget().getName() + "), p("
+          + edge.getSourceInterface().getName() + "," + edge.getTargetInterface().getName() + "), prod="
+          + edge.getProd() + " cons= " + edge.getCons() + " M0= " + edge.getDelay());
     }
 
     for (final SDFAbstractVertex actor : graph.getAllVertices()) {
@@ -151,8 +156,9 @@ public class TestPlugin {
         System.out.println("edges of " + actor.getName());
         for (final SDFEdge edge : ((SDFGraph) actor.getGraphDescription()).edgeSet()) {
           System.out.println("name: " + edge.toString());
-          System.out.println("e(" + edge.getSource().getName() + "," + edge.getTarget().getName() + "), p(" + edge.getSourceInterface().getName() + ","
-              + edge.getTargetInterface().getName() + "), prod=" + edge.getProd() + " cons= " + edge.getCons() + " M0= " + edge.getDelay());
+          System.out.println("e(" + edge.getSource().getName() + "," + edge.getTarget().getName() + "), p("
+              + edge.getSourceInterface().getName() + "," + edge.getTargetInterface().getName() + "), prod="
+              + edge.getProd() + " cons= " + edge.getCons() + " M0= " + edge.getDelay());
         }
       }
     }
@@ -198,7 +204,8 @@ public class TestPlugin {
 
     // print the hierarchical actors
     for (final SDFAbstractVertex h : HActorList.values()) {
-      System.out.println("H Actor " + h.getName() + " : rv=" + h.getNbRepeat() + " dur=" + scenario.getTimingManager().getTimingOrDefault(h.getId(), "x86"));
+      System.out.println("H Actor " + h.getName() + " : rv=" + h.getNbRepeat() + " dur="
+          + scenario.getTimingManager().getTimingOrDefault(h.getId(), "x86"));
       System.out.println("Liste of subgraph Actors: ");
       final SDFGraph subGraph = (SDFGraph) h.getGraphDescription();
       for (final SDFAbstractVertex subActor : subGraph.vertexSet()) {
@@ -341,7 +348,8 @@ public class TestPlugin {
     System.out.println("Print the graph ...");
 
     for (final SDFAbstractVertex actor : graph.vertexSet()) {
-      System.out.println("Function:test: duration=" + actor.getPropertyBean().getValue("duration") + " actorName=" + actor.getName());
+      System.out.println(
+          "Function:test: duration=" + actor.getPropertyBean().getValue("duration") + " actorName=" + actor.getName());
     }
 
     // testSDFGraph(graph, scenario);
@@ -419,7 +427,8 @@ public class TestPlugin {
 
     // RV(top-graph) = [A=2, B=3, C=3]
     // RV(sub-graph) = [D=2, E=6, F=4]
-    // after computing the RV of the subgraph the consumption/production rate of the interfaces are multiplied by their RV, then RV of interfaces is set to 1
+    // after computing the RV of the subgraph the consumption/production rate of the interfaces are multiplied by their
+    // RV, then RV of interfaces is set to 1
     // the resulted rates of edges : aE=(6,1); Fc=(3,12)
 
     // create the subgraph
@@ -512,14 +521,15 @@ public class TestPlugin {
    *
    * timing.getTime() : return actor duration
    *
-   * scenario.getTimingManager().generateVertexTimingFromHierarchy(actor, "x86") : returns the duration of a hierarchical actor when sub-actors are executing
-   * sequentially
+   * scenario.getTimingManager().generateVertexTimingFromHierarchy(actor, "x86") : returns the duration of a
+   * hierarchical actor when sub-actors are executing sequentially
    *
    * timing.DEFAULT_TASK_TIME : default duration of tasks (Ports and Hierarchical actors)= 100
    *
    * Timing.DEFAULT_SPECIAL_VERTEX_TIME : default duration of Special vertices = 10
    *
-   * scenario.getTimingManager().setTiming(vertex.getId(), "x86", 0): set a duration for an actor. time need o be a strict positive number otherwise 1 is set
+   * scenario.getTimingManager().setTiming(vertex.getId(), "x86", 0): set a duration for an actor. time need o be a
+   * strict positive number otherwise 1 is set
    *
    *
    * => Hierarchical actor:
@@ -543,8 +553,8 @@ public class TestPlugin {
    *
    * change time > 0 to >= : time can equal to 0 for interfaces
    *
-   * RV of interfaces is not computed, it is always equal to 1. => the consumption/production rate of the input/output edges of interfaces need to be multiplied
-   * by the real local RV of the interfaces
+   * RV of interfaces is not computed, it is always equal to 1. => the consumption/production rate of the input/output
+   * edges of interfaces need to be multiplied by the real local RV of the interfaces
    *
    *
    */

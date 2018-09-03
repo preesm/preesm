@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -48,7 +48,8 @@ public class TutorialsTest {
   @Test
   public void testStereo() throws IOException, CoreException {
     final String projectName = "org.ietr.preesm.stereo";
-    final String[] scenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario", "lowMaxDisparity.scenario", "YUV4core.scenario" };
+    final String[] scenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario",
+        "lowMaxDisparity.scenario", "YUV4core.scenario" };
     final String[] workflows = new String[] { "CodegenMemoryScriptsMixedMerged.workflow", "StaticPiMMCodegen.workflow",
         "StaticPiMMCodegenMemoryScripts.workflow" };
 

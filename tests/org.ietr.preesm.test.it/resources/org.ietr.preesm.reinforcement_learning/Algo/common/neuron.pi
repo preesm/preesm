@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">neuron</data>
+        <node id="input_size" kind="cfg_in_iface"/>
+        <node id="layer_size" kind="cfg_in_iface"/>
+        <node id="computeNeuron" kind="actor">
+            <data key="graph_desc">Code/include/mlp.h</data>
+            <loop name="neuron">
+                <param direction="IN" isConfig="true" name="input_size" type="int"/>
+                <param direction="IN" isConfig="false" name="input" type="float "/>
+                <param direction="IN" isConfig="false" name="weights" type="float "/>
+                <param direction="IN" isConfig="false"
+                    name="bias_values" type="float "/>
+                <param direction="IN" isConfig="false" name="valid" type="int "/>
+                <param direction="OUT" isConfig="false" name="output" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="input_size"/>
+            <port annotation="NONE" expr="1" kind="input" name="bias_values"/>
+            <port annotation="NONE" expr="input_size" kind="input" name="input"/>
+            <port annotation="NONE" expr="1" kind="input" name="valid"/>
+            <port annotation="NONE" expr="input_size" kind="input" name="weights"/>
+            <port annotation="NONE" expr="1" kind="output" name="output"/>
+        </node>
+        <node id="input" kind="src">
+            <port annotation="NONE" expr="input_size" kind="output" name="input"/>
+        </node>
+        <node id="weights" kind="src">
+            <port annotation="NONE" expr="input_size * layer_size"
+                kind="output" name="weights"/>
+        </node>
+        <node id="bias_values" kind="src">
+            <port annotation="NONE" expr="layer_size" kind="output" name="bias_values"/>
+        </node>
+        <node id="output" kind="snk">
+            <port annotation="NONE" expr="layer_size" kind="input" name="output"/>
+        </node>
+        <node id="valid" kind="src">
+            <port annotation="NONE" expr="1" kind="output" name="valid"/>
+        </node>
+        <edge kind="fifo" source="computeNeuron" sourceport="output"
+            target="output" targetport="output" type="float"/>
+        <edge kind="fifo" source="bias_values" sourceport="bias_values"
+            target="computeNeuron" targetport="bias_values" type="float"/>
+        <edge kind="fifo" source="input" sourceport="input"
+            target="computeNeuron" targetport="input" type="float"/>
+        <edge kind="fifo" source="weights" sourceport="weights"
+            target="computeNeuron" targetport="weights" type="float"/>
+        <edge kind="fifo" source="valid" sourceport="valid"
+            target="computeNeuron" targetport="valid" type="int"/>
+        <edge kind="dependency" source="input_size" target="input"/>
+        <edge kind="dependency" source="input_size" target="weights"/>
+        <edge kind="dependency" source="input_size"
+            target="computeNeuron" targetport="input_size"/>
+        <edge kind="dependency" source="layer_size" target="output"/>
+        <edge kind="dependency" source="layer_size" target="bias_values"/>
+        <edge kind="dependency" source="layer_size" target="input"/>
+        <edge kind="dependency" source="layer_size" target="weights"/>
+    </graph>
+</graphml>

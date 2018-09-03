@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Jonathan Piat <jpiat@laas.fr> (2009 - 2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
@@ -59,12 +59,14 @@ public class Prototype implements IRefinement {
   private int nbArgs;
 
   /**
-   * This map associates {@link CodeGenArgument} of the prototype with an integer that represent the order of the argument in the prototype.
+   * This map associates {@link CodeGenArgument} of the prototype with an integer that represent the order of the
+   * argument in the prototype.
    */
   private final Map<CodeGenArgument, Integer> arguments;
 
   /**
-   * This map associates {@link CodeGenParameter} of the prototype with an integer that represent the order of the argument in the prototype.
+   * This map associates {@link CodeGenParameter} of the prototype with an integer that represent the order of the
+   * argument in the prototype.
    */
   private final Map<CodeGenParameter, Integer> parameters;
 

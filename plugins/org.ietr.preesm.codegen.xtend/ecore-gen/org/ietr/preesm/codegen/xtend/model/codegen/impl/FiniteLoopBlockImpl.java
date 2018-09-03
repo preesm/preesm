@@ -48,23 +48,27 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 
 /**
- * <!-- begin-user-doc --> An implementation of the model object '<em><b>Finite Loop Block</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>Finite Loop Block</b></em>'. <!-- end-user-doc
+ * -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FiniteLoopBlockImpl#getNbIter <em>Nb Iter</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FiniteLoopBlockImpl#getIter <em>Iter</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FiniteLoopBlockImpl#getInBuffers <em>In Buffers</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FiniteLoopBlockImpl#getOutBuffers <em>Out Buffers</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FiniteLoopBlockImpl#getInBuffers <em>In
+ * Buffers</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FiniteLoopBlockImpl#getOutBuffers <em>Out
+ * Buffers</em>}</li>
  * </ul>
  *
  * @generated
  */
 public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBlock {
   /**
-   * The default value of the '{@link #getNbIter() <em>Nb Iter</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * The default value of the '{@link #getNbIter() <em>Nb Iter</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   * 
    * @see #getNbIter()
    * @generated
    * @ordered
@@ -72,8 +76,9 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
   protected static final int NB_ITER_EDEFAULT = 0;
 
   /**
-   * The cached value of the '{@link #getNbIter() <em>Nb Iter</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * The cached value of the '{@link #getNbIter() <em>Nb Iter</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   * 
    * @see #getNbIter()
    * @generated
    * @ordered
@@ -82,7 +87,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * The cached value of the '{@link #getIter() <em>Iter</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @see #getIter()
    * @generated
    * @ordered
@@ -90,8 +95,9 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
   protected IntVar iter;
 
   /**
-   * The cached value of the '{@link #getInBuffers() <em>In Buffers</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * The cached value of the '{@link #getInBuffers() <em>In Buffers</em>}' reference list. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   * 
    * @see #getInBuffers()
    * @generated
    * @ordered
@@ -99,8 +105,9 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
   protected EList<BufferIterator> inBuffers;
 
   /**
-   * The cached value of the '{@link #getOutBuffers() <em>Out Buffers</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * The cached value of the '{@link #getOutBuffers() <em>Out Buffers</em>}' reference list. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * 
    * @see #getOutBuffers()
    * @generated
    * @ordered
@@ -109,7 +116,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   protected FiniteLoopBlockImpl() {
@@ -118,7 +125,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -128,7 +135,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -138,7 +145,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -146,13 +153,14 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
     final int oldNbIter = this.nbIter;
     this.nbIter = newNbIter;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.FINITE_LOOP_BLOCK__NB_ITER, oldNbIter, this.nbIter));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.FINITE_LOOP_BLOCK__NB_ITER, oldNbIter,
+          this.nbIter));
     }
   }
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -162,7 +170,8 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
       this.iter = (IntVar) eResolveProxy(oldIter);
       if (this.iter != oldIter) {
         if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.FINITE_LOOP_BLOCK__ITER, oldIter, this.iter));
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.FINITE_LOOP_BLOCK__ITER, oldIter,
+              this.iter));
         }
       }
     }
@@ -171,7 +180,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   public IntVar basicGetIter() {
@@ -180,7 +189,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -188,39 +197,42 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
     final IntVar oldIter = this.iter;
     this.iter = newIter;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.FINITE_LOOP_BLOCK__ITER, oldIter, this.iter));
+      eNotify(
+          new ENotificationImpl(this, Notification.SET, CodegenPackage.FINITE_LOOP_BLOCK__ITER, oldIter, this.iter));
     }
   }
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
   public EList<BufferIterator> getInBuffers() {
     if (this.inBuffers == null) {
-      this.inBuffers = new EObjectResolvingEList<>(BufferIterator.class, this, CodegenPackage.FINITE_LOOP_BLOCK__IN_BUFFERS);
+      this.inBuffers = new EObjectResolvingEList<>(BufferIterator.class, this,
+          CodegenPackage.FINITE_LOOP_BLOCK__IN_BUFFERS);
     }
     return this.inBuffers;
   }
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
   public EList<BufferIterator> getOutBuffers() {
     if (this.outBuffers == null) {
-      this.outBuffers = new EObjectResolvingEList<>(BufferIterator.class, this, CodegenPackage.FINITE_LOOP_BLOCK__OUT_BUFFERS);
+      this.outBuffers = new EObjectResolvingEList<>(BufferIterator.class, this,
+          CodegenPackage.FINITE_LOOP_BLOCK__OUT_BUFFERS);
     }
     return this.outBuffers;
   }
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -243,7 +255,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @SuppressWarnings("unchecked")
@@ -270,7 +282,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -294,7 +306,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -314,7 +326,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * 
    * @generated
    */
   @Override
@@ -323,7 +335,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
       return super.toString();
     }
 
-    final StringBuffer result = new StringBuffer(super.toString());
+    final StringBuilder result = new StringBuilder(super.toString());
     result.append(" (nbIter: ");
     result.append(this.nbIter);
     result.append(')');

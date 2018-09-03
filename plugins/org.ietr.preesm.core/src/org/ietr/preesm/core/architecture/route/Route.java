@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
@@ -44,7 +44,8 @@ import org.ietr.dftools.architecture.slam.ComponentInstance;
 
 // TODO: Auto-generated Javadoc
 /**
- * A route contains several Route Steps. It links operators. To operators directly connected have a route with one route step.
+ * A route contains several Route Steps. It links operators. To operators directly connected have a route with one route
+ * step.
  *
  * @author mpelcat
  */

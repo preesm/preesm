@@ -3,6 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -39,7 +40,7 @@ package org.ietr.preesm.pimm.algorithm.checker;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.emf.ecore.EObject;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -104,20 +105,28 @@ public class PiMMAlgorithmChecker {
       this.errors = !fifoChecker.getFifoWithOneZeroRate().isEmpty();
       this.warnings = !fifoChecker.getFifoWithVoidType().isEmpty() || !fifoChecker.getFifoWithZeroRates().isEmpty();
       for (final Fifo f : fifoChecker.getFifoWithOneZeroRate()) {
-        final String srcActorPath = ((AbstractActor) f.getSourcePort().eContainer()).getName() + "." + f.getSourcePort().getName();
-        final String tgtActorPath = ((AbstractActor) f.getTargetPort().eContainer()).getName() + "." + f.getTargetPort().getName();
-        this.errorMsgs.put("Fifo between actors " + srcActorPath + " and " + tgtActorPath + " has invalid rates (one equals 0 but not the other)", f);
+        final String srcVertexPath = ((AbstractVertex) f.getSourcePort().eContainer()).getName() + "."
+            + f.getSourcePort().getName();
+        final String tgtVertexPath = ((AbstractVertex) f.getTargetPort().eContainer()).getName() + "."
+            + f.getTargetPort().getName();
+        this.errorMsgs.put("Fifo between actors " + srcVertexPath + " and " + tgtVertexPath
+            + " has invalid rates (one equals 0 but not the other)", f);
       }
       for (final Fifo f : fifoChecker.getFifoWithVoidType()) {
-        final String srcActorPath = ((AbstractActor) f.getSourcePort().eContainer()).getName() + "." + f.getSourcePort().getName();
-        final String tgtActorPath = ((AbstractActor) f.getTargetPort().eContainer()).getName() + "." + f.getTargetPort().getName();
-        this.warningMsgs.put("Fifo between actors " + srcActorPath + " and " + tgtActorPath + " has type \"void\" (this is not supported by code generation)",
-            f);
+        final String srcVertexPath = ((AbstractVertex) f.getSourcePort().eContainer()).getName() + "."
+            + f.getSourcePort().getName();
+        final String tgtVertexPath = ((AbstractVertex) f.getTargetPort().eContainer()).getName() + "."
+            + f.getTargetPort().getName();
+        this.warningMsgs.put("Fifo between actors " + srcVertexPath + " and " + tgtVertexPath
+            + " has type \"void\" (this is not supported by code generation)", f);
       }
       for (final Fifo f : fifoChecker.getFifoWithZeroRates()) {
-        final String srcActorPath = ((AbstractActor) f.getSourcePort().eContainer()).getName() + "." + f.getSourcePort().getName();
-        final String tgtActorPath = ((AbstractActor) f.getTargetPort().eContainer()).getName() + "." + f.getTargetPort().getName();
-        this.warningMsgs.put("Fifo between actors " + srcActorPath + " and " + tgtActorPath + " has rates equal to 0 (you may have forgotten to set them)", f);
+        final String srcVertexPath = ((AbstractVertex) f.getSourcePort().eContainer()).getName() + "."
+            + f.getSourcePort().getName();
+        final String tgtVertexPath = ((AbstractVertex) f.getTargetPort().eContainer()).getName() + "."
+            + f.getTargetPort().getName();
+        this.warningMsgs.put("Fifo between actors " + srcVertexPath + " and " + tgtVertexPath
+            + " has rates equal to 0 (you may have forgotten to set them)", f);
       }
     }
   }
@@ -136,11 +145,12 @@ public class PiMMAlgorithmChecker {
         this.errorMsgs.put("Actor " + a.getVertexPath() + " does not have a refinement", a);
       }
       for (final Actor a : refinementChecker.getActorsWithInvalidExtensionRefinement()) {
-        this.errorMsgs
-            .put("Refinement " + a.getRefinement().getFilePath() + " of Actor " + a.getVertexPath() + " does not have a valid extension (.h, .idl, or .pi)", a);
+        this.errorMsgs.put("Refinement " + a.getRefinement().getFilePath() + " of Actor " + a.getVertexPath()
+            + " does not have a valid extension (.h, .idl, or .pi)", a);
       }
       for (final Actor a : refinementChecker.getActorsWithNonExistingRefinement()) {
-        this.errorMsgs.put("Refinement  " + a.getRefinement().getFilePath() + " of Actor " + a.getVertexPath() + " does not reference an existing file", a);
+        this.errorMsgs.put("Refinement  " + a.getRefinement().getFilePath() + " of Actor " + a.getVertexPath()
+            + " does not reference an existing file", a);
       }
     }
   }

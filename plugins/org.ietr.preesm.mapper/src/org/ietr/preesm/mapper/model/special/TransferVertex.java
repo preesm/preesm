@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
@@ -99,8 +99,8 @@ public class TransferVertex extends MapperDAGVertex {
    * @param nodeIndex
    *          the node index
    */
-  public TransferVertex(final String id, final MapperDAG base, final MapperDAGVertex source, final MapperDAGVertex target, final int routeStepIndex,
-      final int nodeIndex) {
+  public TransferVertex(final String id, final MapperDAG base, final MapperDAGVertex source,
+      final MapperDAGVertex target, final int routeStepIndex, final int nodeIndex) {
     super(id, base);
     this.source = source;
     this.target = target;

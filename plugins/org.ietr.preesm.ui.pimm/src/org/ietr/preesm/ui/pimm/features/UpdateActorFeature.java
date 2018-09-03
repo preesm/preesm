@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
@@ -61,7 +61,8 @@ public class UpdateActorFeature extends UpdateAbstractVertexFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.UpdateAbstractVertexFeature#canUpdate(org.eclipse.graphiti.features.context.IUpdateContext)
+   * @see org.ietr.preesm.ui.pimm.features.UpdateAbstractVertexFeature#canUpdate(org.eclipse.graphiti.features.context.
+   * IUpdateContext)
    */
   @Override
   public boolean canUpdate(final IUpdateContext context) {
@@ -72,7 +73,9 @@ public class UpdateActorFeature extends UpdateAbstractVertexFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.UpdateAbstractVertexFeature#updateNeeded(org.eclipse.graphiti.features.context.IUpdateContext)
+   * @see
+   * org.ietr.preesm.ui.pimm.features.UpdateAbstractVertexFeature#updateNeeded(org.eclipse.graphiti.features.context.
+   * IUpdateContext)
    */
   @Override
   public IReason updateNeeded(final IUpdateContext context) {
@@ -86,7 +89,8 @@ public class UpdateActorFeature extends UpdateAbstractVertexFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.UpdateAbstractVertexFeature#update(org.eclipse.graphiti.features.context.IUpdateContext)
+   * @see org.ietr.preesm.ui.pimm.features.UpdateAbstractVertexFeature#update(org.eclipse.graphiti.features.context.
+   * IUpdateContext)
    */
   @Override
   public boolean update(final IUpdateContext context) {

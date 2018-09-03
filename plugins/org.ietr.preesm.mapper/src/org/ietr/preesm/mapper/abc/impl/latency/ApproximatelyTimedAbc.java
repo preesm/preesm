@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
@@ -54,8 +54,9 @@ import org.ietr.preesm.mapper.params.AbcParameters;
 
 // TODO: Auto-generated Javadoc
 /**
- * An approximately timed architecture simulator associates a complex cost to each inter-core communication. This cost is composed of an overhead on the sender,
- * a transfer time on the medium and a reception time on the receiver. Scheduling transfer vertices are added and mapped to the media architecture components
+ * An approximately timed architecture simulator associates a complex cost to each inter-core communication. This cost
+ * is composed of an overhead on the sender, a transfer time on the medium and a reception time on the receiver.
+ * Scheduling transfer vertices are added and mapped to the media architecture components
  *
  * @author mpelcat
  */
@@ -78,7 +79,8 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
    * @param scenario
    *          the scenario
    */
-  public ApproximatelyTimedAbc(final AbcParameters params, final MapperDAG dag, final Design archi, final AbcType abcType, final PreesmScenario scenario) {
+  public ApproximatelyTimedAbc(final AbcParameters params, final MapperDAG dag, final Design archi,
+      final AbcType abcType, final PreesmScenario scenario) {
     super(params, dag, archi, abcType, scenario);
 
     this.types = new ArrayList<>();

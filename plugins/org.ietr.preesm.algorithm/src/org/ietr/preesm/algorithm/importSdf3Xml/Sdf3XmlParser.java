@@ -56,7 +56,8 @@ import org.w3c.dom.NodeList;
 
 // TODO: Auto-generated Javadoc
 /**
- * This class is used to parse a {@link File} in the SDF3 (SDF For Free) Xml format indo the corresponding {@link SDFGraph}.
+ * This class is used to parse a {@link File} in the SDF3 (SDF For Free) Xml format indo the corresponding
+ * {@link SDFGraph}.
  *
  * @author kdesnos
  * @see this page http://www.es.ele.tue.nl/sdf3/manuals/xml/sdf
@@ -87,7 +88,8 @@ public class Sdf3XmlParser {
    *          the name of the searched {@link Element}
    * @return the searched {@link Element}
    * @throws RuntimeException
-   *           if the given {@link Element} has no child Element with the appropriate name or has more than one child with this name.
+   *           if the given {@link Element} has no child Element with the appropriate name or has more than one child
+   *           with this name.
    */
   protected Element findElement(final Element elt, final String elementName) {
     final NodeList nodes = elt.getElementsByTagName(elementName);
@@ -95,8 +97,8 @@ public class Sdf3XmlParser {
       throw new RuntimeException("Parsed " + elt.getLocalName() + " does not contain any " + elementName + " element");
     }
     if (nodes.getLength() > 1) {
-      throw new RuntimeException(
-          "Parsed " + elt.getLocalName() + " contains too many " + elementName + " elements (expected 1, found " + nodes.getLength() + ")");
+      throw new RuntimeException("Parsed " + elt.getLocalName() + " contains too many " + elementName
+          + " elements (expected 1, found " + nodes.getLength() + ")");
     }
     return (Element) nodes.item(0);
   }

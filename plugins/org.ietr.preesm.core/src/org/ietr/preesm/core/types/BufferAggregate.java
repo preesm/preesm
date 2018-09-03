@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
@@ -40,8 +40,8 @@ import java.util.ArrayList;
 
 // TODO: Auto-generated Javadoc
 /**
- * Objects used to tag the SDF edges when they represent more than one buffer each. One edge contains one aggregate in its propertybean. The Aggregate is
- * composed of BufferDefinitions with details on their size, type...
+ * Objects used to tag the SDF edges when they represent more than one buffer each. One edge contains one aggregate in
+ * its propertybean. The Aggregate is composed of BufferDefinitions with details on their size, type...
  *
  * @author mpelcat
  *

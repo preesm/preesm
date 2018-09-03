@@ -2,6 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Hamza Deroui <hamza.deroui@insa-rennes.fr> (2017)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -62,6 +63,24 @@ public abstract class MathFunctionsHelper {
   }
 
   /**
+   * computes the Greatest Common Divisor (GCD) of two long
+   *
+   * @param a
+   *          long number
+   * @param b
+   *          long number
+   * @return the gcd of a and b
+   */
+  public static long gcd(long a, long b) {
+    while (b > 0) {
+      final long temp = b;
+      b = a % b;
+      a = temp;
+    }
+    return a;
+  }
+
+  /**
    * computes the Greatest Common Divisor (GCD) of a vector of doubles
    *
    * @param input
@@ -90,6 +109,19 @@ public abstract class MathFunctionsHelper {
   }
 
   /**
+   * computes the Least Common Multiple (LCM) of two long
+   *
+   * @param a
+   *          long number
+   * @param b
+   *          long number
+   * @return lcm of a and b
+   */
+  public static long lcm(final long a, final long b) {
+    return a * (b / MathFunctionsHelper.gcd(a, b));
+  }
+
+  /**
    * computes the Least Common Multiple (LCM) of a vector of doubles
    *
    * @param input
@@ -105,14 +137,19 @@ public abstract class MathFunctionsHelper {
     return result;
   }
 
-  /*
-   * public static long gcd(long a, long b) { while (b > 0) { long temp = b; b = a % b; // % is remainder a = temp; } return a; }
+  /**
+   * computes the Least Common Multiple (LCM) of a vector of long
    *
-   * public static long gcd(long[] input) { long result = input[0]; for (int i = 1; i < input.length; i++) result = gcd(result, input[i]); return result; }
-   *
-   * // lcm public static long lcm(long a, long b) { return a * (b / gcd(a, b)); }
-   *
-   * public static long lcm(long[] input) { long result = input[0]; for (int i = 1; i < input.length; i++) result = lcm(result, input[i]); return result; }
-   *
+   * @param input
+   *          an array of long
+   * @return the lcm
    */
+  public static long lcm(long[] input) {
+    long result = input[0];
+    for (int i = 1; i < input.length; i++) {
+      result = lcm(result, input[i]);
+    }
+    return result;
+  }
+
 }

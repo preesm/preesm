@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2012)
  *
@@ -68,7 +68,8 @@ public class DmaRouteStep extends MessageRouteStep {
    * @param dma
    *          the dma
    */
-  public DmaRouteStep(final ComponentInstance sender, final List<ComponentInstance> nodes, final ComponentInstance receiver, final Dma dma) {
+  public DmaRouteStep(final ComponentInstance sender, final List<ComponentInstance> nodes,
+      final ComponentInstance receiver, final Dma dma) {
     super(sender, nodes, receiver);
     this.dma = dma;
   }

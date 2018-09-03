@@ -2,6 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -46,6 +47,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -79,6 +81,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.NonExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
@@ -86,6 +89,7 @@ import org.ietr.preesm.ui.PreesmUIPlugin;
 import org.ietr.preesm.ui.pimm.diagram.PiMMDiagramEditor;
 import org.ietr.preesm.ui.pimm.features.PasteFeature;
 import org.ietr.preesm.ui.pimm.layout.AutoLayoutFeature;
+import org.ietr.preesm.ui.utils.ErrorWithExceptionDialog;
 
 /**
  *
@@ -93,7 +97,8 @@ import org.ietr.preesm.ui.pimm.layout.AutoLayoutFeature;
 public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
 
   private static final IWorkbench     WORKBENCH      = PreesmUIPlugin.getDefault().getWorkbench();
-  private static final Shell          SHELL          = PiMM2DiagramGeneratorPopup.WORKBENCH.getModalDialogShellProvider().getShell();
+  private static final Shell          SHELL          = PiMM2DiagramGeneratorPopup.WORKBENCH
+      .getModalDialogShellProvider().getShell();
   private static final IWorkspace     WORKSPACE      = ResourcesPlugin.getWorkspace();
   private static final IWorkspaceRoot WORKSPACE_ROOT = PiMM2DiagramGeneratorPopup.WORKSPACE.getRoot();
 
@@ -141,7 +146,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
       }
     } catch (final Exception cause) {
       final String message = "Could not generate diagram from PiMM model file";
-      throw new ExecutionException(message, cause);
+      ErrorWithExceptionDialog.errorDialogWithStackTrace(message, cause);
     }
   }
 
@@ -170,7 +175,8 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
     // create a dialog with ok and cancel buttons and a question icon
     final MessageBox dialog = new MessageBox(shell, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
     dialog.setText("Confirmation required");
-    dialog.setMessage("The file \n\n" + diagramFilePath.toString() + "\n\n already exists. Do you want to overwrite it ?");
+    dialog.setMessage(
+        "The file \n\n" + diagramFilePath.toString() + "\n\n already exists. Do you want to overwrite it ?");
 
     // open dialog and await user selection
     userDecision = dialog.open();
@@ -185,7 +191,8 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
     private final PiGraph           graph;
     private final PiMMDiagramEditor editor;
 
-    PopulateDiagramCommand(final PiMMDiagramEditor editor, final TransactionalEditingDomain domain, final PiGraph graph) {
+    PopulateDiagramCommand(final PiMMDiagramEditor editor, final TransactionalEditingDomain domain,
+        final PiGraph graph) {
       super(domain);
       this.editor = editor;
       this.graph = graph;
@@ -203,8 +210,12 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
         pasteFeature.addGraphicalRepresentationForVertex(p, 0, 0);
       }
       for (final AbstractVertex v : this.graph.getActors()) {
+        if (v instanceof NonExecutableActor) {
+          continue;
+        }
         pasteFeature.addGraphicalRepresentationForVertex(v, 0, 0);
       }
+
       for (final Fifo fifo : this.graph.getFifos()) {
         final FreeFormConnection pe = pasteFeature.addGraphicalRepresentationForFifo(fifo);
         final Delay delay = fifo.getDelay();
@@ -230,9 +241,11 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
     // open editor
     final IWorkbench workbench = PiMM2DiagramGeneratorPopup.WORKBENCH;
     final IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
-    final IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(diagramFile.getName());
+    final IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry()
+        .getDefaultEditor(diagramFile.getName());
 
-    final PiMMDiagramEditor editor = (PiMMDiagramEditor) page.openEditor(new FileEditorInput(diagramFile), desc.getId());
+    final PiMMDiagramEditor editor = (PiMMDiagramEditor) page.openEditor(new FileEditorInput(diagramFile),
+        desc.getId());
 
     final IDiagramTypeProvider diagramTypeProvider = editor.getDiagramTypeProvider();
 
@@ -244,14 +257,16 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
     // and the PiGraph from this diagram to get consistent links
     final PiGraph graph = (PiGraph) diagram.getLink().getBusinessObjects().get(0);
 
-    editingDomain.getCommandStack().execute(new PopulateDiagramCommand(editor, editingDomain, graph));
+    PopulateDiagramCommand command = new PopulateDiagramCommand(editor, editingDomain, graph);
+    CommandStack commandStack = editingDomain.getCommandStack();
+    commandStack.execute(command);
 
     // save the .diagram file
     editor.doSave(null);
   }
 
-  private IFile initDiagramResource(final IPath diagramFilePath, final Diagram diagram, final boolean deleteExistingFileFirst)
-      throws IOException, CoreException {
+  private IFile initDiagramResource(final IPath diagramFilePath, final Diagram diagram,
+      final boolean deleteExistingFileFirst) throws IOException, CoreException {
     final IFile file = PiMM2DiagramGeneratorPopup.WORKSPACE_ROOT.getFile(diagramFilePath);
     if (deleteExistingFileFirst) {
       file.delete(true, null);

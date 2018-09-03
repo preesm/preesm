@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
@@ -93,7 +93,8 @@ public class MoveDownActorPortFeature extends MoveUpActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature#canExecute(org.eclipse.graphiti.features.context.
+   * ICustomContext)
    */
   @Override
   public boolean canExecute(final ICustomContext context) {
@@ -137,7 +138,8 @@ public class MoveDownActorPortFeature extends MoveUpActorPortFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature#execute(org.eclipse.graphiti.features.context.
+   * ICustomContext)
    */
   @Override
   public void execute(final ICustomContext context) {
@@ -177,7 +179,8 @@ public class MoveDownActorPortFeature extends MoveUpActorPortFeature {
         }
         // Change context to use portToMoveUp feature
         // Get Graphical Elements
-        final ContainerShape csActor = (ContainerShape) ((BoxRelativeAnchor) anchorToMoveDown).getReferencedGraphicsAlgorithm().getPictogramElement();
+        final ContainerShape csActor = (ContainerShape) ((BoxRelativeAnchor) anchorToMoveDown)
+            .getReferencedGraphicsAlgorithm().getPictogramElement();
         final EList<Anchor> anchors = csActor.getAnchors();
 
         Anchor anchorToMoveUp = null;

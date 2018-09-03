@@ -51,7 +51,8 @@ import org.ietr.preesm.mathematicalModels.PeriodicScheduleModel_ojAlgo;
 
 // TODO: Auto-generated Javadoc
 /**
- * Class used to compute the optimal periodic schedule and the throughput of a non hierarchical graph (SDF or already flattened IBSDF).
+ * Class used to compute the optimal periodic schedule and the throughput of a non hierarchical graph (SDF or already
+ * flattened IBSDF).
  *
  * @author blaunay
  */
@@ -170,7 +171,8 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator {
     // for (int j = 1; j <= edges.size(); j++) {
     // GLPK.intArray_setitem(ind, j, j);
     // H = ((double) (edges.get(j - 1).getDelay().getValue())
-    // + SDFMathD.gcd((double) (edges.get(j - 1).getCons().getValue()), (double) (edges.get(j - 1).getProd().getValue())))
+    // + SDFMathD.gcd((double) (edges.get(j - 1).getCons().getValue()), (double) (edges.get(j -
+    // 1).getProd().getValue())))
     // - (double) (edges.get(j - 1).getCons().getValue());
     // GLPK.doubleArray_setitem(val, j, H);
     // }
@@ -209,8 +211,10 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator {
 
     // Init the weights on the edges (i,j) : w = M0 + gcd(i,j) - Zj
     for (final SDFEdge edge : input.edgeSet()) {
-      e.put(edge, ((double) (edge.getDelay().getValue()) + SDFMathD.gcd((double) (edge.getProd().getValue()), (double) (edge.getCons().getValue())))
-          - (double) (edge.getCons().getValue()));
+      e.put(edge,
+          ((double) (edge.getDelay().getValue())
+              + SDFMathD.gcd((double) (edge.getProd().getValue()), (double) (edge.getCons().getValue())))
+              - (double) (edge.getCons().getValue()));
     }
 
     // Initialization : source.dist = 0, v.dist = infinity

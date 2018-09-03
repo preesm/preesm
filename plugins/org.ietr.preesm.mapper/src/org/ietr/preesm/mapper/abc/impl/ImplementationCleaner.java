@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2014)
@@ -93,7 +93,8 @@ public class ImplementationCleaner {
 
     for (final DAGVertex v : ImplementationCleaner.getAllTransfers(vertex)) {
       if (v instanceof TransferVertex) {
-        this.transactionManager.add(new RemoveVertexTransaction((MapperDAGVertex) v, this.implementation, this.orderManager));
+        this.transactionManager
+            .add(new RemoveVertexTransaction((MapperDAGVertex) v, this.implementation, this.orderManager));
 
       }
     }

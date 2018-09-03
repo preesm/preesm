@@ -89,13 +89,14 @@ public final class URLResolver {
   }
 
   /**
-   * Looks for a Resource stored in the open workspace, in the Plug-in classpath, in a remote location, or in the filesystem.<br/>
+   * Looks for a Resource stored in the open workspace, in the Plug-in classpath, in a remote location, or in the
+   * filesystem.<br/>
    * The lookup order is the following:<br/>
    * <ul>
-   * <li>Look for the resource in the projects of the workspace; if bundleList is not empty, search only within the projects whose name is in the list
-   * bundleList;</li>
-   * <li>Look for the resource in the Eclipse instance loaded plug-ins classpath; if bundleList is not empty, search only within the plug-ins whose name is in
-   * the list if bundleList is not bundleList;</li>
+   * <li>Look for the resource in the projects of the workspace; if bundleList is not empty, search only within the
+   * projects whose name is in the list bundleList;</li>
+   * <li>Look for the resource in the Eclipse instance loaded plug-ins classpath; if bundleList is not empty, search
+   * only within the plug-ins whose name is in the list if bundleList is not bundleList;</li>
    * <li>Try to initialize a remote URL;</li>
    * <li>Lookup for the resource in the file system.</li>
    * </ul>
@@ -134,7 +135,8 @@ public final class URLResolver {
     return resultURL;
   }
 
-  private final URL resolveURLFromWorkspace(final String location, final List<String> projectFilterList) throws MalformedURLException {
+  private final URL resolveURLFromWorkspace(final String location, final List<String> projectFilterList)
+      throws MalformedURLException {
     final IWorkspace workspace;
     try {
       workspace = ResourcesPlugin.getWorkspace();
@@ -147,7 +149,8 @@ public final class URLResolver {
     }
     final IProject[] projects = workspace.getRoot().getProjects();
     final IPath path = new org.eclipse.core.runtime.Path(location);
-    final IProject project = Stream.of(projects).filter(p -> projectFilterList.isEmpty() || projectFilterList.contains(p.getName())).filter(p -> p.exists(path))
+    final IProject project = Stream.of(projects)
+        .filter(p -> projectFilterList.isEmpty() || projectFilterList.contains(p.getName())).filter(p -> p.exists(path))
         .findFirst().orElse(null);
     if (project == null) {
       return null;
@@ -163,8 +166,8 @@ public final class URLResolver {
       return null;
     }
     final Bundle[] bundles = plugin.getBundle().getBundleContext().getBundles();
-    return Stream.of(bundles).filter(b -> pluginFilterList.isEmpty() || pluginFilterList.contains(b.getSymbolicName())).map(b -> b.getEntry(resource))
-        .filter(Objects::nonNull).findFirst().orElse(null);
+    return Stream.of(bundles).filter(b -> pluginFilterList.isEmpty() || pluginFilterList.contains(b.getSymbolicName()))
+        .map(b -> b.getEntry(resource)).filter(Objects::nonNull).findFirst().orElse(null);
   }
 
   private final URL resolvePlainURL(final String resource) throws MalformedURLException {

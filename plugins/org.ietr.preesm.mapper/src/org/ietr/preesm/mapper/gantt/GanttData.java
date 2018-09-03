@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2012 - 2014)
  *
@@ -42,12 +42,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
 
 /**
  * GanttData carries information that can be displayed in a Gantt chart.
@@ -123,7 +123,8 @@ public class GanttData {
           return false;
         }
       } else {
-        final String message = "Gantt: task can not be displayed in Gantt because it has no component: " + currentVertex;
+        final String message = "Gantt: task can not be displayed in Gantt because it has no component: "
+            + currentVertex;
         WorkflowLogger.getLogger().log(Level.SEVERE, message);
       }
     }

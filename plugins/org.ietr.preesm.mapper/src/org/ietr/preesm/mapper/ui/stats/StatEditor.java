@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
@@ -93,7 +93,8 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
     final IFormPage ganttPage = new GanttPage(this.statGen, this, "Gantt", "Gantt");
     final IFormPage overviewPage = new OverviewPage(this.statGen, this, "Loads", "Loads");
     overviewPage.addPropertyListener(this);
-    final PerformancePage performancePage = new PerformancePage(this.statGen, this, "Performance", "Work, Span and Achieved Speedup");
+    final PerformancePage performancePage = new PerformancePage(this.statGen, this, "Performance",
+        "Work, Span and Achieved Speedup");
     performancePage.addPropertyListener(this);
 
     try {

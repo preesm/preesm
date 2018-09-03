@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2014)
@@ -66,8 +66,9 @@ import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature {
 
   /**
-   * The {@link ICustomContext} given to the {@link #execute(ICustomContext)} method can be associated to properties. The {@link #NAME_PROPERTY} key is
-   * associated to a {@link String} that should be used as a name for the created port, thus bypassing the need to ask for a port name to the user.
+   * The {@link ICustomContext} given to the {@link #execute(ICustomContext)} method can be associated to properties.
+   * The {@link #NAME_PROPERTY} key is associated to a {@link String} that should be used as a name for the created
+   * port, thus bypassing the need to ask for a port name to the user.
    */
   public static final String NAME_PROPERTY = "name";
 
@@ -142,7 +143,8 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.
+   * ICustomContext)
    */
   @Override
   public boolean canExecute(final ICustomContext context) {
@@ -162,7 +164,8 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see
+   * org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
    */
   @Override
   public void execute(final ICustomContext context) {
@@ -245,7 +248,8 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
     return boxAnchor;
   }
 
-  private String computePortName(final ICustomContext context, final String defaultPortName, final ExecutableActor actor) {
+  private String computePortName(final ICustomContext context, final String defaultPortName,
+      final ExecutableActor actor) {
     // If a name was given in the property, bypass the dialog box
     final Object nameProperty = context.getProperty(AbstractAddActorPortFeature.NAME_PROPERTY);
     final String portName;
@@ -306,7 +310,8 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
     final IGaService gaService = Graphiti.getGaService();
     final Font font = gaService.manageDefaultFont(getDiagram(), false, false);
 
-    AbstractAddActorPortFeature.PORT_FONT_HEIGHT = GraphitiUi.getUiLayoutService().calculateTextSize("Abcq", font).getHeight();
+    AbstractAddActorPortFeature.PORT_FONT_HEIGHT = GraphitiUi.getUiLayoutService().calculateTextSize("Abcq", font)
+        .getHeight();
 
     return font;
   }

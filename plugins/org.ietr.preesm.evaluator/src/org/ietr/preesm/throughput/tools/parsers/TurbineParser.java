@@ -114,7 +114,8 @@ public abstract class TurbineParser {
         actorsId.put(_actorId, newActorId);
 
         // add the actor to the graph
-        final SDFAbstractVertex actor = GraphStructureHelper.addActor(g, newActorId, null, _actorRF, _actorDuration, null, null);
+        final SDFAbstractVertex actor = GraphStructureHelper.addActor(g, newActorId, null, _actorRF, _actorDuration,
+            null, null);
         // System.out.println("actor : " + newActorId + " " + _actorRF + " " + _actorDuration);
         listActors.put(newActorId, actor);
       }
@@ -133,8 +134,10 @@ public abstract class TurbineParser {
         final Double _cons = Double.parseDouble(line[3]);
 
         // add the edge to the graph
-        GraphStructureHelper.addEdge(g, srcActorId, null, trgActorId, null, _prod.intValue(), _cons.intValue(), _initialMarking.intValue(), null);
-        // System.out.println("edge : (" + srcActorId + "," + trgActorId + " ) prod= " + _prod.intValue() + " cons= " + _cons.intValue() + " d= " +
+        GraphStructureHelper.addEdge(g, srcActorId, null, trgActorId, null, _prod.intValue(), _cons.intValue(),
+            _initialMarking.intValue(), null);
+        // System.out.println("edge : (" + srcActorId + "," + trgActorId + " ) prod= " + _prod.intValue() + " cons= " +
+        // _cons.intValue() + " d= " +
         // _initialMarking.intValue());
       }
 
@@ -191,7 +194,8 @@ public abstract class TurbineParser {
           actorsId.put(_actorId, newActorId);
 
           // add the actor to the graph
-          final SDFAbstractVertex actor = GraphStructureHelper.addActor(subGraph, newActorId, null, _actorRF, _actorDuration, null, null);
+          final SDFAbstractVertex actor = GraphStructureHelper.addActor(subGraph, newActorId, null, _actorRF,
+              _actorDuration, null, null);
           // System.out.println("actor : " + newActorId + " " + _actorRF + " " + _actorDuration);
           listActors.put(newActorId, actor);
         }
@@ -210,9 +214,11 @@ public abstract class TurbineParser {
           final Double _cons = Double.parseDouble(line[3]);
 
           // add the edge to the graph
-          GraphStructureHelper.addEdge(subGraph, srcActorId, null, trgActorId, null, _prod.intValue(), _cons.intValue(), _initialMarking.intValue(), null);
+          GraphStructureHelper.addEdge(subGraph, srcActorId, null, trgActorId, null, _prod.intValue(), _cons.intValue(),
+              _initialMarking.intValue(), null);
           // System.out.println(
-          // "edge : (" + srcActorId + "," + trgActorId + " ) prod= " + _prod.intValue() + " cons= " + _cons.intValue() + " d= " + _initialMarking.intValue());
+          // "edge : (" + srcActorId + "," + trgActorId + " ) prod= " + _prod.intValue() + " cons= " + _cons.intValue()
+          // + " d= " + _initialMarking.intValue());
         }
 
         // reading Input interfaces description
@@ -237,10 +243,13 @@ public abstract class TurbineParser {
           final String trgActorId = actorsId.get(source_target[1].replace(")", ""));
           final Double _prod = Double.parseDouble(line[1]);
 
-          GraphStructureHelper.addInputInterface(subGraph, inputPort, null, TurbineParser.InterfaceDuration_default, null, null);
+          GraphStructureHelper.addInputInterface(subGraph, inputPort, null, TurbineParser.InterfaceDuration_default,
+              null, null);
           // System.out.println("inputInterface : " + inputPort);
-          GraphStructureHelper.addEdge(subGraph, inputPort, null, trgActorId, null, _prod.intValue(), _cons.intValue(), 0, null);
-          // System.out.println("edge : (" + inputPort + "," + trgActorId + " ) prod= " + _prod.intValue() + " cons= " + _cons.intValue());
+          GraphStructureHelper.addEdge(subGraph, inputPort, null, trgActorId, null, _prod.intValue(), _cons.intValue(),
+              0, null);
+          // System.out.println("edge : (" + inputPort + "," + trgActorId + " ) prod= " + _prod.intValue() + " cons= " +
+          // _cons.intValue());
         }
 
         // reading Output interfaces description
@@ -265,10 +274,13 @@ public abstract class TurbineParser {
           final String srcActorId = actorsId.get(source_target[0].replace("(", ""));
           final Double _cons = Double.parseDouble(line[1]);
 
-          GraphStructureHelper.addOutputInterface(subGraph, outputPort, null, TurbineParser.InterfaceDuration_default, null, null);
+          GraphStructureHelper.addOutputInterface(subGraph, outputPort, null, TurbineParser.InterfaceDuration_default,
+              null, null);
           // System.out.println("outputInterface : " + outputPort);
-          GraphStructureHelper.addEdge(subGraph, srcActorId, null, outputPort, null, _prod.intValue(), _cons.intValue(), 0, null);
-          // System.out.println("edge : (" + srcActorId + "," + outputPort + " ) prod= " + _prod.intValue() + " cons= " + _cons.intValue());
+          GraphStructureHelper.addEdge(subGraph, srcActorId, null, outputPort, null, _prod.intValue(), _cons.intValue(),
+              0, null);
+          // System.out.println("edge : (" + srcActorId + "," + outputPort + " ) prod= " + _prod.intValue() + " cons= "
+          // + _cons.intValue());
         }
 
         // add the subgraph description to the hierarchical actor

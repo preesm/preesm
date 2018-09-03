@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2009)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
@@ -82,6 +82,7 @@ public abstract class ExcelWriter implements SelectionListener {
    * @throws CoreException
    *           the core exception
    */
-  protected abstract void addCells(WritableSheet sheet) throws InvalidModelException, FileNotFoundException, RowsExceededException, CoreException;
+  protected abstract void addCells(WritableSheet sheet)
+      throws InvalidModelException, FileNotFoundException, RowsExceededException, CoreException;
 
 }

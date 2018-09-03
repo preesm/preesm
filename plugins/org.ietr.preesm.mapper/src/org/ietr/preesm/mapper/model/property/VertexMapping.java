@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
@@ -76,8 +76,8 @@ public class VertexMapping extends GroupProperty {
   }
 
   /**
-   * Returns a list of components, computed from initial and relative constraints. If the boolean considerGroupMapping is true, one mapped vertex in the group
-   * causes the return of its effective operator.
+   * Returns a list of components, computed from initial and relative constraints. If the boolean considerGroupMapping
+   * is true, one mapped vertex in the group causes the return of its effective operator.
    *
    * @param vertex
    *          the vertex
@@ -85,7 +85,8 @@ public class VertexMapping extends GroupProperty {
    *          the consider group mapping
    * @return the candidate components
    */
-  public List<ComponentInstance> getCandidateComponents(final MapperDAGVertex vertex, final boolean considerGroupMapping) {
+  public List<ComponentInstance> getCandidateComponents(final MapperDAGVertex vertex,
+      final boolean considerGroupMapping) {
 
     final List<ComponentInstance> operators = new ArrayList<>();
     final MapperDAG dag = (MapperDAG) vertex.getBase();

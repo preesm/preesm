@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2016)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2015 - 2016)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2016)
@@ -247,7 +247,8 @@ public class ExportSVGFeature extends AbstractCustomFeature {
         break;
     }
 
-    el.setAttribute("fill", "rgb(" + t.getForeground().getRed() + ", " + t.getForeground().getGreen() + ", " + t.getForeground().getBlue() + ")");
+    el.setAttribute("fill", "rgb(" + t.getForeground().getRed() + ", " + t.getForeground().getGreen() + ", "
+        + t.getForeground().getBlue() + ")");
 
     el.setAttribute("font-size", t.getFont().getSize() + "pt");
     el.setAttribute("font-family", t.getFont().getName());
@@ -336,7 +337,8 @@ public class ExportSVGFeature extends AbstractCustomFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.
+   * ICustomContext)
    */
   @Override
   public boolean canExecute(final ICustomContext context) {
@@ -356,7 +358,8 @@ public class ExportSVGFeature extends AbstractCustomFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see
+   * org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
    */
   @Override
   public void execute(final ICustomContext context) {
@@ -521,11 +524,13 @@ public class ExportSVGFeature extends AbstractCustomFeature {
     /*
      * (non-Javadoc)
      *
-     * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseParameter(org.ietr.preesm.experiment.model.pimm.Parameter)
+     * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseParameter(org.ietr.preesm.experiment.model.pimm.
+     * Parameter)
      */
     @Override
     public Integer caseParameter(final Parameter p) {
-      if (p.isLocallyStatic() && (p.isConfigurationInterface() && (((ConfigInputInterface) p).getGraphPort() instanceof ConfigInputPort))) {
+      if (p.isLocallyStatic()
+          && (p.isConfigurationInterface() && (((ConfigInputInterface) p).getGraphPort() instanceof ConfigInputPort))) {
         return caseConfigInputInterface(p);
       }
 
@@ -551,8 +556,8 @@ public class ExportSVGFeature extends AbstractCustomFeature {
       {
         final Element polygon = this.doc.createElement("polygon");
         paramNode.appendChild(polygon);
-        polygon.setAttribute("points",
-            "0," + (height) + " " + "0," + (height / 2) + " " + (width / 2) + ",0 " + (width) + "," + (height / 2) + " " + (width) + "," + (height));
+        polygon.setAttribute("points", "0," + (height) + " " + "0," + (height / 2) + " " + (width / 2) + ",0 " + (width)
+            + "," + (height / 2) + " " + (width) + "," + (height));
         polygon.setAttribute("fill", "rgb(187,218,247)");
         polygon.setAttribute("stroke", "rgb(98,131,167)");
         polygon.setAttribute("stroke-width", "4px");
@@ -583,7 +588,9 @@ public class ExportSVGFeature extends AbstractCustomFeature {
     /*
      * (non-Javadoc)
      *
-     * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseDataInputInterface(org.ietr.preesm.experiment.model.pimm.DataInputInterface)
+     * @see
+     * org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseDataInputInterface(org.ietr.preesm.experiment.model.
+     * pimm.DataInputInterface)
      */
     @Override
     public Integer caseDataInputInterface(final DataInputInterface dii) {
@@ -634,7 +641,9 @@ public class ExportSVGFeature extends AbstractCustomFeature {
     /*
      * (non-Javadoc)
      *
-     * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseDataOutputInterface(org.ietr.preesm.experiment.model.pimm.DataOutputInterface)
+     * @see
+     * org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseDataOutputInterface(org.ietr.preesm.experiment.model.
+     * pimm.DataOutputInterface)
      */
     @Override
     public Integer caseDataOutputInterface(final DataOutputInterface doi) {
@@ -733,7 +742,9 @@ public class ExportSVGFeature extends AbstractCustomFeature {
     /*
      * (non-Javadoc)
      *
-     * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseConfigOutputInterface(org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface)
+     * @see
+     * org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseConfigOutputInterface(org.ietr.preesm.experiment.model.
+     * pimm.ConfigOutputInterface)
      */
     @Override
     public Integer caseConfigOutputInterface(final ConfigOutputInterface coi) {
@@ -775,7 +786,9 @@ public class ExportSVGFeature extends AbstractCustomFeature {
     /*
      * (non-Javadoc)
      *
-     * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseExecutableActor(org.ietr.preesm.experiment.model.pimm.ExecutableActor)
+     * @see
+     * org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseExecutableActor(org.ietr.preesm.experiment.model.pimm.
+     * ExecutableActor)
      */
     @Override
     public Integer caseExecutableActor(final ExecutableActor ea) {
@@ -819,11 +832,11 @@ public class ExportSVGFeature extends AbstractCustomFeature {
         rect.setAttribute("width", "" + width);
         rect.setAttribute("height", "" + height);
 
-        rect.setAttribute("fill",
-            "rgb(" + actorRect.getBackground().getRed() + ", " + actorRect.getBackground().getGreen() + ", " + actorRect.getBackground().getBlue() + ")");
+        rect.setAttribute("fill", "rgb(" + actorRect.getBackground().getRed() + ", "
+            + actorRect.getBackground().getGreen() + ", " + actorRect.getBackground().getBlue() + ")");
 
-        rect.setAttribute("stroke",
-            "rgb(" + actorRect.getForeground().getRed() + ", " + actorRect.getForeground().getGreen() + ", " + actorRect.getForeground().getBlue() + ")");
+        rect.setAttribute("stroke", "rgb(" + actorRect.getForeground().getRed() + ", "
+            + actorRect.getForeground().getGreen() + ", " + actorRect.getForeground().getBlue() + ")");
 
         rect.setAttribute("stroke-width", "3px");
 
@@ -1008,7 +1021,8 @@ public class ExportSVGFeature extends AbstractCustomFeature {
     /*
      * (non-Javadoc)
      *
-     * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseDependency(org.ietr.preesm.experiment.model.pimm.Dependency)
+     * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseDependency(org.ietr.preesm.experiment.model.pimm.
+     * Dependency)
      */
     @Override
     public Integer caseDependency(final Dependency d) {

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2016)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -77,7 +77,8 @@ public abstract class AbstractCommunicationRouter {
    * @param orderManager
    *          the order manager
    */
-  public AbstractCommunicationRouter(final MapperDAG implementation, final IEdgeSched edgeScheduler, final OrderManager orderManager) {
+  public AbstractCommunicationRouter(final MapperDAG implementation, final IEdgeSched edgeScheduler,
+      final OrderManager orderManager) {
     super();
     this.implementers = new LinkedHashMap<>();
     setManagers(implementation, edgeScheduler, orderManager);
@@ -143,7 +144,8 @@ public abstract class AbstractCommunicationRouter {
    * @param orderManager
    *          the order manager
    */
-  public void setManagers(final MapperDAG implementation, final IEdgeSched edgeScheduler, final OrderManager orderManager) {
+  public void setManagers(final MapperDAG implementation, final IEdgeSched edgeScheduler,
+      final OrderManager orderManager) {
     this.implementation = implementation;
     this.edgeScheduler = edgeScheduler;
     this.orderManager = orderManager;

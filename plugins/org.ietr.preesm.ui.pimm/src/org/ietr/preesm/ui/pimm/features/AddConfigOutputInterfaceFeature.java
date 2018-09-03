@@ -169,7 +169,8 @@ public class AddConfigOutputInterfaceFeature extends AbstractAddFeature {
   public boolean canAdd(final IAddContext context) {
     // Check that the user wants to add an ConfigOutputInterface to the
     // Diagram
-    return (context.getNewObject() instanceof ConfigOutputInterface) && (context.getTargetContainer() instanceof Diagram);
+    return (context.getNewObject() instanceof ConfigOutputInterface)
+        && (context.getTargetContainer() instanceof Diagram);
   }
 
 }

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
@@ -80,7 +80,8 @@ public class XsltTransformer {
    *          The XSLT stylesheet file name.
    * @return true, if successful
    * @throws TransformerConfigurationException
-   *           Thrown if there are errors when parsing the Source or it is not possible to create a {@link Transformer} instance.
+   *           Thrown if there are errors when parsing the Source or it is not possible to create a {@link Transformer}
+   *           instance.
    */
   public boolean setXSLFile(final String fileName) throws TransformerConfigurationException {
 
@@ -136,7 +137,8 @@ public class XsltTransformer {
         outStream.close();
 
       } catch (final FileNotFoundException e) {
-        CLIWorkflowLogger.log(Level.SEVERE, "Problem finding files for XSL transfo (" + osSourceFilePath + "," + osDestFilePath + ")");
+        CLIWorkflowLogger.log(Level.SEVERE,
+            "Problem finding files for XSL transfo (" + osSourceFilePath + "," + osDestFilePath + ")");
       } catch (final TransformerException e) {
         e.printStackTrace();
       } catch (final IOException e) {

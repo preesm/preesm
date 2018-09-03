@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2014)
  *
@@ -92,11 +92,12 @@ public class CopyDiagram extends CopyParticipant {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant#checkConditions(org.eclipse.core.runtime.IProgressMonitor,
-   * org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext)
+   * @see org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant#checkConditions(org.eclipse.core.runtime.
+   * IProgressMonitor, org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext)
    */
   @Override
-  public RefactoringStatus checkConditions(final IProgressMonitor pm, final CheckConditionsContext context) throws OperationCanceledException {
+  public RefactoringStatus checkConditions(final IProgressMonitor pm, final CheckConditionsContext context)
+      throws OperationCanceledException {
     // Nothing to do here
     return null;
   }
@@ -104,7 +105,8 @@ public class CopyDiagram extends CopyParticipant {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant#createChange(org.eclipse.core.runtime.IProgressMonitor)
+   * @see org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant#createChange(org.eclipse.core.runtime.
+   * IProgressMonitor)
    */
   @Override
   public Change createChange(final IProgressMonitor pm) throws CoreException, OperationCanceledException {
@@ -141,8 +143,9 @@ public class CopyDiagram extends CopyParticipant {
           return null;
         }
 
-        final TextFileChange change = RefactoringHelper.createChange("(<pi:Diagram.*?name=\"|<businessObjects href=\")(" + oldName + ")(\".*?>|.pi#.*?\"/>)", 2,
-            newName, newFile);
+        final TextFileChange change = RefactoringHelper.createChange(
+            "(<pi:Diagram.*?name=\"|<businessObjects href=\")(" + oldName + ")(\".*?>|.pi#.*?\"/>)", 2, newName,
+            newFile);
 
         if (change != null) {
           add(change);

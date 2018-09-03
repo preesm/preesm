@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
  *
@@ -55,8 +55,9 @@ import org.ietr.preesm.core.scenario.Timing;
 
 // TODO: Auto-generated Javadoc
 /**
- * This Workflow element is used to generate random SDF graphs The user can define the following options: - Number of vertices - Minimum/maximum number of
- * input/output per actor - Minimum/maximum input/output rates - Minimum/maximum execution time
+ * This Workflow element is used to generate random SDF graphs The user can define the following options: - Number of
+ * vertices - Minimum/maximum number of input/output per actor - Minimum/maximum input/output rates - Minimum/maximum
+ * execution time
  *
  * <p>
  * The Workflow element must have a scenario, a sdf and an architecture as inputs and outputs a SDF and a Scenario
@@ -106,12 +107,12 @@ public class RandomSDF extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
-   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
+   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
 
     retrieveParameters(parameters);
 
@@ -126,8 +127,8 @@ public class RandomSDF extends AbstractTaskImplementation {
     final SDFRandomGraph graphGenerator = new SDFRandomGraph();
     SDFGraph generatedGraph = null;
     try {
-      generatedGraph = graphGenerator.createRandomGraph(this.nbVertex, this.minInDegree, this.maxInDegree, this.minOutDegree, this.maxOutDegree, this.minRate,
-          this.maxRate, this.rateMultiplier);
+      generatedGraph = graphGenerator.createRandomGraph(this.nbVertex, this.minInDegree, this.maxInDegree,
+          this.minOutDegree, this.maxOutDegree, this.minRate, this.maxRate, this.rateMultiplier);
     } catch (final SDF4JException ex) {
       ex.printStackTrace();
     }
@@ -153,7 +154,8 @@ public class RandomSDF extends AbstractTaskImplementation {
       for (final ComponentInstance component : architecture.getComponentInstances()) {
         constraint.addConstraints(component.getInstanceName(), verticesNames.keySet());
         for (final SDFAbstractVertex vertex : sdf.vertexSet()) {
-          final Timing t = scenario.getTimingManager().addTiming(vertex.getName(), component.getComponent().getVlnv().getName());
+          final Timing t = scenario.getTimingManager().addTiming(vertex.getName(),
+              component.getComponent().getVlnv().getName());
           t.setTime(verticesNames.get(vertex.getName()));
         }
       }

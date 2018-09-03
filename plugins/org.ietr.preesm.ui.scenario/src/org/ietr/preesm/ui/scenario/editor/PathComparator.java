@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2011)
@@ -61,7 +61,8 @@ public class PathComparator implements Comparator<IHierarchicalVertex> {
     int diff = 0;
 
     if (o1.getStoredVertex() instanceof SDFAbstractVertex) {
-      diff = ((SDFAbstractVertex) o1.getStoredVertex()).getInfo().compareTo(((SDFAbstractVertex) o2.getStoredVertex()).getInfo());
+      diff = ((SDFAbstractVertex) o1.getStoredVertex()).getInfo()
+          .compareTo(((SDFAbstractVertex) o2.getStoredVertex()).getInfo());
 
     }
 

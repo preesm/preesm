@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2015)
@@ -105,7 +105,8 @@ public class MemoryBoundsEstimatorEngine {
       if (valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_DEFAULT)) {
         this.logger.log(Level.INFO, "No solver specified. Heuristic solver used by default.");
       } else {
-        if (valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_HEURISTIC) || valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_OSTERGARD)
+        if (valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_HEURISTIC)
+            || valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_OSTERGARD)
             || valueSolver.equals(MemoryBoundsEstimatorEngine.VALUE_SOLVER_YAMAGUCHI)) {
           this.logger.log(Level.INFO, valueSolver + " solver used.");
         } else {

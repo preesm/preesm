@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
  *
@@ -48,8 +48,8 @@ import org.ietr.preesm.experiment.model.pimm.Refinement;
 
 // TODO: Auto-generated Javadoc
 /**
- * Class to check different properties of the Refinements of the Actors of a PiGraph. Entry point is the checkRefinements method. Actors with invalid
- * refinements are kept in several sets
+ * Class to check different properties of the Refinements of the Actors of a PiGraph. Entry point is the
+ * checkRefinements method. Actors with invalid refinements are kept in several sets
  *
  * @author cguy
  *

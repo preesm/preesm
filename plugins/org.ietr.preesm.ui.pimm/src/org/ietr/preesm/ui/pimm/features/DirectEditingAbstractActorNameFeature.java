@@ -83,7 +83,9 @@ public class DirectEditingAbstractActorNameFeature extends AbstractDirectEditing
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.impl.AbstractDirectEditingFeature#canDirectEdit(org.eclipse.graphiti.features.context.IDirectEditingContext)
+   * @see
+   * org.eclipse.graphiti.features.impl.AbstractDirectEditingFeature#canDirectEdit(org.eclipse.graphiti.features.context
+   * .IDirectEditingContext)
    */
   @Override
   public boolean canDirectEdit(final IDirectEditingContext context) {
@@ -102,7 +104,8 @@ public class DirectEditingAbstractActorNameFeature extends AbstractDirectEditing
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.func.IDirectEditing#getInitialValue(org.eclipse.graphiti.features.context.IDirectEditingContext)
+   * @see org.eclipse.graphiti.func.IDirectEditing#getInitialValue(org.eclipse.graphiti.features.context.
+   * IDirectEditingContext)
    */
   @Override
   public String getInitialValue(final IDirectEditingContext context) {

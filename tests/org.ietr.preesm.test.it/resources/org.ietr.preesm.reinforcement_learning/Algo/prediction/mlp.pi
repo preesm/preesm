@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">mlp</data>
+        <node id="input_size" kind="cfg_in_iface"/>
+        <node id="output_size" kind="cfg_in_iface"/>
+        <node id="hidden_size" kind="cfg_in_iface"/>
+        <node id="output" kind="snk">
+            <port annotation="NONE" expr="output_size" kind="input" name="output"/>
+        </node>
+        <node id="input" kind="src">
+            <port annotation="NONE" expr="input_size" kind="output" name="input"/>
+        </node>
+        <node id="weights_hidden" kind="actor">
+            <data key="graph_desc">Algo/prediction/weight_generator.pi</data>
+            <port kind="cfg_input" name="layer_size"/>
+            <port kind="cfg_input" name="input_size"/>
+            <port annotation="NONE" expr="layer_size * input_size"
+                kind="output" name="weights_out"/>
+            <port annotation="NONE" expr="layer_size" kind="output" name="bias_out"/>
+        </node>
+        <node id="Hidden_layer" kind="actor">
+            <data key="graph_desc">Algo/common/neuron.pi</data>
+            <port kind="cfg_input" name="input_size"/>
+            <port kind="cfg_input" name="layer_size"/>
+            <port annotation="NONE" expr="1" kind="input" name="valid"/>
+            <port annotation="NONE" expr="input_size" kind="input" name="input"/>
+            <port annotation="NONE" expr="input_size * layer_size"
+                kind="input" name="weights"/>
+            <port annotation="NONE" expr="layer_size" kind="input" name="bias_values"/>
+            <port annotation="NONE" expr="layer_size" kind="output" name="output"/>
+        </node>
+        <node id="Output_layer" kind="actor">
+            <data key="graph_desc">Algo/common/neuron.pi</data>
+            <port kind="cfg_input" name="input_size"/>
+            <port kind="cfg_input" name="layer_size"/>
+            <port annotation="NONE" expr="input_size" kind="input" name="input"/>
+            <port annotation="NONE" expr="1" kind="input" name="valid"/>
+            <port annotation="NONE" expr="input_size * layer_size"
+                kind="input" name="weights"/>
+            <port annotation="NONE" expr="layer_size" kind="input" name="bias_values"/>
+            <port annotation="NONE" expr="layer_size" kind="output" name="output"/>
+        </node>
+        <node id="weights_output" kind="actor">
+            <data key="graph_desc">Algo/prediction/weight_generator.pi</data>
+            <port kind="cfg_input" name="layer_size"/>
+            <port kind="cfg_input" name="input_size"/>
+            <port annotation="NONE" expr="layer_size * input_size"
+                kind="output" name="weights_out"/>
+            <port annotation="NONE" expr="layer_size" kind="output" name="bias_out"/>
+        </node>
+        <node id="activationFunction" kind="actor">
+            <data key="graph_desc">Code/include/mlp.h</data>
+            <loop name="activateTanHyperbolic">
+                <param direction="IN" isConfig="false" name="input" type="float "/>
+                <param direction="IN" isConfig="false" name="valid" type="int "/>
+                <param direction="OUT" isConfig="false" name="output" type="float "/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="input"/>
+            <port annotation="NONE" expr="1" kind="input" name="valid"/>
+            <port annotation="NONE" expr="1" kind="output" name="output"/>
+        </node>
+        <node id="BroadCastValid" kind="broadcast">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="1" kind="input" name="in"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="size" kind="output" name="out_1"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_2"/>
+        </node>
+        <node id="valid" kind="actor">
+            <data key="graph_desc">Code/include/common.h</data>
+            <loop name="valid">
+                <param direction="OUT" isConfig="false" name="valid" type="int "/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="output" name="valid"/>
+        </node>
+        <edge kind="fifo" source="weights_hidden"
+            sourceport="weights_out" target="Hidden_layer"
+            targetport="weights" type="float"/>
+        <edge kind="fifo" source="weights_hidden" sourceport="bias_out"
+            target="Hidden_layer" targetport="bias_values" type="float"/>
+        <edge kind="fifo" source="weights_output"
+            sourceport="weights_out" target="Output_layer"
+            targetport="weights" type="float"/>
+        <edge kind="fifo" source="weights_output" sourceport="bias_out"
+            target="Output_layer" targetport="bias_values" type="float"/>
+        <edge kind="fifo" source="Output_layer" sourceport="output"
+            target="output" targetport="output" type="float"/>
+        <edge kind="fifo" source="input" sourceport="input"
+            target="Hidden_layer" targetport="input" type="float"/>
+        <edge kind="fifo" source="Hidden_layer" sourceport="output"
+            target="activationFunction" targetport="input" type="float"/>
+        <edge kind="fifo" source="activationFunction"
+            sourceport="output" target="Output_layer" targetport="input" type="float"/>
+        <edge kind="fifo" source="BroadCastValid" sourceport="out_0"
+            target="Hidden_layer" targetport="valid" type="int"/>
+        <edge kind="fifo" source="BroadCastValid" sourceport="out_1"
+            target="activationFunction" targetport="valid" type="int"/>
+        <edge kind="fifo" source="BroadCastValid" sourceport="out_2"
+            target="Output_layer" targetport="valid" type="int"/>
+        <edge kind="fifo" source="valid" sourceport="valid"
+            target="BroadCastValid" targetport="in" type="int"/>
+        <edge kind="dependency" source="output_size" target="output"/>
+        <edge kind="dependency" source="input_size" target="input"/>
+        <edge kind="dependency" source="input_size"
+            target="Hidden_layer" targetport="input_size"/>
+        <edge kind="dependency" source="output_size"
+            target="Output_layer" targetport="layer_size"/>
+        <edge kind="dependency" source="hidden_size"
+            target="Hidden_layer" targetport="layer_size"/>
+        <edge kind="dependency" source="input_size"
+            target="weights_hidden" targetport="input_size"/>
+        <edge kind="dependency" source="hidden_size"
+            target="weights_hidden" targetport="layer_size"/>
+        <edge kind="dependency" source="hidden_size"
+            target="weights_output" targetport="input_size"/>
+        <edge kind="dependency" source="output_size"
+            target="weights_output" targetport="layer_size"/>
+        <edge kind="dependency" source="hidden_size"
+            target="Output_layer" targetport="input_size"/>
+        <edge kind="dependency" source="hidden_size"
+            target="BroadCastValid" targetport="size"/>
+    </graph>
+</graphml>

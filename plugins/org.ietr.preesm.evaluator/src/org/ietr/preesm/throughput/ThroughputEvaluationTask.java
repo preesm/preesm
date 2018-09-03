@@ -100,10 +100,10 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
    *         The supported methods
    */
   public static enum ThroughputMethod {
-    SR, // Schedule-Replace technique
-    ESR, // Evaluate-Schedule-Replace method
-    HPeriodic, // Hierarchical Periodic Schedule method
-    Classical, // Based on Flattening the hierarchy
+  SR, // Schedule-Replace technique
+  ESR, // Evaluate-Schedule-Replace method
+  HPeriodic, // Hierarchical Periodic Schedule method
+  Classical, // Based on Flattening the hierarchy
   }
 
   // Plug-in parameters
@@ -112,8 +112,8 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
   public Stopwatch           timer;
 
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
 
     // get the input graph, the scenario for actors duration, and the method to use
     final SDFGraph inputGraph = GraphStructureHelper.cloneIBSDF((SDFGraph) inputs.get("SDF"));
@@ -161,11 +161,13 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
       }
 
       // print the computed throughput
-      WorkflowLogger.getLogger().log(Level.INFO, "Throughput value = " + throughput + " nbIter/clockCycle, Computed in : " + this.timer.toString());
+      WorkflowLogger.getLogger().log(Level.INFO,
+          "Throughput value = " + throughput + " nbIter/clockCycle, Computed in : " + this.timer.toString());
 
     } else {
       // print an error message
-      WorkflowLogger.getLogger().log(Level.WARNING, "ERROR : The graph is deadlock !! Throughput value = 0 nbIter/clockCycle");
+      WorkflowLogger.getLogger().log(Level.WARNING,
+          "ERROR : The graph is deadlock !! Throughput value = 0 nbIter/clockCycle");
     }
 
     // set the outputs

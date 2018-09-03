@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2015 - 2016)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2015)
@@ -53,12 +53,12 @@ public final class SpiderTypeConverter {
    */
   public enum PiSDFType {
 
-    /** The pisdf type body. */
-    PISDF_TYPE_BODY,
-    /** The pisdf type config. */
-    PISDF_TYPE_CONFIG,
-    /** The pisdf type if. */
-    PISDF_TYPE_IF
+  /** The pisdf type body. */
+  PISDF_TYPE_BODY,
+  /** The pisdf type config. */
+  PISDF_TYPE_CONFIG,
+  /** The pisdf type if. */
+  PISDF_TYPE_IF
   }
 
   /**

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2014)
@@ -117,7 +117,8 @@ public class ActorDecorators {
   }
 
   /**
-   * Get the {@link IDecorator}s indicating that the {@link Port}s of the {@link Actor} and those of its {@link PiSDFRefinement} are not coherent.
+   * Get the {@link IDecorator}s indicating that the {@link Port}s of the {@link Actor} and those of its
+   * {@link PiSDFRefinement} are not coherent.
    *
    * @param actor
    *          the {@link Actor} to test.
@@ -126,7 +127,8 @@ public class ActorDecorators {
   protected static IDecorator getPortMismatchDecorators(final Actor actor) {
     final IReason reason = ActorDecorators.portsUpdateNeeded(actor);
     if (reason.toBoolean()) {
-      final ImageDecorator imageRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_WARNING_TSK);
+      final ImageDecorator imageRenderingDecorator = new ImageDecorator(
+          IPlatformImageConstants.IMG_ECLIPSE_WARNING_TSK);
 
       imageRenderingDecorator.setMessage(reason.getText());
       imageRenderingDecorator.setX(1);
@@ -138,7 +140,8 @@ public class ActorDecorators {
   }
 
   /**
-   * This method will check whether the {@link Port}s of the {@link Actor} {@link PiSDFRefinement} are different from the current.
+   * This method will check whether the {@link Port}s of the {@link Actor} {@link PiSDFRefinement} are different from
+   * the current.
    *
    * @param actor
    *          the tested {@link Actor}
@@ -158,7 +161,8 @@ public class ActorDecorators {
             if (actorPort != null) {
               reasons += "\nPort \"" + actorPort.getName() + "\" not present in refinement.";
             } else {
-              reasons += "\nRefinement has an extra " + refinePort.getKind() + " port \"" + refinePort.getName() + "\".";
+              reasons += "\nRefinement has an extra " + refinePort.getKind() + " port \"" + refinePort.getName()
+                  + "\".";
             }
           }
         }

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2014)
@@ -70,9 +70,11 @@ public class PortEqualityHelper {
   public static final String NULL_PORT = "A port is null";
 
   /**
-   * Builds and return a {@link Map} of equivalent {@link Port}s and, if needed, an associated {@link IReason} for their inequality. <br>
+   * Builds and return a {@link Map} of equivalent {@link Port}s and, if needed, an associated {@link IReason} for their
+   * inequality. <br>
    * <br>
-   * Two ports are equivalent if they have the same class and name but may have different rates. The returned {@link Map}is structured as the following example:
+   * Two ports are equivalent if they have the same class and name but may have different rates. The returned
+   * {@link Map}is structured as the following example:
    * <table border="1">
    * <tr>
    * <td colspan=2>Entry(Port,Port)</td>
@@ -108,7 +110,8 @@ public class PortEqualityHelper {
    *          Second {@link AbstractActor} whose {@link Port}s are compared.
    * @return the {@link Map} of equivalent {@link Port}s
    */
-  public static Map<SimpleEntry<Port, Port>, IReason> buildEquivalentPortsMap(final AbstractActor vertex1, final AbstractActor vertex2) {
+  public static Map<SimpleEntry<Port, Port>, IReason> buildEquivalentPortsMap(final AbstractActor vertex1,
+      final AbstractActor vertex2) {
     final Map<SimpleEntry<Port, Port>, IReason> result = new LinkedHashMap<>();
 
     // Do it backward (vertex2 with vertex1) for ConfigInputPort
@@ -123,7 +126,8 @@ public class PortEqualityHelper {
   }
 
   /**
-   * Compares two lists of {@link Port} to make sure all ports from the first list are also in the second. (and optionally vice-versa).
+   * Compares two lists of {@link Port} to make sure all ports from the first list are also in the second. (and
+   * optionally vice-versa).
    *
    * @param <T>
    *          the generic type
@@ -136,8 +140,8 @@ public class PortEqualityHelper {
    * @param backwardTest
    *          Optionally tests if all ports of the second list belong to the first
    */
-  protected static <T extends Port> void comparePortLists(final EList<T> ports1, final EList<T> ports2, final Map<SimpleEntry<Port, Port>, IReason> result,
-      final boolean backwardTest) {
+  protected static <T extends Port> void comparePortLists(final EList<T> ports1, final EList<T> ports2,
+      final Map<SimpleEntry<Port, Port>, IReason> result, final boolean backwardTest) {
     // Maintain a list of input port of vertex2 whose equivalent has not
     // been
     // found yet
@@ -167,7 +171,8 @@ public class PortEqualityHelper {
   /**
    * Check if two ports are equal. If not, the reason for their inequality is returned. <br>
    * <br>
-   * NB: Incoming and Outgoing {@link Fifo}s are not considered when comparing {@link Port}. Use {@link EcoreUtil#EqualityHelper} for this type of comparison.
+   * NB: Incoming and Outgoing {@link Fifo}s are not considered when comparing {@link Port}. Use
+   * {@link EcoreUtil#EqualityHelper} for this type of comparison.
    *
    * @param port1
    *          the first {@link Port} to compare

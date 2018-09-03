@@ -51,12 +51,13 @@ import org.jgrapht.traverse.AbstractGraphIterator;
 
 // TODO: Auto-generated Javadoc
 /**
- * Iterates the graph in ascending or descending order using the given compare function that respects topological order. If an ABC is given, the implementation
- * iterator makes it available for the compare method
+ * Iterates the graph in ascending or descending order using the given compare function that respects topological order.
+ * If an ABC is given, the implementation iterator makes it available for the compare method
  *
  * @author mpelcat
  */
-public abstract class ImplementationIterator extends AbstractGraphIterator<DAGVertex, DAGEdge> implements Comparator<MapperDAGVertex> {
+public abstract class ImplementationIterator extends AbstractGraphIterator<DAGVertex, DAGEdge>
+    implements Comparator<MapperDAGVertex> {
 
   /** Ordered vertex list parsed by the iterator. */
   private int currentIndex = -1;

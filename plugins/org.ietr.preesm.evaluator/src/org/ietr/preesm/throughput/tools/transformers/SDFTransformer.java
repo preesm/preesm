@@ -81,11 +81,12 @@ public abstract class SDFTransformer {
           // compute the target actor instance id, and delay
           final int j = ((((e.getDelay().intValue() + ((i - 1) * e.getProd().intValue()) + k) - 1)
               % (e.getCons().intValue() * e.getTarget().getNbRepeatAsInteger())) / e.getCons().intValue()) + 1;
-          final int d = (int) Math.floor(
-              ((e.getDelay().intValue() + ((i - 1) * e.getProd().intValue()) + k) - 1) / (e.getCons().intValue() * e.getTarget().getNbRepeatAsInteger()));
+          final int d = (int) Math.floor(((e.getDelay().intValue() + ((i - 1) * e.getProd().intValue()) + k) - 1)
+              / (e.getCons().intValue() * e.getTarget().getNbRepeatAsInteger()));
 
           // add the edge
-          GraphStructureHelper.addEdge(hsdf_graph, e.getSource().getName() + "_" + i, null, e.getTarget().getName() + "_" + j, null, 1, 1, d, e);
+          GraphStructureHelper.addEdge(hsdf_graph, e.getSource().getName() + "_" + i, null,
+              e.getTarget().getName() + "_" + j, null, 1, 1, d, e);
 
         }
       }
@@ -131,8 +132,8 @@ public abstract class SDFTransformer {
               % (e.getCons().intValue() * e.getTarget().getNbRepeatAsInteger())) % e.getCons().intValue()) + 1;
           final int j = ((((e.getDelay().intValue() + ((i - 1) * e.getProd().intValue()) + k) - 1)
               % (e.getCons().intValue() * e.getTarget().getNbRepeatAsInteger())) / e.getCons().intValue()) + 1;
-          final int d = (int) Math.floor(
-              ((e.getDelay().intValue() + ((i - 1) * e.getProd().intValue()) + k) - 1) / (e.getCons().intValue() * e.getTarget().getNbRepeatAsInteger()));
+          final int d = (int) Math.floor(((e.getDelay().intValue() + ((i - 1) * e.getProd().intValue()) + k) - 1)
+              / (e.getCons().intValue() * e.getTarget().getNbRepeatAsInteger()));
 
           final int ma = e.getProd().intValue() - (k - 1);
           final int mb = e.getCons().intValue() - (l - 1);
@@ -140,7 +141,8 @@ public abstract class SDFTransformer {
           k += (m - 1);
 
           // add the edge
-          GraphStructureHelper.addEdge(singleRate, e.getSource().getName() + "_" + i, null, e.getTarget().getName() + "_" + j, null, m, m, d * m, e);
+          GraphStructureHelper.addEdge(singleRate, e.getSource().getName() + "_" + i, null,
+              e.getTarget().getName() + "_" + j, null, m, m, d * m, e);
 
         }
       }
@@ -209,7 +211,8 @@ public abstract class SDFTransformer {
     for (final SDFEdge edge : SDF.edgeSet()) {
       edge.getSource().setPropertyValue("normalizedRate", K_RV / edge.getSource().getNbRepeatAsInteger());
       edge.getTarget().setPropertyValue("normalizedRate", K_RV / edge.getTarget().getNbRepeatAsInteger());
-      edge.setPropertyValue("normalizationFactor", K_RV / (edge.getCons().intValue() * edge.getTarget().getNbRepeatAsInteger()));
+      edge.setPropertyValue("normalizationFactor",
+          K_RV / (edge.getCons().intValue() * edge.getTarget().getNbRepeatAsInteger()));
     }
 
     timer.stop();

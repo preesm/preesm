@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -56,7 +56,8 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 public class CopyFeature extends AbstractCopyFeature {
 
   /**
-   * Structural class to store the copied elements. The EObject inheritance is used for enabling the Graphiti clipboard (only stores EObjects).
+   * Structural class to store the copied elements. The EObject inheritance is used for enabling the Graphiti clipboard
+   * (only stores EObjects).
    */
   public static class VertexCopy extends EObjectImpl {
     public int              originalX;

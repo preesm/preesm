@@ -278,7 +278,8 @@ public class GraphStrucutureHelperTest {
     final SDFGraph ibsdf = generateIBSDFGraph3levels();
 
     // get the hierarchical acotrs of the topgraph
-    final Hashtable<String, SDFAbstractVertex> listOfHierarchicalActors = GraphStructureHelper.getHierarchicalActors(ibsdf);
+    final Hashtable<String,
+        SDFAbstractVertex> listOfHierarchicalActors = GraphStructureHelper.getHierarchicalActors(ibsdf);
 
     // check the results
     Assert.assertNotNull(listOfHierarchicalActors);
@@ -293,7 +294,8 @@ public class GraphStrucutureHelperTest {
     final SDFGraph ibsdf = generateIBSDFGraph3levels();
 
     // get the hierarchical acotrs of the topgraph
-    final Hashtable<String, SDFAbstractVertex> listOfHierarchicalActors = GraphStructureHelper.getAllHierarchicalActors(ibsdf);
+    final Hashtable<String,
+        SDFAbstractVertex> listOfHierarchicalActors = GraphStructureHelper.getAllHierarchicalActors(ibsdf);
 
     // check the results
     Assert.assertNotNull(listOfHierarchicalActors);
@@ -403,7 +405,8 @@ public class GraphStrucutureHelperTest {
     }
 
     System.out.println("\nPartial topological sorting computed in " + timer.toString() + ", the ordered actors: ");
-    final ArrayList<SDFAbstractVertex> partialTopologicalSorting = GraphStructureHelper.partialTopologicalSorting(dag.getVertex("5"));
+    final ArrayList<SDFAbstractVertex> partialTopologicalSorting = GraphStructureHelper
+        .partialTopologicalSorting(dag.getVertex("5"));
     for (int i = 0; i < partialTopologicalSorting.size(); i++) {
       System.out.print(partialTopologicalSorting.get(i).getName() + " ");
     }

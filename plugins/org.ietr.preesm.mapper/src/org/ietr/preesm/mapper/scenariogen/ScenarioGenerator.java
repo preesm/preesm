@@ -94,12 +94,12 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
-   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
+   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
 
@@ -176,7 +176,8 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 
           if ((sdfV != null) && (op != null) && (op.getComponent() instanceof Operator)) {
             preesmScenario.getConstraintGroupManager().addConstraint(opName, sdfV);
-            preesmScenario.getTimingManager().setTiming(sdfV.getName(), op.getComponent().getVlnv().getName(), Long.parseLong(timeStr));
+            preesmScenario.getTimingManager().setTiming(sdfV.getName(), op.getComponent().getVlnv().getName(),
+                Long.parseLong(timeStr));
           }
         }
 

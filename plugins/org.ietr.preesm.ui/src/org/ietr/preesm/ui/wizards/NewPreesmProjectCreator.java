@@ -54,7 +54,8 @@ public class NewPreesmProjectCreator {
   }
 
   /**
-   * For this project we need to: - create the default Eclipse project - add the custom project natures - create the folder structure.
+   * For this project we need to: - create the default Eclipse project - add the custom project natures - create the
+   * folder structure.
    *
    * @param projectName
    *          the name of the project we want to create

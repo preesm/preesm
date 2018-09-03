@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
+    Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
 
-    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
     Julien Hascoet <jhascoet@kalray.eu> (2016)
     Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
 
@@ -127,12 +127,14 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference codegen.ecore#//Communication/nodes"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//Communication/receiveRelease"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//Communication/sendReserve"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//Communication/redundant"/>
       <genOperations ecoreOperation="codegen.ecore#//Communication/getCoreContainer"/>
     </genClasses>
     <genClasses ecoreClass="codegen.ecore#//CoreBlock">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//CoreBlock/loopBlock"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//CoreBlock/initBlock"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//CoreBlock/coreType"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//CoreBlock/coreID"/>
     </genClasses>
     <genClasses ecoreClass="codegen.ecore#//ActorBlock">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//ActorBlock/loopBlock"/>
@@ -176,10 +178,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//CommunicationNode/name"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//CommunicationNode/type"/>
     </genClasses>
-    <genClasses ecoreClass="codegen.ecore#//Semaphore"/>
-    <genClasses ecoreClass="codegen.ecore#//SharedMemoryCommunication">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//SharedMemoryCommunication/semaphore"/>
-    </genClasses>
+    <genClasses ecoreClass="codegen.ecore#//SharedMemoryCommunication"/>
     <genClasses ecoreClass="codegen.ecore#//ConstantString">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//ConstantString/value"/>
     </genClasses>
@@ -187,11 +186,14 @@
     <genClasses ecoreClass="codegen.ecore#//FiniteLoopBlock">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//FiniteLoopBlock/nbIter"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//FiniteLoopBlock/iter"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//FiniteLoopBlock/inBuffers"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//FiniteLoopBlock/outBuffers"/>
     </genClasses>
     <genClasses ecoreClass="codegen.ecore#//IntVar"/>
     <genClasses ecoreClass="codegen.ecore#//BufferIterator">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//BufferIterator/size"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//BufferIterator/iterSize"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EReference codegen.ecore#//BufferIterator/iter"/>
     </genClasses>
+    <genClasses ecoreClass="codegen.ecore#//PapifyAction"/>
   </genPackages>
 </genmodel:GenModel>

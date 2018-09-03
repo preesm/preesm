@@ -105,11 +105,13 @@ public abstract class AbstractAddDataInterfacefeature extends AbstractAddFeature
     final IGaService gaService = Graphiti.getGaService();
 
     final Rectangle invisibleRectangle = gaService.createInvisibleRectangle(containerShape);
-    gaService.setLocationAndSize(invisibleRectangle, context.getX(), context.getY(), 200, AbstractAddDataInterfacefeature.INVISIBLE_RECTANGLE_HEIGHT);
+    gaService.setLocationAndSize(invisibleRectangle, context.getX(), context.getY(), 200,
+        AbstractAddDataInterfacefeature.INVISIBLE_RECTANGLE_HEIGHT);
 
     final BoxRelativeAnchor boxAnchor = peCreateService.createBoxRelativeAnchor(containerShape);
     boxAnchor.setRelativeWidth(getRelativeWidth());
-    boxAnchor.setRelativeHeight(((double) AbstractAddDataInterfacefeature.INVISIBLE_RECTANGLE_HEIGHT - (double) AbstractAddDataInterfacefeature.HEIGHT) / 2.0
+    boxAnchor.setRelativeHeight(((double) AbstractAddDataInterfacefeature.INVISIBLE_RECTANGLE_HEIGHT
+        - (double) AbstractAddDataInterfacefeature.HEIGHT) / 2.0
         / AbstractAddDataInterfacefeature.INVISIBLE_RECTANGLE_HEIGHT);
     boxAnchor.setReferencedGraphicsAlgorithm(invisibleRectangle);
 
@@ -118,8 +120,8 @@ public abstract class AbstractAddDataInterfacefeature extends AbstractAddFeature
     roundedRectangle.setForeground(manageColor(getForegroundColor()));
     roundedRectangle.setBackground(manageColor(getBackgroundColor()));
     roundedRectangle.setLineWidth(AbstractAddDataInterfacefeature.LINE_WIDTH);
-    gaService.setLocationAndSize(roundedRectangle, getX(), AbstractAddDataInterfacefeature.Y, AbstractAddDataInterfacefeature.WIDTH,
-        AbstractAddDataInterfacefeature.HEIGHT);
+    gaService.setLocationAndSize(roundedRectangle, getX(), AbstractAddDataInterfacefeature.Y,
+        AbstractAddDataInterfacefeature.WIDTH, AbstractAddDataInterfacefeature.HEIGHT);
 
     // if added interface has no resource we add it to the
     // resource of the graph

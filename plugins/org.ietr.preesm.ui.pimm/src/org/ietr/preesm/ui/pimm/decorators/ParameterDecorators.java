@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2015)
@@ -122,14 +122,15 @@ public class ParameterDecorators {
   }
 
   /**
-   * Get {@link IDecorator} indicating that the {@link Parameter} belongs to a cycle or depends on {@link Parameter}s belonging to a cycle.
+   * Get {@link IDecorator} indicating that the {@link Parameter} belongs to a cycle or depends on {@link Parameter}s
+   * belonging to a cycle.
    *
    * @param parameter
    *          the {@link Parameter} to test
    * @param pe
    *          the {@link PictogramElement} of the tested {@link Parameter}
-   * @return the {@link IDecorator} for the {@link Parameter} or <code>null</code> if the {@link Parameter} does not belong nor depends on a {@link Dependency}
-   *         cycle.
+   * @return the {@link IDecorator} for the {@link Parameter} or <code>null</code> if the {@link Parameter} does not
+   *         belong nor depends on a {@link Dependency} cycle.
    */
   protected static IDecorator getCycleDecorators(final Parameter parameter, final PictogramElement pe) {
     final DependencyCycleDetector detector = new DependencyCycleDetector();
@@ -137,7 +138,8 @@ public class ParameterDecorators {
     if (detector.cyclesDetected()) {
       for (final List<Parameter> cycle : detector.getCycles()) {
         if (cycle.contains(parameter)) {
-          final ImageDecorator imageRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
+          final ImageDecorator imageRenderingDecorator = new ImageDecorator(
+              IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
           String message = "Parameter belongs to a cycle: ";
           for (final Parameter param : cycle) {
             message += param.getName() + ">";
@@ -153,7 +155,8 @@ public class ParameterDecorators {
         // If the parameter is not contained in a detected cycle but
         // cycles were detected
         // its locally static status cannot be determined
-        final ImageDecorator imageRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_WARNING_TSK);
+        final ImageDecorator imageRenderingDecorator = new ImageDecorator(
+            IPlatformImageConstants.IMG_ECLIPSE_WARNING_TSK);
 
         imageRenderingDecorator.setMessage("Parameter depends on parameters contained in a cycle.");
         imageRenderingDecorator.setX((pe.getGraphicsAlgorithm().getWidth() / 2) - 8);
@@ -172,7 +175,8 @@ public class ParameterDecorators {
    *          the {@link Parameter} to test
    * @param pe
    *          the {@link PictogramElement} of the tested {@link Parameter}
-   * @return the {@link IDecorator} for the {@link Parameter} or <code>null</code> if the {@link Parameter} have a valid expression.
+   * @return the {@link IDecorator} for the {@link Parameter} or <code>null</code> if the {@link Parameter} have a valid
+   *         expression.
    */
   protected static IDecorator getExpressionDecorator(final Parameter param, final PictogramElement pe) {
     final Expression expression = param.getValueExpression();

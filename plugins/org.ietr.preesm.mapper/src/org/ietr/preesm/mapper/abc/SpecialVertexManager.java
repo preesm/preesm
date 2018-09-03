@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2012)
@@ -65,8 +65,9 @@ public class SpecialVertexManager {
       return false;
     }
 
-    if (kind.equalsIgnoreCase("dag_broadcast_vertex") || kind.equalsIgnoreCase("dag_fork_vertex") || kind.equalsIgnoreCase("dag_join_vertex")
-        || kind.equalsIgnoreCase("dag_init_vertex") || kind.equalsIgnoreCase("dag_end_vertex")) {
+    if (kind.equalsIgnoreCase("dag_broadcast_vertex") || kind.equalsIgnoreCase("dag_fork_vertex")
+        || kind.equalsIgnoreCase("dag_join_vertex") || kind.equalsIgnoreCase("dag_init_vertex")
+        || kind.equalsIgnoreCase("dag_end_vertex")) {
       return true;
     }
 

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2012)
  *
@@ -90,7 +90,8 @@ public class GanttComponent {
         }
         // Checking for multiple concurrent insertions
         if (t.equals(task)) {
-          final String message = "Gantt: Trying to add to the Gantt chart several identical tasks: " + t + " and " + task;
+          final String message = "Gantt: Trying to add to the Gantt chart several identical tasks: " + t + " and "
+              + task;
           WorkflowLogger.getLogger().log(Level.SEVERE, message);
           return false;
         }

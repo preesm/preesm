@@ -59,7 +59,8 @@ public abstract class IBSDFConsistency {
     // step 1: compute the RV of the top graph
     if (!SDFConsistency.computeRV(graph)) {
       timer.stop();
-      System.err.println("IBSDF RV computation : " + graph.getName() + " is not consistent !! evaluated in " + timer.toString());
+      System.err.println(
+          "IBSDF RV computation : " + graph.getName() + " is not consistent !! evaluated in " + timer.toString());
       return false;
     } else {
       // step 2: compute the RV of each subgraph
@@ -72,7 +73,8 @@ public abstract class IBSDFConsistency {
         }
       }
       timer.stop();
-      System.out.println("IBSDF RV computation : " + graph.getName() + " is consistent !! evaluated in " + timer.toString());
+      System.out
+          .println("IBSDF RV computation : " + graph.getName() + " is consistent !! evaluated in " + timer.toString());
       return true;
     }
   }

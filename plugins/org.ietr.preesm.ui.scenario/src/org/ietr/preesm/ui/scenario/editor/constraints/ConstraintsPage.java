@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2015)
  *
@@ -47,6 +47,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
@@ -108,15 +109,27 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 
     final ScrolledForm f = managedForm.getForm();
     f.setText(Messages.getString("Constraints.title"));
-    f.getBody().setLayout(new GridLayout());
+    final Composite body = f.getBody();
+    body.setLayout(new GridLayout());
 
-    // Constrints file chooser section
-    createFileSection(managedForm, Messages.getString("Constraints.file"), Messages.getString("Constraints.fileDescription"),
-        Messages.getString("Constraints.fileEdit"), this.scenario.getConstraintGroupManager().getExcelFileURL(),
-        Messages.getString("Constraints.fileBrowseTitle"), "xls");
+    if (this.scenario.isProperlySet()) {
+      // Constrints file chooser section
+      createFileSection(managedForm, Messages.getString("Constraints.file"),
+          Messages.getString("Constraints.fileDescription"), Messages.getString("Constraints.fileEdit"),
+          this.scenario.getConstraintGroupManager().getExcelFileURL(),
+          Messages.getString("Constraints.fileBrowseTitle"), "xls");
 
-    createConstraintsSection(managedForm, Messages.getString("Constraints.title"), Messages.getString("Constraints.description"));
+      createConstraintsSection(managedForm, Messages.getString("Constraints.title"),
+          Messages.getString("Constraints.description"));
 
+    } else {
+      final FormToolkit toolkit = managedForm.getToolkit();
+      final Label lbl = toolkit.createLabel(body,
+          "Please properly set Algorithm and Architecture paths on the overview tab, then save, close and "
+              + "reopen this file to enable other tabs.");
+      lbl.setEnabled(true);
+      body.setEnabled(false);
+    }
     managedForm.refresh();
     managedForm.reflow(true);
 
@@ -139,8 +152,8 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 
     final ScrolledForm form = mform.getForm();
     final FormToolkit toolkit = mform.getToolkit();
-    final Section section = toolkit.createSection(form.getBody(),
-        ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    final Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
+        | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
     section.setText(title);
     section.setDescription(desc);
     toolkit.createCompositeSeparator(section);
@@ -162,12 +175,13 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
    *          the grid data
    * @return the composite
    */
-  public Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns, final GridData gridData) {
+  public Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns,
+      final GridData gridData) {
 
     final ScrolledForm form = mform.getForm();
     final FormToolkit toolkit = mform.getToolkit();
-    final Section section = toolkit.createSection(form.getBody(),
-        ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    final Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
+        | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
     section.setText(title);
     section.setDescription(desc);
     toolkit.createCompositeSeparator(section);
@@ -207,7 +221,8 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
     this.checkStateListener = new ConstraintsCheckStateListener(section, this.scenario);
 
     // Creates the section part containing the tree with SDF vertices
-    new SDFTreeSection(this.scenario, section, managedForm.getToolkit(), Section.DESCRIPTION, this, this.checkStateListener);
+    new SDFTreeSection(this.scenario, section, managedForm.getToolkit(), Section.DESCRIPTION, this,
+        this.checkStateListener);
   }
 
   /**
@@ -244,8 +259,8 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
    * @param fileExtension
    *          the file extension
    */
-  private void createFileSection(final IManagedForm mform, final String title, final String desc, final String fileEdit, final String initValue,
-      final String browseTitle, final String fileExtension) {
+  private void createFileSection(final IManagedForm mform, final String title, final String desc, final String fileEdit,
+      final String initValue, final String browseTitle, final String fileExtension) {
 
     final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
     gridData.heightHint = 120;

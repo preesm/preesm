@@ -143,7 +143,8 @@ public class ScenarioParser {
    * @throws CoreException
    *           the core exception
    */
-  public PreesmScenario parseXmlFile(final IFile file) throws InvalidModelException, FileNotFoundException, CoreException {
+  public PreesmScenario parseXmlFile(final IFile file)
+      throws InvalidModelException, FileNotFoundException, CoreException {
     // get the factory
     final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -283,7 +284,8 @@ public class ScenarioParser {
 
     currentParameter = graph.lookupParameterGivenGraph(name, parent);
     if (currentParameter == null) {
-      WorkflowLogger.getLogger().log(Level.WARNING, "Parameter with name '" + name + "' cannot be found in PiGraph '" + parent + "'.");
+      WorkflowLogger.getLogger().log(Level.WARNING,
+          "Parameter with name '" + name + "' cannot be found in PiGraph '" + parent + "'.");
     } else {
       switch (type) {
         case "INDEPENDENT":
@@ -305,7 +307,8 @@ public class ScenarioParser {
             } catch (final NumberFormatException e) {
               // TODO: Do smthg?
             }
-            this.scenario.getParameterValueManager().addActorDependentParameterValue(currentParameter, newValues, parent);
+            this.scenario.getParameterValueManager().addActorDependentParameterValue(currentParameter, newValues,
+                parent);
           }
           break;
         case "PARAMETER_DEPENDENT":
@@ -317,7 +320,8 @@ public class ScenarioParser {
               inputParameters.add(input.getName());
             }
           }
-          this.scenario.getParameterValueManager().addParameterDependentParameterValue(currentParameter, stringValue, inputParameters, parent);
+          this.scenario.getParameterValueManager().addParameterDependentParameterValue(currentParameter, stringValue,
+              inputParameters, parent);
           break;
         default:
           throw new RuntimeException("Unknown Parameter type: " + type + " for Parameter: " + name);
@@ -511,9 +515,11 @@ public class ScenarioParser {
     }
 
     /*
-     * It is not possible to remove all operators from special vertex executors: if no operator is selected, all of them are!!
+     * It is not possible to remove all operators from special vertex executors: if no operator is selected, all of them
+     * are!!
      */
-    if (this.scenario.getSimulationManager().getSpecialVertexOperatorIds().isEmpty() && (this.scenario.getOperatorIds() != null)) {
+    if (this.scenario.getSimulationManager().getSpecialVertexOperatorIds().isEmpty()
+        && (this.scenario.getOperatorIds() != null)) {
       for (final String opId : this.scenario.getOperatorIds()) {
         this.scenario.getSimulationManager().addSpecialVertexOperatorId(opId);
       }
@@ -581,7 +587,8 @@ public class ScenarioParser {
    */
   private void initializeArchitectureInformation(final String url) {
     if (url.contains(".design")) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "SLAM architecture 1.0 is no more supported. Use .slam architecture files.");
+      WorkflowLogger.getLogger().log(Level.SEVERE,
+          "SLAM architecture 1.0 is no more supported. Use .slam architecture files.");
     } else if (url.contains(".slam")) {
 
       final Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
@@ -626,7 +633,8 @@ public class ScenarioParser {
       ressource = resourceSet.getResource(uri, true);
       slamDesign = (Design) (ressource.getContents().get(0));
     } catch (final WrappedException e) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "The architecture file \"" + uri + "\" specified by the scenario does not exist any more.");
+      WorkflowLogger.getLogger().log(Level.SEVERE,
+          "The architecture file \"" + uri + "\" specified by the scenario does not exist any more.");
       return null;
     }
 
@@ -986,7 +994,8 @@ public class ScenarioParser {
   }
 
   /**
-   * Returns an actor Object (either SDFAbstractVertex from SDFGraph or AbstractActor from PiGraph) from the path in its container graph.
+   * Returns an actor Object (either SDFAbstractVertex from SDFGraph or AbstractActor from PiGraph) from the path in its
+   * container graph.
    *
    * @param path
    *          the path to the actor, where its segment is the name of an actor and separators are "/"
@@ -1003,7 +1012,8 @@ public class ScenarioParser {
   }
 
   /**
-   * Returns the name of an actor (either SDFAbstractVertex from SDFGraph or AbstractActor from PiGraph) from the path in its container graph.
+   * Returns the name of an actor (either SDFAbstractVertex from SDFGraph or AbstractActor from PiGraph) from the path
+   * in its container graph.
    *
    * @param path
    *          the path to the actor, where its segment is the name of an actor and separators are "/"

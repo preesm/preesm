@@ -3,6 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2015)
  *
@@ -52,6 +53,7 @@ import org.ietr.dftools.ui.util.FileUtils;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
+import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
@@ -120,7 +122,8 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.
+   * ICustomContext)
    */
   @Override
   public boolean canExecute(final ICustomContext context) {
@@ -130,7 +133,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof Actor) {
+      if (bo instanceof Actor || bo instanceof Delay) {
         ret = true;
       }
     }
@@ -140,7 +143,8 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see
+   * org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
    */
   @Override
   public void execute(final ICustomContext context) {
@@ -184,7 +188,8 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
     fileExtensions.add("pi");
     fileExtensions.add("idl");
     fileExtensions.add("h");
-    final IPath newFilePath = FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), dialogTitle, fileExtensions);
+    final IPath newFilePath = FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+        dialogTitle, fileExtensions);
 
     return newFilePath;
   }
@@ -220,7 +225,8 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
         loopPrototypes = getPrototypes(file, actor, PrototypeFilter.LOOP_ACTOR);
         validRefinement = (!loopPrototypes.isEmpty()) || (!allPrototypes.isEmpty());
         if (!validRefinement) {
-          final String message = "The .h file you selected does not contain any prototype." + ".\nPlease select another valid file.";
+          final String message = "The .h file you selected does not contain any prototype."
+              + ".\nPlease select another valid file.";
           newFilePath = askRefinement(actor, message, dialogTitle);
 
           // If the cancel button of the dialog box was clicked
@@ -232,8 +238,10 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
           // The file is a valid .h file.
           String title = "Loop Function Selection";
           String message = "Select a loop function for actor " + actor.getName() + "\n(* = any string, ? = any char):";
-          final FunctionPrototype[] loopProtoArray = loopPrototypes.toArray(new FunctionPrototype[loopPrototypes.size()]);
-          final FunctionPrototype loopProto = PiMMUtil.selectFunction(loopProtoArray, allProtoArray, title, message, this.showOnlyValidPrototypes);
+          final FunctionPrototype[] loopProtoArray = loopPrototypes
+              .toArray(new FunctionPrototype[loopPrototypes.size()]);
+          final FunctionPrototype loopProto = PiMMUtil.selectFunction(loopProtoArray, allProtoArray, title, message,
+              this.showOnlyValidPrototypes);
 
           final List<FunctionPrototype> initPrototypes = getPrototypes(file, actor, PrototypeFilter.INIT_ACTOR);
           final List<FunctionPrototype> allInitPrototypes = getPrototypes(file, actor, PrototypeFilter.INIT);
@@ -241,9 +249,12 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
           FunctionPrototype initProto = null;
           if (!initPrototypes.isEmpty() || !allInitPrototypes.isEmpty()) {
             title = "Init Function Selection";
-            message = "Select an optionnal init function for actor " + actor.getName() + ", or click Cancel\n(* = any string, ? = any char):";
-            final FunctionPrototype[] initProtoArray = initPrototypes.toArray(new FunctionPrototype[initPrototypes.size()]);
-            final FunctionPrototype[] allInitProtoArray = allInitPrototypes.toArray(new FunctionPrototype[allInitPrototypes.size()]);
+            message = "Select an optionnal init function for actor " + actor.getName()
+                + ", or click Cancel\n(* = any string, ? = any char):";
+            final FunctionPrototype[] initProtoArray = initPrototypes
+                .toArray(new FunctionPrototype[initPrototypes.size()]);
+            final FunctionPrototype[] allInitProtoArray = allInitPrototypes
+                .toArray(new FunctionPrototype[allInitPrototypes.size()]);
             initProto = PiMMUtil.selectFunction(initProtoArray, allInitProtoArray, title, message, false);
 
           }
@@ -290,7 +301,8 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
    *          the prototype filter
    * @return the prototypes
    */
-  private List<FunctionPrototype> getPrototypes(final IFile file, final Actor actor, final PrototypeFilter prototypeFilter) {
+  private List<FunctionPrototype> getPrototypes(final IFile file, final Actor actor,
+      final PrototypeFilter prototypeFilter) {
 
     List<FunctionPrototype> result = null;
 

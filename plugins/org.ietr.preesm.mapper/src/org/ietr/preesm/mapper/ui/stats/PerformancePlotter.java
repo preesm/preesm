@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Jonathan Piat <jpiat@laas.fr> (2008)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
@@ -160,7 +160,8 @@ public class PerformancePlotter extends ApplicationFrame {
    * @param resultNbMainCores
    *          number of cores with type main for the current simulation
    */
-  public void setData(final long workLength, final long spanLength, final long resultTime, final int resultNbCores, final int resultNbMainCores) {
+  public void setData(final long workLength, final long spanLength, final long resultTime, final int resultNbCores,
+      final int resultNbMainCores) {
 
     final double absoluteBestSpeedup = ((double) workLength) / ((double) spanLength);
     final int maxCoreNumber = (int) Math.ceil(absoluteBestSpeedup) + 10;
@@ -194,7 +195,8 @@ public class PerformancePlotter extends ApplicationFrame {
     for (int nbCores = 1; nbCores <= maxCoreNumber; nbCores++) {
       reachableSpeedups[0][nbCores - 1] = nbCores;
 
-      reachableSpeedups[1][nbCores - 1] = ((double) (workLength * nbCores)) / ((double) ((spanLength * nbCores) + workLength));
+      reachableSpeedups[1][nbCores - 1] = ((double) (workLength * nbCores))
+          / ((double) ((spanLength * nbCores) + workLength));
     }
 
     this.speedups.addSeries("Greedy-Scheduling Theorem bound", reachableSpeedups);

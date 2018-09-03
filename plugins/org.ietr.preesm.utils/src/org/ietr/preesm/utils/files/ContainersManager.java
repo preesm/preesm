@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2016)
  *
@@ -168,8 +168,8 @@ public class ContainersManager {
   }
 
   /**
-   * Creates a folder and all parent folders if not existing. Project must exist. <code>org.eclipse.ui.dialogs.ContainerGenerator</code> is too heavy (creates a
-   * runnable)
+   * Creates a folder and all parent folders if not existing. Project must exist.
+   * <code>org.eclipse.ui.dialogs.ContainerGenerator</code> is too heavy (creates a runnable)
    *
    * @param folder
    *          the folder
@@ -182,7 +182,8 @@ public class ContainersManager {
    * @throws CoreException
    *           the core exception
    */
-  private static void createFolder(final IFolder folder, final boolean force, final boolean local, final IProgressMonitor monitor) throws CoreException {
+  private static void createFolder(final IFolder folder, final boolean force, final boolean local,
+      final IProgressMonitor monitor) throws CoreException {
     if (!folder.exists()) {
       final IContainer parent = folder.getParent();
       if (parent instanceof IFolder) {

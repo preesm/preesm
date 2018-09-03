@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2012)
@@ -142,7 +142,8 @@ public class ExcelVariablesWriter extends ExcelWriter {
    * @see org.ietr.preesm.ui.scenario.editor.ExcelWriter#addCells(jxl.write.WritableSheet)
    */
   @Override
-  protected void addCells(final WritableSheet sheet) throws InvalidModelException, FileNotFoundException, RowsExceededException {
+  protected void addCells(final WritableSheet sheet)
+      throws InvalidModelException, FileNotFoundException, RowsExceededException {
     if (sheet != null) {
 
       int maxVOrdinate = 0;

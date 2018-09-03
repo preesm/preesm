@@ -252,7 +252,8 @@ public class TimingManager {
     /*
      * SDFGraph graph = (SDFGraph)sdfVertex.getGraphDescription();
      *
-     * int time = 0; for(SDFAbstractVertex v : graph.vertexSet()){ if(sdfVertex.getGraphDescription() == null){ time += sdfVertex. } }
+     * int time = 0; for(SDFAbstractVertex v : graph.vertexSet()){ if(sdfVertex.getGraphDescription() == null){ time +=
+     * sdfVertex. } }
      *
      * if(time>=0) return(new Timing(opDef,sdfVertex,time)); else return null;
      */
@@ -399,6 +400,7 @@ public class TimingManager {
    *          the new default mem cpy speed
    */
   public void setDefaultMemCpySpeed(final String operatorDef) {
-    putMemcpySpeed(new MemCopySpeed(operatorDef, TimingManager.DEFAULTMEMCPYSETUPTIME, TimingManager.DEFAULTMEMCPYTIMEPERUNIT));
+    putMemcpySpeed(
+        new MemCopySpeed(operatorDef, TimingManager.DEFAULTMEMCPYSETUPTIME, TimingManager.DEFAULTMEMCPYTIMEPERUNIT));
   }
 }

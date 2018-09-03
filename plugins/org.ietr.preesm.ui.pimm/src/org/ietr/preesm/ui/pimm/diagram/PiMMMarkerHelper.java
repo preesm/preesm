@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2015)
@@ -44,8 +44,9 @@ import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.edit.ui.util.EditUIMarkerHelper;
 
 /**
- * The purpose of this custom {@link MarkerHelper} is to associate a new attribute to the {@link IMarker} created in the {@link PiMMDiagramEditor}. This
- * attribute contains a {@link String} corresponding to the uriFragment that can be used to access the pictogram element to which the marker is associated.
+ * The purpose of this custom {@link MarkerHelper} is to associate a new attribute to the {@link IMarker} created in the
+ * {@link PiMMDiagramEditor}. This attribute contains a {@link String} corresponding to the uriFragment that can be used
+ * to access the pictogram element to which the marker is associated.
  *
  * @author kdesnos
  *
@@ -53,19 +54,20 @@ import org.eclipse.emf.edit.ui.util.EditUIMarkerHelper;
 public class PiMMMarkerHelper extends EditUIMarkerHelper {
 
   /**
-   * This {@link IMarker} attribute contains a {@link String} corresponding to the uriFragment that can be used to access the pictogram element to which the
-   * marker is associated.
+   * This {@link IMarker} attribute contains a {@link String} corresponding to the uriFragment that can be used to
+   * access the pictogram element to which the marker is associated.
    */
   public static final String DIAGRAM_URI = "Diagram_URI";
 
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.emf.edit.ui.util.EditUIMarkerHelper#adjustMarker(org.eclipse.core.resources.IMarker, org.eclipse.emf.common.util.Diagnostic,
-   * org.eclipse.emf.common.util.Diagnostic)
+   * @see org.eclipse.emf.edit.ui.util.EditUIMarkerHelper#adjustMarker(org.eclipse.core.resources.IMarker,
+   * org.eclipse.emf.common.util.Diagnostic, org.eclipse.emf.common.util.Diagnostic)
    */
   @Override
-  protected void adjustMarker(final IMarker marker, final Diagnostic diagnostic, final Diagnostic parentDiagnostic) throws CoreException {
+  protected void adjustMarker(final IMarker marker, final Diagnostic diagnostic, final Diagnostic parentDiagnostic)
+      throws CoreException {
 
     super.adjustMarker(marker, diagnostic, parentDiagnostic);
     if (diagnostic.getData().size() == 2) {

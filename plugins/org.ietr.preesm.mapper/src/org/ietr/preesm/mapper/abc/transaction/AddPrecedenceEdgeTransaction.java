@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -84,7 +84,8 @@ public class AddPrecedenceEdgeTransaction extends Transaction {
    * @param destination
    *          the destination
    */
-  public AddPrecedenceEdgeTransaction(final MapperDAG implementation, final MapperDAGVertex source, final MapperDAGVertex destination) {
+  public AddPrecedenceEdgeTransaction(final MapperDAG implementation, final MapperDAGVertex source,
+      final MapperDAGVertex destination) {
     super();
     this.destination = destination;
     this.implementation = implementation;

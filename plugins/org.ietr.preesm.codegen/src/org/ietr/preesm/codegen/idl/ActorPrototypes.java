@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
@@ -118,7 +118,8 @@ public class ActorPrototypes implements IRefinement {
    */
   public void setInitPrototype(final Prototype init, final int i) {
     if (this.initPrototypes.containsKey(i)) {
-      WorkflowLogger.getLogger().log(Level.WARNING, "IDL: Init phase number (-)" + i + " was defined several time for file " + this.path);
+      WorkflowLogger.getLogger().log(Level.WARNING,
+          "IDL: Init phase number (-)" + i + " was defined several time for file " + this.path);
     }
     this.initPrototypes.put(i, init);
   }

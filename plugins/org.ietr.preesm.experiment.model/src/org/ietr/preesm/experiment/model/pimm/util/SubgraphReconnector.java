@@ -46,8 +46,9 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
- * This class provides a single method to connect a hierarchical actor to its underlying subgraph. Synthetically, it takes edges from the super graph (the graph
- * containing the hierarchical actor), and connect them to subgraph (which is also an actor).
+ * This class provides a single method to connect a hierarchical actor to its underlying subgraph. Synthetically, it
+ * takes edges from the super graph (the graph containing the hierarchical actor), and connect them to subgraph (which
+ * is also an actor).
  *
  * @author anmorvan
  *
@@ -161,8 +162,8 @@ public class SubgraphReconnector {
   }
 
   private static void error(final Actor hierarchicalActor, final PiGraph subGraph, final Port port) {
-    throw new PiGraphException("PiGraph '" + subGraph.getName() + "' does not have a corresponding " + port.getClass().getSimpleName() + " named '"
-        + port.getName() + "' for Actor " + hierarchicalActor.getName());
+    throw new PiGraphException("PiGraph '" + subGraph.getName() + "' does not have a corresponding "
+        + port.getClass().getSimpleName() + " named '" + port.getName() + "' for Actor " + hierarchicalActor.getName());
   }
 
 }

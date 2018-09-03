@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2016)
  *
@@ -69,7 +69,8 @@ public class MessageRouteStep extends AbstractRouteStep {
    * @param receiver
    *          the receiver
    */
-  public MessageRouteStep(final ComponentInstance sender, final List<ComponentInstance> inNodes, final ComponentInstance receiver) {
+  public MessageRouteStep(final ComponentInstance sender, final List<ComponentInstance> inNodes,
+      final ComponentInstance receiver) {
     super(sender, receiver);
     this.nodes = new ArrayList<>();
 

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
  *
@@ -48,7 +48,8 @@ import org.ietr.dftools.architecture.slam.ComponentInstance;
 
 // TODO: Auto-generated Javadoc
 /**
- * Visitor to identify the inter-core communications of a mapped DAG. This visitor is inspired by CommunicationRouter.routeAll() implementation.
+ * Visitor to identify the inter-core communications of a mapped DAG. This visitor is inspired by
+ * CommunicationRouter.routeAll() implementation.
  *
  * @author kdesnos
  *
@@ -86,8 +87,10 @@ public class CommunicationIdentifierVisitor implements IGraphVisitor<DirectedAcy
     if (currentEdge.getSource().getPropertyBean().getValue("vertexType").toString().equals("task")
         && currentEdge.getTarget().getPropertyBean().getValue("vertexType").toString().equals("task")) {
 
-      final ComponentInstance sourceComponent = (ComponentInstance) (currentEdge.getSource()).getPropertyBean().getValue("Operator");
-      final ComponentInstance targetComponent = (ComponentInstance) (currentEdge.getTarget()).getPropertyBean().getValue("Operator");
+      final ComponentInstance sourceComponent = (ComponentInstance) (currentEdge.getSource()).getPropertyBean()
+          .getValue("Operator");
+      final ComponentInstance targetComponent = (ComponentInstance) (currentEdge.getTarget()).getPropertyBean()
+          .getValue("Operator");
 
       if ((sourceComponent != null) && (targetComponent != null)) {
         if (!sourceComponent.equals(targetComponent)) {

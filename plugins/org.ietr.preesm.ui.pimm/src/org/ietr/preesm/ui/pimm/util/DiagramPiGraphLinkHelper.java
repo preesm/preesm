@@ -1,7 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -46,13 +47,15 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.ILinkService;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 // TODO: Auto-generated Javadoc
 /**
- * This class contains methods that can be usefull when manipulating {@link Diagram} together with associated {@link PiGraph}.
+ * This class contains methods that can be usefull when manipulating {@link Diagram} together with associated
+ * {@link PiGraph}.
  *
  * @author kdesnos
  *
@@ -84,7 +87,13 @@ public class DiagramPiGraphLinkHelper {
    */
   public static PictogramElement getActorPE(final Diagram diagram, final AbstractActor actor) throws RuntimeException {
     // Get the PE
-    final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, actor);
+    final List<PictogramElement> pes;
+    if (actor instanceof DelayActor) {
+      pes = Graphiti.getLinkService().getPictogramElements(diagram, ((DelayActor) actor).getLinkedDelay());
+    } else {
+      pes = Graphiti.getLinkService().getPictogramElements(diagram, actor);
+    }
+
     PictogramElement actorPE = null;
     for (final PictogramElement pe : pes) {
       if (pe instanceof ContainerShape) {
@@ -126,13 +135,15 @@ public class DiagramPiGraphLinkHelper {
     // if PE is still null.. something is deeply wrong with this
     // graph !
     if (pe == null) {
-      throw new RuntimeException("Pictogram element associated to delay of Fifo " + fifo.getId() + " could not be found.");
+      throw new RuntimeException(
+          "Pictogram element associated to delay of Fifo " + fifo.getId() + " could not be found.");
     }
     return (ContainerShape) pe;
   }
 
   /**
-   * Get the {@link FreeFormConnection} associated to an edge of the {@link Diagram}. The Edge can either be a {@link Fifo} or a {@link Dependency}.
+   * Get the {@link FreeFormConnection} associated to an edge of the {@link Diagram}. The Edge can either be a
+   * {@link Fifo} or a {@link Dependency}.
    *
    * @param diagram
    *          the {@link Diagram} containing the edge.
@@ -142,11 +153,13 @@ public class DiagramPiGraphLinkHelper {
    * @throws RuntimeException
    *           if not {@link FreeFormConnection} could be found, a {@link RuntimeException} is thrown
    */
-  public static FreeFormConnection getFreeFormConnectionOfEdge(final Diagram diagram, final EObject edge) throws RuntimeException {
+  public static FreeFormConnection getFreeFormConnectionOfEdge(final Diagram diagram, final EObject edge)
+      throws RuntimeException {
     final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, edge);
     FreeFormConnection ffc = null;
     for (final PictogramElement pe : pes) {
-      if ((Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe) == edge) && (pe instanceof FreeFormConnection)) {
+      if ((Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe) == edge)
+          && (pe instanceof FreeFormConnection)) {
         ffc = (FreeFormConnection) pe;
       }
     }

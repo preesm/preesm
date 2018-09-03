@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
@@ -38,8 +38,8 @@ package org.ietr.preesm.core.types;
 
 // TODO: Auto-generated Javadoc
 /**
- * Objects used to tag the DAG edges. The buffer couple definition is transmitted to the code generation. One buffer is created for the source and one for the
- * destination.
+ * Objects used to tag the DAG edges. The buffer couple definition is transmitted to the code generation. One buffer is
+ * created for the source and one for the destination.
  *
  * @author mpelcat
  *
@@ -70,7 +70,8 @@ public class BufferProperties {
    * @param size
    *          the size
    */
-  public BufferProperties(final DataType dataType, final String sourceOutputPortID, final String destInputPortID, final int size) {
+  public BufferProperties(final DataType dataType, final String sourceOutputPortID, final String destInputPortID,
+      final int size) {
     super();
     this.dataType = dataType;
     this.destInputPortID = destInputPortID;

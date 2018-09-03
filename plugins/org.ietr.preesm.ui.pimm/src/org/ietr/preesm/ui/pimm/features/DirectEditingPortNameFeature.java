@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
@@ -82,7 +82,9 @@ public class DirectEditingPortNameFeature extends AbstractDirectEditingFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.impl.AbstractDirectEditingFeature#canDirectEdit(org.eclipse.graphiti.features.context.IDirectEditingContext)
+   * @see
+   * org.eclipse.graphiti.features.impl.AbstractDirectEditingFeature#canDirectEdit(org.eclipse.graphiti.features.context
+   * .IDirectEditingContext)
    */
   @Override
   public boolean canDirectEdit(final IDirectEditingContext context) {
@@ -101,7 +103,8 @@ public class DirectEditingPortNameFeature extends AbstractDirectEditingFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.func.IDirectEditing#getInitialValue(org.eclipse.graphiti.features.context.IDirectEditingContext)
+   * @see org.eclipse.graphiti.func.IDirectEditing#getInitialValue(org.eclipse.graphiti.features.context.
+   * IDirectEditingContext)
    */
   @Override
   public String getInitialValue(final IDirectEditingContext context) {
@@ -140,7 +143,8 @@ public class DirectEditingPortNameFeature extends AbstractDirectEditingFeature {
     port.setName(value);
 
     // Update and layout the vertex
-    final GraphicsAlgorithm actorGA = ((BoxRelativeAnchor) context.getPictogramElement()).getReferencedGraphicsAlgorithm();
+    final GraphicsAlgorithm actorGA = ((BoxRelativeAnchor) context.getPictogramElement())
+        .getReferencedGraphicsAlgorithm();
     layoutPictogramElement(actorGA.getPictogramElement());
   }
 

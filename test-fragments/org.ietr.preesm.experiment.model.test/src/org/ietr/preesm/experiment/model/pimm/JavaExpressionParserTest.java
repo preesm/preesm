@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -589,7 +589,8 @@ public class JavaExpressionParserTest {
     Assert.assertTrue(evaluate instanceof Double);
   }
 
-  // height*width*3:[maxDisparity=8.0, scale=12.0, nbIterations=5.0, minDisparity=-8.0, height=270.0, truncValue=12.0, width=480.0]
+  // height*width*3:[maxDisparity=8.0, scale=12.0, nbIterations=5.0, minDisparity=-8.0, height=270.0, truncValue=12.0,
+  // width=480.0]
   @Test
   public void testExpression46() throws ParseException {
     final String expr = "height*width*3";
@@ -606,7 +607,8 @@ public class JavaExpressionParserTest {
     Assert.assertTrue(evaluate instanceof Double);
   }
 
-  // height*width*3:[nbIterations=5.0, scale=4.0, width=434.0, maxDisparity=4.0, minDisparity=0.0, height=380.0, truncValue=12.0]
+  // height*width*3:[nbIterations=5.0, scale=4.0, width=434.0, maxDisparity=4.0, minDisparity=0.0, height=380.0,
+  // truncValue=12.0]
   @Test
   public void testExpression47() throws ParseException {
     final String expr = "height*width*3";
@@ -623,7 +625,8 @@ public class JavaExpressionParserTest {
     Assert.assertTrue(evaluate instanceof Double);
   }
 
-  // height*width*3:[nbIterations=5.0, scale=4.0, width=434.0, minDisparity=0.0, height=380.0, maxDisparity=19.0, truncValue=12.0]
+  // height*width*3:[nbIterations=5.0, scale=4.0, width=434.0, minDisparity=0.0, height=380.0, maxDisparity=19.0,
+  // truncValue=12.0]
   @Test
   public void testExpression48() throws ParseException {
     final String expr = "height*width*3";
@@ -755,7 +758,8 @@ public class JavaExpressionParserTest {
     Assert.assertTrue(evaluate instanceof Double);
   }
 
-  // height*width:[maxDisparity=8.0, scale=12.0, nbIterations=5.0, minDisparity=-8.0, height=270.0, truncValue=12.0, width=480.0]
+  // height*width:[maxDisparity=8.0, scale=12.0, nbIterations=5.0, minDisparity=-8.0, height=270.0, truncValue=12.0,
+  // width=480.0]
   @Test
   public void testExpression58() throws ParseException {
     final String expr = "height*width";
@@ -800,7 +804,8 @@ public class JavaExpressionParserTest {
     Assert.assertTrue(evaluate instanceof Double);
   }
 
-  // height*width:[nbIterations=5.0, scale=4.0, width=434.0, maxDisparity=4.0, minDisparity=0.0, height=380.0, truncValue=12.0]
+  // height*width:[nbIterations=5.0, scale=4.0, width=434.0, maxDisparity=4.0, minDisparity=0.0, height=380.0,
+  // truncValue=12.0]
   @Test
   public void testExpression61() throws ParseException {
     final String expr = "height*width";
@@ -817,7 +822,8 @@ public class JavaExpressionParserTest {
     Assert.assertTrue(evaluate instanceof Double);
   }
 
-  // height*width:[nbIterations=5.0, scale=4.0, width=434.0, minDisparity=0.0, height=380.0, maxDisparity=19.0, truncValue=12.0]
+  // height*width:[nbIterations=5.0, scale=4.0, width=434.0, minDisparity=0.0, height=380.0, maxDisparity=19.0,
+  // truncValue=12.0]
   @Test
   public void testExpression62() throws ParseException {
     final String expr = "height*width";

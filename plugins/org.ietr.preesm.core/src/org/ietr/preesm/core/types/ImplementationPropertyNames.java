@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2012)
@@ -41,7 +41,8 @@ import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 
 // TODO: Auto-generated Javadoc
 /**
- * This class contains property bean names used to exchange vertex properties between the mapper and the code generation plugins.
+ * This class contains property bean names used to exchange vertex properties between the mapper and the code generation
+ * plugins.
  *
  * @author mpelcat
  */

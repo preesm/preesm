@@ -191,17 +191,20 @@ class SpiderMainFilePrinter {
 			// Spider initialisation
 			Spider::init(cfg);
 			
-		 «IF !pg.actorsWithRefinement.isEmpty()»
-			// Actor initializations
+		«IF !pg.actorsWithRefinement.isEmpty()»
+				// Actor initializations
 			«FOR actor : pg.actorsWithRefinement»
-			  «IF actor.refinement instanceof CHeaderRefinement && (actor.refinement as CHeaderRefinement).getInitPrototype !== null»
-					«"\t\t"+ printInitCall(actor)»
-			  «ENDIF»
+				  «IF actor.refinement instanceof CHeaderRefinement && (actor.refinement as CHeaderRefinement).getInitPrototype !== null»
+						«"\t\t"+ printInitCall(actor)»
+				  «ENDIF»
 			«ENDFOR»
 		«ENDIF»
 	
 			// PiSDF graph construction
 			init_«pg.name»();
+			
+			// Reserving memory for persistent delays
+			Spider::initReservedMemory();
 	
 			printf("Start\n");
 	

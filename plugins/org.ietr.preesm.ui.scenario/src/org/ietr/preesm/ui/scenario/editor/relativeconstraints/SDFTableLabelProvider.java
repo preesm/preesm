@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2014)
  *
@@ -79,7 +79,8 @@ public class SDFTableLabelProvider implements ITableLabelProvider {
    * @param propertyListener
    *          the property listener
    */
-  public SDFTableLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer, final IPropertyListener propertyListener) {
+  public SDFTableLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer,
+      final IPropertyListener propertyListener) {
     super();
     this.scenario = scenario;
     this.tableViewer = tableViewer;
@@ -196,9 +197,11 @@ public class SDFTableLabelProvider implements ITableLabelProvider {
 
       final String title = Messages.getString("RelativeConstraints.dialog.title");
       final String message = Messages.getString("RelativeConstraints.dialog.message") + vertex.getName();
-      final String init = String.valueOf(this.scenario.getRelativeconstraintManager().getConstraintOrDefault(vertex.getId()));
+      final String init = String
+          .valueOf(this.scenario.getRelativeconstraintManager().getConstraintOrDefault(vertex.getId()));
 
-      final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message, init, validator);
+      final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title,
+          message, init, validator);
       if (dialog.open() == Window.OK) {
         final String value = dialog.getValue();
 

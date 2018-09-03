@@ -61,8 +61,8 @@ import org.ietr.preesm.ui.scenario.editor.variables.VariablesPage;
 import org.ietr.preesm.ui.utils.ErrorWithExceptionDialog;
 
 /**
- * The scenario editor allows to change all parameters in scenario; i.e. depending on both algorithm and architecture. It can be called by editing a .scenario
- * file or by creating a new file through File/New/Other/Preesm/Preesm Scenario
+ * The scenario editor allows to change all parameters in scenario; i.e. depending on both algorithm and architecture.
+ * It can be called by editing a .scenario file or by creating a new file through File/New/Other/Preesm/Preesm Scenario
  *
  * @author mpelcat
  */
@@ -128,7 +128,8 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
     final IFormPage constraintsPage = new ConstraintsPage(this.scenario, this, "Constraints", "Constraints");
     constraintsPage.addPropertyListener(this);
 
-    final IFormPage relativeConstraintsPage = new RelativeConstraintsPage(this.scenario, this, "RelativeConstraints", "Relative Constraints");
+    final IFormPage relativeConstraintsPage = new RelativeConstraintsPage(this.scenario, this, "RelativeConstraints",
+        "Relative Constraints");
     relativeConstraintsPage.addPropertyListener(this);
     final IFormPage timingsPage = new TimingsPage(this.scenario, this, "Timings", "Timings");
     timingsPage.addPropertyListener(this);

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -76,7 +76,8 @@ public class ErrorWithExceptionDialog {
       childStatuses.add(new Status(IStatus.ERROR, PreesmUIPlugin.PLUGIN_ID, line));
     }
 
-    final MultiStatus ms = new MultiStatus(PreesmUIPlugin.PLUGIN_ID, IStatus.ERROR, childStatuses.toArray(new Status[] {}), // convert to array of statuses
+    final MultiStatus ms = new MultiStatus(PreesmUIPlugin.PLUGIN_ID, IStatus.ERROR,
+        childStatuses.toArray(new Status[] {}), // convert to array of statuses
         t.getLocalizedMessage(), t);
 
     ErrorDialog.openError(null, "Title", msg, ms);

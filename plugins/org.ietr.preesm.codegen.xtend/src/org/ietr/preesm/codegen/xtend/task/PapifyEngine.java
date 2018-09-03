@@ -132,7 +132,8 @@ public class PapifyEngine {
 
             // Check if the current monitoring has already been included
             for (PapifyConfig tmp : configSet) {
-              if (tmp.getPAPIComponent().equals(config.getPAPIComponent()) && tmp.getPAPIEvents().equals(config.getPAPIEvents())) {
+              if (tmp.getPAPIComponent().equals(config.getPAPIComponent())
+                  && tmp.getPAPIEvents().equals(config.getPAPIEvents())) {
                 configAdded = true;
                 configPosition = configSet.indexOf(tmp);
               }

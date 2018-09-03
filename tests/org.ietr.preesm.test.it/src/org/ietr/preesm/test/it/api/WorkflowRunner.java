@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -67,8 +67,8 @@ public class WorkflowRunner {
 
   /**
    */
-  public static final boolean runWorkFlow(final String projectName, final String workflowFilePathStr, final String scenarioFilePathStr)
-      throws CoreException, IOException {
+  public static final boolean runWorkFlow(final String projectName, final String workflowFilePathStr,
+      final String scenarioFilePathStr) throws CoreException, IOException {
     // init
     // init
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -95,12 +95,14 @@ public class WorkflowRunner {
 
     // clean
     project.close(null);
-    Files.walk(createTempDirectory, FileVisitOption.FOLLOW_LINKS).sorted(Comparator.reverseOrder()).map(java.nio.file.Path::toFile).forEach(File::delete);
+    Files.walk(createTempDirectory, FileVisitOption.FOLLOW_LINKS).sorted(Comparator.reverseOrder())
+        .map(java.nio.file.Path::toFile).forEach(File::delete);
     project.delete(true, null);
     return success;
   }
 
-  private static final void copyFiles(final File srcFolder, final IContainer destFolder) throws CoreException, FileNotFoundException {
+  private static final void copyFiles(final File srcFolder, final IContainer destFolder)
+      throws CoreException, FileNotFoundException {
     for (final File f : srcFolder.listFiles()) {
       if (f.isDirectory()) {
         final IFolder newFolder = destFolder.getFolder(new Path(f.getName()));

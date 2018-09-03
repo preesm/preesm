@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2012)
  *
@@ -70,8 +70,8 @@ import org.ietr.preesm.ui.scenario.editor.PreesmAlgorithmTreeContentProvider;
 
 // TODO: Auto-generated Javadoc
 /**
- * Listener of the check state of the SDF tree but also of the selection modification of the current core definition. It updates the check state of the vertices
- * depending on the constraint groups in the scenario
+ * Listener of the check state of the SDF tree but also of the selection modification of the current core definition. It
+ * updates the check state of the vertices depending on the constraint groups in the scenario
  *
  * @author mpelcat
  */
@@ -120,8 +120,8 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
    *          the property listener
    */
   @Override
-  public void setTreeViewer(final CheckboxTreeViewer treeViewer, final PreesmAlgorithmTreeContentProvider contentProvider,
-      final IPropertyListener propertyListener) {
+  public void setTreeViewer(final CheckboxTreeViewer treeViewer,
+      final PreesmAlgorithmTreeContentProvider contentProvider, final IPropertyListener propertyListener) {
     this.treeViewer = treeViewer;
     this.contentProvider = contentProvider;
     this.propertyListener = propertyListener;
@@ -314,7 +314,8 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
     if ((this.currentOpId != null) && (currentGraph != null)) {
       final Set<AbstractVertex> cgSet = new LinkedHashSet<>();
 
-      for (final ConstraintGroup cg : this.scenario.getConstraintGroupManager().getOpConstraintGroups(this.currentOpId)) {
+      for (final ConstraintGroup cg : this.scenario.getConstraintGroupManager()
+          .getOpConstraintGroups(this.currentOpId)) {
 
         // Retrieves the elements in the tree that have the same name as
         // the ones to select in the constraint group
@@ -349,7 +350,8 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
     if ((this.currentOpId != null) && (currentGraph != null)) {
       final Set<HierarchicalSDFVertex> cgSet = new LinkedHashSet<>();
 
-      for (final ConstraintGroup cg : this.scenario.getConstraintGroupManager().getOpConstraintGroups(this.currentOpId)) {
+      for (final ConstraintGroup cg : this.scenario.getConstraintGroupManager()
+          .getOpConstraintGroups(this.currentOpId)) {
 
         // Retrieves the elements in the tree that have the same name as
         // the ones to select in the constraint group

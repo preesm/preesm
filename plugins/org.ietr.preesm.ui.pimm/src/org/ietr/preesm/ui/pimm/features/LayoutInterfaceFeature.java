@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
@@ -87,8 +87,9 @@ public class LayoutInterfaceFeature extends AbstractLayoutFeature {
     }
 
     final EList<EObject> businessObjects = pe.getLink().getBusinessObjects();
-    return (businessObjects.size() == 1) && ((businessObjects.get(0) instanceof InterfaceActor)
-        || ((businessObjects.get(0) instanceof Parameter) && ((Parameter) businessObjects.get(0)).isConfigurationInterface()));
+    return (businessObjects.size() == 1)
+        && ((businessObjects.get(0) instanceof InterfaceActor) || ((businessObjects.get(0) instanceof Parameter)
+            && ((Parameter) businessObjects.get(0)).isConfigurationInterface()));
   }
 
   /*
@@ -122,7 +123,8 @@ public class LayoutInterfaceFeature extends AbstractLayoutFeature {
     return true;
   }
 
-  private void layoutParameter(final ContainerShape containerShape, final GraphicsAlgorithm containerGa, final IDimension size) {
+  private void layoutParameter(final ContainerShape containerShape, final GraphicsAlgorithm containerGa,
+      final IDimension size) {
     final int width = (size.getWidth() < 18) ? 18 : size.getWidth();
     // Layout the invisible rectangle
     containerGa.setWidth(width);
@@ -135,8 +137,8 @@ public class LayoutInterfaceFeature extends AbstractLayoutFeature {
     }
   }
 
-  private void layoutInterfaceActor(final ContainerShape containerShape, final GraphicsAlgorithm containerGa, final InterfaceActor vertex,
-      final IDimension size) {
+  private void layoutInterfaceActor(final ContainerShape containerShape, final GraphicsAlgorithm containerGa,
+      final InterfaceActor vertex, final IDimension size) {
     // Layout the invisible rectangle
     containerGa.setWidth(size.getWidth() + 16 + 3);
     // Layout the label

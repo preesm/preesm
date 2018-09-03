@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013 - 2014)
  * Romina Racca <romina.racca@gmail.com> (2013)
@@ -43,7 +43,8 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 
 // TODO: Auto-generated Javadoc
 /**
- * This class provides the elements displayed in {@link ActorTree}. Each element is a {@link ActorNode}. This tree is used in scenario editor to edit parameters
+ * This class provides the elements displayed in {@link ActorTree}. Each element is a {@link ActorNode}. This tree is
+ * used in scenario editor to edit parameters
  *
  * @author jheulot
  */
@@ -71,7 +72,8 @@ public class PiParameterTableContentProvider implements IStructuredContentProvid
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
+   * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object,
+   * java.lang.Object)
    */
   @Override
   public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {

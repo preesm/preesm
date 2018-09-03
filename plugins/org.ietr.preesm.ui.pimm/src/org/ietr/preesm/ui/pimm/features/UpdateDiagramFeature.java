@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -49,15 +49,17 @@ import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 
 // TODO: Auto-generated Javadoc
 /**
- * This feature try to detect cases when a Diagram or a Network need to be updated according to data contained from other one. It is executed each time a
- * Diagram is opened, thanks to the result of isAutoUpdateAtStartup().
+ * This feature try to detect cases when a Diagram or a Network need to be updated according to data contained from
+ * other one. It is executed each time a Diagram is opened, thanks to the result of isAutoUpdateAtStartup().
  *
  * <p>
- * This feature only apply on a Diagram. For updates on sub-shapes (instances, ports, etc.) please see updates method in the corresponding patterns.
+ * This feature only apply on a Diagram. For updates on sub-shapes (instances, ports, etc.) please see updates method in
+ * the corresponding patterns.
  * </p>
  *
  * @author Antoine Lorence
- * @see OrccDiagramTypeProvider#isAutoUpdateAtStartup() Code adapted from ORCC (net.sf.orcc.xdf.ui.features, https://github.com/orcc/orcc)
+ * @see OrccDiagramTypeProvider#isAutoUpdateAtStartup() Code adapted from ORCC (net.sf.orcc.xdf.ui.features,
+ *      https://github.com/orcc/orcc)
  */
 public class UpdateDiagramFeature extends DefaultUpdateDiagramFeature {
 
@@ -110,12 +112,14 @@ public class UpdateDiagramFeature extends DefaultUpdateDiagramFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.impl.DefaultUpdateDiagramFeature#update(org.eclipse.graphiti.features.context.IUpdateContext)
+   * @see org.eclipse.graphiti.features.impl.DefaultUpdateDiagramFeature#update(org.eclipse.graphiti.features.context.
+   * IUpdateContext)
    */
   @Override
   public boolean update(final IUpdateContext context) {
     if (!(context.getPictogramElement() instanceof Diagram)) {
-      throw new RuntimeException("UpdateDiagramFeature has been used with a non Diagram parameter: " + context.getPictogramElement().getClass().toString());
+      throw new RuntimeException("UpdateDiagramFeature has been used with a non Diagram parameter: "
+          + context.getPictogramElement().getClass().toString());
     }
 
     final Diagram diagram = (Diagram) context.getPictogramElement();
@@ -156,7 +160,8 @@ public class UpdateDiagramFeature extends DefaultUpdateDiagramFeature {
 
     // Set the version to current
     if (property == null) {
-      Graphiti.getPeService().setPropertyValue(diagram, UpdateDiagramFeature.GLOBAL_VERSION_KEY, String.valueOf(UpdateDiagramFeature.CURRENT_EDITOR_VERSION));
+      Graphiti.getPeService().setPropertyValue(diagram, UpdateDiagramFeature.GLOBAL_VERSION_KEY,
+          String.valueOf(UpdateDiagramFeature.CURRENT_EDITOR_VERSION));
     } else {
       property.setValue(String.valueOf(UpdateDiagramFeature.CURRENT_EDITOR_VERSION));
     }

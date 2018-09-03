@@ -99,7 +99,8 @@ public class MemoryScriptEngine {
    * @param scenario
    *          the scenario
    */
-  public MemoryScriptEngine(final String valueAlignment, final String log, final boolean verbose, final PreesmScenario scenario) {
+  public MemoryScriptEngine(final String valueAlignment, final String log, final boolean verbose,
+      final PreesmScenario scenario) {
     this.verbose = verbose;
     // Get the logger
     this.logger = WorkflowLogger.getLogger();
@@ -137,8 +138,8 @@ public class MemoryScriptEngine {
    * @param checkString
    *          the check string
    */
-  public void runScripts(final DirectedAcyclicGraph dag, final Map<String, DataType> dataTypes, final String checkString)
-      throws CoreException, IOException, URISyntaxException, EvalError {
+  public void runScripts(final DirectedAcyclicGraph dag, final Map<String, DataType> dataTypes,
+      final String checkString) throws CoreException, IOException, URISyntaxException, EvalError {
     // Retrieve all the scripts
     final int nbScripts = this.sr.findScripts(dag, this.scenario);
 
@@ -202,7 +203,8 @@ public class MemoryScriptEngine {
       for (final List<Buffer> group : this.sr.bufferGroups) {
         for (final Buffer buffer : group) {
           if ((buffer.matched != null) && (buffer.matched.size() > 1)) {
-            this.logger.log(Level.WARNING, "Buffer " + buffer + " was divided and will be replaced by a NULL pointer in the generated code.");
+            this.logger.log(Level.WARNING,
+                "Buffer " + buffer + " was divided and will be replaced by a NULL pointer in the generated code.");
           }
         }
       }
@@ -236,7 +238,8 @@ public class MemoryScriptEngine {
 
         iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
       }
-      iFile.setContents(new ByteArrayInputStream(this.sr.getLog().toString().getBytes()), true, false, new NullProgressMonitor());
+      iFile.setContents(new ByteArrayInputStream(this.sr.getLog().toString().getBytes()), true, false,
+          new NullProgressMonitor());
     } catch (final CoreException e) {
       e.printStackTrace();
     }

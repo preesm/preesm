@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
  *
@@ -52,7 +52,8 @@ public class SDFValidator extends DataflowValidator {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.graphiti.validators.DataflowValidator#validate(org.ietr.dftools.graphiti.model.Graph, org.eclipse.core.resources.IFile)
+   * @see org.ietr.dftools.graphiti.validators.DataflowValidator#validate(org.ietr.dftools.graphiti.model.Graph,
+   * org.eclipse.core.resources.IFile)
    */
   @Override
   public boolean validate(final Graph graph, final IFile file) {

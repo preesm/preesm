@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -72,7 +72,8 @@ public class SpiderTest {
         final String workflowFilePathStr = "/Workflows/" + workflow;
         final String scenarioFilePathStr = "/Scenarios/" + scenario;
         final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertFalse("Workflow [" + workflow + "] with scenario [" + scenario + "] successed when it should fail", success);
+        Assert.assertFalse("Workflow [" + workflow + "] with scenario [" + scenario + "] successed when it should fail",
+            success);
       }
     }
   }

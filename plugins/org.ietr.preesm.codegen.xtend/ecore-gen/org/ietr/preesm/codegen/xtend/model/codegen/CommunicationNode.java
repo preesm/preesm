@@ -35,11 +35,10 @@
  *******************************************************************************/
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
-import org.eclipse.emf.ecore.EObject;
-
 // TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> A representation of the model object ' <em><b>Communication Node</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A representation of the model object ' <em><b>Communication Node</b></em>'. <!-- end-user-doc
+ * -->
  *
  * <p>
  * The following features are supported:
@@ -53,14 +52,14 @@ import org.eclipse.emf.ecore.EObject;
  * @model
  * @generated
  */
-public interface CommunicationNode extends EObject {
+public interface CommunicationNode extends Commentable {
   /**
    * Returns the value of the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Name</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Name</em>' attribute.
    * @see #setName(String)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCommunicationNode_Name()
@@ -70,9 +69,9 @@ public interface CommunicationNode extends EObject {
   String getName();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode#getName <em>Name</em>}' attribute. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
-   *
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode#getName <em>Name</em>}'
+   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
    * @param value
    *          the new value of the '<em>Name</em>' attribute.
    * @see #getName()
@@ -86,7 +85,7 @@ public interface CommunicationNode extends EObject {
    * If the meaning of the '<em>Type</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Type</em>' attribute.
    * @see #setType(String)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCommunicationNode_Type()
@@ -96,9 +95,9 @@ public interface CommunicationNode extends EObject {
   String getType();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode#getType <em>Type</em>}' attribute. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
-   *
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode#getType <em>Type</em>}'
+   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
    * @param value
    *          the new value of the '<em>Type</em>' attribute.
    * @see #getType()

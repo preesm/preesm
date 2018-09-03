@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2012)
@@ -102,8 +102,8 @@ public class TimeKeeper implements Observer {
   // // Final Time Section
 
   /**
-   * Gives the final time of the given vertex in the current implementation. If current implementation information is not enough to calculate this timing,
-   * returns UNAVAILABLE
+   * Gives the final time of the given vertex in the current implementation. If current implementation information is
+   * not enough to calculate this timing, returns UNAVAILABLE
    *
    * @param vertex
    *          the vertex
@@ -124,7 +124,8 @@ public class TimeKeeper implements Observer {
   }
 
   /**
-   * Gives the total implementation time if possible. If current implementation information is not enough to calculate this timing, returns UNAVAILABLE
+   * Gives the total implementation time if possible. If current implementation information is not enough to calculate
+   * this timing, returns UNAVAILABLE
    *
    * @return the final time
    */
@@ -148,7 +149,8 @@ public class TimeKeeper implements Observer {
   }
 
   /**
-   * Gives the implementation time on the given operator if possible. It considers a partially mapped graph and ignores the non mapped vertices
+   * Gives the implementation time on the given operator if possible. It considers a partially mapped graph and ignores
+   * the non mapped vertices
    *
    * @param component
    *          the component

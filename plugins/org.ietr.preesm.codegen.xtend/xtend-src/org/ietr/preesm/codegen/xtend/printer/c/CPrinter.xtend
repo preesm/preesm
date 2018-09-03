@@ -5,7 +5,7 @@
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Daniel Madroñal <daniel.madronal@upm.es> (2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2016)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2018)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2013 - 2016)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -439,7 +439,7 @@ class CPrinter extends DefaultPrinter {
 		}
 
 
-		int main(void) {	
+		int main(void) {
 			#ifdef _PREESM_MONITOR_INIT
 			mkdir("papify-output", 0777);
 			event_init_multiplex();
@@ -484,7 +484,11 @@ class CPrinter extends DefaultPrinter {
 
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
 	«/*Since everything is already in shared memory, communications are simple synchronizations here*/
-	»«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
+	IF (communication.comment !== null && !communication.comment.empty)
+	»«IF (communication.comment.contains("\n"))
+	»/* «ELSE»// «ENDIF»«communication.comment»
+	«IF (communication.comment.contains("\n"))» */
+	«ENDIF»«ENDIF»«IF communication.isRedundant»//«ENDIF»«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
 		direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
 		(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«communication.sendStart.coreContainer.coreID», «communication.receiveStart.coreContainer.coreID»«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.
 		data.doSwitch»

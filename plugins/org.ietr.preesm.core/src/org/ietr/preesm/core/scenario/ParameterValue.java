@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2014)
  *
@@ -54,17 +54,17 @@ public class ParameterValue {
    */
   public enum ParameterType {
 
-    /** The independent. */
-    // No configuration input port
-    INDEPENDENT,
+  /** The independent. */
+  // No configuration input port
+  INDEPENDENT,
 
-    /** The actor dependent. */
-    // Direct dependency from a configuration actor to this parameter
-    ACTOR_DEPENDENT,
-    // Configuration input ports, but none directly dependent from a
-    /** The parameter dependent. */
-    // configuration actor
-    PARAMETER_DEPENDENT
+  /** The actor dependent. */
+  // Direct dependency from a configuration actor to this parameter
+  ACTOR_DEPENDENT,
+  // Configuration input ports, but none directly dependent from a
+  /** The parameter dependent. */
+  // configuration actor
+  PARAMETER_DEPENDENT
   }
 
   /** Parameter for which we keep value(s). */

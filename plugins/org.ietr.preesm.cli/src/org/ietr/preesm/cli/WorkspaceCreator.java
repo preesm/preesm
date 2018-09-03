@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
  *
@@ -58,8 +58,9 @@ import org.ietr.preesm.utils.files.FilesManager;
 
 // TODO: Auto-generated Javadoc
 /**
- * This application take a folder path in argument and create a valid Eclipse workspace from .project files found in it with the Preesm project nature. The
- * .metadata (workspace information) folder is created in the current Eclipse workspace.
+ * This application take a folder path in argument and create a valid Eclipse workspace from .project files found in it
+ * with the Preesm project nature. The .metadata (workspace information) folder is created in the current Eclipse
+ * workspace.
  *
  * <p>
  * In command-line, workspace folder can be set by using "-data &lt;workspace&gt;" argument.
@@ -99,7 +100,8 @@ public class WorkspaceCreator implements IApplication {
   }
 
   /**
-   * Open searchFolder and try to find .project files inside it. Then, try to create an eclipse projects and add it to the current workspace.
+   * Open searchFolder and try to find .project files inside it. Then, try to create an eclipse projects and add it to
+   * the current workspace.
    *
    * @param searchFolder
    *          the search folder
@@ -128,7 +130,8 @@ public class WorkspaceCreator implements IApplication {
 
               if (project.exists()) {
                 project.close(this.progressMonitor);
-                CLIWorkflowLogger.traceln("A project named " + project.getName() + " is already registered, " + "deleting previous project from Workspace: ");
+                CLIWorkflowLogger.traceln("A project named " + project.getName() + " is already registered, "
+                    + "deleting previous project from Workspace: ");
               }
               project.create(description, this.progressMonitor);
               project.open(this.progressMonitor);
@@ -159,8 +162,8 @@ public class WorkspaceCreator implements IApplication {
 
         final String path = FilesManager.sanitize(args[0]);
         final File searchPath = new File(path).getCanonicalFile();
-        CLIWorkflowLogger
-            .traceln("Register projects from \"" + searchPath.getAbsolutePath() + "\" to workspace \"" + this.workspace.getRoot().getLocation() + "\"");
+        CLIWorkflowLogger.traceln("Register projects from \"" + searchPath.getAbsolutePath() + "\" to workspace \""
+            + this.workspace.getRoot().getLocation() + "\"");
         searchForProjects(searchPath);
 
         // Avoid warning messages of type "The workspace exited

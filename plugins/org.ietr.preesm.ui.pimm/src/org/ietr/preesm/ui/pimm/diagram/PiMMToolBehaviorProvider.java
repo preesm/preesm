@@ -139,9 +139,10 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
               sb.append("That means the links from the diagram file to the PiSDF file are obsolete. ");
               sb.append("This can cause issues when exploring or manipulating the application specification. ");
               sb.append("\n\n");
-              sb.append("For this reason, editing this graph is disabled.");
+              sb.append("For this reason, editing this graph is disabled, and display might even fail.");
               sb.append("\n\n");
-              sb.append("This can be fixed by generating a new diagram file from the pi file (note that the layout will be recomputed). ");
+              sb.append("This can be fixed by generating a new diagram file from the pi file (note that the layout "
+                  + "will be recomputed). ");
               sb.append("To do so, right click on the pi file, then on \"Preem / Generate .diagram\".");
 
               MessageDialog.openWarning(null, title, sb.toString());
@@ -162,7 +163,8 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.tb.DefaultToolBehaviorProvider#getDecorators(org.eclipse.graphiti.mm.pictograms.PictogramElement)
+   * @see org.eclipse.graphiti.tb.DefaultToolBehaviorProvider#getDecorators(org.eclipse.graphiti.mm.pictograms.
+   * PictogramElement)
    */
   @Override
   public IDecorator[] getDecorators(final PictogramElement pe) {
@@ -228,7 +230,9 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.tb.DefaultToolBehaviorProvider#getDoubleClickFeature(org.eclipse.graphiti.features.context.IDoubleClickContext)
+   * @see
+   * org.eclipse.graphiti.tb.DefaultToolBehaviorProvider#getDoubleClickFeature(org.eclipse.graphiti.features.context.
+   * IDoubleClickContext)
    */
   @Override
   public ICustomFeature getDoubleClickFeature(final IDoubleClickContext context) {
@@ -246,7 +250,8 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.tb.DefaultToolBehaviorProvider#getToolTip(org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm)
+   * @see org.eclipse.graphiti.tb.DefaultToolBehaviorProvider#getToolTip(org.eclipse.graphiti.mm.algorithms.
+   * GraphicsAlgorithm)
    */
   @Override
   public String getToolTip(final GraphicsAlgorithm ga) {
@@ -268,7 +273,9 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.tb.DefaultToolBehaviorProvider#getCommandFeature(org.eclipse.graphiti.features.context.impl.CustomContext, java.lang.String)
+   * @see
+   * org.eclipse.graphiti.tb.DefaultToolBehaviorProvider#getCommandFeature(org.eclipse.graphiti.features.context.impl.
+   * CustomContext, java.lang.String)
    */
   @Override
   public ICustomFeature getCommandFeature(final CustomContext context, final String hint) {

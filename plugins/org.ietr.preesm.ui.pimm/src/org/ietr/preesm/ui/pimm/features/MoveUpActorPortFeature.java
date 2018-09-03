@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
@@ -108,7 +108,8 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.
+   * ICustomContext)
    */
   @Override
   public boolean canExecute(final ICustomContext context) {
@@ -160,7 +161,8 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see
+   * org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
    */
   @Override
   public void execute(final ICustomContext context) {
@@ -204,7 +206,8 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
         // Get Graphical Elements
         int anchorToMoveUpIndex;
         int anchorToMoveDownIndex = -1;
-        final ContainerShape csActor = (ContainerShape) ((BoxRelativeAnchor) anchorToMoveUp).getReferencedGraphicsAlgorithm().getPictogramElement();
+        final ContainerShape csActor = (ContainerShape) ((BoxRelativeAnchor) anchorToMoveUp)
+            .getReferencedGraphicsAlgorithm().getPictogramElement();
         final EList<Anchor> anchors = csActor.getAnchors();
 
         anchorToMoveUpIndex = anchors.indexOf(anchorToMoveUp);

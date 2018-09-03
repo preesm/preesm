@@ -66,8 +66,9 @@ public class PeriodicScheduleModel_ojAlgo implements SolverMethod {
     // ----- Variables ---------------------------------------------
     this.edgeVariables = new Hashtable<>(SDF.edgeSet().size());
     for (final SDFEdge e : SDF.edgeSet()) {
-      this.edgeVariables.put((String) e.getPropertyBean().getValue("edgeName"), Variable.make((String) e.getPropertyBean().getValue("edgeName")).lower(0)
-          .upper(1).weight((Double) e.getSource().getPropertyBean().getValue("duration")));
+      this.edgeVariables.put((String) e.getPropertyBean().getValue("edgeName"),
+          Variable.make((String) e.getPropertyBean().getValue("edgeName")).lower(0).upper(1)
+              .weight((Double) e.getSource().getPropertyBean().getValue("duration")));
 
     }
 
@@ -99,7 +100,8 @@ public class PeriodicScheduleModel_ojAlgo implements SolverMethod {
     // Second constraint : sum of H.x = 1
     final Expression expr = model.addExpression("sumHX").lower(1).upper(1);
     for (final SDFEdge e : SDF.edgeSet()) {
-      final double h = ((e.getDelay().intValue() - e.getCons().intValue()) + MathFunctionsHelper.gcd(e.getProd().intValue(), e.getCons().intValue()))
+      final double h = ((e.getDelay().intValue() - e.getCons().intValue())
+          + MathFunctionsHelper.gcd(e.getProd().intValue(), e.getCons().intValue()))
           * (double) e.getPropertyBean().getValue("normalizationFactor");
       expr.set(this.edgeVariables.get(e.getPropertyBean().getValue("edgeName")), h);
     }

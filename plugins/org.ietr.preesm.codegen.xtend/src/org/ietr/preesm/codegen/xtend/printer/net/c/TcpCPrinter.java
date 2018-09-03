@@ -84,7 +84,8 @@ public class TcpCPrinter extends CPrinter {
 
     // ff.append(" int* socketFileDescriptors = (int*)arg;\n");
 
-    ff.append("  \n" + "#ifdef _PREESM_TCP_DEBUG_\n" + "  printf(\"[TCP-DEBUG] Core" + coreID + " READY\\n\");\n" + "#endif\n\n");
+    ff.append("  \n" + "#ifdef _PREESM_TCP_DEBUG_\n" + "  printf(\"[TCP-DEBUG] Core" + coreID + " READY\\n\");\n"
+        + "#endif\n\n");
     return ff.toString();
   }
 
@@ -97,10 +98,12 @@ public class TcpCPrinter extends CPrinter {
     res.append("  int iterationCount = 0;\n");
     res.append("  while(1){\n");
     res.append("    iterationCount++;\n");
-    res.append("#ifdef _PREESM_TCP_DEBUG_\n" + "    printf(\"[TCP-DEBUG] Core" + coreID + " iteration #%d - at barrier\\n\",iterationCount);\n" + "#endif\n");
-    res.append("    preesm_barrier(socketFileDescriptors, " + coreID + ", " + this.getEngine().getCodeBlocks().size() + ");\n");
-    res.append("#ifdef _PREESM_TCP_DEBUG_\n" + "    printf(\"[TCP-DEBUG] Core" + coreID + " iteration #%d - barrier passed\\n\",iterationCount);\n"
-        + "#endif\n    \n    ");
+    res.append("#ifdef _PREESM_TCP_DEBUG_\n" + "    printf(\"[TCP-DEBUG] Core" + coreID
+        + " iteration #%d - at barrier\\n\",iterationCount);\n" + "#endif\n");
+    res.append("    preesm_barrier(socketFileDescriptors, " + coreID + ", " + this.getEngine().getCodeBlocks().size()
+        + ");\n");
+    res.append("#ifdef _PREESM_TCP_DEBUG_\n" + "    printf(\"[TCP-DEBUG] Core" + coreID
+        + " iteration #%d - barrier passed\\n\",iterationCount);\n" + "#endif\n    \n    ");
     return res.toString();
   }
 
@@ -137,15 +140,16 @@ public class TcpCPrinter extends CPrinter {
 
     final String dataAddress = communication.getData().getName();
 
-    functionCallBuilder
-        .append("(" + from + ", " + to + ", socketFileDescriptors, " + dataAddress + ", " + size + ", \"" + dataAddress + " " + size + "\"" + ");\n");
+    functionCallBuilder.append("(" + from + ", " + to + ", socketFileDescriptors, " + dataAddress + ", " + size + ", \""
+        + dataAddress + " " + size + "\"" + ");\n");
 
     return functionCallBuilder.toString();
   }
 
   @Override
   public String printMain(final List<Block> printerBlocks) {
-    // 0- without the following class loader initialization, I get the following exception when running as Eclipse plugin:
+    // 0- without the following class loader initialization, I get the following exception when running as Eclipse
+    // plugin:
     // org.apache.velocity.exception.VelocityException: The specified class for ResourceManager
     // (org.apache.velocity.runtime.resource.ResourceManagerImpl) does not implement
     // org.apache.velocity.runtime.resource.ResourceManager; Velocity is not initialized correctly.
@@ -162,10 +166,11 @@ public class TcpCPrinter extends CPrinter {
     context.put("PREESM_PRINTER", this.getClass().getSimpleName());
     context.put("PREESM_NBTHREADS", printerBlocks.size());
 
-    final List<String> threadFunctionNames = IntStream.range(0, printerBlocks.size()).mapToObj(i -> String.format("computationThread_Core%d", i))
-        .collect(Collectors.toList());
+    final List<String> threadFunctionNames = IntStream.range(0, printerBlocks.size())
+        .mapToObj(i -> String.format("computationThread_Core%d", i)).collect(Collectors.toList());
 
-    context.put("PREESM_THREAD_FUNCTIONS_DECLS", "void* " + String.join("(void *arg);\nvoid* ", threadFunctionNames) + "(void *arg);\n");
+    context.put("PREESM_THREAD_FUNCTIONS_DECLS",
+        "void* " + String.join("(void *arg);\nvoid* ", threadFunctionNames) + "(void *arg);\n");
 
     context.put("PREESM_THREAD_FUNCTIONS", "&" + String.join(",&", threadFunctionNames));
 

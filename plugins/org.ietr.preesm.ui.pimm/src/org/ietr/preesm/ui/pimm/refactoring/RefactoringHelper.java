@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2014)
  *
@@ -65,14 +65,15 @@ public class RefactoringHelper {
    *          The {@link String} used to replace matched parts of the file content.
    * @param file
    *          the {@link IFile} to which changes are to be applied.
-   * @return a {@link TextFileChange} if the regex was matched and text changes were created. <code>null</code> otherwise.
+   * @return a {@link TextFileChange} if the regex was matched and text changes were created. <code>null</code>
+   *         otherwise.
    * @throws CoreException
    *           the core exception
    * @throws MalformedTreeException
    *           the malformed tree exception
    */
-  protected static TextFileChange createChange(final String regex, final int replacedGroup, final String replacementString, final IFile file)
-      throws CoreException, MalformedTreeException {
+  protected static TextFileChange createChange(final String regex, final int replacedGroup,
+      final String replacementString, final IFile file) throws CoreException, MalformedTreeException {
 
     // Read file content
     final StringBuffer buffer = new StringBuffer();
@@ -96,7 +97,8 @@ public class RefactoringHelper {
 
     // If the change is applicable: apply it as many time as possible.
     while (matcher.find()) {
-      final ReplaceEdit edit = new ReplaceEdit(matcher.start(replacedGroup), matcher.end(replacedGroup) - matcher.start(replacedGroup), replacementString);
+      final ReplaceEdit edit = new ReplaceEdit(matcher.start(replacedGroup),
+          matcher.end(replacedGroup) - matcher.start(replacedGroup), replacementString);
       change.addEdit(edit);
     }
 

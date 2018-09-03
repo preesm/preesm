@@ -38,7 +38,8 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
 import org.eclipse.emf.common.util.EList;
 
 /**
- * <!-- begin-user-doc --> A representation of the model object '<em><b>Finite Loop Block</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A representation of the model object '<em><b>Finite Loop Block</b></em>'. <!-- end-user-doc
+ * -->
  *
  * <p>
  * The following features are supported:
@@ -58,10 +59,11 @@ public interface FiniteLoopBlock extends LoopBlock {
   /**
    * Returns the value of the '<em><b>Nb Iter</b></em>' attribute. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Nb Iter</em>' attribute isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Nb Iter</em>' attribute isn't clear, there really should be more of a description
+   * here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Nb Iter</em>' attribute.
    * @see #setNbIter(int)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFiniteLoopBlock_NbIter()
@@ -71,9 +73,9 @@ public interface FiniteLoopBlock extends LoopBlock {
   int getNbIter();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock#getNbIter <em>Nb Iter</em>}' attribute. <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   *
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock#getNbIter <em>Nb
+   * Iter</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
    * @param value
    *          the new value of the '<em>Nb Iter</em>' attribute.
    * @see #getNbIter()
@@ -87,7 +89,7 @@ public interface FiniteLoopBlock extends LoopBlock {
    * If the meaning of the '<em>Iter</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Iter</em>' reference.
    * @see #setIter(IntVar)
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFiniteLoopBlock_Iter()
@@ -97,9 +99,9 @@ public interface FiniteLoopBlock extends LoopBlock {
   IntVar getIter();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock#getIter <em>Iter</em>}' reference. <!-- begin-user-doc --> <!--
-   * end-user-doc -->
-   *
+   * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock#getIter <em>Iter</em>}'
+   * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
    * @param value
    *          the new value of the '<em>Iter</em>' reference.
    * @see #getIter()
@@ -111,10 +113,11 @@ public interface FiniteLoopBlock extends LoopBlock {
    * Returns the value of the '<em><b>In Buffers</b></em>' reference list. The list contents are of type
    * {@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator}. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>In Buffers</em>' reference list isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>In Buffers</em>' reference list isn't clear, there really should be more of a
+   * description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>In Buffers</em>' reference list.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFiniteLoopBlock_InBuffers()
    * @model
@@ -126,10 +129,11 @@ public interface FiniteLoopBlock extends LoopBlock {
    * Returns the value of the '<em><b>Out Buffers</b></em>' reference list. The list contents are of type
    * {@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator}. <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Out Buffers</em>' reference list isn't clear, there really should be more of a description here...
+   * If the meaning of the '<em>Out Buffers</em>' reference list isn't clear, there really should be more of a
+   * description here...
    * </p>
    * <!-- end-user-doc -->
-   *
+   * 
    * @return the value of the '<em>Out Buffers</em>' reference list.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFiniteLoopBlock_OutBuffers()
    * @model

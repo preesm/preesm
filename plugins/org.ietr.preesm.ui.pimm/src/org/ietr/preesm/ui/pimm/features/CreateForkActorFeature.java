@@ -99,7 +99,8 @@ public class CreateForkActorFeature extends AbstractCreateFeature {
     final String question = "Enter new fork actor name";
     String newActorName = "ForkActorName";
 
-    newActorName = PiMMUtil.askString("Create Fork Actor", question, newActorName, new VertexNameValidator(graph, null));
+    newActorName = PiMMUtil.askString("Create Fork Actor", question, newActorName,
+        new VertexNameValidator(graph, null));
     if ((newActorName == null) || (newActorName.trim().length() == 0)) {
       this.hasDoneChanges = false; // If this is not done, the graph is considered modified.
       return ICreate.EMPTY;

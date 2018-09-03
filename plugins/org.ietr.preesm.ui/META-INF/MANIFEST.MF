@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Preesm UI
 Automatic-Module-Name: org.ietr.preesm.ui
 Bundle-SymbolicName: org.ietr.preesm.ui;singleton:=true
-Bundle-Version: 2.13.0
+Bundle-Version: 2.14.0
 Bundle-Activator: org.ietr.preesm.ui.PreesmUIPlugin
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
@@ -16,7 +16,7 @@ Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
  org.eclipse.emf.edit.ui,
  org.eclipse.xtend.lib,
  net.sourceforge.jexcelapi.jxl;bundle-version="2.6.10",
- org.ietr.dftools.ui;bundle-version="[1.8.0,2.0.0)";visibility:=reexport,
+ org.ietr.dftools.ui;bundle-version="[1.9.0,2.0.0)";visibility:=reexport,
  org.ietr.preesm.core;visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

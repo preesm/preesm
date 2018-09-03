@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
@@ -53,7 +53,8 @@ public class VertexDateFormat extends RelativeDateFormat {
   /*
    * (non-Javadoc)
    *
-   * @see org.jfree.chart.util.RelativeDateFormat#format(java.util.Date, java.lang.StringBuffer, java.text.FieldPosition)
+   * @see org.jfree.chart.util.RelativeDateFormat#format(java.util.Date, java.lang.StringBuffer,
+   * java.text.FieldPosition)
    */
   @Override
   public StringBuffer format(final Date date, final StringBuffer toAppendTo, final FieldPosition fieldPosition) {

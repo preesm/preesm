@@ -304,7 +304,8 @@ public class ConstraintGroupManager {
    * @throws CoreException
    *           the core exception
    */
-  public void importConstraints(final PreesmScenario currentScenario) throws InvalidModelException, FileNotFoundException, CoreException {
+  public void importConstraints(final PreesmScenario currentScenario)
+      throws InvalidModelException, FileNotFoundException, CoreException {
     if (!this.excelFileURL.isEmpty() && (currentScenario != null)) {
       final ExcelConstraintsParser parser = new ExcelConstraintsParser(currentScenario);
       parser.parse(this.excelFileURL, currentScenario.getOperatorIds());

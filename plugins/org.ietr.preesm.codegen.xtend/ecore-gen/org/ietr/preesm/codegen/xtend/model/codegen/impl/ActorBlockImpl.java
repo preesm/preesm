@@ -62,16 +62,18 @@ import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
  */
 public class ActorBlockImpl extends BlockImpl implements ActorBlock {
   /**
-   * The cached value of the '{@link #getLoopBlock() <em>Loop Block</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * The cached value of the '{@link #getLoopBlock() <em>Loop Block</em>}' reference. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   * 
    * @see #getLoopBlock()
    * @generated
    * @ordered
    */
   protected LoopBlock loopBlock;
   /**
-   * The cached value of the '{@link #getInitBlock() <em>Init Block</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   *
+   * The cached value of the '{@link #getInitBlock() <em>Init Block</em>}' reference. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   * 
    * @see #getInitBlock()
    * @generated
    * @ordered
@@ -79,7 +81,8 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
   protected CallBlock initBlock;
 
   /**
-   * <!-- begin-user-doc -->Default Constructor also create the init and loop blocks and add them to the {@link CodeElt} list<!-- end-user-doc -->.
+   * <!-- begin-user-doc -->Default Constructor also create the init and loop blocks and add them to the {@link CodeElt}
+   * list<!-- end-user-doc -->.
    */
   protected ActorBlockImpl() {
     super();
@@ -113,7 +116,8 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
       this.loopBlock = (LoopBlock) eResolveProxy(oldLoopBlock);
       if (this.loopBlock != oldLoopBlock) {
         if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.ACTOR_BLOCK__LOOP_BLOCK, oldLoopBlock, this.loopBlock));
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.ACTOR_BLOCK__LOOP_BLOCK,
+              oldLoopBlock, this.loopBlock));
         }
       }
     }
@@ -142,7 +146,8 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
     final LoopBlock oldLoopBlock = this.loopBlock;
     this.loopBlock = newLoopBlock;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.ACTOR_BLOCK__LOOP_BLOCK, oldLoopBlock, this.loopBlock));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.ACTOR_BLOCK__LOOP_BLOCK, oldLoopBlock,
+          this.loopBlock));
     }
   }
 
@@ -159,7 +164,8 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
       this.initBlock = (CallBlock) eResolveProxy(oldInitBlock);
       if (this.initBlock != oldInitBlock) {
         if (eNotificationRequired()) {
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.ACTOR_BLOCK__INIT_BLOCK, oldInitBlock, this.initBlock));
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.ACTOR_BLOCK__INIT_BLOCK,
+              oldInitBlock, this.initBlock));
         }
       }
     }
@@ -188,7 +194,8 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
     final CallBlock oldInitBlock = this.initBlock;
     this.initBlock = newInitBlock;
     if (eNotificationRequired()) {
-      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.ACTOR_BLOCK__INIT_BLOCK, oldInitBlock, this.initBlock));
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.ACTOR_BLOCK__INIT_BLOCK, oldInitBlock,
+          this.initBlock));
     }
   }
 

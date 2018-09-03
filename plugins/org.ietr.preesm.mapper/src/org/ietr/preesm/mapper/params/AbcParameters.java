@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
@@ -99,7 +99,8 @@ public class AbcParameters {
     this.balanceLoads = Boolean.valueOf(textParameters.get("balanceLoads"));
 
     WorkflowLogger.getLogger().log(Level.INFO,
-        "The Abc parameters are: simulatorType=looselyTimed/approximatelyTimed/AccuratelyTimed; edgeSchedType=Simple/Switcher; balanceLoads=true/false");
+        "The Abc parameters are: simulatorType=looselyTimed/approximatelyTimed/AccuratelyTimed; "
+            + "edgeSchedType=Simple/Switcher; balanceLoads=true/false");
   }
 
   /**

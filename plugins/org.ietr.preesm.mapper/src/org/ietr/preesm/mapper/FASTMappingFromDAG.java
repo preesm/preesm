@@ -40,43 +40,29 @@
  */
 package org.ietr.preesm.mapper;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.elements.Workflow;
-import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbstractAbc;
 import org.ietr.preesm.mapper.abc.IAbc;
-import org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
+import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.mapper.abc.taskscheduling.SimpleTaskSched;
-import org.ietr.preesm.mapper.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.mapper.algo.fast.FastAlgorithm;
 import org.ietr.preesm.mapper.algo.list.InitialLists;
-import org.ietr.preesm.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.params.FastAlgoParameters;
 
-// TODO: Auto-generated Javadoc
 /**
- * FAST is a sequential mapping/scheduling method based on list scheduling followed by a neighborhood search phase. It was invented by Y-K Kwok.
+ * FAST is a sequential mapping/scheduling method based on list scheduling followed by a neighborhood search phase. It
+ * was invented by Y-K Kwok.
  *
  * @author pmenuet
  * @author mpelcat
  */
-public class FASTMappingFromDAG extends AbstractMapping {
-
-  /**
-   * Instantiates a new FAST mapping.
-   */
-  public FASTMappingFromDAG() {
-  }
+public class FASTMappingFromDAG extends AbstractMappingFromDAG {
 
   /*
    * (non-Javadoc)
@@ -93,81 +79,31 @@ public class FASTMappingFromDAG extends AbstractMapping {
     return parameters;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.AbstractMapping#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
-   * org.ietr.dftools.workflow.elements.Workflow)
-   */
   @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
-      final String nodeName, final Workflow workflow) throws WorkflowException {
-
-    final Map<String, Object> outputs = new LinkedHashMap<>();
-    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
-    MapperDAG dag = (MapperDAG) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
-    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
-
-    super.execute(inputs, parameters, monitor, nodeName, workflow);
-
-    final FastAlgoParameters fastParams = new FastAlgoParameters(parameters);
-    final AbcParameters abcParams = new AbcParameters(parameters);
-
-    if (dag == null) {
-      throw (new WorkflowException(" graph can't be scheduled, check console messages"));
-    }
-
-    // calculates the DAG span length on the architecture main operator (the
-    // tasks that can
-    // not be executed by the main operator are deported without transfer
-    // time to other operator
-    calculateSpan(dag, architecture, scenario, abcParams);
-
-    final IAbc simu = new InfiniteHomogeneousAbc(abcParams, dag, architecture, abcParams.getSimulatorType().getTaskSchedType(), scenario);
-
-    final InitialLists initialLists = new InitialLists();
-    if (!initialLists.constructInitialLists(dag, simu)) {
-      return outputs;
-    }
-
-    final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
-    simu.resetDAG();
-
-    final FastAlgorithm fastAlgorithm = new FastAlgorithm(initialLists, scenario);
+  protected IAbc schedule(final Map<String, Object> outputs, final Map<String, String> parameters,
+      final InitialLists initial, final PreesmScenario scenario, final AbcParameters abcParams, final MapperDAG dag,
+      final Design architecture, final AbstractTaskSched taskSched) {
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
 
-    dag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false, fastParams.isDisplaySolutions(), monitor, taskSched);
+    final FastAlgoParameters fastParams = new FastAlgoParameters(parameters);
+    final FastAlgorithm fastAlgorithm = new FastAlgorithm(initial, scenario);
+    final MapperDAG resDag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false,
+        fastParams.isDisplaySolutions(), null, taskSched);
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
 
-    final IAbc simu2 = AbstractAbc.getInstance(abcParams, dag, architecture, scenario);
+    final IAbc simu2 = AbstractAbc.getInstance(abcParams, resDag, architecture, scenario);
     // Transfer vertices are automatically regenerated
-    simu2.setDAG(dag);
+    simu2.setDAG(resDag);
 
     // The transfers are reordered using the best found order during
     // scheduling
     simu2.reschedule(fastAlgorithm.getBestTotalOrder());
-    final TagDAG tagDAG = new TagDAG();
 
-    // The mapper dag properties are put in the property bean to be
-    // transfered to code generation
-    try {
-      tagDAG.tag(dag, architecture, scenario, simu2, abcParams.getEdgeSchedType());
-    } catch (final InvalidExpressionException e) {
-      throw (new WorkflowException(e.getMessage()));
-    }
-
-    // A simple task scheduler avoids new task swaps and ensures reuse of
-    // previous order.
     simu2.setTaskScheduler(new SimpleTaskSched());
-    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
-    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, simu2);
 
-    super.clean(architecture, scenario);
-    super.checkSchedulingResult(parameters, dag);
-
-    return outputs;
+    return simu2;
   }
 
 }

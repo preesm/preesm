@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2014)
@@ -78,7 +78,9 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#canReconnect(org.eclipse.graphiti.features.context.IReconnectionContext)
+   * @see
+   * org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#canReconnect(org.eclipse.graphiti.features.context.
+   * IReconnectionContext)
    */
   @Override
   public boolean canReconnect(final IReconnectionContext context) {
@@ -110,7 +112,8 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
 
     // Also true if the TargetPictogramElement is a vertex that can create
     // ports
-    if (CreateFifoFeature.canCreatePort(context.getTargetPictogramElement(), getFeatureProvider(), oldPort.getKind()) != null) {
+    if (CreateFifoFeature.canCreatePort(context.getTargetPictogramElement(), getFeatureProvider(),
+        oldPort.getKind()) != null) {
       return true;
     }
     return false;
@@ -146,7 +149,9 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#postReconnect(org.eclipse.graphiti.features.context.IReconnectionContext)
+   * @see
+   * org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#postReconnect(org.eclipse.graphiti.features.context.
+   * IReconnectionContext)
    */
   @Override
   public void postReconnect(final IReconnectionContext context) {
@@ -171,7 +176,8 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
 
     // Call the move feature of the anchor owner to layout the connection
     final MoveAbstractActorFeature moveFeature = new MoveAbstractActorFeature(getFeatureProvider());
-    final ContainerShape cs = (ContainerShape) context.getNewAnchor().getReferencedGraphicsAlgorithm().getPictogramElement();
+    final ContainerShape cs = (ContainerShape) context.getNewAnchor().getReferencedGraphicsAlgorithm()
+        .getPictogramElement();
     final MoveShapeContext moveCtxt = new MoveShapeContext(cs);
     moveCtxt.setDeltaX(0);
     moveCtxt.setDeltaY(0);
@@ -185,7 +191,9 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#preReconnect(org.eclipse.graphiti.features.context.IReconnectionContext)
+   * @see
+   * org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#preReconnect(org.eclipse.graphiti.features.context.
+   * IReconnectionContext)
    */
   @Override
   public void preReconnect(final IReconnectionContext context) {
@@ -202,7 +210,8 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
     // Create it
     if (newPort == null) {
       final PictogramElement pe = context.getTargetPictogramElement();
-      final AbstractAddActorPortFeature addPortFeature = CreateFifoFeature.canCreatePort(pe, getFeatureProvider(), oldPort.getKind());
+      final AbstractAddActorPortFeature addPortFeature = CreateFifoFeature.canCreatePort(pe, getFeatureProvider(),
+          oldPort.getKind());
       if (addPortFeature != null) {
         final CustomContext sourceContext = new CustomContext(new PictogramElement[] { pe });
         addPortFeature.execute(sourceContext);

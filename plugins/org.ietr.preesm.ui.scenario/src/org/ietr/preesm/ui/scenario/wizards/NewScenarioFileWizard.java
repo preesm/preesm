@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2011)
  *
@@ -36,17 +36,24 @@
  */
 package org.ietr.preesm.ui.scenario.wizards;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
+import org.ietr.preesm.ui.utils.ErrorWithExceptionDialog;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class NewScenarioFileWizard.
  *
  * @author mpelcat
  */
 public class NewScenarioFileWizard extends BasicNewFileResourceWizard {
+
+  public static final String SCENARIO_INITIAL_CONTENT = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<scenario>\n"
+      + "</scenario>";
 
   /*
    * (non-Javadoc)
@@ -57,16 +64,6 @@ public class NewScenarioFileWizard extends BasicNewFileResourceWizard {
   public void addPages() {
     super.addPages();
     super.setWindowTitle("New Scenario File");
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard#initializeDefaultPageImageDescriptor()
-   */
-  @Override
-  protected void initializeDefaultPageImageDescriptor() {
-    super.initializeDefaultPageImageDescriptor();
   }
 
   /*
@@ -84,7 +81,16 @@ public class NewScenarioFileWizard extends BasicNewFileResourceWizard {
       page.setFileName(filename);
     }
 
+    final byte[] bytes = SCENARIO_INITIAL_CONTENT.getBytes();
+    final InputStream source = new ByteArrayInputStream(bytes);
+
     final IFile createdFile = page.createNewFile();
+    try {
+      createdFile.setContents(source, IResource.FORCE, null);
+    } catch (CoreException e) {
+      ErrorWithExceptionDialog.errorDialogWithStackTrace("Could not initialize scenario file content", e);
+    }
+
     return createdFile != null;
   }
 }

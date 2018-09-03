@@ -60,7 +60,8 @@ public abstract class IBSDFLiveness {
     // step 2 check the liveness of the subgraphs
     if (live) {
       // get the list of hierarchical actors
-      final Hashtable<String, SDFAbstractVertex> allHierarchicalActors = GraphStructureHelper.getAllHierarchicalActors(ibsdf);
+      final Hashtable<String,
+          SDFAbstractVertex> allHierarchicalActors = GraphStructureHelper.getAllHierarchicalActors(ibsdf);
 
       // check the liveness of the subgraph of each hierarchical actor in the list
       for (final SDFAbstractVertex h : allHierarchicalActors.values()) {

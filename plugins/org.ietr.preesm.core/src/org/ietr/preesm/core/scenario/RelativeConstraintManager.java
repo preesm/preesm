@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2012)
  *
@@ -51,7 +51,9 @@ public class RelativeConstraintManager {
   /** Integer representing no relative constraint. */
   public static final int NONE = -1;
 
-  /** List of all relative constraints as groups represented by integers and linked to vertices represented by their ID. */
+  /**
+   * List of all relative constraints as groups represented by integers and linked to vertices represented by their ID.
+   */
   private final Map<String, Integer> relativeConstraints;
 
   /** Path to a file containing relative constraints. */

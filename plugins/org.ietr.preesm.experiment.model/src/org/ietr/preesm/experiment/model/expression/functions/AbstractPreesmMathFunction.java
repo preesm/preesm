@@ -58,8 +58,8 @@ public abstract class AbstractPreesmMathFunction extends PostfixMathCommand {
   }
 
   /**
-   * Gets the {@link #getArgCount()} peek elements of the stack and put them in order in an array of double, then call the {@link #compute(double...)} method to
-   * compute the result.
+   * Gets the {@link #getArgCount()} peek elements of the stack and put them in order in an array of double, then call
+   * the {@link #compute(double...)} method to compute the result.
    */
   @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
@@ -69,7 +69,8 @@ public abstract class AbstractPreesmMathFunction extends PostfixMathCommand {
     for (int i = 0; i < getArgCount(); i++) {
       final Object arg = stack.pop();
       if (!(arg instanceof Double)) {
-        throw new ParseException("Argument must be a number, whereas it is " + arg + "(" + arg.getClass().getName() + ")");
+        throw new ParseException(
+            "Argument must be a number, whereas it is " + arg + "(" + arg.getClass().getName() + ")");
       }
       args[i] = (double) arg;
     }

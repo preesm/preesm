@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
@@ -51,8 +51,8 @@ import org.ietr.preesm.mapper.params.AbcParameters;
 
 // TODO: Auto-generated Javadoc
 /**
- * A loosely timed architecture simulator associates a simple cost to each communication. This cost is the transfer size multiplied by the medium speed. The
- * communications are parallel with computation and all parallel with each other.
+ * A loosely timed architecture simulator associates a simple cost to each communication. This cost is the transfer size
+ * multiplied by the medium speed. The communications are parallel with computation and all parallel with each other.
  *
  * @author mpelcat
  */
@@ -72,14 +72,16 @@ public class LooselyTimedAbc extends LatencyAbc {
    * @param scenario
    *          the scenario
    */
-  public LooselyTimedAbc(final AbcParameters params, final MapperDAG dag, final Design archi, final AbcType abcType, final PreesmScenario scenario) {
+  public LooselyTimedAbc(final AbcParameters params, final MapperDAG dag, final Design archi, final AbcType abcType,
+      final PreesmScenario scenario) {
     super(params, dag, archi, abcType, scenario);
   }
 
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#fireNewMappedVertex(org.ietr.preesm.mapper. model.MapperDAGVertex, boolean)
+   * @see org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#fireNewMappedVertex(org.ietr.preesm.mapper.
+   * model.MapperDAGVertex, boolean)
    */
   @Override
   protected void fireNewMappedVertex(final MapperDAGVertex vertex, final boolean updateRank) {

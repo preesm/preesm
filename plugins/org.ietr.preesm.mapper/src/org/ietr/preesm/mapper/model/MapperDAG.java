@@ -51,10 +51,10 @@ import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.algorithm.model.dag.EdgeAggregate;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.mapper.model.property.DAGMappings;
 import org.ietr.preesm.mapper.model.property.DAGTimings;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MapperDAG.
  *
@@ -76,6 +76,9 @@ public class MapperDAG extends DirectedAcyclicGraph {
   /** Corresponding SDF graph. */
   private SDFGraph sdfGraph;
 
+  /** Corresponding SDF graph. */
+  private PiGraph piSDFGraph;
+
   /** The cost of the implementation. */
   private static final String SCHEDULE_COST = "SCHEDULE_COST";
 
@@ -83,10 +86,23 @@ public class MapperDAG extends DirectedAcyclicGraph {
   public static final String CLUSTERED_VERTEX = "clustered_vertex";
 
   static {
-    {
-      AbstractGraph.public_properties.add(MapperDAG.SCHEDULE_COST);
-      AbstractGraph.public_properties.add(MapperDAG.CLUSTERED_VERTEX);
-    }
+    AbstractGraph.public_properties.add(MapperDAG.SCHEDULE_COST);
+    AbstractGraph.public_properties.add(MapperDAG.CLUSTERED_VERTEX);
+  }
+
+  private MapperDAG(final MapperEdgeFactory factory, final SDFGraph graph, final PiGraph piGraph) {
+    super(factory);
+    this.sdfGraph = graph;
+    this.piSDFGraph = piGraph;
+    setScheduleCost(0L);
+
+    getPropertyBean().setValue(MapperDAG.MAPPING_PROPERTY, new DAGMappings());
+    getPropertyBean().setValue(MapperDAG.TIMING_PROPERTY, new DAGTimings());
+
+  }
+
+  public MapperDAG(final MapperEdgeFactory factory) {
+    this(factory, null, null);
   }
 
   /**
@@ -98,13 +114,19 @@ public class MapperDAG extends DirectedAcyclicGraph {
    *          the graph
    */
   public MapperDAG(final MapperEdgeFactory factory, final SDFGraph graph) {
-    super(factory);
-    this.sdfGraph = graph;
-    setScheduleCost(0L);
+    this(factory, graph, null);
+  }
 
-    getPropertyBean().setValue(MapperDAG.MAPPING_PROPERTY, new DAGMappings());
-    getPropertyBean().setValue(MapperDAG.TIMING_PROPERTY, new DAGTimings());
-
+  /**
+   * Creactor of a DAG from a edge factory and a PiMM graph.
+   *
+   * @param factory
+   *          the factory
+   * @param graph
+   *          the graph
+   */
+  public MapperDAG(final MapperEdgeFactory factory, final PiGraph graph) {
+    this(factory, null, graph);
   }
 
   /**
@@ -170,6 +192,25 @@ public class MapperDAG extends DirectedAcyclicGraph {
   }
 
   /**
+   * Gets the reference PiMM graph.
+   *
+   * @return the reference PiMM graph
+   */
+  public PiGraph getReferencePiMMGraph() {
+    return this.piSDFGraph;
+  }
+
+  /**
+   * Sets the reference PiMM graph.
+   *
+   * @param pimmGraph
+   *          the new reference PiMM graph
+   */
+  public void setReferencePiMMGraph(final PiGraph pimmGraph) {
+    this.piSDFGraph = pimmGraph;
+  }
+
+  /**
    * Clone a MapperDAG.
    *
    * @return the mapper DAG
@@ -199,7 +240,8 @@ public class MapperDAG extends DirectedAcyclicGraph {
 
       final String sourceName = source.getName();
       final String targetName = target.getName();
-      final MapperDAGEdge newEdge = (MapperDAGEdge) newDAG.addEdge(newDAG.getVertex(sourceName), newDAG.getVertex(targetName));
+      final MapperDAGEdge newEdge = (MapperDAGEdge) newDAG.addEdge(newDAG.getVertex(sourceName),
+          newDAG.getVertex(targetName));
       newEdge.setInit(origEdge.getInit().clone());
       newEdge.setTiming(origEdge.getTiming().clone());
       newEdge.copyProperties(origEdge);
@@ -294,7 +336,8 @@ public class MapperDAG extends DirectedAcyclicGraph {
       currentvertex = (MapperDAGVertex) currentv;
 
       // Special vertices have null info
-      if ((currentvertex.getCorrespondingSDFVertex().getInfo() != null) && currentvertex.getCorrespondingSDFVertex().getInfo().equals(sdfvertex.getInfo())) {
+      if ((currentvertex.getCorrespondingSDFVertex().getInfo() != null)
+          && currentvertex.getCorrespondingSDFVertex().getInfo().equals(sdfvertex.getInfo())) {
         currentset.add(currentvertex);
       }
     }

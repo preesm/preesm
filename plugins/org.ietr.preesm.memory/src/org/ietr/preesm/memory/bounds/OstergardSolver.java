@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -60,9 +60,11 @@ import org.jgrapht.graph.SimpleGraph;
  * @param <E>
  *          The edges class
  */
-public class OstergardSolver<V extends IWeightedVertex<Integer> & Comparable<V>, E extends DefaultEdge> extends AbstractMaximumWeightCliqueSolver<V, E> {
+public class OstergardSolver<V extends IWeightedVertex<Integer> & Comparable<V>, E extends DefaultEdge>
+    extends AbstractMaximumWeightCliqueSolver<V, E> {
   /**
-   * cost corresponds to the c(i) function in <a href = "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.25.4408"> this paper </a>.
+   * cost corresponds to the c(i) function in
+   * <a href = "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.25.4408"> this paper </a>.
    *
    * <p>
    * It stores the weight of the heaviest clique found for the Subset S<sub>i</sub>.
@@ -71,7 +73,8 @@ public class OstergardSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
   protected ArrayList<Integer> cost;
 
   /**
-   * dcost corresponds to the d(i) function in <a href = "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.25.4408"> this paper </a>.
+   * dcost corresponds to the d(i) function in
+   * <a href = "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.25.4408"> this paper </a>.
    *
    * <p>
    * It stores the weight of the heaviest clique found for the Subset S'<sub>i</sub>.
@@ -80,7 +83,8 @@ public class OstergardSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
   protected ArrayList<Integer> dcost;
 
   /**
-   * This boolean is set to true if a clique with weight c(i+1) + w(vi) is found during an iteration of the wnew. This clique is maximum for Si.
+   * This boolean is set to true if a clique with weight c(i+1) + w(vi) is found during an iteration of the wnew. This
+   * clique is maximum for Si.
    */
   protected boolean found;
 
@@ -242,8 +246,8 @@ public class OstergardSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
   }
 
   /**
-   * This method corresponds to the wclique function in Algorithm 1 in <a href = "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.25.4408"> this paper
-   * </a>.
+   * This method corresponds to the wclique function in Algorithm 1 in
+   * <a href = "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.25.4408"> this paper </a>.
    *
    * @param vertexSet
    *          a subset of vertices of the graph
@@ -324,8 +328,8 @@ public class OstergardSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
   }
 
   /**
-   * This method corresponds to the wnew function in Algorithm 1 in <a href = "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.25.4408"> this paper
-   * </a>.
+   * This method corresponds to the wnew function in Algorithm 1 in
+   * <a href = "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.25.4408"> this paper </a>.
    */
   public void wNew() {
     if (this.speedup) {

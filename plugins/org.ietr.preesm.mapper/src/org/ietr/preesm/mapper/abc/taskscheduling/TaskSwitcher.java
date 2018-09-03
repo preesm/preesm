@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2012)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -41,7 +41,8 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 // TODO: Auto-generated Javadoc
 /**
- * The task switcher adds a processing to the mapping algorithm. When a vertex is mapped, it looks for the best place to schedule it.
+ * The task switcher adds a processing to the mapping algorithm. When a vertex is mapped, it looks for the best place to
+ * schedule it.
  *
  * @author mpelcat
  */
@@ -60,7 +61,8 @@ public class TaskSwitcher extends AbstractTaskSched {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#setOrderManager(org.ietr.preesm. mapper.abc.order.OrderManager)
+   * @see org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#setOrderManager(org.ietr.preesm.
+   * mapper.abc.order.OrderManager)
    */
   @Override
   public void setOrderManager(final OrderManager orderManager) {
@@ -94,7 +96,8 @@ public class TaskSwitcher extends AbstractTaskSched {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#insertVertex(org.ietr.preesm.mapper .model.MapperDAGVertex)
+   * @see org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#insertVertex(org.ietr.preesm.mapper
+   * .model.MapperDAGVertex)
    */
   @Override
   public void insertVertex(final MapperDAGVertex vertex) {

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2013)
  *
@@ -38,7 +38,8 @@ package org.ietr.preesm.core.scenario;
 
 // TODO: Auto-generated Javadoc
 /**
- * Representing the speed of a memcopy for a given operator type. This speed is composed of 2 elements: setupTime and timePerUnit
+ * Representing the speed of a memcopy for a given operator type. This speed is composed of 2 elements: setupTime and
+ * timePerUnit
  *
  * @author mpelcat
  */

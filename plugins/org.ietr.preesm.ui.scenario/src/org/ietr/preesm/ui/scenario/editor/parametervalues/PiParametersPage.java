@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2014)
  *
@@ -125,8 +125,8 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
 
-    this.section = managedForm.getToolkit().createSection(managedForm.getForm().getBody(),
-        ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    this.section = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), ExpandableComposite.TWISTIE
+        | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
 
     this.section.setText(Messages.getString("Parameters.title"));
     this.section.setDescription(Messages.getString("Parameters.description"));
@@ -218,7 +218,8 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
                     }
                   }
 
-                  final boolean equalSet = newValues.containsAll(param.getValues()) && param.getValues().containsAll(newValues);
+                  final boolean equalSet = newValues.containsAll(param.getValues())
+                      && param.getValues().containsAll(newValues);
                   if (modified && !equalSet) {
                     param.getValues().clear();
                     param.getValues().addAll(newValues);

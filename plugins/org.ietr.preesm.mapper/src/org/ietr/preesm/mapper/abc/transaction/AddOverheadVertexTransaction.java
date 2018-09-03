@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
@@ -98,8 +98,8 @@ public class AddOverheadVertexTransaction extends Transaction {
    * @param orderManager
    *          the order manager
    */
-  public AddOverheadVertexTransaction(final MapperDAGEdge edge, final MapperDAG implementation, final AbstractRouteStep step, final long overheadTime,
-      final OrderManager orderManager) {
+  public AddOverheadVertexTransaction(final MapperDAGEdge edge, final MapperDAG implementation,
+      final AbstractRouteStep step, final long overheadTime, final OrderManager orderManager) {
     super();
     this.edge = edge;
     this.implementation = implementation;
@@ -152,8 +152,8 @@ public class AddOverheadVertexTransaction extends Transaction {
 
       // TODO: Look at switching possibilities
       /*
-       * if (true) { TaskSwitcher taskSwitcher = new TaskSwitcher(); taskSwitcher.setOrderManager(orderManager); taskSwitcher.insertVertexBefore(currentTarget,
-       * oVertex); } else
+       * if (true) { TaskSwitcher taskSwitcher = new TaskSwitcher(); taskSwitcher.setOrderManager(orderManager);
+       * taskSwitcher.insertVertexBefore(currentTarget, oVertex); } else
        */
       this.orderManager.insertBefore(currentTarget, this.oVertex);
 

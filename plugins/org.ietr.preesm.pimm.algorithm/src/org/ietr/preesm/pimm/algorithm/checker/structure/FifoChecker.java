@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -42,7 +42,8 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 // TODO: Auto-generated Javadoc
 /**
- * Class to check different properties of the Fifos of a PiGraph. Entry point is the checkFifos method. Invalid Fifos are kept in several sets.
+ * Class to check different properties of the Fifos of a PiGraph. Entry point is the checkFifos method. Invalid Fifos
+ * are kept in several sets.
  *
  * @author cguy
  *
@@ -100,8 +101,8 @@ public class FifoChecker {
   }
 
   /**
-   * Check production and consumption rates of a Fifo. If one of the rate equals 0, the Fifo is invalid. If both rates equal 0, the Fifo is valid but the user
-   * may have forgotten to set the rates
+   * Check production and consumption rates of a Fifo. If one of the rate equals 0, the Fifo is invalid. If both rates
+   * equal 0, the Fifo is valid but the user may have forgotten to set the rates
    *
    * @param f
    *          the Fifo to check
