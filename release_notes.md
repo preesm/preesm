@@ -33,6 +33,7 @@ PREESM Changelog
 * Update external DFTools to [1.9.0,2.0.0);
 * All objects in the codegen model are now able to hold comments;
 * Fix Hierarchical code generator: properly call IBSDF Flattener with -1 to flatten everything;
+* Add ScheduledDAGIterator that iterates over a scheduled DAG vertices in the scheduled order;
 
 ### Bug fix
 * Fix issue #62
