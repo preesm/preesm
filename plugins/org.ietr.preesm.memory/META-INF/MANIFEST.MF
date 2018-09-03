@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtend.lib;bundle-version="2.11.0",
  org.beanshell.bsh;bundle-version="2.1.8",
  org.ietr.preesm.algorithm,
- org.ietr.preesm.core
+ org.ietr.preesm.core,
+ org.ietr.preesm.mapper
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: IETR/INSA Rennes
 Bundle-ClassPath: .
