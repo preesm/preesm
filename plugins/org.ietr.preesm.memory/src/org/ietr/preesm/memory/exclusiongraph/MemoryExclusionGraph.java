@@ -49,7 +49,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
@@ -74,6 +73,7 @@ import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
+import org.ietr.preesm.mapper.ScheduledDAGIterator;
 import org.ietr.preesm.memory.script.Range;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
@@ -1483,13 +1483,11 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     // Create a DAG with new edges from scheduling info
     final DirectedAcyclicGraph scheduledDAG = (DirectedAcyclicGraph) inputDAG.clone();
 
-    // Create an TreeMap of the DAGVertices, in scheduling order.
-    final TreeMap<Integer, DAGVertex> verticesMap = new TreeMap<>();
+    // Create an List of the DAGVertices, in scheduling order.
+    final List<DAGVertex> verticesMap = new ArrayList<>();
 
-    final TopologicalDAGIterator iterDAGVertices = new TopologicalDAGIterator(scheduledDAG); // Iterator
-    // on
-    // DAG
-    // vertices
+    // Iterator on DAG vertices
+    final ScheduledDAGIterator iterDAGVertices = new ScheduledDAGIterator(scheduledDAG);
 
     // Get vertices in scheduling order and remove send/receive vertices
     // from the dag.
@@ -1513,9 +1511,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       if (vertKind.equals(DAGVertex.DAG_VERTEX) || vertKind.equals(DAGBroadcastVertex.DAG_BROADCAST_VERTEX)
           || vertKind.equals(DAGInitVertex.DAG_INIT_VERTEX) || vertKind.equals(DAGEndVertex.DAG_END_VERTEX)
           || vertKind.equals(DAGForkVertex.DAG_FORK_VERTEX) || vertKind.equals(DAGJoinVertex.DAG_JOIN_VERTEX)) {
-        final int schedulingOrder = (Integer) currentVertex.getPropertyBean()
-            .getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
-        verticesMap.put(schedulingOrder, currentVertex);
+        verticesMap.add(currentVertex);
 
         if (vertKind.equals(DAGInitVertex.DAG_INIT_VERTEX)) {
           initVertices.add(currentVertex);
@@ -1543,8 +1539,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
     // Scan the dag and add new precedence edges caused by the schedule
     final Set<DAGEdge> addedEdges = new LinkedHashSet<>();
-    for (final Entry<Integer, DAGVertex> entry : verticesMap.entrySet()) {
-      final DAGVertex currentVertex = entry.getValue();
+    for (final DAGVertex currentVertex : verticesMap) {
 
       // Retrieve component
       final ComponentInstance comp = (ComponentInstance) currentVertex.getPropertyBean().getValue("Operator");
