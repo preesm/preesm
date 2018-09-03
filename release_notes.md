@@ -32,6 +32,7 @@ PREESM Changelog
 * Update external Graphiti to [1.10.0,1.0.0);
 * Update external DFTools to [1.9.0,2.0.0);
 * All objects in the codegen model are now able to hold comments;
+* Fix Hierarchical code generator: properly call IBSDF Flattener with -1 to flatten everything;
 
 ### Bug fix
 * Fix issue #62

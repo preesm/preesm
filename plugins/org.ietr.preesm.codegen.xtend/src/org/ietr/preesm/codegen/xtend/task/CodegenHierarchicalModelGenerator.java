@@ -181,7 +181,7 @@ public class CodegenHierarchicalModelGenerator {
       final List<SDFInterfaceVertex> interfaces = new ArrayList<>();
 
       // we need to flat everything here
-      final IbsdfFlattener flattener = new IbsdfFlattener(graph, 10);
+      final IbsdfFlattener flattener = new IbsdfFlattener(graph, -1);
       SDFGraph resultGraph = null;
       try {
         flattener.flattenGraph();
