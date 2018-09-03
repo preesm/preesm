@@ -1115,8 +1115,8 @@ public class CodegenModelGenerator {
     // Sorted list of the variables used by the prototype.
     // The integer is only used to order the variable and is retrieved
     // from the prototype
-    final TreeMap<Integer, Variable> variableList = new TreeMap<>();
-    final TreeMap<Integer, PortDirection> directionList = new TreeMap<>();
+    final Map<Integer, Variable> variableList = new TreeMap<>();
+    final Map<Integer, PortDirection> directionList = new TreeMap<>();
 
     // Retrieve the Variable corresponding to the arguments of the prototype
     for (final CodeGenArgument arg : prototype.getArguments().keySet()) {
