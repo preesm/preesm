@@ -50,16 +50,12 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.property.VertexTiming;
 
-// TODO: Auto-generated Javadoc
 /**
  * New version of the time keeper. Trying to minimize the mapping time by reducing the evaluation time of timings.
  *
  * @author mpelcat
  */
 public class TimeKeeper implements Observer {
-
-  /** If debug mode is activated, timing actions are traced. */
-  // private boolean debugMode = true;
 
   /**
    * Current implementation: the same as in the ABC

@@ -53,7 +53,6 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.property.EdgeTiming;
 import org.ietr.preesm.mapper.model.property.VertexTiming;
 
-// TODO: Auto-generated Javadoc
 /**
  * Visitor computing the TLevel of each actor firing.
  *

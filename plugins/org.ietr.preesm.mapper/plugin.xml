@@ -141,7 +141,7 @@
             </output>
             <output
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.IAbc">
+                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
             </output>
          </outputs>
       </task>
@@ -170,7 +170,7 @@
             </output>
             <output
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.IAbc">
+                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
             </output>
          </outputs>
       </task>
@@ -199,7 +199,7 @@
             </output>
             <output
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.IAbc">
+                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
             </output>
          </outputs>
       </task>
@@ -214,7 +214,7 @@
             </input>
             <input
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.IAbc">
+                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
             </input>
          </inputs>
       </task>
@@ -255,7 +255,7 @@
          <inputs>
             <input
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.IAbc">
+                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
             </input>
             <input
                   id="scenario"
@@ -272,7 +272,7 @@
          <inputs>
             <input
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.IAbc">
+                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
             </input>
          </inputs>
       </task>
@@ -283,7 +283,7 @@
          <inputs>
             <input
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.IAbc">
+                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
             </input>
          </inputs>
       </task>
@@ -294,7 +294,7 @@
          <inputs>
             <input
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.IAbc">
+                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
             </input>
          </inputs>
       </task>
@@ -348,7 +348,7 @@
             </output>
             <output
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.IAbc">
+                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
             </output>
          </outputs>
       </task>
@@ -377,7 +377,7 @@
             </output>
             <output
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.IAbc">
+                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
             </output>
          </outputs>
       </task>
@@ -406,7 +406,7 @@
             </output>
             <output
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.IAbc">
+                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
             </output>
          </outputs>
       </task>

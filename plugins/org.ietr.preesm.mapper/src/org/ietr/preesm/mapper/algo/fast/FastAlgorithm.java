@@ -51,8 +51,8 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.mapper.abc.AbstractAbc;
-import org.ietr.preesm.mapper.abc.IAbc;
+import org.ietr.preesm.mapper.PreesmMapperException;
+import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.abc.order.VertexOrderList;
 import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.mapper.abc.taskscheduling.TaskSwitcher;
@@ -68,7 +68,6 @@ import org.ietr.preesm.mapper.ui.BestCostPlotter;
 import org.ietr.preesm.mapper.ui.bestcost.BestCostEditor;
 import org.ietr.preesm.mapper.ui.gantt.GanttEditorRunnable;
 
-// TODO: Auto-generated Javadoc
 /**
  * Fast Algorithm.
  *
@@ -131,8 +130,7 @@ public class FastAlgorithm extends Observable {
    */
   public MapperDAG map(final String threadName, final AbcParameters abcParams, final FastAlgoParameters fastParams,
       final MapperDAG dag, final Design archi, final boolean alreadyMapped, final boolean pfastused,
-      final boolean displaySolutions, final IProgressMonitor monitor, final AbstractTaskSched taskSched)
-      throws WorkflowException {
+      final boolean displaySolutions, final IProgressMonitor monitor, final AbstractTaskSched taskSched) {
 
     final List<MapperDAGVertex> cpnDominantList = this.initialLists.getCpnDominant();
     final List<MapperDAGVertex> blockingNodesList = this.initialLists.getBlockingNodes();
@@ -180,7 +178,7 @@ public class FastAlgorithm extends Observable {
       final MapperDAG dag, final Design archi, final boolean alreadyMapped, final boolean pfastused,
       final boolean displaySolutions, final IProgressMonitor monitor, final List<MapperDAGVertex> cpnDominantList,
       final List<MapperDAGVertex> blockingNodesList, final List<MapperDAGVertex> finalcriticalpathList,
-      final AbstractTaskSched taskSched) throws WorkflowException {
+      final AbstractTaskSched taskSched) {
 
     final Random randomGenerator = new Random(System.nanoTime());
 
@@ -191,14 +189,13 @@ public class FastAlgorithm extends Observable {
     if (!pfastused) {
 
       costPlotter.setSUBPLOT_COUNT(1);
-      // demo.display();
       BestCostEditor.createEditor(costPlotter);
 
       addObserver(costPlotter);
     }
 
     // Variables
-    final IAbc simulator = AbstractAbc.getInstance(abcParams, dag, archi, this.scenario);
+    final LatencyAbc simulator = LatencyAbc.getInstance(abcParams, dag, archi, this.scenario);
 
     // A topological task scheduler is chosen for the list scheduling.
     // It schedules the tasks in topological order and, if they are on
@@ -239,9 +236,11 @@ public class FastAlgorithm extends Observable {
       launchEditor(ganttData, "Cost:" + initial + " List");
     }
 
-    WorkflowLogger.getLogger().log(Level.INFO, "Found List solution; Cost:" + initial);
+    final String msg = "Found List solution; Cost:" + initial;
+    WorkflowLogger.getLogger().log(Level.INFO, msg);
 
-    logger.log(Level.FINE, "InitialSP " + initial);
+    final String msg2 = "InitialSP " + initial;
+    logger.log(Level.FINE, msg2);
 
     long SL = initial;
     dag.setScheduleCost(initial);
@@ -264,9 +263,6 @@ public class FastAlgorithm extends Observable {
     final int maxStep = dag.vertexSet().size() * DesignTools.getNumberOfOperatorInstances(archi);
     // the number of better solutions found in a neighborhood is limited
     final int margin = Math.max(maxStep / 10, 1);
-
-    // TODO: Remove, debug only
-    System.out.println("start fast neighborhood search.");
 
     // step 4/17
     // Stopping after the given time in seconds is reached
@@ -297,7 +293,7 @@ public class FastAlgorithm extends Observable {
             pauseSemaphore.acquire();
             pauseSemaphore.release();
           } catch (final InterruptedException e) {
-            e.printStackTrace();
+            throw new PreesmMapperException("Semaphore issue", e);
           }
         }
 

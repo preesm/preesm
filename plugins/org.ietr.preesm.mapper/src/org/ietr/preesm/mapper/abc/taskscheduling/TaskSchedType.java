@@ -35,7 +35,6 @@
  */
 package org.ietr.preesm.mapper.abc.taskscheduling;
 
-// TODO: Auto-generated Javadoc
 /**
  * Types of task scheduler to be used in parameters.
  *
@@ -44,13 +43,13 @@ package org.ietr.preesm.mapper.abc.taskscheduling;
 public enum TaskSchedType {
 
   /** The Simple. */
-  Simple,
+  SIMPLE,
 
   /** The Switcher. */
-  Switcher,
+  SWITCHER,
 
   /** The Topological. */
-  Topological;
+  TOPOLOGICAL;
 
   /*
    * (non-Javadoc)
@@ -60,11 +59,11 @@ public enum TaskSchedType {
   @Override
   public String toString() {
 
-    if (this == Simple) {
+    if (this == SIMPLE) {
       return "Simple";
-    } else if (this == Switcher) {
+    } else if (this == SWITCHER) {
       return "Switcher";
-    } else if (this == Topological) {
+    } else if (this == TOPOLOGICAL) {
       return "Topological";
     } else {
       throw new UnsupportedOperationException();
@@ -81,11 +80,11 @@ public enum TaskSchedType {
   public static TaskSchedType fromString(final String type) {
 
     if (type.equalsIgnoreCase("Simple")) {
-      return Simple;
+      return SIMPLE;
     } else if (type.equalsIgnoreCase("Switcher")) {
-      return Switcher;
+      return SWITCHER;
     } else if (type.equalsIgnoreCase("Topological")) {
-      return Topological;
+      return TOPOLOGICAL;
     }
 
     return null;

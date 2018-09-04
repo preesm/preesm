@@ -41,13 +41,15 @@ package org.ietr.preesm.mapper.ui.stats;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import org.ietr.dftools.algorithm.model.PropertyBean;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.mapper.abc.IAbc;
+import org.ietr.preesm.core.types.ImplementationPropertyNames;
+import org.ietr.preesm.core.types.VertexType;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.SpanLengthCalculator;
 import org.ietr.preesm.mapper.model.MapperDAG;
@@ -60,7 +62,6 @@ import org.ietr.preesm.mapper.model.special.ReceiveVertex;
 import org.ietr.preesm.mapper.model.special.SendVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * Generating the statistics to be displayed in stat editor.
  *
@@ -69,7 +70,7 @@ import org.ietr.preesm.mapper.model.special.TransferVertex;
 public class StatGenerator {
 
   /** The abc. */
-  private IAbc abc = null;
+  private LatencyAbc abc = null;
 
   /** The scenario. */
   private PreesmScenario scenario = null;
@@ -90,7 +91,7 @@ public class StatGenerator {
    * @param params
    *          the params
    */
-  public StatGenerator(final IAbc abc, final PreesmScenario scenario, final Map<String, String> params) {
+  public StatGenerator(final LatencyAbc abc, final PreesmScenario scenario, final Map<String, String> params) {
     super();
     this.params = params;
     this.scenario = scenario;
@@ -117,7 +118,7 @@ public class StatGenerator {
    */
   public long getDAGSpanLength() {
     final Object span = this.abc.getDAG().getPropertyBean().getValue(SpanLengthCalculator.DAG_SPAN);
-    if ((span != null) && (span instanceof Long)) {
+    if (span instanceof Long) {
       return (Long) span;
     }
     return 0;
@@ -130,7 +131,7 @@ public class StatGenerator {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public long getDAGWorkLength() throws WorkflowException {
+  public long getDAGWorkLength() {
 
     long work = 0;
     final MapperDAG dag = this.abc.getDAG();
@@ -149,10 +150,6 @@ public class StatGenerator {
 
         work += ((MapperDAGVertex) vertex).getInit().getTime(adequateOp);
 
-        /*
-         * PreesmLogger.getLogger().log( Level.INFO, "task " + vertex.getName() + " duration " + ((MapperDAGVertex)
-         * vertex) .getInitialVertexProperty().getTime( adequateOp));
-         */
       }
     }
 
@@ -234,19 +231,22 @@ public class StatGenerator {
         final MapperDAGVertex scr = (MapperDAGVertex) me.getSource();
         final MapperDAGVertex tgt = (MapperDAGVertex) me.getTarget();
 
-        if (!e.getSource().getPropertyBean().getValue("vertexType").toString().equals("task")
-            || !e.getTarget().getPropertyBean().getValue("vertexType").toString().equals("task")) {
+        final PropertyBean comSrcBeans = scr.getPropertyBean();
+        final PropertyBean comTgtBeans = tgt.getPropertyBean();
+        final Object srcVtxTypeObj = comSrcBeans.getValue(ImplementationPropertyNames.Vertex_vertexType);
+        final Object tgtVtxTypeObj = comTgtBeans.getValue(ImplementationPropertyNames.Vertex_vertexType);
+
+        final String srcVtxType = srcVtxTypeObj.toString();
+        final String tgtVtxType = tgtVtxTypeObj.toString();
+
+        if (!VertexType.TYPE_TASK.equals(srcVtxType) || !VertexType.TYPE_TASK.equals(tgtVtxType)) {
           // Skip the edge if source or target is not a task
           continue;
         }
 
         if (!(me instanceof PrecedenceEdge)) {
-          final ComponentInstance srcOp = scr
-
-              .getEffectiveComponent();
-          final ComponentInstance tgtOp = tgt
-
-              .getEffectiveComponent();
+          final ComponentInstance srcOp = scr.getEffectiveComponent();
+          final ComponentInstance tgtOp = tgt.getEffectiveComponent();
 
           if (srcOp.getInstanceName().equals(operator.getInstanceName())
               || tgtOp.getInstanceName().equals(operator.getInstanceName())) {
@@ -292,7 +292,7 @@ public class StatGenerator {
    *
    * @return the abc
    */
-  public IAbc getAbc() {
+  public LatencyAbc getAbc() {
     return this.abc;
   }
 

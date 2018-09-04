@@ -39,49 +39,768 @@ package org.ietr.preesm.mapper.abc.impl.latency;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
+import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
+import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGInitVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.mapper.PreesmMapperException;
 import org.ietr.preesm.mapper.abc.AbcType;
-import org.ietr.preesm.mapper.abc.AbstractAbc;
+import org.ietr.preesm.mapper.abc.SpecialVertexManager;
 import org.ietr.preesm.mapper.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.mapper.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.mapper.abc.impl.ImplementationCleaner;
+import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.abc.order.VertexOrderList;
-import org.ietr.preesm.mapper.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.mapper.abc.route.CommunicationRouter;
+import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
+import org.ietr.preesm.mapper.abc.taskscheduling.TaskSwitcher;
+import org.ietr.preesm.mapper.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.mapper.gantt.GanttData;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.mapper.model.property.VertexMapping;
+import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
+import org.ietr.preesm.mapper.model.special.TransferVertex;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.timekeeper.TimeKeeper;
+import org.ietr.preesm.mapper.tools.CustomTopologicalIterator;
 import org.ietr.preesm.mapper.tools.SchedulingOrderIterator;
 
-// TODO: Auto-generated Javadoc
 /**
  * Abc that minimizes latency.
  *
  * @author mpelcat
  */
-public abstract class LatencyAbc extends AbstractAbc {
+public abstract class LatencyAbc {
 
-  /** Current time keeper: called exclusively by simulator to update the useful time tags in DAG. */
-  // protected GraphTimeKeeper timeKeeper;
+  /** Architecture related to the current simulator. */
+  protected Design archi;
+
+  /** Contains the rank list of all the vertices in an implementation. */
+  protected OrderManager orderManager = null;
+
+  /**
+   * Current directed acyclic graph. It is the external dag graph
+   */
+  protected MapperDAG dag;
+
+  /**
+   * Current implementation: the internal model that will be used to add edges/vertices and calculate times.
+   */
+  protected MapperDAG implementation;
+
+  /** Current Abc type. */
+  protected AbcType abcType = null;
+
+  /** Task scheduler. */
+  protected AbstractTaskSched taskScheduler = null;
+
+  /** Scenario with information common to algorithm and architecture. */
+  protected PreesmScenario scenario;
+
+  /**
+   * Gets internal implementation graph. Use only for debug!
+   *
+   * @return the implementation
+   */
+  public MapperDAG getImplementation() {
+    return this.implementation;
+  }
+
+  /**
+   * Activating traces. Put to true only for debug!
+   */
+  private static final boolean DEBUG_TRACES = false;
+
+  /**
+   * Gets a new architecture simulator from a simulator type.
+   *
+   * @param params
+   *          the params
+   * @param dag
+   *          the dag
+   * @param archi
+   *          the archi
+   * @param scenario
+   *          the scenario
+   * @return single instance of AbstractAbc
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+  public static LatencyAbc getInstance(final AbcParameters params, final MapperDAG dag, final Design archi,
+      final PreesmScenario scenario) {
+
+    LatencyAbc abc = null;
+    final AbcType simulatorType = params.getSimulatorType();
+
+    if (simulatorType == AbcType.InfiniteHomogeneous) {
+      abc = new InfiniteHomogeneousAbc(params, dag, archi, scenario);
+    } else if (simulatorType == AbcType.LooselyTimed) {
+      abc = new LooselyTimedAbc(params, dag, archi, simulatorType, scenario);
+    } else if (simulatorType == AbcType.ApproximatelyTimed) {
+      abc = new ApproximatelyTimedAbc(params, dag, archi, simulatorType, scenario);
+    } else if (simulatorType == AbcType.AccuratelyTimed) {
+      abc = new AccuratelyTimedAbc(params, dag, archi, simulatorType, scenario);
+    }
+
+    return abc;
+  }
+
+  /**
+   * Gets the edge sched type.
+   *
+   * @return the edge sched type
+   */
+  public abstract EdgeSchedType getEdgeSchedType();
+
+  /**
+   * Sets the task scheduler of the current ABC.
+   */
+  public void setTaskScheduler(final AbstractTaskSched taskScheduler) {
+
+    this.taskScheduler = taskScheduler;
+    this.taskScheduler.setOrderManager(this.orderManager);
+
+    if (this.taskScheduler instanceof TopologicalTaskSched) {
+      ((TopologicalTaskSched) this.taskScheduler).createTopology(this.implementation);
+    }
+  }
+
+  /**
+   * Setting common constraints to all non-special vertices and their related init and end vertices.
+   */
+  private void initRelativeConstraints() {
+    for (final DAGVertex v : this.implementation.vertexSet()) {
+      populateRelativeConstraint((MapperDAGVertex) v);
+    }
+  }
+
+  /**
+   * Setting common constraints to a non-special vertex and its related init and end vertices.
+   *
+   * @param vertex
+   *          the vertex
+   */
+  private void populateRelativeConstraint(final MapperDAGVertex vertex) {
+
+    final Set<MapperDAGVertex> verticesToAssociate = new LinkedHashSet<>();
+    verticesToAssociate.add(vertex);
+
+    if (SpecialVertexManager.isInit(vertex)) {
+      final String endReferenceName = (String) vertex.getPropertyBean().getValue(DAGInitVertex.END_REFERENCE);
+      final MapperDAGVertex end = (MapperDAGVertex) (this.dag.getVertex(endReferenceName));
+      verticesToAssociate.add(end);
+    }
+
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.abc.IAbc#getDAG()
+   */
+  public final MapperDAG getDAG() {
+    return this.dag;
+  }
+
+  /**
+   * Gets the architecture.
+   *
+   * @return the architecture
+   */
+  public final Design getArchitecture() {
+    return this.archi;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.abc.IAbc#getScenario()
+   */
+  public final PreesmScenario getScenario() {
+    return this.scenario;
+  }
+
+  /**
+   * Gets the effective operator of the vertex. NO_OPERATOR if not set
+   *
+   * @param vertex
+   *          the vertex
+   * @return the effective component
+   */
+  public final ComponentInstance getEffectiveComponent(MapperDAGVertex vertex) {
+    final MapperDAGVertex vertex2 = translateInImplementationVertex(vertex);
+    return vertex2.getEffectiveComponent();
+  }
+
+  /**
+   * Gets the rank of the given vertex on its operator. -1 if the vertex has no rank
+   */
+  public final int getSchedulingOrder(MapperDAGVertex vertex) {
+    vertex = translateInImplementationVertex(vertex);
+
+    return this.orderManager.localIndexOf(vertex);
+  }
+
+  /**
+   * Gets the total rank of the given vertex. -1 if the vertex has no rank
+   *
+   * @param vertex
+   *          the vertex
+   * @return the sched total order
+   */
+  public final int getSchedTotalOrder(MapperDAGVertex vertex) {
+    vertex = translateInImplementationVertex(vertex);
+
+    return this.orderManager.totalIndexOf(vertex);
+  }
+
+  /**
+   * Gets the current total schedule of the ABC.
+   *
+   * @return the total order
+   */
+  public final VertexOrderList getTotalOrder() {
+    return this.orderManager.getTotalOrder().toOrderList();
+  }
+
+  /**
+   * Maps a single vertex vertex on the operator. If updaterank is true, finds a new place for the vertex in the
+   * schedule. Otherwise, use the vertex rank to know where to schedule it.
+   *
+   * @param dagvertex
+   *          the dagvertex
+   * @param operator
+   *          the operator
+   * @param updateRank
+   *          the update rank
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+  private final void mapSingleVertex(final MapperDAGVertex dagvertex, final ComponentInstance operator,
+      final boolean updateRank) {
+    final MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
+
+    if (impvertex.getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE) {
+      // Unmapping if necessary before mapping
+      unmap(dagvertex);
+    }
+
+    // Testing if the vertex or its group can be mapped on the
+    // target operator
+    if (isMapable(impvertex, operator, false) || !updateRank || (impvertex instanceof TransferVertex)) {
+
+      // Implementation property is set in both DAG and
+      // implementation
+      // Modifying effective operator of the vertex and all its
+      // mapping set!
+      dagvertex.setEffectiveOperator(operator);
+      impvertex.setEffectiveOperator(operator);
+
+      fireNewMappedVertex(impvertex, updateRank);
+
+    } else {
+      final String msg = impvertex + " can not be mapped (single) on " + operator;
+      WorkflowLogger.getLogger().log(Level.SEVERE, msg);
+    }
+  }
+
+  /**
+   * Maps a vertex and its non-trivial group. If the boolean remapGroup is true, the whole group is forced to be
+   * unmapped and remapped.
+   *
+   * @param dagvertex
+   *          the dagvertex
+   * @param operator
+   *          the operator
+   * @param updateRank
+   *          the update rank
+   * @param remapGroup
+   *          the remap group
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+  private final void mapVertexWithGroup(final MapperDAGVertex dagvertex, final ComponentInstance operator,
+      final boolean updateRank, final boolean remapGroup) {
+
+    final VertexMapping dagprop = dagvertex.getMapping();
+
+    // Generating a list of vertices to remap in topological order
+    final List<MapperDAGVertex> vList = dagprop.getVertices((MapperDAG) dagvertex.getBase());
+    final List<MapperDAGVertex> orderedVList = new ArrayList<>();
+    // On the whole group otherwise
+    final CustomTopologicalIterator iterator = new CustomTopologicalIterator(this.dag, true);
+    while (iterator.hasNext()) {
+      final MapperDAGVertex v = iterator.next();
+      if (vList.contains(v)) {
+        orderedVList.add(v);
+      }
+    }
+
+    if (LatencyAbc.DEBUG_TRACES) {
+      final String msg = "unmap and remap " + orderedVList + " on " + operator;
+      WorkflowLogger.getLogger().log(Level.INFO, msg);
+    }
+
+    for (final MapperDAGVertex dv : orderedVList) {
+
+      final MapperDAGVertex dvi = translateInImplementationVertex(dv);
+      final ComponentInstance previousOperator = dvi.getEffectiveOperator();
+
+      // We unmap systematically the main vertex (impvertex) if it has an
+      // effectiveComponent and optionally its group
+      final boolean isToUnmap = (previousOperator != DesignTools.NO_COMPONENT_INSTANCE)
+          && (dv.equals(dagvertex) || remapGroup);
+
+      // We map transfer vertices, if rank is kept, and if mappable
+      final boolean isToMap = (dv.equals(dagvertex) || remapGroup)
+          && (isMapable(dvi, operator, false) || !updateRank || (dv instanceof TransferVertex));
+
+      if (isToUnmap) {
+        // Unmapping if necessary before mapping
+        if (LatencyAbc.DEBUG_TRACES) {
+          final String msg = "unmap " + dvi;
+          WorkflowLogger.getLogger().log(Level.INFO, msg);
+        }
+        unmap(dvi);
+
+        if (LatencyAbc.DEBUG_TRACES) {
+          final String msg = "unmapped " + dvi;
+          WorkflowLogger.getLogger().log(Level.INFO, msg);
+        }
+      }
+
+      if (isToMap) {
+        if (LatencyAbc.DEBUG_TRACES) {
+          final String msg = "map " + dvi + " to " + operator;
+          WorkflowLogger.getLogger().log(Level.INFO, msg);
+        }
+
+        dv.setEffectiveOperator(operator);
+        dvi.setEffectiveOperator(operator);
+
+        fireNewMappedVertex(dvi, updateRank);
+
+        if (LatencyAbc.DEBUG_TRACES) {
+          final String msg = "mapped " + dvi;
+          WorkflowLogger.getLogger().log(Level.INFO, msg);
+        }
+
+      } else if (dv.equals(dagvertex) || remapGroup) {
+        final String msg = dagvertex + " can not be mapped (group) on " + operator;
+        WorkflowLogger.getLogger().log(Level.SEVERE, msg);
+        dv.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+        dv.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+      }
+    }
+
+    if (LatencyAbc.DEBUG_TRACES) {
+      final String msg = "unmapped and remapped " + orderedVList + " on " + operator;
+      WorkflowLogger.getLogger().log(Level.INFO, msg);
+    }
+  }
+
+  /**
+   * Maps the vertex aith a group on the operator. If updaterank is true, finds a new place for the vertex in the
+   * schedule. Otherwise, use the vertex rank to know where to schedule it.
+   *
+   * @param dagvertex
+   *          the dagvertex
+   * @param operator
+   *          the operator
+   * @param updateRank
+   *          the update rank
+   * @param remapGroup
+   *          the remap group
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+  public final void map(final MapperDAGVertex dagvertex, final ComponentInstance operator, final boolean updateRank,
+      final boolean remapGroup) {
+    final MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
+
+    if (operator != DesignTools.NO_COMPONENT_INSTANCE) {
+      // On a single actor if it is alone in the group
+      if (impvertex.getMapping().getNumberOfVertices() < 2) {
+        mapSingleVertex(dagvertex, operator, updateRank);
+      } else {
+        // Case of a group with several actors
+        mapVertexWithGroup(dagvertex, operator, updateRank, remapGroup);
+      }
+    } else {
+      WorkflowLogger.getLogger().log(Level.SEVERE, "Operator asked may not exist");
+    }
+  }
+
+  /**
+   * Sets the total orders in the dag.
+   */
+  public final void retrieveTotalOrder() {
+
+    this.orderManager.tagDAG(this.dag);
+  }
+
+  /**
+   * maps all the vertices on the given operator if possible. If a vertex can not be executed on the given operator,
+   * looks for another operator with same type. If again none is found, looks for any other operator able to execute the
+   * vertex.
+   *
+   * @param operator
+   *          the operator
+   * @return true, if successful
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+  public final boolean mapAllVerticesOnOperator(final ComponentInstance operator) {
+
+    boolean possible = true;
+    MapperDAGVertex currentvertex;
+
+    final TopologicalDAGIterator iterator = new TopologicalDAGIterator(this.dag);
+
+    /*
+     * The listener is mapped in each vertex
+     */
+    while (iterator.hasNext()) {
+      currentvertex = (MapperDAGVertex) iterator.next();
+
+      // Looks for an operator able to execute currentvertex (preferably
+      // the given operator)
+      final ComponentInstance adequateOp = findOperator(currentvertex, operator, true);
+
+      if (adequateOp != null) {
+        // Mapping in list order without remapping the group
+        map(currentvertex, adequateOp, true, false);
+      } else {
+        WorkflowLogger.getLogger()
+            .severe("The current mapping algorithm necessitates that all vertices can be mapped on an operator");
+        WorkflowLogger.getLogger()
+            .severe("Problem with: " + currentvertex.getName() + ". Consider changing the scenario.");
+
+        possible = false;
+      }
+    }
+
+    return possible;
+  }
+
+  /**
+   * Looks for operators able to execute currentvertex. If the boolean protectGroupMapping is true and at least one
+   * vertex is mapped in the current vertex group, this unique operator is returned. Otherwise, the intersection of the
+   * available operators for the group is returned.
+   *
+   * @param vertex
+   *          the vertex
+   * @param protectGroupMapping
+   *          the protect group mapping
+   * @return the candidate operators
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+  public List<ComponentInstance> getCandidateOperators(MapperDAGVertex vertex, final boolean protectGroupMapping) {
+
+    vertex = translateInImplementationVertex(vertex);
+
+    List<ComponentInstance> initOperators = null;
+    final VertexMapping vm = vertex.getMapping();
+
+    if (vm != null) {
+      // Delegating the list construction to a mapping group
+      initOperators = vm.getCandidateComponents(vertex, protectGroupMapping);
+    } else {
+      initOperators = vertex.getInit().getInitialOperatorList();
+      final String msg = "Found no mapping group for vertex " + vertex;
+      WorkflowLogger.getLogger().log(Level.WARNING, msg);
+    }
+
+    if (initOperators.isEmpty()) {
+      final String message = "Empty operator set for a vertex: " + vertex.getName()
+          + ". Consider relaxing constraints in scenario.";
+      WorkflowLogger.getLogger().log(Level.SEVERE, message);
+      throw new WorkflowException(message);
+    }
+
+    return initOperators;
+  }
+
+  /**
+   * Looks for an operator able to execute currentvertex (preferably the given operator or an operator with same type)
+   * If the boolean protectGroupMapping is true and at least one vertex is mapped in the current vertex group, this
+   * unique operator is compared to the prefered one. Otherwise, the prefered operator is checked of belonging to
+   * available operators of the group.
+   *
+   * @param currentvertex
+   *          the currentvertex
+   * @param preferedOperator
+   *          the prefered operator
+   * @param protectGroupMapping
+   *          the protect group mapping
+   * @return the component instance
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+
+  public final ComponentInstance findOperator(final MapperDAGVertex currentvertex,
+      final ComponentInstance preferedOperator, final boolean protectGroupMapping) {
+
+    final List<ComponentInstance> opList = getCandidateOperators(currentvertex, protectGroupMapping);
+
+    if (DesignTools.contains(opList, preferedOperator)) {
+      return preferedOperator;
+    } else {
+
+      // Search among the operators with same type than the prefered one
+      for (final ComponentInstance op : opList) {
+        if ((preferedOperator != null)
+            && op.getComponent().getVlnv().getName().equals(preferedOperator.getComponent().getVlnv().getName())) {
+          return op;
+        }
+      }
+
+      // Search among the operators with other type than the prefered one
+      for (final ComponentInstance op : opList) {
+        if (isMapable(currentvertex, op, true)) {
+          return op;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Checks in the vertex implementation properties if it can be mapped on the given operator.
+   *
+   * @param vertex
+   *          the vertex
+   * @param operator
+   *          the operator
+   * @param protectGroupMapping
+   *          the protect group mapping
+   * @return true, if is mapable
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+
+  public final boolean isMapable(final MapperDAGVertex vertex, final ComponentInstance operator,
+      final boolean protectGroupMapping) {
+
+    return DesignTools.contains(getCandidateOperators(vertex, protectGroupMapping), operator);
+  }
+
+  /**
+   * *********Useful tools**********.
+   *
+   * @param edges
+   *          the edges
+   */
+
+  /**
+   * resets the costs of a set of edges
+   */
+  protected final void resetCost(final Set<DAGEdge> edges) {
+    final Iterator<DAGEdge> iterator = edges.iterator();
+
+    while (iterator.hasNext()) {
+
+      final MapperDAGEdge edge = (MapperDAGEdge) iterator.next();
+      if (!(edge instanceof PrecedenceEdge)) {
+        edge.getTiming().resetCost();
+      }
+    }
+  }
+
+  /**
+   * Returns the implementation vertex corresponding to the DAG vertex.
+   *
+   * @param vertex
+   *          the vertex
+   * @return the mapper DAG vertex
+   */
+  public final MapperDAGVertex translateInImplementationVertex(final MapperDAGVertex vertex) {
+
+    final MapperDAGVertex internalVertex = this.implementation.getMapperDAGVertex(vertex.getName());
+
+    if (internalVertex == null) {
+      final String message = "No simulator internal vertex with id " + vertex.getName();
+      WorkflowLogger.getLogger().log(Level.SEVERE, message);
+      throw new PreesmMapperException(message, new NullPointerException());
+    }
+    return internalVertex;
+  }
+
+  /**
+   * resets the costs of a set of edges.
+   *
+   * @param edge
+   *          the edge
+   * @return the mapper DAG edge
+   */
+  private final MapperDAGEdge translateInImplementationEdge(final MapperDAGEdge edge) {
+
+    final MapperDAGVertex sourceVertex = translateInImplementationVertex((MapperDAGVertex) edge.getSource());
+    final MapperDAGVertex destVertex = translateInImplementationVertex((MapperDAGVertex) edge.getTarget());
+
+    return (MapperDAGEdge) this.implementation.getEdge(sourceVertex, destVertex);
+  }
+
+  /**
+   * Unmaps all vertices from implementation.
+   */
+  public final void resetImplementation() {
+
+    final Iterator<DAGVertex> iterator = this.implementation.vertexSet().iterator();
+
+    while (iterator.hasNext()) {
+      unmap((MapperDAGVertex) iterator.next());
+    }
+  }
+
+  /**
+   * Unmaps all vertices in both implementation and DAG Resets the order manager only at the end.
+   */
+  public final void resetDAG() {
+
+    final Iterator<DAGVertex> iterator = this.dag.vertexSet().iterator();
+
+    while (iterator.hasNext()) {
+      final MapperDAGVertex v = (MapperDAGVertex) iterator.next();
+      if (v.hasEffectiveComponent()) {
+        unmap(v);
+      }
+    }
+
+    this.orderManager.resetTotalOrder();
+  }
+
+  /**
+   * Removes the vertex implementation In silent mode, does not update implementation timings.
+   *
+   * @param dagvertex
+   *          the dagvertex
+   */
+  public final void unmap(final MapperDAGVertex dagvertex) {
+
+    final MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
+
+    fireNewUnmappedVertex(impvertex);
+
+    dagvertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+
+    impvertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+  }
+
+  /**
+   * Removes the vertex implementation of a group of vertices that share the same mapping. In silent mode, does not
+   * update implementation timings
+   *
+   * @param dagvertices
+   *          the dagvertices
+   */
+  public final void unmap(final List<MapperDAGVertex> dagvertices) {
+
+    MapperDAGVertex cImpVertex = null;
+    MapperDAGVertex cDagVertex = null;
+    for (final MapperDAGVertex dagvertex : dagvertices) {
+      final MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
+
+      fireNewUnmappedVertex(impvertex);
+      cDagVertex = dagvertex;
+      cImpVertex = impvertex;
+    }
+    if (cDagVertex != null) {
+      cDagVertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+      cImpVertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+    }
+  }
+
+  /**
+   * Gets the cost of the given vertex.
+   *
+   * @param vertex
+   *          the vertex
+   * @return the cost
+   */
+  public final long getCost(MapperDAGVertex vertex) {
+    vertex = translateInImplementationVertex(vertex);
+    return vertex.getTiming().getCost();
+  }
+
+  /**
+   * Gets the cost of the given edge in the implementation.
+   *
+   * @param edge
+   *          the edge
+   * @return the cost
+   */
+  public final long getCost(MapperDAGEdge edge) {
+    edge = translateInImplementationEdge(edge);
+    return edge.getTiming().getCost();
+
+  }
+
+  /**
+   * An edge cost represents its cost taking into account a possible complex transfer of data.
+   *
+   * @param edgeset
+   *          the new edges costs
+   */
+  protected final void setEdgesCosts(final Set<DAGEdge> edgeset) {
+
+    final Iterator<DAGEdge> iterator = edgeset.iterator();
+
+    while (iterator.hasNext()) {
+      final MapperDAGEdge edge = (MapperDAGEdge) iterator.next();
+
+      if (!(edge instanceof PrecedenceEdge)) {
+        setEdgeCost(edge);
+      }
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.abc.IAbc#getType()
+   */
+  public final AbcType getType() {
+    return this.abcType;
+  }
+
+  /**
+   * Prepares task rescheduling.
+   *
+   * @param taskScheduler
+   *          the new task scheduler
+   * @Override public void setTaskScheduler(final AbstractTaskSched taskScheduler) {
+   *
+   *           this.taskScheduler = taskScheduler; this.taskScheduler.setOrderManager(this.orderManager);
+   *
+   *           if (this.taskScheduler instanceof TopologicalTaskSched) { ((TopologicalTaskSched)
+   *           this.taskScheduler).createTopology(this.implementation); } }
+   *
+   *           /** Current time keeper: called exclusively by simulator to update the useful time tags in DAG.
+   */
   protected TimeKeeper nTimeKeeper;
 
   /** The com router. */
-  protected AbstractCommunicationRouter comRouter = null;
+  protected CommunicationRouter comRouter = null;
 
   /** Scheduling the transfer vertices on the media. */
   protected IEdgeSched edgeScheduler;
@@ -105,8 +824,24 @@ public abstract class LatencyAbc extends AbstractAbc {
    */
   public LatencyAbc(final AbcParameters params, final MapperDAG dag, final Design archi, final AbcType abcType,
       final PreesmScenario scenario) {
-    super(dag, archi, abcType, scenario);
 
+    this.abcType = abcType;
+    this.orderManager = new OrderManager(archi);
+
+    this.dag = dag;
+
+    // implementation is a duplicate from dag
+    this.implementation = dag.clone();
+
+    // Initializes relative constraints
+    initRelativeConstraints();
+
+    this.archi = archi;
+    this.scenario = scenario;
+
+    // Schedules the tasks in topological and alphabetical order. Some
+    // better order should be looked for
+    setTaskScheduler(new TaskSwitcher());
     this.params = params;
 
     this.nTimeKeeper = new TimeKeeper(this.implementation, this.orderManager);
@@ -126,8 +861,7 @@ public abstract class LatencyAbc extends AbstractAbc {
    * @throws WorkflowException
    *           the workflow exception
    */
-  @Override
-  public void setDAG(final MapperDAG dag) throws WorkflowException {
+  public void setDAG(final MapperDAG dag) {
 
     this.dag = dag;
     this.implementation = dag.clone();
@@ -145,7 +879,6 @@ public abstract class LatencyAbc extends AbstractAbc {
       operators.put(mdv, mdv.getEffectiveOperator());
       mdv.setEffectiveComponent(DesignTools.NO_COMPONENT_INSTANCE);
       this.implementation.getMapperDAGVertex(mdv.getName()).setEffectiveComponent(DesignTools.NO_COMPONENT_INSTANCE);
-      ;
     }
 
     this.edgeScheduler = AbstractEdgeSched.getInstance(this.edgeScheduler.getEdgeSchedType(), this.orderManager);
@@ -167,7 +900,6 @@ public abstract class LatencyAbc extends AbstractAbc {
    * @see org.ietr.preesm.mapper.abc.AbstractAbc#fireNewMappedVertex(org.ietr.preesm.mapper.model. MapperDAGVertex,
    * boolean)
    */
-  @Override
   protected void fireNewMappedVertex(final MapperDAGVertex vertex, final boolean updateRank) {
 
     final ComponentInstance effectiveOp = vertex.getEffectiveOperator();
@@ -199,7 +931,6 @@ public abstract class LatencyAbc extends AbstractAbc {
    *
    * @see org.ietr.preesm.mapper.abc.AbstractAbc#fireNewUnmappedVertex(org.ietr.preesm.mapper.model. MapperDAGVertex)
    */
-  @Override
   protected void fireNewUnmappedVertex(final MapperDAGVertex vertex) {
 
     // unmapping a vertex resets the cost of the current vertex
@@ -234,18 +965,9 @@ public abstract class LatencyAbc extends AbstractAbc {
    * @param edge
    *          the new edge cost
    */
-  @Override
   protected void setEdgeCost(final MapperDAGEdge edge) {
 
   }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.IAbc#getEdgeSchedType()
-   */
-  @Override
-  public abstract EdgeSchedType getEdgeSchedType();
 
   /**
    * *********Timing accesses**********.
@@ -258,7 +980,6 @@ public abstract class LatencyAbc extends AbstractAbc {
   /**
    * The cost of a vertex is the end time of its execution (latency minimization)
    */
-  @Override
   public final long getFinalCost(MapperDAGVertex vertex) {
     vertex = translateInImplementationVertex(vertex);
 
@@ -279,12 +1000,8 @@ public abstract class LatencyAbc extends AbstractAbc {
    *          the component
    * @return the final cost
    */
-  @Override
   public final long getFinalCost(final ComponentInstance component) {
-
-    final long finalTime = this.nTimeKeeper.getFinalTime(component);
-
-    return finalTime;
+    return this.nTimeKeeper.getFinalTime(component);
   }
 
   /**
@@ -292,7 +1009,6 @@ public abstract class LatencyAbc extends AbstractAbc {
    *
    * @return the final cost
    */
-  @Override
   public final long getFinalCost() {
 
     long cost = getFinalLatency();
@@ -361,7 +1077,6 @@ public abstract class LatencyAbc extends AbstractAbc {
    *
    * @return the gantt data
    */
-  @Override
   public GanttData getGanttData() {
     final GanttData ganttData = new GanttData();
     ganttData.insertDag(this.implementation);
@@ -373,7 +1088,7 @@ public abstract class LatencyAbc extends AbstractAbc {
    *
    * @return the com router
    */
-  public AbstractCommunicationRouter getComRouter() {
+  public CommunicationRouter getComRouter() {
     return this.comRouter;
   }
 
@@ -397,7 +1112,7 @@ public abstract class LatencyAbc extends AbstractAbc {
       }
     }
 
-    if (taskSums.size() > 0) {
+    if (!taskSums.isEmpty()) {
       Collections.sort(taskSums, (arg0, arg1) -> {
         long temp = arg0 - arg1;
         if (temp >= 0) {
@@ -430,73 +1145,9 @@ public abstract class LatencyAbc extends AbstractAbc {
    * @return the load
    */
   public final long getLoad(final ComponentInstance component) {
-
-    final long load2 = this.orderManager.getBusyTime(component);
-
-    /*
-     * long load = 0; if (implementation != null) { for (DAGVertex v : implementation.vertexSet()) { MapperDAGVertex mv
-     * = (MapperDAGVertex) v; if (mv.getImplementationVertexProperty() .getEffectiveComponent().equals(component)) {
-     * load += getCost(mv); } } }
-     *
-     * if(load2 != load){ int i=0; i++; }
-     */
-
-    return load2;
+    return this.orderManager.getBusyTime(component);
   }
 
-  /**
-   * Reschedule all the transfers generated during mapping.
-   */
-  /*
-   * public void rescheduleTransfers(List<MapperDAGVertex> cpnDominantList) {
-   *
-   * if (this.orderManager != null) { ImplementationCleaner cleaner = new ImplementationCleaner( orderManager,
-   * implementation);
-   *
-   * for (ArchitectureComponent cmp : archi .getComponents(ArchitectureComponentType.contentionNode)) { for
-   * (MapperDAGVertex v : this.orderManager.getSchedule(cmp) .getList()) { cleaner.unscheduleVertex(v); } }
-   *
-   * updateTimings();
-   *
-   * for (ArchitectureComponent cmp : archi .getComponents(ArchitectureComponentType.contentionNode)) {
-   * ConcurrentSkipListSet<MapperDAGVertex> list = new ConcurrentSkipListSet<MapperDAGVertex>( new
-   * Comparator<MapperDAGVertex>() {
-   *
-   * @Override public int compare(MapperDAGVertex arg0, MapperDAGVertex arg1) { long TLevelDifference = (getTLevel(arg0,
-   * false) - getTLevel( arg1, false)); if (TLevelDifference == 0) TLevelDifference = (arg0.getName()
-   * .compareTo(arg1.getName())); return (int) TLevelDifference; } });
-   * list.addAll(this.orderManager.getSchedule(cmp).getList());
-   *
-   * for (MapperDAGVertex v : list) { TransferVertex tv = (TransferVertex) v; orderManager.insertVertexBefore(tv,
-   * tv.getTarget()); } } }
-   */
-
-  /*
-   * Schedule totalOrder = this.getTotalOrder(); List<String> orderedNames = new ArrayList<String>();
-   *
-   * for (MapperDAGVertex v : totalOrder) { if (v instanceof TransferVertex) { // addVertexAfterSourceLastTransfer(v,
-   * orderedNames); } else if (v instanceof OverheadVertex) { addVertexAfterSourceLastOverhead(v, orderedNames); } else
-   * { orderedNames.add(v.getName()); } }
-   *
-   * for(int index = cpnDominantList.size()-1;index >= 0 ; index--){ MapperDAGVertex v = cpnDominantList.get(index); for
-   * (DAGVertex t : ImplementationCleaner .getFollowingTransfers(this.translateInImplementationVertex(v))) { if
-   * (!orderedNames.contains(t.getName())) { addVertexAfterSourceLastTransfer((MapperDAGVertex)t, orderedNames); } } }
-   */
-  /*
-   * for (MapperDAGVertex v : cpnDominantList) { for (DAGVertex t : ImplementationCleaner
-   * .getPrecedingTransfers(this.translateInImplementationVertex(v))) { if (!orderedNames.contains(t.getName())) {
-   * addVertexBeforeTarget((MapperDAGVertex)t, orderedNames); } } }
-   */
-
-  /*
-   * MapperDAGVertex v = totalOrder.getLast();
-   *
-   * while(v!=null){ if (v instanceof TransferVertex) { addVertexBeforeTargetFirstTransfer(v, orderedNames); } else if
-   * (v instanceof OverheadVertex) { //addVertexAfterSourceLastOverhead(v, orderedNames); } else {
-   * //orderedNames.add(v.getName()); } v = totalOrder.getPreviousVertex(v); }
-   */
-  // reorder(orderedNames);}
-  @Override
   public void updateFinalCosts() {
     updateTimings();
   }
@@ -507,16 +1158,15 @@ public abstract class LatencyAbc extends AbstractAbc {
    * @param totalOrder
    *          the total order
    */
-  @Override
   public void reschedule(final VertexOrderList totalOrder) {
 
     if ((this.implementation != null) && (this.dag != null)) {
 
       // Sets the order in the implementation
       for (final VertexOrderList.OrderProperty vP : totalOrder.elements()) {
-        final MapperDAGVertex ImplVertex = (MapperDAGVertex) this.implementation.getVertex(vP.getName());
-        if (ImplVertex != null) {
-          ImplVertex.setTotalOrder(vP.getOrder());
+        final MapperDAGVertex implVertex = (MapperDAGVertex) this.implementation.getVertex(vP.getName());
+        if (implVertex != null) {
+          implVertex.setTotalOrder(vP.getOrder());
         }
 
         final MapperDAGVertex dagVertex = (MapperDAGVertex) this.dag.getVertex(vP.getName());
@@ -535,81 +1185,4 @@ public abstract class LatencyAbc extends AbstractAbc {
 
     }
   }
-
-  /**
-   * Reorders the implementation
-   */
-  /*
-   * public void reschedule2() {
-   *
-   * if (implementation != null && dag != null) { WorkflowLogger.getLogger().log(Level.INFO, "Reordering");
-   * PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager, implementation); adder.removePrecedenceEdges();
-   *
-   * nTimeKeeper.update(null, implementation.vertexSet()); updateTimings();
-   * GanttPlotter.plotDeployment(getGanttData(),null);
-   *
-   * int index = 0; TLevelIterator iterator = new TLevelIterator(implementation, true);
-   *
-   * while (iterator.hasNext()) { MapperDAGVertex implVertex = iterator.next(); if (implVertex != null)
-   * implVertex.setTotalOrder(index);
-   *
-   * MapperDAGVertex dagVertex = (MapperDAGVertex) dag .getVertex(implVertex.getName()); if (dagVertex != null)
-   * dagVertex.setTotalOrder(index);
-   *
-   * index++; }
-   *
-   * // Retrieves the new order in order manager orderManager.reconstructTotalOrderFromDAG(implementation);
-   *
-   * adder.addPrecedenceEdges();
-   *
-   * } }
-   */
-
-  /**
-   * Reorders the implementation
-   */
-  /*
-   * @Override public void reschedule(List<MapperDAGVertex> alreadyRescheduled) {
-   *
-   * if (implementation != null && dag != null) {
-   *
-   * PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager, implementation); adder.removePrecedenceEdges();
-   *
-   * nTimeKeeper.update(null, implementation.vertexSet()); updateTimings(); // this.plotImplementation(null);
-   *
-   * WorkflowLogger.getLogger().log(Level.INFO, "Reordering"); List<MapperDAGVertex> vList = new
-   * ArrayList<MapperDAGVertex>( orderManager.getTotalOrder().getList());
-   *
-   * Collections.sort(vList, new ISchedTLevelComp());
-   *
-   * Map<IScheduleElement, IScheduleElement> refMap = new LinkedHashMap<IScheduleElement, IScheduleElement>();
-   * List<IScheduleElement> eltList = new ArrayList<IScheduleElement>();
-   *
-   * IntervalFinder finder = new IntervalFinder(orderManager); for (IScheduleElement elt : vList) { MapperDAGVertex v =
-   * null; if (elt instanceof MapperDAGVertex) { v = (MapperDAGVertex) elt; } else if (elt instanceof
-   * SynchronizedVertices) { v = ((SynchronizedVertices) elt).vertices().get(0); }
-   *
-   * int index = -1; if (SpecialVertexManager.isSpecial(v)) { index = finder.getIndexOfFirstBigEnoughHole(v, 0); } else
-   * { index = finder.getIndexOfFirstBigEnoughHole(v, v .getTiming().getCost()); }
-   *
-   * if (index > -1 && index < v.getTotalOrder()) { IScheduleElement reference = orderManager.get(index);
-   * refMap.put(elt, reference); eltList.add(elt); } }
-   *
-   * for (int i = eltList.size() - 1; i >= 0; i--) { IScheduleElement elt = eltList.get(i);
-   *
-   * if (!alreadyRescheduled.contains(elt)) { IScheduleElement ref = refMap.get(elt); int newIndex = vList.indexOf(ref);
-   * vList.remove(elt); vList.add(newIndex, elt); alreadyRescheduled.add(elt); } }
-   *
-   * VertexOrderList orderList = new VertexOrderList();
-   *
-   * for (IScheduleElement elt : vList) { if (elt instanceof MapperDAGVertex) { MapperDAGVertex v = (MapperDAGVertex)
-   * elt; VertexOrderList.OrderProperty op = orderList.new OrderProperty( v.getName(), vList.indexOf(v));
-   * orderList.addLast(op); } else if (elt instanceof SynchronizedVertices) { for (MapperDAGVertex v :
-   * ((SynchronizedVertices) elt) .vertices()) { VertexOrderList.OrderProperty op = orderList.new OrderProperty(
-   * v.getName(), vList.indexOf(v)); orderList.addLast(op); } } }
-   *
-   * reschedule(orderList);
-   *
-   * } }
-   */
 }

@@ -34,32 +34,31 @@
  */
 package org.ietr.preesm.algorithm.moa.activity
 
-import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
-import java.util.Map
-import org.eclipse.core.runtime.IProgressMonitor
-import org.ietr.dftools.workflow.elements.Workflow
-import org.ietr.dftools.workflow.WorkflowException
-import java.util.logging.Level
-import org.ietr.dftools.workflow.tools.WorkflowLogger
-import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc
-import java.util.HashMap
-import java.util.Set
-import org.ietr.preesm.mapper.abc.IAbc
-import org.ietr.preesm.mapper.model.MapperDAGVertex
-import org.ietr.preesm.mapper.model.MapperDAGEdge
-import java.util.HashSet
-import org.ietr.preesm.core.architecture.route.AbstractRouteStep
-import org.ietr.preesm.core.types.ImplementationPropertyNames
-import org.ietr.preesm.utils.paths.PathTools
-import org.eclipse.core.runtime.Path
-import org.eclipse.core.runtime.IPath
-import org.ietr.preesm.utils.files.ContainersManager
-import org.eclipse.core.runtime.CoreException
-import org.eclipse.core.resources.ResourcesPlugin
-import org.eclipse.core.runtime.NullProgressMonitor
 import java.io.ByteArrayInputStream
+import java.util.HashMap
+import java.util.HashSet
+import java.util.Map
+import java.util.Set
+import java.util.logging.Level
+import org.eclipse.core.resources.ResourcesPlugin
+import org.eclipse.core.runtime.CoreException
+import org.eclipse.core.runtime.IPath
+import org.eclipse.core.runtime.IProgressMonitor
+import org.eclipse.core.runtime.NullProgressMonitor
+import org.eclipse.core.runtime.Path
 import org.ietr.dftools.architecture.slam.ComponentInstance
+import org.ietr.dftools.workflow.WorkflowException
+import org.ietr.dftools.workflow.elements.Workflow
+import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
+import org.ietr.dftools.workflow.tools.WorkflowLogger
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep
 import org.ietr.preesm.core.architecture.route.MessageRouteStep
+import org.ietr.preesm.core.types.ImplementationPropertyNames
+import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc
+import org.ietr.preesm.mapper.model.MapperDAGEdge
+import org.ietr.preesm.mapper.model.MapperDAGVertex
+import org.ietr.preesm.utils.files.ContainersManager
+import org.ietr.preesm.utils.paths.PathTools
 
 /**
  * Exports activity information in terms of tokens and quanta based on LatencyAbc information

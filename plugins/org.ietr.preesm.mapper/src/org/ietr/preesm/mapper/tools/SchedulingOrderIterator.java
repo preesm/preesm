@@ -39,7 +39,7 @@ package org.ietr.preesm.mapper.tools;
 
 import java.util.logging.Level;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.mapper.abc.IAbc;
+import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
@@ -52,7 +52,7 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 public class SchedulingOrderIterator extends ImplementationIterator {
 
   /** The abc. */
-  IAbc abc = null;
+  LatencyAbc abc = null;
 
   /**
    * Instantiates a new scheduling order iterator.
@@ -64,7 +64,7 @@ public class SchedulingOrderIterator extends ImplementationIterator {
    * @param directOrder
    *          the direct order
    */
-  public SchedulingOrderIterator(final MapperDAG implementation, final IAbc abc, final boolean directOrder) {
+  public SchedulingOrderIterator(final MapperDAG implementation, final LatencyAbc abc, final boolean directOrder) {
     super(null, implementation, directOrder);
     this.abc = abc;
   }

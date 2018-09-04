@@ -82,10 +82,10 @@ public class AccuratelyTimedAbc extends LatencyAbc {
     super(params, dag, archi, abcType, scenario);
 
     this.types = new ArrayList<>();
-    this.types.add(CommunicationRouter.transferType);
-    this.types.add(CommunicationRouter.overheadType);
-    this.types.add(CommunicationRouter.involvementType);
-    this.types.add(CommunicationRouter.synchroType);
+    this.types.add(CommunicationRouter.TRANSFER_TYPE);
+    this.types.add(CommunicationRouter.OVERHEAD_TYPE);
+    this.types.add(CommunicationRouter.INVOLVEMENT_TYPE);
+    this.types.add(CommunicationRouter.SYNCHRO_TYPE);
   }
 
   /**

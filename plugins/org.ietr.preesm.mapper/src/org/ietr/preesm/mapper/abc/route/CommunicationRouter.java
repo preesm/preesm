@@ -58,6 +58,7 @@ import org.ietr.preesm.core.architecture.route.MemRouteStep;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.mapper.PreesmMapperException;
 import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.abc.route.calcul.RouteCalculator;
@@ -71,28 +72,27 @@ import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
 
-// TODO: Auto-generated Javadoc
 /**
  * Routes the communications. Based on bridge design pattern. The processing is delegated to implementers
  *
  * @author mpelcat
  */
-public class CommunicationRouter extends AbstractCommunicationRouter {
+public class CommunicationRouter {
 
   /** The Constant transferType. */
-  public static final int transferType = 0;
+  public static final int TRANSFER_TYPE = 0;
 
   /** The Constant overheadType. */
-  public static final int overheadType = 1;
+  public static final int OVERHEAD_TYPE = 1;
 
   /** The Constant sendReceiveType. */
-  public static final int sendReceiveType = 2;
+  public static final int SEND_RECEIVE_TYPE = 2;
 
   /** The Constant synchroType. */
-  public static final int synchroType = 3;
+  public static final int SYNCHRO_TYPE = 3;
 
   /** The Constant involvementType. */
-  public static final int involvementType = 4;
+  public static final int INVOLVEMENT_TYPE = 4;
 
   /** The calculator. */
   private RouteCalculator calculator = null;
@@ -113,7 +113,9 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
    */
   public CommunicationRouter(final Design archi, final PreesmScenario scenario, final MapperDAG implementation,
       final IEdgeSched edgeScheduler, final OrderManager orderManager) {
-    super(implementation, edgeScheduler, orderManager);
+    this.implementers = new LinkedHashMap<>();
+    setManagers(implementation, edgeScheduler, orderManager);
+
     this.calculator = RouteCalculator.getInstance(archi, scenario);
 
     // Initializing the available router implementers
@@ -123,15 +125,93 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
   }
 
   /**
-   * adds all the necessary communication vertices with the given type.
+   * Several ways to simulate a communication depending on which Route is taken into account.
+   */
+  private final Map<String, CommunicationRouterImplementer> implementers;
+
+  /** DAG with communication vertices. */
+  protected MapperDAG implementation = null;
+
+  /** manager of the generated transfers scheduling. */
+  protected IEdgeSched edgeScheduler = null;
+
+  /** manager of the vertices order in general. */
+  protected OrderManager orderManager = null;
+
+  /**
+   * Adds the implementer.
+   *
+   * @param name
+   *          the name
+   * @param implementer
+   *          the implementer
+   */
+  protected void addImplementer(final String name, final CommunicationRouterImplementer implementer) {
+    this.implementers.put(name, implementer);
+  }
+
+  /**
+   * Gets the implementer.
+   *
+   * @param name
+   *          the name
+   * @return the implementer
+   */
+  protected CommunicationRouterImplementer getImplementer(final String name) {
+    return this.implementers.get(name);
+  }
+
+  /**
+   * Gets the implementation.
+   *
+   * @return the implementation
+   */
+  public MapperDAG getImplementation() {
+    return this.implementation;
+  }
+
+  /**
+   * Gets the edge scheduler.
+   *
+   * @return the edge scheduler
+   */
+  public IEdgeSched getEdgeScheduler() {
+    return this.edgeScheduler;
+  }
+
+  /**
+   * Gets the order manager.
+   *
+   * @return the order manager
+   */
+  public OrderManager getOrderManager() {
+    return this.orderManager;
+  }
+
+  /**
+   * Sets the managers.
    *
    * @param implementation
    *          the implementation
+   * @param edgeScheduler
+   *          the edge scheduler
+   * @param orderManager
+   *          the order manager
+   */
+  public void setManagers(final MapperDAG implementation, final IEdgeSched edgeScheduler,
+      final OrderManager orderManager) {
+    this.implementation = implementation;
+    this.edgeScheduler = edgeScheduler;
+    this.orderManager = orderManager;
+  }
+
+  /**
+   * adds all the necessary communication vertices with the given type.
+   *
    * @param type
    *          the type
    */
-  @Override
-  public void routeAll(final MapperDAG implementation, final Integer type) {
+  public void routeAll(final Integer type) {
     final TransactionManager localTransactionManager = new TransactionManager();
 
     // Get edges in scheduling order of their producers
@@ -145,7 +225,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 
     if (edgesInPrecedenceOrder.size() != this.implementation.edgeSet().size()) {
       // If this happens, this means that not all edges are covered by the previous while loop.
-      throw new RuntimeException("Some DAG edges are not covered");
+      throw new PreesmMapperException("Some DAG edges are not covered", null);
     }
 
     // We iterate the edges and process the ones with different allocations
@@ -188,7 +268,6 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
    * @param types
    *          the types
    */
-  @Override
   public void routeNewVertex(final MapperDAGVertex newVertex, final List<Integer> types) {
 
     final Map<MapperDAGEdge, Route> transferEdges = getRouteMap(newVertex);
@@ -272,7 +351,6 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
    *          the edge
    * @return the long
    */
-  @Override
   public long evaluateTransferCost(final MapperDAGEdge edge) {
 
     final MapperDAGVertex source = ((MapperDAGVertex) edge.getSource());
@@ -300,7 +378,6 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
    * @see org.ietr.preesm.mapper.abc.route.AbstractCommunicationRouter#getRoute(org.ietr.preesm.mapper.
    * model.MapperDAGEdge)
    */
-  @Override
   public Route getRoute(final MapperDAGEdge edge) {
     return this.calculator.getRoute(edge);
   }

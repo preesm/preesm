@@ -42,7 +42,6 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 
-// TODO: Auto-generated Javadoc
 /**
  * Represents the type of a vertex in its propertybeans.
  *
@@ -184,7 +183,6 @@ public class VertexType {
    */
   @Override
   public String toString() {
-    // TODO Auto-generated method stub
     return this.type;
   }
 

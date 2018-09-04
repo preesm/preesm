@@ -44,7 +44,7 @@ import java.util.logging.Logger;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.mapper.abc.IAbc;
+import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
@@ -75,7 +75,7 @@ public class KwokListScheduler {
    *           the workflow exception
    */
   private long listImplementationCost(final MapperDAG dag, MapperDAGVertex vertex, final ComponentInstance operator,
-      final IAbc simu, final boolean minimizeVStartorOpEnd) throws WorkflowException {
+      final LatencyAbc simu, final boolean minimizeVStartorOpEnd) {
 
     // check the vertex is into the DAG
     vertex = dag.getMapperDAGVertex(vertex.getName());
@@ -111,8 +111,8 @@ public class KwokListScheduler {
    *           the workflow exception
    */
 
-  public MapperDAG schedule(final MapperDAG dag, final List<MapperDAGVertex> orderlist, final IAbc archisimu,
-      final ComponentInstance operatorfcp, final MapperDAGVertex fcpvertex) throws WorkflowException {
+  public MapperDAG schedule(final MapperDAG dag, final List<MapperDAGVertex> orderlist, final LatencyAbc archisimu,
+      final ComponentInstance operatorfcp, final MapperDAGVertex fcpvertex) {
 
     final boolean minimizeVStartorOpEnd = false;
 
@@ -135,8 +135,8 @@ public class KwokListScheduler {
           if (!groupOperators.isEmpty()) {
             archisimu.map(currentvertex, groupOperators.get(0), true, false);
           } else {
-            logger.log(Level.SEVERE,
-                "Found no operator for: " + currentvertex + ". Certainly a relative constraint problem.");
+            final String msg = "Found no operator for: " + currentvertex + ". Certainly a relative constraint problem.";
+            logger.log(Level.SEVERE, msg);
           }
         }
       } else {
@@ -164,7 +164,8 @@ public class KwokListScheduler {
 
         final int currentVertexRank = orderlist.indexOf(currentvertex);
         if (((currentVertexRank % 100) == 0) && (fcpvertex == null) && (currentVertexRank != 0)) {
-          logger.log(Level.INFO, "list scheduling: " + currentVertexRank + " vertices mapped ");
+          final String msg = "list scheduling: " + currentVertexRank + " vertices mapped ";
+          logger.log(Level.INFO, msg);
         }
 
         chosenoperator = null;

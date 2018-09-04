@@ -84,6 +84,7 @@ import org.ietr.preesm.core.scenario.papi.PapiEventSet;
 import org.ietr.preesm.core.scenario.papi.PapiEventSetType;
 import org.ietr.preesm.core.scenario.papi.PapifyConfig;
 import org.ietr.preesm.core.types.DataType;
+import org.ietr.preesm.core.types.VertexType;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -737,7 +738,7 @@ public class ScenarioParser {
           final Element elt = (Element) node;
           final String type = elt.getTagName();
           final String name = elt.getAttribute("name");
-          if (type.equals("task")) {
+          if (type.equals(VertexType.TYPE_TASK)) {
             if (getActorFromPath(name) != null) {
               cg.addActorPath(name);
             }

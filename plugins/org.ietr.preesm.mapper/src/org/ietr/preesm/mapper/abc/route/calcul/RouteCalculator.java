@@ -58,7 +58,6 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class can evaluate a given transfer and choose the best route between two operators.
  *
@@ -114,10 +113,8 @@ public class RouteCalculator {
    *
    * @param archi
    *          the archi
-   * @param scenario
-   *          the scenario
    */
-  public static void deleteRoutes(final Design archi, final PreesmScenario scenario) {
+  public static void deleteRoutes(final Design archi) {
     RouteCalculator.instances.remove(archi);
   }
 
@@ -292,7 +289,8 @@ public class RouteCalculator {
     final Route r = this.table.getBestRoute(op1, op2);
 
     if (r == null) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "Did not find a route between " + op1 + " and " + op2 + ".");
+      final String msg = "Did not find a route between " + op1 + " and " + op2 + ".";
+      WorkflowLogger.getLogger().log(Level.SEVERE, msg);
     }
 
     return r;

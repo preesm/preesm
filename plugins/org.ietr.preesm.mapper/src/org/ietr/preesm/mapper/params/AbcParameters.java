@@ -45,7 +45,6 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.abc.AbcType;
 import org.ietr.preesm.mapper.abc.edgescheduling.EdgeSchedType;
 
-// TODO: Auto-generated Javadoc
 /**
  * Parameters applied to the current Abc.
  *

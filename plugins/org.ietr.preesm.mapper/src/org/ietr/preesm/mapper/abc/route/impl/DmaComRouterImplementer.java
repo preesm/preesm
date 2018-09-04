@@ -46,7 +46,6 @@ import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.DmaRouteStep;
 import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.mapper.abc.edgescheduling.SimpleEdgeSched;
-import org.ietr.preesm.mapper.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.mapper.abc.route.CommunicationRouter;
 import org.ietr.preesm.mapper.abc.route.CommunicationRouterImplementer;
 import org.ietr.preesm.mapper.abc.transaction.AddOverheadVertexTransaction;
@@ -58,7 +57,6 @@ import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class responsible to generate the suited vertices while simulating a dma communication.
  *
@@ -72,7 +70,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
    * @param user
    *          the user
    */
-  public DmaComRouterImplementer(final AbstractCommunicationRouter user) {
+  public DmaComRouterImplementer(final CommunicationRouter user) {
     super(user);
   }
 
@@ -84,7 +82,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
    */
   @Override
   public void removeVertices(final MapperDAGEdge edge, final TransactionManager transactions) {
-
+    // nothing
   }
 
   /**
@@ -126,7 +124,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
       final DmaRouteStep dmaStep = ((DmaRouteStep) routeStep);
 
       // Adding the transfers of a dma route step
-      if (type == CommunicationRouter.transferType) {
+      if (type == CommunicationRouter.TRANSFER_TYPE) {
         // All the transfers along the path have the same time: the time
         // to transfer the data on the slowest contention node
         final long transferTime = dmaStep.getWorstTransferTime(edge.getInit().getDataSize());
@@ -141,7 +139,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
         }
 
         return transaction;
-      } else if (type == CommunicationRouter.overheadType) {
+      } else if (type == CommunicationRouter.OVERHEAD_TYPE) {
         // Adding the overhead
         MapperDAGEdge incomingEdge = null;
 
@@ -167,7 +165,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
               "The transfer following vertex" + edge.getSource() + "was not found. We could not add overhead.");
         }
 
-      } else if (type == CommunicationRouter.synchroType) {
+      } else if (type == CommunicationRouter.SYNCHRO_TYPE) {
 
         // Synchronizing the previously created transfers
         final List<MapperDAGVertex> toSynchronize = new ArrayList<>();
@@ -183,20 +181,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
           }
         }
 
-        // Synchronizing the vertices in order manager (they
-        // have consecutive total order and be scheduled
-        // simultaneously).
-        /*
-         * if (toSynchronize.size() > 1) { ImplementationCleaner cleaner = new ImplementationCleaner( getOrderManager(),
-         * getImplementation()); PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder( getOrderManager(),
-         * getImplementation()); MapperDAGVertex last = null; last = null;
-         *
-         * for (MapperDAGVertex v : toSynchronize) { cleaner.unscheduleVertex(v); last =
-         * getOrderManager().synchronize(last, v); adder.scheduleVertex(v); }
-         *
-         * }
-         */
-      } else if (type == CommunicationRouter.sendReceiveType) {
+      } else if (type == CommunicationRouter.SEND_RECEIVE_TYPE) {
 
         final Transaction transaction = new AddSendReceiveTransaction(lastTransaction, edge, getImplementation(),
             getOrderManager(), routeStepIndex, routeStep, TransferVertex.SEND_RECEIVE_COST);

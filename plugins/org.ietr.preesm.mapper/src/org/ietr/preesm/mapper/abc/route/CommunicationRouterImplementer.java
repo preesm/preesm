@@ -44,7 +44,6 @@ import org.ietr.preesm.mapper.abc.transaction.TransactionManager;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 
-// TODO: Auto-generated Javadoc
 /**
  * Routes a communication and creates the necessary communication vertices.
  *
@@ -53,7 +52,7 @@ import org.ietr.preesm.mapper.model.MapperDAGEdge;
 public abstract class CommunicationRouterImplementer {
 
   /** The user. */
-  private AbstractCommunicationRouter user = null;
+  private CommunicationRouter user = null;
 
   /**
    * Instantiates a new communication router implementer.
@@ -61,7 +60,7 @@ public abstract class CommunicationRouterImplementer {
    * @param user
    *          the user
    */
-  public CommunicationRouterImplementer(final AbstractCommunicationRouter user) {
+  public CommunicationRouterImplementer(final CommunicationRouter user) {
     super();
     this.user = user;
   }
