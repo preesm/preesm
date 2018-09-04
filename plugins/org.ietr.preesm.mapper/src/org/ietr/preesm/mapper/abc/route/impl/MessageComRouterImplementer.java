@@ -45,7 +45,6 @@ import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.mapper.abc.edgescheduling.SimpleEdgeSched;
-import org.ietr.preesm.mapper.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.mapper.abc.route.CommunicationRouter;
 import org.ietr.preesm.mapper.abc.route.CommunicationRouterImplementer;
 import org.ietr.preesm.mapper.abc.transaction.AddInvolvementVertexTransaction;
@@ -57,7 +56,6 @@ import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class responsible to generate the suited vertices while simulating a message communication.
  *
@@ -71,7 +69,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
    * @param user
    *          the user
    */
-  public MessageComRouterImplementer(final AbstractCommunicationRouter user) {
+  public MessageComRouterImplementer(final CommunicationRouter user) {
     super(user);
   }
 
@@ -83,7 +81,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
    */
   @Override
   public void removeVertices(final MapperDAGEdge edge, final TransactionManager transactions) {
-
+    // nothing
   }
 
   /**
@@ -143,7 +141,6 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
       } else if (type == CommunicationRouter.INVOLVEMENT_TYPE) {
         // Adding the involvement
         MapperDAGEdge incomingEdge = null;
-        // TransferVertex correspondingTransfer = null;
 
         for (final Object o : alreadyCreatedVertices) {
           if (o instanceof TransferVertex) {
@@ -152,7 +149,6 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
                 && (v.getRouteStep() == routeStep) && (v.getNodeIndex() == 0)) {
               // Finding the edge where to add an involvement
               incomingEdge = (MapperDAGEdge) v.incomingEdges().toArray()[0];
-              // correspondingTransfer = v;
             }
 
           }
@@ -186,19 +182,6 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
           }
         }
 
-        // Synchronizing the vertices in order manager (they
-        // have consecutive total order and be scheduled
-        // simultaneously).
-        /*
-         * if (toSynchronize.size() > 1) { ImplementationCleaner cleaner = new ImplementationCleaner( getOrderManager(),
-         * getImplementation()); PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder( getOrderManager(),
-         * getImplementation()); MapperDAGVertex last = null; last = null;
-         *
-         * for (MapperDAGVertex v : toSynchronize) { cleaner.unscheduleVertex(v); last =
-         * getOrderManager().synchronize(last, v); adder.scheduleVertex(v); }
-         *
-         * }
-         */
       } else if (type == CommunicationRouter.SEND_RECEIVE_TYPE) {
 
         final Transaction transaction = new AddSendReceiveTransaction(lastTransaction, edge, getImplementation(),
