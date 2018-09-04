@@ -59,7 +59,6 @@ import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
-import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.mapper.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
@@ -72,7 +71,6 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.ReceiveVertex;
 import org.ietr.preesm.mapper.model.special.SendVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * Tags an SDF with the implementation information necessary for code generation, and DAG exporting.
  *
@@ -104,7 +102,7 @@ public class TagDAG {
    * @throws InvalidExpressionException
    *           the invalid expression exception
    */
-  public void tag(final MapperDAG dag, final Design architecture, final PreesmScenario scenario, final IAbc simu,
+  public void tag(final MapperDAG dag, final Design architecture, final PreesmScenario scenario, final LatencyAbc simu,
       final EdgeSchedType edgeSchedType) throws InvalidExpressionException {
 
     final PropertyBean bean = dag.getPropertyBean();
@@ -146,7 +144,7 @@ public class TagDAG {
    * @param simu
    *          the simu
    */
-  public void addProperties(final MapperDAG dag, final IAbc simu) {
+  public void addProperties(final MapperDAG dag, final LatencyAbc simu) {
 
     MapperDAGVertex currentVertex;
 

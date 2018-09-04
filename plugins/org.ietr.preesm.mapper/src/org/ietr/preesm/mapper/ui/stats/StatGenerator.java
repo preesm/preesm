@@ -50,7 +50,6 @@ import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
-import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.SpanLengthCalculator;
 import org.ietr.preesm.mapper.model.MapperDAG;
@@ -71,7 +70,7 @@ import org.ietr.preesm.mapper.model.special.TransferVertex;
 public class StatGenerator {
 
   /** The abc. */
-  private IAbc abc = null;
+  private LatencyAbc abc = null;
 
   /** The scenario. */
   private PreesmScenario scenario = null;
@@ -92,7 +91,7 @@ public class StatGenerator {
    * @param params
    *          the params
    */
-  public StatGenerator(final IAbc abc, final PreesmScenario scenario, final Map<String, String> params) {
+  public StatGenerator(final LatencyAbc abc, final PreesmScenario scenario, final Map<String, String> params) {
     super();
     this.params = params;
     this.scenario = scenario;
@@ -293,7 +292,7 @@ public class StatGenerator {
    *
    * @return the abc
    */
-  public IAbc getAbc() {
+  public LatencyAbc getAbc() {
     return this.abc;
   }
 

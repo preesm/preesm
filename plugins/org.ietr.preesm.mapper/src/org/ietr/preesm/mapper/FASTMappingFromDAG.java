@@ -45,8 +45,7 @@ import java.util.logging.Level;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.mapper.abc.AbstractAbc;
-import org.ietr.preesm.mapper.abc.IAbc;
+import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.mapper.abc.taskscheduling.SimpleTaskSched;
 import org.ietr.preesm.mapper.algo.fast.FastAlgorithm;
@@ -80,7 +79,7 @@ public class FASTMappingFromDAG extends AbstractMappingFromDAG {
   }
 
   @Override
-  protected IAbc schedule(final Map<String, Object> outputs, final Map<String, String> parameters,
+  protected LatencyAbc schedule(final Map<String, Object> outputs, final Map<String, String> parameters,
       final InitialLists initial, final PreesmScenario scenario, final AbcParameters abcParams, final MapperDAG dag,
       final Design architecture, final AbstractTaskSched taskSched) {
 
@@ -93,7 +92,7 @@ public class FASTMappingFromDAG extends AbstractMappingFromDAG {
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
 
-    final IAbc simu2 = AbstractAbc.getInstance(abcParams, resDag, architecture, scenario);
+    final LatencyAbc simu2 = LatencyAbc.getInstance(abcParams, resDag, architecture, scenario);
     // Transfer vertices are automatically regenerated
     simu2.setDAG(resDag);
 

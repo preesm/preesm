@@ -56,8 +56,7 @@ import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.mapper.abc.AbstractAbc;
-import org.ietr.preesm.mapper.abc.IAbc;
+import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.abc.order.VertexOrderList;
 import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.mapper.algo.fast.FastAlgorithm;
@@ -71,7 +70,6 @@ import org.ietr.preesm.mapper.params.PFastAlgoParameters;
 import org.ietr.preesm.mapper.ui.BestCostPlotter;
 import org.ietr.preesm.mapper.ui.bestcost.BestCostEditor;
 
-// TODO: Auto-generated Javadoc
 /**
  * Task scheduling FAST algorithm multithread.
  *
@@ -323,7 +321,7 @@ public class PFastAlgorithm extends Observable {
     final Vector<MapperDAGVertex> fcpVector = new Vector<>(initialLists.getCriticalpath());
     MapperDAG dagfinal;
     final KwokListScheduler scheduler = new KwokListScheduler();
-    final IAbc archisimu = AbstractAbc.getInstance(abcParams, dag, archi, scenario);
+    final LatencyAbc archisimu = LatencyAbc.getInstance(abcParams, dag, archi, scenario);
     final Set<Set<String>> subSet = new LinkedHashSet<>();
 
     final FastAlgoParameters fastParams = new FastAlgoParameters(pFastParams.getFastTime(),

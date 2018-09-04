@@ -44,7 +44,7 @@ import java.util.Comparator;
 import java.util.List;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.preesm.mapper.abc.IAbc;
+import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.jgrapht.traverse.AbstractGraphIterator;
@@ -66,7 +66,7 @@ public abstract class ImplementationIterator extends AbstractGraphIterator<DAGVe
   protected boolean directOrder;
 
   /** ABC made available for the compare method. */
-  protected IAbc abc = null;
+  protected LatencyAbc abc = null;
 
   /** Ordered vertex list parsed by the iterator. */
   private List<MapperDAGVertex> orderedlist;
@@ -81,7 +81,7 @@ public abstract class ImplementationIterator extends AbstractGraphIterator<DAGVe
    * @param directOrder
    *          the direct order
    */
-  public ImplementationIterator(final IAbc abc, final MapperDAG dag, final boolean directOrder) {
+  public ImplementationIterator(final LatencyAbc abc, final MapperDAG dag, final boolean directOrder) {
     super(dag);
     this.directOrder = directOrder;
     this.abc = abc;

@@ -40,7 +40,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.ietr.preesm.mapper.abc.IAbc;
+import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.ui.GanttPlotter;
 
 /**
@@ -92,7 +92,7 @@ public class GanttPage extends FormPage {
     layout.minNumColumns = 1;
     form.getBody().setLayout(layout);
 
-    final IAbc abc = this.statGen.getAbc();
+    final LatencyAbc abc = this.statGen.getAbc();
 
     GanttPlotter.plotDeployment(abc.getGanttData(), form.getBody());
 

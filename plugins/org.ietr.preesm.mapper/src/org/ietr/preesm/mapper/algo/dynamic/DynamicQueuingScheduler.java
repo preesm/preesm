@@ -45,11 +45,10 @@ import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.mapper.abc.IAbc;
+import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.abc.order.VertexOrderList;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * Scheduler that simulates a dynamic queuing system.
  *
@@ -85,7 +84,7 @@ public class DynamicQueuingScheduler {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public void mapVertices(final IAbc abc) throws WorkflowException {
+  public void mapVertices(final LatencyAbc abc) throws WorkflowException {
 
     // Type of order to use while mapping/scheduling
     String listType = this.textParameters.get("listType");
@@ -125,7 +124,7 @@ public class DynamicQueuingScheduler {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public void mapOnBestOp(final IAbc abc, final MapperDAGVertex currentvertex) throws WorkflowException {
+  public void mapOnBestOp(final LatencyAbc abc, final MapperDAGVertex currentvertex) throws WorkflowException {
 
     final List<ComponentInstance> adequateOps = abc.getCandidateOperators(currentvertex, true);
     long currentMinCost = Long.MAX_VALUE;

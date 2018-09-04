@@ -51,8 +51,7 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.mapper.abc.AbstractAbc;
-import org.ietr.preesm.mapper.abc.IAbc;
+import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.abc.order.VertexOrderList;
 import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.mapper.abc.taskscheduling.TaskSwitcher;
@@ -68,7 +67,6 @@ import org.ietr.preesm.mapper.ui.BestCostPlotter;
 import org.ietr.preesm.mapper.ui.bestcost.BestCostEditor;
 import org.ietr.preesm.mapper.ui.gantt.GanttEditorRunnable;
 
-// TODO: Auto-generated Javadoc
 /**
  * Fast Algorithm.
  *
@@ -198,7 +196,7 @@ public class FastAlgorithm extends Observable {
     }
 
     // Variables
-    final IAbc simulator = AbstractAbc.getInstance(abcParams, dag, archi, this.scenario);
+    final LatencyAbc simulator = LatencyAbc.getInstance(abcParams, dag, archi, this.scenario);
 
     // A topological task scheduler is chosen for the list scheduling.
     // It schedules the tasks in topological order and, if they are on

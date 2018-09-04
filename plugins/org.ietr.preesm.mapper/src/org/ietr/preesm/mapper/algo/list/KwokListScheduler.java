@@ -44,7 +44,7 @@ import java.util.logging.Logger;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.mapper.abc.IAbc;
+import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
@@ -75,7 +75,7 @@ public class KwokListScheduler {
    *           the workflow exception
    */
   private long listImplementationCost(final MapperDAG dag, MapperDAGVertex vertex, final ComponentInstance operator,
-      final IAbc simu, final boolean minimizeVStartorOpEnd) throws WorkflowException {
+      final LatencyAbc simu, final boolean minimizeVStartorOpEnd) throws WorkflowException {
 
     // check the vertex is into the DAG
     vertex = dag.getMapperDAGVertex(vertex.getName());
@@ -111,7 +111,7 @@ public class KwokListScheduler {
    *           the workflow exception
    */
 
-  public MapperDAG schedule(final MapperDAG dag, final List<MapperDAGVertex> orderlist, final IAbc archisimu,
+  public MapperDAG schedule(final MapperDAG dag, final List<MapperDAGVertex> orderlist, final LatencyAbc archisimu,
       final ComponentInstance operatorfcp, final MapperDAGVertex fcpvertex) throws WorkflowException {
 
     final boolean minimizeVStartorOpEnd = false;

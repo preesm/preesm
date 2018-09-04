@@ -43,7 +43,7 @@ import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.mapper.PreesmMapperException;
-import org.ietr.preesm.mapper.abc.IAbc;
+import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.gantt.GanttComponent;
 import org.ietr.preesm.mapper.gantt.GanttData;
 import org.ietr.preesm.mapper.gantt.GanttTask;
@@ -89,7 +89,7 @@ public class XMLStatsExporter {
    * @param file
    *          the file
    */
-  public void exportXMLStats(final IAbc abc, final File file) {
+  public void exportXMLStats(final LatencyAbc abc, final File file) {
     // Generate the stats to write in an xml file
     final String content = generateXMLStats(abc);
     // Write the file
@@ -107,7 +107,7 @@ public class XMLStatsExporter {
    *          the IAbc containing the scheduling of each task
    * @return a String containing the stats at an xml format
    */
-  public String generateXMLStats(final IAbc abc) {
+  public String generateXMLStats(final LatencyAbc abc) {
     append(XMLStatsExporter.NL + "<data>");
     // Generate scheduling stats (when and on which core a given task is
     // executed)
@@ -126,7 +126,7 @@ public class XMLStatsExporter {
    * @param abc
    *          the abc
    */
-  private void generatePerformanceStats(final IAbc abc) {
+  private void generatePerformanceStats(final LatencyAbc abc) {
     // Starting the performace stats
     final StatGenerator statGen = new StatGenerator(abc, abc.getScenario(), null);
     append(XMLStatsExporter.NLT + "<perfs>");
