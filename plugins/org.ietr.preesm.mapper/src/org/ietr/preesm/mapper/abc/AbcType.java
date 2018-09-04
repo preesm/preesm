@@ -39,7 +39,6 @@ package org.ietr.preesm.mapper.abc;
 
 import org.ietr.preesm.mapper.abc.taskscheduling.TaskSchedType;
 
-// TODO: Auto-generated Javadoc
 /**
  * Types of simulator to be used in parameters.
  *
@@ -83,7 +82,7 @@ public class AbcType {
   protected AbcType(final String name) {
     super();
     this.name = name;
-    this.taskSchedType = TaskSchedType.Simple;
+    this.taskSchedType = TaskSchedType.SIMPLE;
   }
 
   /*
@@ -143,7 +142,7 @@ public class AbcType {
     if (taskSchedType != null) {
       this.taskSchedType = taskSchedType;
     } else {
-      this.taskSchedType = TaskSchedType.Simple;
+      this.taskSchedType = TaskSchedType.SIMPLE;
     }
 
     return this;

@@ -56,6 +56,7 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.mapper.PreesmMapperException;
 import org.ietr.preesm.mapper.abc.impl.latency.AccuratelyTimedAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.ApproximatelyTimedAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
@@ -74,7 +75,6 @@ import org.ietr.preesm.mapper.model.special.TransferVertex;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.tools.CustomTopologicalIterator;
 
-// TODO: Auto-generated Javadoc
 /**
  * An architecture simulator calculates costs for a given partial or total implementation.
  *
@@ -120,7 +120,7 @@ public abstract class AbstractAbc implements IAbc {
   /**
    * Activating traces. Put to true only for debug!
    */
-  private static final boolean debugTraces = false;
+  private static final boolean DEBUG_TRACES = false;
 
   /**
    * Gets a new architecture simulator from a simulator type.
@@ -138,7 +138,7 @@ public abstract class AbstractAbc implements IAbc {
    *           the workflow exception
    */
   public static IAbc getInstance(final AbcParameters params, final MapperDAG dag, final Design archi,
-      final PreesmScenario scenario) throws WorkflowException {
+      final PreesmScenario scenario) {
 
     AbstractAbc abc = null;
     final AbcType simulatorType = params.getSimulatorType();
@@ -274,42 +274,9 @@ public abstract class AbstractAbc implements IAbc {
    */
   @Override
   public final ComponentInstance getEffectiveComponent(MapperDAGVertex vertex) {
-    vertex = translateInImplementationVertex(vertex);
-    return vertex.getEffectiveComponent();
+    final MapperDAGVertex vertex2 = translateInImplementationVertex(vertex);
+    return vertex2.getEffectiveComponent();
   }
-
-  /**
-   * *********Costs accesses**********.
-   *
-   * @return the final cost
-   */
-
-  @Override
-  public abstract long getFinalCost();
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.IAbc#getFinalCost(org.ietr.preesm.mapper.model.MapperDAGVertex)
-   */
-  @Override
-  public abstract long getFinalCost(MapperDAGVertex vertex);
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.IAbc#getFinalCost(org.ietr.dftools.architecture.slam. ComponentInstance)
-   */
-  @Override
-  public abstract long getFinalCost(ComponentInstance component);
-
-  /**
-   * *********Implementation accesses**********.
-   *
-   * @param vertex
-   *          the vertex
-   * @return the scheduling order
-   */
 
   /**
    * Gets the rank of the given vertex on its operator. -1 if the vertex has no rank
@@ -359,7 +326,7 @@ public abstract class AbstractAbc implements IAbc {
    *           the workflow exception
    */
   private final void mapSingleVertex(final MapperDAGVertex dagvertex, final ComponentInstance operator,
-      final boolean updateRank) throws WorkflowException {
+      final boolean updateRank) {
     final MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
     if (impvertex.getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE) {
@@ -381,8 +348,8 @@ public abstract class AbstractAbc implements IAbc {
       fireNewMappedVertex(impvertex, updateRank);
 
     } else {
-      WorkflowLogger.getLogger().log(Level.SEVERE,
-          impvertex.toString() + " can not be mapped (single) on " + operator.toString());
+      final String msg = impvertex + " can not be mapped (single) on " + operator;
+      WorkflowLogger.getLogger().log(Level.SEVERE, msg);
     }
   }
 
@@ -402,7 +369,7 @@ public abstract class AbstractAbc implements IAbc {
    *           the workflow exception
    */
   private final void mapVertexWithGroup(final MapperDAGVertex dagvertex, final ComponentInstance operator,
-      final boolean updateRank, final boolean remapGroup) throws WorkflowException {
+      final boolean updateRank, final boolean remapGroup) {
 
     final VertexMapping dagprop = dagvertex.getMapping();
 
@@ -418,8 +385,9 @@ public abstract class AbstractAbc implements IAbc {
       }
     }
 
-    if (AbstractAbc.debugTraces) {
-      System.out.println("unmap and remap " + orderedVList + " on " + operator);
+    if (AbstractAbc.DEBUG_TRACES) {
+      final String msg = "unmap and remap " + orderedVList + " on " + operator;
+      WorkflowLogger.getLogger().log(Level.INFO, msg);
     }
 
     for (final MapperDAGVertex dv : orderedVList) {
@@ -438,19 +406,22 @@ public abstract class AbstractAbc implements IAbc {
 
       if (isToUnmap) {
         // Unmapping if necessary before mapping
-        if (AbstractAbc.debugTraces) {
-          System.out.println("unmap " + dvi);
+        if (AbstractAbc.DEBUG_TRACES) {
+          final String msg = "unmap " + dvi;
+          WorkflowLogger.getLogger().log(Level.INFO, msg);
         }
         unmap(dvi);
 
-        if (AbstractAbc.debugTraces) {
-          System.out.println("unmapped " + dvi);
+        if (AbstractAbc.DEBUG_TRACES) {
+          final String msg = "unmapped " + dvi;
+          WorkflowLogger.getLogger().log(Level.INFO, msg);
         }
       }
 
       if (isToMap) {
-        if (AbstractAbc.debugTraces) {
-          System.out.println("map " + dvi + " to " + operator);
+        if (AbstractAbc.DEBUG_TRACES) {
+          final String msg = "map " + dvi + " to " + operator;
+          WorkflowLogger.getLogger().log(Level.INFO, msg);
         }
 
         dv.setEffectiveOperator(operator);
@@ -458,20 +429,22 @@ public abstract class AbstractAbc implements IAbc {
 
         fireNewMappedVertex(dvi, updateRank);
 
-        if (AbstractAbc.debugTraces) {
-          System.out.println("mapped " + dvi);
+        if (AbstractAbc.DEBUG_TRACES) {
+          final String msg = "mapped " + dvi;
+          WorkflowLogger.getLogger().log(Level.INFO, msg);
         }
 
       } else if (dv.equals(dagvertex) || remapGroup) {
-        WorkflowLogger.getLogger().log(Level.SEVERE,
-            dagvertex.toString() + " can not be mapped (group) on " + operator.toString());
+        final String msg = dagvertex + " can not be mapped (group) on " + operator;
+        WorkflowLogger.getLogger().log(Level.SEVERE, msg);
         dv.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
         dv.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
       }
     }
 
-    if (AbstractAbc.debugTraces) {
-      System.out.println("unmapped and remapped " + orderedVList + " on " + operator);
+    if (AbstractAbc.DEBUG_TRACES) {
+      final String msg = "unmapped and remapped " + orderedVList + " on " + operator;
+      WorkflowLogger.getLogger().log(Level.INFO, msg);
     }
   }
 
@@ -492,7 +465,7 @@ public abstract class AbstractAbc implements IAbc {
    */
   @Override
   public final void map(final MapperDAGVertex dagvertex, final ComponentInstance operator, final boolean updateRank,
-      final boolean remapGroup) throws WorkflowException {
+      final boolean remapGroup) {
     final MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
     if (operator != DesignTools.NO_COMPONENT_INSTANCE) {
@@ -529,7 +502,7 @@ public abstract class AbstractAbc implements IAbc {
    *           the workflow exception
    */
   @Override
-  public final boolean mapAllVerticesOnOperator(final ComponentInstance operator) throws WorkflowException {
+  public final boolean mapAllVerticesOnOperator(final ComponentInstance operator) {
 
     boolean possible = true;
     MapperDAGVertex currentvertex;
@@ -576,8 +549,7 @@ public abstract class AbstractAbc implements IAbc {
    *           the workflow exception
    */
   @Override
-  public List<ComponentInstance> getCandidateOperators(MapperDAGVertex vertex, final boolean protectGroupMapping)
-      throws WorkflowException {
+  public List<ComponentInstance> getCandidateOperators(MapperDAGVertex vertex, final boolean protectGroupMapping) {
 
     vertex = translateInImplementationVertex(vertex);
 
@@ -589,7 +561,8 @@ public abstract class AbstractAbc implements IAbc {
       initOperators = vm.getCandidateComponents(vertex, protectGroupMapping);
     } else {
       initOperators = vertex.getInit().getInitialOperatorList();
-      WorkflowLogger.getLogger().log(Level.WARNING, "Found no mapping group for vertex " + vertex);
+      final String msg = "Found no mapping group for vertex " + vertex;
+      WorkflowLogger.getLogger().log(Level.WARNING, msg);
     }
 
     if (initOperators.isEmpty()) {
@@ -621,33 +594,31 @@ public abstract class AbstractAbc implements IAbc {
 
   @Override
   public final ComponentInstance findOperator(final MapperDAGVertex currentvertex,
-      final ComponentInstance preferedOperator, final boolean protectGroupMapping) throws WorkflowException {
+      final ComponentInstance preferedOperator, final boolean protectGroupMapping) {
 
-    ComponentInstance adequateOp = null;
     final List<ComponentInstance> opList = getCandidateOperators(currentvertex, protectGroupMapping);
 
     if (DesignTools.contains(opList, preferedOperator)) {
-      adequateOp = preferedOperator;
+      return preferedOperator;
     } else {
 
       // Search among the operators with same type than the prefered one
       for (final ComponentInstance op : opList) {
         if ((preferedOperator != null)
             && op.getComponent().getVlnv().getName().equals(preferedOperator.getComponent().getVlnv().getName())) {
-          adequateOp = op;
+          return op;
         }
       }
 
       // Search among the operators with other type than the prefered one
-      if (adequateOp == null) {
-        for (final ComponentInstance op : opList) {
-          adequateOp = op;
-          return adequateOp;
-        }
+      for (final ComponentInstance op : opList) {
+        // if (isMapable(currentvertex, op, true)) {
+        return op;
+        // }
       }
     }
 
-    return adequateOp;
+    return null;
   }
 
   /**
@@ -666,7 +637,7 @@ public abstract class AbstractAbc implements IAbc {
 
   @Override
   public final boolean isMapable(final MapperDAGVertex vertex, final ComponentInstance operator,
-      final boolean protectGroupMapping) throws WorkflowException {
+      final boolean protectGroupMapping) {
 
     return DesignTools.contains(getCandidateOperators(vertex, protectGroupMapping), operator);
   }
@@ -706,7 +677,9 @@ public abstract class AbstractAbc implements IAbc {
     final MapperDAGVertex internalVertex = this.implementation.getMapperDAGVertex(vertex.getName());
 
     if (internalVertex == null) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "No simulator internal vertex with id " + vertex.getName());
+      final String message = "No simulator internal vertex with id " + vertex.getName();
+      WorkflowLogger.getLogger().log(Level.SEVERE, message);
+      throw new PreesmMapperException(message, new NullPointerException());
     }
     return internalVertex;
   }
@@ -723,15 +696,7 @@ public abstract class AbstractAbc implements IAbc {
     final MapperDAGVertex sourceVertex = translateInImplementationVertex((MapperDAGVertex) edge.getSource());
     final MapperDAGVertex destVertex = translateInImplementationVertex((MapperDAGVertex) edge.getTarget());
 
-    if ((destVertex == null) || (sourceVertex == null)) {
-      WorkflowLogger.getLogger().log(Level.SEVERE,
-          "Implementation vertex with id " + edge.getSource() + " or " + edge.getTarget() + " not found");
-    } else {
-      final MapperDAGEdge internalEdge = (MapperDAGEdge) this.implementation.getEdge(sourceVertex, destVertex);
-      return internalEdge;
-    }
-
-    return null;
+    return (MapperDAGEdge) this.implementation.getEdge(sourceVertex, destVertex);
   }
 
   /**
@@ -801,9 +766,10 @@ public abstract class AbstractAbc implements IAbc {
       cDagVertex = dagvertex;
       cImpVertex = impvertex;
     }
-
-    cDagVertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
-    cImpVertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+    if (cDagVertex != null) {
+      cDagVertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+      cImpVertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+    }
   }
 
   /**

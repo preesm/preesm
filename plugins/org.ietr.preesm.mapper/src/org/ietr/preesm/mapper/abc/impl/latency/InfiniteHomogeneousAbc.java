@@ -77,7 +77,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
    */
   public InfiniteHomogeneousAbc(final AbcParameters params, final MapperDAG dag, final Design archi,
       final PreesmScenario scenario) {
-    this(params, dag, archi, TaskSchedType.Simple, scenario);
+    this(params, dag, archi, TaskSchedType.SIMPLE, scenario);
   }
 
   /**

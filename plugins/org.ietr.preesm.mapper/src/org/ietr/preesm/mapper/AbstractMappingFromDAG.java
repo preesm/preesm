@@ -58,6 +58,7 @@ import org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.SpanLengthCalculator;
 import org.ietr.preesm.mapper.abc.route.calcul.RouteCalculator;
 import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
+import org.ietr.preesm.mapper.abc.taskscheduling.TaskSchedType;
 import org.ietr.preesm.mapper.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.mapper.algo.list.InitialLists;
 import org.ietr.preesm.mapper.checker.CommunicationOrderChecker;
@@ -242,11 +243,9 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
    *           the workflow exception
    */
   protected void calculateSpan(final MapperDAG dag, final Design archi, final PreesmScenario scenario,
-      final AbcParameters parameters) throws WorkflowException {
-
-    final SpanLengthCalculator spanCalc = new SpanLengthCalculator(parameters, dag, archi,
-        parameters.getSimulatorType().getTaskSchedType(), scenario);
+      final AbcParameters parameters) {
+    final TaskSchedType taskSchedType = parameters.getSimulatorType().getTaskSchedType();
+    final SpanLengthCalculator spanCalc = new SpanLengthCalculator(parameters, dag, archi, taskSchedType, scenario);
     spanCalc.resetDAG();
-
   }
 }
