@@ -40,12 +40,12 @@ package org.ietr.preesm.mapper.abc.route.calcul;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
-// TODO: Auto-generated Javadoc
 /**
  * Table representing the different routes available to go from one operator to another.
  *
@@ -186,11 +186,11 @@ public class RoutingTable {
      */
     @Override
     public String toString() {
-      String result = "|";
+      final StringBuilder sb = new StringBuilder("|");
       for (final Route r : this) {
-        result += r.toString() + "|";
+        sb.append(r.toString() + "|");
       }
-      return result;
+      return sb.toString();
     }
   }
 
@@ -222,7 +222,8 @@ public class RoutingTable {
    * @return the best route
    */
   public Route getBestRoute(final ComponentInstance op1, final ComponentInstance op2) {
-    for (final OperatorCouple c : this.table.keySet()) {
+    for (final Entry<OperatorCouple, RouteList> e : this.table.entrySet()) {
+      final OperatorCouple c = e.getKey();
       if (c.equals(new OperatorCouple(op1, op2))) {
         return this.table.get(c).first();
       }
@@ -285,12 +286,12 @@ public class RoutingTable {
    */
   @Override
   public String toString() {
-    String result = "";
-    for (final OperatorCouple couple : this.table.keySet()) {
-      result += couple.toString() + " -> " + this.table.get(couple).toString() + "\n";
+    final StringBuilder sb = new StringBuilder();
+    for (final Entry<OperatorCouple, RouteList> e : this.table.entrySet()) {
+      final OperatorCouple couple = e.getKey();
+      sb.append(couple.toString() + " -> " + this.table.get(couple).toString() + "\n");
     }
-
-    return result;
+    return sb.toString();
   }
 
 }
