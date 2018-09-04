@@ -42,7 +42,6 @@ import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.preesm.mapper.model.property.EdgeInit;
 import org.ietr.preesm.mapper.model.property.EdgeTiming;
 
-// TODO: Auto-generated Javadoc
 /**
  * Represents an edge in a DAG of type {@link MapperDAG} used in the mapper.
  *

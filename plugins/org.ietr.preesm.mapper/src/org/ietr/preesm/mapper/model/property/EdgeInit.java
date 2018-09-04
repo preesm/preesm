@@ -37,7 +37,6 @@
  */
 package org.ietr.preesm.mapper.model.property;
 
-// TODO: Auto-generated Javadoc
 /**
  * Properties of an edge set when converting dag to mapper dag.
  *

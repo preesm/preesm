@@ -185,13 +185,10 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
    */
   @Override
   protected void fireNewUnmappedVertex(final MapperDAGVertex vertex) {
-
     // unmapping a vertex resets the cost of the current vertex
     // and its edges
-
     // Keeps the total order
     this.orderManager.remove(vertex, false);
-
     vertex.getTiming().reset();
     resetCost(vertex.incomingEdges());
     resetCost(vertex.outgoingEdges());
