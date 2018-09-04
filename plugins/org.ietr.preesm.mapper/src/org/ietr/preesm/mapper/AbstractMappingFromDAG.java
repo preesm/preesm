@@ -146,7 +146,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
       outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, resSimu);
       outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, resDag);
 
-      clean(architecture, scenario);
+      clean(architecture);
       removeRedundantSynchronization(parameters, dag);
       checkSchedulingResult(parameters, resDag);
     }
@@ -192,9 +192,9 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
    * @param scenario
    *          the scenario
    */
-  protected void clean(final Design architecture, final PreesmScenario scenario) {
+  protected void clean(final Design architecture) {
     // Asking to delete route
-    RouteCalculator.deleteRoutes(architecture, scenario);
+    RouteCalculator.deleteRoutes(architecture);
   }
 
   /**

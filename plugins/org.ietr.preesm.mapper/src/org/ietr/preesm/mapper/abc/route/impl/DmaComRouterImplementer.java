@@ -126,7 +126,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
       final DmaRouteStep dmaStep = ((DmaRouteStep) routeStep);
 
       // Adding the transfers of a dma route step
-      if (type == CommunicationRouter.transferType) {
+      if (type == CommunicationRouter.TRANSFER_TYPE) {
         // All the transfers along the path have the same time: the time
         // to transfer the data on the slowest contention node
         final long transferTime = dmaStep.getWorstTransferTime(edge.getInit().getDataSize());
@@ -141,7 +141,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
         }
 
         return transaction;
-      } else if (type == CommunicationRouter.overheadType) {
+      } else if (type == CommunicationRouter.OVERHEAD_TYPE) {
         // Adding the overhead
         MapperDAGEdge incomingEdge = null;
 
@@ -167,7 +167,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
               "The transfer following vertex" + edge.getSource() + "was not found. We could not add overhead.");
         }
 
-      } else if (type == CommunicationRouter.synchroType) {
+      } else if (type == CommunicationRouter.SYNCHRO_TYPE) {
 
         // Synchronizing the previously created transfers
         final List<MapperDAGVertex> toSynchronize = new ArrayList<>();
@@ -196,7 +196,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
          *
          * }
          */
-      } else if (type == CommunicationRouter.sendReceiveType) {
+      } else if (type == CommunicationRouter.SEND_RECEIVE_TYPE) {
 
         final Transaction transaction = new AddSendReceiveTransaction(lastTransaction, edge, getImplementation(),
             getOrderManager(), routeStepIndex, routeStep, TransferVertex.SEND_RECEIVE_COST);

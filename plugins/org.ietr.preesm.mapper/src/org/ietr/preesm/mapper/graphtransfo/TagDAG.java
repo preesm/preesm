@@ -62,6 +62,7 @@ import org.ietr.preesm.core.types.VertexType;
 import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.mapper.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.abc.route.CommunicationRouter;
@@ -131,9 +132,9 @@ public class TagDAG {
     final OrderManager orderMgr = new OrderManager(architecture);
     orderMgr.reconstructTotalOrderFromDAG(dag);
 
-    final CommunicationRouter comRouter = new CommunicationRouter(architecture, scenario, dag,
-        AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr), orderMgr);
-    comRouter.routeAll(dag, CommunicationRouter.sendReceiveType);
+    final IEdgeSched instance = AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr);
+    final CommunicationRouter comRouter = new CommunicationRouter(architecture, scenario, dag, instance, orderMgr);
+    comRouter.routeAll(CommunicationRouter.SEND_RECEIVE_TYPE);
     orderMgr.tagDAG(dag);
   }
 

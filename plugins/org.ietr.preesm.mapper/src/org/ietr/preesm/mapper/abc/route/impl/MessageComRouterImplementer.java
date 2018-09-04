@@ -128,7 +128,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
       final long transferTime = messageStep.getWorstTransferTime(edge.getInit().getDataSize());
 
       // Adding the transfers of a message route step
-      if (type == CommunicationRouter.transferType) {
+      if (type == CommunicationRouter.TRANSFER_TYPE) {
         final List<ComponentInstance> nodes = messageStep.getContentionNodes();
         AddTransferVertexTransaction transaction = null;
 
@@ -140,7 +140,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
         }
 
         return transaction;
-      } else if (type == CommunicationRouter.involvementType) {
+      } else if (type == CommunicationRouter.INVOLVEMENT_TYPE) {
         // Adding the involvement
         MapperDAGEdge incomingEdge = null;
         // TransferVertex correspondingTransfer = null;
@@ -166,7 +166,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
               "The transfer following vertex" + edge.getSource() + "was not found. We could not add overhead.");
         }
 
-      } else if (type == CommunicationRouter.synchroType) {
+      } else if (type == CommunicationRouter.SYNCHRO_TYPE) {
 
         // Synchronizing the previously created transfers
         final List<MapperDAGVertex> toSynchronize = new ArrayList<>();
@@ -199,7 +199,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
          *
          * }
          */
-      } else if (type == CommunicationRouter.sendReceiveType) {
+      } else if (type == CommunicationRouter.SEND_RECEIVE_TYPE) {
 
         final Transaction transaction = new AddSendReceiveTransaction(lastTransaction, edge, getImplementation(),
             getOrderManager(), routeStepIndex, routeStep, TransferVertex.SEND_RECEIVE_COST);

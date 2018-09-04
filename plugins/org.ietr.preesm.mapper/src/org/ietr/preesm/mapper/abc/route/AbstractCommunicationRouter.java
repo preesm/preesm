@@ -154,12 +154,10 @@ public abstract class AbstractCommunicationRouter {
   /**
    * adds all the necessary communication vertices with the given type.
    *
-   * @param implementation
-   *          the implementation
    * @param type
    *          the type
    */
-  public abstract void routeAll(MapperDAG implementation, Integer type);
+  public abstract void routeAll(Integer type);
 
   /**
    * adds all the necessary communication vertices with the given type affected by the mapping of newVertex.

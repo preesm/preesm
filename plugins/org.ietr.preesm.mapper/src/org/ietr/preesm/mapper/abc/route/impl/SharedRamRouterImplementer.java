@@ -127,7 +127,7 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
       final long receiverTransferTime = ramStep.getReceiverSideWorstTransferTime(edge.getInit().getDataSize());
 
       // Adding the transfers of a ram route step
-      if (type == CommunicationRouter.transferType) {
+      if (type == CommunicationRouter.TRANSFER_TYPE) {
         List<ComponentInstance> nodes = ramStep.getSenderSideContentionNodes();
         AddTransferVertexTransaction transaction = null;
 
@@ -151,7 +151,7 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
         }
 
         return transaction;
-      } else if (type == CommunicationRouter.involvementType) {
+      } else if (type == CommunicationRouter.INVOLVEMENT_TYPE) {
         // Adding the involvements
         MapperDAGEdge incomingEdge = null;
         MapperDAGEdge outgoingEdge = null;
@@ -184,7 +184,7 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
               receiverTransferTime, getOrderManager()));
         }
 
-      } else if (type == CommunicationRouter.synchroType) {
+      } else if (type == CommunicationRouter.SYNCHRO_TYPE) {
 
         // Synchronizing the previously created transfers
         final List<MapperDAGVertex> toSynchronize = new ArrayList<>();
@@ -217,7 +217,7 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
          *
          * }
          */
-      } else if (type == CommunicationRouter.sendReceiveType) {
+      } else if (type == CommunicationRouter.SEND_RECEIVE_TYPE) {
 
         final Transaction transaction = new AddSendReceiveTransaction(lastTransaction, edge, getImplementation(),
             getOrderManager(), routeStepIndex, routeStep, TransferVertex.SEND_RECEIVE_COST);

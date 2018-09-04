@@ -612,9 +612,9 @@ public abstract class AbstractAbc implements IAbc {
 
       // Search among the operators with other type than the prefered one
       for (final ComponentInstance op : opList) {
-        // if (isMapable(currentvertex, op, true)) {
-        return op;
-        // }
+        if (isMapable(currentvertex, op, true)) {
+          return op;
+        }
       }
     }
 

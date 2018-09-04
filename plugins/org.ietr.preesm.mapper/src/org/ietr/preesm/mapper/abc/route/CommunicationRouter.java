@@ -58,6 +58,7 @@ import org.ietr.preesm.core.architecture.route.MemRouteStep;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.mapper.PreesmMapperException;
 import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.abc.route.calcul.RouteCalculator;
@@ -71,7 +72,6 @@ import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
 
-// TODO: Auto-generated Javadoc
 /**
  * Routes the communications. Based on bridge design pattern. The processing is delegated to implementers
  *
@@ -80,19 +80,19 @@ import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
 public class CommunicationRouter extends AbstractCommunicationRouter {
 
   /** The Constant transferType. */
-  public static final int transferType = 0;
+  public static final int TRANSFER_TYPE = 0;
 
   /** The Constant overheadType. */
-  public static final int overheadType = 1;
+  public static final int OVERHEAD_TYPE = 1;
 
   /** The Constant sendReceiveType. */
-  public static final int sendReceiveType = 2;
+  public static final int SEND_RECEIVE_TYPE = 2;
 
   /** The Constant synchroType. */
-  public static final int synchroType = 3;
+  public static final int SYNCHRO_TYPE = 3;
 
   /** The Constant involvementType. */
-  public static final int involvementType = 4;
+  public static final int INVOLVEMENT_TYPE = 4;
 
   /** The calculator. */
   private RouteCalculator calculator = null;
@@ -125,13 +125,11 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
   /**
    * adds all the necessary communication vertices with the given type.
    *
-   * @param implementation
-   *          the implementation
    * @param type
    *          the type
    */
   @Override
-  public void routeAll(final MapperDAG implementation, final Integer type) {
+  public void routeAll(final Integer type) {
     final TransactionManager localTransactionManager = new TransactionManager();
 
     // Get edges in scheduling order of their producers
@@ -145,7 +143,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 
     if (edgesInPrecedenceOrder.size() != this.implementation.edgeSet().size()) {
       // If this happens, this means that not all edges are covered by the previous while loop.
-      throw new RuntimeException("Some DAG edges are not covered");
+      throw new PreesmMapperException("Some DAG edges are not covered", null);
     }
 
     // We iterate the edges and process the ones with different allocations

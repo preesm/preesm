@@ -52,10 +52,10 @@ import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
+import org.ietr.preesm.mapper.PreesmMapperException;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * The scheduling order manager keeps a total order of the vertices and a partial order in each schedule. It is used by
  * the schedule edge adder to insert schedule edges. The scheduling order manager is observed by the time keeper and
@@ -102,7 +102,9 @@ public class OrderManager extends Observable {
 
     // Retrieves the schedule corresponding to the component
     final Schedule currentSched = getSchedule(cmp);
-
+    if (currentSched == null) {
+      throw new PreesmMapperException("Schedule should not be null", new NullPointerException());
+    }
     // Iterates the schedule to find the latest predecessor
     int maxPrec = -1;
     for (final MapperDAGVertex current : currentSched.getList()) {
@@ -142,11 +144,15 @@ public class OrderManager extends Observable {
       }
 
       // Adds vertex or synchro vertices after its chosen predecessor
+      final Schedule schedule = getSchedule(cmp);
+      if (schedule == null) {
+        throw new PreesmMapperException("Schedule should not be null", new NullPointerException());
+      }
       if (maxPrec >= 0) {
         final MapperDAGVertex previous = this.totalOrder.get(maxPrec);
-        getSchedule(cmp).insertAfter(previous, elt);
+        schedule.insertAfter(previous, elt);
       } else {
-        getSchedule(cmp).addFirst(elt);
+        schedule.addFirst(elt);
       }
 
     }
@@ -177,6 +183,9 @@ public class OrderManager extends Observable {
 
         // Gets the schedule of vertex
         final Schedule currentSchedule = getSchedule(effectiveCmp);
+        if (currentSchedule == null) {
+          throw new PreesmMapperException("Schedule should not be null", new NullPointerException());
+        }
 
         currentSchedule.addLast(vertex);
 
