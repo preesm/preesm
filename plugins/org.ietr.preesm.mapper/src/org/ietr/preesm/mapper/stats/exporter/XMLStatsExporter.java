@@ -42,13 +42,13 @@ import java.util.Set;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.architecture.util.DesignTools;
+import org.ietr.preesm.mapper.PreesmMapperException;
 import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.gantt.GanttComponent;
 import org.ietr.preesm.mapper.gantt.GanttData;
 import org.ietr.preesm.mapper.gantt.GanttTask;
 import org.ietr.preesm.mapper.ui.stats.StatGenerator;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class exports stats from an IAbc (architecture benchmark computer) in XML format.
  *
@@ -69,7 +69,7 @@ public class XMLStatsExporter {
   private static final String NLT = "\n\t";
 
   /** The result. */
-  private final StringBuffer result = new StringBuffer();
+  private final StringBuilder result = new StringBuilder();
 
   /**
    * Append.
@@ -93,11 +93,10 @@ public class XMLStatsExporter {
     // Generate the stats to write in an xml file
     final String content = generateXMLStats(abc);
     // Write the file
-    ;
     try (FileWriter out = new FileWriter(file)) {
       out.write(content);
     } catch (final IOException e) {
-      e.printStackTrace();
+      throw new PreesmMapperException("Could not export stats", e);
     }
   }
 
@@ -136,7 +135,7 @@ public class XMLStatsExporter {
     try {
       append(statGen.getDAGWorkLength());
     } catch (final WorkflowException e) {
-      e.printStackTrace();
+      throw new PreesmMapperException("Could not generate perf stats.", e);
     }
     append("\"");
     // Span length

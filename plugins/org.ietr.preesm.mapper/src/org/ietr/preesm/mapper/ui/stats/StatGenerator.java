@@ -41,12 +41,15 @@ package org.ietr.preesm.mapper.ui.stats;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import org.ietr.dftools.algorithm.model.PropertyBean;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.types.ImplementationPropertyNames;
+import org.ietr.preesm.core.types.VertexType;
 import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.SpanLengthCalculator;
@@ -60,7 +63,6 @@ import org.ietr.preesm.mapper.model.special.ReceiveVertex;
 import org.ietr.preesm.mapper.model.special.SendVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * Generating the statistics to be displayed in stat editor.
  *
@@ -117,7 +119,7 @@ public class StatGenerator {
    */
   public long getDAGSpanLength() {
     final Object span = this.abc.getDAG().getPropertyBean().getValue(SpanLengthCalculator.DAG_SPAN);
-    if ((span != null) && (span instanceof Long)) {
+    if (span instanceof Long) {
       return (Long) span;
     }
     return 0;
@@ -130,7 +132,7 @@ public class StatGenerator {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public long getDAGWorkLength() throws WorkflowException {
+  public long getDAGWorkLength() {
 
     long work = 0;
     final MapperDAG dag = this.abc.getDAG();
@@ -149,10 +151,6 @@ public class StatGenerator {
 
         work += ((MapperDAGVertex) vertex).getInit().getTime(adequateOp);
 
-        /*
-         * PreesmLogger.getLogger().log( Level.INFO, "task " + vertex.getName() + " duration " + ((MapperDAGVertex)
-         * vertex) .getInitialVertexProperty().getTime( adequateOp));
-         */
       }
     }
 
@@ -234,19 +232,19 @@ public class StatGenerator {
         final MapperDAGVertex scr = (MapperDAGVertex) me.getSource();
         final MapperDAGVertex tgt = (MapperDAGVertex) me.getTarget();
 
-        if (!e.getSource().getPropertyBean().getValue("vertexType").toString().equals("task")
-            || !e.getTarget().getPropertyBean().getValue("vertexType").toString().equals("task")) {
+        final PropertyBean comSrcBeans = scr.getPropertyBean();
+        final String srcVtxType = comSrcBeans.getValue(ImplementationPropertyNames.Vertex_vertexType).toString();
+        final PropertyBean comTgtBeans = tgt.getPropertyBean();
+        final String tgtVtxType = comTgtBeans.getValue(ImplementationPropertyNames.Vertex_vertexType).toString();
+
+        if (!VertexType.TYPE_TASK.equals(srcVtxType) || !VertexType.TYPE_TASK.equals(tgtVtxType)) {
           // Skip the edge if source or target is not a task
           continue;
         }
 
         if (!(me instanceof PrecedenceEdge)) {
-          final ComponentInstance srcOp = scr
-
-              .getEffectiveComponent();
-          final ComponentInstance tgtOp = tgt
-
-              .getEffectiveComponent();
+          final ComponentInstance srcOp = scr.getEffectiveComponent();
+          final ComponentInstance tgtOp = tgt.getEffectiveComponent();
 
           if (srcOp.getInstanceName().equals(operator.getInstanceName())
               || tgtOp.getInstanceName().equals(operator.getInstanceName())) {
