@@ -53,7 +53,6 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.tools.TLevelIterator;
 
-// TODO: Auto-generated Javadoc
 /**
  * Simulates an architecture having as many cores as necessary to execute one operation on one core. All core have the
  * main operator definition. These cores are all interconnected with media corresponding to the main medium definition.
@@ -77,7 +76,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
    *           the workflow exception
    */
   public InfiniteHomogeneousAbc(final AbcParameters params, final MapperDAG dag, final Design archi,
-      final PreesmScenario scenario) throws WorkflowException {
+      final PreesmScenario scenario) {
     this(params, dag, archi, TaskSchedType.Simple, scenario);
   }
 
@@ -98,7 +97,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
    *           the workflow exception
    */
   public InfiniteHomogeneousAbc(final AbcParameters params, final MapperDAG dag, final Design archi,
-      final TaskSchedType taskSchedType, final PreesmScenario scenario) throws WorkflowException {
+      final TaskSchedType taskSchedType, final PreesmScenario scenario) {
     super(params, dag, archi, AbcType.InfiniteHomogeneous, scenario);
     getType().setTaskSchedType(taskSchedType);
 
