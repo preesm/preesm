@@ -58,6 +58,7 @@ import org.ietr.preesm.core.scenario.papi.PapiEventSet;
 import org.ietr.preesm.core.scenario.papi.PapifyConfig;
 import org.ietr.preesm.core.scenario.papi.PapifyConfigManager;
 import org.ietr.preesm.core.types.DataType;
+import org.ietr.preesm.core.types.VertexType;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -482,7 +483,7 @@ public class ScenarioWriter {
     }
 
     for (final String vtxId : cst.getVertexPaths()) {
-      final Element vtxelt = this.dom.createElement("task");
+      final Element vtxelt = this.dom.createElement(VertexType.TYPE_TASK);
       constraintGroupElt.appendChild(vtxelt);
       vtxelt.setAttribute("name", vtxId);
     }

@@ -39,14 +39,16 @@ package org.ietr.preesm.core.algorithm.visitors;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import org.ietr.dftools.algorithm.model.PropertyBean;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
+import org.ietr.preesm.core.types.ImplementationPropertyNames;
+import org.ietr.preesm.core.types.VertexType;
 
-// TODO: Auto-generated Javadoc
 /**
  * Visitor to identify the inter-core communications of a mapped DAG. This visitor is inspired by
  * CommunicationRouter.routeAll() implementation.
@@ -84,20 +86,21 @@ public class CommunicationIdentifierVisitor implements IGraphVisitor<DirectedAcy
   public void visit(final DAGEdge currentEdge) {
     // First, we check that both source and target vertices are tasks
     // i.e. we skip existing send/receive nodes
-    if (currentEdge.getSource().getPropertyBean().getValue("vertexType").toString().equals("task")
-        && currentEdge.getTarget().getPropertyBean().getValue("vertexType").toString().equals("task")) {
+    final DAGVertex src = currentEdge.getSource();
+    final PropertyBean srcBeans = src.getPropertyBean();
+    final String srcType = srcBeans.getValue(ImplementationPropertyNames.Vertex_vertexType).toString();
+    final DAGVertex tgt = currentEdge.getTarget();
+    final PropertyBean tgtBeans = tgt.getPropertyBean();
+    final String tgtType = tgtBeans.getValue(ImplementationPropertyNames.Vertex_vertexType).toString();
+    if (VertexType.TYPE_TASK.equals(srcType) && VertexType.TYPE_TASK.equals(tgtType)) {
 
-      final ComponentInstance sourceComponent = (ComponentInstance) (currentEdge.getSource()).getPropertyBean()
-          .getValue("Operator");
-      final ComponentInstance targetComponent = (ComponentInstance) (currentEdge.getTarget()).getPropertyBean()
-          .getValue("Operator");
+      final ComponentInstance sourceComponent = (ComponentInstance) srcBeans.getValue("Operator");
+      final ComponentInstance targetComponent = (ComponentInstance) tgtBeans.getValue("Operator");
 
-      if ((sourceComponent != null) && (targetComponent != null)) {
-        if (!sourceComponent.equals(targetComponent)) {
-          // This code is reached only if the current edge is an
-          // inter-core communication
-          this.interCoreComm.add(currentEdge);
-        }
+      if ((sourceComponent != null) && (targetComponent != null) && (!sourceComponent.equals(targetComponent))) {
+        // This code is reached only if the current edge is an
+        // inter-core communication
+        this.interCoreComm.add(currentEdge);
       }
     }
   }
