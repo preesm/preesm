@@ -233,9 +233,12 @@ public class StatGenerator {
         final MapperDAGVertex tgt = (MapperDAGVertex) me.getTarget();
 
         final PropertyBean comSrcBeans = scr.getPropertyBean();
-        final String srcVtxType = comSrcBeans.getValue(ImplementationPropertyNames.Vertex_vertexType).toString();
         final PropertyBean comTgtBeans = tgt.getPropertyBean();
-        final String tgtVtxType = comTgtBeans.getValue(ImplementationPropertyNames.Vertex_vertexType).toString();
+        final Object srcVtxTypeObj = comSrcBeans.getValue(ImplementationPropertyNames.Vertex_vertexType);
+        final Object tgtVtxTypeObj = comTgtBeans.getValue(ImplementationPropertyNames.Vertex_vertexType);
+
+        final String srcVtxType = srcVtxTypeObj.toString();
+        final String tgtVtxType = tgtVtxTypeObj.toString();
 
         if (!VertexType.TYPE_TASK.equals(srcVtxType) || !VertexType.TYPE_TASK.equals(tgtVtxType)) {
           // Skip the edge if source or target is not a task
