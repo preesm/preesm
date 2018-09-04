@@ -42,6 +42,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentSkipListSet;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -56,43 +57,11 @@ public class RoutingTable {
   /**
    * A couple of operators to which the routes are linked.
    */
-  private class OperatorCouple {
+  private class OperatorCouple extends MutablePair<ComponentInstance, ComponentInstance> {
+    private static final long serialVersionUID = -451571160460519876L;
 
-    /** The op 1. */
-    private final ComponentInstance op1;
-
-    /** The op 2. */
-    private final ComponentInstance op2;
-
-    /**
-     * Instantiates a new operator couple.
-     *
-     * @param op1
-     *          the op 1
-     * @param op2
-     *          the op 2
-     */
-    public OperatorCouple(final ComponentInstance op1, final ComponentInstance op2) {
-      super();
-      this.op1 = op1;
-      this.op2 = op2;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(final Object obj) {
-      if (obj instanceof OperatorCouple) {
-        final OperatorCouple doublet = (OperatorCouple) obj;
-        if (doublet.getOp1().getInstanceName().equals(getOp1().getInstanceName())
-            && doublet.getOp2().getInstanceName().equals(getOp2().getInstanceName())) {
-          return true;
-        }
-      }
-      return false;
+    public OperatorCouple(ComponentInstance op1, ComponentInstance op2) {
+      super(op1, op2);
     }
 
     /*
@@ -102,7 +71,7 @@ public class RoutingTable {
      */
     @Override
     public String toString() {
-      return "(" + this.op1 + "," + this.op2 + ")";
+      return "(" + this.getOp1() + "," + this.getOp2() + ")";
     }
 
     /**
@@ -111,7 +80,7 @@ public class RoutingTable {
      * @return the op 1
      */
     public ComponentInstance getOp1() {
-      return this.op1;
+      return this.getLeft();
     }
 
     /**
@@ -120,7 +89,7 @@ public class RoutingTable {
      * @return the op 2
      */
     public ComponentInstance getOp2() {
-      return this.op2;
+      return this.getRight();
     }
   }
 
