@@ -40,17 +40,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
+import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 /**
  *
  */
-public class ScheduledDAGIterator implements Iterator<DAGVertex> {
+public class ScheduledDAGIterator implements Iterator<MapperDAGVertex> {
 
-  private final List<DAGVertex> vertexInSchedulingOrder;
-  private int                   iterator;
+  private final List<MapperDAGVertex> vertexInSchedulingOrder;
+  private int                         iterator;
 
   /**
    *
@@ -60,9 +60,9 @@ public class ScheduledDAGIterator implements Iterator<DAGVertex> {
 
     final TopologicalDAGIterator iter = new TopologicalDAGIterator(algo);
     // Fill a Map with Scheduling order and DAGvertices
-    final Map<Integer, DAGVertex> orderedDAGVertexMap = new TreeMap<>();
+    final Map<Integer, MapperDAGVertex> orderedDAGVertexMap = new TreeMap<>();
     while (iter.hasNext()) {
-      final DAGVertex vertex = iter.next();
+      final MapperDAGVertex vertex = (MapperDAGVertex) iter.next();
       final Integer order = vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder,
           Integer.class);
       orderedDAGVertexMap.put(order, vertex);
@@ -77,7 +77,7 @@ public class ScheduledDAGIterator implements Iterator<DAGVertex> {
   }
 
   @Override
-  public DAGVertex next() {
+  public MapperDAGVertex next() {
     return this.vertexInSchedulingOrder.get(this.iterator++);
   }
 

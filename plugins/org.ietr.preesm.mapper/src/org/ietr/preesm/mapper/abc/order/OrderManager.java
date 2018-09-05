@@ -562,16 +562,8 @@ public class OrderManager extends Observable {
    * @return the vertex list
    */
   public List<MapperDAGVertex> getVertexList(final ComponentInstance cmp) {
-
-    Schedule s = null;
+    final Schedule s = getSchedule(cmp);
     final List<MapperDAGVertex> vList = new ArrayList<>();
-
-    // Preventing from creating several schedules with same name
-    for (final ComponentInstance o : this.schedules.keySet()) {
-      if (o.getInstanceName().equals(cmp.getInstanceName())) {
-        s = this.schedules.get(o);
-      }
-    }
 
     if (s != null) {
       for (final MapperDAGVertex elt : s.getList()) {
@@ -581,7 +573,7 @@ public class OrderManager extends Observable {
       }
     }
 
-    return vList;
+    return Collections.unmodifiableList(vList);
   }
 
   /**
