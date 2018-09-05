@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Update Eclipse-EMF maven repo URL;
 * Update release scripts;
 
 ### Bug fix

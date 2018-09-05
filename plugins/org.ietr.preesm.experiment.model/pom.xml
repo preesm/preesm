@@ -57,19 +57,21 @@
 		<ecore-xtext-version>1.3.0</ecore-xtext-version>
 		<ecore-xcore-version>1.6.0</ecore-xcore-version>
 		<ecore-xcore-lib-version>1.2.0</ecore-xcore-lib-version>
+    
+    <eclipsemf-repo>https://oss.sonatype.org/content/repositories/orgeclipseemf-1058/</eclipsemf-repo>
   </properties>
 
   <repositories>
 		<repository>
 			<id>emf</id>
-			<url>https://oss.sonatype.org/content/repositories/orgeclipseemf-1057/</url>
+			<url>${eclipsemf-repo}</url>
 		</repository>
 	</repositories>
 
 	<pluginRepositories>
 		<pluginRepository>
 			<id>emfp</id>
-			<url>https://oss.sonatype.org/content/repositories/orgeclipseemf-1057/</url>
+			<url>${eclipsemf-repo}</url>
 		</pluginRepository>
 	</pluginRepositories>
 
