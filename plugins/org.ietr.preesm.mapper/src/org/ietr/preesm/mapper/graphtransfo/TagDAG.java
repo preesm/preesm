@@ -103,7 +103,7 @@ public class TagDAG {
    *           the invalid expression exception
    */
   public void tag(final MapperDAG dag, final Design architecture, final PreesmScenario scenario, final LatencyAbc simu,
-      final EdgeSchedType edgeSchedType) {
+      final EdgeSchedType edgeSchedType) throws InvalidExpressionException {
 
     final PropertyBean bean = dag.getPropertyBean();
     bean.setValue(ImplementationPropertyNames.Graph_AbcReferenceType, simu.getType());
@@ -152,7 +152,7 @@ public class TagDAG {
 
     // Updates graph time
     if (simu instanceof LatencyAbc) {
-      simu.updateTimings();
+      ((LatencyAbc) simu).updateTimings();
     }
 
     // Tagging the vertices with informations for code generation
@@ -234,13 +234,13 @@ public class TagDAG {
 
             .getEffectiveOperator();
         final long singleRepeatTime = currentVertex.getInit().getTime(effectiveOperator);
-        final long nbRepeat = currentVertex.getInit().getNbRepeat();
+        final int nbRepeat = currentVertex.getInit().getNbRepeat();
         final long totalTime = nbRepeat * singleRepeatTime;
         bean.setValue(ImplementationPropertyNames.Task_duration, totalTime);
 
         // Tags the DAG with vertex starttime when possible
         if (simu instanceof LatencyAbc) {
-          final long startTime = (simu).getTLevel(currentVertex, false);
+          final long startTime = ((LatencyAbc) simu).getTLevel(currentVertex, false);
           bean.setValue(ImplementationPropertyNames.Start_time, startTime);
         }
       }
@@ -260,7 +260,7 @@ public class TagDAG {
    * @throws InvalidExpressionException
    *           the invalid expression exception
    */
-  public void addAllAggregates(final MapperDAG dag, final PreesmScenario scenario) {
+  public void addAllAggregates(final MapperDAG dag, final PreesmScenario scenario) throws InvalidExpressionException {
 
     MapperDAGEdge edge;
 
@@ -285,7 +285,8 @@ public class TagDAG {
    *           the invalid expression exception
    */
   @SuppressWarnings("unchecked")
-  public void addAggregateFromSDF(final MapperDAGEdge edge, final PreesmScenario scenario) {
+  public void addAggregateFromSDF(final MapperDAGEdge edge, final PreesmScenario scenario)
+      throws InvalidExpressionException {
 
     final BufferAggregate agg = new BufferAggregate();
 
@@ -294,7 +295,7 @@ public class TagDAG {
       final SDFEdge sdfAggMember = (SDFEdge) aggMember;
       final DataType dataType = scenario.getSimulationManager().getDataType(sdfAggMember.getDataType().toString());
       final BufferProperties props = new BufferProperties(dataType, sdfAggMember.getSourceInterface().getName(),
-          sdfAggMember.getTargetInterface().getName(), (int) sdfAggMember.getProd().longValue());
+          sdfAggMember.getTargetInterface().getName(), sdfAggMember.getProd().intValue());
 
       agg.add(props);
     }
@@ -313,14 +314,18 @@ public class TagDAG {
    * @throws InvalidExpressionException
    *           the invalid expression exception
    */
-  public void addAggregate(final MapperDAGEdge edge, final PreesmScenario scenario) {
+  public void addAggregate(final MapperDAGEdge edge, final PreesmScenario scenario) throws InvalidExpressionException {
     final BufferAggregate agg = new BufferAggregate();
     for (final AbstractEdge<?, ?> aggMember : edge.getAggregate()) {
       final DAGEdge dagEdge = (DAGEdge) aggMember;
       final String value = (String) dagEdge.getPropertyBean().getValue(SDFEdge.DATA_TYPE);
       final DataType dataType = scenario.getSimulationManager().getDataType(value);
+      // final int dataSize = (Integer) dagEdge.getPropertyBean().getValue(SDFEdge.DATA_SIZE);
+      // final BufferProperties props = new BufferProperties(dataType, dagEdge.getSourceLabel(),
+      // dagEdge.getTargetLabel(),
+      // dagEdge.getWeight().intValue() / dataSize);
       final BufferProperties props = new BufferProperties(dataType, dagEdge.getSourceLabel(), dagEdge.getTargetLabel(),
-          (int) dagEdge.getWeight().longValue());
+          dagEdge.getWeight().intValue());
       agg.add(props);
     }
     edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);

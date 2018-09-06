@@ -49,6 +49,7 @@ import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.mapper.abc.SpecialVertexManager;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
  * Properties of a mapped vertex set when converting dag to mapper dag.
  *
@@ -66,14 +67,14 @@ public class VertexInit {
   private final List<ComponentInstance> operators;
 
   /** Number of repetitions that may ponderate the timing. */
-  private long nbRepeat;
+  private int nbRepeat;
 
   /**
    * Gets the nb repeat.
    *
    * @return the nb repeat
    */
-  public long getNbRepeat() {
+  public int getNbRepeat() {
     return this.nbRepeat;
   }
 
@@ -94,7 +95,7 @@ public class VertexInit {
    * @param nbRepeat
    *          the new nb repeat
    */
-  public void setNbRepeat(final long nbRepeat) {
+  public void setNbRepeat(final int nbRepeat) {
     this.nbRepeat = nbRepeat;
   }
 

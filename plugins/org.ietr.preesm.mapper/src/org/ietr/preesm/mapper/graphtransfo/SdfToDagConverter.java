@@ -66,7 +66,6 @@ import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.RelativeConstraintManager;
 import org.ietr.preesm.core.scenario.Timing;
-import org.ietr.preesm.mapper.PreesmMapperException;
 import org.ietr.preesm.mapper.abc.SpecialVertexManager;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
@@ -77,16 +76,13 @@ import org.ietr.preesm.mapper.model.property.EdgeInit;
 import org.ietr.preesm.mapper.model.property.VertexInit;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 
+// TODO: Auto-generated Javadoc
 /**
  * Uses the SDF4J library to convert the input SDF into a DAG before scheduling.
  *
  * @author mpelcat
  */
 public class SdfToDagConverter {
-
-  private SdfToDagConverter() {
-    // forbid instantiation
-  }
 
   /**
    * Converts a SDF in a DAG and retrieves the interesting properties from the SDF.
@@ -125,7 +121,9 @@ public class SdfToDagConverter {
     try {
       sdf.accept(visitor);
     } catch (final SDF4JException e) {
-      throw new PreesmMapperException("Error", e);
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      WorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
     }
 
     // Adds the necessary properties to vertices and edges
@@ -135,9 +133,8 @@ public class SdfToDagConverter {
       WorkflowLogger.getLogger().log(Level.SEVERE, "Can not map a DAG with no vertex.");
     } else {
       WorkflowLogger.getLogger().log(Level.INFO, "Conversion finished.");
-      final String msg = "mapping a DAG with " + dag.vertexSet().size() + " vertices and " + dag.edgeSet().size()
-          + " edges.";
-      WorkflowLogger.getLogger().log(Level.INFO, msg);
+      WorkflowLogger.getLogger().log(Level.INFO,
+          "mapping a DAG with " + dag.vertexSet().size() + " vertices and " + dag.edgeSet().size() + " edges.");
     }
 
     scenario.getDAGs2SDFs().put(dag.getName(), sdfIn);
@@ -154,15 +151,18 @@ public class SdfToDagConverter {
    *          the architecture
    * @param scenario
    *          the scenario
+   * @return The DAG with initial properties
    */
-  public static void addInitialProperties(final MapperDAG dag, final Design architecture,
+  public static MapperDAG addInitialProperties(final MapperDAG dag, final Design architecture,
       final PreesmScenario scenario) {
+
     SdfToDagConverter.addInitialVertexProperties(dag, architecture, scenario);
-    SdfToDagConverter.addInitialEdgeProperties(dag);
-    SdfToDagConverter.addInitialSpecialVertexProperties(dag, scenario);
+    SdfToDagConverter.addInitialEdgeProperties(dag, architecture, scenario);
+    SdfToDagConverter.addInitialSpecialVertexProperties(dag, architecture, scenario);
     SdfToDagConverter.addInitialConstraintsProperties(dag, architecture, scenario);
-    SdfToDagConverter.addInitialRelativeConstraintsProperties(dag, scenario);
-    SdfToDagConverter.addInitialTimingProperties(dag);
+    SdfToDagConverter.addInitialRelativeConstraintsProperties(dag, architecture, scenario);
+    SdfToDagConverter.addInitialTimingProperties(dag, architecture, scenario);
+    return null;
   }
 
   /**
@@ -187,10 +187,13 @@ public class SdfToDagConverter {
    *
    * @param dag
    *          the dag
+   * @param architecture
+   *          the architecture
    * @param scenario
    *          the scenario
    */
-  public static void addInitialRelativeConstraintsProperties(final MapperDAG dag, final PreesmScenario scenario) {
+  public static void addInitialRelativeConstraintsProperties(final MapperDAG dag, final Design architecture,
+      final PreesmScenario scenario) {
 
     // Initial relative constraints are stored in the scenario
     final RelativeConstraintManager manager = scenario.getRelativeconstraintManager();
@@ -229,8 +232,14 @@ public class SdfToDagConverter {
    *
    * @param dag
    *          the dag
+   * @param architecture
+   *          the architecture
+   * @param scenario
+   *          the scenario
    */
-  public static void addInitialTimingProperties(final MapperDAG dag) {
+  public static void addInitialTimingProperties(final MapperDAG dag, final Design architecture,
+      final PreesmScenario scenario) {
+
     // New timing objects are created they are not initialized here
     for (final DAGVertex v : dag.vertexSet()) {
       dag.getTimings().dedicate((MapperDAGVertex) v);
@@ -302,7 +311,7 @@ public class SdfToDagConverter {
       final VertexInit currentVertexInit = currentVertex.getInit();
 
       // Setting repetition number
-      final long nbRepeat = currentVertex.getNbRepeat().longValue();
+      final int nbRepeat = currentVertex.getNbRepeat().intValue();
       currentVertexInit.setNbRepeat(nbRepeat);
 
       // The SDF vertex id is used to reference the timings
@@ -315,7 +324,7 @@ public class SdfToDagConverter {
       // Special vertices time computation is delayed until edge sizes are initialized
       final boolean special = SpecialVertexManager.isSpecial(currentVertex);
       if (!special) {
-        if (!timelist.isEmpty()) {
+        if (timelist.size() != 0) {
           // If there is no time defined
           while (listiterator.hasNext()) {
             final Timing timing = listiterator.next();
@@ -341,10 +350,13 @@ public class SdfToDagConverter {
    *
    * @param dag
    *          the dag
+   * @param architecture
+   *          the architecture
    * @param scenario
    *          the scenario
    */
-  public static void addInitialSpecialVertexProperties(final MapperDAG dag, final PreesmScenario scenario) {
+  public static void addInitialSpecialVertexProperties(final MapperDAG dag, final Design architecture,
+      final PreesmScenario scenario) {
 
     // Iterating over dag vertices
     final TopologicalDAGIterator dagiterator = new TopologicalDAGIterator(dag);
@@ -380,8 +392,13 @@ public class SdfToDagConverter {
    *
    * @param dag
    *          the dag
+   * @param architecture
+   *          the architecture
+   * @param scenario
+   *          the scenario
    */
-  public static void addInitialEdgeProperties(final MapperDAG dag) {
+  public static void addInitialEdgeProperties(final MapperDAG dag, final Design architecture,
+      final PreesmScenario scenario) {
     /**
      * Importing data edge weights and multiplying by type size when available
      */
@@ -389,7 +406,7 @@ public class SdfToDagConverter {
     while (edgeiterator.hasNext()) {
       final MapperDAGEdge currentEdge = (MapperDAGEdge) edgeiterator.next();
       final EdgeInit currentEdgeInit = currentEdge.getInit();
-      currentEdgeInit.setDataSize(currentEdge.getWeight().longValue());
+      currentEdgeInit.setDataSize(currentEdge.getWeight().intValue());
 
     }
   }

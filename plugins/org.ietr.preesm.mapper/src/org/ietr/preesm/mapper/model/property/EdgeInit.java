@@ -45,7 +45,7 @@ package org.ietr.preesm.mapper.model.property;
 public class EdgeInit {
 
   /** The data size. */
-  private long dataSize = 0;
+  private int dataSize = 0;
 
   /**
    * Instantiates a new edge init.
@@ -82,7 +82,7 @@ public class EdgeInit {
    *
    * @return the data size
    */
-  public long getDataSize() {
+  public int getDataSize() {
     return this.dataSize;
   }
 
@@ -92,7 +92,7 @@ public class EdgeInit {
    * @param dataSize
    *          the new data size
    */
-  public void setDataSize(final long dataSize) {
+  public void setDataSize(final int dataSize) {
     this.dataSize = dataSize;
   }
 }
