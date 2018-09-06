@@ -45,6 +45,7 @@ import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -56,6 +57,7 @@ import org.ietr.preesm.pimm.algorithm.helper.PiBRV;
 import org.ietr.preesm.pimm.algorithm.helper.PiMMHandler;
 import org.ietr.preesm.pimm.algorithm.helper.PiMMHelperException;
 import org.ietr.preesm.pimm.algorithm.helper.TopologyBasedBRV;
+import org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor.StaticPiMM2ASrPiMMVisitor;
 import org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor.StaticPiMM2SrDAGVisitor;
 
 /**
@@ -110,7 +112,12 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
       String msg = "Parameters and rates evaluations: " + timer + "s.";
       WorkflowLogger.getLogger().log(Level.INFO, msg);
       // 2. We perform the delay transformation step that deals with persistence
+      timer.reset();
+      timer.start();
       this.piHandler.removePersistence();
+      timer.stop();
+      String msg2 = "Persistence removal: " + timer + "s.";
+      WorkflowLogger.getLogger().log(Level.INFO, msg2);
     } catch (PiMMHelperException e) {
       throw new StaticPiMM2SrDAGException(e.getMessage());
     }
@@ -130,8 +137,8 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     // also in ScriptRunner.xtend, there is a part where the aggregate list is flatten, check that also
     aggregateEdges(result);
     timer.stop();
-    final String msg2 = "Edge aggregation performed in " + timer + "s.";
-    WorkflowLogger.getLogger().log(Level.INFO, msg2);
+    final String msg = "Edge aggregation: " + timer + "s.";
+    WorkflowLogger.getLogger().log(Level.INFO, msg);
     return result;
   }
 
@@ -141,16 +148,28 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
    * @return the resulting SR DAG
    */
   private MapperDAG convert2SRDAG() {
+    final PiGraph acyclicSRPiMM = PiMMUserFactory.instance.createPiGraph();
+    acyclicSRPiMM.setName(this.graph.getName());
+    final StopWatch timer = new StopWatch();
+    final StaticPiMM2ASrPiMMVisitor visitorPiMM2ASRPiMM = new StaticPiMM2ASrPiMMVisitor(acyclicSRPiMM, this.graphBRV,
+        this.scenario);
+    timer.start();
+    // Transform Multi-Rate PiMM to Acyclic Single-Rate PiMM
+    visitorPiMM2ASRPiMM.doSwitch(this.graph);
+    timer.stop();
+    final String msg = "Acyclic Single-Rate transformation: " + timer + "s.";
+    WorkflowLogger.getLogger().log(Level.INFO, msg);
+
     StaticPiMM2SrDAGVisitor visitor;
     visitor = new StaticPiMM2SrDAGVisitor(new MapperDAG(new MapperEdgeFactory(), this.graph), this.graphBRV,
         this.scenario);
-    final StopWatch timer = new StopWatch();
+    // Convert the PiMM vertices to DAG vertices
+    timer.reset();
     timer.start();
-    // Do the actual transformation of PiMM to Single Rate DAG
     visitor.doSwitch(this.graph);
     timer.stop();
-    final String msg = "Dag transformation performed in " + timer + "s.";
-    WorkflowLogger.getLogger().log(Level.INFO, msg);
+    final String msg2 = "Dag conversion: " + timer + "s.";
+    WorkflowLogger.getLogger().log(Level.INFO, msg2);
     timer.reset();
     // Get the result
     final MapperDAG result = visitor.getResult();

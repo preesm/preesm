@@ -49,7 +49,6 @@ import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
-import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
@@ -89,16 +88,11 @@ public class PiMMSRVerticesLinker {
   // Sink Port
   private DataInputPort sinkPort;
 
-  // The fifo
-  private final Fifo   fifo;
-  private final String fifoName;
+  // The FIFO
+  private final Fifo fifo;
 
   // The DAG in which we operate
   private final PiGraph dag;
-
-  // Port modifiers annotations
-  private final String sourceModifier;
-  private final String targetModifier;
 
   // Delay init / end id
   String delayInitID;
@@ -166,23 +160,6 @@ public class PiMMSRVerticesLinker {
     this.sourcePort = fifo.getSourcePort();
     this.sinkPort = fifo.getTargetPort();
     this.dag = dag;
-    this.sourceModifier = getAnnotationFromPort(this.sourcePort);
-    this.targetModifier = getAnnotationFromPort(this.sinkPort);
-    this.fifoName = this.fifo.getId().replace(".", "_").replace("-", "_");
-  }
-
-  /**
-   * Convert annotations from to.
-   *
-   * @param piPort
-   *          the pi port
-   * @param edge
-   *          the edge
-   * @param property
-   *          the property
-   */
-  private String getAnnotationFromPort(final DataPort piPort) {
-    return piPort.getAnnotation().getLiteral();
   }
 
   /**
@@ -302,39 +279,26 @@ public class PiMMSRVerticesLinker {
         break;
       }
       toRemove.add(src);
+      // 0. Get the current source vertex
       final AbstractActor sourceVertex = (AbstractActor) src.getSource();
 
-      // Retrieve the source port and if needed, creates it
-      DataOutputPort currentSourcePort = (DataOutputPort) sourceVertex.lookupPort(this.sourcePort.getName());
-      if (currentSourcePort == null) {
-        currentSourcePort = PiMMUserFactory.instance.createDataOutputPort();
-        currentSourcePort.setName(src.getSourceLabel());
-        currentSourcePort.getPortRateExpression().setExpressionString(Long.toString(prod));
-        sourceVertex.getDataOutputPorts().add(currentSourcePort);
-      }
+      // 1. Retrieve the source port and if needed, creates it
+      final DataOutputPort currentSourcePort = getCurrentSourcePort(src, prod, sourceVertex);
 
-      // Retrieve the sink port and if needed, creates it
-      DataInputPort currentSinkPort = (DataInputPort) sinkVertex.lookupPort(this.sinkPort.getName());
-      if (currentSinkPort == null) {
-        currentSinkPort = PiMMUserFactory.instance.createDataInputPort();
-        currentSinkPort.setName(currentSink.getTargetLabel());
-        currentSinkPort.getPortRateExpression().setExpressionString(Long.toString(prod));
-        sinkVertex.getDataInputPorts().add(currentSinkPort);
-      }
+      // 2. Retrieve the sink port and if needed, creates it
+      final DataInputPort currentSinkPort = getCurrentSinkPort(currentSink, prod, sinkVertex);
 
-      // Creates the Fifo and connect the ports
-      final Fifo newFifo = PiMMUserFactory.instance.createFifo();
-      newFifo.setSourcePort(currentSourcePort);
-      newFifo.setTargetPort(currentSinkPort);
-      graph.addFifo(newFifo);
+      // 3. Creates the Fifo and connect the ports
+      createFifo(graph, currentSourcePort, currentSinkPort);
 
-      // If the target is join (new or not) /roundbuffer with new ports
+      // 4. If the target is join (new or not) /roundbuffer with new ports
       final boolean isJoinOrRoundBuffer = (sinkVertex != currentSink.getSink()) || (implode && !isSinkJoinActor);
       if (isJoinOrRoundBuffer) {
         // Update name and source port modifier
         currentSinkPort.setName(currentSinkPort.getName() + "_" + Long.toString(cons));
         currentSinkPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);
       }
+      // 5. Update the remaining consumption
       cons = cons - prod;
     }
     // Remove all sources that got connected
@@ -344,6 +308,26 @@ public class PiMMSRVerticesLinker {
     // Removing the sink for the set condition
     final boolean shouldRemoveSink = (prod > cons) && (cons != 0);
     return !shouldRemoveSink;
+  }
+
+  /**
+   * Creates a Fifo and connects it to the source / target ports. Finally, the Fifo is added to the graph
+   * 
+   * @param graph
+   *          the graph in which the fifo must be added
+   * @param sourcePort
+   *          the source port
+   * @param targetPort
+   *          the target port
+   * @return the created fifo
+   */
+  private void createFifo(final PiGraph graph, final DataOutputPort sourcePort, final DataInputPort targetPort) {
+    final Fifo newFifo = PiMMUserFactory.instance.createFifo();
+    newFifo.setSourcePort(sourcePort);
+    newFifo.setTargetPort(targetPort);
+    newFifo.setType(this.fifo.getType());
+    // Add the fifo to the graph
+    graph.addFifo(newFifo);
   }
 
   /**
@@ -370,16 +354,8 @@ public class PiMMSRVerticesLinker {
     joinActor.getDataOutputPorts().add(outputPort);
 
     // Create the FIFO to connect the Join to the Sink
-    final Fifo newFifo = PiMMUserFactory.instance.createFifo();
     final DataInputPort targetPort = (DataInputPort) sinkVertex.lookupPort(currentSink.getTargetLabel());
-    if (targetPort != null) {
-      newFifo.setTargetPort(targetPort);
-    }
-    newFifo.setSourcePort(outputPort);
-    newFifo.setType(this.fifo.getType());
-
-    // Add the fifo to the graph
-    graph.addFifo(newFifo);
+    createFifo(graph, outputPort, targetPort);
 
     // Add the join actor to the graph
     graph.addActor(joinActor);
@@ -433,33 +409,19 @@ public class PiMMSRVerticesLinker {
         break;
       }
       toRemove.add(snk);
+      // 0. Get the current sink vertex
       final AbstractActor sinkVertex = (AbstractActor) snk.getSink();
 
-      // Retrieve the source port and if needed, creates it
-      DataOutputPort currentSourcePort = (DataOutputPort) sourceVertex.lookupPort(this.sourcePort.getName());
-      if (currentSourcePort == null) {
-        currentSourcePort = PiMMUserFactory.instance.createDataOutputPort();
-        currentSourcePort.setName(currentSource.getSourceLabel());
-        currentSourcePort.getPortRateExpression().setExpressionString(Long.toString(cons));
-        sourceVertex.getDataOutputPorts().add(currentSourcePort);
-      }
+      // 1. Retrieve the source port and if needed, creates it
+      final DataOutputPort currentSourcePort = getCurrentSourcePort(currentSource, cons, sourceVertex);
 
-      // Retrieve the sink port and if needed, creates it
-      DataInputPort currentSinkPort = (DataInputPort) sinkVertex.lookupPort(this.sinkPort.getName());
-      if (currentSinkPort == null) {
-        currentSinkPort = PiMMUserFactory.instance.createDataInputPort();
-        currentSinkPort.setName(snk.getTargetLabel());
-        currentSinkPort.getPortRateExpression().setExpressionString(Long.toString(cons));
-        sinkVertex.getDataInputPorts().add(currentSinkPort);
-      }
+      // 2. Retrieve the sink port and if needed, creates it
+      final DataInputPort currentSinkPort = getCurrentSinkPort(snk, cons, sinkVertex);
 
-      // Creates the Fifo and connect the ports
-      final Fifo newFifo = PiMMUserFactory.instance.createFifo();
-      newFifo.setSourcePort(currentSourcePort);
-      newFifo.setTargetPort(currentSinkPort);
-      graph.addFifo(newFifo);
+      // 3. Creates the FIFO and connect the ports
+      createFifo(graph, currentSourcePort, currentSinkPort);
 
-      // If the target is join (new or not) /roundbuffer with new ports
+      // 4. If the target is join (new or not) /roundbuffer with new ports
       final boolean isForkOrBroadcast = !((sourceVertex == currentSource.getSource())
           && (!explode || !(isSourceBroadcastActor || isSourceForkActor)));
       if (isForkOrBroadcast) {
@@ -467,6 +429,7 @@ public class PiMMSRVerticesLinker {
         currentSourcePort.setName(currentSourcePort.getName() + "_" + Long.toString(prod));
         currentSourcePort.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
       }
+      // 5. Update the remaining production
       prod = prod - cons;
     }
     // Remove all sources that got connected
@@ -476,6 +439,50 @@ public class PiMMSRVerticesLinker {
     // Removing the source for the set condition
     final boolean shouldRemoveSource = (cons > prod) && (prod != 0);
     return !shouldRemoveSource;
+  }
+
+  /**
+   * Return the current source port, creates it if it does not exists
+   * 
+   * @param src
+   *          current source connection
+   * @param rate
+   *          rate to set on the port
+   * @param sourceVertex
+   *          source vertex
+   * @return
+   */
+  private DataOutputPort getCurrentSourcePort(final SourceConnection src, long rate, AbstractActor sourceVertex) {
+    DataOutputPort currentSourcePort = (DataOutputPort) sourceVertex.lookupPort(this.sourcePort.getName());
+    if (currentSourcePort == null) {
+      currentSourcePort = PiMMUserFactory.instance.createDataOutputPort();
+      currentSourcePort.setName(src.getSourceLabel());
+      currentSourcePort.getPortRateExpression().setExpressionString(Long.toString(rate));
+      sourceVertex.getDataOutputPorts().add(currentSourcePort);
+    }
+    return currentSourcePort;
+  }
+
+  /**
+   * Return the current sink port, creates it if it does not exists
+   * 
+   * @param snk
+   *          current sink connection
+   * @param rate
+   *          rate to set on the port
+   * @param sinkVertex
+   *          sink vertex
+   * @return
+   */
+  private DataInputPort getCurrentSinkPort(final SinkConnection snk, long rate, final AbstractActor sinkVertex) {
+    DataInputPort currentSinkPort = (DataInputPort) sinkVertex.lookupPort(this.sinkPort.getName());
+    if (currentSinkPort == null) {
+      currentSinkPort = PiMMUserFactory.instance.createDataInputPort();
+      currentSinkPort.setName(snk.getTargetLabel());
+      currentSinkPort.getPortRateExpression().setExpressionString(Long.toString(rate));
+      sinkVertex.getDataInputPorts().add(currentSinkPort);
+    }
+    return currentSinkPort;
   }
 
   /**
@@ -497,23 +504,16 @@ public class PiMMSRVerticesLinker {
     // Set name property
     forkActor.setName(explodeName);
     // Add a DataOutputPort
-    final DataInputPort inputPort = PiMMUserFactory.instance.createDataInputPort();
-    inputPort.setName(this.sinkPort.getName());
-    inputPort.getPortRateExpression().setExpressionString(Long.toString(currentSource.getProduction()));
-    inputPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);
-    forkActor.getDataInputPorts().add(inputPort);
+    final DataInputPort targetPort = PiMMUserFactory.instance.createDataInputPort();
+    targetPort.setName(this.sinkPort.getName());
+    targetPort.getPortRateExpression().setExpressionString(Long.toString(currentSource.getProduction()));
+    targetPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);
+    forkActor.getDataInputPorts().add(targetPort);
 
     // Create the FIFO to connect the Join to the Sink
-    final Fifo newFifo = PiMMUserFactory.instance.createFifo();
     final DataOutputPort currentSourcePort = (DataOutputPort) sourceVertex.lookupPort(currentSource.getSourceLabel());
-    if (currentSourcePort != null) {
-      newFifo.setSourcePort(currentSourcePort);
-    }
-    newFifo.setTargetPort(inputPort);
-    newFifo.setType(this.fifo.getType());
 
-    // Add the fifo to the graph
-    graph.addFifo(newFifo);
+    createFifo(graph, currentSourcePort, targetPort);
 
     // Add the join actor to the graph
     graph.addActor(forkActor);

@@ -43,8 +43,10 @@ package org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.ietr.dftools.algorithm.model.IRefinement;
+import org.ietr.preesm.core.scenario.ConstraintGroup;
+import org.ietr.preesm.core.scenario.ConstraintGroupManager;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
@@ -70,6 +72,7 @@ import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
 import org.ietr.preesm.pimm.algorithm.helper.PiMMHelperException;
 
@@ -91,9 +94,6 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   /** Basic repetition vector of the graph */
   private final Map<AbstractVertex, Long> brv;
 
-  /** The current SDF refinement. */
-  protected IRefinement currentRefinement;
-
   /** The scenario. */
   private final PreesmScenario scenario;
 
@@ -101,10 +101,18 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   private static final EcoreUtil.Copier copier = new EcoreUtil.Copier(true);
 
   /** Map from original PiMM vertices to generated DAG vertices */
-  private final Map<Fifo, ArrayList<AbstractVertex>> fifoSourceSet = new LinkedHashMap<>();
-  private final Map<Fifo, ArrayList<AbstractVertex>> fifoSinkSet   = new LinkedHashMap<>();
+  private final Map<String, ArrayList<AbstractVertex>> actor2SRActors = new LinkedHashMap<>();
 
-  /** Current Graph name */
+  /** Map of all DataInputInterface to corresponding vertices */
+  private final Map<String, ArrayList<AbstractVertex>> inPort2SRActors = new LinkedHashMap<>();
+
+  /** List of the constrants operator ID of the current actor */
+  ArrayList<String> currentOperatorIDs;
+
+  /** PiMM Graph name */
+  String originalGraphName;
+
+  /** Current Single-Rate Graph name */
   String graphName;
 
   /** Current actor name */
@@ -112,9 +120,6 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /** Current Fifo */
   Fifo currentFifo;
-
-  /** Current type of actor */
-  boolean isSinkActor;
 
   /**
    * Instantiates a new abstract pi MM 2 SR-DAG visitor.
@@ -137,22 +142,26 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * Copy all the DataPorts and ConfigInputPorts of an actor to a secondary actor
+   * Set basic properties from a PiMM actor to the copied actor
    * 
    * @param actor
-   *          original actor from which the ports are copied
+   *          original PiMM actor
    * @param copyActor
-   *          secondary actor to which the ports are copied
+   *          copied PiMM actor
    */
-  private void copyPortsFromActor(final AbstractActor actor, final AbstractActor copyActor) {
-    // Copy the DataInputPorts
-    copyActor.getDataInputPorts().addAll(copier.copyAll(actor.getDataInputPorts()));
+  private void setPropertiesToCopyActor(final AbstractActor actor, final AbstractActor copyActor) {
+    // Set the properties
+    copyActor.setName(this.currentActorName);
 
-    // Copy the DataOutputPorts
-    copyActor.getDataOutputPorts().addAll(copier.copyAll(actor.getDataOutputPorts()));
+    // Add the actor to the graph
+    this.result.addActor(copyActor);
 
-    // Copy the ConfigInputPorts
-    copyActor.getConfigInputPorts().addAll(copier.copyAll(actor.getConfigInputPorts()));
+    // Add the actor to the FIFO source/sink sets
+    this.actor2SRActors.get(this.graphName + actor.getName()).add(copyActor);
+
+    // Add the scenario constraints
+    final ConstraintGroupManager constraintGroupManager = this.scenario.getConstraintGroupManager();
+    this.currentOperatorIDs.forEach(s -> constraintGroupManager.addConstraint(s, copyActor));
   }
 
   /*
@@ -164,10 +173,9 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseAbstractActor(final AbstractActor actor) {
-    // Since we are constructing from the P.O.V of Fifo, the actor may already exist
-    final AbstractVertex lookupVertex = this.result.lookupVertex(this.currentActorName);
-    if (lookupVertex != null) {
-      addActorToFifoSet((AbstractActor) lookupVertex);
+    if (actor instanceof PiGraph) {
+      // Here we handle the replacement of the interfaces by what should be
+
       return true;
     }
     doSwitch(actor);
@@ -182,73 +190,41 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseActor(final Actor actor) {
     // Copy the actor
-    final Actor srActor = (Actor) copier.copy(actor);
+    final Actor copyActor = (Actor) copier.copy(actor);
 
-    // Set the name
-    srActor.setName(this.currentActorName);
-
-    // Add the actor to the graph
-    this.result.addActor(srActor);
-
-    // Add the actor to the FIFO source/sink sets
-    addActorToFifoSet(srActor);
+    // Set the properties
+    setPropertiesToCopyActor(actor, copyActor);
     return true;
   }
 
   @Override
   public Boolean caseBroadcastActor(final BroadcastActor actor) {
     // Copy the BroadCast actor
-    final BroadcastActor srBrActor = (BroadcastActor) copier.copy(actor);
+    final BroadcastActor copyActor = (BroadcastActor) copier.copy(actor);
 
     // Set the properties
-    srBrActor.setName(this.currentActorName);
-
-    // Add the actor to the graph
-    this.result.addActor(srBrActor);
-
-    // Add the actor to the FIFO source/sink sets
-    addActorToFifoSet(srBrActor);
+    setPropertiesToCopyActor(actor, copyActor);
     return true;
   }
 
   @Override
   public Boolean caseJoinActor(final JoinActor actor) {
     // Copy the Join actor
-    final JoinActor srJoinActor = (JoinActor) copier.copy(actor);
+    final JoinActor copyActor = (JoinActor) copier.copy(actor);
 
     // Set the properties
-    srJoinActor.setName(this.currentActorName);
-
-    // Add the actor to the graph
-    this.result.addActor(srJoinActor);
-
-    // Add the actor to the FIFO source/sink sets
-    addActorToFifoSet(srJoinActor);
+    setPropertiesToCopyActor(actor, copyActor);
     return true;
   }
 
   @Override
   public Boolean caseForkActor(final ForkActor actor) {
     // Copyt the Fork actor
-    final ForkActor srForkActor = (ForkActor) copier.copy(actor);
+    final ForkActor copyActor = (ForkActor) copier.copy(actor);
 
     // Set the properties
-    srForkActor.setName(this.currentActorName);
-
-    // Add the actor to the graph
-    this.result.addActor(srForkActor);
-
-    // Add the actor to the FIFO source/sink sets
-    addActorToFifoSet(srForkActor);
+    setPropertiesToCopyActor(actor, copyActor);
     return true;
-  }
-
-  private void addActorToFifoSet(final AbstractActor actor) {
-    if (this.isSinkActor) {
-      this.fifoSinkSet.get(this.currentFifo).add(actor);
-    } else {
-      this.fifoSourceSet.get(this.currentFifo).add(actor);
-    }
   }
 
   @Override
@@ -265,32 +241,101 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   public Boolean caseFifo(final Fifo fifo) {
     // 0. Set current Fifo
     this.currentFifo = fifo;
+    final DataOutputPort sourcePort = fifo.getSourcePort();
+    final DataInputPort targetPort = fifo.getTargetPort();
 
-    // 1. Create the Map to associate the source / sink vertices to the Fifo
-    this.fifoSourceSet.put(fifo, new ArrayList<>());
-    this.fifoSinkSet.put(fifo, new ArrayList<>());
+    // 1. Retrieve Source / Sink actors of the FIFO
+    final AbstractActor sourceActor = sourcePort.getContainingActor();
+    final AbstractActor sinkActor = targetPort.getContainingActor();
 
-    // 2. Retrieve Source / Sink actors of the FIFO
-    final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
-    final AbstractActor sinkActor = fifo.getTargetPort().getContainingActor();
+    ArrayList<AbstractVertex> sourceSet = null;
 
-    // 3. Populate the source set linked to this Fifo
-    this.isSinkActor = false;
-    populateSingleRatePiMMActor(sourceActor);
+    // 2. Populate the source set linked to this FIFO
+    if (sourceActor instanceof InterfaceActor) {
+      final DataInputPort correspondingPort = (DataInputPort) sourceActor.getContainingPiGraph()
+          .lookupGraphDataPortForInterfaceActor((InterfaceActor) sourceActor);
+      // 2.1 Create the entry in the map
+      final String key = originalGraphName + "_" + correspondingPort.getName();
+      if (!inPort2SRActors.containsKey(key)) {
+        inPort2SRActors.put(key, new ArrayList<>());
+      }
 
-    // 4. Populate the sink set linked to this Fifo
-    this.isSinkActor = true;
-    populateSingleRatePiMMActor(sinkActor);
+      // 2.2 Now check if we need a roundbuffer
+      long prod = Long.parseLong(correspondingPort.getPortRateExpression().getExpressionString());
+      long cons = Long.parseLong(targetPort.getPortRateExpression().getExpressionString());
+      long sinkRV = this.brv.get(sinkActor);
+      if (prod != (cons * sinkRV)) {
+        final RoundBufferActor interfaceRB = addRoundBufferIn(fifo, sourceActor, correspondingPort, cons, sinkRV);
+        sourceSet = new ArrayList<>();
+        sourceSet.add(interfaceRB);
+        inPort2SRActors.get(key).add(interfaceRB);
+      }
+    } else if (!this.actor2SRActors.containsKey(this.graphName + sourceActor.getName())) {
+      populateSingleRatePiMMActor(sourceActor);
+    }
 
-    // 5. Do the Single-Rate connections
+    // 3. Populate the sink set linked to this FIFO
+    // If sink actor is hierarchical we should go inside and do partial transformation
+    if (!this.actor2SRActors.containsKey(this.graphName + sinkActor.getName())) {
+      populateSingleRatePiMMActor(sinkActor);
+    }
+
+    // 4. Do the Single-Rate connections
     final PiMMSRVerticesLinker srVerticesLinker = new PiMMSRVerticesLinker(fifo, this.result, this.scenario);
+
+    if (sourceSet == null) {
+      sourceSet = this.actor2SRActors.get(this.graphName + sourceActor.getName());
+    }
+    final ArrayList<AbstractVertex> sinkSet = this.actor2SRActors.get(this.graphName + sinkActor.getName());
+
+    if (sourceSet == null || sinkSet == null) {
+      return true;
+    }
+
     try {
-      srVerticesLinker.execute(this.brv, this.fifoSourceSet.get(fifo), this.fifoSinkSet.get(fifo));
+      srVerticesLinker.execute(this.brv, sourceSet, sinkSet);
     } catch (final PiMMHelperException e) {
       throw new RuntimeException(e.getMessage());
     }
 
+    // In the case of Interfaces we might have disconnected the FIFO so let's reconnect it
+    fifo.setSourcePort(sourcePort);
+    fifo.setTargetPort(targetPort);
     return true;
+  }
+
+  /**
+   * Add a roundbuffer in the place of a DataInputInterface
+   * 
+   * @param fifo
+   *          the fifo
+   * @param sourceActor
+   *          the source interface
+   * @param correspondingPort
+   *          the corresponding data port on the hierarchical actor
+   * @param cons
+   *          consumption of the actor connected to the interface
+   * @param sinkRV
+   *          repetition vector value of the sink vertex
+   * @return
+   */
+  private RoundBufferActor addRoundBufferIn(final Fifo fifo, final AbstractActor sourceActor,
+      final DataInputPort correspondingPort, long cons, long sinkRV) {
+    final RoundBufferActor interfaceRB = this.factory.createRoundBufferActor();
+    interfaceRB.setName("RB_" + sourceActor.getName());
+    // Copy the DataInputPort to the RoundBufferActor from the hierarchical actor
+    final DataInputPort copyPort = (DataInputPort) copier.copy(correspondingPort);
+    interfaceRB.getDataInputPorts().add(copyPort);
+    copyPort.setName("rb_" + correspondingPort.getName());
+    // Add a DataOutputPort to the RoundBufferActor
+    final DataOutputPort dop = this.factory.createDataOutputPort();
+    dop.setName("RB_" + sourceActor.getName() + Long.toString(cons * sinkRV));
+    dop.getPortRateExpression().setExpressionString(Long.toString(cons * sinkRV));
+    interfaceRB.getDataOutputPorts().add(dop);
+    fifo.setSourcePort(dop);
+    // Add the RoundBufferActor to the graph
+    this.result.addActor(interfaceRB);
+    return interfaceRB;
   }
 
   /**
@@ -386,6 +431,20 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     // Populate the DAG with the appropriate number of instances of the actor
     final Long actorNBRepeat = this.brv.get(actor);
 
+    // Creates the entry for the current PiMM Actor
+    this.actor2SRActors.put(this.graphName + actor.getName(), new ArrayList<>());
+
+    // Initialize the operator IDs list
+    this.currentOperatorIDs = new ArrayList<>();
+    final Set<ConstraintGroup> constraintGroups = this.scenario.getConstraintGroupManager().getConstraintGroups();
+    for (final ConstraintGroup cg : constraintGroups) {
+      final Set<String> vertexPaths = cg.getVertexPaths();
+      final Set<String> operatorIds = cg.getOperatorIds();
+      if (vertexPaths.contains(actor.getVertexPath())) {
+        currentOperatorIDs.add((String) operatorIds.toArray()[0]);
+      }
+    }
+
     // We treat hierarchical graphs as normal actors
     // This populate the DAG with the right amount of hierarchical instances w.r.t the BRV value
     final String prefixGraphName = this.graphName.isEmpty() ? "" : this.graphName + "_";
@@ -409,22 +468,36 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       throw new UnsupportedOperationException(
           "Can not convert an empty graph. Check the refinement for [" + graph.getVertexPath() + "].");
     }
-
-    // Perform the Multi-Rate to Single-Rate transformation based on the Fifos
-    for (final Fifo f : graph.getFifos()) {
-      doSwitch(f);
-    }
-
     // Save the current graph name
     final String backupGraphName = this.graphName;
     // Go check hierarchical graphs
     // The hierarchy gets flatten as we go deeper
-    // for (final PiGraph g : graph.getChildrenGraphs()) {
-    //
-    // }
-
+    for (final PiGraph g : graph.getChildrenGraphs()) {
+      originalGraphName = g.getName();
+      for (int i = 0; i < this.brv.get(g); ++i) {
+        final String prefixGraphName = backupGraphName.isEmpty() ? "" : backupGraphName + "_";
+        this.graphName = prefixGraphName + g.getName() + "_" + Long.toString(i);
+        doSwitch(g);
+      }
+      // final StaticPiMM2ASrPiMMVisitor visitorPiMM2ASRPiMM = new StaticPiMM2ASrPiMMVisitor(
+      // PiMMUserFactory.instance.createPiGraph(), this.brv, this.scenario);
+      // visitorPiMM2ASRPiMM.doSwitch(g);
+      // final PiGraph currentResult = visitorPiMM2ASRPiMM.getResult();
+      // for (int i = 0; i < this.brv.get(g); ++i) {
+      // final String prefix = g.getName() + "_" + Long.toString(i);
+      // final PiGraph copy = (PiGraph) copier.copy(currentResult);
+      // copy.getVertices().stream().map(AbstractActor.class::cast).forEach(v -> v.setName(prefix + v.getName()));
+      // copy.getVertices().stream().map(AbstractActor.class::cast)
+      // .forEach(v -> graph.addActor((AbstractActor) copier.copy(v)));
+      // }
+    }
     // Restore the graph name
     this.graphName = backupGraphName;
+
+    // Perform the Multi-Rate to Single-Rate transformation based on the FIFOs
+    for (final Fifo f : graph.getFifos()) {
+      doSwitch(f);
+    }
 
     return true;
   }
