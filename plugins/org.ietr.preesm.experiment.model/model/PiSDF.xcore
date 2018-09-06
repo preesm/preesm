@@ -33,7 +33,6 @@ import org.ietr.preesm.experiment.model.pimm.util.RefinementResolver
 
 type IPath wraps org.eclipse.core.runtime.IPath
 
-// type IPath wraps org.eclipse.core.runtime.IPath
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
 // the corresponding EPackage attributes/... are resolved to type java.lang.Object
