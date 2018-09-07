@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Automatic-Module-Name: org.ietr.preesm.codegen
 Bundle-SymbolicName: org.ietr.preesm.codegen;singleton:=true
-Bundle-Version: 2.14.0.qualifier
+Bundle-Version: 2.14.1
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.core.resources,
