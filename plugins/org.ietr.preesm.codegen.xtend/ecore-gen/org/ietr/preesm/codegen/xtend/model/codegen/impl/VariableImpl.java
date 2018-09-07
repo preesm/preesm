@@ -77,7 +77,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 
   /**
    * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getName()
    * @generated
    * @ordered
@@ -96,7 +96,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 
   /**
    * The cached value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getType()
    * @generated
    * @ordered
@@ -106,7 +106,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
   /**
    * The cached value of the '{@link #getUsers() <em>Users</em>}' reference list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getUsers()
    * @generated
    * @ordered
@@ -259,6 +259,16 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
           CodegenPackage.VARIABLE__USERS, CodegenPackage.BLOCK__DECLARATIONS);
     }
     return this.users;
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated NOT
+   */
+  @Override
+  public void reaffectCreator(final Block creator) {
+    setCreator(creator);
   }
 
   /**

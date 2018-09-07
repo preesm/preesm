@@ -1591,6 +1591,10 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
         EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
         EPackageImpl.IS_ORDERED);
 
+    op = addEOperation(this.variableEClass, null, "reaffectCreator", 0, 1, EPackageImpl.IS_UNIQUE,
+        EPackageImpl.IS_ORDERED);
+    addEParameter(op, getBlock(), "creator", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
     initEClass(this.bufferEClass, Buffer.class, "Buffer", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getBuffer_Size(), this.ecorePackage.getEInt(), "size", null, 1, 1, Buffer.class,

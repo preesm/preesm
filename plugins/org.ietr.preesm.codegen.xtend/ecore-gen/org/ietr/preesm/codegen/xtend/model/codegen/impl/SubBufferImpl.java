@@ -194,21 +194,6 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.VariableImpl#setCreator(org.ietr.preesm.codegen.xtend.model.
-   * codegen.Block)
-   */
-  @Override
-  public void setCreator(final Block newCreator) {
-    super.setCreator(newCreator);
-    final Buffer container = getContainer();
-    if (container != null) {
-      container.getUsers().add(newCreator);
-    }
-  }
-
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
    *
@@ -246,6 +231,20 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
     setContainer(newContainer);
     if (getCreator() != null) {
       newContainer.getUsers().add(getCreator());
+    }
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated NOT
+   */
+  @Override
+  public void reaffectCreator(final Block creator) {
+    super.reaffectCreator(creator);
+    final Buffer container = getContainer();
+    if (container != null) {
+      container.getUsers().add(creator);
     }
   }
 

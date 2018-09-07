@@ -160,4 +160,12 @@ public interface Variable extends Commentable {
    */
   EList<Block> getUsers();
 
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @model
+   * @generated
+   */
+  void reaffectCreator(Block creator);
+
 } // Variable

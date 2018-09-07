@@ -59,6 +59,9 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//Variable/type"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference codegen.ecore#//Variable/creator"/>
       <genFeatures property="Readonly" notify="false" createChild="false" ecoreFeature="ecore:EReference codegen.ecore#//Variable/users"/>
+      <genOperations ecoreOperation="codegen.ecore#//Variable/reaffectCreator">
+        <genParameters ecoreParameter="codegen.ecore#//Variable/reaffectCreator/creator"/>
+      </genOperations>
     </genClasses>
     <genClasses ecoreClass="codegen.ecore#//Buffer">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//Buffer/size"/>

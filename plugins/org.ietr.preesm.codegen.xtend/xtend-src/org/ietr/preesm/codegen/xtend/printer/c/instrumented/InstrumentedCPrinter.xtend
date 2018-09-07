@@ -128,8 +128,8 @@ class InstrumentedCPrinter extends CPrinter {
 
 		for (Block block : printerBlocks) {
 			if (dumpTimedBuffer.creator === null) {
-				dumpTimedBuffer.creator = block
-				nbExec.creator = block
+				dumpTimedBuffer.reaffectCreator(block);
+				nbExec.reaffectCreator(block)
 			}
 			dumpTimedBuffer.users.add(block)
 			nbExec.users.add(block)

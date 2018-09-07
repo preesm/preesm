@@ -823,8 +823,8 @@ public class CodegenModelGenerator {
   }
 
   /**
-   * Generate the {@link Buffer} definition. This method sets the {@link Buffer#setCreator(Block) Creator} attributes.
-   * Also re-order the buffer definitions list so that containers are always defined before content.
+   * Generate the {@link Buffer} definition. This method sets the {@link Buffer#reaffectCreator(Block) Creator}
+   * attributes. Also re-order the buffer definitions list so that containers are always defined before content.
    *
    */
   protected void generateBufferDefinitions() {
@@ -1441,9 +1441,9 @@ public class CodegenModelGenerator {
     fifoCall.setHeadBuffer(buffers.getKey());
     fifoCall.setBodyBuffer(buffers.getValue());
     if (fifoCall.getOperation().equals(FifoOperation.POP)) {
-      buffers.getKey().setCreator(operatorBlock);
+      buffers.getKey().reaffectCreator(operatorBlock);
       if (buffers.getValue() != null) {
-        buffers.getValue().setCreator(operatorBlock);
+        buffers.getValue().reaffectCreator(operatorBlock);
       }
     }
 
@@ -2356,9 +2356,9 @@ public class CodegenModelGenerator {
   }
 
   /**
-   * {@link Buffer#setCreator(Block) Set the creator} of the given {@link Buffer} to the given {@link CoreBlock}, and
-   * recursively iterate over the {@link Buffer#getChildrens() children} {@link SubBuffer} of this {@link Buffer} to set
-   * the same {@link Buffer#setCreator(Block) creator} for them.
+   * {@link Buffer#reaffectCreator(Block) Set the creator} of the given {@link Buffer} to the given {@link CoreBlock},
+   * and recursively iterate over the {@link Buffer#getChildrens() children} {@link SubBuffer} of this {@link Buffer} to
+   * set the same {@link Buffer#reaffectCreator(Block) creator} for them.
    *
    * @param buffer
    *          The {@link Buffer} whose creator is to be set.
@@ -2370,7 +2370,7 @@ public class CodegenModelGenerator {
   private void recusriveSetBufferCreator(final Buffer buffer, final CoreBlock correspondingOperatorBlock,
       final boolean isLocal) {
     // Set the creator for the current buffer
-    buffer.setCreator(correspondingOperatorBlock);
+    buffer.reaffectCreator(correspondingOperatorBlock);
     buffer.setLocal(isLocal);
 
     // Do the same recursively for all its children subbuffers
@@ -2394,7 +2394,7 @@ public class CodegenModelGenerator {
       // have creator since their value is directly used.
       // Consequently the used block can also be declared as the creator
       if (var instanceof Constant) {
-        var.setCreator(operatorBlock);
+        var.reaffectCreator(operatorBlock);
       }
       var.getUsers().add(operatorBlock);
     }

@@ -391,7 +391,7 @@ public class CodegenHierarchicalModelGenerator {
       // have creator since their value is directly used.
       // Consequently the used block can also be declared as the creator
       if (var instanceof Constant) {
-        var.setCreator(operatorBlock);
+        var.reaffectCreator(operatorBlock);
       }
       var.getUsers().add(operatorBlock);
     }
@@ -654,7 +654,7 @@ public class CodegenHierarchicalModelGenerator {
 
       /* register to call block */
       if (var instanceof Constant) {
-        var.setCreator(operatorBlock);
+        var.reaffectCreator(operatorBlock);
       }
       var.getUsers().add(operatorBlock);
       // var.setCreator(operatorBlock);
