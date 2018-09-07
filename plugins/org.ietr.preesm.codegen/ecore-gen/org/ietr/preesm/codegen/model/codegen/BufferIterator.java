@@ -58,7 +58,7 @@ public interface BufferIterator extends SubBuffer {
    * here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Iter Size</em>' attribute.
    * @see #setIterSize(int)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getBufferIterator_IterSize()
@@ -68,9 +68,9 @@ public interface BufferIterator extends SubBuffer {
   int getIterSize();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.BufferIterator#getIterSize <em>Iter
-   * Size</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.BufferIterator#getIterSize <em>Iter Size</em>}'
+   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @param value
    *          the new value of the '<em>Iter Size</em>' attribute.
    * @see #getIterSize()
@@ -84,7 +84,7 @@ public interface BufferIterator extends SubBuffer {
    * If the meaning of the '<em>Iter</em>' reference isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Iter</em>' reference.
    * @see #setIter(IntVar)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getBufferIterator_Iter()
@@ -96,7 +96,7 @@ public interface BufferIterator extends SubBuffer {
   /**
    * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.BufferIterator#getIter <em>Iter</em>}'
    * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Iter</em>' reference.
    * @see #getIter()

@@ -64,7 +64,7 @@ public interface CoreBlock extends Block {
    * here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Loop Block</em>' reference.
    * @see #setLoopBlock(LoopBlock)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getCoreBlock_LoopBlock()
@@ -74,9 +74,9 @@ public interface CoreBlock extends Block {
   LoopBlock getLoopBlock();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.CoreBlock#getLoopBlock <em>Loop
-   * Block</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.CoreBlock#getLoopBlock <em>Loop Block</em>}'
+   * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @param value
    *          the new value of the '<em>Loop Block</em>' reference.
    * @see #getLoopBlock()
@@ -91,7 +91,7 @@ public interface CoreBlock extends Block {
    * here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Init Block</em>' reference.
    * @see #setInitBlock(CallBlock)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getCoreBlock_InitBlock()
@@ -101,9 +101,9 @@ public interface CoreBlock extends Block {
   CallBlock getInitBlock();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.CoreBlock#getInitBlock <em>Init
-   * Block</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.CoreBlock#getInitBlock <em>Init Block</em>}'
+   * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @param value
    *          the new value of the '<em>Init Block</em>' reference.
    * @see #getInitBlock()
@@ -118,7 +118,7 @@ public interface CoreBlock extends Block {
    * here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Core Type</em>' attribute.
    * @see #setCoreType(String)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getCoreBlock_CoreType()
@@ -128,9 +128,9 @@ public interface CoreBlock extends Block {
   String getCoreType();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.CoreBlock#getCoreType <em>Core
-   * Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.CoreBlock#getCoreType <em>Core Type</em>}'
+   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @param value
    *          the new value of the '<em>Core Type</em>' attribute.
    * @see #getCoreType()
@@ -145,7 +145,7 @@ public interface CoreBlock extends Block {
    * here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Core ID</em>' attribute.
    * @see #setCoreID(int)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getCoreBlock_CoreID()
@@ -157,7 +157,7 @@ public interface CoreBlock extends Block {
   /**
    * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.CoreBlock#getCoreID <em>Core ID</em>}'
    * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Core ID</em>' attribute.
    * @see #getCoreID()

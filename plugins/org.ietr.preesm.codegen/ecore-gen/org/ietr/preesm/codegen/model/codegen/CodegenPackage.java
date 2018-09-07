@@ -52,7 +52,7 @@ import org.eclipse.emf.ecore.EReference;
  * <li>and each data type</li>
  * </ul>
  * <!-- end-user-doc -->
- * 
+ *
  * @see org.ietr.preesm.codegen.model.codegen.CodegenFactory
  * @model kind="package"
  * @generated
@@ -60,36 +60,36 @@ import org.eclipse.emf.ecore.EReference;
 public interface CodegenPackage extends EPackage {
   /**
    * The package name. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   String eNAME = "codegen";
 
   /**
    * The package namespace URI. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   String eNS_URI = "http://codegen/1.0";
 
   /**
    * The package namespace name. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   String eNS_PREFIX = "codegen";
 
   /**
    * The singleton instance of the package. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   CodegenPackage eINSTANCE = org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl.init();
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.CodeElt <em>Code Elt</em>}' class.
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.CodeElt <em>Code Elt</em>}' class. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.CodeElt
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getCodeElt()
    * @generated
@@ -97,9 +97,9 @@ public interface CodegenPackage extends EPackage {
   int CODE_ELT = 1;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.BlockImpl <em>Block</em>}'
-   * class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.BlockImpl <em>Block</em>}' class.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.BlockImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getBlock()
    * @generated
@@ -107,9 +107,9 @@ public interface CodegenPackage extends EPackage {
   int BLOCK = 0;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.CallImpl <em>Call</em>}' class.
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.CallImpl <em>Call</em>}' class. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.CallImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getCall()
    * @generated
@@ -119,7 +119,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.CommentableImpl
    * <em>Commentable</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.CommentableImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getCommentable()
    * @generated
@@ -128,7 +128,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -145,7 +145,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -153,7 +153,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The number of structural features of the '<em>Code Elt</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -161,7 +161,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -170,7 +170,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Code Elts</b></em>' containment reference list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -178,7 +178,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Declarations</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -186,7 +186,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -195,7 +195,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Definitions</b></em>' containment reference list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -203,7 +203,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The number of structural features of the '<em>Block</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -211,7 +211,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -219,7 +219,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Parameters</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -227,7 +227,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -235,7 +235,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>EReference0</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -244,7 +244,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Parameter Directions</b></em>' attribute list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -252,16 +252,16 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The number of structural features of the '<em>Call</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
   int CALL_FEATURE_COUNT = CodegenPackage.CODE_ELT_FEATURE_COUNT + 4;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.VariableImpl
-   * <em>Variable</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.VariableImpl <em>Variable</em>}'
+   * class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.VariableImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getVariable()
    * @generated
@@ -270,7 +270,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -278,7 +278,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -286,7 +286,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Type</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -294,7 +294,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Creator</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -302,7 +302,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Users</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -310,16 +310,16 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The number of structural features of the '<em>Variable</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
   int VARIABLE_FEATURE_COUNT = CodegenPackage.COMMENTABLE_FEATURE_COUNT + 4;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.BufferImpl <em>Buffer</em>}'
-   * class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.BufferImpl <em>Buffer</em>}' class.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.BufferImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getBuffer()
    * @generated
@@ -328,7 +328,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -336,7 +336,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -344,7 +344,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Type</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -352,7 +352,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Creator</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -360,7 +360,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Users</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -368,7 +368,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Size</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -376,7 +376,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Childrens</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -384,7 +384,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Type Size</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -392,7 +392,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Merged Range</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -400,7 +400,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Local</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -408,16 +408,16 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The number of structural features of the '<em>Buffer</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
   int BUFFER_FEATURE_COUNT = CodegenPackage.VARIABLE_FEATURE_COUNT + 5;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.SubBufferImpl <em>Sub
-   * Buffer</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.SubBufferImpl <em>Sub Buffer</em>}'
+   * class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.SubBufferImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getSubBuffer()
    * @generated
@@ -426,7 +426,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -434,7 +434,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -442,7 +442,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Type</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -450,7 +450,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Creator</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -458,7 +458,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Users</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -466,7 +466,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Size</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -474,7 +474,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Childrens</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -482,7 +482,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Type Size</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -490,7 +490,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Merged Range</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -498,7 +498,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Local</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -506,7 +506,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Container</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -514,7 +514,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Offset</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -522,16 +522,16 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The number of structural features of the '<em>Sub Buffer</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
   int SUB_BUFFER_FEATURE_COUNT = CodegenPackage.BUFFER_FEATURE_COUNT + 2;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.ConstantImpl
-   * <em>Constant</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.ConstantImpl <em>Constant</em>}'
+   * class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.ConstantImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getConstant()
    * @generated
@@ -540,7 +540,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -548,7 +548,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -556,7 +556,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Type</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -564,7 +564,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Creator</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -572,7 +572,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Users</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -580,7 +580,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Value</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -588,7 +588,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The number of structural features of the '<em>Constant</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -597,7 +597,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.FunctionCallImpl <em>Function
    * Call</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.FunctionCallImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getFunctionCall()
    * @generated
@@ -606,7 +606,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -614,7 +614,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Parameters</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -622,7 +622,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -630,7 +630,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>EReference0</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -639,7 +639,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Parameter Directions</b></em>' attribute list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -647,7 +647,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Actor Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -665,7 +665,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.CommunicationImpl
    * <em>Communication</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.CommunicationImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getCommunication()
    * @generated
@@ -674,7 +674,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -682,7 +682,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Parameters</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -690,7 +690,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -698,7 +698,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>EReference0</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -707,7 +707,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Parameter Directions</b></em>' attribute list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -715,7 +715,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Direction</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -723,7 +723,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Delimiter</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -731,7 +731,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Data</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -739,7 +739,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Send Start</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -747,7 +747,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Send End</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -755,7 +755,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Receive Start</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -763,7 +763,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Receive End</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -771,7 +771,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Id</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -780,7 +780,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Nodes</b></em>' containment reference list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -788,7 +788,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Receive Release</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -796,7 +796,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Send Reserve</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -804,7 +804,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Redundant</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -820,9 +820,9 @@ public interface CodegenPackage extends EPackage {
   int COMMUNICATION_FEATURE_COUNT = CodegenPackage.CALL_FEATURE_COUNT + 12;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.CoreBlockImpl <em>Core
-   * Block</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.CoreBlockImpl <em>Core Block</em>}'
+   * class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.CoreBlockImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getCoreBlock()
    * @generated
@@ -831,7 +831,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -840,7 +840,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Code Elts</b></em>' containment reference list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -848,7 +848,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Declarations</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -856,7 +856,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -865,7 +865,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Definitions</b></em>' containment reference list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -873,7 +873,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Loop Block</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -881,7 +881,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Init Block</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -889,7 +889,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Core Type</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -897,7 +897,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Core ID</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -905,16 +905,16 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The number of structural features of the '<em>Core Block</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
   int CORE_BLOCK_FEATURE_COUNT = CodegenPackage.BLOCK_FEATURE_COUNT + 4;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.ActorBlockImpl <em>Actor
-   * Block</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.ActorBlockImpl <em>Actor Block</em>}'
+   * class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.ActorBlockImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getActorBlock()
    * @generated
@@ -923,7 +923,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -932,7 +932,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Code Elts</b></em>' containment reference list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -940,7 +940,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Declarations</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -948,7 +948,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -957,7 +957,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Definitions</b></em>' containment reference list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -965,7 +965,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Loop Block</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -973,7 +973,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Init Block</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -989,9 +989,9 @@ public interface CodegenPackage extends EPackage {
   int ACTOR_BLOCK_FEATURE_COUNT = CodegenPackage.BLOCK_FEATURE_COUNT + 2;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.LoopBlockImpl <em>Loop
-   * Block</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.LoopBlockImpl <em>Loop Block</em>}'
+   * class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.LoopBlockImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getLoopBlock()
    * @generated
@@ -1000,7 +1000,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1009,7 +1009,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Code Elts</b></em>' containment reference list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1017,7 +1017,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Declarations</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1025,7 +1025,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1034,7 +1034,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Definitions</b></em>' containment reference list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1042,16 +1042,16 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The number of structural features of the '<em>Loop Block</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
   int LOOP_BLOCK_FEATURE_COUNT = CodegenPackage.BLOCK_FEATURE_COUNT + 0;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.ActorCallImpl <em>Actor
-   * Call</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.ActorCallImpl <em>Actor Call</em>}'
+   * class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.ActorCallImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getActorCall()
    * @generated
@@ -1060,7 +1060,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1068,7 +1068,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Parameters</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1076,7 +1076,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1084,7 +1084,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>EReference0</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1093,7 +1093,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Parameter Directions</b></em>' attribute list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1101,16 +1101,16 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The number of structural features of the '<em>Actor Call</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
   int ACTOR_CALL_FEATURE_COUNT = CodegenPackage.CALL_FEATURE_COUNT + 0;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.CallBlockImpl <em>Call
-   * Block</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.CallBlockImpl <em>Call Block</em>}'
+   * class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.CallBlockImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getCallBlock()
    * @generated
@@ -1119,7 +1119,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1128,7 +1128,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Code Elts</b></em>' containment reference list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1136,7 +1136,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Declarations</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1144,7 +1144,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1153,7 +1153,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Definitions</b></em>' containment reference list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1161,7 +1161,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The number of structural features of the '<em>Call Block</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1170,7 +1170,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.SpecialCallImpl <em>Special
    * Call</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.SpecialCallImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getSpecialCall()
    * @generated
@@ -1179,7 +1179,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1187,7 +1187,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Parameters</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1195,7 +1195,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1203,7 +1203,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>EReference0</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1212,7 +1212,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Parameter Directions</b></em>' attribute list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1220,7 +1220,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Type</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1254,9 +1254,9 @@ public interface CodegenPackage extends EPackage {
   int SPECIAL_CALL_FEATURE_COUNT = CodegenPackage.CALL_FEATURE_COUNT + 3;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.FifoCallImpl <em>Fifo
-   * Call</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.FifoCallImpl <em>Fifo Call</em>}'
+   * class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.FifoCallImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getFifoCall()
    * @generated
@@ -1265,7 +1265,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1273,7 +1273,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Parameters</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1281,7 +1281,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1289,7 +1289,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>EReference0</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1298,7 +1298,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Parameter Directions</b></em>' attribute list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1306,7 +1306,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Operation</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1314,7 +1314,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Fifo Head</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1322,7 +1322,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Fifo Tail</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1330,7 +1330,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Head Buffer</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1338,7 +1338,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Body Buffer</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1346,7 +1346,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The number of structural features of the '<em>Fifo Call</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1355,7 +1355,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.CommunicationNodeImpl
    * <em>Communication Node</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.CommunicationNodeImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getCommunicationNode()
    * @generated
@@ -1364,7 +1364,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1372,7 +1372,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1380,7 +1380,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Type</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1389,7 +1389,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The number of structural features of the '<em>Communication Node</em>' class. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1398,7 +1398,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.SharedMemoryCommunicationImpl
    * <em>Shared Memory Communication</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.SharedMemoryCommunicationImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getSharedMemoryCommunication()
    * @generated
@@ -1407,7 +1407,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1415,7 +1415,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Parameters</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1423,7 +1423,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1431,7 +1431,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>EReference0</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1440,7 +1440,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Parameter Directions</b></em>' attribute list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1448,7 +1448,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Direction</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1456,7 +1456,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Delimiter</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1464,7 +1464,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Data</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1472,7 +1472,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Send Start</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1480,7 +1480,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Send End</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1488,7 +1488,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Receive Start</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1496,7 +1496,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Receive End</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1504,7 +1504,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Id</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1513,7 +1513,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Nodes</b></em>' containment reference list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1521,7 +1521,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Receive Release</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1529,7 +1529,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Send Reserve</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1537,7 +1537,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Redundant</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1546,7 +1546,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The number of structural features of the '<em>Shared Memory Communication</em>' class. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1555,7 +1555,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.ConstantStringImpl <em>Constant
    * String</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.ConstantStringImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getConstantString()
    * @generated
@@ -1564,7 +1564,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1572,7 +1572,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1580,7 +1580,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Type</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1588,7 +1588,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Creator</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1596,7 +1596,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Users</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1604,7 +1604,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Value</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1613,16 +1613,16 @@ public interface CodegenPackage extends EPackage {
   /**
    * The number of structural features of the '<em>Constant String</em>' class. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
   int CONSTANT_STRING_FEATURE_COUNT = CodegenPackage.VARIABLE_FEATURE_COUNT + 1;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.NullBufferImpl <em>Null
-   * Buffer</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.NullBufferImpl <em>Null Buffer</em>}'
+   * class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.NullBufferImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getNullBuffer()
    * @generated
@@ -1631,7 +1631,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1639,7 +1639,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1647,7 +1647,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Type</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1655,7 +1655,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Creator</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1663,7 +1663,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Users</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1671,7 +1671,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Size</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1679,7 +1679,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Childrens</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1687,7 +1687,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Type Size</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1695,7 +1695,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Merged Range</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1703,7 +1703,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Local</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1711,7 +1711,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Container</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1719,7 +1719,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Offset</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1735,9 +1735,9 @@ public interface CodegenPackage extends EPackage {
   int NULL_BUFFER_FEATURE_COUNT = CodegenPackage.SUB_BUFFER_FEATURE_COUNT + 0;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.FiniteLoopBlockImpl <em>Finite
-   * Loop Block</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.FiniteLoopBlockImpl <em>Finite Loop
+   * Block</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.FiniteLoopBlockImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getFiniteLoopBlock()
    * @generated
@@ -1746,7 +1746,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1755,7 +1755,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Code Elts</b></em>' containment reference list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1763,7 +1763,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Declarations</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1771,7 +1771,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1780,7 +1780,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The feature id for the '<em><b>Definitions</b></em>' containment reference list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1788,7 +1788,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Nb Iter</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1796,7 +1796,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Iter</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1804,7 +1804,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>In Buffers</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1812,7 +1812,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Out Buffers</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1821,16 +1821,16 @@ public interface CodegenPackage extends EPackage {
   /**
    * The number of structural features of the '<em>Finite Loop Block</em>' class. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
   int FINITE_LOOP_BLOCK_FEATURE_COUNT = CodegenPackage.LOOP_BLOCK_FEATURE_COUNT + 4;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.IntVarImpl <em>Int Var</em>}'
-   * class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.IntVarImpl <em>Int Var</em>}' class.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.IntVarImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getIntVar()
    * @generated
@@ -1839,7 +1839,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1847,7 +1847,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1855,7 +1855,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Type</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1863,7 +1863,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Creator</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1871,7 +1871,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Users</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1879,7 +1879,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The number of structural features of the '<em>Int Var</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1888,7 +1888,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.BufferIteratorImpl <em>Buffer
    * Iterator</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.BufferIteratorImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getBufferIterator()
    * @generated
@@ -1897,7 +1897,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1905,7 +1905,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1913,7 +1913,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Type</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1921,7 +1921,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Creator</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1929,7 +1929,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Users</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1937,7 +1937,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Size</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1945,7 +1945,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Childrens</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1953,7 +1953,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Type Size</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1961,7 +1961,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Merged Range</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1969,7 +1969,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Local</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1977,7 +1977,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Container</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1985,7 +1985,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Offset</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -1993,7 +1993,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Iter Size</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -2001,7 +2001,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Iter</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -2010,7 +2010,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The number of structural features of the '<em>Buffer Iterator</em>' class. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -2019,7 +2019,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.impl.PapifyActionImpl <em>Papify
    * Action</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see org.ietr.preesm.codegen.model.codegen.impl.PapifyActionImpl
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getPapifyAction()
    * @generated
@@ -2028,7 +2028,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Comment</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -2036,7 +2036,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -2044,7 +2044,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Type</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -2052,7 +2052,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Creator</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -2060,7 +2060,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The feature id for the '<em><b>Users</b></em>' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    * @ordered
    */
@@ -2076,9 +2076,9 @@ public interface CodegenPackage extends EPackage {
   int PAPIFY_ACTION_FEATURE_COUNT = CodegenPackage.VARIABLE_FEATURE_COUNT + 0;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.Direction <em>Direction</em>}' enum.
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.Direction <em>Direction</em>}' enum. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.Direction
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getDirection()
    * @generated
@@ -2086,9 +2086,9 @@ public interface CodegenPackage extends EPackage {
   int DIRECTION = 25;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.Delimiter <em>Delimiter</em>}' enum.
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.Delimiter <em>Delimiter</em>}' enum. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.Delimiter
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getDelimiter()
    * @generated
@@ -2096,9 +2096,9 @@ public interface CodegenPackage extends EPackage {
   int DELIMITER = 26;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.SpecialType <em>Special Type</em>}'
-   * enum. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.SpecialType <em>Special Type</em>}' enum.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.SpecialType
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getSpecialType()
    * @generated
@@ -2106,9 +2106,9 @@ public interface CodegenPackage extends EPackage {
   int SPECIAL_TYPE = 27;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.FifoOperation <em>Fifo
-   * Operation</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.FifoOperation <em>Fifo Operation</em>}'
+   * enum. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.FifoOperation
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getFifoOperation()
    * @generated
@@ -2116,9 +2116,9 @@ public interface CodegenPackage extends EPackage {
   int FIFO_OPERATION = 28;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.PortDirection <em>Port
-   * Direction</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * The meta object id for the '{@link org.ietr.preesm.codegen.model.codegen.PortDirection <em>Port Direction</em>}'
+   * enum. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @see org.ietr.preesm.codegen.model.codegen.PortDirection
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getPortDirection()
    * @generated
@@ -2127,7 +2127,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * The meta object id for the '<em>range</em>' data type. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see org.ietr.preesm.memory.script.Range
    * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getrange()
    * @generated
@@ -2146,9 +2146,9 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * Returns the meta object for the containment reference list
-   * '{@link org.ietr.preesm.codegen.model.codegen.Block#getCodeElts <em>Code Elts</em>}'. <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * 
+   * '{@link org.ietr.preesm.codegen.model.codegen.Block#getCodeElts <em>Code Elts</em>}'. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   *
    * @return the meta object for the containment reference list '<em>Code Elts</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Block#getCodeElts()
    * @see #getBlock()
@@ -2157,9 +2157,8 @@ public interface CodegenPackage extends EPackage {
   EReference getBlock_CodeElts();
 
   /**
-   * Returns the meta object for the reference list '
-   * {@link org.ietr.preesm.codegen.model.codegen.Block#getDeclarations <em>Declarations</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the reference list ' {@link org.ietr.preesm.codegen.model.codegen.Block#getDeclarations
+   * <em>Declarations</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the reference list '<em>Declarations</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Block#getDeclarations()
@@ -2171,7 +2170,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.Block#getName
    * <em>Name</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for the attribute '<em>Name</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Block#getName()
    * @see #getBlock()
@@ -2181,8 +2180,8 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * Returns the meta object for the containment reference list
-   * '{@link org.ietr.preesm.codegen.model.codegen.Block#getDefinitions <em>Definitions</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * '{@link org.ietr.preesm.codegen.model.codegen.Block#getDefinitions <em>Definitions</em>}'. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
    *
    * @return the meta object for the containment reference list '<em>Definitions</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Block#getDefinitions()
@@ -2192,9 +2191,9 @@ public interface CodegenPackage extends EPackage {
   EReference getBlock_Definitions();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.CodeElt <em>Code Elt</em>}'.
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.CodeElt <em>Code Elt</em>}'. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for class '<em>Code Elt</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.CodeElt
    * @generated
@@ -2212,10 +2211,9 @@ public interface CodegenPackage extends EPackage {
   EClass getCall();
 
   /**
-   * Returns the meta object for the reference list
-   * '{@link org.ietr.preesm.codegen.model.codegen.Call#getParameters <em>Parameters</em>}'. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for the reference list '{@link org.ietr.preesm.codegen.model.codegen.Call#getParameters
+   * <em>Parameters</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for the reference list '<em>Parameters</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Call#getParameters()
    * @see #getCall()
@@ -2226,7 +2224,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.Call#getName
    * <em>Name</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for the attribute '<em>Name</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Call#getName()
    * @see #getCall()
@@ -2237,7 +2235,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for the reference '{@link org.ietr.preesm.codegen.model.codegen.Call#getEReference0
    * <em>EReference0</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for the reference '<em>EReference0</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Call#getEReference0()
    * @see #getCall()
@@ -2247,9 +2245,9 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * Returns the meta object for the attribute list
-   * '{@link org.ietr.preesm.codegen.model.codegen.Call#getParameterDirections <em>Parameter Directions</em>}'.
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * '{@link org.ietr.preesm.codegen.model.codegen.Call#getParameterDirections <em>Parameter Directions</em>}'. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for the attribute list '<em>Parameter Directions</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Call#getParameterDirections()
    * @see #getCall()
@@ -2258,9 +2256,9 @@ public interface CodegenPackage extends EPackage {
   EAttribute getCall_ParameterDirections();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.Variable <em>Variable</em>}'.
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.Variable <em>Variable</em>}'. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for class '<em>Variable</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Variable
    * @generated
@@ -2270,7 +2268,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.Variable#getName
    * <em>Name</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for the attribute '<em>Name</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Variable#getName()
    * @see #getVariable()
@@ -2281,7 +2279,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.Variable#getType
    * <em>Type</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for the attribute '<em>Type</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Variable#getType()
    * @see #getVariable()
@@ -2291,9 +2289,9 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * Returns the meta object for the container reference
-   * '{@link org.ietr.preesm.codegen.model.codegen.Variable#getCreator <em>Creator</em>}'. <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * 
+   * '{@link org.ietr.preesm.codegen.model.codegen.Variable#getCreator <em>Creator</em>}'. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   *
    * @return the meta object for the container reference '<em>Creator</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Variable#getCreator()
    * @see #getVariable()
@@ -2302,10 +2300,9 @@ public interface CodegenPackage extends EPackage {
   EReference getVariable_Creator();
 
   /**
-   * Returns the meta object for the reference list
-   * '{@link org.ietr.preesm.codegen.model.codegen.Variable#getUsers <em>Users</em>}'. <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * 
+   * Returns the meta object for the reference list '{@link org.ietr.preesm.codegen.model.codegen.Variable#getUsers
+   * <em>Users</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for the reference list '<em>Users</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Variable#getUsers()
    * @see #getVariable()
@@ -2314,9 +2311,9 @@ public interface CodegenPackage extends EPackage {
   EReference getVariable_Users();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.Buffer <em>Buffer</em>}'.
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.Buffer <em>Buffer</em>}'. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for class '<em>Buffer</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Buffer
    * @generated
@@ -2326,7 +2323,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.Buffer#getSize
    * <em>Size</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for the attribute '<em>Size</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Buffer#getSize()
    * @see #getBuffer()
@@ -2335,10 +2332,9 @@ public interface CodegenPackage extends EPackage {
   EAttribute getBuffer_Size();
 
   /**
-   * Returns the meta object for the reference list
-   * '{@link org.ietr.preesm.codegen.model.codegen.Buffer#getChildrens <em>Childrens</em>}'. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for the reference list '{@link org.ietr.preesm.codegen.model.codegen.Buffer#getChildrens
+   * <em>Childrens</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for the reference list '<em>Childrens</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Buffer#getChildrens()
    * @see #getBuffer()
@@ -2347,9 +2343,9 @@ public interface CodegenPackage extends EPackage {
   EReference getBuffer_Childrens();
 
   /**
-   * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.Buffer#getTypeSize
-   * <em>Type Size</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.Buffer#getTypeSize <em>Type
+   * Size</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for the attribute '<em>Type Size</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Buffer#getTypeSize()
    * @see #getBuffer()
@@ -2358,9 +2354,8 @@ public interface CodegenPackage extends EPackage {
   EAttribute getBuffer_TypeSize();
 
   /**
-   * Returns the meta object for the attribute '
-   * {@link org.ietr.preesm.codegen.model.codegen.Buffer#getMergedRange <em>Merged Range</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the attribute ' {@link org.ietr.preesm.codegen.model.codegen.Buffer#getMergedRange
+   * <em>Merged Range</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the attribute '<em>Merged Range</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Buffer#getMergedRange()
@@ -2372,7 +2367,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.Buffer#isLocal
    * <em>Local</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for the attribute '<em>Local</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Buffer#isLocal()
    * @see #getBuffer()
@@ -2381,9 +2376,9 @@ public interface CodegenPackage extends EPackage {
   EAttribute getBuffer_Local();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.SubBuffer <em>Sub
-   * Buffer</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.SubBuffer <em>Sub Buffer</em>}'.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for class '<em>Sub Buffer</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.SubBuffer
    * @generated
@@ -2391,9 +2386,8 @@ public interface CodegenPackage extends EPackage {
   EClass getSubBuffer();
 
   /**
-   * Returns the meta object for the reference
-   * '{@link org.ietr.preesm.codegen.model.codegen.SubBuffer#getContainer <em>Container</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the reference '{@link org.ietr.preesm.codegen.model.codegen.SubBuffer#getContainer
+   * <em>Container</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the reference '<em>Container</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.SubBuffer#getContainer()
@@ -2405,7 +2399,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.SubBuffer#getOffset
    * <em>Offset</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for the attribute '<em>Offset</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.SubBuffer#getOffset()
    * @see #getSubBuffer()
@@ -2414,9 +2408,9 @@ public interface CodegenPackage extends EPackage {
   EAttribute getSubBuffer_Offset();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.Constant <em>Constant</em>}'.
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.Constant <em>Constant</em>}'. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for class '<em>Constant</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Constant
    * @generated
@@ -2426,7 +2420,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.Constant#getValue
    * <em>Value</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for the attribute '<em>Value</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Constant#getValue()
    * @see #getConstant()
@@ -2437,7 +2431,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.FunctionCall <em>Function
    * Call</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for class '<em>Function Call</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.FunctionCall
    * @generated
@@ -2445,9 +2439,8 @@ public interface CodegenPackage extends EPackage {
   EClass getFunctionCall();
 
   /**
-   * Returns the meta object for the attribute '
-   * {@link org.ietr.preesm.codegen.model.codegen.FunctionCall#getActorName <em>Actor Name</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the attribute ' {@link org.ietr.preesm.codegen.model.codegen.FunctionCall#getActorName
+   * <em>Actor Name</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the attribute '<em>Actor Name</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.FunctionCall#getActorName()
@@ -2459,7 +2452,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.Communication
    * <em>Communication</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for class '<em>Communication</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Communication
    * @generated
@@ -2467,9 +2460,8 @@ public interface CodegenPackage extends EPackage {
   EClass getCommunication();
 
   /**
-   * Returns the meta object for the attribute '
-   * {@link org.ietr.preesm.codegen.model.codegen.Communication#getDirection <em>Direction</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the attribute ' {@link org.ietr.preesm.codegen.model.codegen.Communication#getDirection
+   * <em>Direction</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the attribute '<em>Direction</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Communication#getDirection()
@@ -2479,9 +2471,8 @@ public interface CodegenPackage extends EPackage {
   EAttribute getCommunication_Direction();
 
   /**
-   * Returns the meta object for the attribute '
-   * {@link org.ietr.preesm.codegen.model.codegen.Communication#getDelimiter <em>Delimiter</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the attribute ' {@link org.ietr.preesm.codegen.model.codegen.Communication#getDelimiter
+   * <em>Delimiter</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the attribute '<em>Delimiter</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Communication#getDelimiter()
@@ -2493,7 +2484,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for the reference '{@link org.ietr.preesm.codegen.model.codegen.Communication#getData
    * <em>Data</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for the reference '<em>Data</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Communication#getData()
    * @see #getCommunication()
@@ -2502,9 +2493,8 @@ public interface CodegenPackage extends EPackage {
   EReference getCommunication_Data();
 
   /**
-   * Returns the meta object for the reference '
-   * {@link org.ietr.preesm.codegen.model.codegen.Communication#getSendStart <em>Send Start</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the reference ' {@link org.ietr.preesm.codegen.model.codegen.Communication#getSendStart
+   * <em>Send Start</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the reference '<em>Send Start</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Communication#getSendStart()
@@ -2514,9 +2504,8 @@ public interface CodegenPackage extends EPackage {
   EReference getCommunication_SendStart();
 
   /**
-   * Returns the meta object for the reference '
-   * {@link org.ietr.preesm.codegen.model.codegen.Communication#getSendEnd <em>Send End</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the reference ' {@link org.ietr.preesm.codegen.model.codegen.Communication#getSendEnd
+   * <em>Send End</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the reference '<em>Send End</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Communication#getSendEnd()
@@ -2552,7 +2541,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.Communication#getId
    * <em>Id</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for the attribute '<em>Id</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Communication#getId()
    * @see #getCommunication()
@@ -2562,9 +2551,9 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * Returns the meta object for the containment reference list
-   * '{@link org.ietr.preesm.codegen.model.codegen.Communication#getNodes <em>Nodes</em>}'. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
-   * 
+   * '{@link org.ietr.preesm.codegen.model.codegen.Communication#getNodes <em>Nodes</em>}'. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   *
    * @return the meta object for the containment reference list '<em>Nodes</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Communication#getNodes()
    * @see #getCommunication()
@@ -2574,9 +2563,9 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * Returns the meta object for the reference
-   * '{@link org.ietr.preesm.codegen.model.codegen.Communication#getReceiveRelease <em>Receive Release</em>}'.
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * '{@link org.ietr.preesm.codegen.model.codegen.Communication#getReceiveRelease <em>Receive Release</em>}'. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for the reference '<em>Receive Release</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Communication#getReceiveRelease()
    * @see #getCommunication()
@@ -2597,9 +2586,8 @@ public interface CodegenPackage extends EPackage {
   EReference getCommunication_SendReserve();
 
   /**
-   * Returns the meta object for the attribute
-   * '{@link org.ietr.preesm.codegen.model.codegen.Communication#isRedundant <em>Redundant</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.Communication#isRedundant
+   * <em>Redundant</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the attribute '<em>Redundant</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Communication#isRedundant()
@@ -2609,9 +2597,9 @@ public interface CodegenPackage extends EPackage {
   EAttribute getCommunication_Redundant();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.CoreBlock <em>Core
-   * Block</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.CoreBlock <em>Core Block</em>}'.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for class '<em>Core Block</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.CoreBlock
    * @generated
@@ -2619,9 +2607,8 @@ public interface CodegenPackage extends EPackage {
   EClass getCoreBlock();
 
   /**
-   * Returns the meta object for the reference '
-   * {@link org.ietr.preesm.codegen.model.codegen.CoreBlock#getLoopBlock <em>Loop Block</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the reference ' {@link org.ietr.preesm.codegen.model.codegen.CoreBlock#getLoopBlock
+   * <em>Loop Block</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the reference '<em>Loop Block</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.CoreBlock#getLoopBlock()
@@ -2631,9 +2618,8 @@ public interface CodegenPackage extends EPackage {
   EReference getCoreBlock_LoopBlock();
 
   /**
-   * Returns the meta object for the reference '
-   * {@link org.ietr.preesm.codegen.model.codegen.CoreBlock#getInitBlock <em>Init Block</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the reference ' {@link org.ietr.preesm.codegen.model.codegen.CoreBlock#getInitBlock
+   * <em>Init Block</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the reference '<em>Init Block</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.CoreBlock#getInitBlock()
@@ -2645,7 +2631,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.CoreBlock#getCoreType
    * <em>Core Type</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for the attribute '<em>Core Type</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.CoreBlock#getCoreType()
    * @see #getCoreBlock()
@@ -2656,7 +2642,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.CoreBlock#getCoreID
    * <em>Core ID</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for the attribute '<em>Core ID</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.CoreBlock#getCoreID()
    * @see #getCoreBlock()
@@ -2665,9 +2651,9 @@ public interface CodegenPackage extends EPackage {
   EAttribute getCoreBlock_CoreID();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.ActorBlock <em>Actor
-   * Block</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.ActorBlock <em>Actor Block</em>}'.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for class '<em>Actor Block</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.ActorBlock
    * @generated
@@ -2675,9 +2661,8 @@ public interface CodegenPackage extends EPackage {
   EClass getActorBlock();
 
   /**
-   * Returns the meta object for the reference '
-   * {@link org.ietr.preesm.codegen.model.codegen.ActorBlock#getLoopBlock <em>Loop Block</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the reference ' {@link org.ietr.preesm.codegen.model.codegen.ActorBlock#getLoopBlock
+   * <em>Loop Block</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the reference '<em>Loop Block</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.ActorBlock#getLoopBlock()
@@ -2687,9 +2672,8 @@ public interface CodegenPackage extends EPackage {
   EReference getActorBlock_LoopBlock();
 
   /**
-   * Returns the meta object for the reference '
-   * {@link org.ietr.preesm.codegen.model.codegen.ActorBlock#getInitBlock <em>Init Block</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the reference ' {@link org.ietr.preesm.codegen.model.codegen.ActorBlock#getInitBlock
+   * <em>Init Block</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the reference '<em>Init Block</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.ActorBlock#getInitBlock()
@@ -2699,9 +2683,9 @@ public interface CodegenPackage extends EPackage {
   EReference getActorBlock_InitBlock();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.LoopBlock <em>Loop
-   * Block</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.LoopBlock <em>Loop Block</em>}'.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for class '<em>Loop Block</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.LoopBlock
    * @generated
@@ -2709,9 +2693,9 @@ public interface CodegenPackage extends EPackage {
   EClass getLoopBlock();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.ActorCall <em>Actor
-   * Call</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.ActorCall <em>Actor Call</em>}'.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for class '<em>Actor Call</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.ActorCall
    * @generated
@@ -2719,9 +2703,9 @@ public interface CodegenPackage extends EPackage {
   EClass getActorCall();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.CallBlock <em>Call
-   * Block</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.CallBlock <em>Call Block</em>}'.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for class '<em>Call Block</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.CallBlock
    * @generated
@@ -2731,7 +2715,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.SpecialCall <em>Special
    * Call</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for class '<em>Special Call</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.SpecialCall
    * @generated
@@ -2741,7 +2725,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.SpecialCall#getType
    * <em>Type</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for the attribute '<em>Type</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.SpecialCall#getType()
    * @see #getSpecialCall()
@@ -2774,9 +2758,9 @@ public interface CodegenPackage extends EPackage {
   EReference getSpecialCall_OutputBuffers();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.FifoCall <em>Fifo
-   * Call</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.FifoCall <em>Fifo Call</em>}'. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for class '<em>Fifo Call</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.FifoCall
    * @generated
@@ -2786,7 +2770,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.FifoCall#getOperation
    * <em>Operation</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for the attribute '<em>Operation</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.FifoCall#getOperation()
    * @see #getFifoCall()
@@ -2797,7 +2781,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for the reference '{@link org.ietr.preesm.codegen.model.codegen.FifoCall#getFifoHead
    * <em>Fifo Head</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for the reference '<em>Fifo Head</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.FifoCall#getFifoHead()
    * @see #getFifoCall()
@@ -2808,7 +2792,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for the reference '{@link org.ietr.preesm.codegen.model.codegen.FifoCall#getFifoTail
    * <em>Fifo Tail</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for the reference '<em>Fifo Tail</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.FifoCall#getFifoTail()
    * @see #getFifoCall()
@@ -2817,9 +2801,8 @@ public interface CodegenPackage extends EPackage {
   EReference getFifoCall_FifoTail();
 
   /**
-   * Returns the meta object for the reference '
-   * {@link org.ietr.preesm.codegen.model.codegen.FifoCall#getHeadBuffer <em>Head Buffer</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the reference ' {@link org.ietr.preesm.codegen.model.codegen.FifoCall#getHeadBuffer
+   * <em>Head Buffer</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the reference '<em>Head Buffer</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.FifoCall#getHeadBuffer()
@@ -2829,9 +2812,8 @@ public interface CodegenPackage extends EPackage {
   EReference getFifoCall_HeadBuffer();
 
   /**
-   * Returns the meta object for the reference '
-   * {@link org.ietr.preesm.codegen.model.codegen.FifoCall#getBodyBuffer <em>Body Buffer</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the reference ' {@link org.ietr.preesm.codegen.model.codegen.FifoCall#getBodyBuffer
+   * <em>Body Buffer</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the reference '<em>Body Buffer</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.FifoCall#getBodyBuffer()
@@ -2841,9 +2823,9 @@ public interface CodegenPackage extends EPackage {
   EReference getFifoCall_BodyBuffer();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.Commentable
-   * <em>Commentable</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.Commentable <em>Commentable</em>}'.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for class '<em>Commentable</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Commentable
    * @generated
@@ -2851,10 +2833,9 @@ public interface CodegenPackage extends EPackage {
   EClass getCommentable();
 
   /**
-   * Returns the meta object for the attribute
-   * '{@link org.ietr.preesm.codegen.model.codegen.Commentable#getComment <em>Comment</em>}'. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.Commentable#getComment
+   * <em>Comment</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for the attribute '<em>Comment</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Commentable#getComment()
    * @see #getCommentable()
@@ -2863,9 +2844,9 @@ public interface CodegenPackage extends EPackage {
   EAttribute getCommentable_Comment();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.CommunicationNode
-   * <em>Communication Node</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.CommunicationNode <em>Communication
+   * Node</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for class '<em>Communication Node</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.CommunicationNode
    * @generated
@@ -2873,10 +2854,9 @@ public interface CodegenPackage extends EPackage {
   EClass getCommunicationNode();
 
   /**
-   * Returns the meta object for the attribute
-   * '{@link org.ietr.preesm.codegen.model.codegen.CommunicationNode#getName <em>Name</em>}'. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.CommunicationNode#getName
+   * <em>Name</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for the attribute '<em>Name</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.CommunicationNode#getName()
    * @see #getCommunicationNode()
@@ -2885,10 +2865,9 @@ public interface CodegenPackage extends EPackage {
   EAttribute getCommunicationNode_Name();
 
   /**
-   * Returns the meta object for the attribute
-   * '{@link org.ietr.preesm.codegen.model.codegen.CommunicationNode#getType <em>Type</em>}'. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.CommunicationNode#getType
+   * <em>Type</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for the attribute '<em>Type</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.CommunicationNode#getType()
    * @see #getCommunicationNode()
@@ -2899,7 +2878,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication
    * <em>Shared Memory Communication</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for class '<em>Shared Memory Communication</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication
    * @generated
@@ -2909,7 +2888,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.ConstantString <em>Constant
    * String</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for class '<em>Constant String</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.ConstantString
    * @generated
@@ -2917,10 +2896,9 @@ public interface CodegenPackage extends EPackage {
   EClass getConstantString();
 
   /**
-   * Returns the meta object for the attribute
-   * '{@link org.ietr.preesm.codegen.model.codegen.ConstantString#getValue <em>Value</em>}'. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.ConstantString#getValue
+   * <em>Value</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for the attribute '<em>Value</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.ConstantString#getValue()
    * @see #getConstantString()
@@ -2929,9 +2907,9 @@ public interface CodegenPackage extends EPackage {
   EAttribute getConstantString_Value();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.NullBuffer <em>Null
-   * Buffer</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.NullBuffer <em>Null Buffer</em>}'.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for class '<em>Null Buffer</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.NullBuffer
    * @generated
@@ -2939,9 +2917,9 @@ public interface CodegenPackage extends EPackage {
   EClass getNullBuffer();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.FiniteLoopBlock <em>Finite
-   * Loop Block</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.FiniteLoopBlock <em>Finite Loop
+   * Block</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for class '<em>Finite Loop Block</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.FiniteLoopBlock
    * @generated
@@ -2949,9 +2927,8 @@ public interface CodegenPackage extends EPackage {
   EClass getFiniteLoopBlock();
 
   /**
-   * Returns the meta object for the attribute
-   * '{@link org.ietr.preesm.codegen.model.codegen.FiniteLoopBlock#getNbIter <em>Nb Iter</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.FiniteLoopBlock#getNbIter
+   * <em>Nb Iter</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the attribute '<em>Nb Iter</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.FiniteLoopBlock#getNbIter()
@@ -2961,10 +2938,9 @@ public interface CodegenPackage extends EPackage {
   EAttribute getFiniteLoopBlock_NbIter();
 
   /**
-   * Returns the meta object for the reference
-   * '{@link org.ietr.preesm.codegen.model.codegen.FiniteLoopBlock#getIter <em>Iter</em>}'. <!-- begin-user-doc
-   * --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for the reference '{@link org.ietr.preesm.codegen.model.codegen.FiniteLoopBlock#getIter
+   * <em>Iter</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for the reference '<em>Iter</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.FiniteLoopBlock#getIter()
    * @see #getFiniteLoopBlock()
@@ -2997,9 +2973,9 @@ public interface CodegenPackage extends EPackage {
   EReference getFiniteLoopBlock_OutBuffers();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.IntVar <em>Int Var</em>}'.
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.IntVar <em>Int Var</em>}'. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for class '<em>Int Var</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.IntVar
    * @generated
@@ -3009,7 +2985,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.BufferIterator <em>Buffer
    * Iterator</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for class '<em>Buffer Iterator</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.BufferIterator
    * @generated
@@ -3017,9 +2993,8 @@ public interface CodegenPackage extends EPackage {
   EClass getBufferIterator();
 
   /**
-   * Returns the meta object for the attribute
-   * '{@link org.ietr.preesm.codegen.model.codegen.BufferIterator#getIterSize <em>Iter Size</em>}'. <!--
-   * begin-user-doc --> <!-- end-user-doc -->
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.BufferIterator#getIterSize
+   * <em>Iter Size</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the attribute '<em>Iter Size</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.BufferIterator#getIterSize()
@@ -3029,10 +3004,9 @@ public interface CodegenPackage extends EPackage {
   EAttribute getBufferIterator_IterSize();
 
   /**
-   * Returns the meta object for the reference
-   * '{@link org.ietr.preesm.codegen.model.codegen.BufferIterator#getIter <em>Iter</em>}'. <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * 
+   * Returns the meta object for the reference '{@link org.ietr.preesm.codegen.model.codegen.BufferIterator#getIter
+   * <em>Iter</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for the reference '<em>Iter</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.BufferIterator#getIter()
    * @see #getBufferIterator()
@@ -3043,7 +3017,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.codegen.model.codegen.PapifyAction <em>Papify
    * Action</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for class '<em>Papify Action</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.PapifyAction
    * @generated
@@ -3051,9 +3025,9 @@ public interface CodegenPackage extends EPackage {
   EClass getPapifyAction();
 
   /**
-   * Returns the meta object for enum '{@link org.ietr.preesm.codegen.model.codegen.Direction
-   * <em>Direction</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for enum '{@link org.ietr.preesm.codegen.model.codegen.Direction <em>Direction</em>}'. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for enum '<em>Direction</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Direction
    * @generated
@@ -3061,9 +3035,9 @@ public interface CodegenPackage extends EPackage {
   EEnum getDirection();
 
   /**
-   * Returns the meta object for enum '{@link org.ietr.preesm.codegen.model.codegen.Delimiter
-   * <em>Delimiter</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for enum '{@link org.ietr.preesm.codegen.model.codegen.Delimiter <em>Delimiter</em>}'. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for enum '<em>Delimiter</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.Delimiter
    * @generated
@@ -3071,9 +3045,9 @@ public interface CodegenPackage extends EPackage {
   EEnum getDelimiter();
 
   /**
-   * Returns the meta object for enum '{@link org.ietr.preesm.codegen.model.codegen.SpecialType <em>Special
-   * Type</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Returns the meta object for enum '{@link org.ietr.preesm.codegen.model.codegen.SpecialType <em>Special Type</em>}'.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @return the meta object for enum '<em>Special Type</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.SpecialType
    * @generated
@@ -3083,7 +3057,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for enum '{@link org.ietr.preesm.codegen.model.codegen.FifoOperation <em>Fifo
    * Operation</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for enum '<em>Fifo Operation</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.FifoOperation
    * @generated
@@ -3093,7 +3067,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for enum '{@link org.ietr.preesm.codegen.model.codegen.PortDirection <em>Port
    * Direction</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for enum '<em>Port Direction</em>'.
    * @see org.ietr.preesm.codegen.model.codegen.PortDirection
    * @generated
@@ -3113,7 +3087,7 @@ public interface CodegenPackage extends EPackage {
 
   /**
    * Returns the factory that creates the instances of the model. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the factory that creates the instances of the model.
    * @generated
    */
@@ -3133,9 +3107,9 @@ public interface CodegenPackage extends EPackage {
    */
   interface Literals {
     /**
-     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.BlockImpl
-     * <em>Block</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.BlockImpl <em>Block</em>}'
+     * class. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.BlockImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getBlock()
      * @generated
@@ -3153,7 +3127,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Declarations</b></em>' reference list feature. <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference BLOCK__DECLARATIONS = CodegenPackage.eINSTANCE.getBlock_Declarations();
@@ -3161,7 +3135,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Name</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute BLOCK__NAME = CodegenPackage.eINSTANCE.getBlock_Name();
@@ -3175,9 +3149,9 @@ public interface CodegenPackage extends EPackage {
     EReference BLOCK__DEFINITIONS = CodegenPackage.eINSTANCE.getBlock_Definitions();
 
     /**
-     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.CodeElt <em>Code Elt</em>}'
-     * class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.CodeElt <em>Code Elt</em>}' class.
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
      * @see org.ietr.preesm.codegen.model.codegen.CodeElt
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getCodeElt()
      * @generated
@@ -3187,7 +3161,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.CallImpl <em>Call</em>}'
      * class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.CallImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getCall()
      * @generated
@@ -3197,7 +3171,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Parameters</b></em>' reference list feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference CALL__PARAMETERS = CodegenPackage.eINSTANCE.getCall_Parameters();
@@ -3205,7 +3179,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Name</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute CALL__NAME = CodegenPackage.eINSTANCE.getCall_Name();
@@ -3213,7 +3187,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>EReference0</b></em>' reference feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference CALL__EREFERENCE0 = CodegenPackage.eINSTANCE.getCall_EReference0();
@@ -3229,7 +3203,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.VariableImpl
      * <em>Variable</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.VariableImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getVariable()
      * @generated
@@ -3239,7 +3213,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Name</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute VARIABLE__NAME = CodegenPackage.eINSTANCE.getVariable_Name();
@@ -3247,7 +3221,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Type</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute VARIABLE__TYPE = CodegenPackage.eINSTANCE.getVariable_Type();
@@ -3255,7 +3229,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Creator</b></em>' container reference feature. <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference VARIABLE__CREATOR = CodegenPackage.eINSTANCE.getVariable_Creator();
@@ -3263,15 +3237,15 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Users</b></em>' reference list feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference VARIABLE__USERS = CodegenPackage.eINSTANCE.getVariable_Users();
 
     /**
-     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.BufferImpl
-     * <em>Buffer</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.BufferImpl <em>Buffer</em>}'
+     * class. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.BufferImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getBuffer()
      * @generated
@@ -3281,7 +3255,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Size</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute BUFFER__SIZE = CodegenPackage.eINSTANCE.getBuffer_Size();
@@ -3289,7 +3263,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Childrens</b></em>' reference list feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference BUFFER__CHILDRENS = CodegenPackage.eINSTANCE.getBuffer_Childrens();
@@ -3297,7 +3271,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Type Size</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute BUFFER__TYPE_SIZE = CodegenPackage.eINSTANCE.getBuffer_TypeSize();
@@ -3305,7 +3279,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Merged Range</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute BUFFER__MERGED_RANGE = CodegenPackage.eINSTANCE.getBuffer_MergedRange();
@@ -3313,7 +3287,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Local</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute BUFFER__LOCAL = CodegenPackage.eINSTANCE.getBuffer_Local();
@@ -3321,7 +3295,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.SubBufferImpl <em>Sub
      * Buffer</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.SubBufferImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getSubBuffer()
      * @generated
@@ -3331,7 +3305,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Container</b></em>' reference feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference SUB_BUFFER__CONTAINER = CodegenPackage.eINSTANCE.getSubBuffer_Container();
@@ -3339,7 +3313,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Offset</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute SUB_BUFFER__OFFSET = CodegenPackage.eINSTANCE.getSubBuffer_Offset();
@@ -3347,7 +3321,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.ConstantImpl
      * <em>Constant</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.ConstantImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getConstant()
      * @generated
@@ -3357,15 +3331,15 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Value</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute CONSTANT__VALUE = CodegenPackage.eINSTANCE.getConstant_Value();
 
     /**
-     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.FunctionCallImpl
-     * <em>Function Call</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.FunctionCallImpl <em>Function
+     * Call</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.FunctionCallImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getFunctionCall()
      * @generated
@@ -3375,7 +3349,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Actor Name</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute FUNCTION_CALL__ACTOR_NAME = CodegenPackage.eINSTANCE.getFunctionCall_ActorName();
@@ -3383,7 +3357,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.CommunicationImpl
      * <em>Communication</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.CommunicationImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getCommunication()
      * @generated
@@ -3393,7 +3367,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Direction</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute COMMUNICATION__DIRECTION = CodegenPackage.eINSTANCE.getCommunication_Direction();
@@ -3401,7 +3375,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Delimiter</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute COMMUNICATION__DELIMITER = CodegenPackage.eINSTANCE.getCommunication_Delimiter();
@@ -3409,7 +3383,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Data</b></em>' reference feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference COMMUNICATION__DATA = CodegenPackage.eINSTANCE.getCommunication_Data();
@@ -3417,7 +3391,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Send Start</b></em>' reference feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference COMMUNICATION__SEND_START = CodegenPackage.eINSTANCE.getCommunication_SendStart();
@@ -3425,7 +3399,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Send End</b></em>' reference feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference COMMUNICATION__SEND_END = CodegenPackage.eINSTANCE.getCommunication_SendEnd();
@@ -3433,7 +3407,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Receive Start</b></em>' reference feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference COMMUNICATION__RECEIVE_START = CodegenPackage.eINSTANCE.getCommunication_ReceiveStart();
@@ -3441,7 +3415,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Receive End</b></em>' reference feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference COMMUNICATION__RECEIVE_END = CodegenPackage.eINSTANCE.getCommunication_ReceiveEnd();
@@ -3457,7 +3431,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Nodes</b></em>' containment reference list feature. <!-- begin-user-doc
      * --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference COMMUNICATION__NODES = CodegenPackage.eINSTANCE.getCommunication_Nodes();
@@ -3465,7 +3439,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Receive Release</b></em>' reference feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference COMMUNICATION__RECEIVE_RELEASE = CodegenPackage.eINSTANCE.getCommunication_ReceiveRelease();
@@ -3473,7 +3447,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Send Reserve</b></em>' reference feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference COMMUNICATION__SEND_RESERVE = CodegenPackage.eINSTANCE.getCommunication_SendReserve();
@@ -3481,7 +3455,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Redundant</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute COMMUNICATION__REDUNDANT = CodegenPackage.eINSTANCE.getCommunication_Redundant();
@@ -3489,7 +3463,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.CoreBlockImpl <em>Core
      * Block</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.CoreBlockImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getCoreBlock()
      * @generated
@@ -3499,7 +3473,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Loop Block</b></em>' reference feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference CORE_BLOCK__LOOP_BLOCK = CodegenPackage.eINSTANCE.getCoreBlock_LoopBlock();
@@ -3507,7 +3481,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Init Block</b></em>' reference feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference CORE_BLOCK__INIT_BLOCK = CodegenPackage.eINSTANCE.getCoreBlock_InitBlock();
@@ -3515,7 +3489,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Core Type</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute CORE_BLOCK__CORE_TYPE = CodegenPackage.eINSTANCE.getCoreBlock_CoreType();
@@ -3523,7 +3497,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Core ID</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute CORE_BLOCK__CORE_ID = CodegenPackage.eINSTANCE.getCoreBlock_CoreID();
@@ -3531,7 +3505,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.ActorBlockImpl <em>Actor
      * Block</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.ActorBlockImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getActorBlock()
      * @generated
@@ -3541,7 +3515,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Loop Block</b></em>' reference feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference ACTOR_BLOCK__LOOP_BLOCK = CodegenPackage.eINSTANCE.getActorBlock_LoopBlock();
@@ -3549,7 +3523,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Init Block</b></em>' reference feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference ACTOR_BLOCK__INIT_BLOCK = CodegenPackage.eINSTANCE.getActorBlock_InitBlock();
@@ -3557,7 +3531,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.LoopBlockImpl <em>Loop
      * Block</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.LoopBlockImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getLoopBlock()
      * @generated
@@ -3567,7 +3541,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.ActorCallImpl <em>Actor
      * Call</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.ActorCallImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getActorCall()
      * @generated
@@ -3577,7 +3551,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.CallBlockImpl <em>Call
      * Block</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.CallBlockImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getCallBlock()
      * @generated
@@ -3585,9 +3559,9 @@ public interface CodegenPackage extends EPackage {
     EClass CALL_BLOCK = CodegenPackage.eINSTANCE.getCallBlock();
 
     /**
-     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.SpecialCallImpl
-     * <em>Special Call</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.SpecialCallImpl <em>Special
+     * Call</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.SpecialCallImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getSpecialCall()
      * @generated
@@ -3597,7 +3571,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Type</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute SPECIAL_CALL__TYPE = CodegenPackage.eINSTANCE.getSpecialCall_Type();
@@ -3605,7 +3579,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Input Buffers</b></em>' reference list feature. <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference SPECIAL_CALL__INPUT_BUFFERS = CodegenPackage.eINSTANCE.getSpecialCall_InputBuffers();
@@ -3613,7 +3587,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Output Buffers</b></em>' reference list feature. <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference SPECIAL_CALL__OUTPUT_BUFFERS = CodegenPackage.eINSTANCE.getSpecialCall_OutputBuffers();
@@ -3621,7 +3595,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.FifoCallImpl <em>Fifo
      * Call</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.FifoCallImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getFifoCall()
      * @generated
@@ -3631,7 +3605,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Operation</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute FIFO_CALL__OPERATION = CodegenPackage.eINSTANCE.getFifoCall_Operation();
@@ -3639,7 +3613,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Fifo Head</b></em>' reference feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference FIFO_CALL__FIFO_HEAD = CodegenPackage.eINSTANCE.getFifoCall_FifoHead();
@@ -3647,7 +3621,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Fifo Tail</b></em>' reference feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference FIFO_CALL__FIFO_TAIL = CodegenPackage.eINSTANCE.getFifoCall_FifoTail();
@@ -3655,7 +3629,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Head Buffer</b></em>' reference feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference FIFO_CALL__HEAD_BUFFER = CodegenPackage.eINSTANCE.getFifoCall_HeadBuffer();
@@ -3663,7 +3637,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Body Buffer</b></em>' reference feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference FIFO_CALL__BODY_BUFFER = CodegenPackage.eINSTANCE.getFifoCall_BodyBuffer();
@@ -3671,7 +3645,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.CommentableImpl
      * <em>Commentable</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.CommentableImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getCommentable()
      * @generated
@@ -3681,7 +3655,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Comment</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute COMMENTABLE__COMMENT = CodegenPackage.eINSTANCE.getCommentable_Comment();
@@ -3689,7 +3663,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.CommunicationNodeImpl
      * <em>Communication Node</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.CommunicationNodeImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getCommunicationNode()
      * @generated
@@ -3699,7 +3673,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Name</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute COMMUNICATION_NODE__NAME = CodegenPackage.eINSTANCE.getCommunicationNode_Name();
@@ -3707,16 +3681,15 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Type</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute COMMUNICATION_NODE__TYPE = CodegenPackage.eINSTANCE.getCommunicationNode_Type();
 
     /**
-     * The meta object literal for the
-     * '{@link org.ietr.preesm.codegen.model.codegen.impl.SharedMemoryCommunicationImpl <em>Shared Memory
-     * Communication</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.SharedMemoryCommunicationImpl
+     * <em>Shared Memory Communication</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.SharedMemoryCommunicationImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getSharedMemoryCommunication()
      * @generated
@@ -3726,7 +3699,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.ConstantStringImpl
      * <em>Constant String</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.ConstantStringImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getConstantString()
      * @generated
@@ -3736,7 +3709,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Value</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute CONSTANT_STRING__VALUE = CodegenPackage.eINSTANCE.getConstantString_Value();
@@ -3744,7 +3717,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.NullBufferImpl <em>Null
      * Buffer</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.NullBufferImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getNullBuffer()
      * @generated
@@ -3752,9 +3725,9 @@ public interface CodegenPackage extends EPackage {
     EClass NULL_BUFFER = CodegenPackage.eINSTANCE.getNullBuffer();
 
     /**
-     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.FiniteLoopBlockImpl
-     * <em>Finite Loop Block</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.FiniteLoopBlockImpl <em>Finite
+     * Loop Block</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.FiniteLoopBlockImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getFiniteLoopBlock()
      * @generated
@@ -3764,7 +3737,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Nb Iter</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute FINITE_LOOP_BLOCK__NB_ITER = CodegenPackage.eINSTANCE.getFiniteLoopBlock_NbIter();
@@ -3772,7 +3745,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Iter</b></em>' reference feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference FINITE_LOOP_BLOCK__ITER = CodegenPackage.eINSTANCE.getFiniteLoopBlock_Iter();
@@ -3780,7 +3753,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>In Buffers</b></em>' reference list feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference FINITE_LOOP_BLOCK__IN_BUFFERS = CodegenPackage.eINSTANCE.getFiniteLoopBlock_InBuffers();
@@ -3788,15 +3761,15 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Out Buffers</b></em>' reference list feature. <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference FINITE_LOOP_BLOCK__OUT_BUFFERS = CodegenPackage.eINSTANCE.getFiniteLoopBlock_OutBuffers();
 
     /**
-     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.IntVarImpl <em>Int
-     * Var</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.IntVarImpl <em>Int Var</em>}'
+     * class. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.IntVarImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getIntVar()
      * @generated
@@ -3804,9 +3777,9 @@ public interface CodegenPackage extends EPackage {
     EClass INT_VAR = CodegenPackage.eINSTANCE.getIntVar();
 
     /**
-     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.BufferIteratorImpl
-     * <em>Buffer Iterator</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.BufferIteratorImpl <em>Buffer
+     * Iterator</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.BufferIteratorImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getBufferIterator()
      * @generated
@@ -3816,7 +3789,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Iter Size</b></em>' attribute feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EAttribute BUFFER_ITERATOR__ITER_SIZE = CodegenPackage.eINSTANCE.getBufferIterator_IterSize();
@@ -3824,15 +3797,15 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '<em><b>Iter</b></em>' reference feature. <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
+     *
      * @generated
      */
     EReference BUFFER_ITERATOR__ITER = CodegenPackage.eINSTANCE.getBufferIterator_Iter();
 
     /**
-     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.PapifyActionImpl
-     * <em>Papify Action</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.impl.PapifyActionImpl <em>Papify
+     * Action</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
      * @see org.ietr.preesm.codegen.model.codegen.impl.PapifyActionImpl
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getPapifyAction()
      * @generated
@@ -3840,9 +3813,9 @@ public interface CodegenPackage extends EPackage {
     EClass PAPIFY_ACTION = CodegenPackage.eINSTANCE.getPapifyAction();
 
     /**
-     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.Direction
-     * <em>Direction</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.Direction <em>Direction</em>}'
+     * enum. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
      * @see org.ietr.preesm.codegen.model.codegen.Direction
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getDirection()
      * @generated
@@ -3850,9 +3823,9 @@ public interface CodegenPackage extends EPackage {
     EEnum DIRECTION = CodegenPackage.eINSTANCE.getDirection();
 
     /**
-     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.Delimiter
-     * <em>Delimiter</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.Delimiter <em>Delimiter</em>}'
+     * enum. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
      * @see org.ietr.preesm.codegen.model.codegen.Delimiter
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getDelimiter()
      * @generated
@@ -3860,9 +3833,9 @@ public interface CodegenPackage extends EPackage {
     EEnum DELIMITER = CodegenPackage.eINSTANCE.getDelimiter();
 
     /**
-     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.SpecialType <em>Special
-     * Type</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.SpecialType <em>Special Type</em>}'
+     * enum. <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
      * @see org.ietr.preesm.codegen.model.codegen.SpecialType
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getSpecialType()
      * @generated
@@ -3872,7 +3845,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.FifoOperation <em>Fifo
      * Operation</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @see org.ietr.preesm.codegen.model.codegen.FifoOperation
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getFifoOperation()
      * @generated
@@ -3882,7 +3855,7 @@ public interface CodegenPackage extends EPackage {
     /**
      * The meta object literal for the '{@link org.ietr.preesm.codegen.model.codegen.PortDirection <em>Port
      * Direction</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @see org.ietr.preesm.codegen.model.codegen.PortDirection
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getPortDirection()
      * @generated
@@ -3891,7 +3864,7 @@ public interface CodegenPackage extends EPackage {
 
     /**
      * The meta object literal for the '<em>range</em>' data type. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @see org.ietr.preesm.memory.script.Range
      * @see org.ietr.preesm.codegen.model.codegen.impl.CodegenPackageImpl#getrange()
      * @generated

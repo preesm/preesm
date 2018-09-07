@@ -69,7 +69,7 @@ public interface Block extends CodeElt {
    * description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Code Elts</em>' containment reference list.
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getBlock_CodeElts()
    * @model containment="true" changeable="false"
@@ -86,7 +86,7 @@ public interface Block extends CodeElt {
    * of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Declarations</em>' reference list.
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getBlock_Declarations()
    * @see org.ietr.preesm.codegen.model.codegen.Variable#getUsers
@@ -101,7 +101,7 @@ public interface Block extends CodeElt {
    * If the meaning of the '<em>Name</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Name</em>' attribute.
    * @see #setName(String)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getBlock_Name()
@@ -111,9 +111,9 @@ public interface Block extends CodeElt {
   String getName();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.Block#getName <em>Name</em>}' attribute.
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.Block#getName <em>Name</em>}' attribute. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
    * @param value
    *          the new value of the '<em>Name</em>' attribute.
    * @see #getName()
@@ -130,7 +130,7 @@ public interface Block extends CodeElt {
    * a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Definitions</em>' containment reference list.
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getBlock_Definitions()
    * @see org.ietr.preesm.codegen.model.codegen.Variable#getCreator

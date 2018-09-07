@@ -63,7 +63,7 @@ public interface FifoCall extends Call {
    * here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Operation</em>' attribute.
    * @see org.ietr.preesm.codegen.model.codegen.FifoOperation
    * @see #setOperation(FifoOperation)
@@ -74,9 +74,9 @@ public interface FifoCall extends Call {
   FifoOperation getOperation();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.FifoCall#getOperation
-   * <em>Operation</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.FifoCall#getOperation <em>Operation</em>}'
+   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @param value
    *          the new value of the '<em>Operation</em>' attribute.
    * @see org.ietr.preesm.codegen.model.codegen.FifoOperation
@@ -92,7 +92,7 @@ public interface FifoCall extends Call {
    * here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Fifo Head</em>' reference.
    * @see #setFifoHead(FifoCall)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getFifoCall_FifoHead()
@@ -104,7 +104,7 @@ public interface FifoCall extends Call {
   /**
    * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.FifoCall#getFifoHead <em>Fifo Head</em>}'
    * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Fifo Head</em>' reference.
    * @see #getFifoHead()
@@ -119,7 +119,7 @@ public interface FifoCall extends Call {
    * here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Fifo Tail</em>' reference.
    * @see #setFifoTail(FifoCall)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getFifoCall_FifoTail()
@@ -131,7 +131,7 @@ public interface FifoCall extends Call {
   /**
    * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.FifoCall#getFifoTail <em>Fifo Tail</em>}'
    * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Fifo Tail</em>' reference.
    * @see #getFifoTail()
@@ -146,7 +146,7 @@ public interface FifoCall extends Call {
    * here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Head Buffer</em>' reference.
    * @see #setHeadBuffer(Buffer)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getFifoCall_HeadBuffer()
@@ -156,9 +156,9 @@ public interface FifoCall extends Call {
   Buffer getHeadBuffer();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.FifoCall#getHeadBuffer <em>Head
-   * Buffer</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.FifoCall#getHeadBuffer <em>Head Buffer</em>}'
+   * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @param value
    *          the new value of the '<em>Head Buffer</em>' reference.
    * @see #getHeadBuffer()
@@ -173,7 +173,7 @@ public interface FifoCall extends Call {
    * here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Body Buffer</em>' reference.
    * @see #setBodyBuffer(Buffer)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getFifoCall_BodyBuffer()
@@ -183,9 +183,9 @@ public interface FifoCall extends Call {
   Buffer getBodyBuffer();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.FifoCall#getBodyBuffer <em>Body
-   * Buffer</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.FifoCall#getBodyBuffer <em>Body Buffer</em>}'
+   * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @param value
    *          the new value of the '<em>Body Buffer</em>' reference.
    * @see #getBodyBuffer()

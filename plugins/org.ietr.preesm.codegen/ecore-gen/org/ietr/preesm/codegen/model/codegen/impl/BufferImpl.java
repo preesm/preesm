@@ -79,7 +79,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
 
   /**
    * The cached value of the '{@link #getSize() <em>Size</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getSize()
    * @generated
    * @ordered
@@ -89,7 +89,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
   /**
    * The cached value of the '{@link #getChildrens() <em>Childrens</em>}' reference list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getChildrens()
    * @generated
    * @ordered
@@ -99,7 +99,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
   /**
    * The default value of the '{@link #getTypeSize() <em>Type Size</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getTypeSize()
    * @generated
    * @ordered
@@ -109,7 +109,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
   /**
    * The cached value of the '{@link #getTypeSize() <em>Type Size</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getTypeSize()
    * @generated
    * @ordered
@@ -119,7 +119,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
   /**
    * The cached value of the '{@link #getMergedRange() <em>Merged Range</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getMergedRange()
    * @generated
    * @ordered
@@ -202,8 +202,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
   @Override
   public EList<SubBuffer> getChildrens() {
     if (this.childrens == null) {
-      this.childrens = new EObjectWithInverseResolvingEList<>(SubBuffer.class, this,
-          CodegenPackage.BUFFER__CHILDRENS, CodegenPackage.SUB_BUFFER__CONTAINER);
+      this.childrens = new EObjectWithInverseResolvingEList<>(SubBuffer.class, this, CodegenPackage.BUFFER__CHILDRENS,
+          CodegenPackage.SUB_BUFFER__CONTAINER);
     }
     return this.childrens;
   }

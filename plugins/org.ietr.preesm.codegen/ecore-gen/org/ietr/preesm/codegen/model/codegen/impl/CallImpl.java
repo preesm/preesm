@@ -69,7 +69,7 @@ public abstract class CallImpl extends CommentableImpl implements Call {
   /**
    * The cached value of the '{@link #getParameters() <em>Parameters</em>}' reference list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getParameters()
    * @generated
    * @ordered
@@ -88,7 +88,7 @@ public abstract class CallImpl extends CommentableImpl implements Call {
 
   /**
    * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getName()
    * @generated
    * @ordered
@@ -98,7 +98,7 @@ public abstract class CallImpl extends CommentableImpl implements Call {
   /**
    * The cached value of the '{@link #getEReference0() <em>EReference0</em>}' reference. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getEReference0()
    * @generated
    * @ordered

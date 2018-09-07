@@ -60,7 +60,7 @@ public interface Commentable extends EObject {
    * here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Comment</em>' attribute.
    * @see #setComment(String)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getCommentable_Comment()
@@ -72,7 +72,7 @@ public interface Commentable extends EObject {
   /**
    * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.Commentable#getComment <em>Comment</em>}'
    * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Comment</em>' attribute.
    * @see #getComment()

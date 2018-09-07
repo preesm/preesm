@@ -61,7 +61,7 @@ public interface FunctionCall extends Call {
    * here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Actor Name</em>' attribute.
    * @see #setActorName(String)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getFunctionCall_ActorName()
@@ -71,9 +71,9 @@ public interface FunctionCall extends Call {
   String getActorName();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.FunctionCall#getActorName <em>Actor
-   * Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.FunctionCall#getActorName <em>Actor Name</em>}'
+   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @param value
    *          the new value of the '<em>Actor Name</em>' attribute.
    * @see #getActorName()

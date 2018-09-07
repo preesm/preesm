@@ -59,7 +59,7 @@ public abstract class CommentableImpl extends EObjectImpl implements Commentable
   /**
    * The default value of the '{@link #getComment() <em>Comment</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getComment()
    * @generated
    * @ordered
@@ -69,7 +69,7 @@ public abstract class CommentableImpl extends EObjectImpl implements Commentable
   /**
    * The cached value of the '{@link #getComment() <em>Comment</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getComment()
    * @generated
    * @ordered

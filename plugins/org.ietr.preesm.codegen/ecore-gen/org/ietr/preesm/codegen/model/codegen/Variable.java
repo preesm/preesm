@@ -65,7 +65,7 @@ public interface Variable extends Commentable {
    * If the meaning of the '<em>Name</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Name</em>' attribute.
    * @see #setName(String)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getVariable_Name()
@@ -75,9 +75,9 @@ public interface Variable extends Commentable {
   String getName();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.Variable#getName <em>Name</em>}'
-   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.Variable#getName <em>Name</em>}' attribute.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @param value
    *          the new value of the '<em>Name</em>' attribute.
    * @see #getName()
@@ -91,7 +91,7 @@ public interface Variable extends Commentable {
    * If the meaning of the '<em>Type</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Type</em>' attribute.
    * @see #setType(String)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getVariable_Type()
@@ -101,9 +101,9 @@ public interface Variable extends Commentable {
   String getType();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.Variable#getType <em>Type</em>}'
-   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.Variable#getType <em>Type</em>}' attribute.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @param value
    *          the new value of the '<em>Type</em>' attribute.
    * @see #getType()
@@ -113,8 +113,7 @@ public interface Variable extends Commentable {
 
   /**
    * Returns the value of the '<em><b>Creator</b></em>' container reference. It is bidirectional and its opposite is
-   * '{@link org.ietr.preesm.codegen.model.codegen.Block#getDefinitions <em>Definitions</em>}'. <!--
-   * begin-user-doc -->
+   * '{@link org.ietr.preesm.codegen.model.codegen.Block#getDefinitions <em>Definitions</em>}'. <!-- begin-user-doc -->
    * <p>
    * The {@link #getCreator() creator} of a {@link Variable} is the {@link Block} that declare and define the
    * {@link Variable}.
@@ -133,7 +132,7 @@ public interface Variable extends Commentable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.Variable#getCreator <em>Creator</em>}'
    * container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Creator</em>' container reference.
    * @see #getCreator()
@@ -144,8 +143,7 @@ public interface Variable extends Commentable {
   /**
    * Returns the value of the '<em><b>Users</b></em>' reference list. The list contents are of type
    * {@link org.ietr.preesm.codegen.model.codegen.Block}. It is bidirectional and its opposite is '
-   * {@link org.ietr.preesm.codegen.model.codegen.Block#getDeclarations <em>Declarations</em>}'. <!--
-   * begin-user-doc -->
+   * {@link org.ietr.preesm.codegen.model.codegen.Block#getDeclarations <em>Declarations</em>}'. <!-- begin-user-doc -->
    * <p>
    * The {@link #getUsers() users} of a {@link Variable} are the {@link Block Blocks} using the {@link Variable}. One of
    * the {@link #getUsers() users} of the variable is also its {@link #getCreator() creator}.
@@ -162,7 +160,7 @@ public interface Variable extends Commentable {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @model
    * @generated
    */

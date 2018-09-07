@@ -69,7 +69,7 @@ public class CommunicationNodeImpl extends CommentableImpl implements Communicat
 
   /**
    * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getName()
    * @generated
    * @ordered
@@ -88,7 +88,7 @@ public class CommunicationNodeImpl extends CommentableImpl implements Communicat
 
   /**
    * The cached value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getType()
    * @generated
    * @ordered

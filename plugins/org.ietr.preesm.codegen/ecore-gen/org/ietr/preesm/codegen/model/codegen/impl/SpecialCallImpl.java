@@ -56,10 +56,8 @@ import org.ietr.preesm.codegen.model.codegen.SpecialType;
  * </p>
  * <ul>
  * <li>{@link org.ietr.preesm.codegen.model.codegen.impl.SpecialCallImpl#getType <em>Type</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.model.codegen.impl.SpecialCallImpl#getInputBuffers <em>Input
- * Buffers</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.model.codegen.impl.SpecialCallImpl#getOutputBuffers <em>Output
- * Buffers</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.model.codegen.impl.SpecialCallImpl#getInputBuffers <em>Input Buffers</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.model.codegen.impl.SpecialCallImpl#getOutputBuffers <em>Output Buffers</em>}</li>
  * </ul>
  *
  * @generated
@@ -77,7 +75,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 
   /**
    * The cached value of the '{@link #getType() <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getType()
    * @generated
    * @ordered
@@ -87,7 +85,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
   /**
    * The cached value of the '{@link #getInputBuffers() <em>Input Buffers</em>}' reference list. <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * 
+   *
    * @see #getInputBuffers()
    * @generated
    * @ordered
@@ -97,7 +95,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
   /**
    * The cached value of the '{@link #getOutputBuffers() <em>Output Buffers</em>}' reference list. <!-- begin-user-doc
    * --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getOutputBuffers()
    * @generated
    * @ordered
@@ -160,8 +158,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
   @Override
   public EList<Buffer> getInputBuffers() {
     if (this.inputBuffers == null) {
-      this.inputBuffers = new EObjectResolvingEList<>(Buffer.class, this,
-          CodegenPackage.SPECIAL_CALL__INPUT_BUFFERS);
+      this.inputBuffers = new EObjectResolvingEList<>(Buffer.class, this, CodegenPackage.SPECIAL_CALL__INPUT_BUFFERS);
     }
     return this.inputBuffers;
   }

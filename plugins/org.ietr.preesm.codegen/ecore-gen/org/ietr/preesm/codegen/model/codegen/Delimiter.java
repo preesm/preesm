@@ -48,7 +48,7 @@ import org.eclipse.emf.common.util.Enumerator;
  * Data can be sent/received as soon a communication zone {@link #START starts} and until this zone {@link #END ends}.
  * If the {@link #END} of a zone is reached before the completion of the corresponding, the process must wait until the
  * communication completes before pursuing its computation. <!-- end-user-doc -->
- * 
+ *
  * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getDelimiter()
  * @model
  * @generated
@@ -56,7 +56,7 @@ import org.eclipse.emf.common.util.Enumerator;
 public enum Delimiter implements Enumerator {
   /**
    * The '<em><b>START</b></em>' literal object. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #START_VALUE
    * @generated
    * @ordered
@@ -65,7 +65,7 @@ public enum Delimiter implements Enumerator {
 
   /**
    * The '<em><b>END</b></em>' literal object. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #END_VALUE
    * @generated
    * @ordered
@@ -79,7 +79,7 @@ public enum Delimiter implements Enumerator {
    * here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @see #START
    * @model
    * @generated
@@ -94,7 +94,7 @@ public enum Delimiter implements Enumerator {
    * here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @see #END
    * @model
    * @generated
@@ -104,7 +104,7 @@ public enum Delimiter implements Enumerator {
 
   /**
    * An array of all the '<em><b>Delimiter</b></em>' enumerators. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   private static final Delimiter[] VALUES_ARRAY = new Delimiter[] { START, END, };
@@ -112,7 +112,7 @@ public enum Delimiter implements Enumerator {
   /**
    * A public read-only list of all the '<em><b>Delimiter</b></em>' enumerators. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    */
   public static final List<Delimiter> VALUES = Collections.unmodifiableList(Arrays.asList(Delimiter.VALUES_ARRAY));
@@ -120,7 +120,7 @@ public enum Delimiter implements Enumerator {
   /**
    * Returns the '<em><b>Delimiter</b></em>' literal with the specified literal value. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @param literal
    *          the literal.
    * @return the matching enumerator or <code>null</code>.
@@ -156,7 +156,7 @@ public enum Delimiter implements Enumerator {
   /**
    * Returns the '<em><b>Delimiter</b></em>' literal with the specified integer value. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @param value
    *          the integer value.
    * @return the matching enumerator or <code>null</code>.
@@ -195,7 +195,7 @@ public enum Delimiter implements Enumerator {
 
   /**
    * Only this class can construct instances. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   private Delimiter(final int value, final String name, final String literal) {
@@ -240,7 +240,7 @@ public enum Delimiter implements Enumerator {
   /**
    * Returns the literal value of the enumerator, which is its string representation. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override

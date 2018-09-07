@@ -71,7 +71,7 @@ public class BlockImpl extends CommentableImpl implements Block {
   /**
    * The cached value of the '{@link #getCodeElts() <em>Code Elts</em>}' containment reference list. <!-- begin-user-doc
    * --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getCodeElts()
    * @generated
    * @ordered
@@ -81,7 +81,7 @@ public class BlockImpl extends CommentableImpl implements Block {
   /**
    * The cached value of the '{@link #getDeclarations() <em>Declarations</em>}' reference list. <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * 
+   *
    * @see #getDeclarations()
    * @generated
    * @ordered
@@ -100,7 +100,7 @@ public class BlockImpl extends CommentableImpl implements Block {
 
   /**
    * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getName()
    * @generated
    * @ordered

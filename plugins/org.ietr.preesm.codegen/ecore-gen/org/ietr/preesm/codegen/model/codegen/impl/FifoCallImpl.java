@@ -65,7 +65,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
   /**
    * The default value of the '{@link #getOperation() <em>Operation</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getOperation()
    * @generated
    * @ordered
@@ -75,7 +75,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
   /**
    * The cached value of the '{@link #getOperation() <em>Operation</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getOperation()
    * @generated
    * @ordered
@@ -85,7 +85,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
   /**
    * The cached value of the '{@link #getFifoHead() <em>Fifo Head</em>}' reference. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getFifoHead()
    * @generated
    * @ordered
@@ -95,7 +95,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
   /**
    * The cached value of the '{@link #getFifoTail() <em>Fifo Tail</em>}' reference. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getFifoTail()
    * @generated
    * @ordered
@@ -105,7 +105,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
   /**
    * The cached value of the '{@link #getHeadBuffer() <em>Head Buffer</em>}' reference. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getHeadBuffer()
    * @generated
    * @ordered
@@ -115,7 +115,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
   /**
    * The cached value of the '{@link #getBodyBuffer() <em>Body Buffer</em>}' reference. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getBodyBuffer()
    * @generated
    * @ordered

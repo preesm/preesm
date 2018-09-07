@@ -61,7 +61,7 @@ public interface ActorBlock extends Block {
    * here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Loop Block</em>' reference.
    * @see #setLoopBlock(LoopBlock)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getActorBlock_LoopBlock()
@@ -71,9 +71,9 @@ public interface ActorBlock extends Block {
   LoopBlock getLoopBlock();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.ActorBlock#getLoopBlock <em>Loop
-   * Block</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.ActorBlock#getLoopBlock <em>Loop Block</em>}'
+   * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @param value
    *          the new value of the '<em>Loop Block</em>' reference.
    * @see #getLoopBlock()
@@ -88,7 +88,7 @@ public interface ActorBlock extends Block {
    * here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Init Block</em>' reference.
    * @see #setInitBlock(CallBlock)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getActorBlock_InitBlock()
@@ -98,9 +98,9 @@ public interface ActorBlock extends Block {
   CallBlock getInitBlock();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.ActorBlock#getInitBlock <em>Init
-   * Block</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.ActorBlock#getInitBlock <em>Init Block</em>}'
+   * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @param value
    *          the new value of the '<em>Init Block</em>' reference.
    * @see #getInitBlock()

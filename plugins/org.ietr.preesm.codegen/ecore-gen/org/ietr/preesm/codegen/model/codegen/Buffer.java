@@ -66,7 +66,7 @@ public interface Buffer extends Variable {
    * Returns the value of the '<em><b>Size</b></em>' attribute. <!-- begin-user-doc --> Number of elements within the
    * {@link Buffer}. Each element is of type {@link #getType()} and requires {@link #getTypeSize()} bytes for its
    * allocation. <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Size</em>' attribute.
    * @see #setSize(int)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getBuffer_Size()
@@ -76,9 +76,9 @@ public interface Buffer extends Variable {
   int getSize();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.Buffer#getSize <em>Size</em>}' attribute.
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.Buffer#getSize <em>Size</em>}' attribute. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
    * @param value
    *          the new value of the '<em>Size</em>' attribute.
    * @see #getSize()
@@ -89,8 +89,7 @@ public interface Buffer extends Variable {
   /**
    * Returns the value of the '<em><b>Childrens</b></em>' reference list. The list contents are of type
    * {@link org.ietr.preesm.codegen.model.codegen.SubBuffer}. It is bidirectional and its opposite is
-   * '{@link org.ietr.preesm.codegen.model.codegen.SubBuffer#getContainer <em>Container</em>}'. <!--
-   * begin-user-doc -->
+   * '{@link org.ietr.preesm.codegen.model.codegen.SubBuffer#getContainer <em>Container</em>}'. <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Childrens</em>' reference list isn't clear, there really should be more of a description
    * here...
@@ -111,7 +110,7 @@ public interface Buffer extends Variable {
    * This value corresponds to the size of the {@link Buffer} {@link #getType()} in bytes.
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Type Size</em>' attribute.
    * @see #setTypeSize(int)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getBuffer_TypeSize()
@@ -123,7 +122,7 @@ public interface Buffer extends Variable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.Buffer#getTypeSize <em>Type Size</em>}'
    * attribute. <!-- begin-user-doc --><!-- end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Type Size</em>' attribute.
    * @see #getTypeSize()
@@ -138,7 +137,7 @@ public interface Buffer extends Variable {
    * here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Merged Range</em>' attribute.
    * @see #setMergedRange(EList)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getBuffer_MergedRange()
@@ -148,9 +147,9 @@ public interface Buffer extends Variable {
   EList<Range> getMergedRange();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.Buffer#getMergedRange <em>Merged
-   * Range</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.Buffer#getMergedRange <em>Merged Range</em>}'
+   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
    * @param value
    *          the new value of the '<em>Merged Range</em>' attribute.
    * @see #getMergedRange()
@@ -176,9 +175,9 @@ public interface Buffer extends Variable {
   boolean isLocal();
 
   /**
-   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.Buffer#isLocal <em>Local</em>}'
-   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.Buffer#isLocal <em>Local</em>}' attribute. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
    * @param value
    *          the new value of the '<em>Local</em>' attribute.
    * @see #isLocal()

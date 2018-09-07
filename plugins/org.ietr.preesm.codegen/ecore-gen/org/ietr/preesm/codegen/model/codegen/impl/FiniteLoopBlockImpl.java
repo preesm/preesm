@@ -56,10 +56,8 @@ import org.ietr.preesm.codegen.model.codegen.IntVar;
  * <ul>
  * <li>{@link org.ietr.preesm.codegen.model.codegen.impl.FiniteLoopBlockImpl#getNbIter <em>Nb Iter</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.model.codegen.impl.FiniteLoopBlockImpl#getIter <em>Iter</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.model.codegen.impl.FiniteLoopBlockImpl#getInBuffers <em>In
- * Buffers</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.model.codegen.impl.FiniteLoopBlockImpl#getOutBuffers <em>Out
- * Buffers</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.model.codegen.impl.FiniteLoopBlockImpl#getInBuffers <em>In Buffers</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.model.codegen.impl.FiniteLoopBlockImpl#getOutBuffers <em>Out Buffers</em>}</li>
  * </ul>
  *
  * @generated
@@ -68,7 +66,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
   /**
    * The default value of the '{@link #getNbIter() <em>Nb Iter</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getNbIter()
    * @generated
    * @ordered
@@ -78,7 +76,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
   /**
    * The cached value of the '{@link #getNbIter() <em>Nb Iter</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getNbIter()
    * @generated
    * @ordered
@@ -87,7 +85,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * The cached value of the '{@link #getIter() <em>Iter</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @see #getIter()
    * @generated
    * @ordered
@@ -97,7 +95,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
   /**
    * The cached value of the '{@link #getInBuffers() <em>In Buffers</em>}' reference list. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getInBuffers()
    * @generated
    * @ordered
@@ -107,7 +105,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
   /**
    * The cached value of the '{@link #getOutBuffers() <em>Out Buffers</em>}' reference list. <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * 
+   *
    * @see #getOutBuffers()
    * @generated
    * @ordered
@@ -116,7 +114,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   protected FiniteLoopBlockImpl() {
@@ -125,7 +123,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -135,7 +133,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -145,7 +143,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -160,7 +158,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -180,7 +178,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   public IntVar basicGetIter() {
@@ -189,7 +187,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -204,7 +202,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -218,7 +216,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -232,7 +230,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -255,7 +253,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @SuppressWarnings("unchecked")
@@ -282,7 +280,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -306,7 +304,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -326,7 +324,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override

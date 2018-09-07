@@ -255,8 +255,8 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
   @Override
   public EList<Block> getUsers() {
     if (this.users == null) {
-      this.users = new EObjectWithInverseResolvingEList.ManyInverse<>(Block.class, this,
-          CodegenPackage.VARIABLE__USERS, CodegenPackage.BLOCK__DECLARATIONS);
+      this.users = new EObjectWithInverseResolvingEList.ManyInverse<>(Block.class, this, CodegenPackage.VARIABLE__USERS,
+          CodegenPackage.BLOCK__DECLARATIONS);
     }
     return this.users;
   }

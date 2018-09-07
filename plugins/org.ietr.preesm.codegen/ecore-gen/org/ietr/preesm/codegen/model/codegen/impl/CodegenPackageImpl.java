@@ -82,7 +82,7 @@ import org.ietr.preesm.memory.script.Range;
 // TODO: Auto-generated Javadoc
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Package</b>. <!-- end-user-doc -->
- * 
+ *
  * @generated
  */
 public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
@@ -236,28 +236,28 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   private EClass finiteLoopBlockEClass = null;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   private EClass intVarEClass = null;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   private EClass bufferIteratorEClass = null;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   private EClass papifyActionEClass = null;
@@ -335,7 +335,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
    * This method is used to initialize {@link CodegenPackage#eINSTANCE} when that field is accessed. Clients should not
    * invoke it directly. Instead, they should simply access that field to obtain the package. <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * 
+   *
    * @see #eNS_URI
    * @see #createPackageContents()
    * @see #initializePackageContents()
@@ -821,7 +821,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -875,7 +875,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -1160,7 +1160,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -1170,7 +1170,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -1180,7 +1180,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -1190,7 +1190,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -1200,7 +1200,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -1210,7 +1210,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -1220,7 +1220,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -1230,7 +1230,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -1240,7 +1240,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -1250,7 +1250,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -1345,7 +1345,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
   /**
    * Creates the meta-model objects for the package. This method is guarded to have no affect on any invocation but its
    * first. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   public void createPackageContents() {
@@ -1483,7 +1483,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
   /**
    * Complete the initialization of the package and its meta-model. This method is guarded to have no affect on any
    * invocation but its first. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   public void initializePackageContents() {

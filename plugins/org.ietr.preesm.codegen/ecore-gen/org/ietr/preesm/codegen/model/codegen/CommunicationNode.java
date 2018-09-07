@@ -59,7 +59,7 @@ public interface CommunicationNode extends Commentable {
    * If the meaning of the '<em>Name</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Name</em>' attribute.
    * @see #setName(String)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getCommunicationNode_Name()
@@ -71,7 +71,7 @@ public interface CommunicationNode extends Commentable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.CommunicationNode#getName <em>Name</em>}'
    * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Name</em>' attribute.
    * @see #getName()
@@ -85,7 +85,7 @@ public interface CommunicationNode extends Commentable {
    * If the meaning of the '<em>Type</em>' attribute isn't clear, there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * 
+   *
    * @return the value of the '<em>Type</em>' attribute.
    * @see #setType(String)
    * @see org.ietr.preesm.codegen.model.codegen.CodegenPackage#getCommunicationNode_Type()
@@ -97,7 +97,7 @@ public interface CommunicationNode extends Commentable {
   /**
    * Sets the value of the '{@link org.ietr.preesm.codegen.model.codegen.CommunicationNode#getType <em>Type</em>}'
    * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @param value
    *          the new value of the '<em>Type</em>' attribute.
    * @see #getType()

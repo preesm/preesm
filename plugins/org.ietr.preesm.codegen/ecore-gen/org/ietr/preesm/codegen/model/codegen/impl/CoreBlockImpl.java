@@ -65,7 +65,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
   /**
    * The cached value of the '{@link #getLoopBlock() <em>Loop Block</em>}' reference. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getLoopBlock()
    * @generated
    * @ordered
@@ -74,7 +74,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
   /**
    * The cached value of the '{@link #getInitBlock() <em>Init Block</em>}' reference. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getInitBlock()
    * @generated
    * @ordered
@@ -84,7 +84,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
   /**
    * The default value of the '{@link #getCoreType() <em>Core Type</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getCoreType()
    * @generated
    * @ordered
@@ -93,7 +93,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
   /**
    * The cached value of the '{@link #getCoreType() <em>Core Type</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getCoreType()
    * @generated
    * @ordered
@@ -103,7 +103,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
   /**
    * The default value of the '{@link #getCoreID() <em>Core ID</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getCoreID()
    * @generated
    * @ordered
@@ -112,7 +112,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
   /**
    * The cached value of the '{@link #getCoreID() <em>Core ID</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getCoreID()
    * @generated
    * @ordered
@@ -122,7 +122,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
   /**
    * <!-- begin-user-doc --> Default Constructor also create the init and loop blocks and add them to the
    * {@link CodeElt} list.<!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   protected CoreBlockImpl() {
@@ -266,7 +266,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
@@ -276,7 +276,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @generated
    */
   @Override
