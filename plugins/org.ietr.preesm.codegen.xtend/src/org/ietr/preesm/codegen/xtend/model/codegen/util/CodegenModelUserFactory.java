@@ -4,6 +4,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory;
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
 
 /**
  *
@@ -32,4 +33,12 @@ public class CodegenModelUserFactory {
     return coreBlock;
   }
 
+  /**
+   *
+   */
+  public static final NullBuffer createNullBuffer() {
+    final NullBuffer nullBuffer = factory.createNullBuffer();
+    nullBuffer.setName("NULL");
+    return nullBuffer;
+  }
 }

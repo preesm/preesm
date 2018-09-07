@@ -49,10 +49,11 @@ public class NullBufferImpl extends SubBufferImpl implements NullBuffer {
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @generated
    */
   protected NullBufferImpl() {
     super();
-    setName("NULL");
   }
 
   /**

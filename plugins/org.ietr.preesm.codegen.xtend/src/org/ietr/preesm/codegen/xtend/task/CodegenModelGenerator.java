@@ -1006,7 +1006,7 @@ public class CodegenModelGenerator {
           }
         } else {
           // the buffer is a null buffer
-          final NullBuffer dagEdgeBuffer = CodegenFactory.eINSTANCE.createNullBuffer();
+          final NullBuffer dagEdgeBuffer = CodegenModelUserFactory.createNullBuffer();
 
           // Old Naming (too long)
           final String comment = source.getName() + " > " + target.getName();
@@ -1923,7 +1923,7 @@ public class CodegenModelGenerator {
         this.srSDFEdgeBuffers.put(subBufferProperties, subBuff);
       } else {
         // The parent buffer is a null buffer
-        final NullBuffer nullBuff = CodegenFactory.eINSTANCE.createNullBuffer();
+        final NullBuffer nullBuff = CodegenModelUserFactory.createNullBuffer();
         buff = nullBuff;
         // Old naming techniques with complete path to port. (too long,
         // kept
