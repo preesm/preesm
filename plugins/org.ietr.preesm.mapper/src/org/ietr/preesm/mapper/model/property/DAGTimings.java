@@ -40,7 +40,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * MapperDAG stores mapping properties shared by several of its vertices that are synchronized.
  *
@@ -49,7 +48,7 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 public class DAGTimings {
 
   /** The timings. */
-  Map<String, VertexTiming> timings = null;
+  private final Map<String, VertexTiming> timings;
 
   /**
    * Instantiates a new DAG timings.

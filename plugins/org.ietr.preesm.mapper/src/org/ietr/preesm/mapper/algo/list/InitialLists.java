@@ -382,10 +382,10 @@ public class InitialLists implements Cloneable {
     this.blockingNodes.clear();
     this.criticalPath.clear();
 
-    if (simu instanceof LatencyAbc) {
+    if (simu != null) {
       // construction of critical path and CPN dominant list with CPN and
       // IBN actors
-      if (!constructCPN(dag, this.cpnDominant, this.criticalPath, (LatencyAbc) simu)) {
+      if (!constructCPN(dag, this.cpnDominant, this.criticalPath, simu)) {
         WorkflowLogger.getLogger().log(Level.SEVERE, "Problem with initial list construction");
         return false;
       }

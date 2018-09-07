@@ -54,7 +54,6 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
-// TODO: Auto-generated Javadoc
 /**
  * The purpose of this {@link Adapter} is to observe the {@link PiGraph#getActors()} list of a {@link PiGraph} to detect
  * the addition, the deletion and the renaming of {@link PiGraph} interfaces in order to automatically compute the
@@ -87,16 +86,12 @@ public class GraphInterfaceObserver extends AdapterImpl {
    */
   protected void add(final AbstractVertex vertex, final PiGraph graph) {
 
-    // If the added vertex is an Interface of the graph
     if (vertex instanceof InterfaceActor) {
+      // If the added vertex is an Interface of the graph
       addInterfaceActor((InterfaceActor) vertex, graph);
-      return;
-    }
-
-    // If the added vertex is an Parameter and an Interface of the graph
-    if ((vertex instanceof Parameter) && ((Parameter) vertex).isConfigurationInterface()) {
+    } else if ((vertex instanceof Parameter) && ((Parameter) vertex).isConfigurationInterface()) {
+      // If the added vertex is an Parameter and an Interface of the graph
       addParamInterfaceActor((ConfigInputInterface) vertex, graph);
-      return;
     }
   }
 
@@ -131,7 +126,6 @@ public class GraphInterfaceObserver extends AdapterImpl {
     // Set the interface properties
     port.setName(iActor.getName());
     iActor.setGraphPort(port);
-    return;
   }
 
   /**
@@ -224,12 +218,8 @@ public class GraphInterfaceObserver extends AdapterImpl {
 
     if (vertex instanceof InterfaceActor) {
       removeInterfaceActor((InterfaceActor) vertex, graph);
-      return;
-    }
-
-    if ((vertex instanceof Parameter) && ((Parameter) vertex).isConfigurationInterface()) {
+    } else if ((vertex instanceof Parameter) && ((Parameter) vertex).isConfigurationInterface()) {
       removeParamInterfaceActor((ConfigInputInterface) vertex, graph);
-      return;
     }
   }
 
@@ -246,7 +236,6 @@ public class GraphInterfaceObserver extends AdapterImpl {
     // something.
     graph.getDataInputPorts().remove(iActor.getGraphPort());
     graph.getDataOutputPorts().remove(iActor.getGraphPort());
-    return;
   }
 
   /**

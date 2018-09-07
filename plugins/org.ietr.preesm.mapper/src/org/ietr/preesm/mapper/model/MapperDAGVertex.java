@@ -58,7 +58,6 @@ import org.ietr.preesm.mapper.model.special.ReceiveVertex;
 import org.ietr.preesm.mapper.model.special.SendVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * Represents a vertex in a DAG of type {@link MapperDAG} used in the mapper.
  *
@@ -71,18 +70,14 @@ public class MapperDAGVertex extends DAGVertex {
 
   /** Properties set when converting sdf to dag. */
   private static final String INITIAL_PROPERTY = "INITIAL_PROPERTY";
-  // protected InitialVertexProperty initialVertexProperty;
 
   static {
-    {
-      AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_OperatorDef);
-      AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_Available_Operators);
-      AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_originalVertexId);
-      AbstractVertex.public_properties.add(ImplementationPropertyNames.Task_duration);
-      AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_schedulingOrder);
-      AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_Operator);
-
-    }
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_OperatorDef);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_Available_Operators);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_originalVertexId);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.Task_duration);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_schedulingOrder);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_Operator);
   }
 
   /**
@@ -214,7 +209,6 @@ public class MapperDAGVertex extends DAGVertex {
       toString = getName() + "(";
       toString += getEffectiveComponent().toString();
       if (getTiming() != null) {
-        // toString += "," + this.getTiming().getTotalOrder(this);
         toString += "," + getTiming().getTLevel();
         toString += "," + getTiming().getBLevel();
         toString += "," + getTiming().getCost();
@@ -284,28 +278,6 @@ public class MapperDAGVertex extends DAGVertex {
       }
     }
     return succs;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.dag.DAGVertex#incomingEdges()
-   */
-  @Override
-  public Set<DAGEdge> incomingEdges() {
-    // TODO Auto-generated method stub
-    return super.incomingEdges();
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.dag.DAGVertex#outgoingEdges()
-   */
-  @Override
-  public Set<DAGEdge> outgoingEdges() {
-    // TODO Auto-generated method stub
-    return super.outgoingEdges();
   }
 
   /*
