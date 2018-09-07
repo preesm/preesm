@@ -37,7 +37,7 @@ package org.ietr.preesm.codegen.xtend.test;
 import org.eclipse.emf.common.util.EList;
 import org.ietr.preesm.codegen.model.codegen.ActorBlock;
 import org.ietr.preesm.codegen.model.codegen.CodeElt;
-import org.ietr.preesm.codegen.xtend.model.codegen.util.CodegenModelUserFactory;
+import org.ietr.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.junit.Assert;
 import org.junit.Test;
 

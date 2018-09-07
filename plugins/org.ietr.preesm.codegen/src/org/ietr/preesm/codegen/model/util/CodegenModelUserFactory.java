@@ -1,4 +1,4 @@
-package org.ietr.preesm.codegen.xtend.model.codegen.util;
+package org.ietr.preesm.codegen.model.util;
 
 import org.ietr.preesm.codegen.model.codegen.ActorBlock;
 import org.ietr.preesm.codegen.model.codegen.CallBlock;

@@ -2,13 +2,13 @@
 <genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
     xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText="" modelDirectory="/org.ietr.preesm.codegen/ecore-gen"
     editDirectory="/org.ietr.preesm.codegen.xtend.edit/ecore-gen" editorDirectory="/org.ietr.preesm.codegen.xtend.editor/ecore-gen"
-    modelPluginID="org.ietr.preesm.codegen.xtend" modelName="Codegen" rootImplementsInterface=""
+    modelPluginID="org.ietr.preesm.codegen" modelName="Codegen" rootImplementsInterface=""
     codeFormatting="true" testsDirectory="/org.ietr.preesm.codegen.xtend.tests/ecore-gen"
     importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0" copyrightFields="false"
     importOrganizing="true" cleanup="true">
   <foreignModel>codegen.ecore</foreignModel>
-  <genPackages prefix="Codegen" basePackage="org.ietr.preesm.codegen.xtend.model"
-      disposableProviderFactory="true" ecorePackage="codegen.ecore#/">
+  <genPackages prefix="Codegen" basePackage="org.ietr.preesm.codegen.model" disposableProviderFactory="true"
+      ecorePackage="codegen.ecore#/">
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="codegen.ecore#//Direction">
       <genEnumLiterals ecoreEnumLiteral="codegen.ecore#//Direction/SEND"/>
       <genEnumLiterals ecoreEnumLiteral="codegen.ecore#//Direction/RECEIVE"/>

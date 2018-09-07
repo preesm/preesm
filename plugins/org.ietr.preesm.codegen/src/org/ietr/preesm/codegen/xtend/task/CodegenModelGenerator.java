@@ -122,7 +122,7 @@ import org.ietr.preesm.codegen.model.codegen.SpecialCall;
 import org.ietr.preesm.codegen.model.codegen.SpecialType;
 import org.ietr.preesm.codegen.model.codegen.SubBuffer;
 import org.ietr.preesm.codegen.model.codegen.Variable;
-import org.ietr.preesm.codegen.xtend.model.codegen.util.CodegenModelUserFactory;
+import org.ietr.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.BufferAggregate;
