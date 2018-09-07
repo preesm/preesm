@@ -42,8 +42,6 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock;
-import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt;
-import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 
@@ -64,7 +62,7 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
   /**
    * The cached value of the '{@link #getLoopBlock() <em>Loop Block</em>}' reference. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getLoopBlock()
    * @generated
    * @ordered
@@ -73,7 +71,7 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
   /**
    * The cached value of the '{@link #getInitBlock() <em>Init Block</em>}' reference. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getInitBlock()
    * @generated
    * @ordered
@@ -81,15 +79,12 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
   protected CallBlock initBlock;
 
   /**
-   * <!-- begin-user-doc -->Default Constructor also create the init and loop blocks and add them to the {@link CodeElt}
-   * list<!-- end-user-doc -->.
+   * <!-- begin-user-doc --><!-- end-user-doc -->.
+   *
+   * @generated
    */
   protected ActorBlockImpl() {
     super();
-    this.initBlock = CodegenFactory.eINSTANCE.createCallBlock();
-    getCodeElts().add(this.initBlock);
-    this.loopBlock = CodegenFactory.eINSTANCE.createLoopBlock();
-    getCodeElts().add(this.loopBlock);
   }
 
   /**

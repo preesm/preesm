@@ -1,5 +1,6 @@
 package org.ietr.preesm.codegen.xtend.model.codegen.util;
 
+import org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory;
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
@@ -31,6 +32,20 @@ public class CodegenModelUserFactory {
     coreBlock.getCodeElts().add(initBlock);
     coreBlock.getCodeElts().add(loopBlock);
     return coreBlock;
+  }
+
+  /**
+   *
+   */
+  public static final ActorBlock createActorBlock() {
+    final ActorBlock actorBlock = factory.createActorBlock();
+    final CallBlock initBlock = CodegenFactory.eINSTANCE.createCallBlock();
+    final LoopBlock loopBlock = CodegenFactory.eINSTANCE.createLoopBlock();
+    actorBlock.setInitBlock(initBlock);
+    actorBlock.setLoopBlock(loopBlock);
+    actorBlock.getCodeElts().add(initBlock);
+    actorBlock.getCodeElts().add(loopBlock);
+    return actorBlock;
   }
 
   /**
