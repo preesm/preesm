@@ -122,6 +122,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
+import org.ietr.preesm.codegen.xtend.model.codegen.util.CodegenModelUserFactory;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.BufferAggregate;
@@ -575,7 +576,7 @@ public class CodegenModelGenerator {
         // Create a Block and store it.
         operatorBlock = this.coreBlocks.get(operator);
         if (operatorBlock == null) {
-          operatorBlock = CodegenFactory.eINSTANCE.createCoreBlock();
+          operatorBlock = CodegenModelUserFactory.createCoreBlock();
           operatorBlock.setName(operator.getInstanceName());
           operatorBlock.setCoreType(operator.getComponent().getVlnv().getName());
           this.coreBlocks.put(operator, operatorBlock);
@@ -858,7 +859,7 @@ public class CodegenModelGenerator {
         // If the main operator does not exist
         if (mainOperatorBlock == null) {
           // Create it
-          mainOperatorBlock = CodegenFactory.eINSTANCE.createCoreBlock();
+          mainOperatorBlock = CodegenModelUserFactory.createCoreBlock();
           final ComponentInstance componentInstance = this.archi.getComponentInstance(correspondingOperatorID);
           mainOperatorBlock.setName(componentInstance.getInstanceName());
           mainOperatorBlock.setCoreType(componentInstance.getComponent().getVlnv().getName());
