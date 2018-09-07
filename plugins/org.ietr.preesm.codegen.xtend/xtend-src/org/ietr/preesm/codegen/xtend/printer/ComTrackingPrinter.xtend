@@ -36,10 +36,11 @@
  */
 package org.ietr.preesm.codegen.xtend.printer
 
-import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter
-import org.ietr.preesm.codegen.xtend.model.codegen.Direction
-import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
+import org.ietr.preesm.codegen.model.codegen.CoreBlock
+import org.ietr.preesm.codegen.model.codegen.Delimiter
+import org.ietr.preesm.codegen.model.codegen.Direction
+import org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication
+import org.ietr.preesm.codegen.printer.CodegenAbstractPrinter
 
 /**
  * This {@link ComTrackingPrinter} is a dummy implementation of the

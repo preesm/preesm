@@ -46,13 +46,6 @@
 <plugin>
    <extension-point id="printers" name="Printers"
       schema="schema/printers.exsd" />
-   <extension point="org.eclipse.emf.ecore.generated_package">
-      <!-- @generated codegen -->
-      <package
-            uri="http://codegen/1.0"
-            class="org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage"
-            genModel="model/codegen.genmodel"/>
-   </extension>
    <extension point="org.ietr.preesm.codegen.xtend.printers">
       <printers language="XML">
          <printer
