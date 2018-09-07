@@ -46,7 +46,9 @@ import org.ietr.dftools.algorithm.model.IRefinement;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGBroadcastVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGEndVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGInitVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGJoinVertex;
 import org.ietr.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType;
 import org.ietr.dftools.algorithm.model.dag.types.DAGDefaultVertexPropertyType;
@@ -363,6 +365,38 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     return true;
   }
 
+  @Override
+  public Boolean caseDelayActor(final DelayActor actor) {
+    // 0. Check if it is an init or an end actor
+    final boolean isInit = !actor.getDataOutputPorts().isEmpty();
+    final DAGVertex vertex;
+    if (isInit) {
+      // Create the init vertex
+      vertex = vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX);
+      final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
+      final String expressionString = dataOutputPort.getPortRateExpression().getExpressionString();
+      // Set the number of delay
+      vertex.getPropertyBean().setValue(DAGInitVertex.INIT_SIZE, Long.parseLong(expressionString));
+    } else {
+      // Create the end vertex
+      vertex = vertexFactory.createVertex(DAGEndVertex.DAG_END_VERTEX);
+    }
+    // Handle the END_REFERENCE property
+    // final DAGVertex initVertex = this.dag.getVertex(this.delayInitID);
+    // if (initVertex != null) {
+    // initVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, endVertex.getName());
+    // endVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, initVertex.getName());
+    // }
+
+    vertex.setId(actor.getName());
+    vertex.setName(actor.getName());
+    vertex.setInfo(actor.getName());
+    vertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
+    // Add the vertex to the DAG
+    this.result.addVertex(vertex);
+    return true;
+  }
+
   /**
    * Convert annotations from to.
    *
@@ -472,11 +506,6 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseDataOutputInterface(final DataOutputInterface actor) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseDelayActor(final DelayActor actor) {
     throw new UnsupportedOperationException();
   }
 

@@ -523,6 +523,15 @@ public class PiMMSRVerticesLinker {
     final ArrayList<PiMMSRVerticesLinker.SourceConnection> sourceSet = new ArrayList<>();
 
     // Deals delays
+    if (this.delays != 0) {
+      // 0. Create the delay actor
+      final DelayActor init = PiMMUserFactory.instance.createDelayActor();
+      init.setName(vertexSinkSet.get(0).getName() + "_init_" + this.sinkPort.getName());
+      // 2. Add the init actor to the graph
+      vertexSinkSet.get(0).getContainingPiGraph().addActor(init);
+      // 3. Add an entry in the sourceSet
+      sourceSet.add(new SourceConnection(init, this.delays, this.sinkPort.getName()));
+    }
 
     if (this.source instanceof InterfaceActor) {
       // If source is an InterfaceActor, then we have a broadcast
@@ -559,8 +568,6 @@ public class PiMMSRVerticesLinker {
     // Initialize empty source set
     final ArrayList<PiMMSRVerticesLinker.SinkConnection> sinkSet = new ArrayList<>();
 
-    // Deals delays
-
     if (this.sink instanceof InterfaceActor) {
       // If sink is an InterfaceActor, then we have a roundbuffer
       final long sourceRV = vertexSourceSet.size();
@@ -573,6 +580,17 @@ public class PiMMSRVerticesLinker {
       vertexSinkSet.forEach(v -> sinkSet.add(new SinkConnection(v, this.sinkConsumption, this.sinkPort.getName())));
     } else {
       throw new PiMMHelperException("Unhandled type of actor: " + this.sink.getClass().toString());
+    }
+
+    // Deals delays
+    if (this.delays != 0) {
+      // 0. Create the delay actor
+      final DelayActor end = PiMMUserFactory.instance.createDelayActor();
+      end.setName(vertexSinkSet.get(vertexSinkSet.size() - 1).getName() + "_end_" + this.sourcePort.getName());
+      // 2. Add the end actor to the graph
+      vertexSinkSet.get(0).getContainingPiGraph().addActor(end);
+      // 3. Add an entry in the sinkSet
+      sinkSet.add(new SinkConnection(end, this.delays, this.sourcePort.getName()));
     }
 
     return sinkSet;
