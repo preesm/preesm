@@ -970,7 +970,7 @@ public class CodegenModelGenerator {
 
           name = generateUniqueBufferName(name);
           dagEdgeBuffer.setName(name);
-          dagEdgeBuffer.setContainer(mainBuffer);
+          dagEdgeBuffer.reaffectContainer(mainBuffer);
           dagEdgeBuffer.setOffset(dagAlloc.getValue());
           dagEdgeBuffer.setType("char");
           dagEdgeBuffer.setTypeSize(1);
@@ -1011,7 +1011,7 @@ public class CodegenModelGenerator {
           // Old Naming (too long)
           final String comment = source.getName() + " > " + target.getName();
           dagEdgeBuffer.setComment("NULL_" + comment);
-          dagEdgeBuffer.setContainer(mainBuffer);
+          dagEdgeBuffer.reaffectContainer(mainBuffer);
 
           // Generate subsubbuffers. Each subsubbuffer corresponds to
           // an
@@ -1044,7 +1044,7 @@ public class CodegenModelGenerator {
         String name = fifoAlloc.getKey().getSource() + "__" + fifoAlloc.getKey().getSink();
         name = generateUniqueBufferName(name);
         fifoBuffer.setName(name);
-        fifoBuffer.setContainer(mainBuffer);
+        fifoBuffer.reaffectContainer(mainBuffer);
         fifoBuffer.setOffset(fifoAlloc.getValue());
         fifoBuffer.setType("char");
         fifoBuffer.setSize(fifoAlloc.getKey().getWeight());
@@ -1074,7 +1074,7 @@ public class CodegenModelGenerator {
         final SubBuffer workingMemBuffer = CodegenFactory.eINSTANCE.createSubBuffer();
         final MemoryExclusionVertex mObj = e.getKey();
         final int weight = mObj.getWeight();
-        workingMemBuffer.setContainer(mainBuffer);
+        workingMemBuffer.reaffectContainer(mainBuffer);
         workingMemBuffer.setOffset(e.getValue());
         workingMemBuffer.setSize(weight);
         workingMemBuffer.setName("wMem_" + mObj.getVertex().getName());
@@ -1923,7 +1923,7 @@ public class CodegenModelGenerator {
         name = generateUniqueBufferName(name);
 
         subBuff.setName(name);
-        subBuff.setContainer(parentBuffer);
+        subBuff.reaffectContainer(parentBuffer);
         subBuff.setOffset(aggregateOffset);
         subBuff.setType(subBufferProperties.getDataType());
         subBuff.setSize(subBufferProperties.getSize());
@@ -1942,7 +1942,7 @@ public class CodegenModelGenerator {
         comment += " > " + dagEdge.getTarget().getName();
         comment += '_' + subBufferProperties.getDestInputPortID();
         nullBuff.setComment("NULL_" + comment);
-        nullBuff.setContainer(parentBuffer);
+        nullBuff.reaffectContainer(parentBuffer);
 
         // Save the created SubBuffer
         this.srSDFEdgeBuffers.put(subBufferProperties, nullBuff);

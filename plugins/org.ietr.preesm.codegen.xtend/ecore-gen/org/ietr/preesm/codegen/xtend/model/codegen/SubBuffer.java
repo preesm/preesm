@@ -112,4 +112,12 @@ public interface SubBuffer extends Buffer {
    */
   void setOffset(int value);
 
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @model
+   * @generated
+   */
+  void reaffectContainer(Buffer newContainer);
+
 } // SubBuffer

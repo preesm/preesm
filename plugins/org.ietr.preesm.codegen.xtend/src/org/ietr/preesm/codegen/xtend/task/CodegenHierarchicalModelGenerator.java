@@ -603,7 +603,7 @@ public class CodegenHierarchicalModelGenerator {
           // operatorBlock.getName());
           // currentIterVar.setName(upperLoopOffsets + " + " + currentIterVar.getName());
           buf.setName(workingMemBuf.getName() + "_" + Integer.toString(this.currentWorkingMemOffset));
-          buf.setContainer(workingMemBuf);
+          buf.reaffectContainer(workingMemBuf);
           buf.setOffset(this.currentWorkingMemOffset);
           buf.setSize(bufSize);
           buf.setType(currentEdge.getDataType().toString());
@@ -636,7 +636,7 @@ public class CodegenHierarchicalModelGenerator {
       }
 
       bufIter.setName(var.getName());
-      bufIter.setContainer(((SubBuffer) var).getContainer());
+      bufIter.reaffectContainer(((SubBuffer) var).getContainer());
       bufIter.setIter(currentIterVar);
       bufIter.setTypeSize(((SubBuffer) var).getTypeSize());
       bufIter.setType(((SubBuffer) var).getType());
@@ -834,7 +834,7 @@ public class CodegenHierarchicalModelGenerator {
           }
           buf = CodegenFactory.eINSTANCE.createSubBuffer();
           buf.setName(workingMemBuf.getName() + "_" + Integer.toString(this.currentWorkingMemOffset));
-          buf.setContainer(workingMemBuf);
+          buf.reaffectContainer(workingMemBuf);
           buf.setOffset(this.currentWorkingMemOffset);
           buf.setSize(bufSize);
           buf.setType(currentEdge.getDataType().toString());

@@ -1623,6 +1623,10 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
         !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_UNSETTABLE,
         !EPackageImpl.IS_ID, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
+    op = addEOperation(this.subBufferEClass, null, "reaffectContainer", 0, 1, EPackageImpl.IS_UNIQUE,
+        EPackageImpl.IS_ORDERED);
+    addEParameter(op, getBuffer(), "newContainer", 0, 1, EPackageImpl.IS_UNIQUE, EPackageImpl.IS_ORDERED);
+
     initEClass(this.constantEClass, Constant.class, "Constant", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
         EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getConstant_Value(), this.ecorePackage.getELong(), "value", null, 1, 1, Constant.class,

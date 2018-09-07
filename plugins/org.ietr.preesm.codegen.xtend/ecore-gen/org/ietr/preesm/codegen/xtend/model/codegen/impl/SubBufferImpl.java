@@ -63,7 +63,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
   /**
    * The cached value of the '{@link #getContainer() <em>Container</em>}' reference. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getContainer()
    * @generated
    * @ordered
@@ -73,7 +73,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
   /**
    * The default value of the '{@link #getOffset() <em>Offset</em>}' attribute. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   * 
+   *
    * @see #getOffset()
    * @generated
    * @ordered
@@ -171,6 +171,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
    *
    * @param newContainer
    *          the new container
+   * @generated
    */
   @Override
   public void setContainer(final Buffer newContainer) {
@@ -190,9 +191,6 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
     } else if (eNotificationRequired()) {
       eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.SUB_BUFFER__CONTAINER, newContainer,
           newContainer));
-    }
-    if (getCreator() != null) {
-      newContainer.getUsers().add(getCreator());
     }
   }
 
@@ -235,6 +233,19 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
     this.offset = newOffset;
     if (eNotificationRequired()) {
       eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.SUB_BUFFER__OFFSET, oldOffset, this.offset));
+    }
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated NOT
+   */
+  @Override
+  public void reaffectContainer(final Buffer newContainer) {
+    setContainer(newContainer);
+    if (getCreator() != null) {
+      newContainer.getUsers().add(getCreator());
     }
   }
 

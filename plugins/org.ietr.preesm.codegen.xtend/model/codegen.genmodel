@@ -1,42 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
-
-    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
-    Julien Hascoet <jhascoet@kalray.eu> (2016)
-    Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
-
-    This software is a computer program whose purpose is to help prototyping
-    parallel applications using dataflow formalism.
-
-    This software is governed by the CeCILL  license under French law and
-    abiding by the rules of distribution of free software.  You can  use,
-    modify and/ or redistribute the software under the terms of the CeCILL
-    license as circulated by CEA, CNRS and INRIA at the following URL
-    "http://www.cecill.info".
-
-    As a counterpart to the access to the source code and  rights to copy,
-    modify and redistribute granted by the license, users are provided only
-    with a limited warranty  and the software's author,  the holder of the
-    economic rights,  and the successive licensors  have only  limited
-    liability.
-
-    In this respect, the user's attention is drawn to the risks associated
-    with loading,  using,  modifying and/or developing or reproducing the
-    software by the user in light of its specific status of free software,
-    that may mean  that it is complicated to manipulate,  and  that  also
-    therefore means  that it is reserved for developers  and  experienced
-    professionals having in-depth computer knowledge. Users are therefore
-    encouraged to load and test the software's suitability as regards their
-    requirements in conditions enabling the security of their systems and/or
-    data to be ensured and,  more generally, to use and operate it in the
-    same conditions as regards security.
-
-    The fact that you are presently reading this means that you have had
-    knowledge of the CeCILL license and that you accept its terms.
-
--->
 <genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
     xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText="Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,&#xD;&#xA;Karol Desnos, Julien Heulot&#xD;&#xA;&#xD;&#xA;[mpelcat,jnezan,kdesnos,jheulot]@insa-rennes.fr&#xD;&#xA;&#xD;&#xA;This software is a computer program whose purpose is to prototype&#xD;&#xA;parallel applications.&#xD;&#xA;&#xD;&#xA;This software is governed by the CeCILL-C license under French law and&#xD;&#xA;abiding by the rules of distribution of free software.  You can  use, &#xD;&#xA;modify and/ or redistribute the software under the terms of the CeCILL-C&#xD;&#xA;license as circulated by CEA, CNRS and INRIA at the following URL&#xD;&#xA;&quot;http://www.cecill.info&quot;. &#xD;&#xA;&#xD;&#xA;As a counterpart to the access to the source code and  rights to copy,&#xD;&#xA;modify and redistribute granted by the license, users are provided only&#xD;&#xA;with a limited warranty  and the software's author,  the holder of the&#xD;&#xA;economic rights,  and the successive licensors  have only  limited&#xD;&#xA;liability. &#xD;&#xA;&#xD;&#xA;In this respect, the user's attention is drawn to the risks associated&#xD;&#xA;with loading,  using,  modifying and/or developing or reproducing the&#xD;&#xA;software by the user in light of its specific status of free software,&#xD;&#xA;that may mean  that it is complicated to manipulate,  and  that  also&#xD;&#xA;therefore means  that it is reserved for developers  and  experienced&#xD;&#xA;professionals having in-depth computer knowledge. Users are therefore&#xD;&#xA;encouraged to load and test the software's suitability as regards their&#xD;&#xA;requirements in conditions enabling the security of their systems and/or &#xD;&#xA;data to be ensured and,  more generally, to use and operate it in the &#xD;&#xA;same conditions as regards security. &#xD;&#xA;&#xD;&#xA;The fact that you are presently reading this means that you have had&#xD;&#xA;knowledge of the CeCILL-C license and that you accept its terms."
     modelDirectory="/org.ietr.preesm.codegen.xtend/ecore-gen" editDirectory="/org.ietr.preesm.codegen.xtend.edit/ecore-gen"
@@ -108,6 +70,9 @@
     <genClasses ecoreClass="codegen.ecore#//SubBuffer">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//SubBuffer/container"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//SubBuffer/offset"/>
+      <genOperations ecoreOperation="codegen.ecore#//SubBuffer/reaffectContainer">
+        <genParameters ecoreParameter="codegen.ecore#//SubBuffer/reaffectContainer/newContainer"/>
+      </genOperations>
     </genClasses>
     <genClasses ecoreClass="codegen.ecore#//Constant">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//Constant/value"/>
