@@ -11,7 +11,7 @@
       <package
             uri="http://codegen/1.0"
             class="org.ietr.preesm.codegen.model.codegen.CodegenPackage"
-            genModel="model/codegen.genmodel"/>
+            genModel="model/Codegen.xcore"/>
    </extension>
 
 </plugin>

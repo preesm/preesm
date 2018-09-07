@@ -15,7 +15,8 @@ Require-Bundle: org.eclipse.core.runtime,
  com.google.guava,
  org.ietr.preesm.clustering,
  org.eclipse.xtext.xbase.lib,
- org.eclipse.xtend.lib
+ org.eclipse.xtend.lib,
+ org.eclipse.emf.ecore.xcore.lib
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
@@ -30,3 +31,4 @@ Export-Package: org.ietr.preesm.codegen.idl,
  org.ietr.preesm.codegen.model.util,
  org.ietr.preesm.codegen.printer,
  org.ietr.preesm.codegen.xtend.task
+
