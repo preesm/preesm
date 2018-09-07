@@ -53,7 +53,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode;
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter;
 import org.ietr.preesm.codegen.xtend.model.codegen.Direction;
-import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -348,10 +347,9 @@ public class CommunicationImpl extends CallImpl implements Communication {
   }
 
   /**
-   * <!-- begin-user-doc --><!-- end-user-doc -->.
-   *
-   * @param newData
-   *          the new data
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   * 
+   * @generated
    */
   @Override
   public void setData(final Buffer newData) {
@@ -359,10 +357,6 @@ public class CommunicationImpl extends CallImpl implements Communication {
     this.data = newData;
     if (eNotificationRequired()) {
       eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__DATA, oldData, this.data));
-    }
-    getParameters().clear();
-    if (newData != null) {
-      addParameter(newData, PortDirection.NONE);
     }
   }
 

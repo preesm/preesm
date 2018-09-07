@@ -62,7 +62,7 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
   /**
    * The cached value of the '{@link #getLoopBlock() <em>Loop Block</em>}' reference. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   *
+   * 
    * @see #getLoopBlock()
    * @generated
    * @ordered
@@ -71,7 +71,7 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
   /**
    * The cached value of the '{@link #getInitBlock() <em>Init Block</em>}' reference. <!-- begin-user-doc --> <!--
    * end-user-doc -->
-   *
+   * 
    * @see #getInitBlock()
    * @generated
    * @ordered

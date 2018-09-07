@@ -2137,7 +2137,7 @@ public interface CodegenPackage extends EPackage {
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.codegen.xtend.model.codegen.Block <em>Block</em>}'. <!--
    * begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for class '<em>Block</em>'.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.Block
    * @generated
@@ -2394,7 +2394,7 @@ public interface CodegenPackage extends EPackage {
    * Returns the meta object for the reference
    * '{@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getContainer <em>Container</em>}'. <!--
    * begin-user-doc --> <!-- end-user-doc -->
-   * 
+   *
    * @return the meta object for the reference '<em>Container</em>'.
    * @see org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getContainer()
    * @see #getSubBuffer()

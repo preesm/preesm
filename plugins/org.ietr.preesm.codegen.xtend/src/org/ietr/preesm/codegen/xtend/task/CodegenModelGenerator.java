@@ -1290,6 +1290,10 @@ public class CodegenModelGenerator {
       throw new CodegenException("No buffer found for edge" + dagEdge);
     }
     newComm.setData(buffer);
+    newComm.getParameters().clear();
+    if (buffer != null) {
+      newComm.addParameter(buffer, PortDirection.NONE);
+    }
 
     // Set the name of the communication
     // SS <=> Start Send
@@ -1312,6 +1316,11 @@ public class CodegenModelGenerator {
     newCommZoneComplement.setDirection(dir);
     newCommZoneComplement.setDelimiter((delimiter.equals(Delimiter.START)) ? Delimiter.END : Delimiter.START);
     newCommZoneComplement.setData(buffer);
+    newCommZoneComplement.getParameters().clear();
+    if (buffer != null) {
+      newCommZoneComplement.addParameter(buffer, PortDirection.NONE);
+    }
+
     newCommZoneComplement.setName(((newComm.getDirection().equals(Direction.SEND)) ? "SE" : "RS") + commName);
     for (final ComponentInstance comp : routeStep.getNodes()) {
       final CommunicationNode comNode = CodegenFactory.eINSTANCE.createCommunicationNode();
