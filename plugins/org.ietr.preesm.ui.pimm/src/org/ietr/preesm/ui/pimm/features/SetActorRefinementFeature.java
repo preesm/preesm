@@ -56,7 +56,6 @@ import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 import org.ietr.preesm.utils.pimm.header.parser.HeaderParser;
 
@@ -204,7 +203,6 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
    */
   protected void setActorRefinement(final Actor actor, IPath newFilePath) {
     final String dialogTitle = "Select a refinement file";
-    final Refinement refinement = actor.getRefinement();
 
     boolean validRefinement = false;
     do {
@@ -270,11 +268,9 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
       } else {
         // The file is either a .pi or a .IDL file.
         validRefinement = true;
-        if (refinement == null) {
-          final PiSDFRefinement createPiSDFRefinement = PiMMUserFactory.instance.createPiSDFRefinement();
-          createPiSDFRefinement.setFilePath(newFilePath);
-          actor.setRefinement(createPiSDFRefinement);
-        }
+        final PiSDFRefinement createPiSDFRefinement = PiMMUserFactory.instance.createPiSDFRefinement();
+        createPiSDFRefinement.setFilePath(newFilePath);
+        actor.setRefinement(createPiSDFRefinement);
         this.hasDoneChanges = true;
       }
     } while (!validRefinement);
