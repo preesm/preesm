@@ -1,11 +1,11 @@
 package org.ietr.preesm.codegen.xtend.model.codegen.util;
 
-import org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock;
-import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock;
-import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory;
-import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
-import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
-import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
+import org.ietr.preesm.codegen.model.codegen.ActorBlock;
+import org.ietr.preesm.codegen.model.codegen.CallBlock;
+import org.ietr.preesm.codegen.model.codegen.CodegenFactory;
+import org.ietr.preesm.codegen.model.codegen.CoreBlock;
+import org.ietr.preesm.codegen.model.codegen.LoopBlock;
+import org.ietr.preesm.codegen.model.codegen.NullBuffer;
 
 /**
  *

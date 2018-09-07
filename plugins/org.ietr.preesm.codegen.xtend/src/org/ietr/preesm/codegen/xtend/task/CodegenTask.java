@@ -52,7 +52,7 @@ import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.preesm.codegen.xtend.model.codegen.Block;
+import org.ietr.preesm.codegen.model.codegen.Block;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 

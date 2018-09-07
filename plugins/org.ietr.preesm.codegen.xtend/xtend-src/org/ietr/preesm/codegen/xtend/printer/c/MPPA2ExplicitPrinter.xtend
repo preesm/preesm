@@ -38,24 +38,24 @@ package org.ietr.preesm.codegen.xtend.printer.c
 
 import java.util.Date
 import java.util.List
-import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
-import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.Communication
-import org.ietr.preesm.codegen.xtend.model.codegen.Constant
-import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
-import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter
-import org.ietr.preesm.codegen.xtend.model.codegen.Direction
-import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
-import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
-import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
-import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
-import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
-import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
-import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
-import org.ietr.preesm.codegen.xtend.model.codegen.Variable
+import org.ietr.preesm.codegen.model.codegen.Buffer
+import org.ietr.preesm.codegen.model.codegen.CallBlock
+import org.ietr.preesm.codegen.model.codegen.Communication
+import org.ietr.preesm.codegen.model.codegen.Constant
+import org.ietr.preesm.codegen.model.codegen.ConstantString
+import org.ietr.preesm.codegen.model.codegen.CoreBlock
+import org.ietr.preesm.codegen.model.codegen.Delimiter
+import org.ietr.preesm.codegen.model.codegen.Direction
+import org.ietr.preesm.codegen.model.codegen.FifoCall
+import org.ietr.preesm.codegen.model.codegen.FifoOperation
+import org.ietr.preesm.codegen.model.codegen.FiniteLoopBlock
+import org.ietr.preesm.codegen.model.codegen.FunctionCall
+import org.ietr.preesm.codegen.model.codegen.LoopBlock
+import org.ietr.preesm.codegen.model.codegen.NullBuffer
+import org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication
+import org.ietr.preesm.codegen.model.codegen.SpecialCall
+import org.ietr.preesm.codegen.model.codegen.SubBuffer
+import org.ietr.preesm.codegen.model.codegen.Variable
 import org.ietr.preesm.codegen.xtend.task.CodegenException
 
 class MPPA2ExplicitPrinter extends CPrinter {

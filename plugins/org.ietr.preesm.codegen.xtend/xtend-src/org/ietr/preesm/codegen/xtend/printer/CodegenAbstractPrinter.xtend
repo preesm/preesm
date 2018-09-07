@@ -45,30 +45,30 @@ import java.util.Map.Entry
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.eclipse.xtend2.lib.StringConcatenation
-import org.ietr.preesm.codegen.xtend.model.codegen.Block
-import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
-import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator
-import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt
-import org.ietr.preesm.codegen.xtend.model.codegen.Communication
-import org.ietr.preesm.codegen.xtend.model.codegen.Constant
-import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
-import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
-import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
-import org.ietr.preesm.codegen.xtend.model.codegen.IntVar
-import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
-import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
-import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
-import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType
-import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
-import org.ietr.preesm.codegen.xtend.model.codegen.Variable
-import org.ietr.preesm.codegen.xtend.model.codegen.util.CodegenSwitch
+import org.ietr.preesm.codegen.model.codegen.Block
+import org.ietr.preesm.codegen.model.codegen.Buffer
+import org.ietr.preesm.codegen.model.codegen.BufferIterator
+import org.ietr.preesm.codegen.model.codegen.CallBlock
+import org.ietr.preesm.codegen.model.codegen.CodeElt
+import org.ietr.preesm.codegen.model.codegen.Communication
+import org.ietr.preesm.codegen.model.codegen.Constant
+import org.ietr.preesm.codegen.model.codegen.ConstantString
+import org.ietr.preesm.codegen.model.codegen.CoreBlock
+import org.ietr.preesm.codegen.model.codegen.FifoCall
+import org.ietr.preesm.codegen.model.codegen.FiniteLoopBlock
+import org.ietr.preesm.codegen.model.codegen.FunctionCall
+import org.ietr.preesm.codegen.model.codegen.IntVar
+import org.ietr.preesm.codegen.model.codegen.LoopBlock
+import org.ietr.preesm.codegen.model.codegen.NullBuffer
+import org.ietr.preesm.codegen.model.codegen.PapifyAction
+import org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication
+import org.ietr.preesm.codegen.model.codegen.SpecialCall
+import org.ietr.preesm.codegen.model.codegen.SpecialType
+import org.ietr.preesm.codegen.model.codegen.SubBuffer
+import org.ietr.preesm.codegen.model.codegen.Variable
+import org.ietr.preesm.codegen.model.codegen.util.CodegenSwitch
 import org.ietr.preesm.codegen.xtend.task.CodegenEngine
 import org.ietr.preesm.codegen.xtend.task.CodegenException
-import org.ietr.preesm.codegen.xtend.model.codegen.PapifyAction
 
 enum PrinterState {
 	PRINTING_DEFINITIONS,
@@ -420,7 +420,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 
 		return printConstant(constant)
 	}
-	
+
 	override casePapifyAction(PapifyAction action) {
 		return printPapifyAction(action)
 	}
@@ -694,7 +694,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printConstant(Constant constant)
-	
+
 	/**
 	 * Method called to print a {@link PapifyAction} outside the
 	 * {@link CoreBlock#getDefinitions() definition} or the

@@ -50,7 +50,7 @@
       <!-- @generated codegen -->
       <package
             uri="http://codegen/1.0"
-            class="org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage"
+            class="org.ietr.preesm.codegen.model.codegen.CodegenPackage"
             genModel="model/codegen.genmodel"/>
    </extension>
    <extension point="org.ietr.preesm.codegen.xtend.printers">
