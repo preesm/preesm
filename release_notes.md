@@ -12,7 +12,7 @@ PREESM Changelog
 * Move XCore maven config to parent pom;
 
 ### Bug fix
-
+* fix issue #69;
 
 ## Release version 2.14.0
 *2018.09.03*
