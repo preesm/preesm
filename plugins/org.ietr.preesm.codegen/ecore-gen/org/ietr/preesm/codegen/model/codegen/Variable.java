@@ -142,8 +142,9 @@ public interface Variable extends Commentable {
 
   /**
    * Returns the value of the '<em><b>Users</b></em>' reference list. The list contents are of type
-   * {@link org.ietr.preesm.codegen.model.codegen.Block}. It is bidirectional and its opposite is '
-   * {@link org.ietr.preesm.codegen.model.codegen.Block#getDeclarations <em>Declarations</em>}'. <!-- begin-user-doc -->
+   * {@link org.ietr.preesm.codegen.model.codegen.Block}. It is bidirectional and its opposite is
+   * '{@link org.ietr.preesm.codegen.model.codegen.Block#getDeclarations <em>Declarations</em>}'. <!-- begin-user-doc
+   * -->
    * <p>
    * The {@link #getUsers() users} of a {@link Variable} are the {@link Block Blocks} using the {@link Variable}. One of
    * the {@link #getUsers() users} of the variable is also its {@link #getCreator() creator}.

@@ -2157,7 +2157,7 @@ public interface CodegenPackage extends EPackage {
   EReference getBlock_CodeElts();
 
   /**
-   * Returns the meta object for the reference list ' {@link org.ietr.preesm.codegen.model.codegen.Block#getDeclarations
+   * Returns the meta object for the reference list '{@link org.ietr.preesm.codegen.model.codegen.Block#getDeclarations
    * <em>Declarations</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the reference list '<em>Declarations</em>'.
@@ -2354,7 +2354,7 @@ public interface CodegenPackage extends EPackage {
   EAttribute getBuffer_TypeSize();
 
   /**
-   * Returns the meta object for the attribute ' {@link org.ietr.preesm.codegen.model.codegen.Buffer#getMergedRange
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.Buffer#getMergedRange
    * <em>Merged Range</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the attribute '<em>Merged Range</em>'.
@@ -2439,7 +2439,7 @@ public interface CodegenPackage extends EPackage {
   EClass getFunctionCall();
 
   /**
-   * Returns the meta object for the attribute ' {@link org.ietr.preesm.codegen.model.codegen.FunctionCall#getActorName
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.FunctionCall#getActorName
    * <em>Actor Name</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the attribute '<em>Actor Name</em>'.
@@ -2460,7 +2460,7 @@ public interface CodegenPackage extends EPackage {
   EClass getCommunication();
 
   /**
-   * Returns the meta object for the attribute ' {@link org.ietr.preesm.codegen.model.codegen.Communication#getDirection
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.Communication#getDirection
    * <em>Direction</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the attribute '<em>Direction</em>'.
@@ -2471,7 +2471,7 @@ public interface CodegenPackage extends EPackage {
   EAttribute getCommunication_Direction();
 
   /**
-   * Returns the meta object for the attribute ' {@link org.ietr.preesm.codegen.model.codegen.Communication#getDelimiter
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.codegen.model.codegen.Communication#getDelimiter
    * <em>Delimiter</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the attribute '<em>Delimiter</em>'.
@@ -2493,7 +2493,7 @@ public interface CodegenPackage extends EPackage {
   EReference getCommunication_Data();
 
   /**
-   * Returns the meta object for the reference ' {@link org.ietr.preesm.codegen.model.codegen.Communication#getSendStart
+   * Returns the meta object for the reference '{@link org.ietr.preesm.codegen.model.codegen.Communication#getSendStart
    * <em>Send Start</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the reference '<em>Send Start</em>'.
@@ -2504,7 +2504,7 @@ public interface CodegenPackage extends EPackage {
   EReference getCommunication_SendStart();
 
   /**
-   * Returns the meta object for the reference ' {@link org.ietr.preesm.codegen.model.codegen.Communication#getSendEnd
+   * Returns the meta object for the reference '{@link org.ietr.preesm.codegen.model.codegen.Communication#getSendEnd
    * <em>Send End</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the reference '<em>Send End</em>'.
@@ -2607,7 +2607,7 @@ public interface CodegenPackage extends EPackage {
   EClass getCoreBlock();
 
   /**
-   * Returns the meta object for the reference ' {@link org.ietr.preesm.codegen.model.codegen.CoreBlock#getLoopBlock
+   * Returns the meta object for the reference '{@link org.ietr.preesm.codegen.model.codegen.CoreBlock#getLoopBlock
    * <em>Loop Block</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the reference '<em>Loop Block</em>'.
@@ -2618,7 +2618,7 @@ public interface CodegenPackage extends EPackage {
   EReference getCoreBlock_LoopBlock();
 
   /**
-   * Returns the meta object for the reference ' {@link org.ietr.preesm.codegen.model.codegen.CoreBlock#getInitBlock
+   * Returns the meta object for the reference '{@link org.ietr.preesm.codegen.model.codegen.CoreBlock#getInitBlock
    * <em>Init Block</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the reference '<em>Init Block</em>'.
@@ -2661,7 +2661,7 @@ public interface CodegenPackage extends EPackage {
   EClass getActorBlock();
 
   /**
-   * Returns the meta object for the reference ' {@link org.ietr.preesm.codegen.model.codegen.ActorBlock#getLoopBlock
+   * Returns the meta object for the reference '{@link org.ietr.preesm.codegen.model.codegen.ActorBlock#getLoopBlock
    * <em>Loop Block</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the reference '<em>Loop Block</em>'.
@@ -2672,7 +2672,7 @@ public interface CodegenPackage extends EPackage {
   EReference getActorBlock_LoopBlock();
 
   /**
-   * Returns the meta object for the reference ' {@link org.ietr.preesm.codegen.model.codegen.ActorBlock#getInitBlock
+   * Returns the meta object for the reference '{@link org.ietr.preesm.codegen.model.codegen.ActorBlock#getInitBlock
    * <em>Init Block</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the reference '<em>Init Block</em>'.
@@ -2801,7 +2801,7 @@ public interface CodegenPackage extends EPackage {
   EReference getFifoCall_FifoTail();
 
   /**
-   * Returns the meta object for the reference ' {@link org.ietr.preesm.codegen.model.codegen.FifoCall#getHeadBuffer
+   * Returns the meta object for the reference '{@link org.ietr.preesm.codegen.model.codegen.FifoCall#getHeadBuffer
    * <em>Head Buffer</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the reference '<em>Head Buffer</em>'.
@@ -2812,7 +2812,7 @@ public interface CodegenPackage extends EPackage {
   EReference getFifoCall_HeadBuffer();
 
   /**
-   * Returns the meta object for the reference ' {@link org.ietr.preesm.codegen.model.codegen.FifoCall#getBodyBuffer
+   * Returns the meta object for the reference '{@link org.ietr.preesm.codegen.model.codegen.FifoCall#getBodyBuffer
    * <em>Body Buffer</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
    *
    * @return the meta object for the reference '<em>Body Buffer</em>'.
