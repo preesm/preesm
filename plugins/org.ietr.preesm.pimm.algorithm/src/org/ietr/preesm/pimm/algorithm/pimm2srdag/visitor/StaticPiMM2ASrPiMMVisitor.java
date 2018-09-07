@@ -41,7 +41,7 @@
 package org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -72,6 +72,7 @@ import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
 import org.ietr.preesm.pimm.algorithm.helper.PiMMHelperException;
@@ -101,10 +102,13 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   private static final EcoreUtil.Copier copier = new EcoreUtil.Copier(true);
 
   /** Map from original PiMM vertices to generated DAG vertices */
-  private final Map<String, ArrayList<AbstractVertex>> actor2SRActors = new LinkedHashMap<>();
+  private final HashMap<String, ArrayList<AbstractVertex>> actor2SRActors = new HashMap<>();
 
   /** Map of all DataInputInterface to corresponding vertices */
-  private final Map<String, ArrayList<AbstractVertex>> inPort2SRActors = new LinkedHashMap<>();
+  private final HashMap<String, ArrayList<AbstractVertex>> inPort2SRActors = new HashMap<>();
+
+  /** Map of all DataOutputInterface to corresponding vertices */
+  private final HashMap<String, ArrayList<AbstractVertex>> outPort2SRActors = new HashMap<>();
 
   /** List of the constrants operator ID of the current actor */
   ArrayList<String> currentOperatorIDs;
@@ -175,7 +179,9 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   public Boolean caseAbstractActor(final AbstractActor actor) {
     if (actor instanceof PiGraph) {
       // Here we handle the replacement of the interfaces by what should be
-
+      // Copy the actor
+      final PiGraph copyActor = (PiGraph) copier.copy(actor);
+      setPropertiesToCopyActor(actor, copyActor);
       return true;
     }
     doSwitch(actor);
@@ -248,50 +254,29 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     final AbstractActor sourceActor = sourcePort.getContainingActor();
     final AbstractActor sinkActor = targetPort.getContainingActor();
 
-    ArrayList<AbstractVertex> sourceSet = null;
-
     // 2. Populate the source set linked to this FIFO
-    if (sourceActor instanceof InterfaceActor) {
-      final DataInputPort correspondingPort = (DataInputPort) sourceActor.getContainingPiGraph()
-          .lookupGraphDataPortForInterfaceActor((InterfaceActor) sourceActor);
-      // 2.1 Create the entry in the map
-      final String key = originalGraphName + "_" + correspondingPort.getName();
-      if (!inPort2SRActors.containsKey(key)) {
-        inPort2SRActors.put(key, new ArrayList<>());
-      }
-
-      // 2.2 Now check if we need a roundbuffer
-      long prod = Long.parseLong(correspondingPort.getPortRateExpression().getExpressionString());
-      long cons = Long.parseLong(targetPort.getPortRateExpression().getExpressionString());
-      long sinkRV = this.brv.get(sinkActor);
-      if (prod != (cons * sinkRV)) {
-        final RoundBufferActor interfaceRB = addRoundBufferIn(fifo, sourceActor, correspondingPort, cons, sinkRV);
-        sourceSet = new ArrayList<>();
-        sourceSet.add(interfaceRB);
-        inPort2SRActors.get(key).add(interfaceRB);
-      }
-    } else if (!this.actor2SRActors.containsKey(this.graphName + sourceActor.getName())) {
-      populateSingleRatePiMMActor(sourceActor);
+    final ArrayList<
+        AbstractVertex> sourceSet = getSourceSetForSRLinker(fifo, sourcePort, targetPort, sourceActor, sinkActor);
+    if (sourceSet == null) {
+      fifo.setSourcePort(sourcePort);
+      return true;
     }
 
     // 3. Populate the sink set linked to this FIFO
-    // If sink actor is hierarchical we should go inside and do partial transformation
-    if (!this.actor2SRActors.containsKey(this.graphName + sinkActor.getName())) {
-      populateSingleRatePiMMActor(sinkActor);
+    final ArrayList<
+        AbstractVertex> sinkSet = getSinkSetForSRLinker(fifo, sourcePort, targetPort, sourceActor, sinkActor);
+
+    // If sinkSet / sourceSet is null, then we did not need a RoundBuffer / Broadcast and thus processing of connecting
+    // this FIFO will be done later
+    if (sinkSet == null) {
+      // In the case of Interfaces we might have disconnected the FIFO so let's reconnect it
+      fifo.setSourcePort(sourcePort);
+      fifo.setTargetPort(targetPort);
+      return true;
     }
 
     // 4. Do the Single-Rate connections
     final PiMMSRVerticesLinker srVerticesLinker = new PiMMSRVerticesLinker(fifo, this.result, this.scenario);
-
-    if (sourceSet == null) {
-      sourceSet = this.actor2SRActors.get(this.graphName + sourceActor.getName());
-    }
-    final ArrayList<AbstractVertex> sinkSet = this.actor2SRActors.get(this.graphName + sinkActor.getName());
-
-    if (sourceSet == null || sinkSet == null) {
-      return true;
-    }
-
     try {
       srVerticesLinker.execute(this.brv, sourceSet, sinkSet);
     } catch (final PiMMHelperException e) {
@@ -305,34 +290,221 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * Add a roundbuffer in the place of a DataInputInterface
    * 
    * @param fifo
    *          the fifo
+   * @param sourcePort
+   *          the sourcePort
+   * @param targetPort
+   *          the targetPort
+   * @param sourceActor
+   *          the source actor
+   * @param sinkActor
+   *          the sink actor
+   * @return list of source actor to be linked, null else
+   */
+  private ArrayList<AbstractVertex> getSourceSetForSRLinker(final Fifo fifo, final DataOutputPort sourcePort,
+      final DataInputPort targetPort, final AbstractActor sourceActor, final AbstractActor sinkActor) {
+    final ArrayList<AbstractVertex> sourceSet;
+    if (sourceActor instanceof InterfaceActor) {
+      sourceSet = handleDataInputInterface(targetPort, sourceActor, sinkActor);
+    } else if (sourceActor instanceof PiGraph) {
+      // We should retrieve the correct source set
+      final String key = sourceActor.getName() + "_" + sourcePort.getName();
+      sourceSet = this.outPort2SRActors.get(key);
+      if (sourceSet == null) {
+        throw new RuntimeException("No replacement found for DataOutputPort [" + sourcePort.getName()
+            + "] of hierarchical actor [" + sourceActor.getName() + "].");
+      }
+      // Now we change the "sourcePort" of the FIFO to match the one of the sourceSet
+      final AbstractActor firstOfSet = (AbstractActor) sourceSet.get(0);
+      final Port lookupPort = firstOfSet.lookupPort(fifo.getSourcePort().getName());
+      if (lookupPort == null) {
+        fifo.setSourcePort(((AbstractActor) sourceSet.get(0)).getDataOutputPorts().get(0));
+      } else {
+        fifo.setSourcePort((DataOutputPort) lookupPort);
+      }
+    } else if (!this.actor2SRActors.containsKey(this.graphName + sourceActor.getName())) {
+      populateSingleRatePiMMActor(sourceActor);
+      sourceSet = this.actor2SRActors.get(this.graphName + sourceActor.getName());
+    } else {
+      sourceSet = this.actor2SRActors.get(this.graphName + sourceActor.getName());
+    }
+    return sourceSet;
+  }
+
+  /**
+   * Handles a DataInputInterface replacement
+   * 
+   * @param targetPort
+   *          the target port
+   * @param sourceActor
+   *          source actor
+   * @param sinkActor
+   *          sink actor
+   * @return a list containing a BroadcastActor if needed, null else
+   */
+  private ArrayList<AbstractVertex> handleDataInputInterface(final DataInputPort targetPort,
+      final AbstractActor sourceActor, final AbstractActor sinkActor) {
+    final DataInputPort correspondingPort = (DataInputPort) sourceActor.getContainingPiGraph()
+        .lookupGraphDataPortForInterfaceActor((InterfaceActor) sourceActor);
+    ArrayList<AbstractVertex> sourceSet = null;
+
+    // 2.1 Create the entry in the map
+    final String key = originalGraphName + "_" + correspondingPort.getName();
+    if (!inPort2SRActors.containsKey(key)) {
+      inPort2SRActors.put(key, new ArrayList<>());
+    }
+
+    // 2.2 Now check if we need a BroadcastActor
+    long prod = Long.parseLong(correspondingPort.getPortRateExpression().getExpressionString());
+    long cons = Long.parseLong(targetPort.getPortRateExpression().getExpressionString());
+    long sinkRV = this.brv.get(sinkActor);
+    if (prod != (cons * sinkRV)) {
+      final BroadcastActor interfaceBR = addBroadCastIn(sourceActor, correspondingPort);
+      sourceSet = new ArrayList<>();
+      sourceSet.add(interfaceBR);
+      inPort2SRActors.get(key).add(interfaceBR);
+    } else if (sinkActor instanceof PiGraph) {
+      final String subKey = sinkActor.getName() + "_" + targetPort.getName();
+      inPort2SRActors.get(key).addAll(inPort2SRActors.remove(subKey));
+    } else {
+      // 2.4 If we don't, then we can directly link this port to the sinkSet for later processing
+      if (!this.actor2SRActors.containsKey(this.graphName + sinkActor.getName())) {
+        populateSingleRatePiMMActor(sinkActor);
+      }
+      inPort2SRActors.get(key).addAll(this.actor2SRActors.get(this.graphName + sinkActor.getName()));
+    }
+    return sourceSet;
+  }
+
+  /**
+   * Add a BroadcastActor in the place of a DataInputInterface
+   * 
    * @param sourceActor
    *          the source interface
    * @param correspondingPort
    *          the corresponding data port on the hierarchical actor
-   * @param cons
-   *          consumption of the actor connected to the interface
-   * @param sinkRV
-   *          repetition vector value of the sink vertex
-   * @return
+   * @return the BroadcastActor
    */
-  private RoundBufferActor addRoundBufferIn(final Fifo fifo, final AbstractActor sourceActor,
-      final DataInputPort correspondingPort, long cons, long sinkRV) {
-    final RoundBufferActor interfaceRB = this.factory.createRoundBufferActor();
-    interfaceRB.setName("RB_" + sourceActor.getName());
+  private BroadcastActor addBroadCastIn(final AbstractActor sourceActor, final DataInputPort correspondingPort) {
+    final BroadcastActor interfaceBR = this.factory.createBroadcastActor();
+    interfaceBR.setName("BR_" + this.graphName + "_" + sourceActor.getName());
     // Copy the DataInputPort to the RoundBufferActor from the hierarchical actor
     final DataInputPort copyPort = (DataInputPort) copier.copy(correspondingPort);
-    interfaceRB.getDataInputPorts().add(copyPort);
+    copyPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);
+    interfaceBR.getDataInputPorts().add(copyPort);
+    copyPort.setName("br_" + correspondingPort.getName());
+    // Add the BroadcastActor to the graph
+    this.result.addActor(interfaceBR);
+    return interfaceBR;
+  }
+
+  /**
+   * 
+   * @param fifo
+   *          the fifo
+   * @param sourcePort
+   *          the sourcePort
+   * @param targetPort
+   *          the targetPort
+   * @param sourceActor
+   *          the source actor
+   * @param sinkActor
+   *          the sink actor
+   * @return list of sink actor to be linked, null else
+   */
+  private ArrayList<AbstractVertex> getSinkSetForSRLinker(final Fifo fifo, final DataOutputPort sourcePort,
+      final DataInputPort targetPort, final AbstractActor sourceActor, final AbstractActor sinkActor) {
+    final ArrayList<AbstractVertex> sinkSet;
+    if (sinkActor instanceof InterfaceActor) {
+      sinkSet = handleDataOutputInterface(sourcePort, sourceActor, sinkActor);
+    } else if (sinkActor instanceof PiGraph) {
+      // We should retrieve the correct source set
+      final String key = sinkActor.getName() + "_" + targetPort.getName();
+      sinkSet = this.inPort2SRActors.remove(key);
+      if (sinkSet == null) {
+        throw new RuntimeException("No replacement found for DataInputPort [" + targetPort.getName()
+            + "] of hierarchical actor [" + sinkActor.getName() + "].");
+      }
+      // Now we change the "sinkPort" of the FIFO to match the one of the sinkSet
+      final AbstractActor firstOfSet = (AbstractActor) sinkSet.get(0);
+      final Port lookupPort = firstOfSet.lookupPort(fifo.getTargetPort().getName());
+      if (lookupPort == null) {
+        fifo.setTargetPort(((AbstractActor) sinkSet.get(0)).getDataInputPorts().get(0));
+      } else {
+        fifo.setTargetPort((DataInputPort) lookupPort);
+      }
+    } else if (!this.actor2SRActors.containsKey(this.graphName + sinkActor.getName())) {
+      populateSingleRatePiMMActor(sinkActor);
+      sinkSet = this.actor2SRActors.get(this.graphName + sinkActor.getName());
+    } else {
+      sinkSet = this.actor2SRActors.get(this.graphName + sinkActor.getName());
+    }
+    return sinkSet;
+  }
+
+  /**
+   * Handles a DataOutputInterface replacement
+   * 
+   * @param targetPort
+   *          the target port
+   * @param sourceActor
+   *          source actor
+   * @param sinkActor
+   *          sink actor
+   * @return a list containing a RoundBufferActor if needed, null else
+   */
+  private ArrayList<AbstractVertex> handleDataOutputInterface(final DataOutputPort sourcePort,
+      final AbstractActor sourceActor, final AbstractActor sinkActor) {
+    final DataOutputPort correspondingPort = (DataOutputPort) sinkActor.getContainingPiGraph()
+        .lookupGraphDataPortForInterfaceActor((InterfaceActor) sinkActor);
+    ArrayList<AbstractVertex> sinkSet = null;
+
+    // 2.1 Create the entry in the map
+    final String key = originalGraphName + "_" + correspondingPort.getName();
+    if (!outPort2SRActors.containsKey(key)) {
+      outPort2SRActors.put(key, new ArrayList<>());
+    }
+
+    // 2.2 Now check if we need a RoundBufferActor
+    long cons = Long.parseLong(correspondingPort.getPortRateExpression().getExpressionString());
+    long prod = Long.parseLong(sourcePort.getPortRateExpression().getExpressionString());
+    long sourceRV = this.brv.get(sourceActor);
+    if (cons != (prod * sourceRV)) {
+      final RoundBufferActor interfaceRB = addRoundBufferOut(sinkActor, correspondingPort);
+      sinkSet = new ArrayList<>();
+      sinkSet.add(interfaceRB);
+      outPort2SRActors.get(key).add(interfaceRB);
+    } else if (sourceActor instanceof PiGraph) {
+      final String subKey = sourceActor.getName() + "_" + sourcePort.getName();
+      outPort2SRActors.get(key).addAll(outPort2SRActors.remove(subKey));
+    } else {
+      // 2.4 If we don't, then we can directly link this port to the sinkSet for later processing
+      if (!this.actor2SRActors.containsKey(this.graphName + sourceActor.getName())) {
+        populateSingleRatePiMMActor(sourceActor);
+      }
+      outPort2SRActors.get(key).addAll(this.actor2SRActors.get(this.graphName + sourceActor.getName()));
+    }
+    return sinkSet;
+  }
+
+  /**
+   * Add a RoundBufferActor in the place of a DataOutputInterface
+   * 
+   * @param sinkActor
+   *          the sink interface
+   * @param correspondingPort
+   *          the corresponding data port on the hierarchical actor
+   * @return the RoundBufferActor
+   */
+  private RoundBufferActor addRoundBufferOut(final AbstractActor sinkActor, final DataOutputPort correspondingPort) {
+    final RoundBufferActor interfaceRB = this.factory.createRoundBufferActor();
+    interfaceRB.setName("RB_" + this.graphName + "_" + sinkActor.getName());
+    // Copy the DataOutputPort to the RoundBufferActor from the hierarchical actor
+    final DataOutputPort copyPort = (DataOutputPort) copier.copy(correspondingPort);
+    interfaceRB.getDataOutputPorts().add(copyPort);
     copyPort.setName("rb_" + correspondingPort.getName());
-    // Add a DataOutputPort to the RoundBufferActor
-    final DataOutputPort dop = this.factory.createDataOutputPort();
-    dop.setName("RB_" + sourceActor.getName() + Long.toString(cons * sinkRV));
-    dop.getPortRateExpression().setExpressionString(Long.toString(cons * sinkRV));
-    interfaceRB.getDataOutputPorts().add(dop);
-    fifo.setSourcePort(dop);
     // Add the RoundBufferActor to the graph
     this.result.addActor(interfaceRB);
     return interfaceRB;
@@ -424,9 +596,9 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       return;
     }
 
-    if (actor instanceof PiGraph) {
-      return;
-    }
+    // if (actor instanceof PiGraph) {
+    // return;
+    // }
 
     // Populate the DAG with the appropriate number of instances of the actor
     final Long actorNBRepeat = this.brv.get(actor);
@@ -473,28 +645,17 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     // Go check hierarchical graphs
     // The hierarchy gets flatten as we go deeper
     for (final PiGraph g : graph.getChildrenGraphs()) {
-      originalGraphName = g.getName();
       for (int i = 0; i < this.brv.get(g); ++i) {
         final String prefixGraphName = backupGraphName.isEmpty() ? "" : backupGraphName + "_";
         this.graphName = prefixGraphName + g.getName() + "_" + Long.toString(i);
         doSwitch(g);
       }
-      // final StaticPiMM2ASrPiMMVisitor visitorPiMM2ASRPiMM = new StaticPiMM2ASrPiMMVisitor(
-      // PiMMUserFactory.instance.createPiGraph(), this.brv, this.scenario);
-      // visitorPiMM2ASRPiMM.doSwitch(g);
-      // final PiGraph currentResult = visitorPiMM2ASRPiMM.getResult();
-      // for (int i = 0; i < this.brv.get(g); ++i) {
-      // final String prefix = g.getName() + "_" + Long.toString(i);
-      // final PiGraph copy = (PiGraph) copier.copy(currentResult);
-      // copy.getVertices().stream().map(AbstractActor.class::cast).forEach(v -> v.setName(prefix + v.getName()));
-      // copy.getVertices().stream().map(AbstractActor.class::cast)
-      // .forEach(v -> graph.addActor((AbstractActor) copier.copy(v)));
-      // }
     }
     // Restore the graph name
     this.graphName = backupGraphName;
 
     // Perform the Multi-Rate to Single-Rate transformation based on the FIFOs
+    originalGraphName = graph.getName();
     for (final Fifo f : graph.getFifos()) {
       doSwitch(f);
     }

@@ -58,7 +58,7 @@ import org.ietr.preesm.pimm.algorithm.helper.PiMMHandler;
 import org.ietr.preesm.pimm.algorithm.helper.PiMMHelperException;
 import org.ietr.preesm.pimm.algorithm.helper.TopologyBasedBRV;
 import org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor.StaticPiMM2ASrPiMMVisitor;
-import org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor.StaticPiMM2SrDAGVisitor;
+import org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor.StaticPiMM2MapperDAGVisitor;
 
 /**
  * The Class StaticPiMM2SDFLauncher.
@@ -160,13 +160,12 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     final String msg = "Acyclic Single-Rate transformation: " + timer + "s.";
     WorkflowLogger.getLogger().log(Level.INFO, msg);
 
-    StaticPiMM2SrDAGVisitor visitor;
-    visitor = new StaticPiMM2SrDAGVisitor(new MapperDAG(new MapperEdgeFactory(), this.graph), this.graphBRV,
-        this.scenario);
+    final StaticPiMM2MapperDAGVisitor visitor = new StaticPiMM2MapperDAGVisitor(
+        new MapperDAG(new MapperEdgeFactory(), acyclicSRPiMM), this.graphBRV, this.scenario);
     // Convert the PiMM vertices to DAG vertices
     timer.reset();
     timer.start();
-    visitor.doSwitch(this.graph);
+    visitor.doSwitch(acyclicSRPiMM);
     timer.stop();
     final String msg2 = "Dag conversion: " + timer + "s.";
     WorkflowLogger.getLogger().log(Level.INFO, msg2);
