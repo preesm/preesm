@@ -10,6 +10,7 @@ PREESM Changelog
 * Update Eclipse-EMF maven repo URL;
 * Update release scripts;
 * Move XCore maven config to parent pom;
+* Move Codegen model and convert it from ECore to XCore;
 
 ### Bug fix
 * fix issue #69;
