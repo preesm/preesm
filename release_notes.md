@@ -9,6 +9,7 @@ PREESM Changelog
 ### Changes
 * Update Eclipse-EMF maven repo URL;
 * Update release scripts;
+* Move XCore maven config to parent pom;
 
 ### Bug fix
 
