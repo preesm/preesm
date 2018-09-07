@@ -104,6 +104,12 @@ git clean -xdf
 ./releng/update-version.sh $NEW_VERSION
 sed -i -e "s/X\.Y\.Z/$NEW_VERSION/g" release_notes.md
 sed -i -e "s/XXXX\.XX\.XX/$TODAY_DATE/g" release_notes.md
+
+RELEASE_LINES=$(cat release_notes.md | grep -n Release | head -n 2 | cut -d':' -f 1 | xargs)
+NEW_RELEASE_LINE=$(echo $RELEASE_LINES | cut -d' ' -f 1)
+PREV_RELEASE_LINE=$(echo $RELEASE_LINES | cut -d' ' -f 2)
+RELEASE_BODY=$(cat release_notes.md | head -n $((PREV_RELEASE_LINE - 1)) | tail -n +${NEW_RELEASE_LINE} | tr '\n' '\r' | sed 's/\r/\\r\\n/g')
+
 git stash
 
 # Fix headers
@@ -167,7 +173,7 @@ GENERATE_POST_BODY() {
 {
   "tag_name": "${TAG}",
   "name": "${TAG}",
-  "body": "",
+  "body": "${RELEASE_BODY}",
   "draft": false,
   "prerelease": false
 }

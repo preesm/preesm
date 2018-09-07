@@ -59,9 +59,9 @@ import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
-import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.mapper.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.abc.route.CommunicationRouter;
@@ -71,7 +71,6 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.ReceiveVertex;
 import org.ietr.preesm.mapper.model.special.SendVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * Tags an SDF with the implementation information necessary for code generation, and DAG exporting.
  *
@@ -103,8 +102,8 @@ public class TagDAG {
    * @throws InvalidExpressionException
    *           the invalid expression exception
    */
-  public void tag(final MapperDAG dag, final Design architecture, final PreesmScenario scenario, final IAbc simu,
-      final EdgeSchedType edgeSchedType) throws InvalidExpressionException {
+  public void tag(final MapperDAG dag, final Design architecture, final PreesmScenario scenario, final LatencyAbc simu,
+      final EdgeSchedType edgeSchedType) {
 
     final PropertyBean bean = dag.getPropertyBean();
     bean.setValue(ImplementationPropertyNames.Graph_AbcReferenceType, simu.getType());
@@ -131,9 +130,9 @@ public class TagDAG {
     final OrderManager orderMgr = new OrderManager(architecture);
     orderMgr.reconstructTotalOrderFromDAG(dag);
 
-    final CommunicationRouter comRouter = new CommunicationRouter(architecture, scenario, dag,
-        AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr), orderMgr);
-    comRouter.routeAll(dag, CommunicationRouter.sendReceiveType);
+    final IEdgeSched instance = AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr);
+    final CommunicationRouter comRouter = new CommunicationRouter(architecture, scenario, dag, instance, orderMgr);
+    comRouter.routeAll(CommunicationRouter.SEND_RECEIVE_TYPE);
     orderMgr.tagDAG(dag);
   }
 
@@ -145,7 +144,7 @@ public class TagDAG {
    * @param simu
    *          the simu
    */
-  public void addProperties(final MapperDAG dag, final IAbc simu) {
+  public void addProperties(final MapperDAG dag, final LatencyAbc simu) {
 
     MapperDAGVertex currentVertex;
 
@@ -153,7 +152,7 @@ public class TagDAG {
 
     // Updates graph time
     if (simu instanceof LatencyAbc) {
-      ((LatencyAbc) simu).updateTimings();
+      simu.updateTimings();
     }
 
     // Tagging the vertices with informations for code generation
@@ -235,13 +234,13 @@ public class TagDAG {
 
             .getEffectiveOperator();
         final long singleRepeatTime = currentVertex.getInit().getTime(effectiveOperator);
-        final int nbRepeat = currentVertex.getInit().getNbRepeat();
+        final long nbRepeat = currentVertex.getInit().getNbRepeat();
         final long totalTime = nbRepeat * singleRepeatTime;
         bean.setValue(ImplementationPropertyNames.Task_duration, totalTime);
 
         // Tags the DAG with vertex starttime when possible
         if (simu instanceof LatencyAbc) {
-          final long startTime = ((LatencyAbc) simu).getTLevel(currentVertex, false);
+          final long startTime = (simu).getTLevel(currentVertex, false);
           bean.setValue(ImplementationPropertyNames.Start_time, startTime);
         }
       }
@@ -261,7 +260,7 @@ public class TagDAG {
    * @throws InvalidExpressionException
    *           the invalid expression exception
    */
-  public void addAllAggregates(final MapperDAG dag, final PreesmScenario scenario) throws InvalidExpressionException {
+  public void addAllAggregates(final MapperDAG dag, final PreesmScenario scenario) {
 
     MapperDAGEdge edge;
 
@@ -286,8 +285,7 @@ public class TagDAG {
    *           the invalid expression exception
    */
   @SuppressWarnings("unchecked")
-  public void addAggregateFromSDF(final MapperDAGEdge edge, final PreesmScenario scenario)
-      throws InvalidExpressionException {
+  public void addAggregateFromSDF(final MapperDAGEdge edge, final PreesmScenario scenario) {
 
     final BufferAggregate agg = new BufferAggregate();
 
@@ -296,7 +294,7 @@ public class TagDAG {
       final SDFEdge sdfAggMember = (SDFEdge) aggMember;
       final DataType dataType = scenario.getSimulationManager().getDataType(sdfAggMember.getDataType().toString());
       final BufferProperties props = new BufferProperties(dataType, sdfAggMember.getSourceInterface().getName(),
-          sdfAggMember.getTargetInterface().getName(), sdfAggMember.getProd().intValue());
+          sdfAggMember.getTargetInterface().getName(), (int) sdfAggMember.getProd().longValue());
 
       agg.add(props);
     }
@@ -315,18 +313,14 @@ public class TagDAG {
    * @throws InvalidExpressionException
    *           the invalid expression exception
    */
-  public void addAggregate(final MapperDAGEdge edge, final PreesmScenario scenario) throws InvalidExpressionException {
+  public void addAggregate(final MapperDAGEdge edge, final PreesmScenario scenario) {
     final BufferAggregate agg = new BufferAggregate();
     for (final AbstractEdge<?, ?> aggMember : edge.getAggregate()) {
       final DAGEdge dagEdge = (DAGEdge) aggMember;
       final String value = (String) dagEdge.getPropertyBean().getValue(SDFEdge.DATA_TYPE);
       final DataType dataType = scenario.getSimulationManager().getDataType(value);
-      // final int dataSize = (Integer) dagEdge.getPropertyBean().getValue(SDFEdge.DATA_SIZE);
-      // final BufferProperties props = new BufferProperties(dataType, dagEdge.getSourceLabel(),
-      // dagEdge.getTargetLabel(),
-      // dagEdge.getWeight().intValue() / dataSize);
       final BufferProperties props = new BufferProperties(dataType, dagEdge.getSourceLabel(), dagEdge.getTargetLabel(),
-          dagEdge.getWeight().intValue());
+          (int) dagEdge.getWeight().longValue());
       agg.add(props);
     }
     edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);

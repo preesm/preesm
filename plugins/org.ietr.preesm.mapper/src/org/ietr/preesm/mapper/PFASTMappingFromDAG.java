@@ -45,8 +45,7 @@ import java.util.logging.Level;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.mapper.abc.AbstractAbc;
-import org.ietr.preesm.mapper.abc.IAbc;
+import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.mapper.algo.list.InitialLists;
 import org.ietr.preesm.mapper.algo.pfast.PFastAlgorithm;
@@ -83,11 +82,11 @@ public class PFASTMappingFromDAG extends AbstractMappingFromDAG {
   }
 
   @Override
-  protected IAbc schedule(final Map<String, Object> outputs, final Map<String, String> parameters,
+  protected LatencyAbc schedule(final Map<String, Object> outputs, final Map<String, String> parameters,
       final InitialLists initial, final PreesmScenario scenario, final AbcParameters abcParameters, final MapperDAG dag,
       final Design architecture, final AbstractTaskSched taskSched) {
 
-    final IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture, scenario);
+    final LatencyAbc simu2 = LatencyAbc.getInstance(abcParameters, dag, architecture, scenario);
 
     WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
 

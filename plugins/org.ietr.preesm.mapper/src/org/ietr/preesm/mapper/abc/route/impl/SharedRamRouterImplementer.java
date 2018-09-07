@@ -43,7 +43,6 @@ import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.MemRouteStep;
 import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.mapper.abc.edgescheduling.SimpleEdgeSched;
-import org.ietr.preesm.mapper.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.mapper.abc.route.CommunicationRouter;
 import org.ietr.preesm.mapper.abc.route.CommunicationRouterImplementer;
 import org.ietr.preesm.mapper.abc.transaction.AddInvolvementVertexTransaction;
@@ -55,7 +54,6 @@ import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class responsible to generate the suited vertices while simulating a shared ram communication.
  *
@@ -69,7 +67,7 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
    * @param user
    *          the user
    */
-  public SharedRamRouterImplementer(final AbstractCommunicationRouter user) {
+  public SharedRamRouterImplementer(final CommunicationRouter user) {
     super(user);
   }
 
@@ -81,7 +79,7 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
    */
   @Override
   public void removeVertices(final MapperDAGEdge edge, final TransactionManager transactions) {
-
+    // nothing
   }
 
   /**
@@ -127,7 +125,7 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
       final long receiverTransferTime = ramStep.getReceiverSideWorstTransferTime(edge.getInit().getDataSize());
 
       // Adding the transfers of a ram route step
-      if (type == CommunicationRouter.transferType) {
+      if (type == CommunicationRouter.TRANSFER_TYPE) {
         List<ComponentInstance> nodes = ramStep.getSenderSideContentionNodes();
         AddTransferVertexTransaction transaction = null;
 
@@ -151,7 +149,7 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
         }
 
         return transaction;
-      } else if (type == CommunicationRouter.involvementType) {
+      } else if (type == CommunicationRouter.INVOLVEMENT_TYPE) {
         // Adding the involvements
         MapperDAGEdge incomingEdge = null;
         MapperDAGEdge outgoingEdge = null;
@@ -184,7 +182,7 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
               receiverTransferTime, getOrderManager()));
         }
 
-      } else if (type == CommunicationRouter.synchroType) {
+      } else if (type == CommunicationRouter.SYNCHRO_TYPE) {
 
         // Synchronizing the previously created transfers
         final List<MapperDAGVertex> toSynchronize = new ArrayList<>();
@@ -203,21 +201,7 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
 
           }
         }
-
-        // Synchronizing the vertices in order manager (they
-        // have consecutive total order and be scheduled
-        // simultaneously).
-        /*
-         * if (toSynchronize.size() > 1) { ImplementationCleaner cleaner = new ImplementationCleaner( getOrderManager(),
-         * getImplementation()); PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder( getOrderManager(),
-         * getImplementation()); MapperDAGVertex last = null; last = null;
-         *
-         * for (MapperDAGVertex v : toSynchronize) { cleaner.unscheduleVertex(v); last =
-         * getOrderManager().synchronize(last, v); adder.scheduleVertex(v); }
-         *
-         * }
-         */
-      } else if (type == CommunicationRouter.sendReceiveType) {
+      } else if (type == CommunicationRouter.SEND_RECEIVE_TYPE) {
 
         final Transaction transaction = new AddSendReceiveTransaction(lastTransaction, edge, getImplementation(),
             getOrderManager(), routeStepIndex, routeStep, TransferVertex.SEND_RECEIVE_COST);

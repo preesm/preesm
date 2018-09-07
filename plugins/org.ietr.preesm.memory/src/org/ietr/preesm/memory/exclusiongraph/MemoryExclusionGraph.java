@@ -74,6 +74,7 @@ import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
 import org.ietr.preesm.mapper.ScheduledDAGIterator;
+import org.ietr.preesm.memory.allocation.MemoryAllocationException;
 import org.ietr.preesm.memory.script.Range;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
@@ -1726,8 +1727,12 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       if (vertKind.equals(DAGVertex.DAG_VERTEX) || vertKind.equals(DAGBroadcastVertex.DAG_BROADCAST_VERTEX)
           || vertKind.equals(DAGInitVertex.DAG_INIT_VERTEX) || vertKind.equals(DAGEndVertex.DAG_END_VERTEX)
           || vertKind.equals(DAGForkVertex.DAG_FORK_VERTEX) || vertKind.equals(DAGJoinVertex.DAG_JOIN_VERTEX)) {
-        final int schedulingOrder = (Integer) currentVertex.getPropertyBean()
+        final Integer schedulingOrder = (Integer) currentVertex.getPropertyBean()
             .getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
+        if (schedulingOrder == null) {
+          throw new MemoryAllocationException("Cannot build the memory exclusion graph of a non scheduled DAG",
+              new NullPointerException());
+        }
         verticesMap.put(schedulingOrder, currentVertex);
       }
     }

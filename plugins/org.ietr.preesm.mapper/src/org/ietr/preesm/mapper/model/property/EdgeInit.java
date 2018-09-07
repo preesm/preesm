@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
@@ -37,7 +37,6 @@
  */
 package org.ietr.preesm.mapper.model.property;
 
-// TODO: Auto-generated Javadoc
 /**
  * Properties of an edge set when converting dag to mapper dag.
  *
@@ -46,7 +45,7 @@ package org.ietr.preesm.mapper.model.property;
 public class EdgeInit {
 
   /** The data size. */
-  private int dataSize = 0;
+  private long dataSize = 0;
 
   /**
    * Instantiates a new edge init.
@@ -83,7 +82,7 @@ public class EdgeInit {
    *
    * @return the data size
    */
-  public int getDataSize() {
+  public long getDataSize() {
     return this.dataSize;
   }
 
@@ -93,7 +92,7 @@ public class EdgeInit {
    * @param dataSize
    *          the new data size
    */
-  public void setDataSize(final int dataSize) {
+  public void setDataSize(final long dataSize) {
     this.dataSize = dataSize;
   }
 }

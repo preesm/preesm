@@ -44,7 +44,6 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.params.AbcParameters;
 
-// TODO: Auto-generated Javadoc
 /**
  * Using infinite homogeneous simulation to calculate the span length of a dag.
  *
@@ -72,7 +71,7 @@ public class SpanLengthCalculator extends InfiniteHomogeneousAbc {
    *           the workflow exception
    */
   public SpanLengthCalculator(final AbcParameters params, final MapperDAG dag, final Design archi,
-      final TaskSchedType taskSchedType, final PreesmScenario scenario) throws WorkflowException {
+      final TaskSchedType taskSchedType, final PreesmScenario scenario) {
     super(params, dag, archi, taskSchedType, scenario);
 
     updateTimings();

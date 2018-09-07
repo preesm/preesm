@@ -43,8 +43,8 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
+import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.mapper.algo.fast.FastAlgorithm;
 import org.ietr.preesm.mapper.algo.list.InitialLists;
@@ -53,7 +53,6 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.params.FastAlgoParameters;
 
-// TODO: Auto-generated Javadoc
 /**
  * One thread of Task scheduling FAST algorithm multithread.
  *
@@ -163,7 +162,8 @@ class PFastCallable implements Callable<MapperDAG> {
     }
 
     // Create the CPN Dominant Sequence
-    final IAbc IHsimu = new InfiniteHomogeneousAbc(this.abcParams, callableDAG.clone(), callableArchi, this.scenario);
+    final LatencyAbc IHsimu = new InfiniteHomogeneousAbc(this.abcParams, callableDAG.clone(), callableArchi,
+        this.scenario);
     final InitialLists initialLists = new InitialLists();
     initialLists.constructInitialLists(callableDAG, IHsimu);
 

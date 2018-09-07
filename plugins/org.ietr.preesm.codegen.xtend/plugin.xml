@@ -46,13 +46,6 @@
 <plugin>
    <extension-point id="printers" name="Printers"
       schema="schema/printers.exsd" />
-   <extension point="org.eclipse.emf.ecore.generated_package">
-      <!-- @generated codegen -->
-      <package
-            uri="http://codegen/1.0"
-            class="org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage"
-            genModel="model/codegen.genmodel"/>
-   </extension>
    <extension point="org.ietr.preesm.codegen.xtend.printers">
       <printers language="XML">
          <printer
@@ -127,14 +120,6 @@
             <core_type type="x86">
             </core_type>
             <core_type type="c6678">
-            </core_type>
-         </printer>
-      </printers>
-      <printers language="PapifyC">
-         <printer
-            class="org.ietr.preesm.codegen.xtend.printer.c.instrumented.PapifyCPrinterActorsWorkflowTask"
-            extension=".c">
-            <core_type type="x86">
             </core_type>
          </printer>
       </printers>

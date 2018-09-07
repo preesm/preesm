@@ -48,7 +48,6 @@ import java.util.logging.Logger;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
@@ -346,7 +345,7 @@ public class InitialLists implements Cloneable {
    *          the abc
    * @return : void
    */
-  private void addCPNobn(final MapperDAG dag, final List<MapperDAGVertex> orderlist, final IAbc abc) {
+  private void addCPNobn(final MapperDAG dag, final List<MapperDAGVertex> orderlist, final LatencyAbc abc) {
 
     // Variables
     MapperDAGVertex currentvertex = null;
@@ -377,16 +376,16 @@ public class InitialLists implements Cloneable {
    *          the simu
    * @return : true if the initial lists were constructed
    */
-  public boolean constructInitialLists(final MapperDAG dag, final IAbc simu) {
+  public boolean constructInitialLists(final MapperDAG dag, final LatencyAbc simu) {
 
     this.cpnDominant.clear();
     this.blockingNodes.clear();
     this.criticalPath.clear();
 
-    if (simu instanceof LatencyAbc) {
+    if (simu != null) {
       // construction of critical path and CPN dominant list with CPN and
       // IBN actors
-      if (!constructCPN(dag, this.cpnDominant, this.criticalPath, (LatencyAbc) simu)) {
+      if (!constructCPN(dag, this.cpnDominant, this.criticalPath, simu)) {
         WorkflowLogger.getLogger().log(Level.SEVERE, "Problem with initial list construction");
         return false;
       }

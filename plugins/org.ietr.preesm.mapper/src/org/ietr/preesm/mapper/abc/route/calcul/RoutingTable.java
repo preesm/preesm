@@ -40,12 +40,13 @@ package org.ietr.preesm.mapper.abc.route.calcul;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentSkipListSet;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
-// TODO: Auto-generated Javadoc
 /**
  * Table representing the different routes available to go from one operator to another.
  *
@@ -56,43 +57,11 @@ public class RoutingTable {
   /**
    * A couple of operators to which the routes are linked.
    */
-  private class OperatorCouple {
+  private class OperatorCouple extends MutablePair<ComponentInstance, ComponentInstance> {
+    private static final long serialVersionUID = -451571160460519876L;
 
-    /** The op 1. */
-    private final ComponentInstance op1;
-
-    /** The op 2. */
-    private final ComponentInstance op2;
-
-    /**
-     * Instantiates a new operator couple.
-     *
-     * @param op1
-     *          the op 1
-     * @param op2
-     *          the op 2
-     */
-    public OperatorCouple(final ComponentInstance op1, final ComponentInstance op2) {
-      super();
-      this.op1 = op1;
-      this.op2 = op2;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(final Object obj) {
-      if (obj instanceof OperatorCouple) {
-        final OperatorCouple doublet = (OperatorCouple) obj;
-        if (doublet.getOp1().getInstanceName().equals(getOp1().getInstanceName())
-            && doublet.getOp2().getInstanceName().equals(getOp2().getInstanceName())) {
-          return true;
-        }
-      }
-      return false;
+    public OperatorCouple(ComponentInstance op1, ComponentInstance op2) {
+      super(op1, op2);
     }
 
     /*
@@ -102,7 +71,7 @@ public class RoutingTable {
      */
     @Override
     public String toString() {
-      return "(" + this.op1 + "," + this.op2 + ")";
+      return "(" + this.getOp1() + "," + this.getOp2() + ")";
     }
 
     /**
@@ -111,7 +80,7 @@ public class RoutingTable {
      * @return the op 1
      */
     public ComponentInstance getOp1() {
-      return this.op1;
+      return this.getLeft();
     }
 
     /**
@@ -120,7 +89,7 @@ public class RoutingTable {
      * @return the op 2
      */
     public ComponentInstance getOp2() {
-      return this.op2;
+      return this.getRight();
     }
   }
 
@@ -130,7 +99,7 @@ public class RoutingTable {
   private class RouteComparator implements Comparator<Route> {
 
     /** The transfer size. */
-    private long transferSize = 0;
+    private final long transferSize;
 
     /**
      * Instantiates a new route comparator.
@@ -139,7 +108,6 @@ public class RoutingTable {
      *          the transfer size
      */
     public RouteComparator(final long transferSize) {
-      super();
       this.transferSize = transferSize;
     }
 
@@ -151,18 +119,13 @@ public class RoutingTable {
     @Override
     public int compare(final Route o1, final Route o2) {
       long difference = o1.evaluateTransferCost(this.transferSize) - o2.evaluateTransferCost(this.transferSize);
-      if (difference >= 0) {
-        difference = 1;
-      } else {
-        difference = -1;
-      }
       return (int) difference;
     }
 
   }
 
   /**
-   * A list of routes ordered in inverse order of transfer cosr.
+   * A list of routes ordered in inverse order of transfer cost.
    */
   private class RouteList extends ConcurrentSkipListSet<Route> {
 
@@ -186,11 +149,11 @@ public class RoutingTable {
      */
     @Override
     public String toString() {
-      String result = "|";
+      final StringBuilder sb = new StringBuilder("|");
       for (final Route r : this) {
-        result += r.toString() + "|";
+        sb.append(r.toString() + "|");
       }
-      return result;
+      return sb.toString();
     }
   }
 
@@ -222,7 +185,8 @@ public class RoutingTable {
    * @return the best route
    */
   public Route getBestRoute(final ComponentInstance op1, final ComponentInstance op2) {
-    for (final OperatorCouple c : this.table.keySet()) {
+    for (final Entry<OperatorCouple, RouteList> e : this.table.entrySet()) {
+      final OperatorCouple c = e.getKey();
       if (c.equals(new OperatorCouple(op1, op2))) {
         return this.table.get(c).first();
       }
@@ -240,8 +204,9 @@ public class RoutingTable {
    */
   public void removeRoutes(final ComponentInstance op1, final ComponentInstance op2) {
     OperatorCouple key = null;
+    final OperatorCouple route = new OperatorCouple(op1, op2);
     for (final OperatorCouple c : this.table.keySet()) {
-      if (c.equals(new OperatorCouple(op1, op2))) {
+      if (c.equals(route)) {
         key = c;
       }
     }
@@ -263,8 +228,9 @@ public class RoutingTable {
    */
   public void addRoute(final ComponentInstance op1, final ComponentInstance op2, final Route route) {
     OperatorCouple key = null;
+    final OperatorCouple opCouple = new OperatorCouple(op1, op2);
     for (final OperatorCouple c : this.table.keySet()) {
-      if (c.equals(new OperatorCouple(op1, op2))) {
+      if (c.equals(opCouple)) {
         key = c;
       }
     }
@@ -273,7 +239,7 @@ public class RoutingTable {
       list = this.table.get(key);
     } else {
       list = new RouteList(this.scenario.getSimulationManager().getAverageDataSize());
-      this.table.put(new OperatorCouple(op1, op2), list);
+      this.table.put(opCouple, list);
     }
     list.add(route);
   }
@@ -285,12 +251,12 @@ public class RoutingTable {
    */
   @Override
   public String toString() {
-    String result = "";
-    for (final OperatorCouple couple : this.table.keySet()) {
-      result += couple.toString() + " -> " + this.table.get(couple).toString() + "\n";
+    final StringBuilder sb = new StringBuilder();
+    for (final Entry<OperatorCouple, RouteList> e : this.table.entrySet()) {
+      final OperatorCouple couple = e.getKey();
+      sb.append(couple + " -> " + this.table.get(couple) + "\n");
     }
-
-    return result;
+    return sb.toString();
   }
 
 }

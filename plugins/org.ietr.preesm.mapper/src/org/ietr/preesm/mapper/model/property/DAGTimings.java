@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2012)
  *
@@ -40,7 +40,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * MapperDAG stores mapping properties shared by several of its vertices that are synchronized.
  *
@@ -49,7 +48,7 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 public class DAGTimings {
 
   /** The timings. */
-  Map<String, VertexTiming> timings = null;
+  private final Map<String, VertexTiming> timings;
 
   /**
    * Instantiates a new DAG timings.

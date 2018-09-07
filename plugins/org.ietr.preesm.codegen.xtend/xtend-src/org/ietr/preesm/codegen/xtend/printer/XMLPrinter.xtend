@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -35,22 +35,21 @@
  */
 package org.ietr.preesm.codegen.xtend.printer
 
-import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
-import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory
-import org.ietr.preesm.codegen.xtend.model.codegen.Communication
-import org.ietr.preesm.codegen.xtend.model.codegen.Constant
-import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.Direction
-import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
-import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
-import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
-import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
-import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 import java.util.List
-import java.lang.Math
-import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
+import org.ietr.preesm.codegen.model.codegen.Buffer
+import org.ietr.preesm.codegen.model.codegen.CallBlock
+import org.ietr.preesm.codegen.model.codegen.CodegenFactory
+import org.ietr.preesm.codegen.model.codegen.Communication
+import org.ietr.preesm.codegen.model.codegen.Constant
+import org.ietr.preesm.codegen.model.codegen.CoreBlock
+import org.ietr.preesm.codegen.model.codegen.Direction
+import org.ietr.preesm.codegen.model.codegen.FifoCall
+import org.ietr.preesm.codegen.model.codegen.FifoOperation
+import org.ietr.preesm.codegen.model.codegen.FunctionCall
+import org.ietr.preesm.codegen.model.codegen.LoopBlock
+import org.ietr.preesm.codegen.model.codegen.SpecialCall
+import org.ietr.preesm.codegen.model.codegen.SubBuffer
+import org.ietr.preesm.codegen.model.codegen.Variable
 
 class XMLPrinter extends DefaultPrinter {
 

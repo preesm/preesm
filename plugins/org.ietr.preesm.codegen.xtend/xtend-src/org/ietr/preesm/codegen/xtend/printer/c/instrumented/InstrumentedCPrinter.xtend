@@ -41,19 +41,19 @@ import java.util.ArrayList
 import java.util.Collection
 import java.util.LinkedHashMap
 import java.util.List
-import org.ietr.preesm.codegen.xtend.model.codegen.Block
-import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
-import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt
-import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory
-import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
-import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
-import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
-import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
-import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
-import org.ietr.preesm.codegen.xtend.model.codegen.Variable
-import org.ietr.preesm.codegen.xtend.printer.PrinterState
+import org.ietr.preesm.codegen.model.codegen.Block
+import org.ietr.preesm.codegen.model.codegen.Buffer
+import org.ietr.preesm.codegen.model.codegen.CodeElt
+import org.ietr.preesm.codegen.model.codegen.CodegenFactory
+import org.ietr.preesm.codegen.model.codegen.CoreBlock
+import org.ietr.preesm.codegen.model.codegen.FifoCall
+import org.ietr.preesm.codegen.model.codegen.FunctionCall
+import org.ietr.preesm.codegen.model.codegen.LoopBlock
+import org.ietr.preesm.codegen.model.codegen.PortDirection
+import org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication
+import org.ietr.preesm.codegen.model.codegen.SpecialCall
+import org.ietr.preesm.codegen.model.codegen.Variable
+import org.ietr.preesm.codegen.printer.PrinterState
 import org.ietr.preesm.codegen.xtend.printer.c.CPrinter
 
 /**
@@ -128,8 +128,8 @@ class InstrumentedCPrinter extends CPrinter {
 
 		for (Block block : printerBlocks) {
 			if (dumpTimedBuffer.creator === null) {
-				dumpTimedBuffer.creator = block
-				nbExec.creator = block
+				dumpTimedBuffer.reaffectCreator(block);
+				nbExec.reaffectCreator(block)
 			}
 			dumpTimedBuffer.users.add(block)
 			nbExec.users.add(block)
@@ -241,7 +241,7 @@ class InstrumentedCPrinter extends CPrinter {
 	'''
 
 	def String printInstrumentedCall(CodeElt elt, CharSequence superPrint)'''
-	«IF (state == PrinterState::PRINTING_LOOP_BLOCK) && codeEltID.get(elt) !== null»
+	«IF (getState()== PrinterState::PRINTING_LOOP_BLOCK) && codeEltID.get(elt) !== null»
 	for(idx=0; idx<*(«nbExec.doSwitch»+«codeEltID.get(elt)»); idx++){
 		«superPrint»
 	}

@@ -84,8 +84,8 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
     super(params, dag, archi, abcType, scenario);
 
     this.types = new ArrayList<>();
-    this.types.add(CommunicationRouter.transferType);
-    this.types.add(CommunicationRouter.synchroType);
+    this.types.add(CommunicationRouter.TRANSFER_TYPE);
+    this.types.add(CommunicationRouter.SYNCHRO_TYPE);
   }
 
   /**

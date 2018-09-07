@@ -44,7 +44,6 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc
 import java.util.HashMap
 import java.util.Set
-import org.ietr.preesm.mapper.abc.IAbc
 import org.ietr.preesm.mapper.model.MapperDAGVertex
 import org.ietr.preesm.mapper.model.MapperDAGEdge
 import java.util.HashSet

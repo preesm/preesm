@@ -43,7 +43,6 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.activator.Activator;
 
@@ -55,7 +54,7 @@ import org.ietr.preesm.mapper.activator.Activator;
 public class StatEditorInput implements IEditorInput {
 
   /** The abc. */
-  private IAbc abc = null;
+  private LatencyAbc abc = null;
 
   /** The scenario. */
   private PreesmScenario scenario = null;
@@ -73,7 +72,7 @@ public class StatEditorInput implements IEditorInput {
    * @param params
    *          the params
    */
-  public StatEditorInput(final IAbc abc, final PreesmScenario scenario, final Map<String, String> params) {
+  public StatEditorInput(final LatencyAbc abc, final PreesmScenario scenario, final Map<String, String> params) {
     super();
     this.abc = abc;
     this.params = params;
@@ -103,7 +102,7 @@ public class StatEditorInput implements IEditorInput {
    *
    * @return the abc
    */
-  public IAbc getAbc() {
+  public LatencyAbc getAbc() {
     return this.abc;
   }
 
@@ -113,7 +112,7 @@ public class StatEditorInput implements IEditorInput {
    * @param abc
    *          the new abc
    */
-  public void setAbc(final IAbc abc) {
+  public void setAbc(final LatencyAbc abc) {
     this.abc = abc;
   }
 

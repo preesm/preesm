@@ -44,18 +44,20 @@ import java.util.Iterator;
 import org.ietr.dftools.algorithm.exporter.GMLExporter;
 import org.ietr.dftools.algorithm.exporter.Key;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
+import org.ietr.dftools.algorithm.model.PropertyBean;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.architecture.slam.attributes.Parameter;
 import org.ietr.dftools.architecture.slam.impl.ComponentInstanceImpl;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
+import org.ietr.preesm.mapper.PreesmMapperException;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.mapper.model.property.VertexInit;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 import org.w3c.dom.Element;
 
-// TODO: Auto-generated Javadoc
 /**
  * Exporter for the mapper DAG graph that represents the implementation. The attributes contain every information on the
  * deployment. It should not be displayed right away by Graphiti and its purpose is to be transformed into another
@@ -81,9 +83,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
    */
   @Override
   protected Element exportEdge(final DAGEdge edge, final Element parentELement) {
-    final Element edgeElt = createEdge(parentELement, edge.getSource().getId(), edge.getTarget().getId());
-    // exportKeys(edge, "edge", edgeElt);
-    return edgeElt;
+    return createEdge(parentELement, edge.getSource().getId(), edge.getTarget().getId());
   }
 
   /*
@@ -109,9 +109,8 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
       return graphElt;
 
     } catch (final Exception e) {
-      e.printStackTrace();
+      throw new PreesmMapperException("Could not export graph", e);
     }
-    return null;
   }
 
   /*
@@ -123,28 +122,30 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
   @Override
   protected Element exportNode(final DAGVertex vertex, final Element parentELement) {
     // Pre modification for xml export
-    if (vertex.getPropertyBean().getValue("originalId") != null) {
-      if (vertex instanceof MapperDAGVertex) {
-        ((MapperDAGVertex) vertex).getInit().getParentVertex()
-            .setId(vertex.getPropertyBean().getValue("originalId").toString());
-      }
+    final PropertyBean vtxBeans = vertex.getPropertyBean();
+    if (vtxBeans.getValue("originalId") != null && vertex instanceof MapperDAGVertex) {
+      final MapperDAGVertex mapperDagVtx = (MapperDAGVertex) vertex;
+      final VertexInit init = mapperDagVtx.getInit();
+      final MapperDAGVertex parentVertex = init.getParentVertex();
+      parentVertex.setId(vtxBeans.getValue("originalId").toString());
     }
 
-    vertex.setKind(vertex.getPropertyBean().getValue("vertexType").toString());
+    final String vtxType = vtxBeans.getValue(ImplementationPropertyNames.Vertex_vertexType).toString();
+    vertex.setKind(vtxType);
 
     final Element vertexElt = createNode(parentELement, vertex.getId());
     exportKeys(vertex, "vertex", vertexElt);
 
     if (vertex instanceof TransferVertex) {
       // Adding route step to the node
-      final AbstractRouteStep routeStep = (AbstractRouteStep) vertex.getPropertyBean()
+      final AbstractRouteStep routeStep = (AbstractRouteStep) vtxBeans
           .getValue(ImplementationPropertyNames.SendReceive_routeStep);
       // Add the Operator_address key
       if (routeStep != null) {
         String memAddress = null;
         final Element operatorAdress = this.domDocument.createElement("data");
-        final Iterator<Parameter> iter = ((ComponentInstanceImpl) vertex.getPropertyBean().getValue("Operator"))
-            .getParameters().iterator();
+        final Iterator<
+            Parameter> iter = ((ComponentInstanceImpl) vtxBeans.getValue("Operator")).getParameters().iterator();
         while (iter.hasNext()) {
           final Parameter param = iter.next();
           if (param.getKey().equals("memoryAddress")) {
@@ -204,7 +205,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
       exportGraph(graph);
       transform(new FileOutputStream(path));
     } catch (final FileNotFoundException e) {
-      e.printStackTrace();
+      throw new PreesmMapperException("could not export implementation", e);
     }
   }
 

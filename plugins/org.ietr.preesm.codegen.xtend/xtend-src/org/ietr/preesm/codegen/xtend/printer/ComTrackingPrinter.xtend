@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2013)
  *
@@ -36,10 +36,11 @@
  */
 package org.ietr.preesm.codegen.xtend.printer
 
-import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter
-import org.ietr.preesm.codegen.xtend.model.codegen.Direction
-import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
+import org.ietr.preesm.codegen.model.codegen.CoreBlock
+import org.ietr.preesm.codegen.model.codegen.Delimiter
+import org.ietr.preesm.codegen.model.codegen.Direction
+import org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication
+import org.ietr.preesm.codegen.printer.CodegenAbstractPrinter
 
 /**
  * This {@link ComTrackingPrinter} is a dummy implementation of the

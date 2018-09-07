@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -35,9 +35,9 @@
 package org.ietr.preesm.codegen.xtend.test;
 
 import org.eclipse.emf.common.util.EList;
-import org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock;
-import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt;
-import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory;
+import org.ietr.preesm.codegen.model.codegen.ActorBlock;
+import org.ietr.preesm.codegen.model.codegen.CodeElt;
+import org.ietr.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -47,7 +47,7 @@ public class ActorBlockTest {
 
   @Test
   public void testConstruct() {
-    final ActorBlock actor = CodegenFactory.eINSTANCE.createActorBlock();
+    final ActorBlock actor = CodegenModelUserFactory.createActorBlock();
     Assert.assertNotNull(actor);
     final EList<CodeElt> codeElts = actor.getCodeElts();
     Assert.assertNotNull(codeElts);

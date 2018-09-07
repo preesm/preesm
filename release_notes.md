@@ -1,6 +1,21 @@
 PREESM Changelog
 ================
 
+## Release version 2.14.1
+*2018.09.07*
+
+### New Feature
+
+### Changes
+* Update Eclipse-EMF maven repo URL;
+* Update release scripts;
+* Move XCore maven config to parent pom;
+* Refactor scheduler;
+* Move Codegen model and convert it from ECore to XCore;
+
+### Bug fix
+* fix issue #69;
+
 ## Release version 2.14.0
 *2018.09.03*
 

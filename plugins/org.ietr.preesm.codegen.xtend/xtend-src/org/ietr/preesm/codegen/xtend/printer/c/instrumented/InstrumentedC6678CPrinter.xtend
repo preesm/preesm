@@ -39,24 +39,24 @@ import java.util.Collection
 import java.util.Date
 import java.util.LinkedHashSet
 import java.util.List
-import org.ietr.preesm.codegen.xtend.model.codegen.Block
-import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
-import org.ietr.preesm.codegen.xtend.model.codegen.Call
-import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt
-import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory
-import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter
-import org.ietr.preesm.codegen.xtend.model.codegen.Direction
-import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
-import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
-import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
-import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
-import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
-import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
-import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
-import org.ietr.preesm.codegen.xtend.model.codegen.Variable
+import org.ietr.preesm.codegen.model.codegen.Block
+import org.ietr.preesm.codegen.model.codegen.Buffer
+import org.ietr.preesm.codegen.model.codegen.Call
+import org.ietr.preesm.codegen.model.codegen.CallBlock
+import org.ietr.preesm.codegen.model.codegen.CodeElt
+import org.ietr.preesm.codegen.model.codegen.CodegenFactory
+import org.ietr.preesm.codegen.model.codegen.CoreBlock
+import org.ietr.preesm.codegen.model.codegen.Delimiter
+import org.ietr.preesm.codegen.model.codegen.Direction
+import org.ietr.preesm.codegen.model.codegen.FifoCall
+import org.ietr.preesm.codegen.model.codegen.FifoOperation
+import org.ietr.preesm.codegen.model.codegen.FunctionCall
+import org.ietr.preesm.codegen.model.codegen.LoopBlock
+import org.ietr.preesm.codegen.model.codegen.NullBuffer
+import org.ietr.preesm.codegen.model.codegen.PortDirection
+import org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication
+import org.ietr.preesm.codegen.model.codegen.SpecialCall
+import org.ietr.preesm.codegen.model.codegen.Variable
 
 class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 

@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Preesm S-LAM Tools
 Automatic-Module-Name: org.ietr.preesm.architecture
 Bundle-SymbolicName: org.ietr.preesm.architecture;singleton:=true
-Bundle-Version: 2.14.0
+Bundle-Version: 2.14.1
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.core.runtime,
  org.ietr.preesm.experiment.model

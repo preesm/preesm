@@ -119,8 +119,6 @@ public class ForkJoinRemover {
     // non-task vertices
 
     for (final SDFAbstractVertex vert : sdfVertices) {
-      // boolean isTask = vert.getPropertyBean().getValue("vertexType")
-      // .toString().equals("task");
       String vertKind = "";
 
       // Only task vertices have a kind
@@ -154,16 +152,6 @@ public class ForkJoinRemover {
             // outgoing edge and a explode vertex only has 1
             // incoming edge.
 
-            // // Check that the edge is linked to a task (we do
-            // // not
-            // // consider edges linked to send/receive)
-            // if (incomingEdge.getSource().getPropertyBean()
-            // .getValue("vertexType").toString()
-            // .equals("task")
-            // && outgoingEdge.getTarget().getPropertyBean()
-            // .getValue("vertexType").toString()
-            // .equals("task")) {
-
             // Select the edges whose properties must be
             // copied to the new edge
             SDFEdge edge;
@@ -180,7 +168,6 @@ public class ForkJoinRemover {
             newEdge.setTargetInterface(outgoingEdge.getTargetInterface());
             newEdge.setSourceInterface(incomingEdge.getSourceInterface());
 
-            // }
           }
         }
         nonTaskVertices.add(vert);
@@ -188,7 +175,6 @@ public class ForkJoinRemover {
         // Remove the vertex from the graph
         hsdf.removeVertex(vert);
       } else if ((vert instanceof SDFBroadcastVertex) && !(vert instanceof SDFRoundBufferVertex)) {
-        // WorkflowLogger.getLogger().log(Level.SEVERE, "BROADCAST");
 
         // If the broadcast follows an implosion duplicate the broadcast
         final Set<SDFEdge> incomingEdges = vert.getBase().incomingEdgesOf(vert);

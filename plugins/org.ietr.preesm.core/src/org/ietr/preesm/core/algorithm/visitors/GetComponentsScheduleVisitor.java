@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
  *
@@ -40,14 +40,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.ietr.dftools.algorithm.model.PropertyBean;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
+import org.ietr.preesm.core.types.ImplementationPropertyNames;
+import org.ietr.preesm.core.types.VertexType;
 
-// TODO: Auto-generated Javadoc
 /**
  * Visitor to retrieve the schedule of each component of a mapped Directed Acyclic Graph.
  *
@@ -56,13 +58,13 @@ import org.ietr.dftools.architecture.slam.ComponentInstance;
 public class GetComponentsScheduleVisitor implements IGraphVisitor<DirectedAcyclicGraph, DAGVertex, DAGEdge> {
 
   /** The components schedule. */
-  protected Map<ComponentInstance, ArrayList<DAGVertex>> _componentsSchedule;
+  protected Map<ComponentInstance, ArrayList<DAGVertex>> componentsSchedule;
 
   /**
    * Constructor of the GetComponentsScheduleVisitor.
    */
   public GetComponentsScheduleVisitor() {
-    this._componentsSchedule = new LinkedHashMap<>();
+    this.componentsSchedule = new LinkedHashMap<>();
   }
 
   /**
@@ -71,7 +73,7 @@ public class GetComponentsScheduleVisitor implements IGraphVisitor<DirectedAcycl
    * @return An LinkedHashMap containing the schedule of each component of the DAG
    */
   public Map<ComponentInstance, ArrayList<DAGVertex>> getResult() {
-    return this._componentsSchedule;
+    return this.componentsSchedule;
   }
 
   /*
@@ -108,17 +110,19 @@ public class GetComponentsScheduleVisitor implements IGraphVisitor<DirectedAcycl
   @Override
   public void visit(final DAGVertex dagVertex) throws SDF4JException {
     // We only add "task" vertices to schedules
-    if (dagVertex.getPropertyBean().getValue("vertexType").toString().equals("task")) {
+    final PropertyBean vertexBeans = dagVertex.getPropertyBean();
+    final String vtxType = vertexBeans.getValue(ImplementationPropertyNames.Vertex_vertexType).toString();
+    if (VertexType.TYPE_TASK.equals(vtxType)) {
       // Retrieve the component on which the vertex is mapped
-      final ComponentInstance component = (ComponentInstance) dagVertex.getPropertyBean().getValue("Operator");
+      final ComponentInstance component = (ComponentInstance) vertexBeans.getValue("Operator");
       if (component != null) {
         // If a component was retrieved, add the current vertex
         // to the schedule of this component.
-        ArrayList<DAGVertex> schedule = this._componentsSchedule.get(component);
+        ArrayList<DAGVertex> schedule = this.componentsSchedule.get(component);
         // If the component had no existing schedule, create one
         if (schedule == null) {
           schedule = new ArrayList<>();
-          this._componentsSchedule.put(component, schedule);
+          this.componentsSchedule.put(component, schedule);
         }
         schedule.add(dagVertex);
       }

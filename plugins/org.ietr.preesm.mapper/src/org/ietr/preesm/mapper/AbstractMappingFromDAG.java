@@ -53,11 +53,12 @@ import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
+import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.SpanLengthCalculator;
 import org.ietr.preesm.mapper.abc.route.calcul.RouteCalculator;
 import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
+import org.ietr.preesm.mapper.abc.taskscheduling.TaskSchedType;
 import org.ietr.preesm.mapper.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.mapper.algo.list.InitialLists;
 import org.ietr.preesm.mapper.checker.CommunicationOrderChecker;
@@ -111,12 +112,14 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
 
     final AbcParameters abcParams = new AbcParameters(parameters);
 
+    final MapperDAG clonedDag = dag.clone();
+
     // calculates the DAG span length on the architecture main operator (the
     // tasks that can not be executed by the main operator are deported
     // without transfer time to other operator)
-    calculateSpan(dag, architecture, scenario, abcParams);
+    calculateSpan(clonedDag, architecture, scenario, abcParams);
 
-    final IAbc simu = new InfiniteHomogeneousAbc(abcParams, dag, architecture,
+    final LatencyAbc simu = new InfiniteHomogeneousAbc(abcParams, dag, architecture,
         abcParams.getSimulatorType().getTaskSchedType(), scenario);
 
     final InitialLists initial = new InitialLists();
@@ -131,7 +134,8 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
       final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
       simu.resetDAG();
 
-      final IAbc resSimu = schedule(outputs, parameters, initial, scenario, abcParams, dag, architecture, taskSched);
+      final LatencyAbc resSimu = schedule(outputs, parameters, initial, scenario, abcParams, dag, architecture,
+          taskSched);
 
       final MapperDAG resDag = resSimu.getDAG();
       final TagDAG tagSDF = new TagDAG();
@@ -143,16 +147,16 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
       }
 
       outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, resSimu);
-      outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, resDag);
+      outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
 
-      clean(architecture, scenario);
+      clean(architecture);
       removeRedundantSynchronization(parameters, dag);
       checkSchedulingResult(parameters, resDag);
     }
     return outputs;
   }
 
-  protected abstract IAbc schedule(final Map<String, Object> outputs, Map<String, String> parameters,
+  protected abstract LatencyAbc schedule(final Map<String, Object> outputs, Map<String, String> parameters,
       InitialLists initial, PreesmScenario scenario, AbcParameters abcParams, MapperDAG dag, Design architecture,
       AbstractTaskSched taskSched);
 
@@ -191,9 +195,9 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
    * @param scenario
    *          the scenario
    */
-  protected void clean(final Design architecture, final PreesmScenario scenario) {
+  protected void clean(final Design architecture) {
     // Asking to delete route
-    RouteCalculator.deleteRoutes(architecture, scenario);
+    RouteCalculator.deleteRoutes(architecture);
   }
 
   /**
@@ -242,11 +246,9 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
    *           the workflow exception
    */
   protected void calculateSpan(final MapperDAG dag, final Design archi, final PreesmScenario scenario,
-      final AbcParameters parameters) throws WorkflowException {
-
-    final SpanLengthCalculator spanCalc = new SpanLengthCalculator(parameters, dag, archi,
-        parameters.getSimulatorType().getTaskSchedType(), scenario);
+      final AbcParameters parameters) {
+    final TaskSchedType taskSchedType = parameters.getSimulatorType().getTaskSchedType();
+    final SpanLengthCalculator spanCalc = new SpanLengthCalculator(parameters, dag, archi, taskSchedType, scenario);
     spanCalc.resetDAG();
-
   }
 }

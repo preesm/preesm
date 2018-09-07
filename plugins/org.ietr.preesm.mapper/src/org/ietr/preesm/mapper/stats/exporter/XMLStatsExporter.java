@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -42,13 +42,13 @@ import java.util.Set;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.architecture.util.DesignTools;
-import org.ietr.preesm.mapper.abc.IAbc;
+import org.ietr.preesm.mapper.PreesmMapperException;
+import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.gantt.GanttComponent;
 import org.ietr.preesm.mapper.gantt.GanttData;
 import org.ietr.preesm.mapper.gantt.GanttTask;
 import org.ietr.preesm.mapper.ui.stats.StatGenerator;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class exports stats from an IAbc (architecture benchmark computer) in XML format.
  *
@@ -69,7 +69,7 @@ public class XMLStatsExporter {
   private static final String NLT = "\n\t";
 
   /** The result. */
-  private final StringBuffer result = new StringBuffer();
+  private final StringBuilder result = new StringBuilder();
 
   /**
    * Append.
@@ -89,15 +89,14 @@ public class XMLStatsExporter {
    * @param file
    *          the file
    */
-  public void exportXMLStats(final IAbc abc, final File file) {
+  public void exportXMLStats(final LatencyAbc abc, final File file) {
     // Generate the stats to write in an xml file
     final String content = generateXMLStats(abc);
     // Write the file
-    ;
     try (FileWriter out = new FileWriter(file)) {
       out.write(content);
     } catch (final IOException e) {
-      e.printStackTrace();
+      throw new PreesmMapperException("Could not export stats", e);
     }
   }
 
@@ -108,7 +107,7 @@ public class XMLStatsExporter {
    *          the IAbc containing the scheduling of each task
    * @return a String containing the stats at an xml format
    */
-  public String generateXMLStats(final IAbc abc) {
+  public String generateXMLStats(final LatencyAbc abc) {
     append(XMLStatsExporter.NL + "<data>");
     // Generate scheduling stats (when and on which core a given task is
     // executed)
@@ -127,7 +126,7 @@ public class XMLStatsExporter {
    * @param abc
    *          the abc
    */
-  private void generatePerformanceStats(final IAbc abc) {
+  private void generatePerformanceStats(final LatencyAbc abc) {
     // Starting the performace stats
     final StatGenerator statGen = new StatGenerator(abc, abc.getScenario(), null);
     append(XMLStatsExporter.NLT + "<perfs>");
@@ -136,7 +135,7 @@ public class XMLStatsExporter {
     try {
       append(statGen.getDAGWorkLength());
     } catch (final WorkflowException e) {
-      e.printStackTrace();
+      throw new PreesmMapperException("Could not generate perf stats.", e);
     }
     append("\"");
     // Span length

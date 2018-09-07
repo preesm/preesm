@@ -64,7 +64,6 @@ import org.ietr.preesm.core.types.ImplementationPropertyNames
 import org.ietr.preesm.experiment.model.pimm.Actor
 import org.ietr.preesm.experiment.model.pimm.PiGraph
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser
-import org.ietr.preesm.mapper.abc.IAbc
 import org.ietr.preesm.mapper.abc.SpecialVertexManager
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc
 import org.ietr.preesm.mapper.model.MapperDAGEdge
