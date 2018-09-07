@@ -59,6 +59,7 @@ import org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.model.codegen.Variable
+import org.ietr.preesm.codegen.printer.CodegenAbstractPrinter
 
 /**
  * This {@link DevelopperPrinter} is a dummy implementation of the

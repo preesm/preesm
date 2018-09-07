@@ -53,7 +53,7 @@ import org.ietr.preesm.codegen.model.codegen.PortDirection
 import org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.model.codegen.Variable
-import org.ietr.preesm.codegen.xtend.printer.PrinterState
+import org.ietr.preesm.codegen.printer.PrinterState
 import org.ietr.preesm.codegen.xtend.printer.c.CPrinter
 
 /**
@@ -241,7 +241,7 @@ class InstrumentedCPrinter extends CPrinter {
 	'''
 
 	def String printInstrumentedCall(CodeElt elt, CharSequence superPrint)'''
-	«IF (state == PrinterState::PRINTING_LOOP_BLOCK) && codeEltID.get(elt) !== null»
+	«IF (getState()== PrinterState::PRINTING_LOOP_BLOCK) && codeEltID.get(elt) !== null»
 	for(idx=0; idx<*(«nbExec.doSwitch»+«codeEltID.get(elt)»); idx++){
 		«superPrint»
 	}
