@@ -526,7 +526,8 @@ public class PiMMSRVerticesLinker {
     if (this.delays != 0) {
       // 0. Create the delay actor
       final DelayActor init = PiMMUserFactory.instance.createDelayActor();
-      init.setName(vertexSinkSet.get(0).getName() + "_init_" + this.sinkPort.getName());
+      this.delayInitID = vertexSinkSet.get(0).getName() + "_init_" + this.sinkPort.getName();
+      init.setName(delayInitID);
       // 2. Add the init actor to the graph
       vertexSinkSet.get(0).getContainingPiGraph().addActor(init);
       // 3. Add an entry in the sourceSet
@@ -536,9 +537,6 @@ public class PiMMSRVerticesLinker {
     if (this.source instanceof InterfaceActor) {
       // If source is an InterfaceActor, then we have a broadcast
       final long sinkRV = vertexSinkSet.size();
-      // for (int i = 0; i < sinkRV; ++i) {
-      // sourceSet.add(new SourceConnection(vertexSourceSet.get(0), this.sinkConsumption, this.sourcePort.getName()));
-      // }
       sourceSet
           .add(new SourceConnection(vertexSourceSet.get(0), this.sinkConsumption * sinkRV, this.sourcePort.getName()));
     } else if (this.source instanceof AbstractActor) {
@@ -571,9 +569,6 @@ public class PiMMSRVerticesLinker {
     if (this.sink instanceof InterfaceActor) {
       // If sink is an InterfaceActor, then we have a roundbuffer
       final long sourceRV = vertexSourceSet.size();
-      // for (int i = 0; i < sourceRV; ++i) {
-      // sinkSet.add(new SinkConnection(vertexSinkSet.get(0), this.sourceProduction, this.sinkPort.getName()));
-      // }
       sinkSet.add(new SinkConnection(vertexSinkSet.get(0), this.sourceProduction * sourceRV, this.sinkPort.getName()));
     } else if (this.sink instanceof AbstractActor) {
       // Add the list of the SR-DAG vertex associated with the source
@@ -587,6 +582,12 @@ public class PiMMSRVerticesLinker {
       // 0. Create the delay actor
       final DelayActor end = PiMMUserFactory.instance.createDelayActor();
       end.setName(vertexSinkSet.get(vertexSinkSet.size() - 1).getName() + "_end_" + this.sourcePort.getName());
+      // 1. We set the persistence info and delayInitID for END_REFERENCE using the unused port
+      // farresti: YEAH, I KNOW. This is ugly as fuck but well, it works..
+      final DataOutputPort dop = PiMMUserFactory.instance.createDataOutputPort();
+      dop.setName(this.delayInitID);
+      dop.getPortRateExpression().setExpressionString(this.fifo.getDelay().getLevel().getLiteral());
+      end.getDataOutputPorts().add(dop);
       // 2. Add the end actor to the graph
       vertexSinkSet.get(0).getContainingPiGraph().addActor(end);
       // 3. Add an entry in the sinkSet

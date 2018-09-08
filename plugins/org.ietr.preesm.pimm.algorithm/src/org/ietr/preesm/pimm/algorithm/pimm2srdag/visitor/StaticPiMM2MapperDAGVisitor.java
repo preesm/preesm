@@ -86,6 +86,7 @@ import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.PersistenceLevel;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -368,7 +369,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseDelayActor(final DelayActor actor) {
     // 0. Check if it is an init or an end actor
-    final boolean isInit = !actor.getDataOutputPorts().isEmpty();
+    final boolean isInit = actor.getDataInputPorts() == null || actor.getDataInputPorts().isEmpty();
     final DAGVertex vertex;
     if (isInit) {
       // Create the init vertex
@@ -381,17 +382,25 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
       // Create the end vertex
       vertex = vertexFactory.createVertex(DAGEndVertex.DAG_END_VERTEX);
     }
-    // Handle the END_REFERENCE property
-    // final DAGVertex initVertex = this.dag.getVertex(this.delayInitID);
-    // if (initVertex != null) {
-    // initVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, endVertex.getName());
-    // endVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, initVertex.getName());
-    // }
 
     vertex.setId(actor.getName());
     vertex.setName(actor.getName());
     vertex.setInfo(actor.getName());
     vertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
+
+    if (!isInit) {
+      final String delayInitID = actor.getDataOutputPort().getName();
+      // Handle the END_REFERENCE property
+      final DAGVertex initVertex = this.result.getVertex(delayInitID);
+      if (initVertex != null) {
+        initVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, vertex.getName());
+        vertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, initVertex.getName());
+        // Set the PERSISTENCE_LEVEL property
+        final String delayPersistenceLevel = actor.getDataOutputPort().getPortRateExpression().getExpressionString();
+        initVertex.setPropertyValue(DAGInitVertex.PERSISTENCE_LEVEL, PersistenceLevel.getByName(delayPersistenceLevel));
+      }
+    }
+
     // Add the vertex to the DAG
     this.result.addVertex(vertex);
     return true;
