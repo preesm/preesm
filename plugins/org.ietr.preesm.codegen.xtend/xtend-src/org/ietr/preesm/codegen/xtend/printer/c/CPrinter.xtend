@@ -392,6 +392,10 @@ class CPrinter extends DefaultPrinter {
 		#include <unistd.h>
 		#endif
 
+		#ifdef __APPLE__
+		#include "TargetConditionals.h"
+		#endif
+
 		#include <pthread.h>
 		#include <stdio.h>
 
@@ -420,19 +424,26 @@ class CPrinter extends DefaultPrinter {
 			unsigned int numCPU = sysconf(_SC_NPROCESSORS_ONLN);
 		#endif
 
-			// init pthread attributes with affinity
+			// init pthread attributes
 			pthread_attr_t attr;
 			pthread_attr_init(&attr);
+
+			// check CPU id is valid
 			if (core_id >= numCPU) {
 				// leave attribute uninitialized
 				printf("** Warning: thread %d will not be set with specific core affinity \n   due to the lack of available dedicated cores.\n",core_id);
 			} else {
-				// check CPU id is valid
+		#ifdef __APPLE__
+
+		#else
 				// init cpuset struct
 				cpu_set_t cpuset;
 				CPU_ZERO(&cpuset);
 				CPU_SET(core_id, &cpuset);
+
+				// set pthread affinity
 				pthread_attr_setaffinity_np(&attr, sizeof(cpuset), &cpuset);
+		#endif
 			}
 
 			// create thread
