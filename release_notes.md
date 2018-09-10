@@ -1,6 +1,17 @@
 PREESM Changelog
 ================
 
+## Release version 2.14.2
+*2018.09.10*
+
+### New Feature
+
+### Changes
+* Add MacOSX comptabile icon;
+
+### Bug fix
+
+
 ## Release version 2.14.1
 *2018.09.07*
 
