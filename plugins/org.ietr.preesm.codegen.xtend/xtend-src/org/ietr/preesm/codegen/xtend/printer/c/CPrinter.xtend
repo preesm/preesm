@@ -396,6 +396,7 @@ class CPrinter extends DefaultPrinter {
 		#include <stdio.h>
 
 		#define _PREESM_NBTHREADS_ «printerBlocks.size»
+		#define _PREESM_MAIN_THREAD_ «engine.scenario.orderedOperatorIds.indexOf(engine.scenario.simulationManager.mainOperatorName)»
 
 		// application dependent includes
 		#include "preesm.h"
