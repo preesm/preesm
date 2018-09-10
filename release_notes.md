@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Add MacOSX comptabile icon;
 
 ### Bug fix
 
