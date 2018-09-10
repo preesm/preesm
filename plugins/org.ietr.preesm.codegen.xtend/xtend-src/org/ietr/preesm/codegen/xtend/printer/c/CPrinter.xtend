@@ -464,15 +464,22 @@ class CPrinter extends DefaultPrinter {
 
 			// Creating threads
 			for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
-				if(launch(i,&coreThreads[i],coreThreadComputations[i])) {
-					printf("Error: could not launch thread %d\n",i);
-					return 1;
+				if (i != _PREESM_MAIN_THREAD_) {
+					if(launch(i,&coreThreads[i],coreThreadComputations[i])) {
+						printf("Error: could not launch thread %d\n",i);
+						return 1;
+					}
 				}
 			}
 
+			// run main operator code in this thread
+			coreThreadComputations[_PREESM_MAIN_THREAD_](NULL);
+
 			// Waiting for thread terminations
 			for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
-				pthread_join(coreThreads[i], NULL);
+				if (i != _PREESM_MAIN_THREAD_) {
+					pthread_join(coreThreads[i], NULL);
+				}
 			}
 			#ifdef _PREESM_MONITOR_INIT
 			event_destroy();
