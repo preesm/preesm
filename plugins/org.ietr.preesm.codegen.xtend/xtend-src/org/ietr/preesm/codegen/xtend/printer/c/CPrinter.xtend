@@ -434,7 +434,7 @@ class CPrinter extends DefaultPrinter {
 				printf("** Warning: thread %d will not be set with specific core affinity \n   due to the lack of available dedicated cores.\n",core_id);
 			} else {
 		#ifdef __APPLE__
-
+				// NOT SUPPORTED
 		#else
 				// init cpuset struct
 				cpu_set_t cpuset;
