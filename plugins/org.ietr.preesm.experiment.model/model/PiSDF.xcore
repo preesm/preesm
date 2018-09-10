@@ -211,6 +211,10 @@ class PiGraph extends AbstractActor, Graph {
 		vertices.remove(delay)
 	}
 
+	op unique boolean removeFifo(Fifo fifo) {
+		edges.remove(fifo)
+	}
+
 	op unique Parameter[] getOnlyParameters(){
 		return parameters.filter(it | !((it instanceof ConfigInputInterface) || (it instanceof ConfigOutputInterface) )).toEList.unmodifiableView
 	}
