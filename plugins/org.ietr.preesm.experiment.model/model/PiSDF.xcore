@@ -210,6 +210,10 @@ class PiGraph extends AbstractActor, Graph {
 		removeActor(delay.actor)
 		vertices.remove(delay)
 	}
+	
+	op unique boolean removeFifo(Fifo fifo) {
+		edges.remove(fifo)
+	}
 
 	op unique boolean removeFifo(Fifo fifo) {
 		edges.remove(fifo)
