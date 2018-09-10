@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Add helper method PiGraph.removeFifo(Fifo);
 
 ### Bug fix
 
