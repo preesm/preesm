@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Preesm" uid="org.ietr.preesm.product" id="org.ietr.preesm.rcp.utils.product" application="org.eclipse.ui.ide.workbench" version="2.14.1.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Preesm" uid="org.ietr.preesm.product" id="org.ietr.preesm.rcp.utils.product" application="org.eclipse.ui.ide.workbench" version="2.14.2" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/org.ietr.preesm.rcp.utils/icons/preesmLogo_48x48.png"/>

@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Preesm UI :: SDF
 Automatic-Module-Name: org.ietr.preesm.ui.sdf
 Bundle-SymbolicName: org.ietr.preesm.ui.sdf;singleton:=true
-Bundle-Version: 2.14.1.qualifier
+Bundle-Version: 2.14.2
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
  org.eclipse.ui.editors,
