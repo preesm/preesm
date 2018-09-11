@@ -68,7 +68,6 @@ void handler(int sig) {
 }
 
 // kept for compatibility
-pthread_barrier_t iter_barrier;
 int stopThreads;
 
 void actualThreadComputations(int processingElementID) {
