@@ -9,6 +9,8 @@ PREESM Changelog
 ### Changes
 * Add helper method PiGraph.removeFifo(Fifo);
 * Have the main operator thread execute in main thread;
+  * for default C code generation;
+  * for tcp codegen;
 
 ### Bug fix
 

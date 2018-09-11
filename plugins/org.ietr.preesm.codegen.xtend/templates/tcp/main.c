@@ -47,6 +47,7 @@
 
 #[[#]]#define PREESM_COM_PORT 25400
 #[[#]]#define _PREESM_NBTHREADS_ $PREESM_NBTHREADS
+#[[#]]#define _PREESM_MAIN_THREAD_ $PREESM_MAIN_THREAD
 
 ProcessingElement registry[_PREESM_NBTHREADS_];
 
@@ -144,14 +145,20 @@ int main(int argc, char** argv) {
     pthread_t threads[_PREESM_NBTHREADS_];
     int threadArguments[_PREESM_NBTHREADS_];
     for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
-      threadArguments[i] = i;
+      if (i != _PREESM_MAIN_THREAD_) {
+        threadArguments[i] = i;
 #[[#]]#ifdef _PREESM_TCP_DEBUG_
-  printf("[TCP-DEBUG] Launching %d\n", i);
+        printf("[TCP-DEBUG] Launching %d\n", i);
 #[[#]]#endif
-      pthread_create(&threads[i], NULL, threadComputations, &(threadArguments[i]));
+        pthread_create(&threads[i], NULL, threadComputations, &(threadArguments[i]));
+      }
     }
+    threadArguments[_PREESM_MAIN_THREAD_] = _PREESM_MAIN_THREAD_;
+    threadComputations(&(threadArguments[_PREESM_MAIN_THREAD_]));
     for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
-      pthread_join(threads[i], NULL);
+      if (i != _PREESM_MAIN_THREAD_) {
+        pthread_join(threads[i], NULL);
+      }
     }
   }
   return 0;

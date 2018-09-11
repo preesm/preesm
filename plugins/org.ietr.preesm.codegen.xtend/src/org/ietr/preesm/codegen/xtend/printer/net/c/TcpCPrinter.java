@@ -166,6 +166,10 @@ public class TcpCPrinter extends CPrinter {
     context.put("PREESM_PRINTER", this.getClass().getSimpleName());
     context.put("PREESM_NBTHREADS", printerBlocks.size());
 
+    final String mainOperatorName = getEngine().getScenario().getSimulationManager().getMainOperatorName();
+    final int mainThreadID = getEngine().getScenario().getOrderedOperatorIds().indexOf(mainOperatorName);
+    context.put("PREESM_MAIN_THREAD", mainThreadID);
+
     final List<String> threadFunctionNames = IntStream.range(0, printerBlocks.size())
         .mapToObj(i -> String.format("computationThread_Core%d", i)).collect(Collectors.toList());
 
