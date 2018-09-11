@@ -40,6 +40,7 @@ PREESM Changelog
 
 ### Bug fix
 * fix issue #69;
+* fix issue #71;
 
 ## Release version 2.14.0
 *2018.09.03*
