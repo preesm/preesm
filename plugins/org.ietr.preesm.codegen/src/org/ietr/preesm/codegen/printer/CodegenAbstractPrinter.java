@@ -290,6 +290,11 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   public abstract Map<String, CharSequence> createSecondaryFiles(List<Block> printerBlocks,
       Collection<Block> allBlocks);
 
+  /**
+   *
+   */
+  public abstract Map<String, CharSequence> generateStandardLibFiles();
+
   @Override
   public CharSequence defaultCase(final EObject object) {
     throw new CodegenException("Object " + object + " is not supported by the printer " + this);

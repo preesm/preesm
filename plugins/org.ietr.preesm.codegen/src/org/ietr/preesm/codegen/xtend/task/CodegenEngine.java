@@ -311,12 +311,17 @@ public class CodegenEngine {
       }
 
       // Print secondary files
-      final Set<Entry<String, CharSequence>> secondaryFiles = printer
-          .createSecondaryFiles(printerAndBlocks.getValue(), this.codeBlocks).entrySet();
-      for (final Entry<String, CharSequence> entry : secondaryFiles) {
+      final Map<String, CharSequence> createSecondaryFiles = printer.createSecondaryFiles(printerAndBlocks.getValue(),
+          this.codeBlocks);
+      for (final Entry<String, CharSequence> entry : createSecondaryFiles.entrySet()) {
         print(entry.getKey(), entry.getValue());
       }
 
+      // Add standard files for this printer
+      final Map<String, CharSequence> generateStandardLibFiles = printer.generateStandardLibFiles();
+      for (final Entry<String, CharSequence> entry : generateStandardLibFiles.entrySet()) {
+        print(entry.getKey(), entry.getValue());
+      }
     }
   }
 

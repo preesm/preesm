@@ -67,6 +67,8 @@ import org.ietr.preesm.codegen.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.model.codegen.Variable
 import org.ietr.preesm.codegen.xtend.printer.DefaultPrinter
 import org.ietr.preesm.codegen.xtend.task.CodegenException
+import org.ietr.preesm.utils.files.URLResolver
+import org.ietr.preesm.codegen.xtend.CodegenPlugin
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -111,13 +113,7 @@ class CPrinter extends DefaultPrinter {
 			 */
 
 			#define _GNU_SOURCE
-			#include <pthread.h>
-
-			// PE specific includes
-			#include "../include/«block.coreType».h"
-
-			// application dependent includes
-			#include "preesm.h"
+			#include "preesm_gen.h"
 
 	'''
 
@@ -369,6 +365,29 @@ class CPrinter extends DefaultPrinter {
 		}
 	}
 
+	override generateStandardLibFiles() {
+		val result = super.generateStandardLibFiles();
+		val String stdFilesFolder = "/stdfiles/c/"
+		val String[] files = #["clock.c",
+						"clock.h",
+						"communication.c",
+						"communication.h",
+						"dump.c",
+						"dump.h",
+						"fifo.c",
+						"fifo.h",
+						"mac_barrier.c",
+						"mac_barrier.h",
+						"memory.c",
+						"memory.h",
+						"socketcom.c",
+						"socketcom.h",
+						"preesm_gen.h"
+					];
+		files.forEach[it | result.put(it, URLResolver.readURLInPluginList(stdFilesFolder + it, CodegenPlugin.BUNDLE_ID))]
+		return result
+	}
+
 	override createSecondaryFiles(List<Block> printerBlocks, Collection<Block> allBlocks) {
 		val result = super.createSecondaryFiles(printerBlocks, allBlocks);
 		if (generateMainFile()) {
@@ -403,7 +422,7 @@ class CPrinter extends DefaultPrinter {
 		#define _PREESM_MAIN_THREAD_ «engine.scenario.orderedOperatorIds.indexOf(engine.scenario.simulationManager.mainOperatorName)»
 
 		// application dependent includes
-		#include "preesm.h"
+		#include "preesm_gen.h"
 
 		// Declare computation thread functions
 		«FOR coreBlock : printerBlocks»
