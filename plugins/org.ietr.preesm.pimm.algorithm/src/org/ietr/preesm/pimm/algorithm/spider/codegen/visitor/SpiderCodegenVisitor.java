@@ -273,7 +273,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     definition.append(prototype.toString());
 
     final List<Parameter> l = new LinkedList<>();
-    l.addAll(pg.getAllParameters());
+    l.addAll(pg.getParameters());
     Collections.sort(l, (p1, p2) -> p1.getName().compareTo(p2.getName()));
 
     for (final Parameter p : l) {
@@ -416,20 +416,20 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     append(" = Spider::addHierVertex(\n");
     append("\t\t/*Graph*/   graph,\n");
     append("\t\t/*Name*/    \"" + aa.getName() + "\",\n");
-    append("\t\t/*Graph*/   " + SpiderNameGenerator.getMethodName(subGraph) + "(");
+    append("\t\t/*Graph*/   " + SpiderNameGenerator.getMethodName(subGraph) + "(),\n");
 
-    final List<Parameter> params = new LinkedList<>();
-    params.addAll(subGraph.getAllParameters());
-    Collections.sort(params, (p1, p2) -> p1.getName().compareTo(p2.getName()));
-    final List<String> paramStrings = new LinkedList<>();
-    for (final Parameter p : params) {
-      if (p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()) {
-        paramStrings.add(p.getName());
-      }
-    }
-    append(String.join(", ", paramStrings));
+    // final List<Parameter> params = new LinkedList<>();
+    // params.addAll(subGraph.getAllParameters());
+    // Collections.sort(params, (p1, p2) -> p1.getName().compareTo(p2.getName()));
+    // final List<String> paramStrings = new LinkedList<>();
+    // for (final Parameter p : params) {
+    // if (p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()) {
+    // paramStrings.add(p.getName());
+    // }
+    // }
+    // append(String.join(", ", paramStrings));
 
-    append("),\n");
+    // append("),\n");
     append("\t\t/*InData*/  " + aa.getDataInputPorts().size() + ",\n");
     append("\t\t/*OutData*/ " + aa.getDataOutputPorts().size() + ",\n");
     append("\t\t/*InParam*/ " + aa.getConfigInputPorts().size() + ");\n");

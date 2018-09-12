@@ -233,7 +233,7 @@ public class SpiderCodegen {
     /* Declare Fcts */
     append("void init_" + pg.getName() + "(");
     final List<Parameter> l = new LinkedList<>();
-    l.addAll(pg.getAllParameters());
+    l.addAll(pg.getParameters());
     Collections.sort(l, (p1, p2) -> p1.getName().compareTo(p2.getName()));
     final StringBuilder parameters_proto = new StringBuilder();
     for (final Parameter p : l) {
@@ -550,7 +550,7 @@ public class SpiderCodegen {
 
     final StringBuilder params = new StringBuilder();
     final List<Parameter> l = new LinkedList<>();
-    l.addAll(pg.getAllParameters());
+    l.addAll(pg.getParameters());
     Collections.sort(l, (p1, p2) -> p1.getName().compareTo(p2.getName()));
     final StringBuilder parameters_proto = new StringBuilder();
     for (final Parameter p : l) {
