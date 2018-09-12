@@ -69,6 +69,7 @@ import org.ietr.preesm.codegen.xtend.printer.DefaultPrinter
 import org.ietr.preesm.codegen.xtend.task.CodegenException
 import org.ietr.preesm.utils.files.URLResolver
 import org.ietr.preesm.codegen.xtend.CodegenPlugin
+import java.io.IOException
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -381,7 +382,11 @@ class CPrinter extends DefaultPrinter {
 						"memory.h",
 						"preesm_gen.h"
 					];
-		files.forEach[it | result.put(it, URLResolver.readURLInPluginList(stdFilesFolder + it, CodegenPlugin.BUNDLE_ID))]
+		files.forEach[it | try {
+			result.put(it, URLResolver.readURLInPluginList(stdFilesFolder + it, CodegenPlugin.BUNDLE_ID))
+		} catch (IOException exc) {
+			throw new CodegenException("Could not generated content for " + it, exc)
+		}]
 		return result
 	}
 
