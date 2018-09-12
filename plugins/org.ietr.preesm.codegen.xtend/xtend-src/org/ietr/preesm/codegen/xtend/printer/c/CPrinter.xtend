@@ -379,8 +379,6 @@ class CPrinter extends DefaultPrinter {
 						"mac_barrier.h",
 						"memory.c",
 						"memory.h",
-						"socketcom.c",
-						"socketcom.h",
 						"preesm_gen.h"
 					];
 		files.forEach[it | result.put(it, URLResolver.readURLInPluginList(stdFilesFolder + it, CodegenPlugin.BUNDLE_ID))]

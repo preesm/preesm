@@ -41,6 +41,7 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.velocity.VelocityContext;
@@ -68,6 +69,20 @@ public class TcpCPrinter extends CPrinter {
   @Override
   public CharSequence printDeclarationsHeader(List<Variable> list) {
     return "";
+  }
+
+  @Override
+  public Map<String, CharSequence> generateStandardLibFiles() {
+    final Map<String, CharSequence> generateStandardLibFiles = super.generateStandardLibFiles();
+    try {
+      generateStandardLibFiles.put("communication.c",
+          URLResolver.readURLInPluginList("/stdfiles/tcpc/" + "communication.c", CodegenPlugin.BUNDLE_ID));
+      generateStandardLibFiles.put("communication.h",
+          URLResolver.readURLInPluginList("/stdfiles/tcpc/" + "communication.h", CodegenPlugin.BUNDLE_ID));
+    } catch (IOException e) {
+      throw new CodegenException("Could not override communication files", e);
+    }
+    return generateStandardLibFiles;
   }
 
   @Override

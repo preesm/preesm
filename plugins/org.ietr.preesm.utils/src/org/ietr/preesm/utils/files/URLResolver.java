@@ -36,6 +36,7 @@
 package org.ietr.preesm.utils.files;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -76,7 +77,7 @@ public final class URLResolver {
    */
   public static final String readURL(final URL url) throws IOException {
     if (url == null) {
-      throw new NullPointerException();
+      throw new FileNotFoundException();
     }
     final StringBuilder builder = new StringBuilder();
     try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {

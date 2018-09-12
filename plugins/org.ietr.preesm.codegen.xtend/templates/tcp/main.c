@@ -39,8 +39,7 @@
  * @date $PREESM_DATE
  */
 
-#[[#]]#include "socketcom.h"
-#[[#]]#include <pthread.h>
+#[[#]]#include "preesm_gen.h"
 
 #[[#]]#include <execinfo.h>
 #[[#]]#include <signal.h>
