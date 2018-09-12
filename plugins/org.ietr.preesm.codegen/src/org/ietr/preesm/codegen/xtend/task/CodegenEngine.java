@@ -231,7 +231,7 @@ public class CodegenEngine {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public void preprocessPrinters() throws WorkflowException {
+  public void preprocessPrinters() {
     // Pre-process the printers one by one to:
     // - Erase file with the same extension from the destination directory
     // - Do the pre-processing
@@ -301,26 +301,32 @@ public class CodegenEngine {
    * Prints the.
    */
   public void print() {
+
     for (final Entry<IConfigurationElement, List<Block>> printerAndBlocks : this.registeredPrintersAndBlocks
         .entrySet()) {
+
       final String extension = printerAndBlocks.getKey().getAttribute("extension");
       final CodegenAbstractPrinter printer = this.realPrinters.get(printerAndBlocks.getKey());
+
       for (final Block b : printerAndBlocks.getValue()) {
         final String fileContentString = printer.postProcessing(printer.doSwitch(b)).toString();
-        print(b.getName() + extension, fileContentString);
+        final String fileName = b.getName() + extension;
+        print(fileName, fileContentString);
       }
 
       // Print secondary files
       final Map<String, CharSequence> createSecondaryFiles = printer.createSecondaryFiles(printerAndBlocks.getValue(),
           this.codeBlocks);
       for (final Entry<String, CharSequence> entry : createSecondaryFiles.entrySet()) {
-        print(entry.getKey(), entry.getValue());
+        final String fileName = entry.getKey();
+        print(fileName, entry.getValue());
       }
 
       // Add standard files for this printer
       final Map<String, CharSequence> generateStandardLibFiles = printer.generateStandardLibFiles();
       for (final Entry<String, CharSequence> entry : generateStandardLibFiles.entrySet()) {
-        print(entry.getKey(), entry.getValue());
+        final String fileName = entry.getKey();
+        print(fileName, entry.getValue());
       }
     }
   }
