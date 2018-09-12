@@ -1,6 +1,6 @@
 /*
 	============================================================================
-	Name        : x86.h
+	Name        : preesm_gen.h
 	Author      : kdesnos
 	Version     :
 	Copyright   :
@@ -8,11 +8,10 @@
 	============================================================================
 */
 
-#ifndef X86_H
-#define X86_H
+#ifndef PREESM__GEN_H
+#define PREESM__GEN_H
 
-#define VERBOSE
-
+#define _GNU_SOURCE
 #ifdef _WIN32
 #include <windows.h>
 #include <pthread.h>
@@ -33,25 +32,21 @@
 #define _POSIX_C_SOURCE 200112L
 #define _XOPEN_SOURCE 600
 #include <pthread.h>
+#include <unistd.h>
 #endif
 
-#include <stdlib.h>
-#include <stdio.h>
+#ifdef __APPLE__
+#include "TargetConditionals.h"
+#include "mac_barrier.h"
+#endif
 
-#include <string.h>
-#include <semaphore.h>
 
-#include "yuvRead.h"
-#include "yuvWrite.h"
-#include "yuvDisplay.h"
+#include "clock.h"
 #include "communication.h"
-#include "fifo.h"
 #include "dump.h"
+#include "fifo.h"
+#include "socketcom.h"
 
-#include "md5.h"
-#include "stabilization.h"
-
-
-typedef unsigned char uchar;
+#include "preesm.h"
 
 #endif

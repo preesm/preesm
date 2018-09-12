@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
-#include "../include/dump.h"
+#include "dump.h"
 
 static FILE *ptfile;
 static int *bckupNbExec;
