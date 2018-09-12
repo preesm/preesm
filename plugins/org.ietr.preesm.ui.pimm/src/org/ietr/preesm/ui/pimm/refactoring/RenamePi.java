@@ -39,13 +39,11 @@ package org.ietr.preesm.ui.pimm.refactoring;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RenameParticipant;
 
-// TODO: Auto-generated Javadoc
 /**
  * The purpose of this class is to handle the rename refactoring of a file with the ".pi" extension. In the rename
  * operation, it is assumed that the corresponding file with the ".diagram" extension is renamed similarly.
@@ -102,8 +100,7 @@ public class RenamePi extends RenameParticipant {
    * IProgressMonitor, org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext)
    */
   @Override
-  public RefactoringStatus checkConditions(final IProgressMonitor pm, final CheckConditionsContext context)
-      throws OperationCanceledException {
+  public RefactoringStatus checkConditions(final IProgressMonitor pm, final CheckConditionsContext context) {
     // Nothing to do here
     return null;
   }
@@ -115,16 +112,14 @@ public class RenamePi extends RenameParticipant {
    * IProgressMonitor)
    */
   @Override
-  public Change createPreChange(final IProgressMonitor pm) throws CoreException, OperationCanceledException {
+  public Change createPreChange(final IProgressMonitor pm) throws CoreException {
 
     // Get the refactored file
     final IFile refactored = (IFile) getProcessor().getElements()[0];
 
     // Create the change
-    final Change change = RefactoringHelper.createChange("(<data key=\"name\">)(" + this.oldName + ")(</data>)", 2,
-        this.newName, refactored);
-
-    return change;
+    return RefactoringHelper.createChange("(<data key=\"name\">)(" + this.oldName + ")(</data>)", 2, this.newName,
+        refactored);
   }
 
   /*
@@ -134,7 +129,7 @@ public class RenamePi extends RenameParticipant {
    * IProgressMonitor)
    */
   @Override
-  public Change createChange(final IProgressMonitor pm) throws CoreException, OperationCanceledException {
+  public Change createChange(final IProgressMonitor pm) throws CoreException {
     // Nothing to do after the file is renamed.
     return null;
   }
