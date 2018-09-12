@@ -89,13 +89,12 @@ public class TcpCPrinter extends CPrinter {
   public CharSequence printCoreInitBlockHeader(CallBlock callBlock) {
     final int coreID = ((CoreBlock) callBlock.eContainer()).getCoreID();
     StringBuilder ff = new StringBuilder();
-    ff.append("#include \"socketcom.h\"\n");
+    ff.append("#include \"communication.h\"\n");
     ff.append("void *computationThread_Core");
     ff.append(coreID);
     ff.append("(void *arg) {\n");
 
     ff.append("  int* socketFileDescriptors = (int*)arg;\n");
-    ff.append("  int processingElementID = socketFileDescriptors[" + this.getEngine().getCodeBlocks().size() + "];\n");
 
     ff.append("  \n" + "#ifdef _PREESM_TCP_DEBUG_\n" + "  printf(\"[TCP-DEBUG] Core" + coreID + " READY\\n\");\n"
         + "#endif\n\n");

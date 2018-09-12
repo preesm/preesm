@@ -1,5 +1,5 @@
 
-#include "socketcom.h"
+#include "communication.h"
 
 /**
  * Debug function
