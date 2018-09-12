@@ -41,7 +41,6 @@
 #endif
 
 
-#include "clock.h"
 #include "communication.h"
 #include "dump.h"
 #include "fifo.h"

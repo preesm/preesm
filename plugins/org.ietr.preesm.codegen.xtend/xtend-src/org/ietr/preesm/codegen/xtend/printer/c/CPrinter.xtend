@@ -368,8 +368,7 @@ class CPrinter extends DefaultPrinter {
 	override generateStandardLibFiles() {
 		val result = super.generateStandardLibFiles();
 		val String stdFilesFolder = "/stdfiles/c/"
-		val String[] files = #["clock.c",
-						"clock.h",
+		val String[] files = #[
 						"communication.c",
 						"communication.h",
 						"dump.c",
