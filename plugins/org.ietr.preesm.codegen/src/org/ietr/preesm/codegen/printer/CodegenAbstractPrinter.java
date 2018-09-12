@@ -79,6 +79,123 @@ import org.ietr.preesm.codegen.xtend.task.CodegenException;
  */
 public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 
+  /**
+   * This method should be called when printing a "printXXHeader" method when the desired behavior is to print nothing
+   * but indent the "content" of the Block (i.e. what will be printed between the header and the corresponding footer")
+   *
+   * @param n
+   *          the number of indentation desired for the block content
+   *
+   * @return a {@link CharSequence}
+   */
+  static CharSequence printEmptyHeaderWithNIndentation(final int n) {
+    final char[] indent = new char[n];
+    for (int i = 0; i < n; i++) {
+      indent[i] = '\t';
+    }
+    return "\r\n" + new String(indent) + "\r\n";
+  }
+
+  /**
+   * Returns <code>True</code> if the {@link StringConcatenation} ends with an empty line. (i.e. it ends with a \n)
+   *
+   * @param concatenation
+   *          the {@link StringConcatenation} to test
+   * @return <code>True</code> if the {@link StringConcatenation} ends with an empty line. (i.e. it ends with a \n)
+   */
+  static boolean endWithEOL(final StringConcatenation concatenation) {
+    final char n = '\n';
+    return concatenation.charAt(concatenation.length() - 1) == n;
+  }
+
+  /**
+   * Returns a copy of the input {@link StringConcatenation}. If the final line of the {@link StringConcatenation} is
+   * empty, the last "\r\n" (or "\n") are removed from the returned {@link StringConcatenation}, else the input
+   * {@link StringConcatenation} is returned as is
+   *
+   * @param sequence
+   *          the {@link StringConcatenation} to process
+   * @return the input {@link StringConcatenation} as is or without its final "\r\n" or "\n"
+   */
+  static StringConcatenation trimLastEOL(final StringConcatenation sequence) {
+    String result = sequence.toString();
+    final char newLine = '\n';
+    final char r = '\r';
+
+    // if the last character is a \n, remove it
+    if ((result.length() > 0) && (result.charAt(result.length() - 1) == newLine)) {
+      result = result.subSequence(0, result.length() - 1).toString();
+      if ((result.length() > 0) && (result.charAt(result.length() - 1) == r)) {
+        result = result.subSequence(0, result.length() - 1).toString();
+      }
+    }
+
+    final StringConcatenation res = new StringConcatenation();
+    res.append(result);
+    return res;
+  }
+
+  /**
+   * Get a {@link String} that corresponds to the the number of tabulations that form the last line of the input
+   * {@link CharSequence}. If the {@link CharSequence} ends with an '\n' or with a '\r\n' {@link String}, the
+   * penultimate line is processed instead. If the last line contains something else than tabulations, an empty
+   * {@link String} is returned<br>
+   * <br>
+   * Examples:<br>
+   * "<code>I'm a line of
+   * <br>   code</code>" <br>
+   * returns ''<br>
+   * <br>
+   * "<code>I'm another line of code
+   * <br>\t\t</code>" <br>
+   * returns '\t\t' <br>
+   * <br>
+   * "<code>I'm a last line of code
+   * <br>\t\t<br>
+   * </code>" <br>
+   * returns '\t\t'
+   *
+   * @param input
+   *          the processed {@link CharSequence}
+   * @return the {@link String} containing only '\t' or nothing
+   */
+  static String getLastLineIndentation(final CharSequence input) {
+    final char newLine = '\n';
+    final char tab = '\t';
+    final char r = '\r';
+
+    // First, find the beginning of the last line
+    int lastLineBeginning = input.length() - 1;
+    int lastLineIndentationEnd;
+    boolean exitLoop = false;
+
+    // If the input ends with an EOL, skip it
+    if ((lastLineBeginning >= 0) && (input.charAt(lastLineBeginning) == newLine)) {
+      lastLineBeginning = lastLineBeginning - 1;
+      if ((lastLineBeginning >= 0) && (input.charAt(lastLineBeginning) == r)) {
+        lastLineBeginning = lastLineBeginning - 1;
+      }
+    }
+
+    lastLineIndentationEnd = lastLineBeginning + 1;
+
+    while ((lastLineBeginning >= 0) && !exitLoop) {
+      // look for \n (works also for \r\n) but only if characters are \t
+      final char currentChar = input.charAt(lastLineBeginning);
+
+      if (currentChar == newLine) {
+        lastLineBeginning = lastLineBeginning + 1;
+        exitLoop = true;
+      } else {
+        if (currentChar != tab) {
+          return "";
+        }
+        lastLineBeginning = lastLineBeginning - 1;
+      }
+    }
+    return input.subSequence(lastLineBeginning, lastLineIndentationEnd).toString();
+  }
+
   PrinterState state = PrinterState.IDLE;
 
   /**
@@ -118,6 +235,72 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   private CoreBlock printedCoreBlock;
 
   private CodegenEngine engine;
+
+  public CoreBlock getPrintedCoreBlock() {
+    return printedCoreBlock;
+  }
+
+  public void setPrintedCoreBlock(CoreBlock printedCoreBlock) {
+    this.printedCoreBlock = printedCoreBlock;
+  }
+
+  public CodegenEngine getEngine() {
+    return engine;
+  }
+
+  public void setEngine(CodegenEngine engine) {
+    this.engine = engine;
+  }
+
+  /**
+   * Method called before printing a set of {@link Block blocks}. This method can perform some printer specific
+   * modification on the blocks passed as parameters. For example, it can be used to insert instrumentation primitives
+   * in the code. This method will NOT print the code of the {@link Block blocks}, use {@link #doSwitch()} on each
+   * {@link Block} to print after the pre-processing to do so.
+   *
+   * @param printerBlocks
+   *          The list of {@link Block blocks} that will be printer by the printer
+   * @param allBlocks
+   *          The list of all {@link Block blocks} printed during a workflow execution. This list includes all
+   *          printerBlocks
+   */
+  public abstract void preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks);
+
+  /**
+   * Method called after printing a set of {@link Block blocks}. This method can perform some printer specific
+   * modification on the blocks passed as parameters. For example, it can be used to insert instrumentation primitives
+   * in the code. This method will NOT print the code of the {@link Block blocks}, use {@link #doSwitch()} on each
+   * {@link Block} to print after the pre-processing to do so.
+   *
+   */
+  public abstract CharSequence postProcessing(CharSequence charSeq);
+
+  /**
+   * This method is called after all the {@link Block blocks} have been printed by the printer to give the opportunity
+   * to print secondary files. (eg. project files, main files, ...).<br>
+   * This method returns a {@link Map} where each {@link Entry} associates a {@link String} to a {@link CharSequence}
+   * respectively corresponding to a file name (including the extension) and the its content.
+   *
+   * @param printerBlocks
+   *          The list of {@link Block blocks} that were printed by the printer
+   * @param allBlocks
+   *          The list of all {@link Block blocks} printed during a workflow execution. This list includes all
+   *          printerBlocks
+   */
+  public abstract Map<String, CharSequence> createSecondaryFiles(List<Block> printerBlocks,
+      Collection<Block> allBlocks);
+
+  @Override
+  public CharSequence defaultCase(final EObject object) {
+    throw new CodegenException("Object " + object + " is not supported by the printer " + this);
+  }
+
+  /**
+   * Get the current {@link PrinterState} of the printer
+   */
+  public PrinterState getState() {
+    return this.state;
+  }
 
   @Override
   public CharSequence caseCommunication(final Communication communication) {
@@ -287,106 +470,6 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     return result;
   }
 
-  /**
-   * Returns <code>True</code> if the {@link StringConcatenation} ends with an empty line. (i.e. it ends with a \n)
-   *
-   * @param concatenation
-   *          the {@link StringConcatenation} to test
-   * @return <code>True</code> if the {@link StringConcatenation} ends with an empty line. (i.e. it ends with a \n)
-   */
-  static boolean endWithEOL(final StringConcatenation concatenation) {
-    final char n = '\n';
-    return concatenation.charAt(concatenation.length() - 1) == n;
-  }
-
-  /**
-   * Returns a copy of the input {@link StringConcatenation}. If the final line of the {@link StringConcatenation} is
-   * empty, the last "\r\n" (or "\n") are removed from the returned {@link StringConcatenation}, else the input
-   * {@link StringConcatenation} is returned as is
-   *
-   * @param sequence
-   *          the {@link StringConcatenation} to process
-   * @return the input {@link StringConcatenation} as is or without its final "\r\n" or "\n"
-   */
-  static StringConcatenation trimLastEOL(final StringConcatenation sequence) {
-    String result = sequence.toString();
-    final char newLine = '\n';
-    final char r = '\r';
-
-    // if the last character is a \n, remove it
-    if ((result.length() > 0) && (result.charAt(result.length() - 1) == newLine)) {
-      result = result.subSequence(0, result.length() - 1).toString();
-      if ((result.length() > 0) && (result.charAt(result.length() - 1) == r)) {
-        result = result.subSequence(0, result.length() - 1).toString();
-      }
-    }
-
-    final StringConcatenation res = new StringConcatenation();
-    res.append(result);
-    return res;
-  }
-
-  /**
-   * Get a {@link String} that corresponds to the the number of tabulations that form the last line of the input
-   * {@link CharSequence}. If the {@link CharSequence} ends with an '\n' or with a '\r\n' {@link String}, the
-   * penultimate line is processed instead. If the last line contains something else than tabulations, an empty
-   * {@link String} is returned<br>
-   * <br>
-   * Examples:<br>
-   * "<code>I'm a line of
-   * <br>   code</code>" <br>
-   * returns ''<br>
-   * <br>
-   * "<code>I'm another line of code
-   * <br>\t\t</code>" <br>
-   * returns '\t\t' <br>
-   * <br>
-   * "<code>I'm a last line of code
-   * <br>\t\t<br>
-   * </code>" <br>
-   * returns '\t\t'
-   *
-   * @param input
-   *          the processed {@link CharSequence}
-   * @return the {@link String} containing only '\t' or nothing
-   */
-  static String getLastLineIndentation(final CharSequence input) {
-    final char newLine = '\n';
-    final char tab = '\t';
-    final char r = '\r';
-
-    // First, find the beginning of the last line
-    int lastLineBeginning = input.length() - 1;
-    int lastLineIndentationEnd;
-    boolean exitLoop = false;
-
-    // If the input ends with an EOL, skip it
-    if ((lastLineBeginning >= 0) && (input.charAt(lastLineBeginning) == newLine)) {
-      lastLineBeginning = lastLineBeginning - 1;
-      if ((lastLineBeginning >= 0) && (input.charAt(lastLineBeginning) == r)) {
-        lastLineBeginning = lastLineBeginning - 1;
-      }
-    }
-
-    lastLineIndentationEnd = lastLineBeginning + 1;
-
-    while ((lastLineBeginning >= 0) && !exitLoop) {
-      // look for \n (works also for \r\n) but only if characters are \t
-      final char currentChar = input.charAt(lastLineBeginning);
-
-      if (currentChar == newLine) {
-        lastLineBeginning = lastLineBeginning + 1;
-        exitLoop = true;
-      } else {
-        if (currentChar != tab) {
-          return "";
-        }
-        lastLineBeginning = lastLineBeginning - 1;
-      }
-    }
-    return input.subSequence(lastLineBeginning, lastLineIndentationEnd).toString();
-  }
-
   @Override
   public CharSequence caseBuffer(final Buffer buffer) {
     if (this.state.equals(PrinterState.PRINTING_DEFINITIONS)) {
@@ -460,19 +543,6 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     }
 
     return printIntVar(intVar);
-  }
-
-  @Override
-  public CharSequence defaultCase(final EObject object) {
-    throw new CodegenException(
-        "Object " + object + " is not supported by the printer" + this + "in its current state. ");
-  }
-
-  /**
-   * Get the current {@link PrinterState} of the printer
-   */
-  public PrinterState getState() {
-    return this.state;
   }
 
   @Override
@@ -598,44 +668,6 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
     return printBufferIterator(bufferIterator);
   }
-
-  /**
-   * Method called before printing a set of {@link Block blocks}. This method can perform some printer specific
-   * modification on the blocks passed as parameters. For example, it can be used to insert instrumentation primitives
-   * in the code. This method will NOT print the code of the {@link Block blocks}, use {@link #doSwitch()} on each
-   * {@link Block} to print after the pre-processing to do so.
-   *
-   * @param printerBlocks
-   *          The list of {@link Block blocks} that will be printer by the printer
-   * @param allBlocks
-   *          The list of all {@link Block blocks} printed during a workflow execution. This list includes all
-   *          printerBlocks
-   */
-  public abstract void preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks);
-
-  /**
-   * Method called after printing a set of {@link Block blocks}. This method can perform some printer specific
-   * modification on the blocks passed as parameters. For example, it can be used to insert instrumentation primitives
-   * in the code. This method will NOT print the code of the {@link Block blocks}, use {@link #doSwitch()} on each
-   * {@link Block} to print after the pre-processing to do so.
-   *
-   */
-  public abstract CharSequence postProcessing(CharSequence charSeq);
-
-  /**
-   * This method is called after all the {@link Block blocks} have been printed by the printer to give the opportunity
-   * to print secondary files. (eg. project files, main files, ...).<br>
-   * This method returns a {@link Map} where each {@link Entry} associates a {@link String} to a {@link CharSequence}
-   * respectively corresponding to a file name (including the extension) and the its content.
-   *
-   * @param printerBlocks
-   *          The list of {@link Block blocks} that were printed by the printer
-   * @param allBlocks
-   *          The list of all {@link Block blocks} printed during a workflow execution. This list includes all
-   *          printerBlocks
-   */
-  public abstract Map<String, CharSequence> createSecondaryFiles(List<Block> printerBlocks,
-      Collection<Block> allBlocks);
 
   /**
    * Method called to print a {@link SpecialCall} with {@link SpecialCall#getType() type} {@link SpecialType#BROADCAST}.
@@ -904,23 +936,6 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   public abstract CharSequence printDefinitionsHeader(List<Variable> variableList);
 
   /**
-   * This method should be called when printing a "printXXHeader" method when the desired behavior is to print nothing
-   * but indent the "content" of the Block (i.e. what will be printed between the header and the corresponding footer")
-   *
-   * @param n
-   *          the number of indentation desired for the block content
-   *
-   * @return a {@link CharSequence}
-   */
-  static CharSequence printEmptyHeaderWithNIndentation(final int n) {
-    final char[] indent = new char[n];
-    for (int i = 0; i < n; i++) {
-      indent[i] = '\t';
-    }
-    return "\r\n" + new String(indent) + "\r\n";
-  }
-
-  /**
    * Method called to print a {@link FifoCall}.
    *
    * @param fifoCall
@@ -1114,21 +1129,4 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    * @return the printed {@link CharSequence}
    */
   public abstract CharSequence printBufferIteratorDefinition(BufferIterator bufferIterator);
-
-  public CoreBlock getPrintedCoreBlock() {
-    return printedCoreBlock;
-  }
-
-  public void setPrintedCoreBlock(CoreBlock printedCoreBlock) {
-    this.printedCoreBlock = printedCoreBlock;
-  }
-
-  public CodegenEngine getEngine() {
-    return engine;
-  }
-
-  public void setEngine(CodegenEngine engine) {
-    this.engine = engine;
-  }
-
 }
