@@ -40,6 +40,7 @@
 #include "mac_barrier.h"
 #endif
 
+#include <stdio.h>
 
 #include "communication.h"
 #include "dump.h"
