@@ -378,8 +378,6 @@ class CPrinter extends DefaultPrinter {
 						"fifo.h",
 						"mac_barrier.c",
 						"mac_barrier.h",
-						"memory.c",
-						"memory.h",
 						"preesm_gen.h"
 					];
 		files.forEach[it | try {
