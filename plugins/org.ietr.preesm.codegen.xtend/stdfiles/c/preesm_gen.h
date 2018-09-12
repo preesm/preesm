@@ -44,7 +44,6 @@
 #include "communication.h"
 #include "dump.h"
 #include "fifo.h"
-#include "socketcom.h"
 
 #include "preesm.h"
 
