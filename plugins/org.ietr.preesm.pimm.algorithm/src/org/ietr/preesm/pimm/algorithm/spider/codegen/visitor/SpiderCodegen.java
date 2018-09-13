@@ -169,7 +169,7 @@ public class SpiderCodegen {
     this.timings = new LinkedHashMap<>();
     for (final Timing t : this.scenario.getTimingManager().getTimings()) {
       final String actorName = t.getVertexId();
-      final AbstractActor aa = actorsByNames.get(actorName);
+      final AbstractActor aa = lookupTimingRec(pg, actorName);// (AbstractActor) pg.lookupVertex(actorName);
       if (aa != null) {
         if (!this.timings.containsKey(aa)) {
           this.timings.put(aa, new LinkedHashMap<String, String>());
@@ -203,6 +203,19 @@ public class SpiderCodegen {
         }
       }
     }
+  }
+
+  final AbstractActor lookupTimingRec(final PiGraph graph, final String vertexName) {
+    AbstractActor actor = (AbstractActor) graph.lookupVertex(vertexName);
+    if (actor == null) {
+      for (final PiGraph g : graph.getChildrenGraphs()) {
+        actor = lookupTimingRec(g, vertexName);
+        if (actor != null) {
+          break;
+        }
+      }
+    }
+    return actor;
   }
 
   /**

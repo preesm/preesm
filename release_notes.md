@@ -41,6 +41,7 @@ PREESM Changelog
 ### Bug fix
 * fix issue #69;
 * fix issue #71;
+* fixing timing issue in spider codegen. It is temporary as it only copy the behavior of PREESM (see issue 73);
 * fix issue #76; Spider Codegen now correctly assign parameters to method prototype.
 
 ## Release version 2.14.0
