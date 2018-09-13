@@ -11,6 +11,9 @@ PREESM Changelog
 * Have the main operator thread execute in main thread;
   * for default C code generation;
   * for tcp codegen;
+* Codegen now embeds communication, fifo, and dump C and header files
+  * this includes TCP communication lib;
+  * also includes semaphore and barrier implementation for MacOSX;
 
 ### Bug fix
 
