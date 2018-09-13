@@ -41,6 +41,7 @@ PREESM Changelog
 ### Bug fix
 * fix issue #69;
 * fix issue #71;
+* fix issue #76; Spider Codegen now correctly assign parameters to method prototype.
 
 ## Release version 2.14.0
 *2018.09.03*
