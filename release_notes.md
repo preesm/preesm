@@ -37,6 +37,7 @@ PREESM Changelog
 * Move XCore maven config to parent pom;
 * Refactor scheduler;
 * Move Codegen model and convert it from ECore to XCore;
+* Spider codegen now support heteregeneous hardware.
 
 ### Bug fix
 * fix issue #69;

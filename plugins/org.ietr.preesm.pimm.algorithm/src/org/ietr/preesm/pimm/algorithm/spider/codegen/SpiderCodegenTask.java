@@ -52,6 +52,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
@@ -81,6 +82,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
 
     // Retrieve inputs
+    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph pg = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     // Check if we are using papify instrumentation
@@ -92,7 +94,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
       usingPapify = false;
     }
 
-    final SpiderCodegen launcher = new SpiderCodegen(scenario);
+    final SpiderCodegen launcher = new SpiderCodegen(scenario, architecture);
 
     launcher.initGenerator(pg);
     final String graphCode = launcher.generateGraphCode(pg);
@@ -101,6 +103,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     // TODO: add config as parameters from workflow
     final String mCode = launcher.generateMainCode(pg, usingPapify);
     final String papifyCode = launcher.generatePapifyCode(pg, scenario);
+    final String archiCode = launcher.generateArchiCode(pg, scenario);
 
     // Get the workspace
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -132,6 +135,9 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     final String hFilePath = pg.getName() + ".h";
     final File hFile = new File(folder, hFilePath);
 
+    final String archiFilePath = pg.getName() + "_archi.cpp";
+    final File archiFile = new File(folder, archiFilePath);
+
     final String piGraphfilePath = "pi_" + pg.getName() + ".cpp";
     final File piGraphFile = new File(folder, piGraphfilePath);
 
@@ -156,6 +162,12 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
 
     try (FileWriter hWriter = new FileWriter(hFile)) {
       hWriter.write(hCode);
+    } catch (final IOException e) {
+      e.printStackTrace();
+    }
+
+    try (FileWriter archiWriter = new FileWriter(archiFile)) {
+      archiWriter.write(archiCode);
     } catch (final IOException e) {
       e.printStackTrace();
     }

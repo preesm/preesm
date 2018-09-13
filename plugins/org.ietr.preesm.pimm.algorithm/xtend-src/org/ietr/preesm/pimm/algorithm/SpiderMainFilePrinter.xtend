@@ -171,6 +171,12 @@ class SpiderMainFilePrinter {
 		// Setting graph PiSDF graph
 		cfg.platform.fcts = «pg.name»_fcts;
 		cfg.platform.nLrtFcts = N_FCT_«pg.name.toUpperCase»;
+		
+		// Initialize the architecture information
+		if (init_archi_infos(&cfg.platform) < 0) {
+			fprintf(stderr, "ERROR: failed to initialize the architecture.\n");
+			return -1;
+		}
 
 		cfg.verbose = false;
 		cfg.traceEnabled = false;
@@ -225,6 +231,9 @@ class SpiderMainFilePrinter {
 			«ENDIF»
 			
 			// Actor finalisation here if needed
+			
+			// Free the information linked to the architecture
+			free_archi_infos(&cfg.platform);
 			
 		} catch(std::exception &e) {
 			printf("Exception : %s\n", e.what());
