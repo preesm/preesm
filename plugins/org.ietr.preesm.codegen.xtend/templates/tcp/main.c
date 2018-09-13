@@ -39,8 +39,7 @@
  * @date $PREESM_DATE
  */
 
-#[[#]]#include "socketcom.h"
-#[[#]]#include <pthread.h>
+#[[#]]#include "preesm_gen_tcp.h"
 
 #[[#]]#include <execinfo.h>
 #[[#]]#include <signal.h>
@@ -103,7 +102,11 @@ void initMainPEConfig(ProcessingElement registry[_PREESM_NBTHREADS_]) {
     fseek (f, 0, SEEK_SET);
     buffer = malloc (length);
     if (buffer) {
-      fread (buffer, 1, length, f);
+      int res = fread (buffer, 1, length, f);
+      if (res <= 0) {
+        printf("Could not read config file");
+        return;
+      }
     }
     fclose (f);
     char *r = buffer;

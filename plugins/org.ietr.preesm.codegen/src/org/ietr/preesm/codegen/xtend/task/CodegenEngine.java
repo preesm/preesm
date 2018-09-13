@@ -231,7 +231,7 @@ public class CodegenEngine {
    * @throws WorkflowException
    *           the workflow exception
    */
-  public void preprocessPrinters() throws WorkflowException {
+  public void preprocessPrinters() {
     // Pre-process the printers one by one to:
     // - Erase file with the same extension from the destination directory
     // - Do the pre-processing
@@ -301,52 +301,51 @@ public class CodegenEngine {
    * Prints the.
    */
   public void print() {
+
     for (final Entry<IConfigurationElement, List<Block>> printerAndBlocks : this.registeredPrintersAndBlocks
         .entrySet()) {
+
       final String extension = printerAndBlocks.getKey().getAttribute("extension");
       final CodegenAbstractPrinter printer = this.realPrinters.get(printerAndBlocks.getKey());
-      final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+
       for (final Block b : printerAndBlocks.getValue()) {
         final String fileContentString = printer.postProcessing(printer.doSwitch(b)).toString();
-        final IFile iFile = workspace.getRoot().getFile(new Path(this.codegenPath + b.getName() + extension));
-        final IFolder iFolder = workspace.getRoot().getFolder(new Path(this.codegenPath));
-        try {
-          if (!iFolder.exists()) {
-            iFolder.create(false, true, new NullProgressMonitor());
-          }
-          if (!iFile.exists()) {
-            iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
-          }
-          final byte[] bytes = fileContentString.getBytes();
-          iFile.setContents(new ByteArrayInputStream(bytes), true, false, new NullProgressMonitor());
-        } catch (CoreException e) {
-          throw new CodegenException("Could not generated source file for " + b.getName(), e);
-        }
-
+        final String fileName = b.getName() + extension;
+        print(fileName, fileContentString);
       }
 
       // Print secondary files
-      for (final Entry<String, CharSequence> entry : printer
-          .createSecondaryFiles(printerAndBlocks.getValue(), this.codeBlocks).entrySet()) {
-        final String secondaryFileName = entry.getKey();
-        final IFile iFile = workspace.getRoot().getFile(new Path(this.codegenPath + secondaryFileName));
-        try {
-          final IFolder iFolder = workspace.getRoot().getFolder(new Path(this.codegenPath));
-          if (!iFolder.exists()) {
-            iFolder.create(false, true, new NullProgressMonitor());
-          }
-          if (!iFile.exists()) {
-            iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
-          }
-          final CharSequence secondaryFileContent = entry.getValue();
-          iFile.setContents(new ByteArrayInputStream(secondaryFileContent.toString().getBytes()), true, false,
-              new NullProgressMonitor());
-        } catch (final CoreException ex) {
-          throw new CodegenException("Could not generated source file for " + secondaryFileName, ex);
-        }
-
+      final Map<String, CharSequence> createSecondaryFiles = printer.createSecondaryFiles(printerAndBlocks.getValue(),
+          this.codeBlocks);
+      for (final Entry<String, CharSequence> entry : createSecondaryFiles.entrySet()) {
+        final String fileName = entry.getKey();
+        print(fileName, entry.getValue());
       }
 
+      // Add standard files for this printer
+      final Map<String, CharSequence> generateStandardLibFiles = printer.generateStandardLibFiles();
+      for (final Entry<String, CharSequence> entry : generateStandardLibFiles.entrySet()) {
+        final String fileName = entry.getKey();
+        print(fileName, entry.getValue());
+      }
+    }
+  }
+
+  private void print(final String fileName, final CharSequence fileContent) {
+    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(this.codegenPath + fileName));
+    try {
+      final IFolder iFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(this.codegenPath));
+      if (!iFolder.exists()) {
+        iFolder.create(false, true, new NullProgressMonitor());
+      }
+      if (!iFile.exists()) {
+        iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
+      }
+      iFile.setContents(new ByteArrayInputStream(fileContent.toString().getBytes()), true, false,
+          new NullProgressMonitor());
+
+    } catch (final CoreException ex) {
+      throw new CodegenException("Could not generated source file for " + fileName, ex);
     }
   }
 }

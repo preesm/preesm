@@ -41,6 +41,7 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.velocity.VelocityContext;
@@ -71,18 +72,31 @@ public class TcpCPrinter extends CPrinter {
   }
 
   @Override
+  public Map<String, CharSequence> generateStandardLibFiles() {
+    final Map<String, CharSequence> generateStandardLibFiles = super.generateStandardLibFiles();
+    try {
+      generateStandardLibFiles.put("tcp_communication.c",
+          URLResolver.readURLInPluginList("/stdfiles/tcpc/" + "tcp_communication.c", CodegenPlugin.BUNDLE_ID));
+      generateStandardLibFiles.put("tcp_communication.h",
+          URLResolver.readURLInPluginList("/stdfiles/tcpc/" + "tcp_communication.h", CodegenPlugin.BUNDLE_ID));
+      generateStandardLibFiles.put("preesm_gen_tcp.h",
+          URLResolver.readURLInPluginList("/stdfiles/tcpc/" + "preesm_gen_tcp.h", CodegenPlugin.BUNDLE_ID));
+    } catch (IOException e) {
+      throw new CodegenException("Could not override communication files", e);
+    }
+    return generateStandardLibFiles;
+  }
+
+  @Override
   public CharSequence printCoreInitBlockHeader(CallBlock callBlock) {
     final int coreID = ((CoreBlock) callBlock.eContainer()).getCoreID();
     StringBuilder ff = new StringBuilder();
-    ff.append("#include \"socketcom.h\"\n");
+    ff.append("#include \"tcp_communication.h\"\n");
     ff.append("void *computationThread_Core");
     ff.append(coreID);
     ff.append("(void *arg) {\n");
 
     ff.append("  int* socketFileDescriptors = (int*)arg;\n");
-    ff.append("  int processingElementID = socketFileDescriptors[" + this.getEngine().getCodeBlocks().size() + "];\n");
-
-    // ff.append(" int* socketFileDescriptors = (int*)arg;\n");
 
     ff.append("  \n" + "#ifdef _PREESM_TCP_DEBUG_\n" + "  printf(\"[TCP-DEBUG] Core" + coreID + " READY\\n\");\n"
         + "#endif\n\n");
@@ -166,9 +180,7 @@ public class TcpCPrinter extends CPrinter {
     context.put("PREESM_PRINTER", this.getClass().getSimpleName());
     context.put("PREESM_NBTHREADS", printerBlocks.size());
 
-    final String mainOperatorName = getEngine().getScenario().getSimulationManager().getMainOperatorName();
-    final int mainThreadID = getEngine().getScenario().getOrderedOperatorIds().indexOf(mainOperatorName);
-    context.put("PREESM_MAIN_THREAD", mainThreadID);
+    context.put("PREESM_MAIN_THREAD", getMainOperatorId());
 
     final List<String> threadFunctionNames = IntStream.range(0, printerBlocks.size())
         .mapToObj(i -> String.format("computationThread_Core%d", i)).collect(Collectors.toList());

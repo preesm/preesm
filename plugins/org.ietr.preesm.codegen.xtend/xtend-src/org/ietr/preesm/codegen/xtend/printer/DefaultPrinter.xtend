@@ -80,6 +80,12 @@ class DefaultPrinter extends CodegenAbstractPrinter {
 	}
 
 	/**
+	 */
+	override generateStandardLibFiles() {
+		return new LinkedHashMap<String,CharSequence>
+	}
+
+	/**
 	 * Default implementation: does nothing.
 	 * @see CodegenAbstractPrinter#preProcessing(List,List)
 	 */
