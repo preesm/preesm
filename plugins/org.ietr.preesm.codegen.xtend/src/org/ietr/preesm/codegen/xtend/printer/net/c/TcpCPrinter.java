@@ -75,10 +75,12 @@ public class TcpCPrinter extends CPrinter {
   public Map<String, CharSequence> generateStandardLibFiles() {
     final Map<String, CharSequence> generateStandardLibFiles = super.generateStandardLibFiles();
     try {
-      generateStandardLibFiles.put("communication.c",
-          URLResolver.readURLInPluginList("/stdfiles/tcpc/" + "communication.c", CodegenPlugin.BUNDLE_ID));
-      generateStandardLibFiles.put("communication.h",
-          URLResolver.readURLInPluginList("/stdfiles/tcpc/" + "communication.h", CodegenPlugin.BUNDLE_ID));
+      generateStandardLibFiles.put("tcp_communication.c",
+          URLResolver.readURLInPluginList("/stdfiles/tcpc/" + "tcp_communication.c", CodegenPlugin.BUNDLE_ID));
+      generateStandardLibFiles.put("tcp_communication.h",
+          URLResolver.readURLInPluginList("/stdfiles/tcpc/" + "tcp_communication.h", CodegenPlugin.BUNDLE_ID));
+      generateStandardLibFiles.put("preesm_gen_tcp.h",
+          URLResolver.readURLInPluginList("/stdfiles/tcpc/" + "preesm_gen_tcp.h", CodegenPlugin.BUNDLE_ID));
     } catch (IOException e) {
       throw new CodegenException("Could not override communication files", e);
     }
@@ -89,7 +91,7 @@ public class TcpCPrinter extends CPrinter {
   public CharSequence printCoreInitBlockHeader(CallBlock callBlock) {
     final int coreID = ((CoreBlock) callBlock.eContainer()).getCoreID();
     StringBuilder ff = new StringBuilder();
-    ff.append("#include \"communication.h\"\n");
+    ff.append("#include \"tcp_communication.h\"\n");
     ff.append("void *computationThread_Core");
     ff.append(coreID);
     ff.append("(void *arg) {\n");

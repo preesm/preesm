@@ -1,5 +1,5 @@
 
-#include "communication.h"
+#include "tcp_communication.h"
 
 /**
  * Debug function
