@@ -8,8 +8,8 @@
 	============================================================================
 */
 
-#ifndef PREESM__GEN_H
-#define PREESM__GEN_H
+#ifndef _PREESM_PREESM_GEN_H
+#define _PREESM_PREESM_GEN_H
 
 #define _GNU_SOURCE
 #ifdef _WIN32

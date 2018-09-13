@@ -9,8 +9,8 @@
 	============================================================================
 */
 
-#ifndef FIFO_H
-#define FIFO_H
+#ifndef _PREESM_FIFO_H
+#define _PREESM_FIFO_H
 
 /**
 * Initialize a FIFO by filling its memory with 0.
@@ -20,7 +20,7 @@
 * @param headSize
 *        Size of the first element of the fifo (>0)
 * @param bodyBuffer
-*        pointer to the memory space containing all but the first element of 
+*        pointer to the memory space containing all but the first element of
 *        the fifo.
 * @param bodySize
 *        Size of the body of the fifo (>=0)
@@ -37,7 +37,7 @@ void fifoInit(void* headBuffer, int headSize, void* bodyBuffer, int bodySize);
 * @param headSize
 *        Size of the pushed data and of the first element of the fifo (>0)
 * @param bodyBuffer
-*        pointer to the memory space containing all but the first element of 
+*        pointer to the memory space containing all but the first element of
 *        the fifo.
 * @param bodySize
 *        Size of the body of the fifo (>=0)
@@ -54,7 +54,7 @@ void fifoPush(void * inputBuffer, void* headBuffer, int headSize, void* bodyBuff
 * @param headSize
 *        Size of the popped data and of the first element of the fifo (>0)
 * @param bodyBuffer
-*        pointer to the memory space containing all but the first element of 
+*        pointer to the memory space containing all but the first element of
 *        the fifo.
 * @param bodySize
 *        Size of the body of the fifo (>=0)

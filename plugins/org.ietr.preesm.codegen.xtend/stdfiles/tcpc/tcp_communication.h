@@ -1,7 +1,7 @@
 
 
-#ifndef _SOCKETCOM_H_
-#define _SOCKETCOM_H_
+#ifndef _PREESM_SOCKETCOM_H_
+#define _PREESM_SOCKETCOM_H_
 
 #define _GNU_SOURCE
 

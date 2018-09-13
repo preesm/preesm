@@ -10,8 +10,8 @@ communications.
 ============================================================================
 */
 
-#ifndef COMMUNICATION_H
-#define COMMUNICATION_H
+#ifndef _PREESM_COMMUNICATION_H
+#define _PREESM_COMMUNICATION_H
 
 #ifdef __APPLE__
 #include <dispatch/dispatch.h>
