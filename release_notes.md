@@ -14,6 +14,7 @@ PREESM Changelog
 * Codegen now embeds communication, fifo, and dump C and header files
   * this includes TCP communication lib;
   * also includes semaphore and barrier implementation for MacOSX;
+* Minor fixes in UI;
 
 ### Bug fix
 

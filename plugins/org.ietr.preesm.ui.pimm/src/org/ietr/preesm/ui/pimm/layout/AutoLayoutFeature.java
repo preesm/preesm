@@ -39,6 +39,7 @@
 package org.ietr.preesm.ui.pimm.layout;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -789,6 +790,10 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
       // 3. Layout actors according to the topological order
       stageByStageActorLayout(diagram, this.stagedActors);
+    } else {
+      this.stagedActors = Collections.emptyList();
+      this.feedbackFifos = Collections.emptyList();
+      this.stagesGaps = Collections.emptyList();
     }
   }
 

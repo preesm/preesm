@@ -154,12 +154,14 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
           for (final Entry<String, EObject> msgs : checker.getWarningMsgs().entrySet()) {
             final String msg = msgs.getKey();
             final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, msgs.getValue());
-            final PictogramElement pictogramElement = pes.get(0);
-            final String uriFragment = pictogramElement.eResource().getURIFragment(pictogramElement);
-            final BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.WARNING,
-                PreesmUIPlugin.PLUGIN_ID, 0, msg, new Object[] { pictogramElement, uriFragment });
+            if (!pes.isEmpty()) {
+              final PictogramElement pictogramElement = pes.get(0);
+              final String uriFragment = pictogramElement.eResource().getURIFragment(pictogramElement);
+              final BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.WARNING,
+                  PreesmUIPlugin.PLUGIN_ID, 0, msg, new Object[] { pictogramElement, uriFragment });
 
-            result.add(d);
+              result.add(d);
+            }
           }
 
           // Errors
